@@ -29,7 +29,7 @@ export function renderSunReadouts(sun,shade,settings){
   document.querySelectorAll('[data-sun-season]').forEach(b=>b.setAttribute('aria-pressed',String(settings.sunDate.slice(5)===b.dataset.sunSeason)));
   for(const zone of ['garden','terrace','pool']){
     const result=shade.zones[zone],value=result.percent;
-    $(`sunlit-${zone}`).textContent=Number.isFinite(value)?`${Math.round(value)}%`:'—';
+    $(`sunlit-${zone}`).textContent=Number.isFinite(value)?value>0&&value<1?'<1%':value>99&&value<100?'>99%':`${Math.round(value)}%`:'—';
     $(`sunlit-${zone}-bar`).style.width=Number.isFinite(value)?`${value}%`:'0%';
     $(`sunlit-${zone}-count`).textContent=shade.status==='night'?'Sun below horizon':shade.status==='disabled'?'Simulation off':result.total?`${result.sunlit} / ${result.total} points in direct sun`:'No outdoor sample points';
   }

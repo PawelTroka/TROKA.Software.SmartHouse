@@ -189,7 +189,8 @@ export function createScene(container, data, callbacks = {}) {
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
   scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
-  const sunMarker=new THREE.Mesh(new THREE.SphereGeometry(.52,svgMode?8:16,svgMode?6:12),new THREE.MeshBasicMaterial({color:'#fff0ad',transparent:true,opacity:.95}));
+  const sunMarker=new THREE.Mesh(new THREE.SphereGeometry(.52,svgMode?8:16,svgMode?6:12),new THREE.MeshBasicMaterial({color:'#fff0ad',transparent:true,opacity:.95,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
+  sunGuideGroup.renderOrder=1000;sunPathGroup.renderOrder=1000;sunMarker.renderOrder=1002;
   sunGuideGroup.add(sunPathGroup,sunMarker);sunGuideGroup.visible=false;
   const terrainMeshes = [];
   const labels = [];
@@ -583,7 +584,8 @@ export function createScene(container, data, callbacks = {}) {
       // The dome is a direction guide, never a shade caster or an opaque canopy.
       const horizon=[];
       for(let i=0;i<=72;i++){const a=i*Math.PI*2/72;horizon.push([centre[0]+Math.cos(a)*radius,centre[1]+Math.sin(a)*radius,centre[2]]);}
-      line(sunPathGroup,horizon,'#bdad76',.24);
+      const horizonGuide=line(sunPathGroup,horizon,'#bdad76',.24);
+      Object.assign(horizonGuide.material,{depthTest:false,depthWrite:false,fog:false,toneMapped:false});horizonGuide.renderOrder=1000;
       const vertices=[],path=solar.path||[];
       for(let i=1;i<path.length;i++){
         let a=path[i-1].direction,b=path[i].direction;
@@ -596,8 +598,8 @@ export function createScene(container, data, callbacks = {}) {
         vertices.push(domePoint(a),domePoint(b));
       }
       if(vertices.length){
-        const material=new THREE.LineBasicMaterial({color:'#e4b857',transparent:true,opacity:.8});material.userData.transient=true;
-        sunPathGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(vertices),material));
+        const material=new THREE.LineBasicMaterial({color:'#e4b857',transparent:true,opacity:.8,depthTest:false,depthWrite:false,fog:false,toneMapped:false});material.userData.transient=true;
+        const pathGuide=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(vertices),material);pathGuide.renderOrder=1001;sunPathGroup.add(pathGuide);
       }
     }
     if(daylight){sunMarker.position.copy(domePoint(solar.direction));sunMarker.material.color.copy(sun.color);}
@@ -639,7 +641,7 @@ export function createScene(container, data, callbacks = {}) {
       }
     }
     scene.fog.color.copy(scene.background);
-    updateSunGuide(solar,settings,enabled,daylight,centre,34);
+    updateSunGuide(solar,settings,enabled,daylight,centre,18);
     shadowCameraDirty=true;requestRender();
     return {enabled,isDaylight:daylight,rendererType};
   }
