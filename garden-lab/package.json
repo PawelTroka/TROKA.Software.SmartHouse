@@ -1,1 +1,1 @@
-{"name":"sternicza-garden-lab","version":"1.1.0","private":true,"type":"module","description":"A site-specific garden privacy, terrain and planting budget simulator","scripts":{"build":"node scripts/build.mjs","test":"node --test tests/*.test.mjs"}}
+{"name":"sternicza-garden-lab","version":"1.2.0","private":true,"type":"module","description":"A site-specific garden privacy, sunlight, terrain and planting budget simulator","scripts":{"build":"node scripts/build.mjs","test":"node --test tests/*.test.mjs"}}

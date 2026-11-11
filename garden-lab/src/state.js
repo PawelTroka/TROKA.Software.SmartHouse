@@ -1,5 +1,6 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.1.0';
-import {BUILDING_FIELDS} from './buildings.js?v=1.1.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.2.0';
+import {BUILDING_FIELDS} from './buildings.js?v=1.2.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.2.0';
 
 export const FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:2.5,group:'hedge'},
@@ -19,32 +20,35 @@ export const FIELDS = Object.freeze({
   observerY: {label:'Observer from front boundary (y)',min:0.5,max:37,step:0.1,value:30,group:'assumption'},
   lookYaw: {label:'Look direction',min:-180,max:180,step:1,value:0,group:'look',unit:'°'},
   lookPitch: {label:'Look up / down',min:-60,max:60,step:1,value:0,group:'look',unit:'°'},
+  sunMinutes: {label:'Time of day in Warsaw',min:0,max:1439,step:1,value:SOLAR_DEFAULTS.sunMinutes,group:'solar'},
   ...COST_FIELDS,
   ...BUILDING_FIELDS,
 });
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','custom']);
-export const MODES = Object.freeze(['orbit','eye','plan','section']);
-export const DEFAULTS = Object.freeze({...COST_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,linkedHedges:false});
+export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
+export const DEFAULTS = Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,linkedHedges:false,sunPathVisible:false});
 export function sanitizeState(input={}) {
   const out={...DEFAULTS};
   if (!input || typeof input!=='object' || Array.isArray(input)) return out;
   for (const [key,f] of Object.entries(FIELDS)) {
     if (typeof input[key]==='number' && Number.isFinite(input[key])) out[key]=Math.max(f.min,Math.min(f.max,input[key]));
   }
+  out.sunMinutes=Math.round(out.sunMinutes);
+  out.sunDate=sanitizeSolarDate(input.sunDate);
   for (const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean')) if(typeof input[key]==='boolean') out[key]=input[key];
   if(PRESETS.includes(input.preset))out.preset=input.preset;
   if(MODES.includes(input.mode))out.mode=input.mode;
   return out;
 }
 export function encodeState(state) {
-  const s=sanitizeState(state),p=new URLSearchParams({v:'2'});
+  const s=sanitizeState(state),p=new URLSearchParams({v:'3'});
   for(const [key,val] of Object.entries(s)) if(val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
   return p.toString();
 }
 export function decodeState(hash) {
   const p=new URLSearchParams(hash.replace(/^#/,'')),s={};
-  if(!['1','2'].includes(p.get('v')))return {...DEFAULTS};
-  for(const [key,val] of p){if(key in FIELDS){if(val.trim()!=='')s[key]=Number(val);}else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}else if(key==='preset'||key==='mode')s[key]=val;}
+  if(!['1','2','3'].includes(p.get('v')))return {...DEFAULTS};
+  for(const [key,val] of p){if(key in FIELDS){if(val.trim()!=='')s[key]=Number(val);}else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}else if(key==='preset'||key==='mode'||key==='sunDate')s[key]=val;}
   return sanitizeState(s);
 }
 export function scenarioState(name,current=DEFAULTS) {

@@ -2,6 +2,7 @@ import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
 import { terrainAt, gardenGroundAt, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js';
+import { sampledRoofFaces } from './shade.js?v=1.2.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // Three.js coordinates are x, elevation, -gardenDepth. No vertical exaggeration.
@@ -48,40 +49,40 @@ function polygonPrism(ring, base, top, material) {
   return mesh;
 }
 
-// Triangulate the actual downsampled roof returns in plan. This preserves their
-// measured elevations instead of presenting a made-up pyramid as the survey.
+// Rendering and numerical shade use the same measured roof triangulation.
 function sampledRoofGeometry(ring, samples, edgeZ) {
-  const unique=new Map();
-  [...samples,...closeRing(ring).map(p=>[...p,edgeZ])].forEach(p=>{
-    const key=`${p[0].toFixed(3)}:${p[1].toFixed(3)}`;
-    if(!unique.has(key)||unique.get(key)[2]<p[2])unique.set(key,p);
-  });
-  const points=[...unique.values()],count=points.length;
-  if(count<3)return null;
-  const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
-  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),span=Math.max(x1-x0,y1-y0)*8,cx=(x0+x1)/2,cy=(y0+y1)/2;
-  points.push([cx-span,cy-span,edgeZ],[cx,cy+span,edgeZ],[cx+span,cy-span,edgeZ]);
-  const triangle=(a,b,c)=>{
-    const p=points[a],q=points[b],r=points[c],d=2*(p[0]*(q[1]-r[1])+q[0]*(r[1]-p[1])+r[0]*(p[1]-q[1]));
-    if(Math.abs(d)<1e-10)return null;
-    const p2=p[0]**2+p[1]**2,q2=q[0]**2+q[1]**2,r2=r[0]**2+r[1]**2;
-    const x=(p2*(q[1]-r[1])+q2*(r[1]-p[1])+r2*(p[1]-q[1]))/d;
-    const y=(p2*(r[0]-q[0])+q2*(p[0]-r[0])+r2*(q[0]-p[0]))/d;
-    return {a,b,c,x,y,r2:(x-p[0])**2+(y-p[1])**2};
-  };
-  let triangles=[triangle(count,count+1,count+2)];
-  for(let i=0;i<count;i++){
-    const p=points[i],edges=new Map(),kept=[];
-    for(const t of triangles){
-      if((p[0]-t.x)**2+(p[1]-t.y)**2<=t.r2+1e-8){
-        for(const [a,b]of[[t.a,t.b],[t.b,t.c],[t.c,t.a]]){const key=a<b?`${a}:${b}`:`${b}:${a}`;if(edges.has(key))edges.delete(key);else edges.set(key,[a,b]);}
-      }else kept.push(t);
-    }
-    for(const [a,b]of edges.values()){const t=triangle(a,b,i);if(t)kept.push(t);}
-    triangles=kept;
-  }
-  const faces=triangles.filter(t=>t.a<count&&t.b<count&&t.c<count&&contains((points[t.a][0]+points[t.b][0]+points[t.c][0])/3,(points[t.a][1]+points[t.b][1]+points[t.c][1])/3,ring)).map(t=>localTriangle(points[t.a],points[t.b],points[t.c]));
+  const faces=sampledRoofFaces(ring,samples,edgeZ).map(([a,b,c])=>localTriangle(a,b,c));
   return faces.length?geometryFromTriangles(faces):null;
+}
+
+/** Fit resolution to site receivers, but depth to every possible context caster.
+ * Points are in Three.js world coordinates, not the site's x/y/elevation axes.
+ * A distant building capable of shading a receiver projects onto that same
+ * light-space x/y, so its distance must enlarge depth, not the map's footprint.
+ */
+export function fitSunShadowCamera(light,receiverPoints,casterPoints,margin=2.5) {
+  if(!receiverPoints.length)return;
+  light.updateMatrixWorld(true);light.target.updateMatrixWorld(true);
+  const camera=light.shadow.camera;
+  camera.position.setFromMatrixPosition(light.matrixWorld);
+  camera.lookAt(new THREE.Vector3().setFromMatrixPosition(light.target.matrixWorld));
+  camera.updateMatrixWorld(true);
+  const projected=new THREE.Vector3();
+  let left=Infinity,right=-Infinity,bottom=Infinity,top=-Infinity,near=Infinity,far=-Infinity;
+  for(const p of receiverPoints){
+    projected.copy(p).applyMatrix4(camera.matrixWorldInverse);
+    left=Math.min(left,projected.x);right=Math.max(right,projected.x);
+    bottom=Math.min(bottom,projected.y);top=Math.max(top,projected.y);
+    near=Math.min(near,-projected.z);far=Math.max(far,-projected.z);
+  }
+  for(const p of casterPoints){
+    projected.copy(p).applyMatrix4(camera.matrixWorldInverse);
+    near=Math.min(near,-projected.z);far=Math.max(far,-projected.z);
+  }
+  Object.assign(camera,{left:left-margin,right:right+margin,bottom:bottom-margin,top:top+margin,near:Math.max(.1,near-5),far:Math.max(10,far+5)});
+  camera.updateProjectionMatrix();light.shadow.updateMatrices(light);
+  light.shadow.needsUpdate=true;
+  return {left:camera.left,right:camera.right,bottom:camera.bottom,top:camera.top,near:camera.near,far:camera.far};
 }
 
 function removeGeometry(group) {
@@ -104,7 +105,7 @@ function fallback(container, error) {
   text.style.cssText = 'max-width:390px;line-height:1.6;margin:0';
   element.append(heading, text);
   container.append(element);
-  return { available: false, reason: String(error?.message || error), update() {}, setView() {}, resize() {}, dispose() { element.remove(); } };
+  return { available: false, reason: String(error?.message || error), update() {}, updateSun() {}, setView() {}, resize() {}, dispose() { element.remove(); } };
 }
 
 export function createScene(container, data, callbacks = {}) {
@@ -126,7 +127,7 @@ export function createScene(container, data, callbacks = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.16;
-  if(renderer.shadowMap){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
+  if(renderer.shadowMap){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;}
   renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;outline:none';
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('role', 'img');
@@ -148,15 +149,16 @@ export function createScene(container, data, callbacks = {}) {
 
   const ambient = new THREE.HemisphereLight('#f9f4e8', '#7e8a7c', 2.25);
   scene.add(ambient);
-  if(svgMode)scene.add(new THREE.AmbientLight('#ffffff',.88));
+  const svgAmbient=svgMode?new THREE.AmbientLight('#ffffff',.88):null;
+  if(svgAmbient)scene.add(svgAmbient);
   const sun = new THREE.DirectionalLight('#fff2d4', svgMode?.72:3.1);
   sun.position.copy(point(-30, 4, 70));
   sun.target.position.copy(point(10, 24, 3));
   sun.castShadow = !svgMode;
-  sun.shadow.mapSize.set(1024, 1024);
-  Object.assign(sun.shadow.camera, { left: -45, right: 45, top: 45, bottom: -45, near: 1, far: 140 });
-  sun.shadow.normalBias = 0.06;
-  sun.shadow.bias = -0.0002;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -45, right: 45, top: 45, bottom: -45, near: .1, far: 550 });
+  sun.shadow.normalBias = 0.035;
+  sun.shadow.bias = -0.00004;
   scene.add(sun, sun.target);
 
   const mat = {};
@@ -185,8 +187,10 @@ export function createScene(container, data, callbacks = {}) {
   standard('linen', '#eee9d9');
   standard('gold', '#d7a74a', { roughness: 0.55, metalness: 0.15 });
 
-  const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group();
-  scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup);
+  const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
+  scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
+  const sunMarker=new THREE.Mesh(new THREE.SphereGeometry(.52,svgMode?8:16,svgMode?6:12),new THREE.MeshBasicMaterial({color:'#fff0ad',transparent:true,opacity:.95}));
+  sunGuideGroup.add(sunPathGroup,sunMarker);sunGuideGroup.visible=false;
   const terrainMeshes = [];
   const labels = [];
   const labelLayer = document.createElement('div');
@@ -196,6 +200,8 @@ export function createScene(container, data, callbacks = {}) {
   let disposed = false, renderPending = false, mode = 'orbit', currentSettings = {}, currentObserver = null, currentAnalysis = null;
   let designSignature = '', observerSignature = '', eyeYaw = 0, eyePitch = 0, eyeFov=65, storedYaw = null, storedPitch = null;
   let lastWidth = 1, lastHeight = 1;
+  let shadowBoundsDirty=true,shadowCameraDirty=true,shadowReceiverPoints=[],shadowCasterPoints=[];
+  let sunPathSignature='',previousSunPath=null;
 
   const box = (group, x, y, z, width, depth, height, material, cast = true, svgOrder = 0) => {
     if (width <= 0 || depth <= 0 || height <= 0) return null;
@@ -329,6 +335,7 @@ export function createScene(container, data, callbacks = {}) {
       if (labels[i].kind === 'target') { labels[i].element.remove(); labels.splice(i, 1); }
     }
     (data.buildings || []).filter(b => b.index !== 0 && b.index !== 1 && b.id !== data.site.house.id && b.id !== data.site.garage?.id).forEach(addContextBuilding);
+    shadowBoundsDirty=true;
   }
 
   makeTerrain(staticGroup, [-65,-28,115,150], svgMode?12:3, (x,y)=>terrainAt(x,y,data)-.015, mat.walkway);
@@ -382,9 +389,9 @@ export function createScene(container, data, callbacks = {}) {
     pitchedRoof(group,[[x0+4,y0-.05],[x0+7.4,y0-.05],[x0+7.4,y0+3.6],[x0+4,y0+3.6]],eaves+.04,eaves+1.7,mat.roof,'y');
     box(group,x0+7.6,y0+4.8,eaves+1.4,.68,.8,1.25,mat.roof);
     // Low furnishings add scale without adding unsimulated tall sightline obstacles.
-    box(group,6.2,13.5,floor,3.1,1.0,.4,mat.linen);
-    box(group,6.2,13.5,floor+.4,3.1,.27,.42,mat.linen);
-    box(group,7,15.0,floor,.95,.65,.32,mat.woodLight);
+    box(group,6.2,13.5,floor,3.1,1.0,.4,mat.linen,false);
+    box(group,6.2,13.5,floor+.4,3.1,.27,.42,mat.linen,false);
+    box(group,7,15.0,floor,.95,.65,.32,mat.woodLight,false);
   }
 
   function addHedges(group,settings) {
@@ -430,7 +437,8 @@ export function createScene(container, data, callbacks = {}) {
     }
     const geometry=new THREE.IcosahedronGeometry(1,1), instance=new THREE.InstancedMesh(geometry,mat.leaf,placements.length),dummy=new THREE.Object3D();
     placements.forEach(([x,y,h],i)=>{dummy.position.copy(point(x,y,gardenGroundAt(x,y,settings,data)+h*.48));dummy.scale.set(.53,h,.53);dummy.rotation.y=x+y;dummy.updateMatrix();instance.setMatrixAt(i,dummy.matrix);});
-    instance.castShadow=true;instance.receiveShadow=true;group.add(instance);
+    // These small plants are illustrative; the numerical shade model excludes them.
+    instance.castShadow=false;instance.receiveShadow=true;group.add(instance);
   }
 
   function addGarden(group,settings) {
@@ -451,28 +459,28 @@ export function createScene(container, data, callbacks = {}) {
       for(let i=0;i<n;i++)box(group,x+1.0,rear+depth+i*.29,stepGround,stepW,.29,drop*(n-i)/n,mat.stone);
     }
     // Low daybed at the terrace's quiet end.
-    box(group,x+.45,rear+.7,floor,.7,2.1,.26,mat.wood);
-    box(group,x+.42,rear+.72,floor+.26,.76,2.0,.12,mat.linen);
+    box(group,x+.45,rear+.7,floor,.7,2.1,.26,mat.wood,false);
+    box(group,x+.42,rear+.72,floor+.26,.76,2.0,.12,mat.linen,false);
     const p=data.site.pool,px=p.x,py=p.y,pw=p.width,pl=p.length,pz=gardenGroundAt(px+pw/2,py+pl/2,settings,data)+.015;
     box(group,px-.28,py-.28,pz-.06,pw+.56,pl+.56,.12,mat.stoneLight,false,-70);
     box(group,px,py,pz+.065,pw,pl,.025,mat.water,false,-69);
     for(let n=0;n<4;n++)line(group,[[px+.12,py+1+n*1.9,pz+.095],[px+pw-.12,py+1+n*1.9,pz+.095]],'#79a5a0',.21);
     for(let y=28;y<32;y+=2.5){
       const lx=10.8,lz=gardenGroundAt(lx,y,settings,data);
-      box(group,lx,y,lz,.78,2.0,.24,mat.wood);
-      box(group,lx+.02,y+.03,lz+.24,.74,1.9,.1,mat.linen);
-      const back=box(group,lx+.02,y+.03,lz+.37,.74,.6,.09,mat.linen);back.rotation.x=.3;
+      box(group,lx,y,lz,.78,2.0,.24,mat.wood,false);
+      box(group,lx+.02,y+.03,lz+.24,.74,1.9,.1,mat.linen,false);
+      const back=box(group,lx+.02,y+.03,lz+.37,.74,.6,.09,mat.linen,false);back.rotation.x=.3;
     }
     // Ground-level circulation and a small dining setting, only when the garage is removed.
     for(let y=23;y<35;y+=1.45){const z=gardenGroundAt(3.8,y,settings,data);box(group,3.2,y,z+.018,1.15,.9,.035,mat.stoneLight,false,-80);}
     if(settings.removeGarage!==false){
       const dx=15.3,dy=26.4,dz=gardenGroundAt(dx,dy,settings,data);
       box(group,14.1,24.5,dz-.015,3.8,4.6,.035,mat.stone,false,-80);
-      box(group,dx,dy,dz+.65,1.55,.8,.09,mat.woodLight);
-      [dx+.1,dx+1.3].forEach(tx=>box(group,tx,dy+.1,dz,.12,.6,.65,mat.wood));
+      box(group,dx,dy,dz+.65,1.55,.8,.09,mat.woodLight,false);
+      [dx+.1,dx+1.3].forEach(tx=>box(group,tx,dy+.1,dz,.12,.6,.65,mat.wood,false));
       for(const cy of [dy-.55,dy+1.0])for(const cx of [dx+.08,dx+.92]){
-        box(group,cx,cy,dz+.42,.55,.5,.08,mat.linen);
-        box(group,cx,cy+(cy<dy?0:.43),dz+.5,.55,.07,.35,mat.wood);
+        box(group,cx,cy,dz+.42,.55,.5,.08,mat.linen,false);
+        box(group,cx,cy+(cy<dy?0:.43),dz+.5,.55,.07,.35,mat.wood,false);
       }
     }
     addShrubs(group,settings);
@@ -534,6 +542,106 @@ export function createScene(container, data, callbacks = {}) {
       designGroup.add(polygonPrism(g.footprint,base,eaves,mat.plinth));
       pitchedRoof(designGroup,g.footprint,eaves,num(g.roofTopZ,8.69),mat.roof,'y');
     }
+    shadowBoundsDirty=true;
+  }
+
+  function refreshShadowBounds() {
+    shadowReceiverPoints=[];shadowCasterPoints=[];
+    const bounds=new THREE.Box3();
+    // Cache box corners when geometry changes. Moving only the time slider then
+    // transforms these few points, without rebuilding meshes or triangulating roofs.
+    const collect=(group,isSite)=>{
+      group.updateMatrixWorld(true);
+      group.traverse(mesh=>{
+        if(!mesh.isMesh||mesh.isInstancedMesh||!mesh.geometry?.attributes.position?.count)return;
+        if(!mesh.castShadow&&!(isSite&&mesh.receiveShadow))return;
+        if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();
+        bounds.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
+        if(bounds.isEmpty())return;
+        for(const x of [bounds.min.x,bounds.max.x])for(const y of [bounds.min.y,bounds.max.y])for(const z of [bounds.min.z,bounds.max.z]){
+          const p=new THREE.Vector3(x,y,z);
+          if(mesh.castShadow)shadowCasterPoints.push(p);
+          if(isSite&&mesh.receiveShadow)shadowReceiverPoints.push(p);
+        }
+      });
+    };
+    collect(buildingGroup,false);collect(designGroup,true);
+    // Before the first design update, retain a valid plot-sized lighting region.
+    if(!shadowReceiverPoints.length)for(const p of data.site.boundary)shadowReceiverPoints.push(point(p[0],p[1],terrainAt(...p,data)));
+    shadowBoundsDirty=false;shadowCameraDirty=true;
+  }
+
+  function updateSunGuide(solar,settings,enabled,daylight,centre,radius) {
+    sunGuideGroup.visible=enabled&&settings.sunPathVisible===true;
+    sunMarker.visible=daylight;
+    if(!sunGuideGroup.visible)return;
+    const signature=`${solar.date||settings.sunDate}:${centre.join(':')}:${radius}`;
+    const domePoint=direction=>point(centre[0]+direction[0]*radius,centre[1]+direction[1]*radius,centre[2]+direction[2]*radius);
+    if(previousSunPath!==solar.path||signature!==sunPathSignature){
+      previousSunPath=solar.path;sunPathSignature=signature;removeGeometry(sunPathGroup);
+      // A thin reference horizon and the above-horizon portion of today's path.
+      // The dome is a direction guide, never a shade caster or an opaque canopy.
+      const horizon=[];
+      for(let i=0;i<=72;i++){const a=i*Math.PI*2/72;horizon.push([centre[0]+Math.cos(a)*radius,centre[1]+Math.sin(a)*radius,centre[2]]);}
+      line(sunPathGroup,horizon,'#bdad76',.24);
+      const vertices=[],path=solar.path||[];
+      for(let i=1;i<path.length;i++){
+        let a=path[i-1].direction,b=path[i].direction;
+        if(!a||!b||(a[2]<=0&&b[2]<=0))continue;
+        if(a[2]<0||b[2]<0){
+          const t=a[2]/(a[2]-b[2]),crossing=a.map((v,j)=>v+(b[j]-v)*t),length=Math.hypot(...crossing);
+          const horizonDirection=crossing.map(v=>v/length);
+          if(a[2]<0)a=horizonDirection;else b=horizonDirection;
+        }
+        vertices.push(domePoint(a),domePoint(b));
+      }
+      if(vertices.length){
+        const material=new THREE.LineBasicMaterial({color:'#e4b857',transparent:true,opacity:.8});material.userData.transient=true;
+        sunPathGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(vertices),material));
+      }
+    }
+    if(daylight){sunMarker.position.copy(domePoint(solar.direction));sunMarker.material.color.copy(sun.color);}
+  }
+
+  function updateSun(solar,settings=currentSettings) {
+    currentSettings={...currentSettings,...settings};
+    const direction=solar?.direction;
+    const enabled=settings.sunEnabled!==false&&solar?.enabled!==false&&Array.isArray(direction)&&direction.length===3&&direction.every(Number.isFinite)&&Math.hypot(...direction)>0;
+    const daylight=enabled&&solar.isDaylight===true&&direction[2]>0;
+    const c=centroid(data.site.boundary),centre=[c[0],c[1],gardenGroundAt(c[0],c[1],settings,data)+.1];
+    if(!enabled){
+      ambient.color.set('#f9f4e8');ambient.groundColor.set('#7e8a7c');ambient.intensity=2.25;
+      if(svgAmbient){svgAmbient.color.set('#ffffff');svgAmbient.intensity=.88;}
+      sun.color.set('#fff2d4');sun.intensity=svgMode?.72:3.1;sun.castShadow=!svgMode;
+      sun.position.copy(point(-30,4,70));sun.target.position.copy(point(10,24,3));
+      scene.background.set('#dfe8e8');renderer.toneMappingExposure=1.16;
+    }else{
+      // The ephemeris vector points FROM the plot TO the sun. In Three.js the
+      // site's vertical component is Y, and garden depth becomes negative Z.
+      const towardSun=new THREE.Vector3(direction[0],direction[2],-direction[1]).normalize();
+      sun.target.position.copy(point(...centre));sun.position.copy(sun.target.position).addScaledVector(towardSun,300);
+      sun.castShadow=daylight&&!svgMode;
+      if(daylight){
+        const strength=Math.pow(Math.max(0,direction[2]),.4),warmth=THREE.MathUtils.clamp(num(solar.elevation)/35,0,1);
+        sun.color.set('#ffc18a').lerp(new THREE.Color('#fff3db'),warmth);
+        sun.intensity=(svgMode?.8:3.3)*strength;
+        ambient.color.set('#f1f2ec');ambient.groundColor.set('#778575');ambient.intensity=1.25+.8*strength;
+        if(svgAmbient){svgAmbient.color.set('#edf1ee').multiplyScalar(.78);svgAmbient.intensity=.78;}
+        scene.background.set('#e7d6c0').lerp(new THREE.Color('#dce8eb'),warmth);renderer.toneMappingExposure=1.12;
+      }else{
+        // Keep the model readable at night without inventing direct sunlight or
+        // letting the previous daytime shadow map suggest a sun above the horizon.
+        sun.intensity=0;
+        ambient.color.set('#8fa5c0');ambient.groundColor.set('#48585d');ambient.intensity=.52;
+        // SVGRenderer reads the ambient color directly (ignoring its intensity).
+        if(svgAmbient){svgAmbient.color.set('#91a9c5').multiplyScalar(.32);svgAmbient.intensity=.32;}
+        scene.background.set('#182833');renderer.toneMappingExposure=1.02;
+      }
+    }
+    scene.fog.color.copy(scene.background);
+    updateSunGuide(solar,settings,enabled,daylight,centre,34);
+    shadowCameraDirty=true;requestRender();
+    return {enabled,isDaylight:daylight,rendererType};
   }
 
   function rebuildObserver(observer,analysis,settings) {
@@ -572,6 +680,12 @@ export function createScene(container, data, callbacks = {}) {
 
   function renderNow() {
     renderPending=false;if(disposed)return;
+    if(shadowBoundsDirty)refreshShadowBounds();
+    if(sun.castShadow&&shadowCameraDirty){
+      fitSunShadowCamera(sun,shadowReceiverPoints,shadowCasterPoints);
+      if(renderer.shadowMap)renderer.shadowMap.needsUpdate=true;
+      shadowCameraDirty=false;
+    }
     renderer.render(scene,camera);renderLabels();
   }
   function requestRender() {if(!renderPending&&!disposed){renderPending=true;requestAnimationFrame(renderNow);}}
@@ -699,7 +813,8 @@ export function createScene(container, data, callbacks = {}) {
     if(disposed)return;disposed=true;resizeObserver.disconnect();controls.dispose();
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const materials=new Set();scene.traverse(o=>{o.geometry?.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));});materials.forEach(m=>m.dispose());
+    sun.shadow.dispose();
     renderer.dispose?.();renderer.domElement.remove();labelLayer.remove();
   }
-  return {available:true,rendererType,update,setView,resize,dispose,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov})};
+  return {available:true,rendererType,update,updateSun,setView,resize,dispose,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov})};
 }

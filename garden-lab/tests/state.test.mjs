@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DEFAULTS,FIELDS,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,changeHedgeHeight} from '../src/state.js';
+import {DEFAULTS,FIELDS,MODES,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,changeHedgeHeight} from '../src/state.js';
 import {COST_FIELDS} from '../src/costs.js';
 import {BUILDING_FIELDS} from '../src/buildings.js';
 test('share links preserve fill, fixed floors, independent hedge heights and observer settings',()=>{
@@ -55,16 +55,60 @@ test('legacy saved settings keep the design but discard the old automatically li
  assert.equal(legacyUrl.hedgeLeft,4);
 });
 
-test('v2 links preserve every editable cost and building assumption with comparison settings',()=>{
+test('v3 links preserve every editable cost and building assumption with comparison settings',()=>{
  const state={...DEFAULTS,linkedHedges:true,buyNewThujas:false,raiseNewHedges:false,includeHighFeatures:true};
  for(const [key,f] of Object.entries({...COST_FIELDS,...BUILDING_FIELDS}))state[key]=Math.round((f.min+(f.max-f.min)*.37)*100)/100;
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=2&'));
+ assert.ok(encoded.startsWith('v=3&'));
  for(const key of Object.keys({...COST_FIELDS,...BUILDING_FIELDS})){
   assert.ok(key in FIELDS);
   assert.equal(restored[key],state[key],key);
  }
  for(const key of ['linkedHedges','buyNewThujas','raiseNewHedges','includeHighFeatures'])assert.equal(restored[key],state[key],key);
+});
+
+test('solar settings round-trip with the design, costs, buildings and independent hedges',()=>{
+ const state={...DEFAULTS,mode:'sun',sunDate:'2026-12-21',sunMinutes:962,sunEnabled:false,sunPathVisible:true,hedgeRear:6,hedgeLeft:3.5,hedgeRight:2.5,gardenRaise:.35,costFillRate:90,b9HeightDelta:2};
+ const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
+ assert.ok(encoded.startsWith('v=3&'));
+ assert.ok(MODES.includes('sun'));
+ assert.equal(FIELDS.sunMinutes.group,'solar');
+ for(const key of ['mode','sunDate','sunMinutes','sunEnabled','sunPathVisible','hedgeRear','hedgeLeft','hedgeRight','gardenRaise','costFillRate','b9HeightDelta'])assert.equal(restored[key],state[key],key);
+ const changed=changeHedgeHeight(restored,'hedgeLeft',4.5);
+ assert.equal(changed.hedgeLeft,4.5);assert.equal(changed.hedgeRear,6);assert.equal(changed.hedgeRight,2.5);
+ for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(changed[key],state[key],key);
+});
+
+test('solar date and minute validation prevents malformed shared scenarios',()=>{
+ for(const date of ['2026-02-29','2026-04-31','1999-12-31','2101-01-01','2026-06-21<script>','',null])assert.equal(sanitizeState({sunDate:date}).sunDate,DEFAULTS.sunDate,String(date));
+ assert.equal(sanitizeState({sunDate:'2028-02-29'}).sunDate,'2028-02-29');
+ assert.equal(sanitizeState({sunDate:'2100-12-31'}).sunDate,'2100-12-31');
+ assert.equal(decodeState('#v=3&sunDate=2026-02-30&sunMinutes=NaN&sunEnabled=no&sunPathVisible=1').sunDate,DEFAULTS.sunDate);
+ for(const value of ['NaN','Infinity','-Infinity',''])assert.equal(decodeState(`#v=3&sunMinutes=${value}`).sunMinutes,DEFAULTS.sunMinutes,value);
+ assert.equal(decodeState('#v=3&sunMinutes=-30').sunMinutes,0);
+ assert.equal(decodeState('#v=3&sunMinutes=1500').sunMinutes,1439);
+ assert.equal(sanitizeState({sunMinutes:720.8}).sunMinutes,721);
+ assert.equal(sanitizeState({sunMinutes:'720'}).sunMinutes,DEFAULTS.sunMinutes);
+ assert.equal(sanitizeState({sunEnabled:'false',sunPathVisible:'true'}).sunEnabled,true);
+ assert.equal(sanitizeState({sunEnabled:'false',sunPathVisible:'true'}).sunPathVisible,false);
+});
+
+test('v1 and v2 links preserve legacy assumptions and adopt stable solar defaults',()=>{
+ for(const version of [1,2]){
+  const restored=decodeState(`#v=${version}&hedgeRear=6&hedgeLeft=4&hedgeRight=3&gardenRaise=0.5&costFillRate=85&b9HeightDelta=1.5&linkedHedges=false&mode=section`);
+  for(const [key,value] of Object.entries({hedgeRear:6,hedgeLeft:4,hedgeRight:3,gardenRaise:.5,costFillRate:85,b9HeightDelta:1.5,linkedHedges:false,mode:'section'}))assert.equal(restored[key],value,`v${version} ${key}`);
+  for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(restored[key],DEFAULTS[key],`v${version} ${key}`);
+ }
+ assert.equal(encodeState(DEFAULTS),'v=3');
+ assert.deepEqual(decodeState('#v=4&hedgeRear=10&sunDate=2026-12-21'),DEFAULTS);
+});
+
+test('hedge scenarios preserve the selected sun date and time',()=>{
+ const current={...DEFAULTS,sunDate:'2026-09-22',sunMinutes:1080,sunEnabled:false,sunPathVisible:true,mode:'sun'};
+ for(const name of ['starter','raised','tall','canopy']){
+  const next=scenarioState(name,current);
+  for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible','mode'])assert.equal(next[key],current[key],`${name} ${key}`);
+ }
 });
 
 test('malformed boolean URL values leave defaults intact instead of silently disabling options',()=>{

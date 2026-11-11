@@ -1,6 +1,6 @@
 # Sternicza · Garden Lab
 
-An interactive, browser-only garden privacy simulator for Sternicza 11, Gdańsk. Explore the actual mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, and compare editable thuja and earthwork budgets.
+An interactive, browser-only garden privacy and sunlight simulator for Sternicza 11, Gdańsk. Explore the actual mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, compare editable thuja and earthwork budgets, and see how seasonal sun changes the shade.
 
 **[Open the live simulator](https://paweltroka.github.io/TROKA.Software.SmartHouse/)**
 
@@ -14,7 +14,9 @@ Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between 
 
 **Fine-tune the assumptions** includes optional building height and distance comparisons. **Budget assumptions · PLN** contains planting density, per-side supplier quotes, material rates, delivery capacity and project allowances. The budget beneath the sightline results updates with the design; expand **Quantities, itemised costs & sources** for the calculation and dated source links.
 
-**Share view** creates a `v=2` URL containing changed settings, including cost inputs and building adjustments. Older `v=1` links remain readable. Existing local v1 preferences migrate to independent hedge editing, so the previous automatically linked default does not persist. An explicit linking setting in a shared link is still respected. **Export scenario** downloads schema-version-2 JSON containing settings, visibility results, the complete cost estimate and active building adjustments. Saved A/B comparisons include these inputs.
+**Sun & shade** lets you choose a date and time in Gdańsk, compare seasons, and inspect the resulting sun direction, 3D shadows and outdoor shade map. Change the hedges, canopy, garden level or surrounding-building assumptions to compare their effect on direct sunlight.
+
+**Share view** creates a `v=3` URL containing changed settings, including sun controls, cost inputs and building adjustments. Older `v=1` and `v=2` links remain readable. Existing local v1 preferences migrate to independent hedge editing, so the previous automatically linked default does not persist. An explicit linking setting in a shared link is still respected. **Export scenario** downloads versioned JSON containing settings, visibility results, the complete cost estimate and active building adjustments. Saved A/B comparisons include these inputs.
 
 The app has no backend, analytics, account requirement or external runtime requests. Three.js r160 is vendored with its MIT licence. A reduced SVG renderer keeps 3D interaction available on browsers without WebGL. Plan and section views use SVG independently of the 3D renderer.
 
@@ -52,7 +54,19 @@ Mapped property/footprint geometry and the terrain crop are data-derived. Nearby
 
 The house's living floor starts at an **assumed 1.2 m above the original near-house garden reference**. This value is not a measured floor survey. The terrace, jacuzzi, pool, canopy, new openings, furniture and finishes are proposed. The main house's pitched roof is schematic. The default **0.5 m hedge inset** is a design choice: setting it to zero reproduces the earlier boundary-screen calculations.
 
-The 3D view displays proposed walls and window openings, but these are not used as verified occluders in the ray score. Ornamental planting is illustrative and does not improve the numerical score. The score covers five target apartment volumes regardless of which direction the camera faces.
+The 3D view displays proposed walls and window openings, but these are not used as verified occluders in the privacy ray score. Ornamental planting is illustrative and does not improve the numerical score. The privacy score covers five target apartment volumes regardless of which direction the camera faces.
+
+## Sun and shade model
+
+Choose a date from **2000–2100** and a time of day. The initial view is **21 June 2026 at 12:00**, an illustrative summer scenario. All times use **Europe/Warsaw**, including CET/CEST daylight saving, regardless of the device's timezone. A repeated autumn hour uses its first occurrence; a missing spring hour advances by the clock-change gap and displays an explanation. Future clock rules depend on the browser's timezone database.
+
+Sun position uses NOAA/Meeus equations at **54.405452° N, 18.6312142° E**. The mapped EPSG:2180 orientation is corrected for meridian convergence: the rear garden axis points approximately **203.131° true**, rather than exactly south. Azimuth is clockwise from true north; elevation is above the level geometric horizon. Independent NREL SPA comparisons validate the seasonal solar direction. Method references and limitations are recorded in [`data/solar-sources.json`](data/solar-sources.json).
+
+The shade calculation traces rays toward the sun from outdoor surface samples on a **1 m grid**. It accounts for mapped surrounding-building bodies, sampled apartment roofs where available, the schematic house and retained-garage roofs, opaque hedge/bed screens, the raised terrace and the proposed canopy. Building height/distance overrides, garage removal, hedge edits and surface-level changes feed the same comparison geometry. The model does not calculate sunlight through living-room windows or indoor illumination.
+
+The garden, terrace, pool and front-area percentages are the **fraction of outdoor sample centres receiving direct sun at the selected instant**. They approximate surface coverage and can change in steps near shadow edges. They do not represent irradiance, weather, cumulative daily sunlight hours, thermal comfort or plant growth. Night is shown separately from architectural shade. Sunrise, solar noon and sunset describe the astronomical day; sunrise/sunset use the conventional −0.833° apparent horizon, while shadow rays use the geometric sun centre above 0°. Buildings and trees can delay the property's actual direct sun.
+
+Hedges are treated as opaque screens, not as measured foliage. Existing tree crowns, decorative planting/furniture, distant terrain horizon, cloud cover and diffuse/reflected light are excluded from the numerical result. Source roof detail and proposed geometry remain approximate; 3D shadow-map resolution and visual decoration can also produce small differences from the sampled shade map. The result is a planning comparison, not a surveyed solar-access assessment.
 
 ## Building sensitivity comparisons
 
@@ -142,7 +156,9 @@ The estimate excludes garage demolition, reuse of excavated pool soil, stripping
 
 The test suite covers finite ray intersections, the audited roof-ray benchmarks, terrain interpolation, garden versus bed raise, retained foliage, fixed house floors, screen inset, finite canopy roof/front/side edges, approximate building occlusion and garage removal.
 
-Cost regressions cover per-side tree pricing, zero-work totals, retained planting, polygon exclusions and overlaps, garden/bed volumes, topsoil partitioning, loose quantities, material-specific truck loads, area overrides, quote-required tall stock, custom unit prices and applying contingency once. Building tests cover unchanged zero overrides, area centroids, coherent height and position transformations, independence, caching without cumulative edits, exact reset and feeding changed targets into sightline calculations. State tests cover independent/link-controlled editing, legacy migration, v1/v2 URLs, budget and building settings, and validation of untrusted URL values.
+Cost regressions cover per-side tree pricing, zero-work totals, retained planting, polygon exclusions and overlaps, garden/bed volumes, topsoil partitioning, loose quantities, material-specific truck loads, area overrides, quote-required tall stock, custom unit prices and applying contingency once. Building tests cover unchanged zero overrides, area centroids, coherent height and position transformations, independence, caching without cumulative edits, exact reset and feeding changed targets into sightline calculations. State tests cover independent/link-controlled editing, legacy migration, v1/v2/v3 URLs, sun controls, budget and building settings, and validation of untrusted URL values.
+
+Solar checks compare NREL SPA reference directions and seasonal daylight events, validate true-north/local-frame rotation, and cover Warsaw DST gaps/folds and supported date boundaries. Shade checks exercise finite blockers, building and roof geometry, independent hedge sides, canopy protection, changed receiver elevations, garage removal and explicit night/disabled states.
 
 Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated living-room controlling PCK 3 ray and **10.4933350440 m** for the garden ray at local y = 30 m. These are requirements for particular sampled rays, not suggested hedge purchases.
 
@@ -157,9 +173,12 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 | `src/buildings.js` | Non-destructive building height/distance sensitivity transforms |
 | `src/costs.js` | Hedge quantities, fill geometry, material/load quantities and editable PLN budgets |
 | `src/budget-view.js` | Budget summaries, itemised costs and price-source presentation |
+| `src/solar.js` | Solar direction, mapped orientation, Warsaw civil time and daily horizon events |
+| `src/shade.js` | Outdoor direct-sun rays, modeled blockers and 1 m sampled shade coverage |
 | `src/app.js` | Interface and model integration |
 | `data/site-data.json` | Compact derived site and surrounding-building dataset |
 | `data/cost-sources.json` | Dated supplier observations, tax notes and planning-assumption evidence |
+| `data/solar-sources.json` | Solar/timezone references, site orientation and shade-model limitations |
 | `tests/` | Numerical and state checks |
 | `vendor/` | Pinned Three.js r160 and its licence |
 
