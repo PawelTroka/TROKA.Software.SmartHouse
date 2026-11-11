@@ -6,7 +6,7 @@ import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from 
 import {renderPlan,renderSection} from './diagrams.js';
 import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.2.0';
 import {analyzeSunlight} from './shade.js?v=1.2.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.2.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.2.1';
 
 const $=id=>document.getElementById(id);
 const storageKey='sternicza-garden-lab-v2';
@@ -254,7 +254,7 @@ try{
   baseData=await response.json();data=applyBuildingOverrides(baseData,settings);
   fetch(new URL('../data/cost-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Price sources unavailable');return r.json();}).then(renderPriceSources).catch(()=>{$('price-date').textContent='Price references are also documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.2.0');
+    const {createScene}=await import('./scene.js?v=1.2.1');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

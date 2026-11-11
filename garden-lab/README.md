@@ -58,6 +58,11 @@ The 3D view displays proposed walls and window openings, but these are not used 
 
 ## Sun and shade model
 
+![Published seasonal sun and shade simulator](sun-shade-preview.jpg)
+
+Version 1.2.1 was checked with 68 passing automated tests, desktop and phone layouts, and live WebGL summer, evening and winter shadows. The optional sun path is an illustrative direction guide; its display radius does not change lighting geometry.
+
+
 Choose a date from **2000–2100** and a time of day. The initial view is **21 June 2026 at 12:00**, an illustrative summer scenario. All times use **Europe/Warsaw**, including CET/CEST daylight saving, regardless of the device's timezone. A repeated autumn hour uses its first occurrence; a missing spring hour advances by the clock-change gap and displays an explanation. Future clock rules depend on the browser's timezone database.
 
 Sun position uses NOAA/Meeus equations at **54.405452° N, 18.6312142° E**. The mapped EPSG:2180 orientation is corrected for meridian convergence: the rear garden axis points approximately **203.131° true**, rather than exactly south. Azimuth is clockwise from true north; elevation is above the level geometric horizon. Independent NREL SPA comparisons validate the seasonal solar direction. Method references and limitations are recorded in [`data/solar-sources.json`](data/solar-sources.json).
@@ -175,6 +180,8 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 | `src/budget-view.js` | Budget summaries, itemised costs and price-source presentation |
 | `src/solar.js` | Solar direction, mapped orientation, Warsaw civil time and daily horizon events |
 | `src/shade.js` | Outdoor direct-sun rays, modeled blockers and 1 m sampled shade coverage |
+| `src/sun-view.js` | Seasonal controls, daily elevation chart, shade map and zone readouts |
+| `src/sun.css` | Responsive sun controls and shade-map presentation |
 | `src/app.js` | Interface and model integration |
 | `data/site-data.json` | Compact derived site and surrounding-building dataset |
 | `data/cost-sources.json` | Dated supplier observations, tax notes and planning-assumption evidence |
