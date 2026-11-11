@@ -185,8 +185,8 @@ export function createScene(container, data, callbacks = {}) {
   standard('linen', '#eee9d9');
   standard('gold', '#d7a74a', { roughness: 0.55, metalness: 0.15 });
 
-  const staticGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group();
-  scene.add(staticGroup, designGroup, markerGroup, rayGroup);
+  const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group();
+  scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup);
   const terrainMeshes = [];
   const labels = [];
   const labelLayer = document.createElement('div');
@@ -287,19 +287,20 @@ export function createScene(container, data, callbacks = {}) {
     const base = num(building.baseZ, terrainAt(...c, data));
     const roof = Math.max(base + 2, num(building.roofZ, base + 7));
     const roofPts = (building.roofPoints || []).map(xyz).filter(p => p.length >= 3 && Number.isFinite(p[2]));
-    const roofMax = Math.max(roof, ...roofPts.map(p => p[2]).filter(z => z < roof + 7));
-    staticGroup.add(polygonPrism(ring, base, roof, target ? mat.target : mat.context));
+    const roofMax = Math.max(roof, ...roofPts.map(p => p[2]));
+    buildingGroup.add(polygonPrism(ring, base, roof, target ? mat.target : mat.context));
     if (target && roofPts.length > 6) {
-      const roofGeometry = sampledRoofGeometry(ring,roofPts.filter((p,i)=>p[2]<roof+7&&(!svgMode||i%3===0)),roof);
+      const roofGeometry = sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roof);
       const roofMesh = new THREE.Mesh(roofGeometry || geometryFromTriangles([]), mat.contextRoof);
       roofMesh.castShadow = true;
-      staticGroup.add(roofMesh);
+      buildingGroup.add(roofMesh);
     } else {
       const outline = [...ring, ring[0]].map(p => [...p, roof + 0.03]);
-      line(staticGroup, outline, '#8b9a98', 0.6);
+      line(buildingGroup, outline, '#8b9a98', 0.6);
     }
     if (target && Math.hypot(c[0] - 10, c[1] - 25) < 120) {
-      const windowGeometry = new THREE.PlaneGeometry(1.05, 1.35);
+      const heightScale = num(building.adjustment?.scaleZ, 1);
+      const windowGeometry = new THREE.PlaneGeometry(1.05, 1.35 * heightScale);
       const positions = [];
       for (let side = 0; side < ring.length; side++) {
         const a = ring[side], b = ring[(side + 1) % ring.length], dx = b[0]-a[0], dy=b[1]-a[1], length=Math.hypot(dx,dy);
@@ -307,26 +308,34 @@ export function createScene(container, data, callbacks = {}) {
         for (let floor = 0; floor < 5; floor++) for (let n = 0; n < count; n++) {
           const t = (n + 0.5) / count, x = a[0]+dx*t, y = a[1]+dy*t;
           const nx = x - c[0], ny = y - c[1], l = Math.hypot(nx,ny);
-          positions.push({x:x+nx/l*.025,y:y+ny/l*.025,z:base+1.9+floor*2.9,angle:Math.atan2(dy,dx)});
+          positions.push({x:x+nx/l*.025,y:y+ny/l*.025,z:base+(1.9+floor*2.9)*heightScale,angle:Math.atan2(dy,dx)});
         }
       }
       if(svgMode){
-        positions.filter((_,i)=>i%2===0).forEach(p=>{const window=new THREE.Mesh(windowGeometry,mat.contextWindow);window.position.copy(point(p.x,p.y,p.z));window.rotation.set(0,p.angle,0);staticGroup.add(window);});
+        positions.filter((_,i)=>i%2===0).forEach(p=>{const window=new THREE.Mesh(windowGeometry,mat.contextWindow);window.position.copy(point(p.x,p.y,p.z));window.rotation.set(0,p.angle,0);buildingGroup.add(window);});
       }else{
         const windows = new THREE.InstancedMesh(windowGeometry, mat.contextWindow, positions.length);
         const dummy = new THREE.Object3D();
         positions.forEach((p,i)=>{dummy.position.copy(point(p.x,p.y,p.z));dummy.rotation.set(0,p.angle,0);dummy.updateMatrix();windows.setMatrixAt(i,dummy.matrix);});
-        staticGroup.add(windows);
+        buildingGroup.add(windows);
       }
       if ([9,15,29].includes(building.index)) label(building.label, [c[0],c[1],roofMax+1.1], 'target', building.id);
     }
+  }
+
+  function rebuildContextBuildings() {
+    removeGeometry(buildingGroup);
+    for (let i = labels.length - 1; i >= 0; i--) {
+      if (labels[i].kind === 'target') { labels[i].element.remove(); labels.splice(i, 1); }
+    }
+    (data.buildings || []).filter(b => b.index !== 0 && b.index !== 1 && b.id !== data.site.house.id && b.id !== data.site.garage?.id).forEach(addContextBuilding);
   }
 
   makeTerrain(staticGroup, [-65,-28,115,150], svgMode?12:3, (x,y)=>terrainAt(x,y,data)-.015, mat.walkway);
   box(staticGroup, -65, -7.8, terrainAt(10,-4,data)-.02, 180, 5.8, .05, mat.road, false,-95);
   box(staticGroup, -65, -1.9, terrainAt(10,-1,data), 180, 1.8, .05, mat.stoneLight, false,-95);
   for (let x=-50;x<110;x+=8) box(staticGroup,x,-4.96,terrainAt(x,-5,data)+.03,3.5,.1,.015,mat.stoneLight,false,-94);
-  (data.buildings || []).filter(b => b.index !== 0 && b.index !== 1 && b.id !== data.site.house.id && b.id !== data.site.garage?.id).forEach(addContextBuilding);
+  rebuildContextBuildings();
   label('STERNICZA', [10,-3.7,terrainAt(10,-3.7,data)+.18], 'road');
 
   function addHouse(group, settings) {
@@ -593,7 +602,14 @@ export function createScene(container, data, callbacks = {}) {
     camera.updateProjectionMatrix();requestRender();
   }
 
-  function update(settings,observer,analysis) {
+  function update(settings,observer,analysis,activeData=data) {
+    if(activeData!==data){
+      data=activeData;
+      rebuildContextBuildings();
+      // Optional high roof returns are part of the design group and must move
+      // with their building as well. The camera and terrain renderer persist.
+      designSignature='';
+    }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
     const signature=JSON.stringify(['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','includeHighFeatures'].map(k=>settings[k]));
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}

@@ -1,57 +1,88 @@
-import {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState} from './state.js';
+import {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,changeHedgeHeight} from './state.js?v=1.1.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.1.0';
+import {BUILDING_FIELDS,BUILDING_TARGETS,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.1.0';
+import {renderBudget,renderPriceSources} from './budget-view.js?v=1.1.0';
 import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from './geometry.js';
 import {renderPlan,renderSection} from './diagrams.js';
 
 const $=id=>document.getElementById(id);
-const storageKey='sternicza-garden-lab-v1';
+const storageKey='sternicza-garden-lab-v2';
+const legacyStorageKey='sternicza-garden-lab-v1';
 const safeRead=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}};
-let settings=location.hash.startsWith('#v=1')?decodeState(location.hash):sanitizeState(safeRead(storageKey,DEFAULTS));
-let data,scene,observer,analysis,updateTimer,toastTimer,lastSceneMode;
+let settings=/^#v=[12](?:&|$)/.test(location.hash)?decodeState(location.hash):sanitizeState(safeRead(storageKey,migrateLegacyState(safeRead(legacyStorageKey,DEFAULTS))));
+let baseData,data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode;
 let comparisonA=safeRead(`${storageKey}-A`,null),comparisonB=null,showingA=false;
+if(!comparisonA){const legacyA=safeRead(`${legacyStorageKey}-A`,null);if(legacyA)comparisonA=migrateLegacyState(legacyA);}
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
 function toast(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3500);}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(settings));}catch{}}
 
 function buildFields(){
+  const costHeadings={costSpacing:'Thujas & planting',costAreaOverride:'Soil quantities',costFillRate:'Materials & transport',costRetainingAllowance:'Site allowances'};
   for(const [key,f] of Object.entries(FIELDS)){
     if(f.group==='look')continue;
     const host=$(`${f.group}-controls`),field=document.createElement('div');
-    field.className='field';field.dataset.field=key;
-    const digits=f.step<.1?2:1;
-    field.innerHTML=`<div class="field-top"><label for="${key}">${f.label}</label><span class="value-input"><input id="${key}-value" type="number" min="${f.min}" max="${f.max}" step="${f.step}" aria-label="${f.label} in metres"><span>m</span></span></div><input id="${key}" type="range" min="${f.min}" max="${f.max}" step="${f.step}"><div class="range-labels"><span>${f.min} m</span><span>${f.max} m</span></div>`;
+    field.className=f.group==='cost'?'field cost-field':'field';field.dataset.field=key;
+    if(f.group==='building')field.dataset.building=key.match(/^b(\d+)/)[1];
+    const unit=f.unit||'m',spokenUnit=unit==='m'?'metres':unit;
+    if(costHeadings[key]){const h=document.createElement('h4');h.textContent=costHeadings[key];host.append(h);}
+    if(f.group==='cost'){
+      field.innerHTML=`<label for="${key}">${f.label}</label><div class="cost-input"><input id="${key}" type="number" min="${f.min}" max="${f.max}" step="${f.step}" aria-label="${f.label} in ${spokenUnit}"><span>${unit}</span></div>${f.help?`<p class="field-note">${f.help}</p>`:''}`;
+    }else{
+      field.innerHTML=`<div class="field-top"><label for="${key}">${f.label}</label><span class="value-input"><input id="${key}-value" type="number" min="${f.min}" max="${f.max}" step="${f.step}" aria-label="${f.label} in ${spokenUnit}"><span>${unit}</span></span></div><input id="${key}" type="range" min="${f.min}" max="${f.max}" step="${f.step}"><div class="range-labels"><span>${f.min} ${unit}</span><span>${f.max} ${unit}</span></div>`;
+    }
     host.append(field);
     const change=value=>{
+      if(value==='')return;
       const n=Number(value);if(!Number.isFinite(n))return;
       settings[key]=Math.max(f.min,Math.min(f.max,n));
-      if(key.startsWith('hedge')&&key!=='hedgeInset'&&settings.linkedHedges)settings.hedgeRear=settings.hedgeLeft=settings.hedgeRight=settings[key];
+      if(['hedgeRear','hedgeLeft','hedgeRight'].includes(key))settings=changeHedgeHeight(settings,key,settings[key]);
       if(key==='observerX'||key==='observerY')settings.preset='custom';
       if(showingA){showingA=false;comparisonB=null;}
       $('scenario').value='custom';syncControls();scheduleUpdate();
     };
     $(key).addEventListener('input',e=>change(e.target.value));
-    $(`${key}-value`).addEventListener('input',e=>{if(e.target.value!=='')change(e.target.value);});
-    $(`${key}-value`).addEventListener('change',e=>change(e.target.value));
-    $(`${key}-value`).addEventListener('keydown',e=>{if(e.key==='Enter'){e.target.blur();}});
+    if(f.group==='cost')$(key).addEventListener('change',()=>{syncControls();});
+    if($(`${key}-value`)){
+      $(`${key}-value`).addEventListener('input',e=>change(e.target.value));
+      $(`${key}-value`).addEventListener('change',e=>change(e.target.value));
+      $(`${key}-value`).addEventListener('keydown',e=>{if(e.key==='Enter')e.target.blur();});
+    }
   }
+  for(const b of BUILDING_TARGETS){const option=document.createElement('option');option.value=b.index;option.textContent=b.label;$('building-select').append(option);}
   const high=document.createElement('label');high.className='switch-row';
   high.innerHTML='<span>Include tall unverified roof returns<small>Sensitivity check for the thin feature near PCK 3.</small></span><input id="includeHighFeatures" type="checkbox" role="switch">';
   $('assumption-controls').append(high);
 }
 
+function syncBuildingControls(){
+  const selected=Number($('building-select').value);
+  document.querySelectorAll('[data-building]').forEach(f=>f.hidden=Number(f.dataset.building)!==selected);
+  if(!baseData)return;
+  const assumptions=buildingAssumptions(baseData,settings),b=assumptions.find(x=>x.index===selected);
+  if(b)$('building-baseline').innerHTML=`<div><span>Roof height above base</span><strong>${fmt(b.baselineHeight,2)} <small>→</small> ${fmt(b.height,2)} m</strong></div><div><span>House → building centre</span><strong>${fmt(b.baselineDistance,2)} <small>→</small> ${fmt(b.distance,2)} m</strong></div><small>Mapped baseline → current comparison</small>`;
+  const active=assumptions.filter(x=>x.active);
+  $('building-overrides-note').textContent=active.length?`${active.length} building${active.length===1?'':'s'} adjusted for this comparison. Reset restores the mapped data.`:'Using mapped buildings. No geometry overrides.';
+  $('geometry-status').textContent=active.length?`What-if geometry · ${active.length} building${active.length===1?'':'s'} adjusted`:'2024 terrain + building data';
+  $('geometry-status').classList.toggle('what-if',active.length>0);
+  $('reset-building').disabled=!b?.active;
+  $('reset-buildings').disabled=!active.length;
+}
+
 function syncControls(){
   for(const [key,f] of Object.entries(FIELDS)){
     if(!$(key))continue;
-    $(key).value=settings[key];
+    if(f.group!=='cost'||document.activeElement!==$(key))$(key).value=settings[key];
     $(key).style.setProperty('--progress',`${100*(settings[key]-f.min)/(f.max-f.min)}%`);
-    if(document.activeElement!==$(`${key}-value`))$(`${key}-value`).value=fmt(settings[key],f.step<.1?2:1);
+    if($(`${key}-value`)&&document.activeElement!==$(`${key}-value`))$(`${key}-value`).value=fmt(settings[key],f.step<.1?2:1);
   }
-  for(const key of ['raiseNewHedges','canopyEnabled','removeGarage','showRays','includeHighFeatures'])$(key).checked=settings[key];
+  for(const key of ['raiseNewHedges','canopyEnabled','removeGarage','showRays','includeHighFeatures','buyNewThujas'])$(key).checked=settings[key];
   $('canopy-controls').hidden=!settings.canopyEnabled;
   document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.preset===settings.preset)));
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===settings.mode)));
-  $('link-hedges').setAttribute('aria-pressed',String(settings.linkedHedges));
-  $('link-hedges').textContent=settings.linkedHedges?'Linked':'Separate';
+  $('link-hedges').checked=settings.linkedHedges;
+  syncBuildingControls();
   $('compare').disabled=!comparisonA;
   $('compare-mobile').disabled=!comparisonA;
   $('compare').textContent=showingA?'Return to B':'Compare A/B';
@@ -87,9 +118,13 @@ function showMode(reset=false){
 function update(){
   if(!data)return;
   const started=performance.now();
+  data=applyBuildingOverrides(baseData,settings);
+  syncBuildingControls();
   observer=observerForPreset(settings.preset,settings,data);
   analysis=analyzeVisibility(observer,settings,data);
-  scene?.update(settings,observer,analysis);
+  scene?.update(settings,observer,analysis,data);
+  costEstimate=estimateCosts(settings,data);
+  renderBudget(costEstimate,settings);
   showMode();
   $('view-badge-text').textContent=observer.label;
   $('observer-readout').textContent=`Eye ${fmt(observer.z-data.site.floorReference.z,2)} m above original garden reference · ${fmt(observer.eyeHeight,2)} m above ${observer.surface==='floor'?'floor':'local ground'}`;
@@ -139,8 +174,13 @@ document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click'
   syncControls();update();
 }));
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{settings.mode=b.dataset.mode;syncControls();showMode(true);persist();}));
-for(const key of ['raiseNewHedges','canopyEnabled','removeGarage','showRays','includeHighFeatures'])$(key).addEventListener('change',e=>{settings[key]=e.target.checked;showingA=false;$('scenario').value='custom';syncControls();update();});
-$('link-hedges').addEventListener('click',()=>{settings.linkedHedges=!settings.linkedHedges;if(settings.linkedHedges)settings.hedgeLeft=settings.hedgeRight=settings.hedgeRear;syncControls();update();});
+for(const key of ['raiseNewHedges','canopyEnabled','removeGarage','showRays','includeHighFeatures','buyNewThujas'])$(key).addEventListener('change',e=>{settings[key]=e.target.checked;showingA=false;$('scenario').value='custom';syncControls();update();});
+$('link-hedges').addEventListener('change',e=>{settings.linkedHedges=e.target.checked;showingA=false;syncControls();persist();toast(settings.linkedHedges?'Linked: the next hedge edit will move all three sides.':'Hedge sliders now move independently.');});
+$('building-select').addEventListener('change',syncBuildingControls);
+$('reset-building').addEventListener('click',()=>{const b=BUILDING_TARGETS.find(x=>x.index===Number($('building-select').value));if(b){settings[b.heightKey]=0;settings[b.distanceKey]=0;showingA=false;syncControls();update();}});
+$('reset-buildings').addEventListener('click',()=>{for(const key of Object.keys(BUILDING_FIELDS))settings[key]=0;showingA=false;syncControls();update();});
+$('reset-costs').addEventListener('click',()=>{Object.assign(settings,COST_DEFAULTS);showingA=false;syncControls();update();toast('Cost assumptions restored; garden design unchanged.');});
+$('edit-budget').addEventListener('click',e=>{e.preventDefault();$('budget-assumptions').open=true;$('budget-assumptions').scrollIntoView({behavior:'smooth',block:'start'});});
 $('scenario').addEventListener('change',e=>{if(e.target.value!=='custom'){settings=scenarioState(e.target.value,settings);showingA=false;syncControls();update();}});
 $('reset').addEventListener('click',()=>{settings={...DEFAULTS};showingA=false;$('scenario').value='starter';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
 $('reset-camera').addEventListener('click',()=>{settings.lookYaw=0;settings.lookPitch=0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);toast('View reset');});
@@ -152,7 +192,7 @@ $('share').addEventListener('click',async()=>{
   catch{toast('Your settings are in the address bar. Copy the page URL to share.');}
 });
 $('export').addEventListener('click',()=>{
-  const content={schemaVersion:1,project:'Sternicza Garden Lab',exportedAt:new Date().toISOString(),settings,summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey or a whole-property privacy guarantee.'};
+  const content={schemaVersion:2,project:'Sternicza Garden Lab',exportedAt:new Date().toISOString(),settings,costEstimate,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey or a whole-property privacy guarantee.'};
   const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='sternicza-scenario.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
 });
 $('about-open').addEventListener('click',()=>$('about').showModal());
@@ -164,9 +204,10 @@ window.addEventListener('resize',()=>{scene?.resize();if(data&&(settings.mode===
 try{
   const response=await fetch(new URL('../data/site-data.json',import.meta.url));
   if(!response.ok)throw new Error(`Site data could not be loaded (${response.status})`);
-  data=await response.json();
+  baseData=await response.json();data=applyBuildingOverrides(baseData,settings);
+  fetch(new URL('../data/cost-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Price sources unavailable');return r.json();}).then(renderPriceSources).catch(()=>{$('price-date').textContent='Price references are also documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js');
+    const {createScene}=await import('./scene.js?v=1.1.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}
   }catch(error){console.error('3D view unavailable',error);settings.mode='plan';toast('3D could not start. Plan and sightline views remain available.');}
