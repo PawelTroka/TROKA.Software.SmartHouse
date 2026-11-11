@@ -4,7 +4,7 @@ An interactive, browser-only garden privacy simulator for Sternicza 11, Gdańsk.
 
 **[Open the live simulator](https://paweltroka.github.io/TROKA.Software.SmartHouse/)**
 
-![Published Garden Lab simulator](preview.png)
+![Published Garden Lab simulator with independent hedge controls and live cost estimates](preview-v1.1.jpg)
 
 ## Use it
 
