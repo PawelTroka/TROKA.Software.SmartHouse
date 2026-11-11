@@ -1,19 +1,33 @@
-import {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,changeHedgeHeight} from './state.js?v=1.1.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.1.0';
-import {BUILDING_FIELDS,BUILDING_TARGETS,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.1.0';
-import {renderBudget,renderPriceSources} from './budget-view.js?v=1.1.0';
+import {FIELDS,DEFAULTS,STATE_VERSION,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,migrateLegacyState,changeHedgeHeight} from './state.js?v=1.2.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.2.0';
+import {BUILDING_FIELDS,BUILDING_TARGETS,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.2.0';
+import {renderBudget,renderPriceSources} from './budget-view.js?v=1.2.0';
 import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from './geometry.js';
 import {renderPlan,renderSection} from './diagrams.js';
+import {getSolarState,analyzeSunlight,dailySunlight} from './solar.js?v=1.2.0';
+import {createSolarView} from './solar-view.js?v=1.2.0';
 
 const $=id=>document.getElementById(id);
-const storageKey='sternicza-garden-lab-v2';
+const storageKey='sternicza-garden-lab-v3';
+const previousStorageKey='sternicza-garden-lab-v2';
 const legacyStorageKey='sternicza-garden-lab-v1';
 const safeRead=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}};
-let settings=/^#v=[12](?:&|$)/.test(location.hash)?decodeState(location.hash):sanitizeState(safeRead(storageKey,migrateLegacyState(safeRead(legacyStorageKey,DEFAULTS))));
+function readSaved(suffix=''){
+  const saved=safeRead(`${storageKey}${suffix}`,null);if(saved)return sanitizeState(saved);
+  const previous=safeRead(`${previousStorageKey}${suffix}`,null);if(previous)return migrateSavedState(previous,2);
+  const legacy=safeRead(`${legacyStorageKey}${suffix}`,null);if(legacy)return migrateLegacyState(legacy);
+  return suffix?null:{...DEFAULTS};
+}
+let settings=/^#v=/.test(location.hash)?decodeState(location.hash):readSaved();
 let baseData,data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode;
-let comparisonA=safeRead(`${storageKey}-A`,null),comparisonB=null,showingA=false;
-if(!comparisonA){const legacyA=safeRead(`${legacyStorageKey}-A`,null);if(legacyA)comparisonA=migrateLegacyState(legacyA);}
+let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
+let solar,sunlight,solarTimeline,solarTimelineKey='',solarUpdateTimer;
+const solarGeometryKeys=['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','includeHighFeatures',...Object.keys(BUILDING_FIELDS)];
+const solarView=createSolarView({onChange:patch=>{
+  settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+  clearTimeout(solarUpdateTimer);solarUpdateTimer=setTimeout(()=>{refreshSolar();scene?.updateSolar?.(settings,solar);persist();syncControls();},30);
+}});
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
 function toast(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3500);}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(settings));}catch{}}
@@ -21,7 +35,7 @@ function persist(){try{localStorage.setItem(storageKey,JSON.stringify(settings))
 function buildFields(){
   const costHeadings={costSpacing:'Thujas & planting',costAreaOverride:'Soil quantities',costFillRate:'Materials & transport',costRetainingAllowance:'Site allowances'};
   for(const [key,f] of Object.entries(FIELDS)){
-    if(f.group==='look')continue;
+    if(f.group==='look'||f.group==='solar')continue;
     const host=$(`${f.group}-controls`),field=document.createElement('div');
     field.className=f.group==='cost'?'field cost-field':'field';field.dataset.field=key;
     if(f.group==='building')field.dataset.building=key.match(/^b(\d+)/)[1];
@@ -89,7 +103,7 @@ function syncControls(){
   $('compare-mobile').textContent=showingA?'Return to B':'Compare A/B';
   $('comparison-status').textContent=showingA?'Viewing saved A':'Live configuration';
   const scenarioKeys=['hedgeRear','hedgeLeft','hedgeRight','gardenRaise','bedRaise','canopyEnabled','raiseNewHedges'];
-  $('scenario').value=['starter','raised','tall','canopy'].find(name=>{
+  $('scenario').value=['default','starter','raised','tall','canopy'].find(name=>{
     const candidate=scenarioState(name,DEFAULTS);
     return scenarioKeys.every(k=>candidate[k]===settings[k])&&(!settings.canopyEnabled||['canopyDepth','canopyHeight','canopyWidth','fasciaDepth'].every(k=>candidate[k]===settings[k]));
   })||'custom';
@@ -122,7 +136,8 @@ function update(){
   syncBuildingControls();
   observer=observerForPreset(settings.preset,settings,data);
   analysis=analyzeVisibility(observer,settings,data);
-  scene?.update(settings,observer,analysis,data);
+  refreshSolar();
+  scene?.update(settings,observer,analysis,data,solar);
   costEstimate=estimateCosts(settings,data);
   renderBudget(costEstimate,settings);
   showMode();
@@ -161,6 +176,15 @@ function update(){
 }
 function scheduleUpdate(){clearTimeout(updateTimer);updateTimer=setTimeout(update,65);}
 
+function refreshSolar(){
+  if(!data)return;
+  solar=getSolarState(settings.solarDate,settings.solarTime,data);
+  sunlight=analyzeSunlight(solar,settings,data);
+  const key=JSON.stringify([settings.solarDate,...solarGeometryKeys.map(k=>settings[k])]);
+  if(key!==solarTimelineKey){solarTimelineKey=key;solarTimeline=dailySunlight(settings.solarDate,settings,data,30);}
+  solarView.render(settings,solar,sunlight,solarTimeline);
+}
+
 buildFields();
 if(window.matchMedia('(max-width:760px)').matches)$('building-details').open=false;
 syncControls();
@@ -182,23 +206,25 @@ $('reset-buildings').addEventListener('click',()=>{for(const key of Object.keys(
 $('reset-costs').addEventListener('click',()=>{Object.assign(settings,COST_DEFAULTS);showingA=false;syncControls();update();toast('Cost assumptions restored; garden design unchanged.');});
 $('edit-budget').addEventListener('click',e=>{e.preventDefault();$('budget-assumptions').open=true;$('budget-assumptions').scrollIntoView({behavior:'smooth',block:'start'});});
 $('scenario').addEventListener('change',e=>{if(e.target.value!=='custom'){settings=scenarioState(e.target.value,settings);showingA=false;syncControls();update();}});
-$('reset').addEventListener('click',()=>{settings={...DEFAULTS};showingA=false;$('scenario').value='starter';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
+$('reset').addEventListener('click',()=>{solarView.pause();settings={...DEFAULTS};showingA=false;$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Defaults restored: 4 m hedges and +0.5 m garden');});
 $('reset-camera').addEventListener('click',()=>{settings.lookYaw=0;settings.lookPitch=0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);toast('View reset');});
 $('save-a').addEventListener('click',()=>{comparisonA={...settings};comparisonB=null;showingA=false;try{localStorage.setItem(`${storageKey}-A`,JSON.stringify(comparisonA));}catch{}syncControls();toast('Scenario A saved. Change a setting, then compare.');});
-$('compare').addEventListener('click',()=>{if(!comparisonA)return;if(!showingA){comparisonB={...settings};settings={...comparisonA,mode:settings.mode};showingA=true;}else{settings={...comparisonB,mode:settings.mode};showingA=false;}syncControls();update();toast(showingA?'Showing saved scenario A':'Back to scenario B');});
+$('compare').addEventListener('click',()=>{if(!comparisonA)return;solarView.pause();if(!showingA){comparisonB={...settings};settings={...comparisonA,mode:settings.mode};showingA=true;}else{settings={...comparisonB,mode:settings.mode};showingA=false;}syncControls();update();toast(showingA?'Showing saved scenario A':'Back to scenario B');});
 $('share').addEventListener('click',async()=>{
+  solarView.pause();
   const url=new URL(location.href);url.hash=encodeState(settings);history.replaceState(null,'',url);
   try{await navigator.clipboard.writeText(url.href);toast('Link copied with your current settings');}
   catch{toast('Your settings are in the address bar. Copy the page URL to share.');}
 });
 $('export').addEventListener('click',()=>{
-  const content={schemaVersion:2,project:'Sternicza Garden Lab',exportedAt:new Date().toISOString(),settings,costEstimate,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey or a whole-property privacy guarantee.'};
+  solarView.pause();refreshSolar();
+  const content={schemaVersion:STATE_VERSION,project:'Sternicza Garden Lab',exportedAt:new Date().toISOString(),settings,costEstimate,solar,sunlight,solarTimeline,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey or a whole-property privacy guarantee. Solar clock: Europe/Warsaw. Direct-sun checks use ideal hedges and conservative roof envelopes; clouds and unmeasured trees are excluded.'};
   const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='sternicza-scenario.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
 });
 $('about-open').addEventListener('click',()=>$('about').showModal());
 $('about-close').addEventListener('click',()=>$('about').close());
 $('about').addEventListener('click',e=>{if(e.target===$('about')){const r=$('about').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('about').close();}});
-window.addEventListener('hashchange',()=>{settings=decodeState(location.hash);showingA=false;syncControls();update();});
+window.addEventListener('hashchange',()=>{solarView.pause();settings=decodeState(location.hash);showingA=false;syncControls();update();});
 window.addEventListener('resize',()=>{scene?.resize();if(data&&(settings.mode==='plan'||settings.mode==='section'))showMode();});
 
 try{
@@ -207,10 +233,11 @@ try{
   baseData=await response.json();data=applyBuildingOverrides(baseData,settings);
   fetch(new URL('../data/cost-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Price sources unavailable');return r.json();}).then(renderPriceSources).catch(()=>{$('price-date').textContent='Price references are also documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.1.0');
+    const {createScene}=await import('./scene.js?v=1.2.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
+    solarView.setRenderer(scene.rendererType);
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}
-  }catch(error){console.error('3D view unavailable',error);settings.mode='plan';toast('3D could not start. Plan and sightline views remain available.');}
+  }catch(error){console.error('3D view unavailable',error);settings.mode='plan';solarView.setRenderer(null);toast('3D could not start. Plan and sightline views remain available.');}
   $('loading').hidden=true;syncControls();update();
 }catch(error){
   console.error(error);$('loading').replaceChildren();const heading=document.createElement('strong');heading.textContent='The site model could not load.';const note=document.createElement('span');note.textContent='Refresh the page to retry. If running locally, serve the folder over HTTP.';$('loading').append(heading,note);
