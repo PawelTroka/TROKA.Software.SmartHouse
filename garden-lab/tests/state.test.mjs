@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {STATE_VERSION,DEFAULTS,FIELDS,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,migrateSavedState,isValidSolarDate,changeHedgeHeight} from '../src/state.js';
+import {STATE_VERSION,DEFAULTS,FIELDS,MODES,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,migrateSavedState,changeHedgeHeight} from '../src/state.js';
 import {COST_FIELDS} from '../src/costs.js';
 import {BUILDING_FIELDS} from '../src/buildings.js';
 test('share links preserve fill, fixed floors, independent hedge heights and observer settings',()=>{
@@ -55,11 +55,11 @@ test('legacy saved settings keep the design but discard the old automatically li
  assert.equal(legacyUrl.hedgeLeft,4);
 });
 
-test('v3 links preserve every editable cost and building assumption with comparison settings',()=>{
+test('v4 links preserve every editable cost and building assumption with comparison settings',()=>{
  const state={...DEFAULTS,linkedHedges:true,buyNewThujas:false,raiseNewHedges:false,includeHighFeatures:true};
  for(const [key,f] of Object.entries({...COST_FIELDS,...BUILDING_FIELDS}))state[key]=Math.round((f.min+(f.max-f.min)*.37)*100)/100;
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=3&'));
+ assert.ok(encoded.startsWith('v=4&'));
  for(const key of Object.keys({...COST_FIELDS,...BUILDING_FIELDS})){
   assert.ok(key in FIELDS);
   assert.equal(restored[key],state[key],key);
@@ -67,67 +67,92 @@ test('v3 links preserve every editable cost and building assumption with compari
  for(const key of ['linkedHedges','buyNewThujas','raiseNewHedges','includeHighFeatures'])assert.equal(restored[key],state[key],key);
 });
 
-test('old sparse links keep the original baseline while new links use the requested defaults',()=>{
- assert.equal(STATE_VERSION,3);
+test('solar settings round-trip with the design, costs, buildings and independent hedges',()=>{
+ const state={...DEFAULTS,mode:'sun',sunDate:'2026-12-21',sunMinutes:962,sunEnabled:false,sunPathVisible:true,hedgeRear:6,hedgeLeft:3.5,hedgeRight:2.5,gardenRaise:.35,costFillRate:90,b9HeightDelta:2};
+ const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
+ assert.ok(encoded.startsWith('v=4&'));
+ assert.ok(MODES.includes('sun'));
+ assert.equal(FIELDS.sunMinutes.group,'solar');
+ for(const key of ['mode','sunDate','sunMinutes','sunEnabled','sunPathVisible','hedgeRear','hedgeLeft','hedgeRight','gardenRaise','costFillRate','b9HeightDelta'])assert.equal(restored[key],state[key],key);
+ const changed=changeHedgeHeight(restored,'hedgeLeft',4.5);
+ assert.equal(changed.hedgeLeft,4.5);assert.equal(changed.hedgeRear,6);assert.equal(changed.hedgeRight,2.5);
+ for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(changed[key],state[key],key);
+});
+
+test('solar date and minute validation prevents malformed shared scenarios',()=>{
+ for(const date of ['2026-02-29','2026-04-31','1999-12-31','2101-01-01','2026-06-21<script>','',null])assert.equal(sanitizeState({sunDate:date}).sunDate,DEFAULTS.sunDate,String(date));
+ assert.equal(sanitizeState({sunDate:'2028-02-29'}).sunDate,'2028-02-29');
+ assert.equal(sanitizeState({sunDate:'2100-12-31'}).sunDate,'2100-12-31');
+ assert.equal(decodeState('#v=3&sunDate=2026-02-30&sunMinutes=NaN&sunEnabled=no&sunPathVisible=1').sunDate,DEFAULTS.sunDate);
+ for(const value of ['NaN','Infinity','-Infinity',''])assert.equal(decodeState(`#v=3&sunMinutes=${value}`).sunMinutes,DEFAULTS.sunMinutes,value);
+ assert.equal(decodeState('#v=3&sunMinutes=-30').sunMinutes,0);
+ assert.equal(decodeState('#v=3&sunMinutes=1500').sunMinutes,1439);
+ assert.equal(sanitizeState({sunMinutes:720.8}).sunMinutes,721);
+ assert.equal(sanitizeState({sunMinutes:'720'}).sunMinutes,DEFAULTS.sunMinutes);
+ assert.equal(sanitizeState({sunEnabled:'false',sunPathVisible:'true'}).sunEnabled,true);
+ assert.equal(sanitizeState({sunEnabled:'false',sunPathVisible:'true'}).sunPathVisible,false);
+});
+
+test('v1 and v2 links preserve legacy assumptions and adopt stable solar defaults',()=>{
  for(const version of [1,2]){
+  const restored=decodeState(`#v=${version}&hedgeRear=6&hedgeLeft=4&hedgeRight=3&gardenRaise=0.5&costFillRate=85&b9HeightDelta=1.5&linkedHedges=false&mode=section`);
+  for(const [key,value] of Object.entries({hedgeRear:6,hedgeLeft:4,hedgeRight:3,gardenRaise:.5,costFillRate:85,b9HeightDelta:1.5,linkedHedges:false,mode:'section'}))assert.equal(restored[key],value,`v${version} ${key}`);
+  for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(restored[key],DEFAULTS[key],`v${version} ${key}`);
+ }
+ assert.equal(encodeState(DEFAULTS),'v=4');
+ assert.deepEqual(decodeState('#v=5&hedgeRear=10&sunDate=2026-12-21'),DEFAULTS);
+});
+
+test('hedge scenarios preserve the selected sun date and time',()=>{
+ const current={...DEFAULTS,sunDate:'2026-09-22',sunMinutes:1080,sunEnabled:false,sunPathVisible:true,mode:'sun'};
+ for(const name of ['default','starter','raised','tall','canopy']){
+  const next=scenarioState(name,current);
+  for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible','mode'])assert.equal(next[key],current[key],`${name} ${key}`);
+ }
+});
+
+test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
+ assert.equal(STATE_VERSION,4);
+ for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
-  for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,key);
-  assert.equal(legacy.gardenRaise,0);
+  for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
+  assert.equal(legacy.gardenRaise,0);assert.equal(legacy.bedRaise,0);
   const explicit=decodeState(`#v=${version}&hedgeRear=4&gardenRaise=0.5&floorHeight=1.7`);
   assert.equal(explicit.hedgeRear,4);assert.equal(explicit.hedgeLeft,2.5);assert.equal(explicit.hedgeRight,2.5);
   assert.equal(explicit.gardenRaise,.5);assert.equal(explicit.floorHeight,1.7);
   assert.equal(decodeState(`#v=${version}&hedgeRear=NaN`).hedgeRear,2.5);
  }
- const fresh=decodeState('#v=3');
+ const published=decodeState('#v=3&mode=sun&sunDate=2026-12-21&sunMinutes=962&sunPathVisible=true&sunEnabled=false');
+ assert.equal(published.hedgeRear,2.5);assert.equal(published.gardenRaise,0);
+ assert.equal(published.mode,'sun');assert.equal(published.sunDate,'2026-12-21');assert.equal(published.sunMinutes,962);
+ assert.equal(published.sunPathVisible,true);assert.equal(published.sunEnabled,false);
+ const fresh=decodeState('#v=4');
  for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(fresh[key],4,key);
  assert.equal(fresh.gardenRaise,.5);assert.equal(fresh.bedRaise,0);assert.equal(fresh.floorHeight,1.2);
- assert.equal(encodeState(DEFAULTS),'v=3');
- assert.deepEqual(decodeState('#v=99&hedgeRear=12'),DEFAULTS);
  assert.deepEqual(decodeState(null),DEFAULTS);
+ // Re-sharing a published v3 design must encode the old baseline explicitly.
+ const reshared=encodeState(published);
+ assert.match(reshared,/hedgeRear=2.5/);assert.match(reshared,/gardenRaise=0(?:&|$)/);
+ assert.deepEqual(decodeState(reshared),published);
 });
 
-test('saved v2 designs preserve explicit choices and partial old saves have legacy defaults',()=>{
- const old={hedgeRear:6,hedgeLeft:3,gardenRaise:0,linkedHedges:true,floorHeight:1.4,preset:'garden'};
- const restored=migrateSavedState(old,2);
- for(const key of Object.keys(old))assert.equal(restored[key],old[key],key);
- assert.equal(restored.hedgeRight,2.5);
- assert.equal(migrateSavedState({},2).gardenRaise,0);
- assert.equal(migrateSavedState({},3).gardenRaise,.5);
+test('saved v2/v3 designs retain old defaults and explicit solar settings during migration',()=>{
+ const old={hedgeRear:6,hedgeLeft:3,gardenRaise:0,linkedHedges:true,floorHeight:1.4,preset:'garden',mode:'sun',sunDate:'2028-02-29',sunMinutes:407,sunEnabled:false,sunPathVisible:true};
+ for(const version of [2,3]){
+  const restored=migrateSavedState(old,version);
+  for(const key of Object.keys(old))assert.equal(restored[key],old[key],`v${version} ${key}`);
+  assert.equal(restored.hedgeRight,2.5);
+  assert.equal(migrateSavedState({},version).gardenRaise,0);
+ }
+ assert.equal(migrateSavedState({},4).gardenRaise,.5);
  assert.equal(migrateSavedState(old,1).linkedHedges,false);
- assert.deepEqual(migrateSavedState(null,2),DEFAULTS);
+ assert.deepEqual(migrateSavedState(null,3),DEFAULTS);
  assert.deepEqual(migrateSavedState(old,99),DEFAULTS);
  assert.equal(old.linkedHedges,true,'Migration must not mutate saved comparison A');
- // Re-sharing an old default design must write its old values explicitly in v3.
- const reshared=encodeState(decodeState('#v=2'));
- assert.match(reshared,/hedgeRear=2.5/);assert.match(reshared,/gardenRaise=0(?:&|$)/);
- assert.equal(decodeState(reshared).gardenRaise,0);
-});
-
-test('date and local minute survive links, saved state and scenario switches',()=>{
- const selected={...DEFAULTS,solarDate:'2028-02-29',solarTime:407,shadowsEnabled:false,showSunPath:false};
- const decoded=decodeState(encodeState(selected));
- for(const key of ['solarDate','solarTime','shadowsEnabled','showSunPath'])assert.equal(decoded[key],selected[key],key);
- assert.equal(migrateSavedState(selected,3).solarDate,'2028-02-29');
- const comparison=scenarioState('default',{...selected,floorHeight:1.8,preset:'jacuzzi',eyeHeight:.7});
- assert.equal(comparison.hedgeRear,4);assert.equal(comparison.gardenRaise,.5);assert.equal(comparison.bedRaise,0);
- for(const key of ['solarDate','solarTime','shadowsEnabled','showSunPath'])assert.equal(comparison[key],selected[key],key);
- assert.equal(comparison.floorHeight,1.8);assert.equal(comparison.preset,'jacuzzi');assert.equal(comparison.eyeHeight,.7);
- assert.equal(scenarioState('starter',comparison).gardenRaise,0);
-});
-
-test('solar dates reject overflow and malformed dates without browser-timezone coercion',()=>{
- for(const value of ['2000-02-29','2024-02-29','2100-12-31'])assert.equal(isValidSolarDate(value),true,value);
- for(const value of ['2026-02-29','2100-02-29','2026-04-31','1999-12-31','2101-01-01','2026-00-10','2026-13-01','2026-6-21','2026-06-21T12:00:00Z',' 2026-06-21',null,20260621]){
-  assert.equal(isValidSolarDate(value),false,String(value));
-  assert.equal(sanitizeState({solarDate:value}).solarDate,DEFAULTS.solarDate);
- }
- assert.equal(decodeState('#v=3&solarDate=2026-02-30').solarDate,DEFAULTS.solarDate);
- assert.equal(sanitizeState({solarTime:Infinity}).solarTime,780);
- assert.equal(sanitizeState({solarTime:-5}).solarTime,0);
- assert.equal(sanitizeState({solarTime:2000}).solarTime,1439);
- assert.equal(sanitizeState({solarTime:719.6}).solarTime,720);
- const malformed=decodeState('#v=3&solarTime=&shadowsEnabled=maybe&showSunPath=0');
- assert.equal(malformed.solarTime,780);assert.equal(malformed.shadowsEnabled,true);assert.equal(malformed.showSunPath,true);
+ const next=scenarioState('default',old);
+ assert.equal(next.hedgeRear,4);assert.equal(next.hedgeLeft,4);assert.equal(next.hedgeRight,4);assert.equal(next.gardenRaise,.5);assert.equal(next.bedRaise,0);
+ for(const key of ['floorHeight','preset','mode','sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(next[key],old[key],key);
+ assert.equal(scenarioState('starter',next).gardenRaise,0);
 });
 
 test('malformed boolean URL values leave defaults intact instead of silently disabling options',()=>{

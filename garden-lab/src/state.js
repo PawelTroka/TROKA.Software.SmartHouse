@@ -1,7 +1,8 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.2.0';
-import {BUILDING_FIELDS} from './buildings.js?v=1.2.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.3.0';
+import {BUILDING_FIELDS} from './buildings.js?v=1.3.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.3.0';
 
-export const STATE_VERSION = 3;
+export const STATE_VERSION = 4;
 
 export const FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -21,25 +22,17 @@ export const FIELDS = Object.freeze({
   observerY: {label:'Observer from front boundary (y)',min:0.5,max:37,step:0.1,value:30,group:'assumption'},
   lookYaw: {label:'Look direction',min:-180,max:180,step:1,value:0,group:'look',unit:'°'},
   lookPitch: {label:'Look up / down',min:-60,max:60,step:1,value:0,group:'look',unit:'°'},
-  solarTime: {label:'Local time in Gdańsk',min:0,max:1439,step:1,value:780,group:'solar',unit:'min'},
+  sunMinutes: {label:'Time of day in Warsaw',min:0,max:1439,step:1,value:SOLAR_DEFAULTS.sunMinutes,group:'solar'},
   ...COST_FIELDS,
   ...BUILDING_FIELDS,
 });
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','custom']);
-export const MODES = Object.freeze(['orbit','eye','plan','section']);
-export const DEFAULTS = Object.freeze({...COST_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,linkedHedges:false,solarDate:'2026-06-21',shadowsEnabled:true,showSunPath:true});
-// Earlier links omitted values relative to a different baseline. Keep that
-// baseline explicit so changing today's defaults cannot change a saved design.
+export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
+export const DEFAULTS = Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,linkedHedges:false,sunPathVisible:false});
+// Versions 1–3 omitted values relative to the original 2.5 m / no-fill design.
+// Changing new defaults must not reinterpret those already-published links.
 const LEGACY_DEFAULTS = Object.freeze({...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-
-export function isValidSolarDate(value) {
-  if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
-  const [year,month,day]=value.split('-').map(Number);
-  if(year<2000||year>2100)return false;
-  const date=new Date(Date.UTC(year,month-1,day));
-  return date.getUTCFullYear()===year&&date.getUTCMonth()===month-1&&date.getUTCDate()===day;
-}
 
 function sanitizeWithDefaults(input,defaults) {
   const out={...defaults};
@@ -47,18 +40,16 @@ function sanitizeWithDefaults(input,defaults) {
   for (const [key,f] of Object.entries(FIELDS)) {
     if (typeof input[key]==='number' && Number.isFinite(input[key])) out[key]=Math.max(f.min,Math.min(f.max,input[key]));
   }
-  out.solarTime=Math.round(out.solarTime);
+  out.sunMinutes=Math.round(out.sunMinutes);
+  out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
   for (const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean')) if(typeof input[key]==='boolean') out[key]=input[key];
   if(PRESETS.includes(input.preset))out.preset=input.preset;
   if(MODES.includes(input.mode))out.mode=input.mode;
-  if(isValidSolarDate(input.solarDate))out.solarDate=input.solarDate;
   return out;
 }
-
 export function sanitizeState(input={}) {
   return sanitizeWithDefaults(input,DEFAULTS);
 }
-
 export function encodeState(state) {
   const s=sanitizeState(state),p=new URLSearchParams({v:String(STATE_VERSION)});
   for(const [key,val] of Object.entries(s)) if(val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
@@ -67,8 +58,8 @@ export function encodeState(state) {
 export function decodeState(hash) {
   if(typeof hash!=='string')return {...DEFAULTS};
   const p=new URLSearchParams(hash.replace(/^#/,'')),s={};
-  if(!['1','2',String(STATE_VERSION)].includes(p.get('v')))return {...DEFAULTS};
-  for(const [key,val] of p){if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}else if(key==='preset'||key==='mode'||key==='solarDate')s[key]=val;}
+  if(!['1','2','3',String(STATE_VERSION)].includes(p.get('v')))return {...DEFAULTS};
+  for(const [key,val] of p){if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}else if(key==='preset'||key==='mode'||key==='sunDate')s[key]=val;}
   return sanitizeWithDefaults(s,p.get('v')===String(STATE_VERSION)?DEFAULTS:LEGACY_DEFAULTS);
 }
 export function scenarioState(name,current=DEFAULTS) {
@@ -80,9 +71,9 @@ export function scenarioState(name,current=DEFAULTS) {
   return s;
 }
 
-/** Restore saved designs against their original defaults, including partial saves. */
-export function migrateSavedState(input,version=2) {
-  if(!isStateRecord(input)||![1,2,STATE_VERSION].includes(version))return {...DEFAULTS};
+/** Restore partial or full saved designs against their original defaults. */
+export function migrateSavedState(input,version=3) {
+  if(!isStateRecord(input)||![1,2,3,STATE_VERSION].includes(version))return {...DEFAULTS};
   const next=sanitizeWithDefaults(input,version===STATE_VERSION?DEFAULTS:LEGACY_DEFAULTS);
   if(version===1)next.linkedHedges=false;
   return next;
