@@ -2,6 +2,10 @@
 
 An interactive, browser-only garden privacy simulator for Sternicza 11, Gdańsk. Explore the actual mapped plot and neighbouring buildings, then change the proposed hedge, ground and terrace geometry.
 
+**[Open the live simulator](https://paweltroka.github.io/TROKA.Software.SmartHouse/)**
+
+![Published Garden Lab simulator](preview.png)
+
 ## Use it
 
 Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between **3D model**, **Eye level**, **Plan**, and **Sightline**. Click the plan to move the observer. Save scenario A, change the design, then compare A/B. **Share view** encodes the settings in the URL; **Export scenario** downloads the settings and numerical summary as JSON.
@@ -22,7 +26,7 @@ Open `http://localhost:8000/`. You can also serve the source folder directly. Op
 
 ## GitHub Pages
 
-The `gh-pages` branch contains the static application at its root. In repository **Settings → Pages**, use **Deploy from a branch → gh-pages → / (root)**. No custom domain, paid service, secrets or build-time credentials are needed.
+The live app is published at **https://paweltroka.github.io/TROKA.Software.SmartHouse/**. GitHub Pages is already enabled and deploys the static application from **gh-pages / (root)**. No custom domain, paid service, secrets or build-time credentials are needed.
 
 The source is maintained in `garden-lab/` on `main`. To publish later changes with an authenticated Git checkout, run the tests and build, then copy the contents of `garden-lab/public/` to a worktree of the `gh-pages` branch and commit/push that branch. Keep the `.nojekyll` file. The repository's existing house model files are unrelated to this app and are preserved on `main`.
 
