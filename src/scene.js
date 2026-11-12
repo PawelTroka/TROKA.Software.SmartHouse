@@ -1,13 +1,15 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.4.0';
-import { sampledRoofFaces } from './shade.js?v=1.4.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.4.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.4.0';
-import { getSiteProfile } from './sites.js?v=1.4.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.4.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.4.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.5.0';
+import { sampledRoofFaces } from './shade.js?v=1.5.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.5.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.5.0';
+import { getSiteProfile } from './sites.js?v=1.5.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.5.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.5.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.5.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.5.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -238,6 +240,11 @@ export function createScene(container, data, callbacks = {}) {
   standard('walkway', '#d4d1c2');
   standard('linen', '#fffaf0', { map: textures?.textiles });
   standard('gold', '#d7a74a', { roughness: 0.55, metalness: 0.15 });
+  standard('treeBark', '#766049', { map: textures?.wood });
+  standard('treePine', '#5c7850', { map: textures?.foliage, vertexColors: true });
+  standard('treeSpruce', '#4d6a53', { map: textures?.foliage, vertexColors: true });
+  standard('treeDeciduous', '#718b53', { map: textures?.foliage, vertexColors: true });
+  standard('treeGhost', '#a89178', { transparent: true, opacity: .22, depthWrite: false, vertexColors: true });
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
   scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
@@ -806,6 +813,10 @@ export function createScene(container, data, callbacks = {}) {
     addGarden(designGroup,settings);
     addHedges(designGroup,settings);
     addCanopy(designGroup,settings);
+    for (const volume of screeningTreeVolumes(settings, data)) {
+      if (volume.enabled === false) continue;
+      designGroup.add(createScreeningTreeGroup(volume, {bark: mat.treeBark, pine: mat.treePine, spruce: mat.treeSpruce, deciduous: mat.treeDeciduous, ghost: mat.treeGhost}, svgMode));
+    }
     if(settings.includeHighFeatures){
       const returns=(data.buildings||[]).flatMap(b=>b.highFeatures||[]);
       if(returns.length){
@@ -1015,7 +1026,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify(['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures'].map(k=>settings[k]));
+    const signature=JSON.stringify([...['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
