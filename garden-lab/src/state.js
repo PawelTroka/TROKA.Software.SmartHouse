@@ -1,10 +1,10 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.5.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.5.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.5.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.5.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.5.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.6.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.6.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.6.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.6.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.6.0';
 
-export const STATE_VERSION = 7;
+export const STATE_VERSION = 8;
 
 const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -31,7 +31,7 @@ const BASE_FIELDS = Object.freeze({
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -45,7 +45,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,
     linkedHedges:false,sunPathVisible:false,screeningTrees:Object.freeze([]),treeLeafMode:'auto',...profile.defaults,siteId});
-  const LEGACY_DEFAULTS=Object.freeze({...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
+  // Versions 4–7 started without specimen trees. Their omitted field must never
+  // acquire the new planting design; v7 still preserves explicitly stored trees.
+  const V7_DEFAULTS=Object.freeze({...DEFAULTS,screeningTrees:Object.freeze([]),treeLeafMode:'auto'});
+  const LEGACY_DEFAULTS=Object.freeze({...V7_DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
   function sanitizeWithDefaults(input,defaults) {
     const out={...defaults,screeningTrees:sanitizeScreeningTrees(defaults.screeningTrees,profile.bounds)};
     if(!isStateRecord(input)||(input.siteId!==undefined&&input.siteId!==siteId))return out;
@@ -57,14 +60,14 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
     if(MODES.includes(input.mode))out.mode=input.mode;
-    out.screeningTrees=sanitizeScreeningTrees(input.screeningTrees,profile.bounds);
+    if(Object.hasOwn(input,'screeningTrees'))out.screeningTrees=sanitizeScreeningTrees(input.screeningTrees,profile.bounds);
     if(TREE_LEAF_MODES.includes(input.treeLeafMode))out.treeLeafMode=input.treeLeafMode;
     return out;
   }
   function sanitizeState(input={}) {return sanitizeWithDefaults(input,DEFAULTS);}
   function restoreVersionedState(input,version) {
     if(version<6&&siteId!==DEFAULT_SITE_ID)return sanitizeState();
-    const next=sanitizeWithDefaults(input,version<=3?LEGACY_DEFAULTS:DEFAULTS);
+    const next=sanitizeWithDefaults(input,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:DEFAULTS);
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
@@ -76,7 +79,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   function encodeState(state) {
     const s=sanitizeState(state),p=new URLSearchParams({v:String(STATE_VERSION),site:siteId});
     for(const [key,val] of Object.entries(s)){
-      if(key==='screeningTrees'){if(val.length)p.set(key,JSON.stringify(val));continue;}
+      // Explicit [] matters now that one property's fresh default contains trees.
+      // Always serialise the actual layout, including default trees, so shared
+      // designs remain stable if a later release changes the starting layout.
+      if(key==='screeningTrees'){p.set(key,JSON.stringify(val));continue;}
       if(key!=='siteId'&&val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
     }
     return p.toString();
@@ -92,17 +98,35 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}
       else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}
       else if(key==='preset'||key==='mode'||key==='sunDate'||key==='treeLeafMode')s[key]=val;
-      else if(key==='screeningTrees'&&version>=7&&val.length<=20000){try{s[key]=JSON.parse(val);}catch{ /* Ignore malformed external state. */ }}
+      else if(key==='screeningTrees'&&version>=7){
+        s[key]=[];
+        if(val.length<=20000)try{s[key]=JSON.parse(val);}catch{ /* Malformed trees never add default screens. */ }
+      }
     }
     return restoreVersionedState(s,version);
   }
   function scenarioState(name,current=DEFAULTS) {
+    const layout=(profile.screeningLayouts||[]).find(item=>item.id===name);
+    if(layout)return sanitizeState({...current,...layout.settings,screeningTrees:layout.trees});
     const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
     if(name==='default')Object.assign(s,{hedgeRear:DEFAULTS.hedgeRear,hedgeLeft:DEFAULTS.hedgeLeft,hedgeRight:DEFAULTS.hedgeRight,gardenRaise:DEFAULTS.gardenRaise});
     if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,bedRaise:.5});
     if(name==='tall'||name==='canopy')Object.assign(s,{hedgeRear:6,hedgeLeft:6,hedgeRight:6});
     if(name==='canopy')Object.assign(s,{canopyEnabled:true,canopyHeight:DEFAULTS.canopyHeight,canopyDepth:DEFAULTS.canopyDepth,canopyWidth:DEFAULTS.canopyWidth,fasciaDepth:DEFAULTS.fasciaDepth});
     return s;
+  }
+  function matchesScenario(name,current) {
+    const state=sanitizeState(current),layout=(profile.screeningLayouts||[]).find(item=>item.id===name);
+    if(!profile.screeningLayouts?.length&&state.screeningTrees.length)return false;
+    const candidate=scenarioState(name,state);
+    const keys=layout?Object.keys(layout.settings):['hedgeRear','hedgeLeft','hedgeRight','gardenRaise','bedRaise','canopyEnabled','raiseNewHedges'];
+    if(!keys.every(key=>candidate[key]===state[key]))return false;
+    if(state.canopyEnabled&&!['canopyDepth','canopyHeight','canopyWidth','fasciaDepth'].every(key=>candidate[key]===state[key]))return false;
+    if(layout){
+      const geometry=trees=>JSON.stringify(trees.map(tree=>[tree.typeId,tree.x,tree.y,tree.height,tree.crownBase,tree.crownWidth,tree.crownDepth,tree.rotation,tree.enabled].map(value=>typeof value==='number'?Math.round(value*10000)/10000:value)).map(row=>JSON.stringify(row)).sort());
+      return geometry(candidate.screeningTrees)===geometry(state.screeningTrees);
+    }
+    return true;
   }
   function migrateSavedState(input,version=3) {
     if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return sanitizeState();
@@ -119,10 +143,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(next.linkedHedges)for(const side of keys)next[side]=next[key];
     return next;
   }
-  return Object.freeze({STATE_VERSION,FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight,
+  return Object.freeze({STATE_VERSION,FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,matchesScenario,migrateSavedState,changeHedgeHeight,
     migrateLegacyState:input=>migrateSavedState(input,1)});
 }
 
 // Existing callers and old links keep the exact Sternicza settings and migration.
 const sternicza=createStateModel();
-export const {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight,migrateLegacyState}=sternicza;
+export const {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,matchesScenario,migrateSavedState,changeHedgeHeight,migrateLegacyState}=sternicza;

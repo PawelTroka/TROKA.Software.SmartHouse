@@ -1,0 +1,211 @@
+[
+  {
+    "name": "5 m crowns",
+    "views": [
+      {
+        "id": "sofa",
+        "visible": 25,
+        "total": 420,
+        "blockedPercent": 94
+      },
+      {
+        "id": "standing",
+        "visible": 37,
+        "total": 420,
+        "blockedPercent": 91.2
+      },
+      {
+        "id": "terrace",
+        "visible": 4,
+        "total": 420,
+        "blockedPercent": 99
+      },
+      {
+        "id": "jacuzzi",
+        "visible": 3,
+        "total": 460,
+        "blockedPercent": 99.3
+      },
+      {
+        "id": "garden",
+        "visible": 27,
+        "total": 460,
+        "blockedPercent": 94.1
+      }
+    ],
+    "warnings": [
+      {
+        "id": "screen-1",
+        "warnings": [
+          "The crown overlaps Austrian pine · very tall 9.5 m (screen-2). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      },
+      {
+        "id": "screen-2",
+        "warnings": [
+          "The crown overlaps Austrian pine · very tall 9.5 m (screen-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      },
+      {
+        "id": "screen-3",
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "name": "4 m crowns",
+    "views": [
+      {
+        "id": "sofa",
+        "visible": 51,
+        "total": 420,
+        "blockedPercent": 87.9
+      },
+      {
+        "id": "standing",
+        "visible": 63,
+        "total": 420,
+        "blockedPercent": 85
+      },
+      {
+        "id": "terrace",
+        "visible": 69,
+        "total": 420,
+        "blockedPercent": 83.6
+      },
+      {
+        "id": "jacuzzi",
+        "visible": 57,
+        "total": 460,
+        "blockedPercent": 87.6
+      },
+      {
+        "id": "garden",
+        "visible": 69,
+        "total": 460,
+        "blockedPercent": 85
+      }
+    ],
+    "warnings": [
+      {
+        "id": "screen-1",
+        "warnings": []
+      },
+      {
+        "id": "screen-2",
+        "warnings": []
+      },
+      {
+        "id": "screen-3",
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "name": "6 m crowns",
+    "views": [
+      {
+        "id": "sofa",
+        "visible": 10,
+        "total": 420,
+        "blockedPercent": 97.6
+      },
+      {
+        "id": "standing",
+        "visible": 22,
+        "total": 420,
+        "blockedPercent": 94.8
+      },
+      {
+        "id": "terrace",
+        "visible": 0,
+        "total": 420,
+        "blockedPercent": 100
+      },
+      {
+        "id": "jacuzzi",
+        "visible": 0,
+        "total": 460,
+        "blockedPercent": 100
+      },
+      {
+        "id": "garden",
+        "visible": 11,
+        "total": 460,
+        "blockedPercent": 97.6
+      }
+    ],
+    "warnings": [
+      {
+        "id": "screen-1",
+        "warnings": [
+          "The crown overlaps Austrian pine · very tall 9.5 m (screen-2). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      },
+      {
+        "id": "screen-2",
+        "warnings": [
+          "The crown overhangs a building, terrace, stairs or pool. Check clearance and maintenance access.",
+          "The crown overlaps Austrian pine · very tall 9.5 m (screen-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      },
+      {
+        "id": "screen-3",
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "name": "4 m clear stems",
+    "views": [
+      {
+        "id": "sofa",
+        "visible": 17,
+        "total": 420,
+        "blockedPercent": 96
+      },
+      {
+        "id": "standing",
+        "visible": 39,
+        "total": 420,
+        "blockedPercent": 90.7
+      },
+      {
+        "id": "terrace",
+        "visible": 11,
+        "total": 420,
+        "blockedPercent": 97.4
+      },
+      {
+        "id": "jacuzzi",
+        "visible": 18,
+        "total": 460,
+        "blockedPercent": 96.1
+      },
+      {
+        "id": "garden",
+        "visible": 252,
+        "total": 460,
+        "blockedPercent": 45.2
+      }
+    ],
+    "warnings": [
+      {
+        "id": "screen-1",
+        "warnings": [
+          "The crown overlaps Austrian pine · very tall 9.5 m (screen-2). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      },
+      {
+        "id": "screen-2",
+        "warnings": [
+          "The crown overlaps Austrian pine · very tall 9.5 m (screen-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      },
+      {
+        "id": "screen-3",
+        "warnings": []
+      }
+    ]
+  }
+]

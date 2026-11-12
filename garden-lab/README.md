@@ -2,7 +2,28 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.5.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.5.0)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.6.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.6.0)**
+
+## Sternicza planting defaults · 1.6.0
+
+Fresh and reset Sternicza designs start with **two 9.5 m Austrian pines and one 5.5 m Austrian pine**, positioned against PCK 3 sightlines. The catalog plant subtotal is **136,700 PLN**. This is a design starting point, not a best-value claim or a guarantee of full concealment. Existing saved designs keep their trees; select **Strategic pines · 2 tall + 1 large · default** to apply the new layout.
+
+| Planting scenario | Specimens | Catalog plants only |
+| --- | --- | ---: |
+| Strategic default | Two 9.5 m + one 5.5 m pines | 136,700 PLN |
+| Larger-stock comparison | Three 9.5 m pines | 179,700 PLN |
+| Lower-cost comparison | One 9.5 m + two 5.5 m pines | 93,700 PLN |
+| Hedges only | No specimen trees | 0 PLN for specimen trees |
+
+All planting choices restore the same 4 m hedges, +0.5 m garden fill, 4.2 m terrace, removed garage and disabled canopy. They retain the selected floor level, viewpoint, date, supplier allowances and building adjustments. The chosen default crowns stay inside the parcel and clear of the pool, terrace, house and stairs; trunks avoid the illustrated dining platform and loungers. Some rear crowns overlap. Actual root-ball space, access and future growth need a planting design. Korzeniowskiego retains its own tree-free default.
+
+The mixed default saves **43,000 PLN** in plant reference costs compared with three tall pines. At the mapped standing living-room point, **103/420 PCK 3 samples remain visible**, compared with **37/420** for three tall pines; at the jacuzzi the counts are **6/460** and **3/460**. The lower-cost option prioritizes living-room views and leaves more visible from the jacuzzi and parts of the garden. Even the premium layout leaves **230/460** target samples visible from west of the pool. These are geometric sampled-point counts, not visible facade-area percentages or measured foliage opacity.
+
+See the [13-view comparison, sunlight tradeoffs and assumptions](docs/pck3-layout-comparison.md), [recorded results](docs/pck3-layout-comparison.json), and [reproducible bounded search](scripts/search-pck3-layouts.mjs). The search is a constrained design comparison, not proof of a global optimum. Plant prices remain separate from unquoted delivery, crane/unloading, planting, anchoring and establishment.
+
+**Verification:** 148 automated tests pass, including default placement, all historical link baselines, v7 saved designs and v8 empty-tree sharing.
+
+State version **8** preserves all older links and per-property saves. Versions 1–7 that omitted trees remain tree-free; version 7 explicit trees and saved scenario A retain their geometry and prices. New links always include the actual tree array, including an explicit empty array, so a later default change cannot silently alter an existing shared planting design.
 
 ![Screening-tree controls and the Sternicza jacuzzi view in Garden Lab 1.5.0](screening-trees-preview-1.5.0.jpg)
 
@@ -10,7 +31,7 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 ## Screening trees · 1.5.0
 
-Open **Screening trees** to compare one broad specimen, a group of three narrower trees, or flat pleached panels above a hedge. Both properties use the same controls with their own mapped geometry. Trees can be selected, duplicated, disabled or removed independently. **Place on plan** moves the selected tree instead of the observer; the position sliders provide precise coordinates. A fresh design contains no added trees.
+Open **Screening trees** to compare one broad specimen, a group of three narrower trees, or flat pleached panels above a hedge. Both properties use the same controls with their own mapped geometry. Trees can be selected, duplicated, disabled or removed independently. **Place on plan** moves the selected tree instead of the observer; the position sliders provide precise coordinates. Sternicza's fresh design now uses the strategic layout described above; the hedges-only scenario removes its specimen trees.
 
 **Find screening position** searches rear-garden soil for the selected target (PCK 3 initially at Sternicza) from the current observer. It maximizes additional sampled points hidden, retaining other trees, hedges and buildings as existing screens. The result is specific to that observer and dense-crown assumption. It is not an optimization for the whole garden, sunlight, maintenance, root space or aesthetics. Trunks inside the house, retained garage, pool, terrace, threshold or stairs are rejected. Crown overhang and boundary conflicts remain visible as warnings; inspect clearance before choosing a design.
 
@@ -32,7 +53,7 @@ These are nursery catalog references reviewed **12 November 2026**, not confirme
 
 **Screening trees have their own budget.** Purchased stock sizes retain the catalog plant price. Out-of-spec dimensions require a custom unit quote; resizing does not extrapolate a nursery price or treat a mature crown as the purchased plant. Positive **Custom plant quote** replaces the reference; zero restores catalog pricing. Planting and anchoring are per tree, while delivery, crane/unloading and establishment are per-order allowances. Zero service values are explicitly unquoted. Incomplete budgets show known costs plus missing quotes. Disabled trees are excluded. Contingency is applied once after combining base hedge, soil and tree costs.
 
-Shared v7 links, JSON exports, per-property local saves and A/B comparisons preserve every tree independently. Old v1–6 links remain readable. Preview deployments use separate storage and do not overwrite the production design or scenario A.
+Shared v8 links, JSON exports, per-property local saves and A/B comparisons preserve every tree independently. Old v1–7 links remain readable. Preview deployments use separate storage and do not overwrite the production design or scenario A.
 
 **Verification:** 142 automated tests cover the geometry, costs, solar/shade calculations and saved-state compatibility. Browser checks cover adding and resizing trees, custom and missing prices, disabling, three-tree placement, keyboard plan movement, A/B separation, winter foliage, shared-link reload and switching properties. Phone controls were checked at 390 × 844; the desktop sidebar scrolls independently to keep the model visible. Placement messages clear when their viewing or screening conditions change.
 
@@ -72,7 +93,7 @@ The house's roof boundary uses local height estimates from nearby roof returns, 
 
 ## Use it
 
-A fresh or reset design starts with **4 m thujas on all three rear-garden sides and 0.5 m of garden fill**. Extra planting-bed raise is **0 m**. The house and terrace floor stay fixed; the garden keeps its existing slope with a uniform 0.5 m addition, rather than becoming a level slab. Saved designs retain their choices. Choose the **4 m hedges + 0.5 m raised garden · default** scenario to apply the new baseline while retaining the other controls, or use **Reset** to reset the entire design. The original 2.5 m / no-fill scenario remains available for comparison.
+A fresh or reset design starts with **4 m thujas on all three rear-garden sides and 0.5 m of garden fill**. Sternicza additionally starts with the mixed pine layout above. Extra planting-bed raise is **0 m**. The house and terrace floor stay fixed; the garden keeps its existing slope with a uniform 0.5 m addition, rather than becoming a level slab. Saved designs retain their choices. Select a named planting layout to apply its garden assumptions while retaining the comparison context, or use **Reset** to reset the entire design. The original 2.5 m / no-fill hedge settings remain available and retain any trees already placed.
 
 Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between **3D model**, **Eye level**, **Plan**, **Sightline**, and **Sun & shade**. Click the plan to move the observer. Save scenario A, change the design, then compare A/B.
 
@@ -82,7 +103,7 @@ Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between 
 
 **Sun & shade** lets you choose a date and time in Gdańsk, compare seasons, and inspect the resulting sun direction, 3D shadows and outdoor shade map. Change the hedges, canopy, garden level or surrounding-building assumptions to compare their effect on direct sunlight.
 
-**Share view** creates a `v=7` URL containing the property identity and changed settings, including independently positioned trees, foliage mode, sun controls, cost inputs and building adjustments. Older `v=1`–`v=5` links always reopen Sternicza. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration from versions 1–4, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Version 5 already uses the corrected orientation. Re-sharing writes version 7. Version 6 links retain both property identities; existing v6 browser saves and scenario A migrate independently per property, with no added trees. Existing Sternicza browser saves and scenario A migrate in the same way; they are never imported into Korzeniowskiego. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-7 JSON containing the property, source location, settings, visibility, costs, sunlight and building adjustments.
+**Share view** creates a `v=8` URL containing the property identity and changed settings, including independently positioned trees, foliage mode, sun controls, cost inputs and building adjustments. The complete tree array is always included. Older `v=1`–`v=5` links always reopen Sternicza. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration from versions 1–4, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Version 5 already uses the corrected orientation. Re-sharing writes version 8. Version 6–7 links retain both property identities; their browser saves and scenario A migrate independently per property. Version 6 has no trees; version 7 preserves any explicitly stored trees and otherwise remains tree-free. Earlier Sternicza browser saves migrate similarly and are never imported into Korzeniowskiego. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-8 JSON containing the property, source location, settings, visibility, costs, sunlight and building adjustments.
 
 The app has no backend, analytics, account requirement or external runtime requests. Three.js r160 is vendored with its MIT licence. A reduced SVG renderer keeps 3D interaction available on browsers without WebGL. Plan, section and the numerical shade map use SVG independently of the 3D renderer. Detailed materials and 3D cast shadows require WebGL; an in-app note explains the fallback.
 

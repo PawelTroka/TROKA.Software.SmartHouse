@@ -31,7 +31,7 @@ test('explicit property identity survives share links and legacy links select on
   const active=createStateModel(getSiteProfile('korzeniowskiego-40',otherSite()));
   const scenario={...active.DEFAULTS,hedgeLeft:2,hedgeRight:6,lookYaw:35,costTreePriceLeft:120,costTreePriceRight:980,b70HeightDelta:2,sunDate:'2026-12-21'};
   const link=active.encodeState(scenario),restored=active.decodeState(link);
-  assert.match(link,/^v=7&site=korzeniowskiego-40&/);
+  assert.match(link,/^v=8&site=korzeniowskiego-40&/);
   for(const key of ['siteId','hedgeLeft','hedgeRight','lookYaw','costTreePriceLeft','costTreePriceRight','b70HeightDelta','sunDate'])assert.equal(restored[key],scenario[key],key);
   assert.deepEqual(decodeState(link),DEFAULTS,'The same controls cannot be applied to another property');
   assert.deepEqual(active.decodeState('v=6&site=sternicza-11&hedgeRear=12'),active.DEFAULTS);
