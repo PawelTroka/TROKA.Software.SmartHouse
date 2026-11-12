@@ -63,6 +63,16 @@ export function floorElevation(settings, data) {
   return data.site.floorReference.z + number(settings.floorHeight, 1.2);
 }
 
+/** Shared grade sample used by the illustrated steps and both terrace readouts. */
+export function terraceGroundReference(settings = {}, data) {
+  const terrace = data.site.terrace;
+  const depth = number(settings.terraceDepth, terrace.depth);
+  const x = terrace.x + terrace.width / 2;
+  const offset = 0.6, y = number(terrace.y, data.site.rearMidpoint[1]) + depth + offset;
+  const floorZ = floorElevation(settings, data), groundZ = gardenGroundAt(x, y, settings, data);
+  return { x, y, offset, floorZ, groundZ, drop: floorZ - groundZ };
+}
+
 /** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
   const depth = number(settings.terraceDepth, 4.2), size = 2.2;

@@ -4,6 +4,7 @@
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
 import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.4.0';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.4.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -115,12 +116,15 @@ function gableFaces(ring,eaves,ridge,axis='x') {
 
 // Same planar Delaunay construction as the rendered sampled apartment roofs.
 // Kept pure: no WebGL/DOM requirement for the shade map or numerical tests.
-export function sampledRoofFaces(ring,samples,edgeZ) {
+export function sampledRoofFaces(ring,samples,edgeZ,edgePoints=null) {
   const unique=new Map();
-  [...samples,...openRing(ring).map(p=>[...p,edgeZ])].forEach(p=>{
+  [...samples,...(edgePoints||openRing(ring).map(p=>[...p,edgeZ]))].forEach(p=>{
     const key=`${p[0].toFixed(3)}:${p[1].toFixed(3)}`;
     if(!unique.has(key)||unique.get(key)[2]<p[2])unique.set(key,p);
   });
+  // A local envelope supplies shared wall/roof seam vertices. At coincident
+  // plan coordinates they take precedence so no vertical cracks are introduced.
+  if(edgePoints)for(const p of edgePoints)unique.set(`${p[0].toFixed(3)}:${p[1].toFixed(3)}`,p);
   const points=[...unique.values()],count=points.length;
   if(count<3)return [];
   const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),span=Math.max(x1-x0,y1-y0)*8,cx=(x0+x1)/2,cy=(y0+y1)/2;
@@ -166,6 +170,12 @@ function makeOccluders(settings,data) {
   const addMeasuredBuilding=(building,id,label,axis)=>{
     if(!building?.footprint?.length)return;
     const ring=openRing(building.footprint),returns=(building.roofPoints||[]).map(point).filter(p=>p.length>=3&&p.every(Number.isFinite));
+    if(site.id==='korzeniowskiego-40'&&building===house&&returns.length>6){
+      const envelope=localRoofEnvelope(building);
+      add(mesh(id,label,envelope.wallFaces));
+      add(mesh(`${id}-roof`,`${label} roof`,sampledRoofFaces(envelope.ring,envelope.samples,envelope.fallback,envelope.boundary)));
+      return;
+    }
     // Fixed source elevations, shared with the renderer. Changing a proposed
     // interior floor must never lift the existing building's shadow-casting roof.
     const sampled=returns.length>6,eaves=sampled?Math.min(...returns.map(p=>p[2])):num(building.roofZ,num(building.baseZ)+7);

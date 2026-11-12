@@ -1,12 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.4.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.4.0';
 import { sampledRoofFaces } from './shade.js?v=1.4.0';
 import { createSurfaceTextures } from './scene-materials.js?v=1.4.0';
 import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.4.0';
 import { getSiteProfile } from './sites.js?v=1.4.0';
 import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.4.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.4.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -73,8 +74,8 @@ function polygonPrism(ring, base, top, material) {
 }
 
 // Rendering and numerical shade use the same measured roof triangulation.
-function sampledRoofGeometry(ring, samples, edgeZ) {
-  const faces=sampledRoofFaces(ring,samples,edgeZ).map(([a,b,c])=>toWorldRoofTriangle(a,b,c));
+function sampledRoofGeometry(ring, samples, edgeZ, edgePoints=null) {
+  const faces=sampledRoofFaces(ring,samples,edgeZ,edgePoints).map(([a,b,c])=>toWorldRoofTriangle(a,b,c));
   return faces.length?geometryFromTriangles(faces):null;
 }
 
@@ -465,9 +466,7 @@ export function createScene(container, data, callbacks = {}) {
   /** Fit proposed glazing and finishes to the actual second site's wall edges.
    * The mapped footprint and sampled roof remain the existing envelope. */
   function addMappedHouse(group,settings) {
-    const h=data.site.house,ring=closeRing(h.footprint),base=h.baseZ;
-    const samples=(h.roofPoints||[]).map(xyz).filter(p=>p.length===3&&p.every(Number.isFinite));
-    const eaves=samples.length>6?Math.min(...samples.map(p=>p[2])):h.roofZ;
+    const h=data.site.house,envelope=localRoofEnvelope(h),{ring,samples,base}=envelope;
     const floor=data.site.floorReference.z+num(settings.floorHeight,1.7);
     const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
     const rearEdge=h.rearEdge||data.site.rearEdge;
@@ -480,18 +479,28 @@ export function createScene(container, data, callbacks = {}) {
     },{index:0,y:-Infinity}).index;
     for(let i=0;i<ring.length;i++){
       const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);
-      if(len<.05)continue;
+      if(len<.0001)continue;
+      const edge=envelope.edges[i],eaves=u=>roofEdgeHeight(edge,u);
+      const minEaves=Math.min(...edge.points.map(p=>p[2])),maxEaves=Math.max(...edge.points.map(p=>p[2]));
       const nx=winding*dy/len,ny=-winding*dx/len;
       const p=(u,z,offset=0)=>[a[0]+dx*u+nx*offset,a[1]+dy*u+ny*offset,z];
       const panel=(u0,u1,z0,z1,material,offset=0,shadow=true)=>{
-        if(u1-u0<.001||z1-z0<.001)return;
-        const mesh=new THREE.Mesh(geometryFromTriangles([localTriangle(p(u0,z0,offset),p(u1,z0,offset),p(u1,z1,offset)),localTriangle(p(u0,z0,offset),p(u1,z1,offset),p(u0,z1,offset))]),material);
+        if(u1-u0<.001)return;
+        const top=typeof z1==='function'?z1:()=>z1,triangles=[];
+        const cuts=[u0,...edge.points.map((_,j)=>j/(edge.points.length-1)).filter(u=>u>u0&&u<u1),u1];
+        for(let j=0;j<cuts.length-1;j++){
+          const u=cuts[j],v=cuts[j+1],hu=top(u),hv=top(v);
+          if(Math.min(hu,hv)<=z0+.001)continue;
+          triangles.push(localTriangle(p(u,z0,offset),p(v,z0,offset),p(v,hv,offset)),localTriangle(p(u,z0,offset),p(v,hv,offset),p(u,hu,offset)));
+        }
+        if(!triangles.length)return;
+        const mesh=new THREE.Mesh(geometryFromTriangles(triangles),material);
         mesh.castShadow=shadow;mesh.receiveShadow=true;group.add(mesh);
       };
       if(i===edgeIndex){
         const t=data.site.terrace,project=x=>Math.abs(dx)>.01?(x-a[0])/dx:.5;
         const uA=project(t.x+.08),uB=project(t.x+t.width-.08),lo=Math.max(.05,Math.min(uA,uB)),hi=Math.min(.95,Math.max(uA,uB));
-        const top=Math.min(floor+2.65,eaves-.25);
+        const top=Math.min(floor+2.65,minEaves-.25);
         panel(0,1,base,floor,mat.plinth);panel(0,lo,floor,top,mat.wall);panel(hi,1,floor,top,mat.wall);panel(0,1,top,eaves,mat.wall);
         panel(lo,hi,floor+.04,top-.04,mat.glass,.018,false);
         for(const u of [lo,lo+(hi-lo)/3,lo+2*(hi-lo)/3,hi])panel(u-.023/len,u+.023/len,floor,top,mat.metal,.035,false);
@@ -499,18 +508,21 @@ export function createScene(container, data, callbacks = {}) {
       }else panel(0,1,base,eaves,mat.wall);
       // Repeated openings are a restrained renovation proposal, never surveyed windows.
       const count=Math.max(1,Math.floor(len/3.1));
-      for(let z=floor+(i===edgeIndex?3.35:.5);z+1.5<eaves-.25;z+=3.0){
+      for(let z=floor+(i===edgeIndex?3.35:.5);len>=1.5&&z+1.5<maxEaves-.25;z+=3.0){
         for(let j=0;j<count;j++){
           const u=(j+.5)/count,half=Math.min(.72/len,.35/count);
+          const lo=u-half-.06/len,hi=u+half+.06/len;
+          const localHeights=[eaves(lo),eaves(hi),...edge.points.filter((_,k)=>k/(edge.points.length-1)>lo&&k/(edge.points.length-1)<hi).map(p=>p[2])];
+          if(z+1.56>=Math.min(...localHeights)-.1)continue;
           panel(u-half-.06/len,u+half+.06/len,z-.06,z+1.56,mat.metal,.03,false);
           panel(u-half,u+half,z,z+1.5,mat.contextWindow,.05,false);
         }
       }
-      line(group,[p(0,eaves-.06,.04),p(1,eaves-.06,.04)],'#4e5751',.9);
+      line(group,edge.points.map((q,j)=>p(j/(edge.points.length-1),q[2]-.06,.04)),'#4e5751',.9);
     }
-    const roof=samples.length>6?sampledRoofGeometry(ring,samples,eaves):null;
+    const roof=samples.length>6?sampledRoofGeometry(ring,samples,envelope.fallback,envelope.boundary):null;
     if(roof){const mesh=new THREE.Mesh(roof,mat.roof);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);}
-    else group.add(polygonPrism(ring,eaves,num(h.roofTopZ,eaves),mat.roof));
+    else group.add(polygonPrism(ring,envelope.fallback,num(h.roofTopZ,envelope.fallback),mat.roof));
     group.add(polygonPrism(ring,floor-.12,floor,mat.stoneLight));
     const sofa=data.site.observers?.sofa||data.site.rearMidpoint;
     box(group,sofa[0]-1.4,sofa[1]-.6,floor,2.8,.8,.4,mat.linen,false);
@@ -699,7 +711,7 @@ export function createScene(container, data, callbacks = {}) {
       const jets=new THREE.InstancedMesh(new THREE.SphereGeometry(.035,8,5),mat.metal,8),dummy=new THREE.Object3D();
       for(let i=0;i<8;i++){dummy.position.copy(point(i<4?jx+.155:jx+2.045,jy+.43+(i%4)*.44,floor-.28));dummy.updateMatrix();jets.setMatrixAt(i,dummy.matrix);}group.add(jets);
     }
-    const stepGround=gardenGroundAt(x+width/2,rear+depth+.6,settings,data),drop=floor-stepGround;
+    const {groundZ:stepGround,drop}=terraceGroundReference(settings,data);
     const stairs=terraceStairs({...terrace,y:rear},depth,drop);
     if(stairs.count){
       for(let i=0;i<stairs.count;i++)box(group,stairs.x,stairs.y+i*.29,stepGround,stairs.width,.29,drop*(stairs.count-i)/stairs.count,mat.stone);

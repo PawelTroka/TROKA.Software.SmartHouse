@@ -1,6 +1,7 @@
 import {
   terrainAt,
   gardenGroundAt,
+  terraceGroundReference,
   hedgeSegments,
   canopyBounds,
   jacuzziBounds,
@@ -118,9 +119,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   ).join('');
   const detail = scope === 'garden';
   const compact = scale < 10;
-  const floorZ = site.floorReference.z + number(settings.floorHeight, 1.2);
-  const terrainAtTerrace = gardenGroundAt(terrace.x + terrace.width / 2, rearY + terrace.depth, settings, data);
-  const terraceDrop = floorZ - terrainAtTerrace;
+  const {drop:terraceDrop} = terraceGroundReference(settings,data);
   const jacuzzi = jacuzziBounds(settings, data);
   const jacuzziX = jacuzzi?.x0, jacuzziY = jacuzzi?.y0;
   const canopy = settings.canopyEnabled ? canopyBounds(settings, data) : null;
@@ -156,7 +155,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const svg = `
     <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation" tabindex="0" role="img" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place a viewpoint. Arrow keys move the viewpoint by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
       <title>${esc(profile.label)} — mapped plot and proposed garden</title>
-      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street boundary. Proposed terrace, jacuzzi and pool are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
+      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street-side parcel boundary. Proposed terrace, jacuzzi and pool are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
       <defs><clipPath id="plan-clip"><rect width="${W}" height="${H}"/></clipPath><marker id="plan-tick" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M4 0V8" stroke="${C.muted}"/></marker></defs>
       <rect width="${W}" height="${H}" fill="${C.paper}"/>
       <g clip-path="url(#plan-clip)" font-family="Inter,system-ui,sans-serif" font-size="14" fill="${C.ink}">
@@ -202,7 +201,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
     <div style="flex:1;min-height:0;display:flex;overflow:hidden;border:1px solid ${C.line};border-radius:12px;background:${C.paper}">${svg}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
       <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Privacy targets</span><span>Left / right: from house toward rear garden ↓</span>
-      ${detail ? `<span>Terrace drop <b>${fmt(terraceDrop, 2)} m</b></span>` : ''}
+      ${detail ? `<span title="Ground on terrace centreline, 0.6 m beyond the outer edge.">${terraceDrop>=0?'Terrace drop':'Garden above terrace'} <b>${fmt(Math.abs(terraceDrop), 2)} m</b> · centreline, 0.6 m beyond edge</span>` : ''}
     </div>`;
 
   for (const button of container.querySelectorAll('[data-map-scope]')) button.onclick = () => {

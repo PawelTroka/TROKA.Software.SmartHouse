@@ -3,7 +3,7 @@ import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites
 import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.4.0';
 import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.4.0';
 import {renderBudget,renderPriceSources} from './budget-view.js?v=1.4.0';
-import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from './geometry.js?v=1.4.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference} from './geometry.js?v=1.4.0';
 import {renderPlan,renderSection} from './diagrams.js?v=1.4.0';
 import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.4.0';
 import {analyzeSunlight} from './shade.js?v=1.4.0';
@@ -245,10 +245,9 @@ function update(){
   $('required-height').textContent=fmt(analysis.worstRequiredHedge.rear,1);
   $('required-caption').textContent=`${settings.raiseNewHedges?'Above new planting ground':'Above original ground'}. Without canopy; mapped surrounding buildings still screen some rays.`;
   $('hedge-basis').textContent=settings.raiseNewHedges?'Plant height is above the new planting ground (garden fill + extra bed height). Hedges are ideal continuous, opaque screens.':'Heights refer to original ground. Existing foliage stays fixed; adding soil reduces its exposed height. Screens are ideal and opaque.';
-  const [mx,rearY]=data.site.rearMidpoint;
-  const drop=floorElevation(settings,data)-gardenGroundAt(mx,rearY+settings.terraceDepth+.1,settings,data);
+  const {drop}=terraceGroundReference(settings,data);
   $('terrace-drop').textContent=fmt(Math.abs(drop),2);
-  $('drop-caption').textContent=drop>=0?'Vertical drop at the terrace edge.':'Garden is above the terrace at this edge.';
+  $('drop-caption').textContent=drop>=0?'To ground on terrace centreline, 0.6 m beyond the edge.':'Garden is above terrace on its centreline, 0.6 m beyond the edge.';
   const rows=$('building-rows');rows.replaceChildren();
   for(const block of analysis.byBlock){
     const row=document.createElement('div');row.className='building-row';
