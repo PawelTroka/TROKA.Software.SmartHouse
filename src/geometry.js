@@ -1,5 +1,5 @@
 /**
- * Sternicza 11 privacy geometry. All distances are metres. Plan coordinates are
+ * Site-specific privacy geometry. All distances are metres. Plan coordinates are
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
@@ -63,7 +63,17 @@ export function floorElevation(settings, data) {
   return data.site.floorReference.z + number(settings.floorHeight, 1.2);
 }
 
-/** Right means looking from the house into the garden: the west / low-x edge. */
+/** Shared grade sample used by the illustrated steps and both terrace readouts. */
+export function terraceGroundReference(settings = {}, data) {
+  const terrace = data.site.terrace;
+  const depth = number(settings.terraceDepth, terrace.depth);
+  const x = terrace.x + terrace.width / 2;
+  const offset = 0.6, y = number(terrace.y, data.site.rearMidpoint[1]) + depth + offset;
+  const floorZ = floorElevation(settings, data), groundZ = gardenGroundAt(x, y, settings, data);
+  return { x, y, offset, floorZ, groundZ, drop: floorZ - groundZ };
+}
+
+/** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
   const depth = number(settings.terraceDepth, 4.2), size = 2.2;
   const x0 = data.site.terrace.x + 0.15;
@@ -76,17 +86,20 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const s = settingsWithDefaults(settings), [mx, rearY] = data.site.rearMidpoint;
   const depth = number(s.terraceDepth, 4.2), width = data.site.terrace.width;
   const tub = jacuzziBounds(s, data);
+  const sofa = data.site.observers?.sofa || [mx, rearY - 2.5];
+  const garden = data.site.observers?.garden || [mx, 30];
+  const terraceCentre = data.site.terrace.x + width / 2;
   const values = {
-    sofa: [mx, rearY - 2.5, 1.2, 'Living room · seated', 'floor'],
-    standing: [mx, rearY - 2.5, 1.65, 'Living room · standing', 'floor'],
-    terrace: [mx, rearY + Math.max(0.5, depth - 1), 1.65, 'Living terrace', 'floor'],
+    sofa: [...sofa, 1.2, 'Living room · seated', 'floor'],
+    standing: [...sofa, 1.65, 'Living room · standing', 'floor'],
+    terrace: [terraceCentre, rearY + Math.max(0.5, depth - 1), 1.65, 'Living terrace', 'floor'],
     jacuzzi: [(tub.x0 + tub.x1) / 2, (tub.y0 + tub.y1) / 2, 0.7, 'Jacuzzi · seated', 'floor'],
-    garden: [mx, 30, 1.65, 'Garden · standing', 'garden'],
-    custom: [number(s.observerX, mx), number(s.observerY, 30), 1.65, 'Custom viewpoint', 'auto'],
+    garden: [...garden, 1.65, 'Garden · standing', 'garden'],
+    custom: [number(s.observerX, garden[0]), number(s.observerY, garden[1]), 1.65, 'Custom viewpoint', 'auto'],
   };
   let [x, y, defaultEye, label, surface] = values[preset] || values.custom;
   if (surface === 'auto') {
-    const onTerrace = x >= mx - width / 2 && x <= mx + width / 2 && y >= rearY && y <= rearY + depth;
+    const onTerrace = x >= data.site.terrace.x && x <= data.site.terrace.x + width && y >= rearY && y <= rearY + depth;
     surface = onTerrace || pointInPolygon([x, y], data.site.house.footprint) ? 'floor' : 'garden';
   }
   const eyeHeight = number(settings.eyeHeight, defaultEye);
@@ -138,9 +151,13 @@ export function hedgeSegments(settings = {}, data) {
   const segments = [];
   for (let i = 0; i < p.length - 1; i++) {
     const name = data.site.boundaryNames[i];
-    // Physical sides are named from the house looking toward +y (SSW).
-    // The north-up-ish plan has east on screen-right, but that is the viewer's LEFT.
-    const side = name === 'rear' ? 'rear' : name.startsWith('east') ? 'left' : name.startsWith('west') ? 'right' : null;
+    // New datasets name physical sides directly. Legacy Sternicza names were
+    // geographic: east is left there, but west is left on the north-facing site.
+    const physical = data.site.boundarySides?.[i] || name;
+    const side = physical === 'rear' || physical.startsWith('rear-') ? 'rear'
+      : physical === 'left' || physical.startsWith('left-') ? 'left'
+      : physical === 'right' || physical.startsWith('right-') ? 'right'
+      : name.startsWith('east') ? 'left' : name.startsWith('west') ? 'right' : null;
     if (!side) continue;
     let a = p[i], b = p[i + 1];
     const startY = data.site.rearMidpoint[1];
@@ -158,7 +175,8 @@ export function hedgeSegments(settings = {}, data) {
 }
 
 export function canopyBounds(settings = {}, data) {
-  const s = settingsWithDefaults(settings), [mx, y0] = data.site.rearMidpoint;
+  const s = settingsWithDefaults(settings), y0 = data.site.rearMidpoint[1];
+  const mx = data.site.terrace.x + data.site.terrace.width / 2;
   const width = Math.max(0, number(s.canopyWidth, 8.5));
   const z = floorElevation(s, data) + number(s.canopyHeight, 2.7);
   return { x0: mx - width / 2, x1: mx + width / 2, y0,
@@ -245,7 +263,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
   const segments = hedgeSegments(s, data), rays = [], byBlock = [];
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
-  if (!s.removeGarage) blockers.push(data.site.garage);
+  if (!s.removeGarage && data.site.garage) blockers.push(data.site.garage);
   const worstRequiredHedge = { rear: 0, left: 0, right: 0, overall: 0 };
   const remainingRequiredHedge = { rear: 0, left: 0, right: 0, overall: 0 };
   let criticalRay = null;

@@ -1,10 +1,11 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.3.1';
-import {BUILDING_FIELDS} from './buildings.js?v=1.3.1';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.3.1';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.4.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.4.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.4.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.4.0';
 
-export const STATE_VERSION = 5;
+export const STATE_VERSION = 6;
 
-export const FIELDS = Object.freeze({
+const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeLeft: {label:'Left hedge · east',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeRight: {label:'Right hedge · west',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -28,84 +29,92 @@ export const FIELDS = Object.freeze({
 });
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
-export const DEFAULTS = Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,linkedHedges:false,sunPathVisible:false});
-// Versions 1–3 omitted values relative to the original 2.5 m / no-fill design.
-// Changing new defaults must not reinterpret those already-published links.
-const LEGACY_DEFAULTS = Object.freeze({...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
-const SUPPORTED_VERSIONS = Object.freeze([1,2,3,4,5]);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6]);
 
-/**
- * Before v5, side names described the map rather than a person looking out of
- * the house. Resolve old omitted defaults first, then preserve each geographic
- * hedge installation and its quote under the corrected east-left/west-right
- * names. Positive yaw now turns physically right; coordinates remain unchanged.
- */
-function restoreVersionedState(input,version) {
-  const next=sanitizeWithDefaults(input,version<=3?LEGACY_DEFAULTS:DEFAULTS);
-  if(version<5){
-    [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
-    [next.costTreePriceLeft,next.costTreePriceRight]=[next.costTreePriceRight,next.costTreePriceLeft];
-    next.lookYaw=next.lookYaw===0?0:-next.lookYaw;
+/** A property's fields, defaults and saved designs share one explicit site identity. */
+export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
+  const siteId=profile.id;
+  const fields={...BASE_FIELDS};
+  for(const key of Object.keys(BUILDING_FIELDS))delete fields[key];
+  Object.assign(fields,buildingFields(profile.buildingTargets));
+  for(const [key,override] of Object.entries(profile.fieldOverrides||{}))if(fields[key])fields[key]={...fields[key],...override};
+  for(const [key,value] of Object.entries(profile.defaults||{}))if(fields[key])fields[key]={...fields[key],value};
+  const FIELDS=Object.freeze(Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,Object.freeze(value)])));
+  const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
+    preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,
+    linkedHedges:false,sunPathVisible:false,...profile.defaults,siteId});
+  const LEGACY_DEFAULTS=Object.freeze({...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
+  function sanitizeWithDefaults(input,defaults) {
+    const out={...defaults};
+    if(!isStateRecord(input)||(input.siteId!==undefined&&input.siteId!==siteId))return out;
+    for(const [key,f] of Object.entries(FIELDS)) {
+      if(typeof input[key]==='number'&&Number.isFinite(input[key]))out[key]=Math.max(f.min,Math.min(f.max,input[key]));
+    }
+    out.sunMinutes=Math.round(out.sunMinutes);
+    out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
+    for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
+    if(PRESETS.includes(input.preset))out.preset=input.preset;
+    if(MODES.includes(input.mode))out.mode=input.mode;
+    return out;
   }
-  return next;
-}
-
-function sanitizeWithDefaults(input,defaults) {
-  const out={...defaults};
-  if (!isStateRecord(input)) return out;
-  for (const [key,f] of Object.entries(FIELDS)) {
-    if (typeof input[key]==='number' && Number.isFinite(input[key])) out[key]=Math.max(f.min,Math.min(f.max,input[key]));
+  function sanitizeState(input={}) {return sanitizeWithDefaults(input,DEFAULTS);}
+  function restoreVersionedState(input,version) {
+    if(version<6&&siteId!==DEFAULT_SITE_ID)return {...DEFAULTS};
+    const next=sanitizeWithDefaults(input,version<=3?LEGACY_DEFAULTS:DEFAULTS);
+    if(version<5){
+      [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
+      [next.costTreePriceLeft,next.costTreePriceRight]=[next.costTreePriceRight,next.costTreePriceLeft];
+      next.lookYaw=next.lookYaw===0?0:-next.lookYaw;
+    }
+    return next;
   }
-  out.sunMinutes=Math.round(out.sunMinutes);
-  out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
-  for (const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean')) if(typeof input[key]==='boolean') out[key]=input[key];
-  if(PRESETS.includes(input.preset))out.preset=input.preset;
-  if(MODES.includes(input.mode))out.mode=input.mode;
-  return out;
-}
-export function sanitizeState(input={}) {
-  return sanitizeWithDefaults(input,DEFAULTS);
-}
-export function encodeState(state) {
-  const s=sanitizeState(state),p=new URLSearchParams({v:String(STATE_VERSION)});
-  for(const [key,val] of Object.entries(s)) if(val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
-  return p.toString();
-}
-export function decodeState(hash) {
-  if(typeof hash!=='string')return {...DEFAULTS};
-  const p=new URLSearchParams(hash.replace(/^#/,'')),s={};
-  if(!SUPPORTED_VERSIONS.map(String).includes(p.get('v')))return {...DEFAULTS};
-  for(const [key,val] of p){if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}else if(key==='preset'||key==='mode'||key==='sunDate')s[key]=val;}
-  return restoreVersionedState(s,Number(p.get('v')));
-}
-export function scenarioState(name,current=DEFAULTS) {
-  const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
-  if(name==='default')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,gardenRaise:.5});
-  if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,bedRaise:.5});
-  if(name==='tall'||name==='canopy')Object.assign(s,{hedgeRear:6,hedgeLeft:6,hedgeRight:6});
-  if(name==='canopy')Object.assign(s,{canopyEnabled:true,canopyHeight:2.7,canopyDepth:4.2,canopyWidth:8.5,fasciaDepth:.3});
-  return s;
+  function encodeState(state) {
+    const s=sanitizeState(state),p=new URLSearchParams({v:String(STATE_VERSION),site:siteId});
+    for(const [key,val] of Object.entries(s))if(key!=='siteId'&&val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
+    return p.toString();
+  }
+  function decodeState(hash) {
+    if(typeof hash!=='string')return {...DEFAULTS};
+    const p=new URLSearchParams(hash.replace(/^#/,'')),s={};
+    const version=Number(p.get('v'));
+    if(!SUPPORTED_VERSIONS.includes(version))return {...DEFAULTS};
+    if(version===6&&p.get('site')!==siteId)return {...DEFAULTS};
+    if(version<6&&(siteId!==DEFAULT_SITE_ID||(p.has('site')&&p.get('site')!==DEFAULT_SITE_ID)))return {...DEFAULTS};
+    for(const [key,val] of p){
+      if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}
+      else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}
+      else if(key==='preset'||key==='mode'||key==='sunDate')s[key]=val;
+    }
+    return restoreVersionedState(s,version);
+  }
+  function scenarioState(name,current=DEFAULTS) {
+    const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
+    if(name==='default')Object.assign(s,{hedgeRear:DEFAULTS.hedgeRear,hedgeLeft:DEFAULTS.hedgeLeft,hedgeRight:DEFAULTS.hedgeRight,gardenRaise:DEFAULTS.gardenRaise});
+    if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,bedRaise:.5});
+    if(name==='tall'||name==='canopy')Object.assign(s,{hedgeRear:6,hedgeLeft:6,hedgeRight:6});
+    if(name==='canopy')Object.assign(s,{canopyEnabled:true,canopyHeight:DEFAULTS.canopyHeight,canopyDepth:DEFAULTS.canopyDepth,canopyWidth:DEFAULTS.canopyWidth,fasciaDepth:DEFAULTS.fasciaDepth});
+    return s;
+  }
+  function migrateSavedState(input,version=3) {
+    if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return {...DEFAULTS};
+    if(version===6&&input.siteId!==siteId)return {...DEFAULTS};
+    if(input.siteId!==undefined&&input.siteId!==siteId)return {...DEFAULTS};
+    const next=restoreVersionedState(input,version);
+    if(version===1)next.linkedHedges=false;
+    return next;
+  }
+  function changeHedgeHeight(state,key,value) {
+    const keys=['hedgeRear','hedgeLeft','hedgeRight'];
+    if(!keys.includes(key))return sanitizeState(state);
+    const next=sanitizeState({...state,[key]:value});
+    if(next.linkedHedges)for(const side of keys)next[side]=next[key];
+    return next;
+  }
+  return Object.freeze({STATE_VERSION,FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight,
+    migrateLegacyState:input=>migrateSavedState(input,1)});
 }
 
-/** Restore partial or full saved designs against their original defaults. */
-export function migrateSavedState(input,version=3) {
-  if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return {...DEFAULTS};
-  const next=restoreVersionedState(input,version);
-  if(version===1)next.linkedHedges=false;
-  return next;
-}
-
-/** Upgrade saved v1 preferences without preserving its automatically enabled linking. */
-export function migrateLegacyState(input) {
-  return migrateSavedState(input,1);
-}
-
-/** One control changes one side unless the user explicitly enables linked editing. */
-export function changeHedgeHeight(state,key,value) {
-  const keys=['hedgeRear','hedgeLeft','hedgeRight'];
-  if(!keys.includes(key))return sanitizeState(state);
-  const next=sanitizeState({...state,[key]:value});
-  if(next.linkedHedges)for(const side of keys)next[side]=next[key];
-  return next;
-}
+// Existing callers and old links keep the exact Sternicza settings and migration.
+const sternicza=createStateModel();
+export const {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight,migrateLegacyState}=sternicza;

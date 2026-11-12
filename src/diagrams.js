@@ -1,12 +1,14 @@
 import {
   terrainAt,
   gardenGroundAt,
+  terraceGroundReference,
   hedgeSegments,
   canopyBounds,
   jacuzziBounds,
-} from './geometry.js?v=1.3.1';
-import {gazeDirection} from './orientation.js?v=1.3.1';
-import {localSunDirection} from './solar.js?v=1.3.1';
+} from './geometry.js?v=1.4.0';
+import {gazeDirection} from './orientation.js?v=1.4.0';
+import {localSunDirection} from './solar.js?v=1.4.0';
+import {getSiteProfile} from './sites.js?v=1.4.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -46,7 +48,8 @@ function footprintBounds(polygon) {
 
 function criticalRay(data, analysis) {
   const rays = analysis?.rays || [];
-  const nearest = data.buildings.find(b => b.index === 9 || /PCK\s*3/i.test(b.label));
+  const legacySite = !data.site.id || data.site.id === 'sternicza-11';
+  const nearest = legacySite ? data.buildings.find(b => /PCK\s*3/i.test(b.label)) : null;
   const candidates = rays.filter(r => r.screen && (!nearest || r.blockId === nearest.id) && r.kind !== 'facade');
   if (candidates.length) {
     const meaningful = candidates.filter(r => r.blockedBy !== 'building');
@@ -57,15 +60,16 @@ function criticalRay(data, analysis) {
     !best || r.screen.requiredHeight > best.screen.requiredHeight ? r : best, null);
 }
 
-function planLayout(scope, data, container) {
-  let bounds = {minX: -3.5, maxX: 24.5, minY: -4.2, maxY: 42.4};
+export function planLayout(scope, data, container) {
+  const plot = getSiteProfile(data.site.id || 'sternicza-11', data).bounds;
+  let bounds = {minX: plot.minX - 3.5, maxX: plot.maxX + 4.2, minY: plot.minY - 4.2, maxY: plot.maxY + 4.2};
   if (scope === 'context') {
-    const points = data.buildings.filter(b => b.kind === 'target').flatMap(b => b.footprint);
+    const points = [...data.site.boundary, ...data.buildings.filter(b => b.kind === 'target').flatMap(b => b.footprint)];
     bounds = {
-      minX: Math.max(-70, Math.min(-8, ...points.map(p => p[0])) - 6),
-      maxX: Math.min(115, Math.max(28, ...points.map(p => p[0])) + 6),
-      minY: -8,
-      maxY: Math.min(145, Math.max(68, ...points.map(p => p[1])) + 8),
+      minX: Math.min(...points.map(p => p[0])) - 6,
+      maxX: Math.max(...points.map(p => p[0])) + 6,
+      minY: Math.min(...points.map(p => p[1])) - 8,
+      maxY: Math.max(...points.map(p => p[1])) + 8,
     };
   }
   // Match the available panel instead of shrinking a thousand-pixel drawing.
@@ -89,7 +93,12 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const scope = container.dataset.mapScope === 'context' ? 'context' : 'garden';
   const l = planLayout(scope, data, container), {X, Y, scale, W, H} = l;
   const site = data.site;
+  const profile = getSiteProfile(site.id || 'sternicza-11', data), plot = profile.bounds;
+  const middleX = (plot.minX + plot.maxX) / 2;
+  const frontage = number(site.frontage, plot.maxX - plot.minX);
+  const depth = number(site.depth, plot.maxY - plot.minY);
   const house = footprintBounds(site.house.footprint);
+  const setback = number(site.frontSetback, house.minY - plot.minY);
   const rearY = site.rearMidpoint[1];
   const terrace = {...site.terrace, depth: number(settings.terraceDepth, site.terrace.depth)};
   const pool = site.pool;
@@ -99,7 +108,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const label = (text, x, y, opts = '') => `<text x="${X(x)}" y="${Y(y)}" text-anchor="middle" ${opts}>${esc(text)}</text>`;
   const mapped = data.buildings.filter(b => b.footprint?.length && b.kind !== 'house' && b.kind !== 'garage');
   const nearby = mapped.map(b => {
-    if (b.id === site.house.id || b.id === site.garage.id || b.index === 0 || b.index === 1) return '';
+    if (b.id === site.house.id || b.id === site.garage?.id) return '';
     const c = centroid(b.footprint), isTarget = b.kind === 'target';
     return `<polygon points="${polys(b.footprint)}" fill="${isTarget ? C.target : C.context}" stroke="${isTarget ? C.targetStroke : '#c3c7be'}" stroke-width="1.2"/>` +
       (scope === 'context' && isTarget ? label(b.label.replace(' apartment block',' block').replace(' continuation',' cont.'), c[0], c[1], `font-size="${W < 500 ? 10 : 12}" fill="${C.ink}" font-weight="600"`) : '');
@@ -110,11 +119,9 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   ).join('');
   const detail = scope === 'garden';
   const compact = scale < 10;
-  const floorZ = site.floorReference.z + number(settings.floorHeight, 1.2);
-  const terrainAtTerrace = gardenGroundAt(terrace.x + terrace.width / 2, rearY + terrace.depth, settings, data);
-  const terraceDrop = floorZ - terrainAtTerrace;
+  const {drop:terraceDrop} = terraceGroundReference(settings,data);
   const jacuzzi = jacuzziBounds(settings, data);
-  const jacuzziX = jacuzzi.x0, jacuzziY = jacuzzi.y0;
+  const jacuzziX = jacuzzi?.x0, jacuzziY = jacuzzi?.y0;
   const canopy = settings.canopyEnabled ? canopyBounds(settings, data) : null;
   const yaw = number(settings.lookYaw);
   const coneRadius = detail ? 4.5 : 7;
@@ -129,48 +136,42 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const north = localSunDirection(0, 0, data), compassX = W - 34, compassY = 48;
   const compass = `<g aria-label="True north"><circle cx="${compassX}" cy="${compassY}" r="23" fill="#fffdf5" fill-opacity=".94" stroke="${C.line}"/><line x1="${compassX}" y1="${compassY}" x2="${compassX + north[0] * 18}" y2="${compassY + north[1] * 18}" stroke="${C.ink}" stroke-width="2"/><text x="${compassX + north[0] * 31}" y="${compassY + north[1] * 31 + 3}" text-anchor="middle" font-size="11" font-weight="700">N</text></g>`;
   const dimensions = detail ? `
-    <line x1="${X(0)}" y1="${Y(-1.1)}" x2="${X(20.32)}" y2="${Y(-1.1)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
-    <text x="${X(10.16)}" y="${Y(-1.1) - 5}" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">${compact ? '20.32 m frontage' : '20.32 m mapped frontage'}</text>
-    <line x1="${X(-1.6)}" y1="${Y(0)}" x2="${X(-1.6)}" y2="${Y(38.21)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
-    <text transform="translate(${X(-1.6) - 7} ${Y(19.1)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">38.21 m mapped depth</text>
-    <line x1="${X(2.5)}" y1="${Y(.25)}" x2="${X(2.5)}" y2="${Y(9.1)}" stroke="${C.muted}" stroke-dasharray="3 4"/>
-    <text transform="translate(${X(1.9)} ${Y(4.7)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">9.1 m</text>` : '';
+    <line x1="${X(plot.minX)}" y1="${Y(plot.minY - 1.1)}" x2="${X(plot.minX + frontage)}" y2="${Y(plot.minY - 1.1)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
+    <text x="${X(plot.minX + frontage / 2)}" y="${Y(plot.minY - 1.1) - 5}" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">${fmt(frontage, 2)} m ${compact ? '' : 'mapped '}frontage</text>
+    <line x1="${X(plot.minX - 1.6)}" y1="${Y(plot.minY)}" x2="${X(plot.minX - 1.6)}" y2="${Y(plot.minY + depth)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
+    <text transform="translate(${X(plot.minX - 1.6) - 7} ${Y(plot.minY + depth / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">${fmt(depth, 2)} m mapped depth</text>
+    <line x1="${X(plot.minX + 2.5)}" y1="${Y(plot.minY)}" x2="${X(plot.minX + 2.5)}" y2="${Y(plot.minY + setback)}" stroke="${C.muted}" stroke-dasharray="3 4"/>
+    <text transform="translate(${X(plot.minX + 1.9)} ${Y(plot.minY + setback / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">${fmt(setback)} m</text>` : '';
   const roofDetail = detail ? `
     <path d="M${X((house.minX + house.maxX) / 2)} ${Y(house.minY)} L${X((house.minX + house.maxX) / 2)} ${Y(house.maxY)}" stroke="#f2eee5" stroke-width="1.2" opacity=".65"/>
     ${label(compact ? 'House' : 'MAIN HOUSE', (house.minX + house.maxX) / 2, house.minY + 3.1, `font-size="${compact ? 11 : 14}" font-weight="650" fill="#fffdf6"`)}
-    ${!compact ? label('mapped footprint', (house.minX + house.maxX) / 2, house.minY + 4.4, 'font-size="11" fill="#e7ede6"') : ''}` : label('House', 9.6, 13.8, 'font-size="10" fill="#fffdf6"');
-  const garage = !settings.removeGarage ? `<polygon points="${polys(site.garage.footprint)}" fill="#a7a393" stroke="#8b8a7b"/>${detail ? label(compact ? 'Garage' : 'EXISTING GARAGE', ...centroid(site.garage.footprint), 'font-size="10" fill="#fffdf6"') : ''}` : '';
+    ${!compact ? label('mapped footprint', (house.minX + house.maxX) / 2, house.minY + 4.4, 'font-size="11" fill="#e7ede6"') : ''}` : label('House', ...centroid(site.house.footprint), 'font-size="10" fill="#fffdf6"');
+  const garage = site.garage && !settings.removeGarage ? `<polygon points="${polys(site.garage.footprint)}" fill="#a7a393" stroke="#8b8a7b"/>${detail ? label(compact ? 'Garage' : 'EXISTING GARAGE', ...centroid(site.garage.footprint), 'font-size="10" fill="#fffdf6"') : ''}` : '';
   const rays = ray ? `<line x1="${X(observer.x)}" y1="${Y(observer.y)}" x2="${X(ray.target[0])}" y2="${Y(ray.target[1])}" stroke="${ray.visible ? C.ray : C.clear}" stroke-width="2" stroke-dasharray="6 5" opacity=".9"/>` +
     (ray.screen ? `<circle cx="${X(ray.screen.x)}" cy="${Y(ray.screen.y)}" r="5" fill="${C.paper}" stroke="${ray.visible ? C.ray : C.clear}" stroke-width="2"/>` : '') : '';
-  const plantDetails = detail ? `
-    ${rect(.9, 19, 1.2, 17, `rx="9" fill="#b7c9a5" opacity=".75"`)}
-    ${rect(17.7, 30.2, 1.1, 5.7, `rx="8" fill="#b7c9a5" opacity=".75"`)}
-    ${rect(2.2, 35.3, 14.6, 1.1, `rx="8" fill="#becda9" opacity=".75"`)}
-    ${label('garden', 13.7, 32.2, `font-size="${compact ? 11 : 14}" fill="#6c8264"`)}` : '';
+  const sideY = rearY + Math.max(1.5, (plot.maxY - rearY) * .3);
   const scalebar = detail ? 5 : 20;
   const xScale = 38, yScale = H - 32;
   const svg = `
-    <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation" tabindex="0" role="img" aria-roledescription="interactive site plan" aria-label="Mapped site plan. Click the plot to place a viewpoint. Arrow keys move the viewpoint by half a metre. Top is the street side, bottom is the rear garden toward south southwest.">
-      <title>Sternicza 11 — mapped plot and proposed garden</title>
-      <desc>Plot approximately 20.32 by 38.21 metres. House begins approximately 9.1 metres from the street boundary. Proposed terrace, jacuzzi and pool are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
+    <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation" tabindex="0" role="img" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place a viewpoint. Arrow keys move the viewpoint by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
+      <title>${esc(profile.label)} — mapped plot and proposed garden</title>
+      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street-side parcel boundary. Proposed terrace, jacuzzi and pool are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
       <defs><clipPath id="plan-clip"><rect width="${W}" height="${H}"/></clipPath><marker id="plan-tick" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M4 0V8" stroke="${C.muted}"/></marker></defs>
       <rect width="${W}" height="${H}" fill="${C.paper}"/>
       <g clip-path="url(#plan-clip)" font-family="Inter,system-ui,sans-serif" font-size="14" fill="${C.ink}">
-        ${rect(l.bounds.minX - 5, -6, l.bounds.maxX - l.bounds.minX + 10, 5.8, `fill="#dfdfd6"`)}
+        ${rect(l.bounds.minX - 5, plot.minY - 6, l.bounds.maxX - l.bounds.minX + 10, 5.8, `fill="#dfdfd6"`)}
         ${nearby}
         <polygon points="${polys(site.boundary)}" fill="${C.land}" stroke="${C.muted}" stroke-width="1.4" stroke-dasharray="4 3"/>
-        ${rect(2.9, .1, 1.1, 17.9, `fill="#d3d2c1"`)}
-        ${plantDetails}
         <polygon points="${polys(site.house.footprint)}" fill="${C.roof}" stroke="#696f69"/>
         ${roofDetail}
         ${rect(terrace.x, rearY, terrace.width, terrace.depth, `fill="${C.stone}" stroke="#c9bda5" stroke-width="1.2"`)}
         ${rect(terrace.x, rearY + terrace.depth, terrace.width, .42, 'fill="#d2c5ad"')}
-        ${rect(jacuzziX, jacuzziY, 2.2, 2.2, `rx="2" fill="${C.waterLight}" stroke="#f8f4e9" stroke-width="${detail ? 2 : 1}"`)}
+        ${jacuzzi ? rect(jacuzziX, jacuzziY, jacuzzi.x1 - jacuzzi.x0, jacuzzi.y1 - jacuzzi.y0, `rx="2" fill="${C.waterLight}" stroke="#f8f4e9" stroke-width="${detail ? 2 : 1}"`) : ''}
         ${detail ? label(compact ? 'Terrace' : 'TERRACE', terrace.x + terrace.width - 2.7, rearY + 2.45, `font-size="${compact ? 9 : 12}" fill="#746c59"`) : ''}
-        ${detail && !compact ? label('8.5 × ' + fmt(terrace.depth) + ' m', terrace.x + terrace.width - 2.7, rearY + 3.4, 'font-size="10" fill="#746c59"') : ''}
-        ${rect(pool.x, pool.y, pool.width, pool.length, `rx="2" fill="${C.water}" stroke="#eae5d7" stroke-width="${detail ? 3 : 1.5}"`)}
-        ${detail ? `<line x1="${X(pool.x + .35)}" y1="${Y(pool.y + .6)}" x2="${X(pool.x + pool.width - .35)}" y2="${Y(pool.y + .6)}" stroke="#c7dfd9" stroke-width="2"/>` : ''}
-        ${detail ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">${compact ? 'Pool' : 'POOL 3.5 × 8 m'}</text>` : ''}
+        ${detail && !compact ? label(fmt(terrace.width) + ' × ' + fmt(terrace.depth) + ' m', terrace.x + terrace.width - 2.7, rearY + Math.min(3.4, terrace.depth - .4), 'font-size="10" fill="#746c59"') : ''}
+        ${pool ? rect(pool.x, pool.y, pool.width, pool.length, `rx="2" fill="${C.water}" stroke="#eae5d7" stroke-width="${detail ? 3 : 1.5}"`) : ''}
+        ${detail && pool ? `<line x1="${X(pool.x + .35)}" y1="${Y(pool.y + .6)}" x2="${X(pool.x + pool.width - .35)}" y2="${Y(pool.y + .6)}" stroke="#c7dfd9" stroke-width="2"/>` : ''}
+        ${detail && pool ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">${compact ? 'Pool' : `POOL ${fmt(pool.width)} × ${fmt(pool.length)} m`}</text>` : ''}
         ${garage}
         ${hedges}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
@@ -180,9 +181,9 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="2" fill="${C.ink}"/>
         ${detail ? compact ? `<text x="${X(observer.x) + 9}" y="${Y(observer.y) + 3}" font-size="9" fill="${C.ink}">View</text>` : `<rect x="${X(observer.x) - 58}" y="${Y(observer.y) - 30}" width="116" height="19" rx="9" fill="#fffdf5" fill-opacity=".94"/><text x="${X(observer.x)}" y="${Y(observer.y) - 17}" text-anchor="middle" font-size="10" fill="${C.ink}">${esc(observer.label || 'Viewpoint')}</text>` : ''}
         ${dimensions}
-        ${detail ? label('STERNICZA · STREET / NNE', 10.2, -3.4, `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : label('Sternicza / NNE', 10.2, -3.7, 'font-size="10" fill="#5f685e"')}
-        ${detail ? label('REAR GARDEN / SSW ↓', 10.2, 40.5, `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : ''}
-        ${detail ? label('RIGHT · W', 3.1, 24, 'font-size="9" fill="#31513a"') + label('LEFT · E', 17.2, 24, 'font-size="9" fill="#31513a"') : ''}
+        ${label(`${profile.streetLabel} · ${detail ? 'STREET / ' : ''}${profile.frontBearingLabel}`, middleX, plot.minY - 3.4, `font-size="${compact ? 9 : 11}" fill="#5f685e"`)}
+        ${detail ? label(`REAR GARDEN / ${profile.rearBearingLabel} ↓`, middleX, plot.maxY + 2.3, `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : ''}
+        ${detail ? label(`RIGHT · ${profile.sideLabels.right.toUpperCase()}`, plot.minX + 2.6, sideY, 'font-size="9" fill="#31513a"') + label(`LEFT · ${profile.sideLabels.left.toUpperCase()}`, plot.maxX - 2.6, sideY, 'font-size="9" fill="#31513a"') : ''}
         ${compass}
         <path d="M${xScale} ${yScale - 6}v6h${scalebar * scale}v-6" fill="none" stroke="${C.ink}" stroke-width="2"/>
         <text x="${xScale + scalebar * scale / 2}" y="${yScale - 10}" text-anchor="middle" font-size="11">${scalebar} m</text>
@@ -199,8 +200,8 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
     </div>
     <div style="flex:1;min-height:0;display:flex;overflow:hidden;border:1px solid ${C.line};border-radius:12px;background:${C.paper}">${svg}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
-      <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Apartments</span><span>Left / right: from house toward rear garden ↓</span>
-      ${detail ? `<span>Terrace drop <b>${fmt(terraceDrop, 2)} m</b></span>` : ''}
+      <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Privacy targets</span><span>Left / right: from house toward rear garden ↓</span>
+      ${detail ? `<span title="Ground on terrace centreline, 0.6 m beyond the outer edge.">${terraceDrop>=0?'Terrace drop':'Garden above terrace'} <b>${fmt(Math.abs(terraceDrop), 2)} m</b> · centreline, 0.6 m beyond edge</span>` : ''}
     </div>`;
 
   for (const button of container.querySelectorAll('[data-map-scope]')) button.onclick = () => {

@@ -19,3 +19,11 @@
 @media(max-width:760px){.visual-column{position:static}.cost-panel{padding:16px;margin-top:11px}.cost-heading h3{font-size:21px}.cost-summary strong{font-size:18px}.cost-total{align-items:flex-start;flex-direction:column;gap:6px}.cost-total strong{font-size:15px}.cost-field>label{font-size:12px}.cost-field .field-note{font-size:10px}.cost-input input{font-size:13px;width:72px}.cost-status,.cost-summary small{font-size:10px}#cost-breakdown>summary{font-size:11px}.budget-table{font-size:10px}.budget-table td,.budget-table th{padding:8px 3px}.building-baseline strong{font-size:14px}}
 
 .orientation-note{margin:0;padding:10px 18px;border-top:1px solid var(--line,#d6dbd0);font-size:11px;line-height:1.5;color:#647565;background:#f8f8f1}.orientation-note strong{color:#365542;font-weight:600}
+
+/* Keep property selection visible above both the desktop and phone workspace. */
+.site-switcher{display:flex;flex-direction:column;gap:5px;min-width:205px;margin-left:18px;padding-left:24px;border-left:1px solid var(--line)}
+.site-switcher label{font-size:8px;letter-spacing:1.5px;font-weight:700;color:var(--muted)}
+.site-switcher select{color:var(--ink);background:#f1f4e9;border:1px solid #d2dcc9;border-radius:6px;min-height:35px;padding:7px 27px 7px 10px;font-size:12px;font-weight:600;max-width:100%;cursor:pointer}
+#property-name{letter-spacing:1.5px}.source-links small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin:4px 0 10px}
+@media(max-width:1050px){.site-switcher{margin-left:5px;padding-left:15px;min-width:190px}.header{gap:14px}#plot-dimensions{line-height:1.4}.context-bar{height:auto;min-height:38px}}
+@media(max-width:760px){.header{height:auto;min-height:124px;flex-wrap:wrap;gap:12px;padding:13px 17px}.site-switcher{order:3;flex-basis:100%;min-width:0;margin:0;padding:0;border:0;flex-direction:row;align-items:center;gap:12px}.site-switcher label{font-size:9px;flex:0 0 auto}.site-switcher select{flex:1;min-width:0;font-size:13px;min-height:38px}.brand .eyebrow{font-size:8px;letter-spacing:1px}.context-bar{flex-wrap:wrap;gap:6px 12px}.context-bar>span:first-child{display:none}.context-bar #plot-dimensions{font-size:9px}.context-bar button{margin-left:auto;min-height:26px;font-size:9px}}

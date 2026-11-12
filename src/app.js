@@ -1,30 +1,99 @@
-import {FIELDS,DEFAULTS,STATE_VERSION,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight} from './state.js?v=1.3.1';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.3.1';
-import {BUILDING_FIELDS,BUILDING_TARGETS,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.3.1';
-import {renderBudget,renderPriceSources} from './budget-view.js?v=1.3.1';
-import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from './geometry.js?v=1.3.1';
-import {renderPlan,renderSection} from './diagrams.js?v=1.3.1';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.3.1';
-import {analyzeSunlight} from './shade.js?v=1.3.1';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.3.1';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.4.0';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.4.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.4.0';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.4.0';
+import {renderBudget,renderPriceSources} from './budget-view.js?v=1.4.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference} from './geometry.js?v=1.4.0';
+import {renderPlan,renderSection} from './diagrams.js?v=1.4.0';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.4.0';
+import {analyzeSunlight} from './shade.js?v=1.4.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.4.0';
 
 const $=id=>document.getElementById(id);
-const storageKey=`sternicza-garden-lab-v${STATE_VERSION}`;
+const selectedSiteId=resolveSiteId(location.search,location.hash);
+const siteOption=getSiteProfile(selectedSiteId);
+let ready=false;
+for(const option of SITE_OPTIONS){const node=document.createElement('option');node.value=option.id;node.textContent=option.label;$('site-select').append(node);}
+$('site-select').value=selectedSiteId;
+$('site-select').addEventListener('change',event=>{
+  if(ready)persist();
+  const url=new URL(location.href);url.searchParams.set('site',event.target.value);url.hash='';
+  location.assign(url.href);
+});
+let baseData;
+try{
+  const response=await fetch(new URL(`../${siteOption.dataPath}`,import.meta.url));
+  if(!response.ok)throw new Error(`Site data could not be loaded (${response.status})`);
+  baseData=await response.json();
+}catch(error){
+  console.error(error);$('loading').replaceChildren();
+  const heading=document.createElement('strong');heading.textContent=`${siteOption.label} could not load.`;
+  const note=document.createElement('span');note.textContent='Refresh to retry, or choose another property above.';
+  $('loading').append(heading,note);throw error;
+}
+const profile=getSiteProfile(selectedSiteId,baseData);
+const canonicalURL=new URL(location.href);
+if(canonicalURL.searchParams.get('site')!==profile.id){canonicalURL.searchParams.set('site',profile.id);history.replaceState(null,'',canonicalURL);}
+const {FIELDS,DEFAULTS,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight}=createStateModel(profile);
+const BUILDING_TARGETS=getBuildingTargets(baseData),BUILDING_FIELDS=buildingFields(baseData);
+const storageKey=`garden-lab-${profile.id}-v${STATE_VERSION}`;
 const safeRead=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}};
 function readSaved(suffix=''){
-  for(const version of [5,4,3,2,1]){
+  const current=safeRead(`${storageKey}${suffix}`,null);
+  if(current&&typeof current==='object'&&!Array.isArray(current)&&current.siteId===profile.id)return migrateSavedState(current,STATE_VERSION);
+  if(profile.id===DEFAULT_SITE_ID)for(const version of [5,4,3,2,1]){
     const saved=safeRead(`sternicza-garden-lab-v${version}${suffix}`,null);
     if(saved&&typeof saved==='object'&&!Array.isArray(saved))return migrateSavedState(saved,version);
   }
   return suffix?null:{...DEFAULTS};
 }
-let settings=/^#v=[12345](?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
-let baseData,data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback;
+let settings=/^#v=[123456](?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
+if(!profile.hasGarage)settings.removeGarage=true;
+let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
 function toast(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3500);}
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(settings));}catch{}}
+
+const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderSiteDetails(){
+  const site=baseData.site,t=site.terrace,pool=site.pool,esc=escapeHTML;
+  const width=site.frontage??profile.bounds.maxX-profile.bounds.minX,depth=site.depth??profile.bounds.maxY-profile.bounds.minY;
+  document.title=`${profile.label} · Garden Lab`;
+  document.querySelector('meta[name="description"]').content=`Explore privacy, garden levels, seasonal sunlight and costs at ${profile.address}.`;
+  document.documentElement.dataset.site=profile.id;
+  $('property-name').textContent=profile.label.toUpperCase();
+  $('plot-dimensions').textContent=`${fmt(width,1)} × ${fmt(depth,1)} m · ${fmt(site.area,0)} m² mapped plot`;
+  $('hedge-orientation').textContent=`Looking from the house into the rear garden: left is ${profile.sideLabels.left}, right is ${profile.sideLabels.right}.`;
+  $('site-orientation').innerHTML=`Looking from house to garden (${esc(profile.rearBearingLabel)}): <strong>left = ${esc(profile.sideLabels.left)}</strong> · <strong>right = ${esc(profile.sideLabels.right)}</strong>. Plans keep the street at the top.`;
+  $('terrace-proposal').textContent=`Proposed ${fmt(t.width,1)} m wide terrace, with a 2.2 × 2.2 m built-in jacuzzi on the right when looking out.`;
+  $('floor-assumption-note').textContent=`The initial living floor is assumed ${fmt(DEFAULTS.floorHeight,1)} m above the original garden reference. Adjust it to a measured level. Garden levels come from the terrain grid.`;
+  $('removeGarage').closest('label').hidden=!profile.hasGarage;$('removeGarage').disabled=!profile.hasGarage;
+  const highCount=(baseData.buildings||[]).reduce((n,b)=>n+(b.highFeatures?.length||0),0);
+  const roofCount=[site.house,site.garage,...baseData.buildings].filter(Boolean).reduce((n,b)=>n+(b.roofPoints?.length||0),0);
+  const formatSource=source=>{
+    try{const url=new URL(source.url);if(!['https:','http:'].includes(url.protocol))return '';return `<li><a href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>${source.details?`<small>${esc(source.details)}</small>`:''}</li>`;}catch{return '';}
+  };
+  $('about-content').innerHTML=`<h2>${esc(profile.label)}.<br>Measured context. Adjustable design.</h2>
+    <p>A planning simulator for ${esc(profile.address)}. The site and surrounding buildings come from public mapping and elevation data; the renovation and planting are proposals.</p>
+    <h3>What the model knows</h3><ul>
+      <li>Mapped parcel area ${fmt(site.area,2)} m²; frontage ${fmt(width,2)} m; local depth ${fmt(depth,2)} m.</li>
+      <li>Parcel${(site.parcels?.length||0)>1?'s':''}: ${esc((site.parcels||[]).join(', '))}. A cadastral outline does not verify ownership or a sale boundary.</li>
+      ${Number.isFinite(site.frontSetback)?`<li>The mapped house starts approximately ${fmt(site.frontSetback,2)} m from the street-side parcel boundary. This is not a surveyed curb-to-wall distance.</li>`:''}
+      <li>Main house${profile.hasGarage?' and detached garage':''}, ${baseData.buildings.length} surrounding building volumes and a ${fmt(baseData.terrain.cellSize,0)} m terrain grid. ${roofCount?`${roofCount.toLocaleString()} reduced roof points provide selected roof detail.`:'Roofs use the available building model heights.'}</li></ul>
+    <h3>Design assumptions</h3><p>The initial living floor is <strong>assumed +${fmt(DEFAULTS.floorHeight,1)} m</strong> above the original near-house garden reference. This is editable, and is not a measured floor survey. The ${fmt(t.width,1)} m terrace, ${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool, jacuzzi, glazing, furniture and finishes illustrate a renovation proposal.</p>
+    <p>The house and terrace floor stay fixed when the garden rises. New hedges move with added soil only when that option is enabled. The initial comparison uses 4 m hedges and +0.5 m garden fill. Terrain retains its mapped slope under a uniform addition; fill does not create a level slab. Available terrace and canopy controls are fitted to this property's proposal.</p>
+    <h3>How screening is calculated</h3><p>Rays run from the selected eye position to sampled facade and roof points on ${BUILDING_TARGETS.length} target buildings. Finite hedge screens, the terrace canopy and approximate surrounding building volumes can intercept them. The percentage is the share of sampled points blocked from one observer, not visual-field area or a whole-garden guarantee. Target buildings are considered regardless of camera direction.</p>
+    <p>Own-house walls, window openings and ornamental planting are not surveyed obstructions and do not improve the privacy score. ${highCount?'Optional unverified high roof returns are excluded by default and can be included as a sensitivity comparison.':''} Building height and distance adjustments are what-if scenarios; Reset restores the mapped source geometry.</p>
+    <h3>Orientation</h3><p>The rear garden axis is ${fmt(profile.rearBearing,2)}° true (${esc(profile.rearBearingLabel)}). Looking from the house into the garden, left is ${esc(profile.sideLabels.left)} (${esc(profile.leftBearingLabel)}) and right is ${esc(profile.sideLabels.right)} (${esc(profile.rightBearingLabel)}). Plans keep the street at the top and show true north.</p>
+    <h3>Sun and shade</h3><p>The sun uses ${fmt(profile.latitude,6)}° N, ${fmt(profile.longitude,6)}° E with NOAA/Meeus equations and Europe/Warsaw local time, including daylight saving. Grid north is corrected to true north. Date, time and sun path are saved with each scenario.</p>
+    <p>The shade map traces rays from outdoor samples on a 1 m grid. It includes modeled house roofs, neighbouring buildings, opaque hedges, canopy and local terrain. Pool and jacuzzi water use their rendered elevations. Percentages describe direct-sun sample points at the selected moment; they are not daily sunlight hours or irradiance. Existing tree crowns, decorative planting, clouds, diffuse light and reflections are excluded. Night is distinguished from architectural shade.</p>
+    <h3>Costs and saved designs</h3><p>Thuja counts follow each selected hedge length and planting spacing. Soil quantities exclude the proposed terrace, pool and any retained garage. Rates, supplier quotes, transport, drainage and retaining allowances are editable. This is a planning budget, not an engineered earthwork design. Each property keeps its own settings and scenario A. Shared links and exports include the property identity. Existing Sternicza links remain readable.</p>
+    <h3>Dataset limitations</h3><ul>${(baseData.limitations||[]).map(note=>`<li>${esc(note)}</li>`).join('')}</ul>
+    <h3>Primary data sources</h3><ul class="source-links">${(baseData.sources||[]).map(formatSource).join('')}<li><a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener noreferrer">NOAA · solar calculation method ↗</a></li></ul>
+    <p class="field-note">Horizontal source: ${esc(baseData.coordinates.horizontalCRS)}. Height datum: ${esc(baseData.coordinates.verticalDatum)}. Mapped geometry and floor/design assumptions should be checked against measurements before a construction decision.</p>`;
+}
 
 function buildFields(){
   const costHeadings={costSpacing:'Thujas & planting',costAreaOverride:'Soil quantities',costFillRate:'Materials & transport',costRetainingAllowance:'Site allowances'};
@@ -60,8 +129,12 @@ function buildFields(){
   }
   for(const b of BUILDING_TARGETS){const option=document.createElement('option');option.value=b.index;option.textContent=b.label;$('building-select').append(option);}
   const high=document.createElement('label');high.className='switch-row';
-  high.innerHTML='<span>Include tall unverified roof returns<small>Sensitivity check for the thin feature near PCK 3.</small></span><input id="includeHighFeatures" type="checkbox" role="switch">';
+  const hasHighFeatures=baseData.buildings.some(b=>(b.highFeatures?.length||0)>0);
+  high.innerHTML='<span>Include tall unverified roof returns<small>Sensitivity check for uncertain rooftop features.</small></span><input id="includeHighFeatures" type="checkbox" role="switch">';
+  high.hidden=!hasHighFeatures;
   $('assumption-controls').append(high);
+  $('includeHighFeatures').disabled=!hasHighFeatures;
+  $('building-select').closest('.building-assumptions').hidden=BUILDING_TARGETS.length===0;
 }
 
 function syncBuildingControls(){
@@ -72,7 +145,7 @@ function syncBuildingControls(){
   if(b)$('building-baseline').innerHTML=`<div><span>Roof height above base</span><strong>${fmt(b.baselineHeight,2)} <small>→</small> ${fmt(b.height,2)} m</strong></div><div><span>House → building centre</span><strong>${fmt(b.baselineDistance,2)} <small>→</small> ${fmt(b.distance,2)} m</strong></div><small>Mapped baseline → current comparison</small>`;
   const active=assumptions.filter(x=>x.active);
   $('building-overrides-note').textContent=active.length?`${active.length} building${active.length===1?'':'s'} adjusted for this comparison. Reset restores the mapped data.`:'Using mapped buildings. No geometry overrides.';
-  $('geometry-status').textContent=active.length?`What-if geometry · ${active.length} building${active.length===1?'':'s'} adjusted`:'2024 terrain + building data';
+  $('geometry-status').textContent=active.length?`What-if geometry · ${active.length} building${active.length===1?'':'s'} adjusted`:'Mapped terrain + building data';
   $('geometry-status').classList.toggle('what-if',active.length>0);
   $('reset-building').disabled=!b?.active;
   $('reset-buildings').disabled=!active.length;
@@ -157,7 +230,7 @@ function update(){
   analysis=analyzeVisibility(observer,settings,data);
   scene?.update(settings,observer,analysis,data);
   costEstimate=estimateCosts(settings,data);
-  renderBudget(costEstimate,settings);
+  renderBudget(costEstimate,settings,data);
   updateSun(false);
   showMode();
   $('view-badge-text').textContent=observer.label;
@@ -165,17 +238,16 @@ function update(){
   const pct=analysis.blockedPercent;
   $('blocked-percent').textContent=fmt(pct,1);
   $('coverage-bar').style.width=`${pct}%`;
-  const complete=analysis.visible===0;
-  $('blocked-pill').textContent=complete?'All sampled points':'Some views remain';
+  const complete=analysis.total>0&&analysis.visible===0;
+  $('blocked-pill').textContent=!analysis.total?'No target samples':complete?'All sampled points':'Some views remain';
   $('blocked-pill').classList.toggle('complete',complete);
   $('sample-count').textContent=`${analysis.blocked.toLocaleString()} of ${analysis.total.toLocaleString()} sampled points blocked from this viewpoint.`;
   $('required-height').textContent=fmt(analysis.worstRequiredHedge.rear,1);
   $('required-caption').textContent=`${settings.raiseNewHedges?'Above new planting ground':'Above original ground'}. Without canopy; mapped surrounding buildings still screen some rays.`;
   $('hedge-basis').textContent=settings.raiseNewHedges?'Plant height is above the new planting ground (garden fill + extra bed height). Hedges are ideal continuous, opaque screens.':'Heights refer to original ground. Existing foliage stays fixed; adding soil reduces its exposed height. Screens are ideal and opaque.';
-  const [mx,rearY]=data.site.rearMidpoint;
-  const drop=floorElevation(settings,data)-gardenGroundAt(mx,rearY+settings.terraceDepth+.1,settings,data);
+  const {drop}=terraceGroundReference(settings,data);
   $('terrace-drop').textContent=fmt(Math.abs(drop),2);
-  $('drop-caption').textContent=drop>=0?'Vertical drop at the terrace edge.':'Garden is above the terrace at this edge.';
+  $('drop-caption').textContent=drop>=0?'To ground on terrace centreline, 0.6 m beyond the edge.':'Garden is above terrace on its centreline, 0.6 m beyond the edge.';
   const rows=$('building-rows');rows.replaceChildren();
   for(const block of analysis.byBlock){
     const row=document.createElement('div');row.className='building-row';
@@ -195,7 +267,9 @@ function update(){
 }
 function scheduleUpdate(){clearTimeout(updateTimer);updateTimer=setTimeout(update,65);}
 
+renderSiteDetails();
 buildFields();
+ready=true;
 if(window.matchMedia('(max-width:760px)').matches)$('building-details').open=false;
 syncControls();
 $('sun-date').addEventListener('change',e=>{if(e.target.validity.valid&&e.target.value)changeSun({sunDate:sanitizeSolarDate(e.target.value,settings.sunDate)});else e.target.value=settings.sunDate;});
@@ -238,7 +312,7 @@ $('save-a').addEventListener('click',()=>{stopSunPlayback();comparisonA={...sett
 $('compare').addEventListener('click',()=>{stopSunPlayback();if(!comparisonA)return;if(!showingA){comparisonB={...settings};settings={...comparisonA,mode:settings.mode};showingA=true;}else{settings={...comparisonB,mode:settings.mode};showingA=false;}syncControls();update();toast(showingA?'Showing saved scenario A':'Back to scenario B');});
 $('share').addEventListener('click',async()=>{
   stopSunPlayback();
-  const url=new URL(location.href);url.hash=encodeState(settings);history.replaceState(null,'',url);
+  const url=new URL(location.href);url.searchParams.set('site',profile.id);url.hash=encodeState(settings);history.replaceState(null,'',url);
   try{await navigator.clipboard.writeText(url.href);toast('Link copied with your current settings');}
   catch{toast('Your settings are in the address bar. Copy the page URL to share.');}
 });
@@ -247,22 +321,25 @@ $('export').addEventListener('click',()=>{
   // A range input can still have a scheduled geometry/budget update. Export one
   // coherent snapshot of the latest settings and their derived calculations.
   clearTimeout(updateTimer);update();
-  const content={schemaVersion:STATE_VERSION,project:'Sternicza Garden Lab',exportedAt:new Date().toISOString(),settings,costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
-  const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='sternicza-scenario.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
+  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`${profile.id}-scenario.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
 });
 $('about-open').addEventListener('click',()=>$('about').showModal());
 $('about-close').addEventListener('click',()=>$('about').close());
 $('about').addEventListener('click',e=>{if(e.target===$('about')){const r=$('about').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('about').close();}});
-window.addEventListener('hashchange',()=>{if(!/^#v=[12345](?:&|$)/.test(location.hash))return;stopSunPlayback();settings=decodeState(location.hash);showingA=false;syncControls();update();});
+window.addEventListener('hashchange',()=>{
+  if(!/^#v=[123456](?:&|$)/.test(location.hash))return;
+  const destination=resolveSiteId(location.search,location.hash);
+  if(destination!==profile.id){const url=new URL(location.href);url.searchParams.set('site',destination);location.assign(url.href);return;}
+  stopSunPlayback();settings=decodeState(location.hash);if(!profile.hasGarage)settings.removeGarage=true;showingA=false;syncControls();update();
+});
 window.addEventListener('resize',()=>{scene?.resize();if(data&&['plan','section','sun'].includes(settings.mode))showMode();});
 
 try{
-  const response=await fetch(new URL('../data/site-data.json',import.meta.url));
-  if(!response.ok)throw new Error(`Site data could not be loaded (${response.status})`);
-  baseData=await response.json();data=applyBuildingOverrides(baseData,settings);
+  data=applyBuildingOverrides(baseData,settings);
   fetch(new URL('../data/cost-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Price sources unavailable');return r.json();}).then(renderPriceSources).catch(()=>{$('price-date').textContent='Price references are also documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.3.1');
+    const {createScene}=await import('./scene.js?v=1.4.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

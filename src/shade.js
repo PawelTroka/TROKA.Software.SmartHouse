@@ -3,7 +3,8 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.3.1';
+import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.4.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.4.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -115,12 +116,18 @@ function gableFaces(ring,eaves,ridge,axis='x') {
 
 // Same planar Delaunay construction as the rendered sampled apartment roofs.
 // Kept pure: no WebGL/DOM requirement for the shade map or numerical tests.
-export function sampledRoofFaces(ring,samples,edgeZ) {
+const localRoofFaceCache=new WeakMap();
+export function sampledRoofFaces(ring,samples,edgeZ,edgePoints=null) {
+  const cached=edgePoints&&localRoofFaceCache.get(edgePoints);
+  if(cached&&cached.ring===ring&&cached.samples===samples&&cached.edgeZ===edgeZ)return cached.faces;
   const unique=new Map();
-  [...samples,...openRing(ring).map(p=>[...p,edgeZ])].forEach(p=>{
+  [...samples,...(edgePoints||openRing(ring).map(p=>[...p,edgeZ]))].forEach(p=>{
     const key=`${p[0].toFixed(3)}:${p[1].toFixed(3)}`;
     if(!unique.has(key)||unique.get(key)[2]<p[2])unique.set(key,p);
   });
+  // A local envelope supplies shared wall/roof seam vertices. At coincident
+  // plan coordinates they take precedence so no vertical cracks are introduced.
+  if(edgePoints)for(const p of edgePoints)unique.set(`${p[0].toFixed(3)}:${p[1].toFixed(3)}`,p);
   const points=[...unique.values()],count=points.length;
   if(count<3)return [];
   const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),span=Math.max(x1-x0,y1-y0)*8,cx=(x0+x1)/2,cy=(y0+y1)/2;
@@ -143,7 +150,11 @@ export function sampledRoofFaces(ring,samples,edgeZ) {
     for(const [a,b]of edges.values()){const t=triangle(a,b,i);if(t)kept.push(t);}
     triangles=kept;
   }
-  return triangles.filter(t=>t.a<count&&t.b<count&&t.c<count&&pointInPolygon([(points[t.a][0]+points[t.b][0]+points[t.c][0])/3,(points[t.a][1]+points[t.b][1]+points[t.c][1])/3],ring)).map(t=>[points[t.a],points[t.b],points[t.c]]);
+  let indices=triangles.filter(t=>t.a<count&&t.b<count&&t.c<count).map(t=>[t.a,t.b,t.c]);
+  if(edgePoints)indices=constrainRoofEdges(indices,points.slice(0,count),edgePoints);
+  const faces=indices.filter(([a,b,c])=>pointInPolygon([(points[a][0]+points[b][0]+points[c][0])/3,(points[a][1]+points[b][1]+points[c][1])/3],ring)).map(t=>t.map(i=>points[i]));
+  if(edgePoints)localRoofFaceCache.set(edgePoints,{ring,samples,edgeZ,faces});
+  return faces;
 }
 
 const contextOccluderCache=new WeakMap();
@@ -166,6 +177,12 @@ function makeOccluders(settings,data) {
   const addMeasuredBuilding=(building,id,label,axis)=>{
     if(!building?.footprint?.length)return;
     const ring=openRing(building.footprint),returns=(building.roofPoints||[]).map(point).filter(p=>p.length>=3&&p.every(Number.isFinite));
+    if(site.id==='korzeniowskiego-40'&&building===house&&returns.length>6){
+      const envelope=localRoofEnvelope(building);
+      add(mesh(id,label,envelope.wallFaces));
+      add(mesh(`${id}-roof`,`${label} roof`,sampledRoofFaces(envelope.ring,envelope.samples,envelope.fallback,envelope.boundary)));
+      return;
+    }
     // Fixed source elevations, shared with the renderer. Changing a proposed
     // interior floor must never lift the existing building's shadow-casting roof.
     const sampled=returns.length>6,eaves=sampled?Math.min(...returns.map(p=>p[2])):num(building.roofZ,num(building.baseZ)+7);
@@ -178,6 +195,8 @@ function makeOccluders(settings,data) {
   const t=site.terrace,depth=num(settings.terraceDepth,t?.depth||4.2);
   if(t){
     const ground=gardenGroundAt(t.x+t.width/2,rear+depth/2,settings,data),base=Math.min(ground,floor-.15);
+    const threshold=Math.max(0,num(t.thresholdDepth));
+    if(threshold)add(prism('terrace-threshold','Terrace threshold',rectangle(t.x,rear-threshold,t.x+t.width,rear),base,floor));
     // The recessed tub is a real hole. A solid deck prism would enclose its
     // below-floor water receiver and incorrectly shade it even at solar zenith.
     const tub=jacuzziBounds(settings,data),x0=t.x,x1=t.x+t.width,y0=rear,y1=rear+depth;
@@ -203,8 +222,8 @@ function makeOccluders(settings,data) {
     add(prism('canopy-roof','Terrace canopy',rectangle(c.x0,c.y0,c.x1,c.y1),c.z,c.z+.15));
     const bottom=Math.min(c.z-.04,c.fasciaBottomZ);
     add(prism('canopy-front','Canopy front fascia',rectangle(c.x0,c.y1-.075,c.x1,c.y1+.075),bottom,c.z));
-    add(prism('canopy-left','Canopy left fascia',rectangle(c.x0,c.y0,c.x0+.13,c.y1),bottom,c.z));
-    add(prism('canopy-right','Canopy right fascia',rectangle(c.x1-.13,c.y0,c.x1,c.y1),bottom,c.z));
+    add(prism('canopy-right','Canopy right fascia',rectangle(c.x0,c.y0,c.x0+.13,c.y1),bottom,c.z));
+    add(prism('canopy-left','Canopy left fascia',rectangle(c.x1-.13,c.y0,c.x1,c.y1),bottom,c.z));
     for(const x of [c.x0+.08,c.x1-.18])add(prism('canopy-post','Canopy post',rectangle(x,c.y1-.18,x+.1,c.y1-.08),floor,Math.max(floor+.1,bottom)));
   }
   return objects;
@@ -225,7 +244,7 @@ function bedSurface(x,y,ground,settings,segments){
 
 function makeReceivers(settings,data,size=1){
   const {site}=data,ring=openRing(site.boundary),xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]),rear=site.rearMidpoint[1];
-  const t=site.terrace,p=site.pool,terrace=t?{x0:t.x,y0:rear,x1:t.x+t.width,y1:rear+num(settings.terraceDepth,t.depth)}:null;
+  const t=site.terrace,p=site.pool,terrace=t?{x0:t.x,y0:rear-Math.max(0,num(t.thresholdDepth)),x1:t.x+t.width,y1:rear+num(settings.terraceDepth,t.depth)}:null;
   const pool=p?{x0:p.x,y0:p.y,x1:p.x+p.width,y1:p.y+p.length}:null;
   const tub=t?jacuzziBounds(settings,data):null;
   const tubWater=tub?{x0:tub.x0+JACUZZI_WATER_INSET,x1:tub.x1-JACUZZI_WATER_INSET,y0:tub.y0+JACUZZI_WATER_INSET,y1:tub.y1-JACUZZI_WATER_INSET}:null;
