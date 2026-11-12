@@ -50,8 +50,9 @@ test('rear and side hedges shade finite rays independently',()=>{
   const data=fixture(),sun=daytime([0,1,1]),receiver=[10,35,0];
   assert.equal(sunlightAtPoint(receiver,{...settings,hedgeRear:2.5},data,sun).sunlit,true);
   assert.equal(sunlightAtPoint(receiver,{...settings,hedgeRear:4},data,sun).blocker?.id,'hedge-rear');
-  assert.equal(sunlightAtPoint(receiver,{...settings,hedgeRight:6},data,sun).sunlit,true,'Right hedge is not crossed by a northward local ray');
-  assert.equal(sunlightAtPoint([18,24,0],{...settings,hedgeRight:4},data,daytime([1,0,1])).blocker?.id,'hedge-right');
+  assert.equal(sunlightAtPoint(receiver,{...settings,hedgeRight:6},data,sun).sunlit,true,'Right hedge is not crossed by a ray toward the rear boundary');
+  assert.equal(sunlightAtPoint([18,24,0],{...settings,hedgeLeft:4},data,daytime([1,0,1])).blocker?.id,'hedge-left');
+  assert.equal(sunlightAtPoint([2,24,0],{...settings,hedgeRight:4},data,daytime([-1,0,1])).blocker?.id,'hedge-right');
 });
 
 test('raising only hedge beds and lifting the whole garden are distinct sunlight scenarios',()=>{
@@ -148,8 +149,8 @@ test('jacuzzi water samples follow the rendered inset and rounded corners',()=>{
   for(const c of water){
     assert.ok(c.x>=tub.x0+.16&&c.x<=tub.x1-.16&&c.y>=tub.y0+.16&&c.y<=tub.y1-.16);
   }
-  assert.equal(g.cells.find(c=>c.x===13.5&&c.y===21.5).zone,'terrace','The clipped rounded water corner cannot count as a water sample');
-  assert.equal(g.cells.find(c=>c.x===12.5&&c.y===20.5).zone,'jacuzzi');
+  assert.equal(g.cells.find(c=>c.x===7.5&&c.y===21.5).zone,'terrace','The clipped rounded water corner cannot count as a water sample');
+  assert.equal(g.cells.find(c=>c.x===6.5&&c.y===20.5).zone,'jacuzzi');
 });
 
 test('excavated pool terrain cannot self-shadow water but the same retained hill casts shade',()=>{

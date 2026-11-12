@@ -1,13 +1,15 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js';
-import { sampledRoofFaces } from './shade.js?v=1.3.0';
-import { createSurfaceTextures } from './scene-materials.js';
+import { terrainAt, gardenGroundAt, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.3.1';
+import { sampledRoofFaces } from './shade.js?v=1.3.1';
+import { createSurfaceTextures } from './scene-materials.js?v=1.3.1';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.3.1';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
-// Three.js coordinates are x, elevation, -gardenDepth. No vertical exaggeration.
-const point = (x, y, z) => new THREE.Vector3(x, z, -y);
+// The source basis is left-handed. Three uses x, elevation, +gardenDepth.
+// A viewer looking into the rear garden therefore has decreasing site x at right.
+const point = (x, y, z) => new THREE.Vector3(...toWorld(x, y, z));
 const xyz = p => Array.isArray(p) ? p : [p.x, p.y, p.z];
 const closeRing = ring => ring.length > 1 && Math.hypot(ring[0][0] - ring.at(-1)[0], ring[0][1] - ring.at(-1)[1]) < 1e-6 ? ring.slice(0, -1) : ring;
 const num = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
@@ -40,7 +42,16 @@ function geometryFromTriangles(triangles) {
 }
 
 function localTriangle(a, b, c) {
-  return [[a[0], a[2], -a[1]], [b[0], b[2], -b[1]], [c[0], c[2], -c[1]]];
+  return toWorldTriangle(a, b, c);
+}
+
+/** Rounded slabs are uniform extrusions: rotate and translate to keep their
+ * full depth at +world Z and their full height above the local slab base.
+ * This uses a proper rotation, retaining the extrusion's outward normals. */
+export function orientExtrudedSlab(geometry, height) {
+  geometry.rotateX(Math.PI / 2);
+  geometry.translate(0, height, 0);
+  return geometry;
 }
 
 function polygonPrism(ring, base, top, material) {
@@ -59,7 +70,7 @@ function polygonPrism(ring, base, top, material) {
 
 // Rendering and numerical shade use the same measured roof triangulation.
 function sampledRoofGeometry(ring, samples, edgeZ) {
-  const faces=sampledRoofFaces(ring,samples,edgeZ).map(([a,b,c])=>localTriangle(a,b,c));
+  const faces=sampledRoofFaces(ring,samples,edgeZ).map(([a,b,c])=>toWorldRoofTriangle(a,b,c));
   return faces.length?geometryFromTriangles(faces):null;
 }
 
@@ -267,7 +278,7 @@ export function createScene(container, data, callbacks = {}) {
       shape.holes.push(path);
     }
     const geometry = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: bevel && !svgMode, bevelSize: .014, bevelThickness: .012, bevelSegments: 1, curveSegments: svgMode ? 3 : 6, steps: 1 });
-    geometry.rotateX(-Math.PI / 2);
+    orientExtrudedSlab(geometry, height);
     const mesh = new THREE.Mesh(geometry, material); mesh.position.copy(point(x, y, z));
     mesh.castShadow = false; mesh.receiveShadow = true; group.add(mesh); return mesh;
   }
@@ -309,8 +320,9 @@ export function createScene(container, data, callbacks = {}) {
       for (const tri of [[[x, y], [xx, y], [xx, yy]], [[x, y], [xx, yy], [x, yy]]]) {
         const c = centroid(tri);
         if (ring && !contains(...c, ring)) continue;
-        for (const p of tri) {
-          positions.push(p[0], heightAt(...p), -p[1]);
+        // Reversing the winding keeps these terrain normals facing upward.
+        for (const p of [tri[0], tri[2], tri[1]]) {
+          positions.push(...toWorld(p[0], p[1], heightAt(...p)));
           uv.push(p[0] / 2.5, p[1] / 2.5);
           if (vertexColors) {
             const variation = 0.92 + 0.08 * Math.sin(p[0] * 2.31 + p[1] * 1.27) * Math.cos(p[1] * 0.63);
@@ -386,14 +398,18 @@ export function createScene(container, data, callbacks = {}) {
       const windowGeometry = new THREE.PlaneGeometry(1.05, 1.35 * heightScale);
       const frameGeometry = new THREE.PlaneGeometry(1.19, 1.49 * heightScale);
       const positions = [];
+      const winding = Math.sign(ring.reduce((sum, a, i) => { const b = ring[(i + 1) % ring.length]; return sum + a[0] * b[1] - b[0] * a[1]; }, 0)) || 1;
       for (let side = 0; side < ring.length; side++) {
         const a = ring[side], b = ring[(side + 1) % ring.length], dx = b[0]-a[0], dy=b[1]-a[1], length=Math.hypot(dx,dy);
+        if (length < 1e-8) continue;
+        const nx = winding * dy / length, ny = -winding * dx / length;
         const count = Math.max(1, Math.floor(length / 3.5));
         const floors = Math.max(1, Math.floor((roof - base - 1) / (2.9 * heightScale)));
         for (let floor = 0; floor < floors; floor++) for (let n = 0; n < count; n++) {
           const t = (n + 0.5) / count, x = a[0]+dx*t, y = a[1]+dy*t;
-          const nx = x - c[0], ny = y - c[1], l = Math.hypot(nx,ny);
-          positions.push({x:x+nx/l*.045,y:y+ny/l*.045,z:base+(1.9+floor*2.9)*heightScale,angle:Math.atan2(dy,dx),nx:nx/l,ny:ny/l});
+          // PlaneGeometry faces +Z. Its normal is the mapped outward facade
+          // normal; the pane and frame remain parallel to the actual wall.
+          positions.push({x:x+nx*.045,y:y+ny*.045,z:base+(1.9+floor*2.9)*heightScale,angle:Math.atan2(nx,ny),nx,ny});
         }
       }
       if(svgMode){
@@ -614,10 +630,11 @@ export function createScene(container, data, callbacks = {}) {
       for(let i=0;i<n;i++)box(group,x+1.0,rear+depth+i*.29,stepGround,stepW,.29,drop*(n-i)/n,mat.stone);
     }
     // Low daybed at the terrace's quiet end.
-    box(group,x+.45,rear+.7,floor,.7,2.1,.26,mat.wood,false);
-    roundedSlab(group,x+.42,rear+.72,floor+.26,.76,2.0,.12,.07,mat.linen);
-    roundedSlab(group,x+.48,rear+.78,floor+.39,.64,.38,.10,.07,mat.linen);
-    roundedSlab(group,x+1.45,rear+1.2,floor,.65,.65,.34,.20,mat.woodLight);
+    // The tub occupies physical right (low site x); this seating stays at left.
+    box(group,x+width-1.15,rear+.7,floor,.7,2.1,.26,mat.wood,false);
+    roundedSlab(group,x+width-1.18,rear+.72,floor+.26,.76,2.0,.12,.07,mat.linen);
+    roundedSlab(group,x+width-1.12,rear+.78,floor+.39,.64,.38,.10,.07,mat.linen);
+    roundedSlab(group,x+width-2.10,rear+1.2,floor,.65,.65,.34,.20,mat.woodLight);
     const p=data.site.pool,px=p.x,py=p.y,pw=p.width,pl=p.length,pz=gardenGroundAt(px+pw/2,py+pl/2,settings,data)+.015;
     box(group,px-.28,py-.28,pz-.06,pw+.56,.28,.12,mat.stoneLight,false,-70);
     box(group,px-.28,py+pl,pz-.06,pw+.56,.28,.12,mat.stoneLight,false,-70);
@@ -633,7 +650,7 @@ export function createScene(container, data, callbacks = {}) {
       const lx=10.8,lz=gardenGroundAt(lx,y,settings,data);
       box(group,lx,y,lz,.78,2.0,.24,mat.wood,false);
       roundedSlab(group,lx+.02,y+.03,lz+.24,.74,1.9,.1,.07,mat.linen);
-      const back=box(group,lx+.02,y+.03,lz+.37,.74,.6,.09,mat.linen,false);back.rotation.x=.3;
+      const back=box(group,lx+.02,y+.03,lz+.37,.74,.6,.09,mat.linen,false);back.rotation.x=-.3;
     }
     // Ground-level circulation and a small dining setting, only when the garage is removed.
     for(let y=23;y<35;y+=1.45){const z=gardenGroundAt(3.8,y,settings,data);box(group,3.2,y,z+.018,1.15,.9,.035,mat.stoneLight,false,-80);}
@@ -786,8 +803,8 @@ export function createScene(container, data, callbacks = {}) {
       scene.background.set('#dfe8e8');renderer.toneMappingExposure=1.16;
     }else{
       // The ephemeris vector points FROM the plot TO the sun. In Three.js the
-      // site's vertical component is Y, and garden depth becomes negative Z.
-      const towardSun=new THREE.Vector3(direction[0],direction[2],-direction[1]).normalize();
+      // site's vertical component is Y, and garden depth becomes positive Z.
+      const towardSun=point(...direction).normalize();
       sun.target.position.copy(point(...centre));sun.position.copy(sun.target.position).addScaledVector(towardSun,300);
       sun.castShadow=daylight&&!svgMode;
       if(daylight){
@@ -868,9 +885,8 @@ export function createScene(container, data, callbacks = {}) {
 
   function orientEye() {
     if(!currentObserver)return;
-    const yaw=THREE.MathUtils.degToRad(eyeYaw),pitch=THREE.MathUtils.degToRad(eyePitch);
     camera.position.copy(point(currentObserver.x,currentObserver.y,currentObserver.z));
-    const target=camera.position.clone().add(new THREE.Vector3(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)));
+    const target=camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch)));
     camera.lookAt(target);requestRender();
   }
 
@@ -884,7 +900,9 @@ export function createScene(container, data, callbacks = {}) {
       if(previous!=='eye'){eyeYaw=num(settings.lookYaw);eyePitch=num(settings.lookPitch);}
       orientEye();
     }else if(mode==='plan'){
-      camera.fov=36;camera.near=.1;camera.position.copy(point(10,23.999,83));controls.target.copy(point(10,24,2.5));camera.lookAt(controls.target);controls.minDistance=15;controls.maxPolarAngle=.001;controls.minPolarAngle=.0001;controls.update();
+      // The tiny rearward bias resolves the vertical lookAt singularity with
+      // street at top and increasing site x at screen right, matching the map.
+      camera.fov=36;camera.near=.1;camera.position.copy(point(10,24.001,83));controls.target.copy(point(10,24,2.5));camera.lookAt(controls.target);controls.minDistance=15;controls.maxPolarAngle=.001;controls.minPolarAngle=.0001;controls.update();
     }else{
       camera.fov=48;camera.near=.1;camera.position.copy(point(29,46,33));controls.target.copy(point(10,23,4));controls.minDistance=3;controls.minPolarAngle=.08;controls.maxPolarAngle=Math.PI*.49;camera.lookAt(controls.target);controls.update();
     }
@@ -900,7 +918,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify(['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','includeHighFeatures'].map(k=>settings[k]));
+    const signature=JSON.stringify(['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures'].map(k=>settings[k]));
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
@@ -960,7 +978,7 @@ export function createScene(container, data, callbacks = {}) {
       const rect=renderer.domElement.getBoundingClientRect(),cursor=new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1),raycaster=new THREE.Raycaster();
       raycaster.setFromCamera(cursor,camera);
       const hit=raycaster.intersectObjects(terrainMeshes,false)[0];
-      if(hit){const p={x:hit.point.x,y:-hit.point.z};if(contains(p.x,p.y,data.site.boundary))callbacks.onPick(p);}
+      if(hit){const [x,y]=fromWorld(hit.point.x,hit.point.y,hit.point.z),p={x,y};if(contains(p.x,p.y,data.site.boundary))callbacks.onPick(p);}
     }
     if(mode==='eye'&&dragged)callbacks.onCameraChange?.({lookYaw:eyeYaw,lookPitch:eyePitch});
     pointerStart=null;pointerLast=null;

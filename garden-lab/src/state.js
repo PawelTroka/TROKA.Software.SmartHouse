@@ -1,13 +1,13 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.3.0';
-import {BUILDING_FIELDS} from './buildings.js?v=1.3.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.3.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.3.1';
+import {BUILDING_FIELDS} from './buildings.js?v=1.3.1';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.3.1';
 
-export const STATE_VERSION = 4;
+export const STATE_VERSION = 5;
 
 export const FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
-  hedgeLeft: {label:'Left side hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
-  hedgeRight: {label:'Right side hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
+  hedgeLeft: {label:'Left hedge · east',min:0,max:15,step:0.1,value:4,group:'hedge'},
+  hedgeRight: {label:'Right hedge · west',min:0,max:15,step:0.1,value:4,group:'hedge'},
   gardenRaise: {label:'Raise the whole rear garden',min:0,max:1,step:0.05,value:0.5,group:'terrain'},
   bedRaise: {label:'Extra height under the hedges',min:0,max:1,step:0.05,value:0,group:'terrain'},
   terraceDepth: {label:'Terrace depth',min:3,max:6,step:0.1,value:4.2,group:'terrace'},
@@ -32,7 +32,24 @@ export const DEFAULTS = Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Obj
 // Versions 1–3 omitted values relative to the original 2.5 m / no-fill design.
 // Changing new defaults must not reinterpret those already-published links.
 const LEGACY_DEFAULTS = Object.freeze({...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
+const SUPPORTED_VERSIONS = Object.freeze([1,2,3,4,5]);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
+
+/**
+ * Before v5, side names described the map rather than a person looking out of
+ * the house. Resolve old omitted defaults first, then preserve each geographic
+ * hedge installation and its quote under the corrected east-left/west-right
+ * names. Positive yaw now turns physically right; coordinates remain unchanged.
+ */
+function restoreVersionedState(input,version) {
+  const next=sanitizeWithDefaults(input,version<=3?LEGACY_DEFAULTS:DEFAULTS);
+  if(version<5){
+    [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
+    [next.costTreePriceLeft,next.costTreePriceRight]=[next.costTreePriceRight,next.costTreePriceLeft];
+    next.lookYaw=next.lookYaw===0?0:-next.lookYaw;
+  }
+  return next;
+}
 
 function sanitizeWithDefaults(input,defaults) {
   const out={...defaults};
@@ -58,9 +75,9 @@ export function encodeState(state) {
 export function decodeState(hash) {
   if(typeof hash!=='string')return {...DEFAULTS};
   const p=new URLSearchParams(hash.replace(/^#/,'')),s={};
-  if(!['1','2','3',String(STATE_VERSION)].includes(p.get('v')))return {...DEFAULTS};
+  if(!SUPPORTED_VERSIONS.map(String).includes(p.get('v')))return {...DEFAULTS};
   for(const [key,val] of p){if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}else if(key==='preset'||key==='mode'||key==='sunDate')s[key]=val;}
-  return sanitizeWithDefaults(s,p.get('v')===String(STATE_VERSION)?DEFAULTS:LEGACY_DEFAULTS);
+  return restoreVersionedState(s,Number(p.get('v')));
 }
 export function scenarioState(name,current=DEFAULTS) {
   const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
@@ -73,8 +90,8 @@ export function scenarioState(name,current=DEFAULTS) {
 
 /** Restore partial or full saved designs against their original defaults. */
 export function migrateSavedState(input,version=3) {
-  if(!isStateRecord(input)||![1,2,3,STATE_VERSION].includes(version))return {...DEFAULTS};
-  const next=sanitizeWithDefaults(input,version===STATE_VERSION?DEFAULTS:LEGACY_DEFAULTS);
+  if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return {...DEFAULTS};
+  const next=restoreVersionedState(input,version);
   if(version===1)next.linkedHedges=false;
   return next;
 }

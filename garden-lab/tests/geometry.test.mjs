@@ -108,7 +108,7 @@ test('side fascia is tested independently of the front edge', () => {
   const c = canopyBounds(s, data), targetX = 40, targetY = 48;
   const r = (c.x1 - eye[0]) / (targetX - eye[0]);
   const targetZ = eye[2] + ((c.z - 0.15) - eye[2]) / r;
-  assert.equal(canopyIntersection(eye, [targetX, targetY, targetZ], s, data)?.part, 'right-fascia');
+  assert.equal(canopyIntersection(eye, [targetX, targetY, targetZ], s, data)?.part, 'left-fascia');
 });
 
 test('finite segment and building intersections reject extensions and endpoint self hits', () => {

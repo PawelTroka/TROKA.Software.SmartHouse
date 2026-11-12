@@ -20,9 +20,19 @@ Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between 
 
 **Sun & shade** lets you choose a date and time in Gdańsk, compare seasons, and inspect the resulting sun direction, 3D shadows and outdoor shade map. Change the hedges, canopy, garden level or surrounding-building assumptions to compare their effect on direct sunlight.
 
-**Share view** creates a `v=4` URL containing changed settings, including sun controls, cost inputs and building adjustments. Older `v=1`, `v=2` and `v=3` links remain readable and retain their original 2.5 m hedge / no-fill baseline when those fields were omitted. Re-sharing an old design records those values explicitly. Existing v1–v3 browser saves, including scenario A, migrate without adopting the new geometric defaults. Existing local v1 preferences migrate to independent hedge editing, so the previous automatically linked default does not persist. An explicit linking setting in a shared link is still respected. **Export scenario** downloads schema-version-4 JSON containing settings, visibility results, the complete cost estimate and active building adjustments. Saved A/B comparisons include these inputs.
+**Share view** creates a `v=5` URL containing changed settings, including sun controls, cost inputs and building adjustments. Older `v=1`–`v=4` links remain readable. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Re-sharing writes the corrected conventions once. Existing browser saves and scenario A migrate in the same way. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-5 JSON containing settings, visibility, costs, sunlight and building adjustments.
 
 The app has no backend, analytics, account requirement or external runtime requests. Three.js r160 is vendored with its MIT licence. A reduced SVG renderer keeps 3D interaction available on browsers without WebGL. Plan, section and the numerical shade map use SVG independently of the 3D renderer. Detailed materials and 3D cast shadows require WebGL; an in-app note explains the fallback.
+
+## Orientation correction · 1.3.1
+
+The source plot frame has local **+x toward ESE** and **+y toward SSW into the rear garden**. Its horizontal East/North basis has determinant −1. The old render conversion `(x, elevation, −y)` reflected that geography. The corrected Three.js conversion is `(x, elevation, +y)`; source footprints, terrain, roof points and numerical sunlight directions are unchanged.
+
+**Left and right mean looking from the house into the rear garden.** The existing garage, PCK 3 and the east neighbour appear on the left. The west apartment block and west neighbour appear on the right. `hedgeLeft` controls the east boundary; `hedgeRight` controls the west boundary. The plans retain their street-at-top orientation, show true north, and label the physical hedge sides. Camera yaw, plan viewing cones, inverse picking, sun and shadow directions use the same coordinate convention.
+
+The proposed jacuzzi now occupies the physical right/west edge promised by the interface; terrace furniture occupies the other end. Both its receiving-water samples and seated observer use the shared bounds. This placement change can alter the jacuzzi-specific privacy and sunlight results. Mapped surrounding buildings have not been moved to achieve the orientation repair.
+
+The consolidation includes PR #1's 4 m / +0.5 m defaults, detailed procedural models, fixed source roof elevations, terrain cut-outs and separate jacuzzi sunlight results. It also corrects roof normals, window facing and water extrusion orientation; planting spacing now refreshes the visible crowns as well as the budget.
 
 ## Local development
 
@@ -172,7 +182,7 @@ The estimate excludes garage demolition, reuse of excavated pool soil, stripping
 
 The test suite covers finite ray intersections, the audited roof-ray benchmarks, terrain interpolation, garden versus bed raise, retained foliage, fixed house floors, screen inset, finite canopy roof/front/side edges, approximate building occlusion and garage removal.
 
-Cost regressions cover per-side tree pricing, zero-work totals, retained planting, polygon exclusions and overlaps, garden/bed volumes, topsoil partitioning, loose quantities, material-specific truck loads, area overrides, quote-required tall stock, custom unit prices and applying contingency once. Building tests cover unchanged zero overrides, area centroids, coherent height and position transformations, independence, caching without cumulative edits, exact reset and feeding changed targets into sightline calculations. State tests cover independent/link-controlled editing, legacy migration, v1/v2/v3 legacy defaults and v4 URLs, browser-save migration, sun controls, budget and building settings, and validation of untrusted URL values.
+Cost regressions cover per-side tree pricing, zero-work totals, retained planting, polygon exclusions and overlaps, garden/bed volumes, topsoil partitioning, loose quantities, material-specific truck loads, area overrides, quote-required tall stock, custom unit prices and applying contingency once. Building tests cover unchanged zero overrides, area centroids, coherent height and position transformations, independence, caching without cumulative edits, exact reset and feeding changed targets into sightline calculations. State tests cover independent/link-controlled editing, legacy migration, v1–v4 legacy defaults and v5 URLs, browser-save migration, sun controls, budget and building settings, and validation of untrusted URL values.
 
 Solar checks compare NREL SPA reference directions and seasonal daylight events, validate true-north/local-frame rotation, and cover Warsaw DST gaps/folds and supported date boundaries. Shade checks exercise finite blockers, building and roof geometry, independent hedge sides, canopy protection, fixed mapped roofs across floor changes, pool/jacuzzi water elevations and excavation openings, local terrain, garage removal and explicit night/disabled states.
 
@@ -201,3 +211,5 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 | `tests/` | Numerical and state checks |
 | `vendor/` | Pinned Three.js r160 and its licence |
 
+
+Orientation regressions use actual mapped anchors, geographic East/North projections, camera handedness, screen-side projections, world picking, overhead plans, triangle normals, rounded extrusion bounds, morning/afternoon sun directions, physical hedge-side pricing and migrated asymmetric saved designs.

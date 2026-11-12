@@ -1,24 +1,24 @@
-import {FIELDS,DEFAULTS,STATE_VERSION,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight} from './state.js?v=1.3.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.3.0';
-import {BUILDING_FIELDS,BUILDING_TARGETS,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.3.0';
-import {renderBudget,renderPriceSources} from './budget-view.js?v=1.3.0';
-import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from './geometry.js';
-import {renderPlan,renderSection} from './diagrams.js';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.3.0';
-import {analyzeSunlight} from './shade.js?v=1.3.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.3.0';
+import {FIELDS,DEFAULTS,STATE_VERSION,sanitizeState,encodeState,decodeState,scenarioState,migrateSavedState,changeHedgeHeight} from './state.js?v=1.3.1';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.3.1';
+import {BUILDING_FIELDS,BUILDING_TARGETS,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.3.1';
+import {renderBudget,renderPriceSources} from './budget-view.js?v=1.3.1';
+import {observerForPreset,analyzeVisibility,floorElevation,gardenGroundAt} from './geometry.js?v=1.3.1';
+import {renderPlan,renderSection} from './diagrams.js?v=1.3.1';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.3.1';
+import {analyzeSunlight} from './shade.js?v=1.3.1';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.3.1';
 
 const $=id=>document.getElementById(id);
-const storageKey='sternicza-garden-lab-v4';
+const storageKey=`sternicza-garden-lab-v${STATE_VERSION}`;
 const safeRead=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}};
 function readSaved(suffix=''){
-  for(const version of [4,3,2,1]){
+  for(const version of [5,4,3,2,1]){
     const saved=safeRead(`sternicza-garden-lab-v${version}${suffix}`,null);
     if(saved&&typeof saved==='object'&&!Array.isArray(saved))return migrateSavedState(saved,version);
   }
   return suffix?null:{...DEFAULTS};
 }
-let settings=/^#v=[1234](?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
+let settings=/^#v=[12345](?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
 let baseData,data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
@@ -253,7 +253,7 @@ $('export').addEventListener('click',()=>{
 $('about-open').addEventListener('click',()=>$('about').showModal());
 $('about-close').addEventListener('click',()=>$('about').close());
 $('about').addEventListener('click',e=>{if(e.target===$('about')){const r=$('about').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('about').close();}});
-window.addEventListener('hashchange',()=>{if(!/^#v=[1234](?:&|$)/.test(location.hash))return;stopSunPlayback();settings=decodeState(location.hash);showingA=false;syncControls();update();});
+window.addEventListener('hashchange',()=>{if(!/^#v=[12345](?:&|$)/.test(location.hash))return;stopSunPlayback();settings=decodeState(location.hash);showingA=false;syncControls();update();});
 window.addEventListener('resize',()=>{scene?.resize();if(data&&['plan','section','sun'].includes(settings.mode))showMode();});
 
 try{
@@ -262,7 +262,7 @@ try{
   baseData=await response.json();data=applyBuildingOverrides(baseData,settings);
   fetch(new URL('../data/cost-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Price sources unavailable');return r.json();}).then(renderPriceSources).catch(()=>{$('price-date').textContent='Price references are also documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.3.0');
+    const {createScene}=await import('./scene.js?v=1.3.1');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}
