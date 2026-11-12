@@ -64,7 +64,7 @@ test('current links preserve every editable cost and building assumption with co
  const state={...DEFAULTS,linkedHedges:true,buyNewThujas:false,raiseNewHedges:false,includeHighFeatures:true};
  for(const [key,f] of Object.entries({...COST_FIELDS,...BUILDING_FIELDS}))state[key]=Math.round((f.min+(f.max-f.min)*.37)*100)/100;
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=8&site=sternicza-11&'));
+ assert.ok(encoded.startsWith('v=9&site=sternicza-11&'));
  for(const key of Object.keys({...COST_FIELDS,...BUILDING_FIELDS})){
   assert.ok(key in FIELDS);
   assert.equal(restored[key],state[key],key);
@@ -75,7 +75,7 @@ test('current links preserve every editable cost and building assumption with co
 test('solar settings round-trip with the design, costs, buildings and independent hedges',()=>{
  const state={...DEFAULTS,mode:'sun',sunDate:'2026-12-21',sunMinutes:962,sunEnabled:false,sunPathVisible:true,hedgeRear:6,hedgeLeft:3.5,hedgeRight:2.5,gardenRaise:.35,costFillRate:90,b9HeightDelta:2};
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=8&site=sternicza-11&'));
+ assert.ok(encoded.startsWith('v=9&site=sternicza-11&'));
  assert.ok(MODES.includes('sun'));
  assert.equal(FIELDS.sunMinutes.group,'solar');
  for(const key of ['mode','sunDate','sunMinutes','sunEnabled','sunPathVisible','hedgeRear','hedgeLeft','hedgeRight','gardenRaise','costFillRate','b9HeightDelta'])assert.equal(restored[key],state[key],key);
@@ -105,7 +105,7 @@ test('v1 and v2 links preserve legacy assumptions and adopt stable solar default
   for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(restored[key],DEFAULTS[key],`v${version} ${key}`);
  }
  const defaultLink=new URLSearchParams(encodeState(DEFAULTS));
- assert.equal(defaultLink.get('v'),'8');assert.equal(defaultLink.get('site'),'sternicza-11');
+ assert.equal(defaultLink.get('v'),'9');assert.equal(defaultLink.get('site'),'sternicza-11');
  assert.deepEqual(JSON.parse(defaultLink.get('screeningTrees')),DEFAULTS.screeningTrees);
  assert.deepEqual(decodeState('#v=6&hedgeRear=10&sunDate=2026-12-21'),DEFAULTS);
 });
@@ -119,7 +119,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,8);
+ assert.equal(STATE_VERSION,9);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -210,7 +210,7 @@ test('sparse legacy side values migrate after resolving the version-specific omi
 test('v5 physical side labels and state retain left/east and right/west without migration',()=>{
  assert.equal(FIELDS.hedgeLeft.label,'Left hedge · east');
  assert.equal(FIELDS.hedgeRight.label,'Right hedge · west');
- const current={...DEFAULTS,screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
+ const current={...DEFAULTS,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
  assert.deepEqual(decodeState(encodeState(current)),current);
  assert.deepEqual(migrateSavedState(current,5),current);
  assert.equal(decodeState('#v=5&hedgeLeft=3').hedgeRight,4);
@@ -225,4 +225,47 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(valid.buyNewThujas,false);assert.equal(valid.raiseNewHedges,false);assert.equal(valid.linkedHedges,true);
  const sanitized=sanitizeState({buyNewThujas:'false',b9HeightDelta:Infinity,costFillRate:-1,b15DistanceDelta:-100});
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
+});
+
+test('v9 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+ assert.equal(DEFAULTS.gardenProgram,'spa');
+ for(const gardenProgram of ['spa','classic']){
+  const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram==='spa',costSpaSauna:85400};
+  const params=new URLSearchParams(encodeState(input));
+  assert.equal(params.get('v'),'9');
+  assert.equal(params.get('gardenProgram'),gardenProgram,'The programme must remain explicit even when it matches fresh defaults');
+  assert.equal(params.get('screeningTrees'),'[]');
+  assert.deepEqual(decodeState(params.toString()),input);
+  assert.deepEqual(migrateSavedState(input,9),input);
+ }
+ assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa');
+});
+
+test('spa viewpoint and garage invariants survive URL and saved-state sanitization',()=>{
+ for(const preset of ['sauna','firepit']){
+  const spa=sanitizeState({...DEFAULTS,gardenProgram:'spa',preset,removeGarage:false,eyeHeight:1.1});
+  assert.equal(spa.preset,preset);assert.equal(spa.eyeHeight,1.1);
+  assert.equal(spa.removeGarage,true,'The converted spa space cannot simultaneously retain the former garage');
+  const classic=sanitizeState({...spa,gardenProgram:'classic',removeGarage:false});
+  assert.equal(classic.removeGarage,false);
+  assert.equal(classic.preset,'garden','A removed spa room must not leave the observer on a nonexistent floor');
+  assert.equal(classic.eyeHeight,1.65);
+  const fromOldLink=decodeState(`v=8&site=sternicza-11&gardenProgram=spa&preset=${preset}&removeGarage=false`);
+  assert.equal(fromOldLink.gardenProgram,'classic');assert.equal(fromOldLink.preset,'garden');
+  assert.equal(fromOldLink.removeGarage,false,'Historical garages are not removed by the new programme default');
+ }
+});
+
+test('installed spa allowances are editable finite amounts and round-trip independently',()=>{
+ const quotes={costSpaPool:243000,costSpaJacuzzi:71600,costSpaSauna:85400,costSpaColdPlunge:22300,costSpaFirepit:52000};
+ const input={...DEFAULTS,...quotes};
+ const decoded=decodeState(encodeState(input));
+ for(const [key,amount] of Object.entries(quotes)){
+  assert.equal(FIELDS[key].group,'cost-spa');assert.equal(decoded[key],amount);
+  assert.equal(sanitizeState({[key]:-1})[key],0);
+  assert.equal(sanitizeState({[key]:Infinity})[key],0);
+  assert.equal(sanitizeState({[key]:'1000'})[key],0);
+  assert.equal(sanitizeState({[key]:3000000})[key],2000000);
+ }
+ assert.equal(sanitizeState({...input,costSpaSauna:0}).costSpaPool,quotes.costSpaPool,'Clearing one quote must not change another');
 });

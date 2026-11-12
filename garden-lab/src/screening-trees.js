@@ -3,9 +3,10 @@
  * Coordinates and absolute elevations match geometry.js. Dense crowns are an
  * optimistic geometric assumption, not a measured guarantee of opaque foliage.
  */
-import { TREE_CATALOG, getTreeType } from './tree-catalog.js?v=1.6.0';
-import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.6.0';
-import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.6.0';
+import { TREE_CATALOG, getTreeType } from './tree-catalog.js?v=1.7.0';
+import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.7.0';
+import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.7.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.7.0';
 
 export const MAX_SCREENING_TREES = 12;
 export const TREE_LEAF_MODES = Object.freeze(['auto','leaf-on','leaf-off']);
@@ -63,12 +64,14 @@ function groundObstacles(settings,data) {
   const {site}=data,items=[];
   if(site.house?.footprint)items.push({label:'the house',ring:site.house.footprint});
   if(settings.removeGarage===false&&site.garage?.footprint)items.push({label:'the retained garage',ring:site.garage.footprint});
-  if(site.pool)items.push({label:'the pool',ring:rectCorners(site.pool)});
+  const program=gardenProgram(settings,data),pool=poolBounds(settings,data);
+  if(pool)items.push({label:'the pool',ring:rectCorners(pool,program.active ? .28 : 0)});
+  if(program.active)for(const item of [program.sauna,program.firepit,program.coldPlunge])items.push({label:item.label,ring:item.footprint});
   if(site.terrace) {
     const terrace={...site.terrace,y:finite(site.terrace.y,site.rearMidpoint[1])},depth=finite(settings.terraceDepth,terrace.depth);
     items.push({label:'the terrace',ring:rectCorners({...terrace,depth})});
     if(terrace.thresholdDepth)items.push({label:'the terrace threshold',ring:rectCorners({...terrace,y:terrace.y-terrace.thresholdDepth,depth:terrace.thresholdDepth})});
-    const stairs=terraceStairs(terrace,depth,terraceGroundReference(settings,data).drop);
+    const stairs=terraceStairs(terrace,depth,terraceGroundReference(settings,data).drop,settings,data);
     if(stairs.count)items.push({label:'the terrace stairs',ring:rectCorners(stairs)});
   }
   return items;
@@ -118,7 +121,7 @@ function placement(tree,type,settings,data,obstacles=groundObstacles(settings,da
   }
   const outline=crownOutline(tree,type),crownInside=outline.every(p=>pointInPolygon(p,data.site.boundary));
   if(!crownInside)warnings.push('The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.');
-  if(plantable&&obstacles.some(o=>outline.some(p=>pointInPolygon(p,o.ring))))warnings.push('The crown overhangs a building, terrace, stairs or pool. Check clearance and maintenance access.');
+  if(plantable&&obstacles.some(o=>outline.some(p=>pointInPolygon(p,o.ring))))warnings.push('The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.');
   return {plantable,warnings,crownInside,crownOutline:outline,trunkRadius};
 }
 

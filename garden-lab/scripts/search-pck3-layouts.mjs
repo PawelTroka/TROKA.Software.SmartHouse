@@ -9,7 +9,8 @@ const {terraceStairs,rectCorners}=await import(`${ROOT}/src/layout.js`);
 const {analyzeSunlight}=await import(`${ROOT}/src/shade.js`);
 const {sunForSettings}=await import(`${ROOT}/src/solar.js`);
 const data=JSON.parse(fs.readFileSync(`${ROOT}/data/site-data.json`));
-const settings={...DEFAULTS,screeningTrees:[],hedgeRear:4,hedgeLeft:4,hedgeRight:4,gardenRaise:.5,bedRaise:0,terraceDepth:4.2,floorHeight:1.2,removeGarage:true,canopyEnabled:false,includeHighFeatures:false};
+// Reproduce the v1.6 study against its original west-pool design, not later defaults.
+const settings={...DEFAULTS,gardenProgram:'classic',screeningTrees:[],hedgeRear:4,hedgeLeft:4,hedgeRight:4,gardenRaise:.5,bedRaise:0,terraceDepth:4.2,floorHeight:1.2,removeGarage:true,canopyEnabled:false,includeHighFeatures:false};
 const typeIds=['austrian-pine-medium','austrian-pine-large','austrian-pine-xl','austrian-pine-tall','serbian-spruce'];
 const round=n=>Math.round(n*100)/100;
 const primary=['sofa','standing','terrace','jacuzzi','garden'];

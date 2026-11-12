@@ -5,12 +5,16 @@ import {
   hedgeSegments,
   canopyBounds,
   jacuzziBounds,
-} from './geometry.js?v=1.6.0';
-import {gazeDirection} from './orientation.js?v=1.6.0';
-import {localSunDirection} from './solar.js?v=1.6.0';
-import {getSiteProfile} from './sites.js?v=1.6.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.6.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.6.0';
+  spaLevels,
+  saunaOpaqueFaces,
+} from './geometry.js?v=1.7.0';
+import {gazeDirection} from './orientation.js?v=1.7.0';
+import {localSunDirection} from './solar.js?v=1.7.0';
+import {getSiteProfile} from './sites.js?v=1.7.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.7.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.7.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.7.0';
+import {terraceStairs} from './layout.js?v=1.7.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -39,6 +43,19 @@ function pointInPolygon(point, polygon) {
 function centroid(polygon) {
   const p = polygon.length > 2 && distance(polygon[0], polygon.at(-1)) < 1e-6 ? polygon.slice(0, -1) : polygon;
   return p.reduce((s, v) => [s[0] + v[0] / p.length, s[1] + v[1] / p.length], [0, 0]);
+}
+
+/** Shared plan marks for the proposed spa, used by both privacy and shade maps. */
+export function spaPlanMarkup(program,{X,Y,scale,labels=true,subtle=false}) {
+  if(!program?.active)return '';
+  const poly=points=>points.map(p=>`${X(p[0]).toFixed(2)},${Y(p[1]).toFixed(2)}`).join(' ');
+  const rect=(r,attrs='')=>`<rect x="${X(r.x)}" y="${Y(r.y)}" width="${r.width*scale}" height="${r.length*scale}" ${attrs}/>`;
+  const text=(label,x,y,fill=C.ink,size=9)=>`<text x="${X(x)}" y="${Y(y)}" text-anchor="middle" fill="${fill}" font-size="${size}" font-weight="650" paint-order="stroke" stroke="${C.paper}" stroke-width="2">${esc(label)}</text>`;
+  const {sauna:s,firepit:f,coldPlunge:c}=program;
+  const sauna=s?`<g data-spa-object="sauna"><polygon points="${poly(s.footprint)}" fill="#9d8065" fill-opacity="${subtle ? .4 : .85}" stroke="#634b39" stroke-width="1.4"/>${(s.benches||[]).map(b=>rect(b,'fill="#d2b594" fill-opacity=".8"')).join('')}${(s.glazing||[]).map(({a,b})=>`<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#6aa8a4" stroke-width="3"/>`).join('')}${labels?text('SAUNA · 6',s.x+s.width*.43,s.y+s.length*.62):''}</g>`:'';
+  const pit=f?`<g data-spa-object="firepit">${rect(f,`rx="${.12*scale}" fill="#c9ba9e" fill-opacity="${subtle ? .15 : .8}" stroke="#968267" stroke-width="1.4"`)}${(f.seats||[]).map(b=>rect(b,'fill="#a99272" stroke="#7f705c" stroke-width=".6"')).join('')}${(f.steps||[]).map(step=>rect(step,'fill="none" stroke="#7f705c" stroke-width=".7"')).join('')}<circle cx="${X(f.x+f.width/2)}" cy="${Y(f.y+f.length*.58)}" r="${.45*scale}" fill="#8c5940" stroke="#d3a36d" stroke-width="1.4"/>${labels?text(`FIREPIT −${fmt(f.depth,2)} m`,f.x+f.width/2,f.y+f.length+.65,C.ink,8.5):''}</g>`:'';
+  const plunge=c?`<g data-spa-object="cold-plunge">${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text('COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
+  return subtle?`<g pointer-events="none">${sauna+pit+plunge}</g>`:sauna+pit+plunge;
 }
 
 function footprintBounds(polygon) {
@@ -105,7 +122,8 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const setback = number(site.frontSetback, house.minY - plot.minY);
   const rearY = site.rearMidpoint[1];
   const terrace = {...site.terrace, depth: number(settings.terraceDepth, site.terrace.depth)};
-  const pool = site.pool;
+  const pool = poolBounds(settings,data);
+  const program = gardenProgram(settings,data);
   const ray = criticalRay(data, analysis);
   const polys = points => points.map(p => `${X(p[0]).toFixed(2)},${Y(p[1]).toFixed(2)}`).join(' ');
   const rect = (x, y, w, h, attributes = '') => `<rect x="${X(x)}" y="${Y(y)}" width="${w * scale}" height="${h * scale}" ${attributes}/>`;
@@ -124,6 +142,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const detail = scope === 'garden';
   const compact = scale < 10;
   const {drop:terraceDrop} = terraceGroundReference(settings,data);
+  const steps = terraceStairs(terrace,terrace.depth,terraceDrop,settings,data);
   const jacuzzi = jacuzziBounds(settings, data);
   const jacuzziX = jacuzzi?.x0, jacuzziY = jacuzzi?.y0;
   const canopy = settings.canopyEnabled ? canopyBounds(settings, data) : null;
@@ -159,7 +178,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const svg = `
     <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation;${options.placingTree ? 'cursor:crosshair;' : ''}" tabindex="0" role="group" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place ${options.placingTree ? 'the selected tree' : 'a viewpoint'}. Arrow keys move ${options.placingTree ? 'the selected tree' : 'the viewpoint'} by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
       <title>${esc(profile.label)} — mapped plot and proposed garden</title>
-      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street-side parcel boundary. Proposed terrace, jacuzzi and pool are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
+      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street-side parcel boundary. Proposed terrace, jacuzzi, pool${program.active?', six-person sauna, sunken firepit and cold plunge':''} are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
       <defs><clipPath id="plan-clip"><rect width="${W}" height="${H}"/></clipPath><marker id="plan-tick" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M4 0V8" stroke="${C.muted}"/></marker></defs>
       <rect width="${W}" height="${H}" fill="${C.paper}"/>
       <g clip-path="url(#plan-clip)" font-family="Inter,system-ui,sans-serif" font-size="14" fill="${C.ink}">
@@ -169,13 +188,15 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         <polygon points="${polys(site.house.footprint)}" fill="${C.roof}" stroke="#696f69"/>
         ${roofDetail}
         ${rect(terrace.x, rearY, terrace.width, terrace.depth, `fill="${C.stone}" stroke="#c9bda5" stroke-width="1.2"`)}
-        ${rect(terrace.x, rearY + terrace.depth, terrace.width, .42, 'fill="#d2c5ad"')}
+        ${program.active?Array.from({length:steps.count},(_,i)=>rect(steps.x,steps.y+i*.29,steps.width,.29,'fill="#d2c5ad" stroke="#b4a78e" stroke-width=".6"')).join(''):rect(terrace.x, rearY + terrace.depth, terrace.width, .42, 'fill="#d2c5ad"')}
         ${jacuzzi ? rect(jacuzziX, jacuzziY, jacuzzi.x1 - jacuzzi.x0, jacuzzi.y1 - jacuzzi.y0, `rx="2" fill="${C.waterLight}" stroke="#f8f4e9" stroke-width="${detail ? 2 : 1}"`) : ''}
+        ${program.active&&jacuzzi?`<line x1="${X(jacuzzi.x0)}" y1="${Y(jacuzzi.y1)}" x2="${X(jacuzzi.x1)}" y2="${Y(jacuzzi.y1)}" stroke="#46898b" stroke-width="2.4"/>${detail?label('EDGE SPA',jacuzzi.x0+jacuzzi.width/2,jacuzzi.y0+jacuzzi.length/2,'font-size="8" fill="#3b7778"'):''}`:''}
         ${detail ? label(compact ? 'Terrace' : 'TERRACE', terrace.x + terrace.width - 2.7, rearY + 2.45, `font-size="${compact ? 9 : 12}" fill="#746c59"`) : ''}
         ${detail && !compact ? label(fmt(terrace.width) + ' × ' + fmt(terrace.depth) + ' m', terrace.x + terrace.width - 2.7, rearY + Math.min(3.4, terrace.depth - .4), 'font-size="10" fill="#746c59"') : ''}
         ${pool ? rect(pool.x, pool.y, pool.width, pool.length, `rx="2" fill="${C.water}" stroke="#eae5d7" stroke-width="${detail ? 3 : 1.5}"`) : ''}
         ${detail && pool ? `<line x1="${X(pool.x + .35)}" y1="${Y(pool.y + .6)}" x2="${X(pool.x + pool.width - .35)}" y2="${Y(pool.y + .6)}" stroke="#c7dfd9" stroke-width="2"/>` : ''}
         ${detail && pool ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">${compact ? 'Pool' : `POOL ${fmt(pool.width)} × ${fmt(pool.length)} m`}</text>` : ''}
+        ${spaPlanMarkup(program,{X,Y,scale,labels:detail})}
         ${garage}
         ${hedges}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
@@ -279,6 +300,32 @@ function firstPolygonExit(origin, direction, polygon) {
   return intersections.length ? Math.min(...intersections) : null;
 }
 
+function lineEdgeDistance(origin,direction,a,b){
+  const sx=b[0]-a[0],sy=b[1]-a[1],den=direction[0]*sy-direction[1]*sx;
+  if(Math.abs(den)<1e-9)return null;
+  const ax=a[0]-origin[0],ay=a[1]-origin[1],s=(ax*sy-ay*sx)/den,u=(ax*direction[1]-ay*direction[0])/den;
+  return u>=-1e-8&&u<=1+1e-8?s:null;
+}
+function linePolygonInterval(origin,direction,polygon){
+  const distances=polygon.map((p,i)=>lineEdgeDistance(origin,direction,p,polygon[(i+1)%polygon.length])).filter(Number.isFinite);
+  return distances.length>1?[Math.min(...distances),Math.max(...distances)]:null;
+}
+const sectionRect=(origin,direction,r)=>rayRectangleInterval(origin,direction,{x0:r.x,x1:r.x+r.width,y0:r.y,y1:r.y+r.length});
+
+/** Only objects intersected by this vertical section are shown, at shared levels. */
+export function spaSectionCuts(settings,data,origin,direction){
+  const program=gardenProgram(settings,data);
+  if(!program.active)return [];
+  const levels=spaLevels(settings,data),tub=jacuzziBounds(settings,data);
+  return [
+    {kind:'pool',label:'pool · 1.40 m water',interval:sectionRect(origin,direction,program.pool),...levels.pool},
+    {kind:'firepit',label:`sunken lounge · −${fmt(program.firepit.depth,2)} m`,interval:sectionRect(origin,direction,program.firepit),...levels.firepit},
+    {kind:'coldPlunge',label:'cold plunge · 1.10 m water',interval:sectionRect(origin,direction,program.coldPlunge),...levels.coldPlunge},
+    {kind:'jacuzzi',label:'terrace-edge jacuzzi',interval:rayRectangleInterval(origin,direction,tub),groundZ:tub.z,bottomZ:tub.z-.68,waterZ:tub.waterZ},
+    {kind:'sauna',label:'six-person sauna',interval:linePolygonInterval(origin,direction,program.sauna.footprint),...levels.sauna},
+  ].filter(c=>c.interval&&c.interval[1]-c.interval[0]>1e-7);
+}
+
 /** Equal-scale section along one actual sampled ray, not a whole-garden promise. */
 export function renderSection(container, data, settings, observer, analysis, measuredFrame = null) {
   const ray = criticalRay(data, analysis);
@@ -297,14 +344,21 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const screen = ray.screen;
   const floorZ = reference + number(settings.floorHeight, 1.2);
   const minS = -2.5, maxS = D + 3.2;
+  const program=gardenProgram(settings,data),levels=spaLevels(settings,data);
+  const spaCuts=spaSectionCuts(settings,data,origin,direction).filter(c=>c.interval[1]>minS&&c.interval[0]<maxS);
   const sampleCount = Math.max(50, Math.ceil((maxS - minS) * 2));
-  const samples = Array.from({length: sampleCount + 1}, (_, i) => {
-    const s = minS + i / sampleCount * (maxS - minS), p = xy(s);
-    return {s, existing: terrainAt(p[0], p[1], data), proposed: gardenGroundAt(p[0], p[1], settings, data)};
+  const positions=Array.from({length:sampleCount+1},(_,i)=>minS+i/sampleCount*(maxS-minS));
+  const stepCuts=program.active?levels.firepit.steps.map(step=>({step,interval:sectionRect(origin,direction,step)})).filter(c=>c.interval):[];
+  for(const cut of [...spaCuts,...stepCuts])for(const s of cut.interval)for(const d of [-.0001,.0001])if(s+d>minS&&s+d<maxS)positions.push(s+d);
+  const samples=[...new Set(positions)].sort((a,b)=>a-b).map(s=>{
+    const p=xy(s),cut=spaCuts.find(c=>c.kind!=='sauna'&&s>c.interval[0]&&s<c.interval[1]);
+    const step=stepCuts.find(c=>s>c.interval[0]&&s<c.interval[1])?.step;
+    const proposed=cut?(cut.kind==='firepit'?(step?.topZ??cut.floorZ):cut.bottomZ):gardenGroundAt(p[0],p[1],settings,data);
+    return {s,existing:terrainAt(p[0],p[1],data),proposed};
   });
   const roof = settings.canopyEnabled ? canopyBounds(settings, data) : null;
   const minimumZ = Math.min(...samples.map(p => Math.min(p.existing, p.proposed)), screen?.groundZ ?? Infinity) - 1;
-  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...treeVolumes.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
+  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...spaCuts.map(c=>c.roofZ??c.rimZ??c.waterZ??c.floorZ), ...treeVolumes.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
   // Use the flex panel's actual pixel frame, not the world's aspect ratio, for
   // the viewBox. A second layout pass below measures it after the short header
   // and readouts are laid out. World metres still use one scale in both axes,
@@ -325,9 +379,42 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const existingPath = profilePath('existing');
   const block = data.buildings.find(b => b.id === ray.blockId);
   const sampleType = ray.kind === 'high-feature' ? 'high-feature return' : 'roof point';
-  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? 'canopy' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
+  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? 'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
   const outcome = `This sampled ${sampleType} is ${ray.visible ? 'exposed' : `hidden by the ${blockerLabel}`}`;
   const treesSvg = treeSectionMarkup(treeVolumes, {origin, direction, minS, maxS, X, Y, scale});
+  const clipped=interval=>[Math.max(minS,interval[0]),Math.min(maxS,interval[1])];
+  const spaSvg=spaCuts.map(c=>{
+    const [a,b]=clipped(c.interval),middle=(a+b)/2;
+    const caption=`<text x="${X(middle)}" y="${Y((c.roofZ??c.rimZ??c.groundZ)+.5)}" text-anchor="middle" font-size="${compact?8:10}" fill="${C.muted}">${esc(c.label)}</text>`;
+    if(c.kind==='sauna'){
+      const faces=saunaOpaqueFaces(settings,data).map(face=>{
+        const z0=Math.min(...face.vertices.map(p=>p[2])),z1=Math.max(...face.vertices.map(p=>p[2]));
+        if(z1-z0>1e-6){
+          const s=lineEdgeDistance(origin,direction,face.vertices[0],face.vertices[1]);
+          return Number.isFinite(s)&&s>=minS&&s<=maxS?`<line x1="${X(s)}" x2="${X(s)}" y1="${Y(z0)}" y2="${Y(z1)}" stroke="#8a7156" stroke-width="2.5"/>`:'';
+        }
+        const interval=linePolygonInterval(origin,direction,face.vertices);
+        if(!interval||interval[1]<minS||interval[0]>maxS)return '';
+        const [start,end]=clipped(interval);
+        return `<line x1="${X(start)}" x2="${X(end)}" y1="${Y(z0)}" y2="${Y(z0)}" stroke="#8a7156" stroke-width="2"/>`;
+      }).join('');
+      const glass=program.sauna.glazing.map(edge=>{
+        const s=lineEdgeDistance(origin,direction,edge.a,edge.b);
+        return Number.isFinite(s)&&s>=minS&&s<=maxS?`<line x1="${X(s)}" x2="${X(s)}" y1="${Y(c.floorZ+edge.bottom)}" y2="${Y(c.floorZ+edge.top)}" stroke="#65a3a5" stroke-width="1.3" stroke-dasharray="2 3"/>`:'';
+      }).join('');
+      return `<g data-spa-section="sauna">${faces}${glass}${caption}</g>`;
+    }
+    if(c.kind==='firepit'){
+      const seats=program.firepit.seats.map(seat=>{
+        const interval=sectionRect(origin,direction,seat);
+        if(!interval||interval[1]<minS||interval[0]>maxS)return '';
+        const [start,end]=clipped(interval);
+        return `<rect x="${X(start)}" y="${Y(c.seatZ)}" width="${(end-start)*scale}" height="${(c.seatZ-c.floorZ)*scale}" fill="#ad9678"/>`;
+      }).join('');
+      return `<g data-spa-section="firepit"><line x1="${X(a)}" x2="${X(b)}" y1="${Y(c.floorZ)}" y2="${Y(c.floorZ)}" stroke="#968267" stroke-width="2.5"/>${seats}${caption}</g>`;
+    }
+    return `<g data-spa-section="${c.kind}"><rect x="${X(a)}" y="${Y(c.waterZ)}" width="${(b-a)*scale}" height="${(c.waterZ-c.bottomZ)*scale}" fill="${C.waterLight}" fill-opacity=".65"/><path d="M${X(a)} ${Y(c.groundZ)}V${Y(c.bottomZ)}H${X(b)}V${Y(c.groundZ)}" stroke="#8e9b94" stroke-width="1.5" fill="none"/><line x1="${X(a)}" x2="${X(b)}" y1="${Y(c.waterZ)}" y2="${Y(c.waterZ)}" stroke="#4f9496" stroke-width="2"/>${caption}</g>`;
+  }).join('');
   const statusColor = ray.visible ? C.ray : C.clear;
   const topOfScreen = screen ? (screen.topZ ?? screen.groundZ + screen.height) : null;
   // Both displayed heights share today's planting base. For retained foliage,
@@ -357,8 +444,19 @@ export function renderSection(container, data, settings, observer, analysis, mea
   if (terraceInterval && terraceInterval[1] > minS && terraceInterval[0] < maxS) {
     const a = Math.max(minS, terraceInterval[0]), b = Math.min(maxS, terraceInterval[1]);
     const ground = gardenGroundAt(...xy(b), settings, data);
-    terraceFloor = `<rect x="${X(a)}" y="${Y(floorZ)}" width="${(b-a)*scale}" height="${.18*scale}" fill="#bdab8d"/>
+    const hole=spaCuts.find(c=>c.kind==='jacuzzi')?.interval;
+    const deckSpans=hole?[[a,Math.min(b,hole[0])],[Math.max(a,hole[1]),b]].filter(([start,end])=>end>start):[[a,b]];
+    terraceFloor = `${deckSpans.map(([start,end])=>`<rect x="${X(start)}" y="${Y(floorZ)}" width="${(end-start)*scale}" height="${.18*scale}" fill="#bdab8d"/>`).join('')}
       <line x1="${X(b)}" y1="${Y(floorZ)}" x2="${X(b)}" y2="${Y(ground)}" stroke="#bdab8d" stroke-width="2"/>`;
+  }
+  if(program.active){
+    const stairs=terraceStairs(t,number(settings.terraceDepth,t.depth),terraceGroundReference(settings,data).drop,settings,data);
+    for(let i=0;i<stairs.count;i++){
+      const interval=sectionRect(origin,direction,{x:stairs.x,y:stairs.y+i*.29,width:stairs.width,length:.29});
+      if(!interval||interval[1]<=minS||interval[0]>=maxS)continue;
+      const [a,b]=clipped(interval),z=floorZ-stairs.drop*i/stairs.count;
+      terraceFloor+=`<rect data-spa-section="terrace-step" x="${X(a)}" y="${Y(z)}" width="${(b-a)*scale}" height="${(z-floorZ+stairs.drop)*scale}" fill="#b6a486" stroke="#8b7e67" stroke-width=".5"/>`;
+    }
   }
   const eyeGround = observer.z - number(observer.eyeHeight, settings.eyeHeight || 1.65);
   const person = `<line x1="${X(0)}" y1="${Y(eyeGround + .12)}" x2="${X(0)}" y2="${Y(observer.z - .2)}" stroke="${C.ink}" stroke-width="3"/>
@@ -404,7 +502,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
           <path d="${profilePath('proposed')}" fill="none" stroke="${C.hedgeDark}" stroke-width="1.5"/>
           <path d="${existingPath}" fill="none" stroke="${C.existing}" stroke-width="1.2" stroke-dasharray="3 4"/>
           ${screen && screen.groundZ > gardenGroundAt(screen.x, screen.y, settings, data) + .01 ? `<rect x="${X(screen.distance) - .48 * scale}" y="${Y(screen.groundZ)}" width="${.96 * scale}" height="${(screen.groundZ - gardenGroundAt(screen.x, screen.y, settings, data)) * scale}" fill="${C.soil}"/>` : ''}
-          ${houseFloor}${terraceFloor}
+          ${houseFloor}${terraceFloor}${spaSvg}
           ${canopySvg}
           ${treesSvg}
           ${screenSvg}
@@ -420,7 +518,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
       <div>Hedge-only target<strong style="display:block;color:${C.ink};font-size:${compact ? 17 : 20}px;margin-top:3px">${need !== null ? fmt(need, 2) + ' m' : '—'}</strong></div>
       <div>Eye to sample<strong style="display:block;color:${C.ink};font-size:${compact ? 17 : 20}px;margin-top:3px">${fmt(D, 2)} m</strong></div>
     </div>
-    <p style="flex:0 0 auto;margin:7px 0 0;font-size:10.5px;color:${C.muted};line-height:1.35">Solid/dotted ground: proposed/existing. Crown shapes are cuts through this section. The hedge-only target excludes canopy and tree screening and applies to this ray.</p>`;
+    <p style="flex:0 0 auto;margin:7px 0 0;font-size:10.5px;color:${C.muted};line-height:1.35">Solid/dotted ground: proposed/existing. Crown${program.active?' and spa':''} shapes are cuts through this section.${program.active?' Blue dotted sauna edges are transparent glass; pool, plunge and lounge excavation uses the shared design levels.':''} The hedge-only target excludes other screening and applies to this ray.</p>`;
   const frame = container.querySelector('[data-section-frame]');
   if (!measuredFrame && frame?.clientWidth > 0 && frame?.clientHeight > 0) {
     return renderSection(container, data, settings, observer, analysis, {

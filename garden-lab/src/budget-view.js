@@ -1,5 +1,5 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.6.0';
+import {getSiteProfile} from './sites.js?v=1.7.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -20,6 +20,10 @@ export function budgetSideLabels(data){
 
 export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks,t=cost.screeningTrees;
+  const spa=cost.spa;
+  if($('spa-cost'))$('spa-cost').textContent=spa?.status==='quote-required'?(spa.knownBase.low>0?`${amount(spa.knownSubtotal,true)} + quotes`:'Quote needed'):amount(spa?.total);
+  if($('spa-quantity'))$('spa-quantity').textContent=spa?.enabled?`${spa.rows.filter(row=>row.quoted).length} of ${spa.rows.length} installed allowances entered`:'No spa programme selected';
+  if($('spa-cost-detail'))$('spa-cost-detail').innerHTML=spa?.enabled?table('Spa construction · your installed allowances',spa.rows.map(item=>row(escape(item.label),'Complete installed allowance',item.quoted?money(item.amount):'Quote needed')).join('')):'';
   $('hedge-cost').textContent=amount(h.total,true);
   $('earthwork-cost').textContent=amount(e.total,true);
   $('combined-cost').textContent=amount(cost.total,true);
@@ -30,7 +34,7 @@ export function renderBudget(cost,settings,data){
     ?`${t.count} enabled ${t.count===1?'tree':'trees'} · ${amount(t.plantsKnown)} known plant supply${t.plantQuoteCount?` · ${t.plantQuoteCount} specimen ${t.plantQuoteCount===1?'quote':'quotes'} needed`:''}`
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
-    ?`Some plant prices or services need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices in Screening trees and service allowances in Budget assumptions.`
+    ?`Some plants, services or spa installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices in Screening trees and installed allowances in Budget assumptions.`
     :`PLN planning budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance. Site allowances and rates are editable.`;
   $('cost-status').classList.toggle('needs-quote',cost.status==='quote-required');
   const panel=document.querySelector('.cost-panel');
@@ -53,7 +57,7 @@ export function renderBudget(cost,settings,data){
   earth+=row('Drainage','Provisional allowance',money(e.lines.drainage));
   earth+=row('Access / preparation','Provisional allowance',money(e.lines.access));
   $('cost-detail-content').innerHTML=table('Thujas by side · supply and installation',plants)+quantities+
-    `<p class="field-note">Gross rear area ${n(e.rearGrossArea)} m²; ${n(e.excludedArea)} m² excluded for the pool, terrace and retained structures. Topsoil is included within the selected raise. Loose material uses your ${n(e.looseFactor,2)}× delivery multiplier.</p>`+
+    `<p class="field-note">Gross rear area ${n(e.rearGrossArea)} m²; ${n(e.excludedArea)} m² excluded for the pool, terrace${spa?.enabled?', sauna, sunken lounge, cold plunge':''} and retained structures. Topsoil is included within the selected raise. Loose material uses your ${n(e.looseFactor,2)}× delivery multiplier.</p>`+
     table('Rear-garden earthworks',earth)+
     `<p class="field-note">Line items exclude the ${cost.contingencyPercent}% upper-budget uncertainty allowance. Published plant bands are price references, not a guaranteed current offer. Enter supplier-confirmed final amounts, including applicable tax, for a purchasing budget.</p>`+
     `<ul class="budget-notes">${cost.notes.map(note=>`<li>${escape(note)}</li>`).join('')}</ul>`;

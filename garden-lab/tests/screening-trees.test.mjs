@@ -112,7 +112,7 @@ test('sun and privacy use the same finite canopy, leafless trees lose crown shad
 });
 
 test('tree contributions never change the audited hedge-alone requirement',()=>{
-  const settings={...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,screeningTrees:[]};
+  const settings={...DEFAULTS,gardenProgram:'classic',hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,screeningTrees:[]};
   const observer=observerForPreset('jacuzzi',settings,realData),before=analyzeVisibility(observer,settings,realData);
   const t=tree('austrian-pine-xl',{x:16,y:25,height:10,crownWidth:9,crownDepth:6});
   const after=analyzeVisibility(observer,{...settings,screeningTrees:[t]},realData);
@@ -155,8 +155,8 @@ test('three sequential group suggestions keep separate stems even after all targ
   assert.ok(screeningTreeVolumes(settings,data).some(v=>v.warnings.some(message=>message.includes('crown overlaps'))),'Crowns may overlap despite safe separation of suggested centres');
 });
 
-test('state v8 preserves every independent tree and leaf mode, with deep copies and safe IDs',()=>{
-  assert.equal(STATE_VERSION,8);
+test('state v9 preserves every independent tree and leaf mode, with deep copies and safe IDs',()=>{
+  assert.equal(STATE_VERSION,9);
   assert.equal(tree().unitPrice,0,'Zero requests a catalog-based estimate; creating a tree must not invent a custom quote');
   assert.equal(sanitizeScreeningTrees([{...tree(),unitPrice:undefined}])[0].unitPrice,0);
   const input={...DEFAULTS,treeLeafMode:'leaf-off',screeningTrees:[tree(),tree('pleached-hornbeam',{id:'panel-2',x:15,y:33,rotation:48,unitPrice:3100,enabled:false})]};

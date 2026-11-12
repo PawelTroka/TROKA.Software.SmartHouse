@@ -3,7 +3,9 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.6.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.7.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.7.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.7.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 0,
@@ -66,6 +68,82 @@ export function floorElevation(settings, data) {
   return data.site.floorReference.z + number(settings.floorHeight, 1.2);
 }
 
+/** Flat proposed pads use explicit references; they do not flatten the garden. */
+export function spaLevels(settings={},data){
+  const program=gardenProgram(settings,data),p=poolBounds(settings,data);
+  let poolGround=p?gardenGroundAt(p.x+p.width/2,p.y+p.length/2,settings,data):null,poolLow=poolGround;
+  if(program.active&&p){
+    // The moved pool crosses sloping, locally uneven ground. Sample the whole
+    // outer coping footprint, including its edges; a centre or four-corner
+    // reference can bury its uphill edge in the measured terrain. The level
+    // rim and its stone skirt do not flatten or raise the rest of the garden.
+    const margin=p.coping,x0=p.x-margin,y0=p.y-margin,w=p.width+2*margin,l=p.length+2*margin;
+    const nx=Math.ceil(w/.25),ny=Math.ceil(l/.25),grades=[];
+    for(let ix=0;ix<=nx;ix++)for(let iy=0;iy<=ny;iy++)grades.push(gardenGroundAt(x0+w*ix/nx,y0+l*iy/ny,settings,data));
+    poolGround=Math.max(...grades);poolLow=Math.min(...grades);
+  }
+  const result={active:program.active,pool:p?{groundZ:poolGround,waterZ:poolGround+p.waterOffset,
+    bottomZ:poolGround+p.waterOffset-p.waterDepth,copingTopZ:poolGround+.075,
+    copingBaseZ:program.active?poolLow-.08:poolGround-.045}:null,sauna:null,firepit:null,coldPlunge:null};
+  if(!program.active)return result;
+  const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
+  const sa=program.sauna,sg=highest(sa),sf=sg+sa.floorOffset;
+  result.sauna={groundZ:sg,floorZ:sf,roofZ:sf+sa.height};
+  const f=program.firepit,fg=highest(f),ff=fg-f.depth;
+  result.firepit={groundZ:fg,floorZ:ff,rimZ:fg,
+    steps:f.steps.map(step=>({...step,topZ:fg-step.depth})),seatZ:ff+f.seatHeight};
+  const c=program.coldPlunge,cg=highest(c),cw=cg+c.waterOffset;
+  result.coldPlunge={groundZ:cg,baseZ:cg,rimZ:cg+c.height,waterZ:cw,bottomZ:cw-c.waterDepth,
+    steps:c.steps.map(step=>({...step,topZ:cg+step.height}))};
+  return result;
+}
+
+/** Only the pavilion's opaque construction; glazing never becomes a solid wall. */
+export function saunaOpaqueFaces(settings={},data){
+  const program=gardenProgram(settings,data);if(!program.active)return [];
+  const sauna=program.sauna,levels=spaLevels(settings,data).sauna,faces=[];
+  for(const [i,wall] of sauna.walls.entries()){
+    const low=levels.floorZ+wall.bottom,high=levels.floorZ+wall.top;
+    faces.push({id:`sauna-wall-${i}`,label:'Sauna wall',part:'wall',vertices:[
+      [...wall.a,low],[...wall.b,low],[...wall.b,high],[...wall.a,high]]});
+  }
+  const ring=sauna.footprint.slice(0,-1),roofBottom=levels.roofZ-.10,padBottom=levels.groundZ-.6;
+  for(let i=0;i<ring.length;i++){
+    const a=ring[i],b=ring[(i+1)%ring.length];
+    faces.push({id:`sauna-roof-edge-${i}`,label:'Sauna roof edge',part:'wall',vertices:[
+      [...a,roofBottom],[...b,roofBottom],[...b,levels.roofZ],[...a,levels.roofZ]]});
+    faces.push({id:`sauna-pad-edge-${i}`,label:'Sauna raised pad',part:'wall',vertices:[
+      [...a,padBottom],[...b,padBottom],[...b,levels.floorZ],[...a,levels.floorZ]]});
+  }
+  faces.push({id:'sauna-roof',label:'Sauna roof',part:'roof',vertices:ring.map(p=>[...p,levels.roofZ])});
+  faces.push({id:'sauna-roof-underside',label:'Sauna roof underside',part:'roof',vertices:ring.map(p=>[...p,roofBottom])});
+  faces.push({id:'sauna-floor',label:'Sauna floor',part:'floor',vertices:ring.map(p=>[...p,levels.floorZ])});
+  return faces;
+}
+
+/** Construction conflicts are surfaced instead of claiming every slider fits. */
+export function spaLayoutWarnings(settings={},data){
+  const program=gardenProgram(settings,data);if(!program.active)return [];
+  const warnings=[];
+  const stairs=terraceStairs(data.site.terrace,number(settings.terraceDepth,4.2),terraceGroundReference(settings,data).drop,settings,data);
+  if(stairs.count&&rectanglesOverlap(stairs,program.firepit,.25))warnings.push('The terrace stair run reaches the sunken lounge. Reduce the terrace depth or floor height, or redesign the steps before building.');
+  if(settings.removeGarage===false&&data.site.garage)warnings.push('This pool position occupies part of the existing garage site. The spa layout requires removal of the detached garage.');
+  return warnings;
+}
+
+const withinRect=(x,y,r)=>x>=r.x-EPS&&x<=r.x+r.width+EPS&&y>=r.y-EPS&&y<=r.y+r.length+EPS;
+/** Supporting surface for custom eyes and receiver samples inside the sunken room. */
+export function spaSurfaceAt(x,y,settings={},data){
+  const program=gardenProgram(settings,data);if(!program.active)return null;
+  const levels=spaLevels(settings,data);
+  if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
+  if(withinRect(x,y,program.firepit)){
+    const step=levels.firepit.steps.find(r=>withinRect(x,y,r));
+    return {surface:'firepit',groundZ:step?step.topZ:levels.firepit.floorZ};
+  }
+  return null;
+}
+
 /** Shared grade sample used by the illustrated steps and both terrace readouts. */
 export function terraceGroundReference(settings = {}, data) {
   const terrace = data.site.terrace;
@@ -79,9 +157,12 @@ export function terraceGroundReference(settings = {}, data) {
 /** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
   const depth = number(settings.terraceDepth, 4.2), size = 2.2;
+  const spa=spaEnabled(settings,data);
   const x0 = data.site.terrace.x + 0.15;
-  const y0 = data.site.rearMidpoint[1] + Math.min(1.45, Math.max(0.15, depth - size - 0.15));
-  return { x0, x1: x0 + size, y0, y1: y0 + size, width: size, length: size, z: floorElevation(settings, data) };
+  const y0 = data.site.rearMidpoint[1] + (spa?depth-size:Math.min(1.45,Math.max(0.15,depth-size-.15)));
+  const x1=x0+size,y1=y0+size,z=floorElevation(settings,data),waterOffset=spa?-.035:-.115;
+  return {x0,x1,y0,y1,width:size,length:size,z,infinity:spa,waterOffset,waterZ:z+waterOffset,
+    waterBounds:{x0:x0+.16,x1:x1-.16,y0:y0+.16,y1:y1-(spa?.07:.16)}};
 }
 
 /** Eye-height override is deliberate: UI should set the preset's initial value. */
@@ -90,7 +171,8 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const depth = number(s.terraceDepth, 4.2), width = data.site.terrace.width;
   const tub = jacuzziBounds(s, data);
   const sofa = data.site.observers?.sofa || [mx, rearY - 2.5];
-  const garden = data.site.observers?.garden || [mx, 30];
+  const program=gardenProgram(s,data),levels=program.active?spaLevels(s,data):null;
+  const garden = program.active?[11.8,32.1]:(data.site.observers?.garden || [mx, 30]);
   const terraceCentre = data.site.terrace.x + width / 2;
   const values = {
     sofa: [...sofa, 1.2, 'Living room · seated', 'floor'],
@@ -100,14 +182,22 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
     garden: [...garden, 1.65, 'Garden · standing', 'garden'],
     custom: [number(s.observerX, garden[0]), number(s.observerY, garden[1]), 1.65, 'Custom viewpoint', 'auto'],
   };
+  if(program.active){
+    const sa=program.sauna.viewpoint,fp=program.firepit.viewpoint;
+    values.sauna=[sa.x,sa.y,sa.eyeHeight,'Sauna · seated','sauna'];
+    values.firepit=[fp.x,fp.y,fp.eyeHeight,'Fire lounge · seated','firepit'];
+  }
   let [x, y, defaultEye, label, surface] = values[preset] || values.custom;
   if (surface === 'auto') {
     const onTerrace = x >= data.site.terrace.x && x <= data.site.terrace.x + width && y >= rearY && y <= rearY + depth;
-    surface = onTerrace || pointInPolygon([x, y], data.site.house.footprint) ? 'floor' : 'garden';
+    surface = onTerrace || pointInPolygon([x, y], data.site.house.footprint) ? 'floor' : spaSurfaceAt(x,y,s,data)?.surface||'garden';
   }
   const eyeHeight = number(settings.eyeHeight, defaultEye);
-  const groundZ = surface === 'floor' ? floorElevation(s, data) : gardenGroundAt(x, y, s, data);
-  return { x, y, z: groundZ + eyeHeight, preset, label, eyeHeight, groundZ, surface };
+  const groundZ = surface==='floor'?floorElevation(s,data):surface==='sauna'?levels.sauna.floorZ:
+    surface==='firepit'?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data);
+  const target=program.active&&(preset==='sauna'||preset==='firepit')?program[preset==='sauna'?'sauna':'firepit'].viewpoint.lookAt:null;
+  const defaultLookYaw=target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
+  return {x,y,z:groundZ+eyeHeight,preset,label,eyeHeight,groundZ,surface,defaultLookYaw,defaultLookPitch:0};
 }
 
 /** Intersection of finite plan segment AB with CD, returning AB fraction t. */
@@ -257,6 +347,25 @@ export function buildingIntersection(observer, target, building) {
   return hits.sort((a, b) => a.t - b.t)[0] || null;
 }
 
+/** Finite opaque sauna walls and roof; the panoramic glass stays transparent. */
+export function saunaIntersection(observer,target,settings={},data,faces=saunaOpaqueFaces(settings,data)){
+  const a=point3(observer),b=point3(target),hits=[];
+  for(const face of faces){
+    const p=face.vertices;
+    if(face.part==='wall'){
+      const hit=segmentIntersection(a,b,p[0],p[1]);
+      if(!hit||hit.t<=1e-5||hit.t>=1-1e-5)continue;
+      const z=a[2]+(b[2]-a[2])*hit.t,low=Math.min(...p.map(v=>v[2])),high=Math.max(...p.map(v=>v[2]));
+      if(z>=low-EPS&&z<=high+EPS)hits.push({...hit,z,part:face.part,buildingId:'sauna',faceId:face.id});
+    }else{
+      const dz=b[2]-a[2];if(Math.abs(dz)<=EPS)continue;
+      const t=(p[0][2]-a[2])/dz,x=a[0]+t*(b[0]-a[0]),y=a[1]+t*(b[1]-a[1]);
+      if(t>1e-5&&t<1-1e-5&&pointInPolygon([x,y],p))hits.push({t,x,y,z:p[0][2],part:face.part,buildingId:'sauna',faceId:face.id});
+    }
+  }
+  return hits.sort((a,b)=>a.t-b.t)[0]||null;
+}
+
 /**
  * Percent is an unweighted sampled-ray metric from ONE eye, not visible area.
  * Back-facing/LoD1 self-hidden facade samples are excluded from the denominator.
@@ -265,6 +374,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
   const s = settingsWithDefaults(settings), origin = point3(observer);
   const segments = hedgeSegments(s, data), rays = [], byBlock = [];
   const trees = screeningTreeVolumes(s, data);
+  const saunaFaces=saunaOpaqueFaces(s,data);
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
   if (!s.removeGarage && data.site.garage) blockers.push(data.site.garage);
@@ -286,6 +396,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       const screen = screenOnRay(origin, target, s, data, segments);
       const canopy = canopyIntersection(origin, target, s, data);
       const tree = firstTreeIntersection(origin, target, trees);
+      const sauna=saunaIntersection(origin,target,s,data,saunaFaces);
       let buildingHit = null;
       for (const other of blockers) {
         if (other.id === block.id) continue;
@@ -297,11 +408,12 @@ export function analyzeVisibility(observer, settings = {}, data) {
       if (canopy) possible.push({ t: canopy.t, type: 'canopy', hit: canopy });
       if (buildingHit) possible.push({ t: buildingHit.t, type: 'building', hit: buildingHit });
       if (tree) possible.push({ t: tree.t, type: 'screening-tree', hit: tree });
+      if (sauna) possible.push({t:sauna.t,type:'sauna',hit:sauna});
       const first = possible.sort((a, b) => a.t - b.t)[0];
       const ray = { origin, target, blockId: block.id, blockLabel: block.label,
         kind: i < block.roofSampleCount ? 'roof' : i >= block.samples.length ? 'high-feature' : 'facade',
         visible: !first, blockedBy: first?.type || null, obstruction: first?.hit || null,
-        screen, canopy, tree, distance };
+        screen, canopy, tree, sauna, distance };
       blockRays.push(ray); rays.push(ray);
       if (screen && !buildingHit) {
         worstRequiredHedge[screen.side] = Math.max(worstRequiredHedge[screen.side], screen.requiredHeight);
@@ -310,7 +422,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
         }
         // Keep the hedge-alone benchmark above unchanged. This second value
         // only describes the rays still needing a hedge after canopy/trees.
-        if (!canopy && !tree) {
+        if (!canopy && !tree && !sauna) {
           remainingRequiredHedge[screen.side] = Math.max(remainingRequiredHedge[screen.side], screen.requiredHeight);
           remainingRequiredHedge.overall = Math.max(remainingRequiredHedge.overall, screen.requiredHeight);
         }
