@@ -5,10 +5,12 @@ import {
   hedgeSegments,
   canopyBounds,
   jacuzziBounds,
-} from './geometry.js?v=1.4.0';
-import {gazeDirection} from './orientation.js?v=1.4.0';
-import {localSunDirection} from './solar.js?v=1.4.0';
-import {getSiteProfile} from './sites.js?v=1.4.0';
+} from './geometry.js?v=1.5.0';
+import {gazeDirection} from './orientation.js?v=1.5.0';
+import {localSunDirection} from './solar.js?v=1.5.0';
+import {getSiteProfile} from './sites.js?v=1.5.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.5.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.5.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -89,9 +91,11 @@ export function planLayout(scope, data, container) {
 }
 
 /** Render an interactive, metrically scaled plan. Source coordinates remain unmodified. */
-export function renderPlan(container, data, settings, observer, analysis, onPick) {
+export function renderPlan(container, data, settings, observer, analysis, onPick, options = {}) {
   const scope = container.dataset.mapScope === 'context' ? 'context' : 'garden';
   const l = planLayout(scope, data, container), {X, Y, scale, W, H} = l;
+  const treeVolumes = screeningTreeVolumes(settings, data);
+  const trees = treePlanMarkup(treeVolumes, {X, Y, scale, selectedTreeId: options.selectedTreeId, interactive: true});
   const site = data.site;
   const profile = getSiteProfile(site.id || 'sternicza-11', data), plot = profile.bounds;
   const middleX = (plot.minX + plot.maxX) / 2;
@@ -153,7 +157,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const scalebar = detail ? 5 : 20;
   const xScale = 38, yScale = H - 32;
   const svg = `
-    <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation" tabindex="0" role="img" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place a viewpoint. Arrow keys move the viewpoint by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
+    <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation;${options.placingTree ? 'cursor:crosshair;' : ''}" tabindex="0" role="group" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place ${options.placingTree ? 'the selected tree' : 'a viewpoint'}. Arrow keys move ${options.placingTree ? 'the selected tree' : 'the viewpoint'} by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
       <title>${esc(profile.label)} — mapped plot and proposed garden</title>
       <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street-side parcel boundary. Proposed terrace, jacuzzi and pool are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
       <defs><clipPath id="plan-clip"><rect width="${W}" height="${H}"/></clipPath><marker id="plan-tick" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M4 0V8" stroke="${C.muted}"/></marker></defs>
@@ -177,6 +181,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
         <polygon points="${polys(cone)}" fill="${C.observer}" opacity=".18"/>
         ${rays}
+        ${trees}
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="${detail ? 6 : 4}" fill="${C.observer}" stroke="#fffdf5" stroke-width="2"/>
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="2" fill="${C.ink}"/>
         ${detail ? compact ? `<text x="${X(observer.x) + 9}" y="${Y(observer.y) + 3}" font-size="9" fill="${C.ink}">View</text>` : `<rect x="${X(observer.x) - 58}" y="${Y(observer.y) - 30}" width="116" height="19" rx="9" fill="#fffdf5" fill-opacity=".94"/><text x="${X(observer.x)}" y="${Y(observer.y) - 17}" text-anchor="middle" font-size="10" fill="${C.ink}">${esc(observer.label || 'Viewpoint')}</text>` : ''}
@@ -192,7 +197,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
 
   container.innerHTML = `
     <div class="diagram-toolbar" style="display:flex;flex:0 0 auto;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px">
-      <p style="margin:0;font-size:11px;color:${C.muted}">${detail ? 'Tap the plot to move your viewpoint.' : 'Mapped footprints and sampled roof heights.'}</p>
+      <p style="margin:0;font-size:11px;color:${options.placingTree ? '#9b6922' : C.muted}">${options.placingTree ? 'Tap bare garden ground to place the selected tree.' : detail ? `Tap the plot to move your viewpoint.${treeVolumes.length ? ' Tap a tree to select it.' : ''}` : 'Mapped footprints and sampled roof heights.'}</p>
       <div style="display:flex;gap:5px" aria-label="Plan extent">
         <button type="button" data-map-scope="garden" aria-pressed="${scope === 'garden'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'garden' ? C.ink : 'transparent'};color:${scope === 'garden' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Garden</button>
         <button type="button" data-map-scope="context" aria-pressed="${scope === 'context'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'context' ? C.ink : 'transparent'};color:${scope === 'context' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Neighbourhood</button>
@@ -201,30 +206,44 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
     <div style="flex:1;min-height:0;display:flex;overflow:hidden;border:1px solid ${C.line};border-radius:12px;background:${C.paper}">${svg}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
       <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Privacy targets</span><span>Left / right: from house toward rear garden ↓</span>
+      ${treeVolumes.length ? '<span><b style="color:#41694d">◯</b> Tree crowns · dashed = no foliage credit / invalid</span>' : ''}
       ${detail ? `<span title="Ground on terrace centreline, 0.6 m beyond the outer edge.">${terraceDrop>=0?'Terrace drop':'Garden above terrace'} <b>${fmt(Math.abs(terraceDrop), 2)} m</b> · centreline, 0.6 m beyond edge</span>` : ''}
     </div>`;
 
   for (const button of container.querySelectorAll('[data-map-scope]')) button.onclick = () => {
     container.dataset.mapScope = button.dataset.mapScope;
-    renderPlan(container, data, settings, observer, analysis, onPick);
+    renderPlan(container, data, settings, observer, analysis, onPick, options);
   };
   const node = container.querySelector('svg');
+  for (const tree of container.querySelectorAll('[data-screening-tree]')) {
+    const select = event => {
+      if (options.placingTree || typeof options.onTreePick !== 'function') return;
+      event.preventDefault(); event.stopPropagation();
+      options.onTreePick(tree.dataset.screeningTree);
+    };
+    tree.addEventListener('click', select);
+    tree.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') select(event); });
+  }
   node.addEventListener('click', event => {
-    if (typeof onPick !== 'function') return;
+    const callback = options.placingTree ? options.onTreePlace : onPick;
+    if (typeof callback !== 'function') return;
     const matrix = node.getScreenCTM();
     if (!matrix) return;
     const p = node.createSVGPoint(); p.x = event.clientX; p.y = event.clientY;
     const q = p.matrixTransform(matrix.inverse());
     const xy = l.world(q.x, q.y);
-    if (pointInPolygon(xy, site.boundary)) onPick({x: Math.round(xy[0] * 100) / 100, y: Math.round(xy[1] * 100) / 100});
+    if (pointInPolygon(xy, site.boundary)) callback({x: Math.round(xy[0] * 100) / 100, y: Math.round(xy[1] * 100) / 100});
   });
   node.addEventListener('keydown', event => {
     const offsets = {ArrowLeft: [-.5, 0], ArrowRight: [.5, 0], ArrowUp: [0, -.5], ArrowDown: [0, .5]};
     const offset = offsets[event.key];
-    if (!offset || typeof onPick !== 'function') return;
+    const callback = options.placingTree ? options.onTreePlace : onPick;
+    if (!offset || typeof callback !== 'function') return;
     event.preventDefault();
-    const xy = [observer.x + offset[0], observer.y + offset[1]];
-    if (pointInPolygon(xy, site.boundary)) onPick({x: xy[0], y: xy[1]});
+    const moving = options.placingTree ? treeVolumes.find(v => v.id === options.selectedTreeId) : observer;
+    if (!moving) return;
+    const xy = [moving.x + offset[0], moving.y + offset[1]];
+    if (pointInPolygon(xy, site.boundary)) callback({x: xy[0], y: xy[1]});
   });
   return {ray, svg: node};
 }
@@ -272,6 +291,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   if (!(D > 0)) return {ray: null};
   const direction = [(target[0] - observer.x) / D, (target[1] - observer.y) / D];
   const origin = [observer.x, observer.y];
+  const treeVolumes = screeningTreeVolumes(settings, data);
   const xy = s => [observer.x + s * direction[0], observer.y + s * direction[1]];
   const reference = data.site.floorReference.z;
   const screen = ray.screen;
@@ -284,7 +304,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   });
   const roof = settings.canopyEnabled ? canopyBounds(settings, data) : null;
   const minimumZ = Math.min(...samples.map(p => Math.min(p.existing, p.proposed)), screen?.groundZ ?? Infinity) - 1;
-  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity) + 3.4;
+  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...treeVolumes.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
   // Use the flex panel's actual pixel frame, not the world's aspect ratio, for
   // the viewBox. A second layout pass below measures it after the short header
   // and readouts are laid out. World metres still use one scale in both axes,
@@ -305,7 +325,9 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const existingPath = profilePath('existing');
   const block = data.buildings.find(b => b.id === ray.blockId);
   const sampleType = ray.kind === 'high-feature' ? 'high-feature return' : 'roof point';
-  const outcome = ray.visible ? `This sampled ${sampleType} is exposed` : ray.blockedBy?.startsWith('hedge') ? `This sampled ${sampleType} is hidden by the hedge` : ray.blockedBy === 'canopy' ? `This sampled ${sampleType} is hidden by the canopy` : `This sampled ${sampleType} is hidden by a mapped building`;
+  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? 'canopy' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
+  const outcome = `This sampled ${sampleType} is ${ray.visible ? 'exposed' : `hidden by the ${blockerLabel}`}`;
+  const treesSvg = treeSectionMarkup(treeVolumes, {origin, direction, minS, maxS, X, Y, scale});
   const statusColor = ray.visible ? C.ray : C.clear;
   const topOfScreen = screen ? (screen.topZ ?? screen.groundZ + screen.height) : null;
   // Both displayed heights share today's planting base. For retained foliage,
@@ -368,7 +390,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
 
   container.innerHTML = `
     <div style="display:flex;flex:0 0 auto;flex-direction:column;gap:3px;margin:0 0 7px">
-      <span style="display:inline-flex;align-items:center;gap:6px;color:${statusColor};font-size:12px;font-weight:650"><span style="width:6px;height:6px;border-radius:50%;background:${statusColor}"></span>${ray.visible ? 'Sample exposed' : 'Sample hidden by ' + (ray.blockedBy === 'canopy' ? 'canopy' : ray.blockedBy === 'building' ? 'building' : 'hedge')} · ${esc(block?.label || 'apartment')}</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;color:${statusColor};font-size:12px;font-weight:650"><span style="width:6px;height:6px;border-radius:50%;background:${statusColor}"></span>${ray.visible ? 'Sample exposed' : 'Sample hidden by ' + blockerLabel} · ${esc(block?.label || 'apartment')}</span>
       <span style="font-size:10px;color:${C.muted}">One sightline · equal horizontal and vertical scale</span>
     </div>
     <div data-section-frame style="flex:1;min-height:0;display:flex;border:1px solid ${C.line};border-radius:12px;overflow:hidden;background:${C.paper}">
@@ -384,6 +406,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
           ${screen && screen.groundZ > gardenGroundAt(screen.x, screen.y, settings, data) + .01 ? `<rect x="${X(screen.distance) - .48 * scale}" y="${Y(screen.groundZ)}" width="${.96 * scale}" height="${(screen.groundZ - gardenGroundAt(screen.x, screen.y, settings, data)) * scale}" fill="${C.soil}"/>` : ''}
           ${houseFloor}${terraceFloor}
           ${canopySvg}
+          ${treesSvg}
           ${screenSvg}
           ${buildingMark}
           <line x1="${X(0)}" y1="${Y(observer.z)}" x2="${X(D)}" y2="${Y(target[2])}" stroke="${statusColor}" stroke-width="2" stroke-dasharray="${ray.visible ? 'none' : '6 4'}"/>
@@ -397,7 +420,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
       <div>Hedge-only target<strong style="display:block;color:${C.ink};font-size:${compact ? 17 : 20}px;margin-top:3px">${need !== null ? fmt(need, 2) + ' m' : '—'}</strong></div>
       <div>Eye to sample<strong style="display:block;color:${C.ink};font-size:${compact ? 17 : 20}px;margin-top:3px">${fmt(D, 2)} m</strong></div>
     </div>
-    <p style="flex:0 0 auto;margin:7px 0 0;font-size:10.5px;color:${C.muted};line-height:1.35">Solid/dotted ground: proposed/existing. Screen heights use current soil; the hedge-only target excludes canopy screening and applies to this ray.</p>`;
+    <p style="flex:0 0 auto;margin:7px 0 0;font-size:10.5px;color:${C.muted};line-height:1.35">Solid/dotted ground: proposed/existing. Crown shapes are cuts through this section. The hedge-only target excludes canopy and tree screening and applies to this ray.</p>`;
   const frame = container.querySelector('[data-section-frame]');
   if (!measuredFrame && frame?.clientWidth > 0 && frame?.clientHeight > 0) {
     return renderSection(container, data, settings, observer, analysis, {

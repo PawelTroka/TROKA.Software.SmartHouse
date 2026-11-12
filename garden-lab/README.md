@@ -1,12 +1,40 @@
 # Brzeźno · Garden Lab
 
-An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, compare editable thuja and earthwork budgets, and see how seasonal sun changes the shade.
+An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.4.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.4.0)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.5.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.5.0)**
 
-![Published Korzeniowskiego 40 simulator with the summer shade map](korzeniowskiego-preview-1.4.0.jpg)
+![Screening-tree controls and the Sternicza jacuzzi view in Garden Lab 1.5.0](screening-trees-preview-1.5.0.jpg)
 
-*Published version 1.4.0 at the main GitHub Pages URL. The screenshot shows the initial 4 m hedges / +0.5 m garden scenario at 12:00 on 21 June 2026, with the street at the top and the NNE rear garden below.*
+*Browser verification of version 1.5.0. One priced 5.5 m pine is shown from the jacuzzi, with crown-overhang warnings and target-specific visibility. Dense modeled foliage is illustrative, not a guarantee of actual screening.*
+
+## Screening trees · 1.5.0
+
+Open **Screening trees** to compare one broad specimen, a group of three narrower trees, or flat pleached panels above a hedge. Both properties use the same controls with their own mapped geometry. Trees can be selected, duplicated, disabled or removed independently. **Place on plan** moves the selected tree instead of the observer; the position sliders provide precise coordinates. A fresh design contains no added trees.
+
+**Find screening position** searches rear-garden soil for the selected target (PCK 3 initially at Sternicza) from the current observer. It maximizes additional sampled points hidden, retaining other trees, hedges and buildings as existing screens. The result is specific to that observer and dense-crown assumption. It is not an optimization for the whole garden, sunlight, maintenance, root space or aesthetics. Trunks inside the house, retained garage, pool, terrace, threshold or stairs are rejected. Crown overhang and boundary conflicts remain visible as warnings; inspect clearance before choosing a design.
+
+| Purchased specimen preset | Initial height / crown width | Referenced plant price |
+| --- | --- | ---: |
+| Austrian pine · medium | 4.25 / 3.5 m | 13,500 PLN |
+| Austrian pine · large | 5.5 / 3.5 m | 16,900 PLN |
+| Austrian pine · extra large | 6.5 / 5 m | 44,900 PLN |
+| Austrian pine · very tall | 9.5 / 5 m | 59,900 PLN |
+| Serbian spruce · narrow | 6 / 1.75 m | 4,950 PLN |
+| Hornbeam · summer crown | 6 / 2.5 m | 11,300 PLN |
+| Pleached hornbeam · Grande | 3.7 / 1.5 m | 2,190 PLN |
+
+These are nursery catalog references reviewed **12 November 2026**, not confirmed available stock or installed quotations. Prices and purchased size ranges are recorded in [`data/tree-sources.json`](data/tree-sources.json), with supplier links and tax/logistics notes. Pine and broad-hornbeam amounts include VAT under Galeria Ogrodowa terms; the tax basis of the other displayed amounts requires confirmation. Wyplatane's pleached-panel delivery is included. Three matching Serbian spruces are a budget comparison, not a supplier guarantee of three identical available plants.
+
+**Total height, crown base, width, depth and rotation are independent.** Pine and broadleaf crowns use ellipsoids, spruce uses a finite elliptical cone, and pleached foliage uses a thin rotated box. The same volumes drive 3D/plan/section, privacy and direct-sun rays. Empty space beneath a crown stays open except for its narrow trunk. A taller clear-stem tree can therefore screen less of a low sightline. Crown bases are editable assumptions except for the documented pleached stem. Round-crown depth starts equal to the listed diameter; actual specimens must be checked.
+
+**Foliage** can follow the chosen sun date or be forced to summer/winter. Deciduous auto foliage uses May–October as an illustrative comparison assumption; leaf-off crowns receive no opaque-foliage credit. Evergreen crowns stay active. These are dense geometric envelopes, so real gaps and permeability can reveal more of the background. They are not a guarantee of complete visual concealment. Existing unmapped trees and ornamental planting remain outside the numerical model.
+
+**Screening trees have their own budget.** Purchased stock sizes retain the catalog plant price. Out-of-spec dimensions require a custom unit quote; resizing does not extrapolate a nursery price or treat a mature crown as the purchased plant. Positive **Custom plant quote** replaces the reference; zero restores catalog pricing. Planting and anchoring are per tree, while delivery, crane/unloading and establishment are per-order allowances. Zero service values are explicitly unquoted. Incomplete budgets show known costs plus missing quotes. Disabled trees are excluded. Contingency is applied once after combining base hedge, soil and tree costs.
+
+Shared v7 links, JSON exports, per-property local saves and A/B comparisons preserve every tree independently. Old v1–6 links remain readable. Preview deployments use separate storage and do not overwrite the production design or scenario A.
+
+**Verification:** 142 automated tests cover the geometry, costs, solar/shade calculations and saved-state compatibility. Browser checks cover adding and resizing trees, custom and missing prices, disabling, three-tree placement, keyboard plan movement, A/B separation, winter foliage, shared-link reload and switching properties. Phone controls were checked at 390 × 844; the desktop sidebar scrolls independently to keep the model visible. Placement messages clear when their viewing or screening conditions change.
 
 ## Two properties · 1.4.0
 
@@ -54,7 +82,7 @@ Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between 
 
 **Sun & shade** lets you choose a date and time in Gdańsk, compare seasons, and inspect the resulting sun direction, 3D shadows and outdoor shade map. Change the hedges, canopy, garden level or surrounding-building assumptions to compare their effect on direct sunlight.
 
-**Share view** creates a `v=6` URL containing the property identity and changed settings, including sun controls, cost inputs and building adjustments. Older `v=1`–`v=5` links always reopen Sternicza. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration from versions 1–4, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Version 5 already uses the corrected orientation. Re-sharing writes version 6 once. Existing Sternicza browser saves and scenario A migrate in the same way; they are never imported into Korzeniowskiego. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-6 JSON containing the property, source location, settings, visibility, costs, sunlight and building adjustments.
+**Share view** creates a `v=7` URL containing the property identity and changed settings, including independently positioned trees, foliage mode, sun controls, cost inputs and building adjustments. Older `v=1`–`v=5` links always reopen Sternicza. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration from versions 1–4, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Version 5 already uses the corrected orientation. Re-sharing writes version 7. Version 6 links retain both property identities; existing v6 browser saves and scenario A migrate independently per property, with no added trees. Existing Sternicza browser saves and scenario A migrate in the same way; they are never imported into Korzeniowskiego. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-7 JSON containing the property, source location, settings, visibility, costs, sunlight and building adjustments.
 
 The app has no backend, analytics, account requirement or external runtime requests. Three.js r160 is vendored with its MIT licence. A reduced SVG renderer keeps 3D interaction available on browsers without WebGL. Plan, section and the numerical shade map use SVG independently of the 3D renderer. Detailed materials and 3D cast shadows require WebGL; an in-app note explains the fallback.
 
@@ -114,7 +142,7 @@ Choose a date from **2000–2100** and a time of day. The initial view is **21 J
 
 Sun position uses NOAA/Meeus equations at the selected property's coordinates: **54.405452° N, 18.6312142° E** for Sternicza and **54.4075710° N, 18.6301101° E** for Korzeniowskiego. The mapped EPSG:2180 orientation is corrected for meridian convergence: the rear axes point approximately **203.131° true** and **28.051° true**, respectively. Azimuth is clockwise from true north; elevation is above the level geometric horizon. Independent NREL SPA comparisons validate the seasonal solar direction. General method references and the original Sternicza calibration are recorded in [`data/solar-sources.json`](data/solar-sources.json); each active dataset supplies its own location and frame.
 
-The shade calculation traces rays toward the sun from outdoor surface samples on a **1 m grid**. It accounts for mapped surrounding-building bodies, sampled apartment roofs where available, the house and retained-garage roof meshes at fixed source elevations, opaque hedge/bed screens, the raised terrace with its jacuzzi opening, the proposed canopy and the supplied local terrain with garden fill. Building height/distance overrides, garage removal, hedge edits and surface-level changes feed the same comparison geometry. The model does not calculate sunlight through living-room windows or indoor illumination.
+The shade calculation traces rays toward the sun from outdoor surface samples on a **1 m grid**. It accounts for mapped surrounding-building bodies, sampled apartment roofs where available, the house and retained-garage roof meshes at fixed source elevations, opaque hedge/bed screens, the raised terrace with its jacuzzi opening, the proposed canopy, finite added screening-tree crowns and trunks, and the supplied local terrain with garden fill. Building height/distance overrides, garage removal, hedge edits and surface-level changes feed the same comparison geometry. The model does not calculate sunlight through living-room windows or indoor illumination.
 
 The garden, terrace, jacuzzi, pool and front-area percentages are the **fraction of outdoor sample centres receiving direct sun at the selected instant**. They approximate surface coverage and can change in steps near shadow edges. They do not represent irradiance, weather, cumulative daily sunlight hours, thermal comfort or plant growth. Night is shown separately from architectural shade. Sunrise, solar noon and sunset describe the astronomical day; sunrise/sunset use the conventional −0.833° apparent horizon, while shadow rays use the geometric sun centre above 0°. Buildings and trees can delay the property's actual direct sun.
 
@@ -147,7 +175,7 @@ required top elevation = (1 − r) × E + r × B
 required hedge height = required top elevation − planting-ground elevation
 ```
 
-The engine intersects finite hedge segments, the finite canopy roof and front/side fascia, and approximate surrounding-building prisms. The required rear hedge metric ignores canopy protection, but retains occlusion from mapped surrounding buildings. It refers to new planting ground, or original ground when existing hedge tops are held fixed.
+The engine intersects finite hedge segments, finite tree crowns and trunks, the canopy roof and front/side fascia, and approximate surrounding-building prisms. The required rear hedge metric ignores canopy and tree protection, but retains occlusion from mapped surrounding buildings. It refers to new planting ground, or original ground when existing hedge tops are held fixed.
 
 **Raising the garden is distinct from raising the hedge beds.** The house floor and terrace stay fixed. A garden observer moves with garden fill; a living-room observer does not. New planting rises with the soil only when the corresponding switch is enabled. Adding soil never lifts retained foliage. The terrain model applies uniform fill within the rear-garden area; retaining structures, drainage, soil settling and construction feasibility are outside scope.
 

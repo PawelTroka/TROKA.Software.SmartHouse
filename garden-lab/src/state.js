@@ -1,9 +1,10 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.4.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.4.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.4.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.4.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.5.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.5.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.5.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.5.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.5.0';
 
-export const STATE_VERSION = 6;
+export const STATE_VERSION = 7;
 
 const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -30,7 +31,7 @@ const BASE_FIELDS = Object.freeze({
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -43,10 +44,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const FIELDS=Object.freeze(Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,Object.freeze(value)])));
   const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,includeHighFeatures:false,
-    linkedHedges:false,sunPathVisible:false,...profile.defaults,siteId});
+    linkedHedges:false,sunPathVisible:false,screeningTrees:Object.freeze([]),treeLeafMode:'auto',...profile.defaults,siteId});
   const LEGACY_DEFAULTS=Object.freeze({...DEFAULTS,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0});
   function sanitizeWithDefaults(input,defaults) {
-    const out={...defaults};
+    const out={...defaults,screeningTrees:sanitizeScreeningTrees(defaults.screeningTrees,profile.bounds)};
     if(!isStateRecord(input)||(input.siteId!==undefined&&input.siteId!==siteId))return out;
     for(const [key,f] of Object.entries(FIELDS)) {
       if(typeof input[key]==='number'&&Number.isFinite(input[key]))out[key]=Math.max(f.min,Math.min(f.max,input[key]));
@@ -56,12 +57,15 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
     if(MODES.includes(input.mode))out.mode=input.mode;
+    out.screeningTrees=sanitizeScreeningTrees(input.screeningTrees,profile.bounds);
+    if(TREE_LEAF_MODES.includes(input.treeLeafMode))out.treeLeafMode=input.treeLeafMode;
     return out;
   }
   function sanitizeState(input={}) {return sanitizeWithDefaults(input,DEFAULTS);}
   function restoreVersionedState(input,version) {
-    if(version<6&&siteId!==DEFAULT_SITE_ID)return {...DEFAULTS};
+    if(version<6&&siteId!==DEFAULT_SITE_ID)return sanitizeState();
     const next=sanitizeWithDefaults(input,version<=3?LEGACY_DEFAULTS:DEFAULTS);
+    if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
       [next.costTreePriceLeft,next.costTreePriceRight]=[next.costTreePriceRight,next.costTreePriceLeft];
@@ -71,20 +75,24 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   }
   function encodeState(state) {
     const s=sanitizeState(state),p=new URLSearchParams({v:String(STATE_VERSION),site:siteId});
-    for(const [key,val] of Object.entries(s))if(key!=='siteId'&&val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
+    for(const [key,val] of Object.entries(s)){
+      if(key==='screeningTrees'){if(val.length)p.set(key,JSON.stringify(val));continue;}
+      if(key!=='siteId'&&val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
+    }
     return p.toString();
   }
   function decodeState(hash) {
-    if(typeof hash!=='string')return {...DEFAULTS};
+    if(typeof hash!=='string')return sanitizeState();
     const p=new URLSearchParams(hash.replace(/^#/,'')),s={};
     const version=Number(p.get('v'));
-    if(!SUPPORTED_VERSIONS.includes(version))return {...DEFAULTS};
-    if(version===6&&p.get('site')!==siteId)return {...DEFAULTS};
-    if(version<6&&(siteId!==DEFAULT_SITE_ID||(p.has('site')&&p.get('site')!==DEFAULT_SITE_ID)))return {...DEFAULTS};
+    if(!SUPPORTED_VERSIONS.includes(version))return sanitizeState();
+    if(version>=6&&p.get('site')!==siteId)return sanitizeState();
+    if(version<6&&(siteId!==DEFAULT_SITE_ID||(p.has('site')&&p.get('site')!==DEFAULT_SITE_ID)))return sanitizeState();
     for(const [key,val] of p){
       if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}
       else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}
-      else if(key==='preset'||key==='mode'||key==='sunDate')s[key]=val;
+      else if(key==='preset'||key==='mode'||key==='sunDate'||key==='treeLeafMode')s[key]=val;
+      else if(key==='screeningTrees'&&version>=7&&val.length<=20000){try{s[key]=JSON.parse(val);}catch{ /* Ignore malformed external state. */ }}
     }
     return restoreVersionedState(s,version);
   }
@@ -97,9 +105,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     return s;
   }
   function migrateSavedState(input,version=3) {
-    if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return {...DEFAULTS};
-    if(version===6&&input.siteId!==siteId)return {...DEFAULTS};
-    if(input.siteId!==undefined&&input.siteId!==siteId)return {...DEFAULTS};
+    if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return sanitizeState();
+    if(version>=6&&input.siteId!==siteId)return sanitizeState();
+    if(input.siteId!==undefined&&input.siteId!==siteId)return sanitizeState();
     const next=restoreVersionedState(input,version);
     if(version===1)next.linkedHedges=false;
     return next;
