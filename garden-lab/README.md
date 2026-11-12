@@ -2,13 +2,55 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.7.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.7.0)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.8.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.8.0#v=10&site=sternicza-11)**
 
-## Sternicza spa courtyard · 1.7.0
+## Sternicza: three tall pines, perimeter layout and dimensions · 1.8.0
+
+The latest fresh/reset design is **Spa courtyard · near plot edges**. The pool is farther toward the physical **left/east**, the six-person sauna is tucked into the far **right/west rear corner**, and the cold plunge is next to the rear boundary. The large terrace and edge jacuzzi remain, with the sunken fire lounge in the middle.
+
+### Finished edges and real levels
+
+| Feature | Size | Mapped boundary clearance |
+| --- | --- | --- |
+| Pool | 3.50 × 8.00 m water; 0.28 m coping | **≈ 0.82 m** from outer coping to the east/left parcel edge |
+| Sauna | 4.20 × 4.10 m outer envelope; 2.65 m external height | **≈ 1.09 m west/right**, **≈ 1.08 m rear** |
+| Cold plunge | 2.20 × 1.30 m outer rim; 1.10 m water depth | **≈ 1.04 m** from the outer pad to the rear parcel edge |
+| Sunken lounge | 4.40 × 4.40 m pit; **4.56 × 4.60 m including coping** | **2.54 m** between its outer coping and the pool coping |
+| Living terrace | 8.50 × 4.20 m, including the 2.20 × 2.20 m edge jacuzzi | **≈ 0.74 m** down to the proposed garden at the existing reference point |
+
+The dimensions use the actual mapped boundary segments, including the small inward kink beside the pool. They are not measured from an axis-aligned rectangle. The rear garden keeps the measured slope under the selected uniform fill. Sauna and plunge pads reach down to the low side of their footprints; their access treads use the actual approach grade. The sauna has two treads with approximately 0.136 m risers; the plunge has five 0.30 m treads and approximately 0.179 m risers.
+
+The pool-to-boundary strip is planting space, not a full clear walkway behind a thick hedge. Pool access is from the inner garden; hedge width and trimming must fit the narrow strip. These are model clearances, not approved building setbacks. The near-boundary sauna needs a project-specific siting check.
+
+### Third full-height pine restored
+
+The balanced default now has **three 9.5 m Austrian pines**, each with the existing catalog **5 m crown** assumption. Pine 3 is brought forward beside the pool, where its height intercepts the elevated living-room rays. The reference plant subtotal is **179,700 PLN**; delivery, lifting, planting and establishment remain separately editable and unquoted unless supplied.
+
+The new layouts are tested against PCK3 from **seven named viewpoints plus ten additional occupied/path locations**, using the current spa geometry. The balanced design materially improves the living room, terrace and jacuzzi compared with the previous behind-pool planting, while preserving better garden coverage than a house-only arrangement. It still leaves residual sampled views: **three trees do not establish 100% concealment from everywhere**. Crowns are dense idealized shapes, and actual foliage gaps can expose more.
+
+**Start with a scenario** includes:
+
+- **Three 9.5 m pines · balanced views · default**: the main proposal.
+- **Three 9.5 m pines · living-room priority**: puts more screening in front of the house, with more exposure around the fire lounge and pool paths.
+- **Two 9.5 m + one 5.5 m pine**: optimized lower-cost comparison; 136,700 PLN plants only.
+- **One 9.5 m + two 5.5 m pines**: budget comparison; 93,700 PLN plants only.
+- **Hedges only**: same spa, 4 m hedges and 0.5 m fill without specimen trees.
+
+The comparison includes both historical planting arrangements, same-position size changes and instantaneous sunlight checks. Full results and reproduction details are in [the new screening comparison](docs/edge-screening-comparison.md) and [machine-readable results](docs/edge-screening-comparison.json) and `scripts/search-edge-pck3-layouts.mjs`. Tree trunks retain concept planting space, but their crowns intentionally overhang parts of the pool/spa edges. The modeled crowns stay clear of the fire bowl itself; this is not a fire-safety or arboricultural certification. The additional screening also changes shade, so compare **Sun & shade** at your own times and seasons.
+
+### Subtle dimension overlay
+
+The **Dimensions** checkbox above the viewer is on in fresh designs. It shows fine lines and metre labels in the 3D model, eye view, plan and garden shade map. Sightline sections label only objects actually cut by that section. Measurements include feature width/length, boundary gaps, selected gaps between features, terrace and lounge drops, water depths, sauna height, separate hedge heights, and tree height/crown sizes.
+
+3D labels remain small, avoid overlapping one another and disappear behind opaque geometry. The plan gives the complete set; hover a label for its measurement basis. Lines are non-interactive, so selecting a viewpoint or tree still works. The switch is independent of sightline rays and is saved/shared with the design. JSON exports include the full metric records even when the overlay is hidden.
+
+**State version 10** preserves older designs: v9 keeps the original spa and its actual pines; v1–8 keep the original west-pool arrangement. Existing scenarios do not silently acquire taller trees or move their pool. Select the new garden layout, use Reset, or follow the current Sternicza link above to load the latest defaults. Known named planting layouts transfer to a compatible preset; custom trees remain with conflict warnings. Korzeniowskiego retains its own geometry.
+
+## Previous spa courtyard · 1.7.0
 
 ![Verified terrace view of the spa courtyard](spa-terrace-preview-1.7.0.jpg)
 
-Fresh and reset Sternicza designs now use **Spa courtyard**. The pool moves to the physical **left/east** when looking from the house into the rear garden. A six-person corner sauna occupies the rear **right/west**, with glazing toward the garden centre, pool and terrace. This is a metric proposal on the existing mapped parcel, not a replacement of the source survey or a construction-ready design.
+Version 1.7.0 introduced **Spa courtyard**, retained as **Previous spa** in the layout selector. The pool moves to the physical **left/east** when looking from the house into the rear garden. A six-person corner sauna occupies the rear **right/west**, with glazing toward the garden centre, pool and terrace. This is a metric proposal on the existing mapped parcel, not a replacement of the source survey or a construction-ready design.
 
 | Feature | Proposed geometry |
 | --- | --- |
