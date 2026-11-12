@@ -1,12 +1,42 @@
-# Sternicza · Garden Lab
+# Brzeźno · Garden Lab
 
-An interactive, browser-only garden privacy and sunlight simulator for Sternicza 11, Gdańsk. Explore the actual mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, compare editable thuja and earthwork budgets, and see how seasonal sun changes the shade.
+An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, compare editable thuja and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open the live simulator](https://paweltroka.github.io/TROKA.Software.SmartHouse/)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.4.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.4.0)**
+
+## Two properties · 1.4.0
+
+The **Property** selector switches between complete site datasets. Each property keeps its own current design and saved scenario A. Share links and exported scenarios include the selected property. Changing properties never applies the other property's heights, camera, building overrides, costs or saved comparison.
+
+| Mapped characteristic | Sternicza 11 | Korzeniowskiego 40 |
+| --- | --- | --- |
+| Design parcels | 401 + 400 | 160 |
+| Polygon area | 766.86 m² | 467.72 m² |
+| Approximate frontage / maximum local depth | 20.32 / 38.21 m | 15.78 / 29.91 m |
+| Rear direction, true north | 203.13° · SSW | 28.05° · NNE |
+| Physical left / right, looking into the garden | East / west | West / east |
+| Initial assumed living-floor height above garden reference | +1.2 m | +1.7 m |
+| Detached garage in source data | Present; removable | No mapped footprint within parcel |
+
+The Korzeniowskiego parcel is irregular, so frontage multiplied by maximum depth is not its exact area. The house's closest point is **5.49 m from the street-side parcel boundary**, not from a measured kerb. The older advert used 480 m²; the simulator follows the official mapped polygon. Property title and boundaries have not been legally verified.
+
+Korzeniowskiego has a **proposed 7.5 m wide terrace**, adjustable from 3–6 m deep, a **2.2 × 2.2 m integrated jacuzzi**, and an **8.5 × 2.2 m pool** along the physical right/east side. A short threshold connects the rectangular terrace to the actual stepped/sloping rear facade. Stairs respond to the selected floor and garden levels; loungers disappear when an extreme stair run occupies their position. These are design proposals, not existing features or a construction survey.
+
+Its irregular house footprint, local terrain, 40 nearby building footprints, and roof returns for the house plus five privacy targets come from separate official source data. The five adjustable targets are the right/east and left/west neighbours, plus the rear right, centre and left neighbours. PCK 3 is only a Sternicza target. The NNE garden uses its own true-north conversion and location for sunlight; low winter sun from the south can be blocked by the house itself.
+
+The house's roof boundary uses local height estimates from nearby roof returns, preserving lower projections without pulling every facade down to the lowest return. The same wall triangles and roof boundary feed the rendering and sunlight calculation. This is an interpolation of recorded points, not a surveyed eaves/roof construction model. The displayed terrace drop, plan and stairs use one ground reference on the terrace centreline, **0.6 m beyond the outer edge**; the initial Korzeniowskiego drop is approximately **1.34 m**.
+
+### Korzeniowskiego source data
+
+- [Official ULDK parcel 226101_1.0034.160](https://uldk.gugik.gov.pl/?request=GetParcelById&id=226101_1.0034.160&result=geom_wkt&srid=2180), retrieved 12 November 2026.
+- [GUGiK Gdańsk 2024 LoD1 building archive](https://opendata.geoportal.gov.pl/InneDane/Budynki3D/LOD1/2024/22/2261.zip), house EGiB ID `226101_1.0034.287_BUD`, footprint approximately 100.42 m².
+- [2024 1 m terrain tile](https://opendata.geoportal.gov.pl/NumDaneWys/NMT/81008/81008_1561323_N-34-50-C-d-1-1.asc), cropped around this parcel.
+- [2024 airborne LiDAR tile N-34-50-C-d-1-1-1-3](https://opendata.geoportal.gov.pl/NumDaneWys/DanePomiaroweLAZ/81005/81005_1559924_N-34-50-C-d-1-1-1-3.laz). Class-6 building returns are clipped to the house and five neighbours, then reduced to a maximum per plan voxel. The other context roofs retain LoD1 median heights.
+- [Derived dataset](data/korzeniowskiego-40.json) and [reproducible generator](scripts/build-korzeniowskiego-data.py), with source URLs, identifiers, acquisition dates, local frame and assumptions.
 
 ![Garden Lab 1.3.1 with corrected terrace view and physical hedge sides](orientation-preview-1.3.1.jpg)
 
-*Published version 1.3.1, looking from the terrace into the rear garden: left is east and right is west. This verification view uses 4 m hedges and 0.5 m of garden fill.*
+*Earlier Sternicza verification in version 1.3.1: left is east and right is west. This screenshot uses 4 m hedges and 0.5 m of garden fill.*
 
 ## Use it
 
@@ -20,7 +50,7 @@ Choose a viewpoint, then adjust hedge height or pick a scenario. Switch between 
 
 **Sun & shade** lets you choose a date and time in Gdańsk, compare seasons, and inspect the resulting sun direction, 3D shadows and outdoor shade map. Change the hedges, canopy, garden level or surrounding-building assumptions to compare their effect on direct sunlight.
 
-**Share view** creates a `v=5` URL containing changed settings, including sun controls, cost inputs and building adjustments. Older `v=1`–`v=4` links remain readable. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Re-sharing writes the corrected conventions once. Existing browser saves and scenario A migrate in the same way. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-5 JSON containing settings, visibility, costs, sunlight and building adjustments.
+**Share view** creates a `v=6` URL containing the property identity and changed settings, including sun controls, cost inputs and building adjustments. Older `v=1`–`v=5` links always reopen Sternicza. Versions 1–3 retain their original 2.5 m hedge / no-fill baseline; version 4 retains its 4 m / +0.5 m baseline. On migration from versions 1–4, left/right hedge heights and supplier quotes swap names to keep their original geographic side, and yaw changes sign to preserve the geographic viewing direction. Version 5 already uses the corrected orientation. Re-sharing writes version 6 once. Existing Sternicza browser saves and scenario A migrate in the same way; they are never imported into Korzeniowskiego. Old automatically linked v1 browser preferences become independent; explicit linking in shared links is respected. **Export scenario** downloads schema-version-6 JSON containing the property, source location, settings, visibility, costs, sunlight and building adjustments.
 
 The app has no backend, analytics, account requirement or external runtime requests. Three.js r160 is vendored with its MIT licence. A reduced SVG renderer keeps 3D interaction available on browsers without WebGL. Plan, section and the numerical shade map use SVG independently of the 3D renderer. Detailed materials and 3D cast shadows require WebGL; an in-app note explains the fallback.
 
@@ -52,7 +82,7 @@ The live app is published at **https://paweltroka.github.io/TROKA.Software.Smart
 
 The source is maintained in `garden-lab/` on `main`. To publish later changes with an authenticated Git checkout, run the tests and build, then copy the contents of `garden-lab/public/` to a worktree of the `gh-pages` branch and commit/push that branch. Keep the `.nojekyll` file. The repository's existing house model files are unrelated to this app and are preserved on `main`.
 
-## Coordinates and source data
+## Sternicza coordinates and source data
 
 - Parcel geometry: GUGiK ULDK parcels `226101_1.0034.401` and `226101_1.0034.400`. The combined design plot is approximately **20.32 × 38.21 m**, area **766.86 m²**. Inclusion of parcel 400 is a design assumption, not a title check.
 - Source horizontal system: **EPSG:2180**. The app uses a local frame with x along the frontage and y into the rear garden, approximately SSW.
@@ -66,9 +96,9 @@ The source is maintained in `garden-lab/` on `main`. To publish later changes wi
 
 Mapped property/footprint geometry and the terrain crop are data-derived. Nearby blocks include sampled roof elevations; the farther central blocks have only LoD1 median roofs. The tall thin return near PCK 3 is unverified and excluded by default, with an optional sensitivity toggle.
 
-The house's living floor starts at an **assumed 1.2 m above the original near-house garden reference**. This value is not a measured floor survey. The terrace, jacuzzi, pool, canopy, new openings, furniture and finishes are proposed. House and garage roof meshes interpolate the available mapped roof samples, with the original source elevations fixed when the assumed floor height changes. These are approximations of the recorded returns, not measured construction roof models. The default **0.5 m hedge inset** is a design choice: setting it to zero reproduces the earlier boundary-screen calculations.
+The living floor starts at an **assumed 1.2 m for Sternicza or 1.7 m for Korzeniowskiego above the property's original near-house garden reference**. Neither is a measured floor survey. The terrace, jacuzzi, pool, canopy, new openings, furniture and finishes are proposed. House and garage roof meshes interpolate the available mapped roof samples, with the original source elevations fixed when the assumed floor height changes. These are approximations of the recorded returns, not measured construction roof models. The default **0.5 m hedge inset** is a design choice: setting it to zero reproduces the earlier boundary-screen calculations.
 
-The 3D view displays proposed walls and window openings, but these are not used as verified occluders in the privacy ray score. Ornamental planting is illustrative and does not improve the numerical score. The privacy score covers five target apartment volumes regardless of which direction the camera faces.
+The 3D view displays proposed walls and window openings, but these are not used as verified occluders in the privacy ray score. Ornamental planting is illustrative and does not improve the numerical score. The privacy score covers the active property's five target building volumes regardless of which direction the camera faces.
 
 ## Sun and shade model
 
@@ -78,7 +108,7 @@ Version 1.2.1 was checked with 68 passing automated tests, desktop and phone lay
 
 Choose a date from **2000–2100** and a time of day. The initial view is **21 June 2026 at 12:00**, an illustrative summer scenario. All times use **Europe/Warsaw**, including CET/CEST daylight saving, regardless of the device's timezone. A repeated autumn hour uses its first occurrence; a missing spring hour advances by the clock-change gap and displays an explanation. Future clock rules depend on the browser's timezone database.
 
-Sun position uses NOAA/Meeus equations at **54.405452° N, 18.6312142° E**. The mapped EPSG:2180 orientation is corrected for meridian convergence: the rear garden axis points approximately **203.131° true**, rather than exactly south. Azimuth is clockwise from true north; elevation is above the level geometric horizon. Independent NREL SPA comparisons validate the seasonal solar direction. Method references and limitations are recorded in [`data/solar-sources.json`](data/solar-sources.json).
+Sun position uses NOAA/Meeus equations at the selected property's coordinates: **54.405452° N, 18.6312142° E** for Sternicza and **54.4075710° N, 18.6301101° E** for Korzeniowskiego. The mapped EPSG:2180 orientation is corrected for meridian convergence: the rear axes point approximately **203.131° true** and **28.051° true**, respectively. Azimuth is clockwise from true north; elevation is above the level geometric horizon. Independent NREL SPA comparisons validate the seasonal solar direction. General method references and the original Sternicza calibration are recorded in [`data/solar-sources.json`](data/solar-sources.json); each active dataset supplies its own location and frame.
 
 The shade calculation traces rays toward the sun from outdoor surface samples on a **1 m grid**. It accounts for mapped surrounding-building bodies, sampled apartment roofs where available, the house and retained-garage roof meshes at fixed source elevations, opaque hedge/bed screens, the raised terrace with its jacuzzi opening, the proposed canopy and the supplied local terrain with garden fill. Building height/distance overrides, garage removal, hedge edits and surface-level changes feed the same comparison geometry. The model does not calculate sunlight through living-room windows or indoor illumination.
 
@@ -96,7 +126,7 @@ Plant crowns and finishes illustrate the proposal. The ideal continuous hedge sc
 
 ## Building sensitivity comparisons
 
-The five target apartment blocks can be adjusted independently: **PCK 3**, the west and east blocks, the farther central block and its continuation. Select a block under **Fine-tune the assumptions → Surrounding buildings**. The readout shows the mapped baseline and current comparison side by side.
+The selected property's five privacy targets can be adjusted independently. Sternicza uses **PCK 3**, the west and east blocks, the farther central block and its continuation; Korzeniowskiego uses its five neighbouring buildings described above. Select a building under **Fine-tune the assumptions → Surrounding buildings**. The readout shows the mapped baseline and current comparison side by side.
 
 - **Height adjustment** changes roof-top height above the block's fixed base. All roof, facade and optional high-feature sample elevations scale consistently above that base. The allowed adjustment is −10 to +15 m, with a minimum modeled building height of 2 m.
 - **Distance adjustment** translates the whole building along its original bearing from the house's rear-wall midpoint to the building's footprint area centroid. Positive values move it farther away; negative values move it closer. The adjustment range is −15 to +40 m, with a minimum centre distance of 5 m. The footprint shape and elevations remain unchanged; moving the observer does not change this reference.
@@ -133,7 +163,7 @@ Enter a positive **Rear / Left / Right: custom tree price** to use your own PLN-
 
 ### Soil quantities and raising the garden
 
-The automatic fill area is the mapped land behind the house's rear-wall reference, excluding the **house footprint, terrace, pool and retained garage**. Overlapping exclusions are subtracted once. Removing the garage makes its footprint available for fill, but demolition costs are not included. Terrace depth therefore changes the priced fill area. At the initial 4.2 m terrace depth with the garage removed, the automatic area is approximately **338.69 m²**, rather than the property's full 766.86 m².
+The automatic fill area is the selected property's mapped land behind its rear-wall reference, excluding the **house footprint, terrace, pool and any retained garage**. Overlapping exclusions are subtracted once. Removing Sternicza's garage makes its footprint available for fill, but demolition costs are not included. Terrace depth therefore changes the priced fill area. The following numerical examples are for **Sternicza**: at the initial 4.2 m terrace depth with the garage removed, the automatic area is approximately **338.69 m²**, rather than the property's full 766.86 m². Korzeniowskiego calculates quantities from its own smaller polygon and layout.
 
 Finished in-place volume is:
 
@@ -180,6 +210,10 @@ The estimate excludes garage demolition, reuse of excavated pool soil, stripping
 
 ## Checks
 
+Version 1.4.0 passes **114 automated tests**. New regressions independently reconstruct the Korzeniowskiego parcel and house from official source coordinates; check physical east/west sides, the NNE garden and winter house shade; validate terrace/pool/jacuzzi placement and extreme stair runs; preserve every wall/roof seam; check shared terrace-drop readouts; and isolate property defaults, saved scenarios, version-6 links, target-building adjustments and solar caches. Sternicza's original source dataset and audited roof-ray benchmarks remain unchanged.
+
+The hosted preview was checked for independent hedge edits, separate property settings and scenario A, neighbour height/distance adjustments, seasonal shade updates, the corrected 3D house and eye-level view, and a 390 px phone-sized iframe without horizontal overflow. The testing browser had WebGL disabled, so these new visual checks exercised the SVG fallback and numerical shade map; the earlier 1.3.1 WebGL review below is not a claim that 1.4.0 received a new GPU-rendered review.
+
 The test suite covers finite ray intersections, the audited roof-ray benchmarks, terrain interpolation, garden versus bed raise, retained foliage, fixed house floors, screen inset, finite canopy roof/front/side edges, approximate building occlusion and garage removal.
 
 Cost regressions cover per-side tree pricing, zero-work totals, retained planting, polygon exclusions and overlaps, garden/bed volumes, topsoil partitioning, loose quantities, material-specific truck loads, area overrides, quote-required tall stock, custom unit prices and applying contingency once. Building tests cover unchanged zero overrides, area centroids, coherent height and position transformations, independence, caching without cumulative edits, exact reset and feeding changed targets into sightline calculations. State tests cover independent/link-controlled editing, legacy migration, v1–v4 legacy defaults and v5 URLs, browser-save migration, sun controls, budget and building settings, and validation of untrusted URL values.
@@ -193,6 +227,9 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 | File | Purpose |
 | --- | --- |
 | `src/geometry.js` | Terrain, observers, finite intersections and sampled visibility |
+| `src/sites.js` | Property registry, locations, physical side labels and site-specific defaults |
+| `src/layout.js` | Shared proposed furniture and level-dependent stair layout |
+| `src/roof-envelope.js` | Locally varying inferred wall/roof boundary shared by visual and sunlight models |
 | `src/scene.js` | 3D model, cameras and WebGL/SVG rendering |
 | `src/scene-materials.js` | Original procedural surface textures and materials |
 | `src/diagrams.js` | Interactive plan and precise sightline section |
@@ -205,7 +242,9 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 | `src/sun-view.js` | Seasonal controls, daily elevation chart, shade map and zone readouts |
 | `src/sun.css` | Responsive sun controls and shade-map presentation |
 | `src/app.js` | Interface and model integration |
-| `data/site-data.json` | Compact derived site and surrounding-building dataset |
+| `data/site-data.json` | Compact derived Sternicza site and surrounding-building dataset |
+| `data/korzeniowskiego-40.json` | Separate Korzeniowskiego parcel, terrain, house and neighbour dataset |
+| `scripts/build-korzeniowskiego-data.py` | Reproduce the second dataset from official source files |
 | `data/cost-sources.json` | Dated supplier observations, tax notes and planning-assumption evidence |
 | `data/solar-sources.json` | Solar/timezone references, site orientation and shade-model limitations |
 | `tests/` | Numerical and state checks |

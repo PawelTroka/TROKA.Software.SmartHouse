@@ -1,10 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.3.1';
-import { sampledRoofFaces } from './shade.js?v=1.3.1';
-import { createSurfaceTextures } from './scene-materials.js?v=1.3.1';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.3.1';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.4.0';
+import { sampledRoofFaces } from './shade.js?v=1.4.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.4.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.4.0';
+import { getSiteProfile } from './sites.js?v=1.4.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.4.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.4.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -61,7 +64,9 @@ function polygonPrism(ring, base, top, material) {
     const a0 = [...a, base], b0 = [...b, base], a1 = [...a, top], b1 = [...b, top];
     triangles.push(localTriangle(a0, b0, b1), localTriangle(a0, b1, a1));
   }
-  for (let i = 1; i < r.length - 1; i++) triangles.push(localTriangle([...r[0], top], [...r[i], top], [...r[i + 1], top]));
+  // Ear clipping preserves notches in real concave building footprints.
+  const cap=THREE.ShapeUtils.triangulateShape(r.map(p=>new THREE.Vector2(...p)),[]);
+  for(const [a,b,c] of cap)triangles.push(toWorldRoofTriangle([...r[a],top],[...r[b],top],[...r[c],top]));
   const mesh = new THREE.Mesh(geometryFromTriangles(triangles), material);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -69,8 +74,8 @@ function polygonPrism(ring, base, top, material) {
 }
 
 // Rendering and numerical shade use the same measured roof triangulation.
-function sampledRoofGeometry(ring, samples, edgeZ) {
-  const faces=sampledRoofFaces(ring,samples,edgeZ).map(([a,b,c])=>toWorldRoofTriangle(a,b,c));
+function sampledRoofGeometry(ring, samples, edgeZ, edgePoints=null) {
+  const faces=sampledRoofFaces(ring,samples,edgeZ,edgePoints).map(([a,b,c])=>toWorldRoofTriangle(a,b,c));
   return faces.length?geometryFromTriangles(faces):null;
 }
 
@@ -129,6 +134,8 @@ function fallback(container, error) {
 }
 
 export function createScene(container, data, callbacks = {}) {
+  const profile=getSiteProfile(data.site.id||'sternicza-11',data),plot=boundsOf(data.site.boundary);
+  const plotCentre=[(plot.minX+plot.maxX)/2,(plot.minY+plot.maxY)/2];
   let renderer, rendererType='webgl';
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
@@ -151,7 +158,7 @@ export function createScene(container, data, callbacks = {}) {
   renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;outline:none';
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('role', 'img');
-  renderer.domElement.setAttribute('aria-label', 'Interactive 3D model of the Sternicza house, garden and surrounding apartment blocks. Drag to rotate.');
+  renderer.domElement.setAttribute('aria-label', `Interactive 3D model of ${profile.label}, its garden and surrounding buildings. Drag to rotate.`);
   container.append(renderer.domElement);
 
   const scene = new THREE.Scene();
@@ -393,7 +400,7 @@ export function createScene(container, data, callbacks = {}) {
       const outline = [...ring, ring[0]].map(p => [...p, roof + 0.03]);
       line(buildingGroup, outline, '#8b9a98', 0.6);
     }
-    if (target && Math.hypot(c[0] - 10, c[1] - 25) < 120) {
+    if (target && Math.hypot(c[0] - plotCentre[0], c[1] - plotCentre[1]) < 120) {
       const heightScale = num(building.adjustment?.scaleZ, 1);
       const windowGeometry = new THREE.PlaneGeometry(1.05, 1.35 * heightScale);
       const frameGeometry = new THREE.PlaneGeometry(1.19, 1.49 * heightScale);
@@ -426,7 +433,7 @@ export function createScene(container, data, callbacks = {}) {
         windows.receiveShadow = true; frames.receiveShadow = true;
         buildingGroup.add(frames, windows);
       }
-      if ([9,15,29].includes(building.index)) label(building.label, [c[0],c[1],roofMax+1.1], 'target', building.id);
+      if (profile.buildingTargets.slice(0,3).some(b=>b.index===building.index)) label(building.label, [c[0],c[1],roofMax+1.1], 'target', building.id);
     }
   }
 
@@ -435,7 +442,7 @@ export function createScene(container, data, callbacks = {}) {
     for (let i = labels.length - 1; i >= 0; i--) {
       if (labels[i].kind === 'target') { labels[i].element.remove(); labels.splice(i, 1); }
     }
-    (data.buildings || []).filter(b => b.index !== 0 && b.index !== 1 && b.id !== data.site.house.id && b.id !== data.site.garage?.id).forEach(addContextBuilding);
+    (data.buildings || []).filter(b => b.id !== data.site.house.id && b.id !== data.site.garage?.id && b.kind!=='house' && b.kind!=='garage').forEach(addContextBuilding);
     shadowBoundsDirty=true;
   }
 
@@ -454,9 +461,76 @@ export function createScene(container, data, callbacks = {}) {
   box(staticGroup, -65, -1.9, terrainAt(10,-1,data), 180, 1.8, .05, mat.stoneLight, false,-95);
   for (let x=-50;x<110;x+=8) box(staticGroup,x,-4.96,terrainAt(x,-5,data)+.03,3.5,.1,.015,mat.stoneLight,false,-94);
   rebuildContextBuildings();
-  label('STERNICZA', [10,-3.7,terrainAt(10,-3.7,data)+.18], 'road');
+  label(profile.streetLabel, [plotCentre[0],-3.7,terrainAt(plotCentre[0],-3.7,data)+.18], 'road');
+
+  /** Fit proposed glazing and finishes to the actual second site's wall edges.
+   * The mapped footprint and sampled roof remain the existing envelope. */
+  function addMappedHouse(group,settings) {
+    const h=data.site.house,envelope=localRoofEnvelope(h),{ring,samples,base}=envelope;
+    const floor=data.site.floorReference.z+num(settings.floorHeight,1.7);
+    const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
+    const rearEdge=h.rearEdge||data.site.rearEdge;
+    const edgeIndex=rearEdge?ring.reduce((best,a,i)=>{
+      const b=ring[(i+1)%ring.length],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+      const d=Math.hypot(mx-(rearEdge[0][0]+rearEdge[1][0])/2,my-(rearEdge[0][1]+rearEdge[1][1])/2);
+      return d<best.distance?{index:i,distance:d}:best;
+    },{index:0,distance:Infinity}).index:ring.reduce((best,a,i)=>{
+      const y=(a[1]+ring[(i+1)%ring.length][1])/2;return y>best.y?{index:i,y}:best;
+    },{index:0,y:-Infinity}).index;
+    for(let i=0;i<ring.length;i++){
+      const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);
+      if(len<.0001)continue;
+      const edge=envelope.edges[i],eaves=u=>roofEdgeHeight(edge,u);
+      const minEaves=Math.min(...edge.points.map(p=>p[2])),maxEaves=Math.max(...edge.points.map(p=>p[2]));
+      const nx=winding*dy/len,ny=-winding*dx/len;
+      const p=(u,z,offset=0)=>[a[0]+dx*u+nx*offset,a[1]+dy*u+ny*offset,z];
+      const panel=(u0,u1,z0,z1,material,offset=0,shadow=true)=>{
+        if(u1-u0<.001)return;
+        const top=typeof z1==='function'?z1:()=>z1,triangles=[];
+        const cuts=[u0,...edge.points.map((_,j)=>j/(edge.points.length-1)).filter(u=>u>u0&&u<u1),u1];
+        for(let j=0;j<cuts.length-1;j++){
+          const u=cuts[j],v=cuts[j+1],hu=top(u),hv=top(v);
+          if(Math.min(hu,hv)<=z0+.001)continue;
+          triangles.push(localTriangle(p(u,z0,offset),p(v,z0,offset),p(v,hv,offset)),localTriangle(p(u,z0,offset),p(v,hv,offset),p(u,hu,offset)));
+        }
+        if(!triangles.length)return;
+        const mesh=new THREE.Mesh(geometryFromTriangles(triangles),material);
+        mesh.castShadow=shadow;mesh.receiveShadow=true;group.add(mesh);
+      };
+      if(i===edgeIndex){
+        const t=data.site.terrace,project=x=>Math.abs(dx)>.01?(x-a[0])/dx:.5;
+        const uA=project(t.x+.08),uB=project(t.x+t.width-.08),lo=Math.max(.05,Math.min(uA,uB)),hi=Math.min(.95,Math.max(uA,uB));
+        const top=Math.min(floor+2.65,minEaves-.25);
+        panel(0,1,base,floor,mat.plinth);panel(0,lo,floor,top,mat.wall);panel(hi,1,floor,top,mat.wall);panel(0,1,top,eaves,mat.wall);
+        panel(lo,hi,floor+.04,top-.04,mat.glass,.018,false);
+        for(const u of [lo,lo+(hi-lo)/3,lo+2*(hi-lo)/3,hi])panel(u-.023/len,u+.023/len,floor,top,mat.metal,.035,false);
+        panel(lo,hi,floor,floor+.045,mat.metal,.04,false);panel(lo,hi,top-.045,top,mat.metal,.04,false);
+      }else panel(0,1,base,eaves,mat.wall);
+      // Repeated openings are a restrained renovation proposal, never surveyed windows.
+      const count=Math.max(1,Math.floor(len/3.1));
+      for(let z=floor+(i===edgeIndex?3.35:.5);len>=1.5&&z+1.5<maxEaves-.25;z+=3.0){
+        for(let j=0;j<count;j++){
+          const u=(j+.5)/count,half=Math.min(.72/len,.35/count);
+          const lo=u-half-.06/len,hi=u+half+.06/len;
+          const localHeights=[eaves(lo),eaves(hi),...edge.points.filter((_,k)=>k/(edge.points.length-1)>lo&&k/(edge.points.length-1)<hi).map(p=>p[2])];
+          if(z+1.56>=Math.min(...localHeights)-.1)continue;
+          panel(u-half-.06/len,u+half+.06/len,z-.06,z+1.56,mat.metal,.03,false);
+          panel(u-half,u+half,z,z+1.5,mat.contextWindow,.05,false);
+        }
+      }
+      line(group,edge.points.map((q,j)=>p(j/(edge.points.length-1),q[2]-.06,.04)),'#4e5751',.9);
+    }
+    const roof=samples.length>6?sampledRoofGeometry(ring,samples,envelope.fallback,envelope.boundary):null;
+    if(roof){const mesh=new THREE.Mesh(roof,mat.roof);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);}
+    else group.add(polygonPrism(ring,envelope.fallback,num(h.roofTopZ,envelope.fallback),mat.roof));
+    group.add(polygonPrism(ring,floor-.12,floor,mat.stoneLight));
+    const sofa=data.site.observers?.sofa||data.site.rearMidpoint;
+    box(group,sofa[0]-1.4,sofa[1]-.6,floor,2.8,.8,.4,mat.linen,false);
+    box(group,sofa[0]-1.4,sofa[1]-.6,floor+.4,2.8,.18,.38,mat.linen,false);
+  }
 
   function addHouse(group, settings) {
+    if(data.site.id==='korzeniowskiego-40'){addMappedHouse(group,settings);return;}
     const house = data.site.house, ring=closeRing(house.footprint);
     const xs=ring.map(p=>p[0]), ys=ring.map(p=>p[1]), x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), rear=data.site.rearMidpoint[1];
     const roofPoints=(house.roofPoints||[]).map(xyz).filter(p=>p.length>=3&&Number.isFinite(p[2]));
@@ -579,8 +653,17 @@ export function createScene(container, data, callbacks = {}) {
 
   function addShrubs(group,settings) {
     const placements=[];
-    for(let y=20;y<37;y+=1.45){placements.push([1.05,y,.35+(Math.sin(y)*.5+.5)*.3]);placements.push([19.25,y,.35+(Math.cos(y)*.5+.5)*.3]);}
-    for(let x=2;x<19;x+=1.3)placements.push([x,36.8,.4+(Math.sin(x*3)*.5+.5)*.18]);
+    const pool=data.site.pool,t=data.site.terrace;
+    for(const {a,b} of hedgeSegments(settings,data)){
+      const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),n=Math.max(1,Math.floor(len/1.45));
+      for(let i=0;i<n;i++){
+        const u=(i+.5)/n,x=a[0]+dx*u-dy/len*.85,y=a[1]+dy*u+dx/len*.85;
+        if(!contains(x,y,data.site.boundary)||contains(x,y,data.site.house.footprint))continue;
+        if(x>pool.x-.75&&x<pool.x+pool.width+.75&&y>pool.y-.75&&y<pool.y+pool.length+.75)continue;
+        if(x>t.x-.6&&x<t.x+t.width+.6&&y>t.y-.6&&y<t.y+num(settings.terraceDepth,t.depth)+.6)continue;
+        placements.push([x,y,.35+(Math.sin(x+y)*.5+.5)*.3]);
+      }
+    }
     if(svgMode){
       placements.filter((_,i)=>i%3===0).forEach(([x,y,h])=>{const shrub=new THREE.Mesh(new THREE.IcosahedronGeometry(1,0),mat.leaf);shrub.position.copy(point(x,y,gardenGroundAt(x,y,settings,data)+h*.48));shrub.scale.set(.53,h,.53);group.add(shrub);});
       return;
@@ -598,6 +681,10 @@ export function createScene(container, data, callbacks = {}) {
     const deckBase=Math.min(ground,floor-.15);
     const jacuzzi=jacuzziBounds(settings,data),jx=jacuzzi.x0,jy=jacuzzi.y0;
     const deckHeight=Math.max(.15,floor-deckBase);
+    // A proposed threshold overlaps the existing floor to bridge the actual
+    // stepped/angled facade. It shares its dimensions with the shade engine.
+    const threshold=num(terrace.thresholdDepth);
+    if(threshold>0)box(group,x,rear-threshold,deckBase,width,threshold,deckHeight,mat.stone);
     // Four deck slabs leave an actual opening for the integrated tub. The water
     // and seats sit below deck level instead of a blue plate over a solid terrace.
     box(group,x,rear,deckBase,jx-x,depth,deckHeight,mat.stone);
@@ -624,10 +711,10 @@ export function createScene(container, data, callbacks = {}) {
       const jets=new THREE.InstancedMesh(new THREE.SphereGeometry(.035,8,5),mat.metal,8),dummy=new THREE.Object3D();
       for(let i=0;i<8;i++){dummy.position.copy(point(i<4?jx+.155:jx+2.045,jy+.43+(i%4)*.44,floor-.28));dummy.updateMatrix();jets.setMatrixAt(i,dummy.matrix);}group.add(jets);
     }
-    const stepGround=gardenGroundAt(x+width/2,rear+depth+.6,settings,data),drop=floor-stepGround;
-    if(drop>.1){
-      const n=Math.max(1,Math.ceil(drop/.18)),stepW=3.0;
-      for(let i=0;i<n;i++)box(group,x+1.0,rear+depth+i*.29,stepGround,stepW,.29,drop*(n-i)/n,mat.stone);
+    const {groundZ:stepGround,drop}=terraceGroundReference(settings,data);
+    const stairs=terraceStairs({...terrace,y:rear},depth,drop);
+    if(stairs.count){
+      for(let i=0;i<stairs.count;i++)box(group,stairs.x,stairs.y+i*.29,stepGround,stairs.width,.29,drop*(stairs.count-i)/stairs.count,mat.stone);
     }
     // Low daybed at the terrace's quiet end.
     // The tub occupies physical right (low site x); this seating stays at left.
@@ -645,18 +732,21 @@ export function createScene(container, data, callbacks = {}) {
     const poolWater=box(group,px,py,waterTop-.025,pw,pl,.025,mat.water,false,-69);
     poolWater.name='pool-water';
     for(let ty=py+.8;ty<py+pl;ty+=.8){line(group,[[px-.28,ty,pz+.067],[px,ty,pz+.067]],'#b1a994',.45);line(group,[[px+pw,ty,pz+.067],[px+pw+.28,ty,pz+.067]],'#b1a994',.45);}
-    for(let n=0;n<4;n++)line(group,[[px+.12,py+1+n*1.9,waterTop+.004],[px+pw-.12,py+1+n*1.9,waterTop+.004]],'#79a5a0',.21);
-    for(let y=28;y<32;y+=2.5){
-      const lx=10.8,lz=gardenGroundAt(lx,y,settings,data);
+    for(let y=py+1;y<py+pl-.4;y+=1.9)line(group,[[px+.12,y,waterTop+.004],[px+pw-.12,y,waterTop+.004]],'#79a5a0',.21);
+    const furniture=gardenFurniture(data);
+    for(const [lx,y] of furniture.loungers){
+      const lounger={x:lx,y,width:.78,length:2};
+      if(rectanglesOverlap(lounger,{x,y:rear,width,length:depth},.15)||(stairs.count&&rectanglesOverlap(lounger,stairs,.15)))continue;
+      const lz=gardenGroundAt(lx,y,settings,data);
       box(group,lx,y,lz,.78,2.0,.24,mat.wood,false);
       roundedSlab(group,lx+.02,y+.03,lz+.24,.74,1.9,.1,.07,mat.linen);
       const back=box(group,lx+.02,y+.03,lz+.37,.74,.6,.09,mat.linen,false);back.rotation.x=-.3;
     }
     // Ground-level circulation and a small dining setting, only when the garage is removed.
-    for(let y=23;y<35;y+=1.45){const z=gardenGroundAt(3.8,y,settings,data);box(group,3.2,y,z+.018,1.15,.9,.035,mat.stoneLight,false,-80);}
-    if(settings.removeGarage!==false){
-      const dx=15.3,dy=26.4,dz=gardenGroundAt(dx,dy,settings,data);
-      box(group,14.1,24.5,dz-.015,3.8,4.6,.035,mat.stone,false,-80);
+    for(const [pathX,pathY] of furniture.path){const z=gardenGroundAt(pathX+.5,pathY,settings,data);box(group,pathX,pathY,z+.018,1.15,.9,.035,mat.stoneLight,false,-80);}
+    if(!data.site.garage||settings.removeGarage!==false){
+      const dining=furniture.dining,dx=dining.x+(dining.width-1.55)/2,dy=dining.y+(dining.length-.8)/2,dz=gardenGroundAt(dx,dy,settings,data);
+      box(group,dining.x,dining.y,dz-.015,dining.width,dining.length,.035,mat.stone,false,-80);
       box(group,dx,dy,dz+.65,1.55,.8,.09,mat.woodLight,false);
       [dx+.1,dx+1.3].forEach(tx=>box(group,tx,dy+.1,dz,.12,.6,.65,mat.wood,false));
       for(const cy of [dy-.55,dy+1.0])for(const cx of [dx+.08,dx+.92]){
@@ -685,7 +775,7 @@ export function createScene(container, data, callbacks = {}) {
     removeGeometry(designGroup);
     syncContextTerrain(settings);
     const boundary=data.site.boundary;
-    const ground=makeTerrain(designGroup,[-.1,0,20.45,38.3],svgMode?2:.65,(x,y)=>gardenGroundAt(x,y,settings,data)+.008,mat.grass,boundary,!svgMode,waterCutouts(settings));
+    const ground=makeTerrain(designGroup,[plot.minX-.1,plot.minY-.1,plot.maxX+.1,plot.maxY+.1],svgMode?2:.65,(x,y)=>gardenGroundAt(x,y,settings,data)+.008,mat.grass,boundary,!svgMode,waterCutouts(settings));
     terrainMeshes.push(ground);
     const linePoints=[];
     const ring=closeRing(boundary);
@@ -704,9 +794,14 @@ export function createScene(container, data, callbacks = {}) {
       }
       const fillEdge=new THREE.Mesh(geometryFromTriangles(faces),mat.plinth);fillEdge.receiveShadow=true;if(svgMode)fillEdge.renderOrder=-89;designGroup.add(fillEdge);
     }
-    const frontZ=terrainAt(5,5,data);
-    box(designGroup,1.0,.4,frontZ+.01,2.6,9.1,.04,mat.stone,false,-80);
-    box(designGroup,4.1,1.7,frontZ+.01,10.9,1.1,.04,mat.stone,false,-80);
+    if(data.site.id==='korzeniowskiego-40'){
+      const h=boundsOf(data.site.house.footprint),centre=(h.minX+h.maxX)/2,frontZ=terrainAt(centre,h.minY/2,data);
+      box(designGroup,centre-.6,.25,frontZ+.015,1.2,Math.max(.1,h.minY-.25),.035,mat.stone,false,-80);
+    }else{
+      const frontZ=terrainAt(5,5,data);
+      box(designGroup,1.0,.4,frontZ+.01,2.6,9.1,.04,mat.stone,false,-80);
+      box(designGroup,4.1,1.7,frontZ+.01,10.9,1.1,.04,mat.stone,false,-80);
+    }
     addHouse(designGroup,settings);
     addGarden(designGroup,settings);
     addHedges(designGroup,settings);
@@ -799,7 +894,7 @@ export function createScene(container, data, callbacks = {}) {
       ambient.color.set('#f9f4e8');ambient.groundColor.set('#7e8a7c');ambient.intensity=2.25;
       if(svgAmbient){svgAmbient.color.set('#ffffff');svgAmbient.intensity=.88;}
       sun.color.set('#fff2d4');sun.intensity=svgMode?.72:3.1;sun.castShadow=!svgMode;
-      sun.position.copy(point(-30,4,70));sun.target.position.copy(point(10,24,3));
+      sun.position.copy(point(centre[0]-40,centre[1]-20,centre[2]+67));sun.target.position.copy(point(...centre));
       scene.background.set('#dfe8e8');renderer.toneMappingExposure=1.16;
     }else{
       // The ephemeris vector points FROM the plot TO the sun. In Three.js the
@@ -902,9 +997,11 @@ export function createScene(container, data, callbacks = {}) {
     }else if(mode==='plan'){
       // The tiny rearward bias resolves the vertical lookAt singularity with
       // street at top and increasing site x at screen right, matching the map.
-      camera.fov=36;camera.near=.1;camera.position.copy(point(10,24.001,83));controls.target.copy(point(10,24,2.5));camera.lookAt(controls.target);controls.minDistance=15;controls.maxPolarAngle=.001;controls.minPolarAngle=.0001;controls.update();
+      const cx=plotCentre[0],cy=(data.site.rearMidpoint[1]+plot.maxY)/2,z=data.site.floorReference.z;
+      camera.fov=36;camera.near=.1;camera.position.copy(point(cx,cy+.001,z+Math.max(plot.maxY-plot.minY,plot.maxX-plot.minX)*2.1));controls.target.copy(point(cx,cy,z));camera.lookAt(controls.target);controls.minDistance=15;controls.maxPolarAngle=.001;controls.minPolarAngle=.0001;controls.update();
     }else{
-      camera.fov=48;camera.near=.1;camera.position.copy(point(29,46,33));controls.target.copy(point(10,23,4));controls.minDistance=3;controls.minPolarAngle=.08;controls.maxPolarAngle=Math.PI*.49;camera.lookAt(controls.target);controls.update();
+      const cy=data.site.rearMidpoint[1]+(plot.maxY-data.site.rearMidpoint[1])*.3,cx=plotCentre[0],span=plot.maxY-plot.minY,z=data.site.floorReference.z;
+      camera.fov=48;camera.near=.1;camera.position.copy(point(cx+span*.5,cy+span*.6,z+span*.8));controls.target.copy(point(cx,cy,z+1.5));controls.minDistance=3;controls.minPolarAngle=.08;controls.maxPolarAngle=Math.PI*.49;camera.lookAt(controls.target);controls.update();
     }
     camera.updateProjectionMatrix();requestRender();
   }

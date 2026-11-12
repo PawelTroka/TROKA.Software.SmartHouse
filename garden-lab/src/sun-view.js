@@ -1,5 +1,6 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.3.1';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.3.1';
+import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.4.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.4.0';
+import {getSiteProfile} from './sites.js?v=1.4.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -42,16 +43,22 @@ export function renderSunReadouts(sun,shade,settings){
   $('sun-day-chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sun elevation throughout ${escape(sun.date)} in Warsaw local time. Selected elevation ${sun.elevation.toFixed(1)} degrees."><defs><clipPath id="sun-chart-clip"><rect x="${left}" y="${top}" width="${W-left-right}" height="${H-top-bottom}"/></clipPath></defs><rect x="${left}" y="${top}" width="${W-left-right}" height="${H-top-bottom}" rx="5" fill="#edf0e9"/><rect x="${X(sunrise)}" y="${top}" width="${Math.max(0,X(sunset)-X(sunrise))}" height="${H-top-bottom}" fill="#f8efd6"/><line x1="${left}" x2="${W-right}" y1="${Y(0)}" y2="${Y(0)}" stroke="#9da89a" stroke-dasharray="3 3"/><g clip-path="url(#sun-chart-clip)"><path d="${path}" fill="none" stroke="#a98432" stroke-width="2.5"/><line x1="${X(sun.resolvedMinutes)}" x2="${X(sun.resolvedMinutes)}" y1="${top}" y2="${H-bottom}" stroke="#345f49" stroke-width="1.5"/><circle cx="${X(sun.resolvedMinutes)}" cy="${Y(sun.elevation)}" r="4" fill="#e4ae3f" stroke="#fffef9" stroke-width="2"/></g>${[0,6,12,18,24].map(h=>`<text x="${X(h*60)}" y="${H-5}" text-anchor="${h===0?'start':h===24?'end':'middle'}" fill="#6d7b6d" font-size="10">${String(h).padStart(2,'0')}:00</text>`).join('')}<text x="2" y="${Y(0)+3}" fill="#6d7b6d" font-size="10">0°</text><text x="2" y="${Y(60)+3}" fill="#6d7b6d" font-size="10">60°</text></svg>`;
 }
 
+export function sunMapBounds(scope,data,compact=false){
+  const plot=getSiteProfile(data.site.id||'sternicza-11',data).bounds;
+  if(scope==='context'){
+    const points=[...data.site.boundary,...data.buildings.filter(b=>b.kind==='target'&&b.footprint?.length).flatMap(b=>b.footprint)];
+    return {minX:Math.min(...points.map(p=>p[0]))-5,maxX:Math.max(...points.map(p=>p[0]))+5,minY:Math.min(...points.map(p=>p[1]))-6,maxY:Math.max(...points.map(p=>p[1]))+5};
+  }
+  return {minX:plot.minX-(compact?3:8),maxX:plot.maxX+(compact?3:8),minY:plot.minY-3,maxY:plot.maxY+4};
+}
+
 /** A metric plan of direct-sun samples, separate from the privacy sightline score. */
 export function renderSunMap(container,data,settings,sun,shade){
   const scope=container.dataset.sunScope==='context'?'context':'garden';
   const W=Math.max(340,container.clientWidth||760),H=Math.max(310,(container.clientHeight||470)-75);
   const compact=W<520;
-  let bounds={minX:compact?-3:-10,maxX:compact?24:31,minY:-3,maxY:42};
-  if(scope==='context'){
-    const p=data.buildings.filter(b=>b.kind==='target').flatMap(b=>b.footprint);
-    bounds={minX:Math.min(-10,...p.map(p=>p[0]))-5,maxX:Math.max(30,...p.map(p=>p[0]))+5,minY:-6,maxY:Math.max(60,...p.map(p=>p[1]))+5};
-  }
+  const profile=getSiteProfile(data.site.id||'sternicza-11',data),plot=profile.bounds;
+  const bounds=sunMapBounds(scope,data,compact);
   const pad=24,scale=Math.min((W-pad*2)/(bounds.maxX-bounds.minX),(H-pad*2)/(bounds.maxY-bounds.minY));
   const ox=(W-(bounds.maxX-bounds.minX)*scale)/2,oy=(H-(bounds.maxY-bounds.minY)*scale)/2;
   const X=x=>ox+(x-bounds.minX)*scale,Y=y=>oy+(y-bounds.minY)*scale;
@@ -60,7 +67,7 @@ export function renderSunMap(container,data,settings,sun,shade){
   const label=(text,x,y,size=11)=>`<text x="${X(x)}" y="${Y(y)}" text-anchor="middle" font-size="${size}" font-weight="600" fill="#294735" paint-order="stroke" stroke="#fffef9" stroke-width="3" stroke-linejoin="round">${escape(text)}</text>`;
   const centre=p=>p.reduce((a,v)=>[a[0]+v[0]/p.length,a[1]+v[1]/p.length],[0,0]);
   const {site}=data,t={...site.terrace,depth:settings.terraceDepth},p=site.pool,c=settings.canopyEnabled?canopyBounds(settings,data):null,j=jacuzziBounds(settings,data);
-  const context=data.buildings.map(b=>{
+  const context=data.buildings.filter(b=>b.footprint?.length&&b.kind!=='house'&&b.kind!=='garage'&&b.id!==site.house.id&&b.id!==site.garage?.id).map(b=>{
     const bc=centre(b.footprint);
     return `<polygon points="${poly(b.footprint)}" fill="${b.kind==='target'?'#d0b7a7':'#dedfd5'}" stroke="#b7c0b3" stroke-width="1"/>${scope==='context'&&b.kind==='target'?label(b.label.replace(' apartment block','').replace(' continuation',''),bc[0],bc[1],compact?9:11):''}`;
   }).join('');
@@ -74,7 +81,12 @@ export function renderSunMap(container,data,settings,sun,shade){
   const detail=scope==='garden';
   const canopy=c?rect(c.x0,c.y0,c.x1-c.x0,c.y1-c.y0,'fill="none" stroke="#6c5740" stroke-width="2" stroke-dasharray="5 3"'):'';
   const jacuzzi=j?rect(j.x0,j.y0,j.x1-j.x0,j.y1-j.y0,'fill="#76a8a7" fill-opacity=".4" stroke="#4b7775" stroke-width="1"'):'';
-  container.innerHTML=`<div class="sun-map-toolbar"><div class="map-scope" role="group" aria-label="Shade map extent"><button data-sun-scope="garden" aria-pressed="${detail}">Garden</button><button data-sun-scope="context" aria-pressed="${!detail}">Neighbourhood</button></div><span>${escape(formatSolarTime(sun.resolvedMinutes))} · ${sun.elevation.toFixed(1)}°</span></div><svg class="sun-map-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escape(`${shade.status} map for ${sun.date} at ${formatSolarTime(sun.resolvedMinutes)}. Gold cells receive direct sun; green cells are shaded.`)}"><defs><clipPath id="sun-plot-clip"><polygon points="${poly(site.boundary)}"/></clipPath></defs><rect width="${W}" height="${H}" fill="#f2f3eb"/>${context}<polygon points="${poly(site.boundary)}" fill="#e2e7d8" stroke="#78917a" stroke-width="1.6"/>${rect(t.x,t.y,t.width,t.depth,'fill="#e9e1d1"')}${rect(p.x,p.y,p.width,p.length,'fill="#aed2ce"')}<g clip-path="url(#sun-plot-clip)">${cellMarkup}</g><polygon points="${poly(site.house.footprint)}" fill="#babfb3" stroke="#7e8f7a" stroke-width="1.3"/>${!settings.removeGarage?`<polygon points="${poly(site.garage.footprint)}" fill="#babfb3" stroke="#7e8f7a"/>`:''}${rect(t.x,t.y,t.width,t.depth,'fill="none" stroke="#a79a7f" stroke-width="1.3"')}${rect(p.x,p.y,p.width,p.length,'fill="none" stroke="#437b80" stroke-width="1.5"')}${hedges}${canopy}${detail?jacuzzi:''}${label('HOUSE',houseC[0],houseC[1])}${detail?`${label('TERRACE',t.x+t.width/2,t.y+t.depth/2,10)}${label('POOL',p.x+p.width/2,p.y+p.length/2,10)}${label('STERNICZA',10,-1,10)}${label('RIGHT · W',3,24,9)}${label('LEFT · E',17.3,24,9)}`:''}${compass}<g transform="translate(20 ${H-20})"><path d="M0 -4V0H${5*scale}V-4" fill="none" stroke="#5d735c" stroke-width="1.5"/><text x="${2.5*scale}" y="13" font-size="10" text-anchor="middle" fill="#5d735c">5 m</text></g></svg><div class="sun-map-legend"><span><i style="background:${colors.sun}"></i>Direct sun</span><span><i style="background:${colors.shade}"></i>Modeled shade</span>${shade.status==='night'?`<span><i style="background:${colors.night}"></i>Night</span>`:''}<span>Left / right: from house toward rear ↓</span><span class="sun-map-detail" id="sun-map-detail">${shade.status==='daylight'?'Tap a coloured cell to identify its blocker.':shade.status==='night'?'Sun below the horizon.':'Enable real sunlight to see shade.'}</span></div>`;
+  const sideY=site.rearMidpoint[1]+Math.max(1.5,(plot.maxY-site.rearMidpoint[1])*.3);
+  const poolFill=p?rect(p.x,p.y,p.width,p.length,'fill="#aed2ce"'):'';
+  const poolOutline=p?rect(p.x,p.y,p.width,p.length,'fill="none" stroke="#437b80" stroke-width="1.5"'):'';
+  const garage=site.garage&&!settings.removeGarage?`<polygon points="${poly(site.garage.footprint)}" fill="#babfb3" stroke="#7e8f7a"/>`:'';
+  const labels=detail?`${label('TERRACE',t.x+t.width/2,t.y+t.depth/2,10)}${p?label('POOL',p.x+p.width/2,p.y+p.length/2,10):''}${label(profile.streetLabel,(plot.minX+plot.maxX)/2,plot.minY-1,10)}${label(`RIGHT · ${profile.sideLabels.right.toUpperCase()}`,plot.minX+2.6,sideY,9)}${label(`LEFT · ${profile.sideLabels.left.toUpperCase()}`,plot.maxX-2.6,sideY,9)}`:'';
+  container.innerHTML=`<div class="sun-map-toolbar"><div class="map-scope" role="group" aria-label="Shade map extent"><button data-sun-scope="garden" aria-pressed="${detail}">Garden</button><button data-sun-scope="context" aria-pressed="${!detail}">Neighbourhood</button></div><span>${escape(formatSolarTime(sun.resolvedMinutes))} · ${sun.elevation.toFixed(1)}°</span></div><svg class="sun-map-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escape(`${shade.status} map for ${profile.label}, ${sun.date} at ${formatSolarTime(sun.resolvedMinutes)}. Gold cells receive direct sun; green cells are shaded.`)}"><defs><clipPath id="sun-plot-clip"><polygon points="${poly(site.boundary)}"/></clipPath></defs><rect width="${W}" height="${H}" fill="#f2f3eb"/>${context}<polygon points="${poly(site.boundary)}" fill="#e2e7d8" stroke="#78917a" stroke-width="1.6"/>${rect(t.x,t.y,t.width,t.depth,'fill="#e9e1d1"')}${poolFill}<g clip-path="url(#sun-plot-clip)">${cellMarkup}</g><polygon points="${poly(site.house.footprint)}" fill="#babfb3" stroke="#7e8f7a" stroke-width="1.3"/>${garage}${rect(t.x,t.y,t.width,t.depth,'fill="none" stroke="#a79a7f" stroke-width="1.3"')}${poolOutline}${hedges}${canopy}${detail?jacuzzi:''}${label('HOUSE',houseC[0],houseC[1])}${labels}${compass}<g transform="translate(20 ${H-20})"><path d="M0 -4V0H${5*scale}V-4" fill="none" stroke="#5d735c" stroke-width="1.5"/><text x="${2.5*scale}" y="13" font-size="10" text-anchor="middle" fill="#5d735c">5 m</text></g></svg><div class="sun-map-legend"><span><i style="background:${colors.sun}"></i>Direct sun</span><span><i style="background:${colors.shade}"></i>Modeled shade</span>${shade.status==='night'?`<span><i style="background:${colors.night}"></i>Night</span>`:''}<span>Left / right: from house toward rear ↓</span><span class="sun-map-detail" id="sun-map-detail">${shade.status==='daylight'?'Tap a coloured cell to identify its blocker.':shade.status==='night'?'Sun below the horizon.':'Enable real sunlight to see shade.'}</span></div>`;
   container.querySelectorAll('[data-sun-scope]').forEach(button=>button.addEventListener('click',()=>{container.dataset.sunScope=button.dataset.sunScope;renderSunMap(container,data,settings,sun,shade);}));
   container.querySelector('svg').addEventListener('click',event=>{
     const target=event.target.closest('[data-sun-cell]');if(!target)return;

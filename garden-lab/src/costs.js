@@ -3,7 +3,7 @@
  * not the full property. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments } from './geometry.js?v=1.3.1';
+import { hedgeSegments } from './geometry.js?v=1.4.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',

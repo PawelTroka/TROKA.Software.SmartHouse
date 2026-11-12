@@ -1,4 +1,5 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
+import {getSiteProfile} from './sites.js?v=1.4.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -12,7 +13,12 @@ function amount(value,rounded=false){
 const row=(label,quantity,total)=>`<tr><th scope="row">${label}</th><td>${quantity}</td><td>${total}</td></tr>`;
 const table=(heading,rows)=>`<div class="budget-table-wrap"><h4>${heading}</h4><table class="budget-table"><thead><tr><th scope="col">Item</th><th scope="col">Quantity / basis</th><th scope="col">PLN</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 
-export function renderBudget(cost,settings){
+export function budgetSideLabels(data){
+  const profile=getSiteProfile(data?.site?.id||'sternicza-11',data);
+  return {rear:'Rear',left:`Left / ${profile.sideLabels.left}`,right:`Right / ${profile.sideLabels.right}`};
+}
+
+export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks;
   $('hedge-cost').textContent=amount(h.total,true);
   $('earthwork-cost').textContent=amount(e.total,true);
@@ -26,8 +32,8 @@ export function renderBudget(cost,settings){
   const panel=document.querySelector('.cost-panel');
   panel.dataset.status=cost.status;panel.dataset.totalLow=cost.total?.low??'';
   panel.dataset.earthworkLow=e.total.low;panel.dataset.compactedVolume=e.compactedVolume;
-  const sideLabel={rear:'Rear',left:'Left / east',right:'Right / west'};
-  let plants=h.sides.map(s=>row(`${sideLabel[s.side]} · ${n(s.height)} m`,
+  const sideLabel=budgetSideLabels(data);
+  let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
     amount(s.plants))).join('');
   plants+=row('Planting labour',`${h.count} trees × ${money(settings.costPlantingRate)}`,money(h.lines.planting));
