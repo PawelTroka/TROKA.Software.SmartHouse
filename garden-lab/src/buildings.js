@@ -3,19 +3,31 @@
  * The mapped data remains the immutable reference. Distances use the house's
  * rear-wall midpoint and the footprint area centroid, never the movable eye.
  */
-export const BUILDING_TARGETS = Object.freeze([
+const LEGACY_TARGETS = [
   { index: 9, label: 'PCK 3' },
   { index: 15, label: 'West apartment block' },
   { index: 29, label: 'East apartment block' },
   { index: 31, label: 'Farther central block' },
   { index: 53, label: 'Central block continuation' },
-].map(b => Object.freeze({ ...b, id: `building-${b.index}`,
-  heightKey: `b${b.index}HeightDelta`, distanceKey: `b${b.index}DistanceDelta` })));
+];
+const targetDescriptor = b => Object.freeze({ index: b.index, label: b.label || `Building ${b.index}`,
+  id: b.id || `building-${b.index}`, heightKey: `b${b.index}HeightDelta`, distanceKey: `b${b.index}DistanceDelta` });
+export const BUILDING_TARGETS = Object.freeze(LEGACY_TARGETS.map(targetDescriptor));
 
-export const BUILDING_FIELDS = Object.freeze(Object.fromEntries(BUILDING_TARGETS.flatMap(b => [
+/** Stable fields belong to the selected property's actual target buildings. */
+export function getBuildingTargets(data) {
+  if (!data) return BUILDING_TARGETS;
+  return Object.freeze((data.buildings || []).filter(b => b.kind === 'target' && Number.isInteger(b.index)).map(targetDescriptor));
+}
+
+export function buildingFields(data) {
+  const targets = Array.isArray(data) ? data : getBuildingTargets(data);
+  return Object.freeze(Object.fromEntries(targets.flatMap(b => [
   [b.heightKey, Object.freeze({ label: `${b.label} height adjustment`, min: -10, max: 15, step: .1, value: 0, group: 'building', unit: 'm' })],
   [b.distanceKey, Object.freeze({ label: `${b.label} distance adjustment`, min: -15, max: 40, step: .1, value: 0, group: 'building', unit: 'm' })],
 ])));
+}
+export const BUILDING_FIELDS = buildingFields(BUILDING_TARGETS);
 
 const finite = (value, fallback = 0) => typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -42,16 +54,17 @@ function baselineOf(data) { return sourceFor.get(data) || data; }
 /** Values ready for a compact UI readout, all heights above the fixed block base. */
 export function buildingAssumptions(input, settings = {}) {
   const data = baselineOf(input), reference = data.site.rearMidpoint;
-  return BUILDING_TARGETS.map(target => {
+  const targets = getBuildingTargets(data), fields = buildingFields(targets);
+  return targets.map(target => {
     const block = data.buildings.find(b => b.id === target.id);
     if (!block) return null;
     const center = footprintCentroid(block.footprint);
     const baselineHeight = finite(block.roofTopZ, block.roofZ) - block.baseZ;
     const baselineDistance = Math.hypot(center[0] - reference[0], center[1] - reference[1]);
     const heightDelta = clamp(finite(settings[target.heightKey]),
-      Math.max(BUILDING_FIELDS[target.heightKey].min, 2 - baselineHeight), BUILDING_FIELDS[target.heightKey].max);
+      Math.max(fields[target.heightKey].min, 2 - baselineHeight), fields[target.heightKey].max);
     const distanceDelta = clamp(finite(settings[target.distanceKey]),
-      Math.max(BUILDING_FIELDS[target.distanceKey].min, 5 - baselineDistance), BUILDING_FIELDS[target.distanceKey].max);
+      Math.max(fields[target.distanceKey].min, 5 - baselineDistance), fields[target.distanceKey].max);
     return { ...target, baseZ: block.baseZ, center, reference: [...reference],
       baselineHeight, height: baselineHeight + heightDelta, heightDelta,
       baselineDistance, distance: baselineDistance + distanceDelta, distanceDelta,

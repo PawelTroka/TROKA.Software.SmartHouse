@@ -1,5 +1,5 @@
 /**
- * Solar geometry for Sternicza. NOAA/Meeus Julian-century equations, evaluated
+ * Solar geometry for the selected property. NOAA/Meeus Julian-century equations, evaluated
  * at a real UTC instant. Elevation and shading use the geometric sun centre;
  * sunrise/sunset alone use the conventional -0.833° apparent-horizon threshold.
  * This predicts solar direction, not weather, irradiance or surveyed horizons.
@@ -15,6 +15,16 @@ export const SOLAR_SITE = Object.freeze({
   // negligible at this site's 0.37° separation from the central meridian.
   gridConvergenceDegrees: Math.atan(Math.tan((18.6312142 - 19) * RAD) * Math.sin(54.405452 * RAD)) * DEG,
 });
+/** Active coordinates; the fallback preserves the original Sternicza dataset. */
+export function getSolarSite(data) {
+  const c=data?.coordinates||{};
+  const latitude=Number.isFinite(c.latitude)&&Math.abs(c.latitude)<=90?c.latitude:SOLAR_SITE.latitude;
+  const longitude=Number.isFinite(c.longitude)&&Math.abs(c.longitude)<=180?c.longitude:SOLAR_SITE.longitude;
+  const centralMeridian=Number.isFinite(c.centralMeridian)?c.centralMeridian:19;
+  const gridConvergenceDegrees=Number.isFinite(c.gridConvergenceDegrees)?c.gridConvergenceDegrees
+    :c.horizontalCRS==='EPSG:2180'||!data?Math.atan(Math.tan((longitude-centralMeridian)*RAD)*Math.sin(latitude*RAD))*DEG:0;
+  return {latitude,longitude,timeZone:SOLAR_SITE.timeZone,centralMeridian,gridConvergenceDegrees};
+}
 const clock = new Intl.DateTimeFormat('en-GB', {
   timeZone: SOLAR_SITE.timeZone, calendar: 'iso8601', numberingSystem: 'latn',
   year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
@@ -132,7 +142,7 @@ export function solarPosition(instant, latitude = SOLAR_SITE.latitude, longitude
 export function localSunDirection(azimuth, elevation, data) {
   const c = data?.coordinates || {}, ux = c.xUnitEN || [1, 0], uy = c.yUnitEN || [0, 1];
   const convergence = Number.isFinite(c.gridConvergenceDegrees) ? c.gridConvergenceDegrees
-    : c.horizontalCRS === 'EPSG:2180' ? SOLAR_SITE.gridConvergenceDegrees : 0;
+    : c.horizontalCRS === 'EPSG:2180' ? getSolarSite(data).gridConvergenceDegrees : 0;
   // GeographicLib/PROJ sign convention: grid azimuth = true azimuth - gamma.
   const a = (azimuth - convergence) * RAD, e = elevation * RAD;
   const gridEast = Math.cos(e) * Math.sin(a), gridNorth = Math.cos(e) * Math.cos(a);
@@ -143,16 +153,18 @@ function localMinuteOf(utc, date) {
   const [y, m, d] = dateParts(date);
   return (wallEpoch(utc) - Date.UTC(y, m - 1, d)) / MINUTE;
 }
-function crossing(a, b, threshold) {
-  const sign = solarPosition(a).elevation >= threshold;
+function crossing(a, b, threshold, position) {
+  const sign = position(a).elevation >= threshold;
   for (let i = 0; i < 24 && b - a > 500; i++) {
     const middle = (a + b) / 2;
-    if ((solarPosition(middle).elevation >= threshold) === sign) a = middle; else b = middle;
+    if ((position(middle).elevation >= threshold) === sign) a = middle; else b = middle;
   }
   return (a + b) / 2;
 }
-function dailySolar(date) {
-  if (dailyCache.has(date)) return dailyCache.get(date);
+function dailySolar(date,site) {
+  const key=`${date}|${site.latitude}|${site.longitude}`;
+  if(dailyCache.has(key))return dailyCache.get(key);
+  const position=instant=>solarPosition(instant,site.latitude,site.longitude);
   const [y, m, d] = dateParts(date), nextDate = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
   const start = warsawInstant(date, 0).utc;
   // Resolve the next midnight directly for 2100-12-31, whose next date is outside
@@ -160,49 +172,50 @@ function dailySolar(date) {
   const nextWall = Date.UTC(y, m - 1, d + 1);
   let end = nextWall - warsawOffsetMinutes(nextWall) * MINUTE;
   if (validDate(nextDate)) end = warsawInstant(nextDate, 0).utc;
-  let sunriseUTC = null, sunsetUTC = null, previous = start, previousElevation = solarPosition(start).elevation;
+  let sunriseUTC = null, sunsetUTC = null, previous = start, previousElevation = position(start).elevation;
   const horizon = -0.833;
   for (let current = start + 10 * MINUTE; current <= end + 10 * MINUTE; current += 10 * MINUTE) {
-    const next = Math.min(current, end), nextElevation = solarPosition(next).elevation;
-    if (previousElevation < horizon && nextElevation >= horizon) sunriseUTC = crossing(previous, next, horizon);
-    if (previousElevation >= horizon && nextElevation < horizon) sunsetUTC = crossing(previous, next, horizon);
+    const next = Math.min(current, end), nextElevation = position(next).elevation;
+    if (previousElevation < horizon && nextElevation >= horizon) sunriseUTC = crossing(previous, next, horizon, position);
+    if (previousElevation >= horizon && nextElevation < horizon) sunsetUTC = crossing(previous, next, horizon, position);
     previous = next; previousElevation = nextElevation;
     if (next === end) break;
   }
-  let noonUTC = Date.UTC(y, m - 1, d, 12) - 4 * SOLAR_SITE.longitude * MINUTE;
-  for (let i = 0; i < 3; i++) noonUTC = Date.UTC(y, m - 1, d, 12) - (4 * SOLAR_SITE.longitude + solarPosition(noonUTC).equationOfTime) * MINUTE;
+  let noonUTC = Date.UTC(y, m - 1, d, 12) - 4 * site.longitude * MINUTE;
+  for (let i = 0; i < 3; i++) noonUTC = Date.UTC(y, m - 1, d, 12) - (4 * site.longitude + position(noonUTC).equationOfTime) * MINUTE;
   const path = [];
   for (let minutes = 0; minutes < 1440; minutes += 15) {
     const time = warsawInstant(date, minutes);
     if (time.resolution === 'shifted-forward') continue;
-    path.push({ minutes, utcISO: time.utcISO, ...solarPosition(time.utc) });
+    path.push({ minutes, utcISO: time.utcISO, ...position(time.utc) });
   }
-  path.push({ minutes: 1440, utcISO: new Date(end).toISOString(), ...solarPosition(end) });
-  return remember(dailyCache, date, {
+  path.push({ minutes: 1440, utcISO: new Date(end).toISOString(), ...position(end) });
+  return remember(dailyCache, key, {
     sunriseMinutes: sunriseUTC === null ? null : localMinuteOf(sunriseUTC, date),
     sunsetMinutes: sunsetUTC === null ? null : localMinuteOf(sunsetUTC, date),
     sunriseUTC: sunriseUTC === null ? null : new Date(sunriseUTC).toISOString(),
     sunsetUTC: sunsetUTC === null ? null : new Date(sunsetUTC).toISOString(),
     daylightMinutes: sunriseUTC !== null && sunsetUTC !== null ? (sunsetUTC - sunriseUTC) / MINUTE : previousElevation >= horizon ? (end - start) / MINUTE : 0,
-    noonMinutes: localMinuteOf(noonUTC, date), noonElevation: solarPosition(noonUTC).elevation,
+    noonMinutes: localMinuteOf(noonUTC, date), noonElevation: position(noonUTC).elevation,
     path,
   });
 }
 const pathCache = new WeakMap();
 export function sunForSettings(settings = {}, data) {
   const time = warsawInstant(settings.sunDate ?? SOLAR_DEFAULTS.sunDate, settings.sunMinutes ?? SOLAR_DEFAULTS.sunMinutes);
-  const position = solarPosition(time.utc), day = dailySolar(time.date);
+  const site=getSolarSite(data),position = solarPosition(time.utc,site.latitude,site.longitude), day = dailySolar(time.date,site);
   const coordinateObject = data?.coordinates;
   let cached = coordinateObject && pathCache.get(coordinateObject);
-  if (!cached || cached.date !== time.date) {
-    cached = { date: time.date, path: day.path.map(p => ({ ...p, direction: localSunDirection(p.azimuth, p.elevation, data) })) };
+  const signature=JSON.stringify([time.date,site.latitude,site.longitude,site.gridConvergenceDegrees,coordinateObject?.xUnitEN,coordinateObject?.yUnitEN]);
+  if (!cached || cached.signature !== signature) {
+    cached = { signature, date: time.date, path: day.path.map(p => ({ ...p, direction: localSunDirection(p.azimuth, p.elevation, data) })) };
     if (coordinateObject) pathCache.set(coordinateObject, cached);
   }
   return {
     ...time, ...position, ...day, path: cached.path,
     enabled: settings.sunEnabled !== false, direction: localSunDirection(position.azimuth, position.elevation, data),
-    latitude: SOLAR_SITE.latitude, longitude: SOLAR_SITE.longitude, timeZone: SOLAR_SITE.timeZone,
-    gridConvergenceDegrees: SOLAR_SITE.gridConvergenceDegrees,
+    latitude: site.latitude, longitude: site.longitude, timeZone: site.timeZone,
+    gridConvergenceDegrees: site.gridConvergenceDegrees,
     horizonBasis: 'Geometric sun centre for shade; apparent sunrise/sunset use −0.833° over a level, unobstructed horizon.',
   };
 }

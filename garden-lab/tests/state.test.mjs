@@ -57,11 +57,11 @@ test('legacy saved settings keep the design but discard the old automatically li
  assert.equal(decodeState('#v=1&linkedHedges=true').linkedHedges,true,'An explicit link preference is not the old automatic storage default');
 });
 
-test('v5 links preserve every editable cost and building assumption with comparison settings',()=>{
+test('v6 links preserve every editable cost and building assumption with comparison settings',()=>{
  const state={...DEFAULTS,linkedHedges:true,buyNewThujas:false,raiseNewHedges:false,includeHighFeatures:true};
  for(const [key,f] of Object.entries({...COST_FIELDS,...BUILDING_FIELDS}))state[key]=Math.round((f.min+(f.max-f.min)*.37)*100)/100;
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=5&'));
+ assert.ok(encoded.startsWith('v=6&site=sternicza-11&'));
  for(const key of Object.keys({...COST_FIELDS,...BUILDING_FIELDS})){
   assert.ok(key in FIELDS);
   assert.equal(restored[key],state[key],key);
@@ -72,7 +72,7 @@ test('v5 links preserve every editable cost and building assumption with compari
 test('solar settings round-trip with the design, costs, buildings and independent hedges',()=>{
  const state={...DEFAULTS,mode:'sun',sunDate:'2026-12-21',sunMinutes:962,sunEnabled:false,sunPathVisible:true,hedgeRear:6,hedgeLeft:3.5,hedgeRight:2.5,gardenRaise:.35,costFillRate:90,b9HeightDelta:2};
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=5&'));
+ assert.ok(encoded.startsWith('v=6&site=sternicza-11&'));
  assert.ok(MODES.includes('sun'));
  assert.equal(FIELDS.sunMinutes.group,'solar');
  for(const key of ['mode','sunDate','sunMinutes','sunEnabled','sunPathVisible','hedgeRear','hedgeLeft','hedgeRight','gardenRaise','costFillRate','b9HeightDelta'])assert.equal(restored[key],state[key],key);
@@ -101,7 +101,7 @@ test('v1 and v2 links preserve legacy assumptions and adopt stable solar default
   for(const [key,value] of Object.entries({hedgeRear:6,hedgeLeft:3,hedgeRight:4,gardenRaise:.5,costFillRate:85,b9HeightDelta:1.5,linkedHedges:false,mode:'section'}))assert.equal(restored[key],value,`v${version} ${key}`);
   for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(restored[key],DEFAULTS[key],`v${version} ${key}`);
  }
- assert.equal(encodeState(DEFAULTS),'v=5');
+ assert.equal(encodeState(DEFAULTS),'v=6&site=sternicza-11');
  assert.deepEqual(decodeState('#v=6&hedgeRear=10&sunDate=2026-12-21'),DEFAULTS);
 });
 
@@ -114,7 +114,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,5);
+ assert.equal(STATE_VERSION,6);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
