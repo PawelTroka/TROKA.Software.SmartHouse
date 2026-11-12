@@ -3,11 +3,13 @@
  * not the full property. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments } from './geometry.js?v=1.4.0';
+import { hedgeSegments } from './geometry.js?v=1.5.0';
+import { getTreeType } from './tree-catalog.js?v=1.5.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
 });
+const treeField = (label, max, unit, help) => ({ ...field(label, 0, 0, max, 1, unit, help), group: 'cost-tree' });
 export const COST_FIELDS = Object.freeze({
   costSpacing: field('Tree spacing', .8, .3, 2, .05, 'm', 'Centre-to-centre spacing; density and nursery crown width still need checking.'),
   costTreePriceRear: field('Rear: custom tree price', 0, 0, 100000, 10, 'PLN/tree', '0 uses published stock prices. Enter a supplier quote for taller trees.'),
@@ -17,6 +19,11 @@ export const COST_FIELDS = Object.freeze({
   costPlantingRate: field('Planting allowance', 75, 0, 5000, 5, 'PLN/tree', 'Editable labour allowance; large stock and lifting can cost more.'),
   costHedgeDelivery: field('Tree delivery allowance', 1000, 0, 50000, 100, 'PLN', 'One allowance for the whole hedge order, not one per side.'),
   costHedgeEquipment: field('Tree lifting / equipment', 0, 0, 100000, 500, 'PLN', 'Enter a lifting and access quote for large root balls; zero means not budgeted.'),
+  costScreeningPlanting: treeField('Screening-tree planting', 50000, 'PLN/tree', 'Supply prices exclude planting. 0 means unquoted; enter your allowance or contractor quote per enabled tree.'),
+  costScreeningAnchoring: treeField('Screening-tree anchoring', 20000, 'PLN/tree', '0 means unquoted. Wyplatane lists a three-stake and tape kit at 149 PLN/tree; other specimens need an appropriate system and quote.'),
+  costScreeningDelivery: treeField('Screening-tree delivery', 100000, 'PLN/order', 'One allowance for trees whose supplier price excludes delivery; 0 means unquoted. No delivery charge is added for a pleached-only order.'),
+  costScreeningCrane: treeField('Screening-tree crane / unloading', 100000, 'PLN/order', 'One lifting/access allowance for large specimens; 0 means unquoted. Not automatically applied to pleached hornbeam panels.'),
+  costScreeningEstablishment: treeField('Screening-tree irrigation / establishment', 100000, 'PLN/order', 'Editable allowance for establishment work across the tree order. 0 means unquoted; this is not an annual maintenance model.'),
   costAreaOverride: field('Fill area override', 0, 0, 1000, 1, 'm²', '0 uses mapped rear area minus pool, terrace and retained structures. A positive value changes cost quantities only.'),
   costBedWidth: field('Raised hedge bed width', 1, .3, 3, .1, 'm', 'Width centred on the hedge line and clipped to the property; overlapping corners count once.'),
   costTopsoilDepth: field('Topsoil within added depth', .15, 0, .5, .05, 'm', 'Topsoil replaces part of the fill; it is not added above the selected raise.'),
@@ -180,6 +187,81 @@ export function thujaUnitPrice(height, customPrice = 0, factor = 100) {
   return { ...range(band.low * factor / 100, band.high * factor / 100), status: 'estimate', source: 'published-stock', stockBandMaximum: band.maxHeight };
 }
 
+/**
+ * A purchased specimen price applies only to the documented stock envelope.
+ * Round-crown depth uses the quoted diameter band as a circular assumption.
+ * Panel depth is unquoted: increasing it beyond the drawing default requires
+ * a custom quote rather than silently buying a much larger crown. No extrapolation.
+ */
+export function screeningTreeUnitPrice(tree = {}) {
+  const type = getTreeType(tree.typeId);
+  if (!type) return { low: null, high: null, status: 'quote-required', source: 'unquoted', stockMatch: false, reason: 'Unknown tree type; choose a catalog specimen.' };
+  const dimensions = Object.fromEntries(Object.entries(type.dimensions).map(([key, fallback]) =>
+    [key, typeof tree[key] === 'number' && Number.isFinite(tree[key]) ? tree[key] : fallback]));
+  const inBand = (value, band) => value >= band[0] - EPS && value <= band[1] + EPS;
+  const mismatches = [];
+  if (!inBand(dimensions.height, type.stock.height)) mismatches.push('height');
+  if (!inBand(dimensions.crownWidth, type.stock.width)) mismatches.push('crown width');
+  if (type.form !== 'panel' && !inBand(dimensions.crownDepth, type.stock.width)) mismatches.push('crown depth (assumed circular diameter)');
+  const expandedPanelDepth = type.form === 'panel' && dimensions.crownDepth > type.dimensions.crownDepth + EPS;
+  if (expandedPanelDepth) mismatches.push('panel depth');
+  if (type.stock.crownBase && !inBand(dimensions.crownBase, type.stock.crownBase)) mismatches.push('clear-stem height');
+  const stockMatch = mismatches.length === 0;
+  const custom = positive(tree.unitPrice);
+  if (custom > 0) return { ...range(custom), status: 'estimate', source: 'custom', stockMatch, reason: 'Your plant-only unit price; installation and logistics remain separate.' };
+  if (!stockMatch) return { low: null, high: null, status: 'quote-required', source: 'unquoted', stockMatch,
+    reason: `${expandedPanelDepth ? `The supplier does not specify panel depth. A crown deeper than the ${type.dimensions.crownDepth} m drawing assumption needs a custom quote. ` : ''}Edited ${mismatches.join(', ')} is not supported by this price reference. Enter a custom plant price; prices are not extrapolated to other sizes.` };
+  return { ...range(type.pricePLN), status: 'estimate', source: 'published-stock', stockMatch,
+    reason: type.priceNote };
+}
+
+/** Enabled screening trees only. Zero service allowances stay visibly unquoted. */
+export function estimateScreeningTreeCosts(settings = {}) {
+  const c = costSettings(settings);
+  const trees = Array.isArray(settings.screeningTrees) ? settings.screeningTrees.filter(tree =>
+    tree && typeof tree === 'object' && !Array.isArray(tree) && tree.enabled !== false) : [];
+  const rows = trees.map((tree, index) => {
+    const type = getTreeType(tree.typeId), unit = screeningTreeUnitPrice(tree);
+    const height = tree.height ?? type?.dimensions.height;
+    const crownWidth = tree.crownWidth ?? type?.dimensions.crownWidth;
+    const crownDepth = tree.crownDepth ?? type?.dimensions.crownDepth;
+    const expandedPanel = type?.form === 'panel' && (height > type.dimensions.height + EPS
+      || crownWidth > type.dimensions.crownWidth + EPS || crownDepth > type.dimensions.crownDepth + EPS);
+    return { id: tree.id || `tree-${index + 1}`, typeId: tree.typeId, label: type?.label || 'Unknown tree',
+      height, crownWidth, crownDepth,
+      unit, plants: unit.low === null ? null : range(unit.low, unit.high), status: unit.status,
+      sourceUrl: type?.sourceUrl, sourceTitle: type?.sourceTitle, priceNote: type?.priceNote,
+      taxNote: type?.taxNote, deliveryIncluded: type?.deliveryIncluded === true && unit.source === 'published-stock',
+      liftingQuoteRequired: type?.liftingQuoteRequired !== false || expandedPanel };
+  });
+  const count = rows.length;
+  const deliveryRequired = count > 0 && rows.some(row => !row.deliveryIncluded);
+  const liftingRequired = count > 0 && rows.some(row => row.liftingQuoteRequired);
+  const plantQuoteCount = rows.filter(row => row.unit.status === 'quote-required').length;
+  const plantsKnown = addRanges(rows.map(row => row.plants).filter(Boolean));
+  const serviceSpecs = [
+    ['planting', 'Planting', count * c.costScreeningPlanting, count > 0],
+    ['anchoring', 'Anchoring', count * c.costScreeningAnchoring, count > 0],
+    ['delivery', 'Delivery', deliveryRequired ? c.costScreeningDelivery : 0, deliveryRequired],
+    ['equipment', 'Crane / unloading', liftingRequired ? c.costScreeningCrane : 0, liftingRequired],
+    ['establishment', 'Irrigation / establishment', count ? c.costScreeningEstablishment : 0, count > 0],
+  ];
+  const unquotedServices = serviceSpecs.filter(([, , value, applicable]) => applicable && value <= 0)
+    .map(([id, label]) => ({ id, label }));
+  const lines = { plants: plantQuoteCount ? null : plantsKnown,
+    ...Object.fromEntries(serviceSpecs.map(([id, , value]) => [id, value])) };
+  const lineStatuses = Object.fromEntries(serviceSpecs.map(([id, , value, applicable]) =>
+    [id, !applicable ? 'included-or-not-required' : value > 0 ? 'allowance' : 'quote-required']));
+  const knownBase = addRanges([plantsKnown, range(sum(serviceSpecs.map(([, , value]) => value)))]);
+  const unknown = plantQuoteCount > 0 || unquotedServices.length > 0;
+  const knownSubtotal = withContingency(knownBase, c.costContingency);
+  return { rows, count, plantsKnown, plantQuoteCount, lines, lineStatuses, unquotedServices,
+    deliveryRequired, liftingRequired, allDeliveryIncluded: count > 0 && !deliveryRequired,
+    knownBase, knownSubtotal, baseTotal: unknown ? null : knownBase,
+    total: unknown ? null : knownSubtotal,
+    status: unknown ? 'quote-required' : count ? 'estimate' : 'none' };
+}
+
 /** Main public API. All monetary amounts are PLN, all volumes cubic metres. */
 export function estimateCosts(settings = {}, data) {
   const c = costSettings(settings), q = gardenQuantities(settings, data);
@@ -236,9 +318,17 @@ export function estimateCosts(settings = {}, data) {
   const earthTotal = withContingency(earthBase, c.costContingency);
   if (hasEarthwork) notes.push('Earthwork excludes garage demolition, excavated-pool soil reuse, topsoil stripping/disposal, new paving and professional design. Retaining, drainage, transport and access are editable allowances.');
   if (c.costAreaOverride > 0) notes.push('Area override changes cost quantities only. Bed overlap assumes the raised garden area includes the hedge beds up to the selected area.');
-  const knownSubtotal = addRanges([hedgeKnown, earthTotal]);
+  const screeningTrees = estimateScreeningTreeCosts(settings);
+  if (screeningTrees.plantQuoteCount) notes.push('An edited screening tree is not supported by its catalog price reference. Enter a plant-only quote for that specimen; prices are not extrapolated to other dimensions.');
+  if (screeningTrees.unquotedServices.length) notes.push(`Screening-tree services not yet budgeted: ${screeningTrees.unquotedServices.map(item => item.label.toLowerCase()).join(', ')}. Zero means unquoted; the known subtotal includes only priced items.`);
+  if (screeningTrees.count) notes.push('Screening-tree prices describe purchased specimens, not mature sizes or guaranteed available stock. Only enabled trees are included. Catalog references were reviewed 12 November 2026; crown shape and density still need specimen confirmation.');
+  if (screeningTrees.rows.some(row => row.typeId === 'serbian-spruce' || row.typeId === 'pleached-hornbeam')) notes.push('Serbian spruce and pleached hornbeam use displayed retail amounts whose VAT basis needs supplier confirmation. Enter final tax-inclusive quotes for purchasing.');
+  // Combine unadjusted branches first; apply uncertainty once to the upper sum.
+  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase]);
+  const knownSubtotal = withContingency(knownBase, c.costContingency);
+  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required';
   return {
-    currency: 'PLN', basisDate: '2026-11-11', contingencyPercent: c.costContingency,
+    currency: 'PLN', basisDate: '2026-11-12', contingencyPercent: c.costContingency,
     hedges: { sides, count, length, spacing: c.costSpacing, procurement: c.buyNewThujas,
       lines: hedgeLines, baseTotal: hedgeUnknown ? null : hedgeKnownBase,
       total: hedgeUnknown ? null : hedgeKnown, knownSubtotal: hedgeKnown,
@@ -248,7 +338,8 @@ export function estimateCosts(settings = {}, data) {
       looseVolume: looseFillVolume + looseTopsoilVolume, looseFactor: c.costLooseFactor,
       loads, fillLoads, topsoilLoads, truckCapacity: c.costTruckCapacity,
       lines: earthLines, baseTotal: earthBase, total: earthTotal, status: hasEarthwork ? 'estimate' : 'none' },
-    total: hedgeUnknown ? null : knownSubtotal, knownSubtotal,
-    status: hedgeUnknown ? 'quote-required' : count > 0 || hasEarthwork ? 'estimate' : 'none', notes,
+    screeningTrees,
+    total: unknown ? null : knownSubtotal, knownSubtotal,
+    status: unknown ? 'quote-required' : count > 0 || hasEarthwork || screeningTrees.count > 0 ? 'estimate' : 'none', notes,
   };
 }

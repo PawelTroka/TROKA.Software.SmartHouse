@@ -3,8 +3,9 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.4.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.4.0';
+import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.5.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.5.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.5.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -264,15 +265,15 @@ function makeReceivers(settings,data,size=1){
 
 const geometryCache=new WeakMap();
 const geometryKeys=['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'];
-/** Prepared geometry is cached across dates/times and rebuilt for design edits. */
+/** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
-  const signature=JSON.stringify(geometryKeys.map(k=>settings[k]));
+  const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21']);
   const cached=geometryCache.get(data);
   if(cached?.signature===signature)return cached.geometry;
   const pool=data.site.pool,tub=data.site.terrace?jacuzziBounds(settings,data):null;
   const terrain={maxZ:Math.max(...data.terrain.elevations)+Math.max(0,num(settings.gardenRaise))+Math.max(0,num(settings.bedRaise)),segments:hedgeSegments(settings,data),
     cutouts:[...(pool?[{x0:pool.x,x1:pool.x+pool.width,y0:pool.y,y1:pool.y+pool.length}]:[]),...(tub?[tub]:[])]};
-  const geometry={occluders:makeOccluders(settings,data),cells:makeReceivers(settings,data),cellSize:1,terrain};
+  const geometry={occluders:makeOccluders(settings,data),trees:screeningTreeVolumes(settings,data),cells:makeReceivers(settings,data),cellSize:1,terrain};
   geometryCache.set(data,{signature,geometry});
   return geometry;
 }
@@ -307,7 +308,9 @@ export function sunlightAtPoint(receiver,settings,data,sun,geometry=prepareSunGe
   const length=Math.hypot(...sun.direction),direction=sun.direction.map(v=>v/length);
   if(!Number.isFinite(length)||length<EPS)return {state:'night',sunlit:false,blocker:null};
   const objectBlocker=firstSunBlocker(origin,direction,geometry.occluders);
-  const blocker=terrainSunBlocker(origin,direction,settings,data,geometry.terrain,objectBlocker?.distance)||objectBlocker;
+  const treeBlocker=treeSunIntersection(origin,direction,geometry.trees);
+  const nearest=treeBlocker&&(!objectBlocker||treeBlocker.distance<objectBlocker.distance)?treeBlocker:objectBlocker;
+  const blocker=terrainSunBlocker(origin,direction,settings,data,geometry.terrain,nearest?.distance)||nearest;
   return {state:blocker?'shade':'sun',sunlit:!blocker,blocker};
 }
 
@@ -323,11 +326,12 @@ export function analyzeSunlight(settings,data,sun){
   const cells=geometry.cells.map(cell=>{
     const result=sunlightAtPoint(cell,settings,data,sun,geometry),zone=zones[cell.zone];
     zone.total++;if(result.sunlit)zone.sunlit++;else if(daylight)zone.shaded++;
-    return {...cell,sunlit:result.sunlit,state:result.state,blockedBy:result.blocker?.id||null};
+    return {...cell,sunlit:result.sunlit,state:result.state,blockedBy:result.blocker?.id||null,blockedLabel:result.blocker?.label||null,
+      ...(result.blocker?.treeId?{treeId:result.blocker.treeId,treeTypeId:result.blocker.typeId}:{})};
   });
   for(const zone of Object.values(zones))zone.percent=daylight&&zone.total?zone.sunlit/zone.total*100:null;
   return {status,isDaylight:daylight,cells,zones,cellSize:geometry.cellSize,direction:sun?.direction||null,
-    modelNote:'Direct sun at 1 m outdoor sample points, including local terrain sampled every 0.5 m along each ray. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
-    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges and the proposed canopy. Pool and recessed jacuzzi water use matched surface heights and excavated openings.',
+    modelNote:'Direct sun at 1 m outdoor sample points, including local terrain sampled every 0.5 m along each ray and finite dense proposed tree crowns. Deciduous auto foliage is May–October, an approximate comparison assumption. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
+    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees with seasonal crown geometry. Pool and recessed jacuzzi water use matched surface heights and excavated openings.',
     limitations:'No weather, diffuse/reflected light, existing tree crowns, decorative planting/furniture/rims, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; roof interpolation, missing-roof fallbacks and foliage permeability remain simplified.'};
 }

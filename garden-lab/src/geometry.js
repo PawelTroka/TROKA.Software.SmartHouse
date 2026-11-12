@@ -3,6 +3,8 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.5.0';
+
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 0,
   gardenRaise: 0, bedRaise: 0, raiseNewHedges: true,
@@ -10,6 +12,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   canopyEnabled: false, canopyDepth: 4.2, canopyHeight: 2.7,
   canopyWidth: 8.5, fasciaDepth: 0.3, terraceDepth: 4.2,
   includeHighFeatures: false,
+  screeningTrees: Object.freeze([]), treeLeafMode: 'auto',
 });
 
 const EPS = 1e-8;
@@ -261,6 +264,7 @@ export function buildingIntersection(observer, target, building) {
 export function analyzeVisibility(observer, settings = {}, data) {
   const s = settingsWithDefaults(settings), origin = point3(observer);
   const segments = hedgeSegments(s, data), rays = [], byBlock = [];
+  const trees = screeningTreeVolumes(s, data);
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
   if (!s.removeGarage && data.site.garage) blockers.push(data.site.garage);
@@ -281,6 +285,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       if (distance < EPS) continue;
       const screen = screenOnRay(origin, target, s, data, segments);
       const canopy = canopyIntersection(origin, target, s, data);
+      const tree = firstTreeIntersection(origin, target, trees);
       let buildingHit = null;
       for (const other of blockers) {
         if (other.id === block.id) continue;
@@ -291,18 +296,21 @@ export function analyzeVisibility(observer, settings = {}, data) {
       if (screen?.blocked) possible.push({ t: screen.t, type: `hedge-${screen.side}`, hit: screen });
       if (canopy) possible.push({ t: canopy.t, type: 'canopy', hit: canopy });
       if (buildingHit) possible.push({ t: buildingHit.t, type: 'building', hit: buildingHit });
+      if (tree) possible.push({ t: tree.t, type: 'screening-tree', hit: tree });
       const first = possible.sort((a, b) => a.t - b.t)[0];
       const ray = { origin, target, blockId: block.id, blockLabel: block.label,
         kind: i < block.roofSampleCount ? 'roof' : i >= block.samples.length ? 'high-feature' : 'facade',
         visible: !first, blockedBy: first?.type || null, obstruction: first?.hit || null,
-        screen, canopy, distance };
+        screen, canopy, tree, distance };
       blockRays.push(ray); rays.push(ray);
       if (screen && !buildingHit) {
         worstRequiredHedge[screen.side] = Math.max(worstRequiredHedge[screen.side], screen.requiredHeight);
         if (screen.requiredHeight > worstRequiredHedge.overall) {
           worstRequiredHedge.overall = screen.requiredHeight; criticalRay = ray;
         }
-        if (!canopy) {
+        // Keep the hedge-alone benchmark above unchanged. This second value
+        // only describes the rays still needing a hedge after canopy/trees.
+        if (!canopy && !tree) {
           remainingRequiredHedge[screen.side] = Math.max(remainingRequiredHedge[screen.side], screen.requiredHeight);
           remainingRequiredHedge.overall = Math.max(remainingRequiredHedge.overall, screen.requiredHeight);
         }
@@ -318,5 +326,5 @@ export function analyzeVisibility(observer, settings = {}, data) {
   for (const ray of rays) if (ray.blockedBy) reasons[ray.blockedBy] = (reasons[ray.blockedBy] || 0) + 1;
   return { observer, total, visible, blocked, blockedPercent: total ? 100 * blocked / total : 0,
     byBlock, worstRequiredHedge, remainingRequiredHedge, rays, criticalRay, reasons,
-    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens; not an area percentage or all-viewpoints guarantee.' };
+    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens and finite dense proposed crowns. Hedge-alone requirements ignore added trees/canopy. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
 }
