@@ -4,9 +4,9 @@ An interactive, browser-only garden privacy and sunlight simulator for Sternicza
 
 **[Open the live simulator](https://paweltroka.github.io/TROKA.Software.SmartHouse/)**
 
-![Earlier Garden Lab v1.1 interface with independent hedge controls and cost estimates](preview-v1.1.jpg)
+![Garden Lab 1.3.1 with corrected terrace view and physical hedge sides](orientation-preview-1.3.1.jpg)
 
-*The screenshot shows the earlier v1.1 interface, before the sun controls and detailed scene changes.*
+*Published version 1.3.1, looking from the terrace into the rear garden: left is east and right is west. This verification view uses 4 m hedges and 0.5 m of garden fill.*
 
 ## Use it
 
@@ -213,3 +213,7 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 
 
 Orientation regressions use actual mapped anchors, geographic East/North projections, camera handedness, screen-side projections, world picking, overhead plans, triangle normals, rounded extrusion bounds, morning/afternoon sun directions, physical hedge-side pricing and migrated asymmetric saved designs.
+
+## Consolidation verification · 1.3.1
+
+PR #1 was merged after 91 automated tests passed, a successful build and syntax checks for all application modules. A real WebGL browser review verified the garage/PCK 3 left and west block right, unequal physical-side hedge edits, plan orientation, the recessed jacuzzi and furniture, evening shade and four sunlight readouts. A v3 asymmetric design was opened and re-shared as v5 to check geographic heights, quotes and yaw migration. The preserved published roof-ray benchmark still passes.
