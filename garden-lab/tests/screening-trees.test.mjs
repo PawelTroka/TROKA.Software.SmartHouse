@@ -155,8 +155,8 @@ test('three sequential group suggestions keep separate stems even after all targ
   assert.ok(screeningTreeVolumes(settings,data).some(v=>v.warnings.some(message=>message.includes('crown overlaps'))),'Crowns may overlap despite safe separation of suggested centres');
 });
 
-test('state v7 preserves every independent tree and leaf mode, with deep copies and safe IDs',()=>{
-  assert.equal(STATE_VERSION,7);
+test('state v8 preserves every independent tree and leaf mode, with deep copies and safe IDs',()=>{
+  assert.equal(STATE_VERSION,8);
   assert.equal(tree().unitPrice,0,'Zero requests a catalog-based estimate; creating a tree must not invent a custom quote');
   assert.equal(sanitizeScreeningTrees([{...tree(),unitPrice:undefined}])[0].unitPrice,0);
   const input={...DEFAULTS,treeLeafMode:'leaf-off',screeningTrees:[tree(),tree('pleached-hornbeam',{id:'panel-2',x:15,y:33,rotation:48,unitPrice:3100,enabled:false})]};
