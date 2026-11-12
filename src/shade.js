@@ -3,11 +3,11 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.7.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.7.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.7.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.7.0';
-import { terraceStairs } from './layout.js?v=1.7.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.8.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.8.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.8.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.8.0';
+import { terraceStairs } from './layout.js?v=1.8.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -176,7 +176,8 @@ function spaOccluders(settings,data) {
     {x:pool.x+pool.width,y:pool.y,width:cp,length:pool.length},
   ])slab('pool-coping','Raised pool coping',coping,pz.copingBaseZ,pz.copingTopZ);
   for(const face of saunaOpaqueFaces(settings,data))add(mesh(face.id,face.label,fanTriangles(face.vertices)));
-  add(prism('sauna-base','Sauna floor base',program.sauna.footprint,levels.sauna.groundZ,levels.sauna.floorZ));
+  add(prism('sauna-base','Sauna floor base',program.sauna.footprint,levels.sauna.padBaseZ??levels.sauna.groundZ,levels.sauna.floorZ));
+  for(const step of levels.sauna.entrySteps||[])add(prism('sauna-entry-step','Sauna entry step',step.footprint,step.baseZ,step.topZ));
 
   const f=program.firepit,z=levels.firepit,t=f.wallThickness,entry=f.steps[0];
   const walls=[
@@ -198,7 +199,16 @@ function spaOccluders(settings,data) {
     {x:c.x,y:c.y+r,width:r,length:c.length-2*r},
     {x:c.x+c.width-r,y:c.y+r,width:r,length:c.length-2*r},
   ])slab('cold-plunge-rim','Cold-plunge basin rim',wall,cz.bottomZ,cz.rimZ);
-  for(const step of cz.steps)slab('cold-plunge-step','Cold-plunge access step',step,cz.groundZ,step.topZ);
+  if(program.id==='spa-edge'){
+    const pad=c.pad??.18;
+    for(const strip of [
+      {x:c.x-pad,y:c.y-pad,width:c.width+2*pad,length:pad},
+      {x:c.x-pad,y:c.y+c.length,width:c.width+2*pad,length:pad},
+      {x:c.x-pad,y:c.y,width:pad,length:c.length},
+      {x:c.x+c.width,y:c.y,width:pad,length:c.length},
+    ])slab('cold-plunge-pad','Cold-plunge raised pad',strip,cz.padBaseZ,cz.baseZ+.02);
+  }
+  for(const step of cz.steps)slab('cold-plunge-step','Cold-plunge access step',step,step.baseZ??cz.groundZ,step.topZ);
 
   const terrace=data.site.terrace,drop=terraceGroundReference(settings,data).drop;
   const stairs=terraceStairs(terrace,num(settings.terraceDepth,terrace.depth),drop,settings,data),floor=floorElevation(settings,data);
@@ -317,8 +327,11 @@ function makeReceivers(settings,data,size=1){
       let z=zone==='jacuzzi'?tub.waterZ:zone==='terrace'?floor:zone==='pool'?poolZ:zone==='coldPlunge'?levels.coldPlunge.waterZ:zone==='firepit'?(pitStep?.topZ??levels.firepit.floorZ):bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
       if(zone==='garden'&&program.active){
         if(rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
+        if(program.id==='spa-edge'&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
         const step=levels.coldPlunge.steps.find(r=>rectContains(x,y,rectBounds(r)));
         if(step)z=step.topZ;
+        const saunaStep=levels.sauna.entrySteps?.find(r=>pointInPolygon([x,y],r.footprint));
+        if(saunaStep)z=saunaStep.topZ;
         if(stairs.count&&rectContains(x,y,rectBounds(stairs))){
           const i=Math.min(stairs.count-1,Math.floor((y-stairs.y)/.29));
           z=floor-stairs.drop*i/stairs.count;

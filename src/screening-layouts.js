@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.7.0';
+import {getTreeType} from './tree-catalog.js?v=1.8.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -77,6 +77,50 @@ const spaLayouts=Object.freeze(layouts.map(layout=>Object.freeze({...layout,
     :'Trees positioned around the east pool and spa rooms. Compare the current sightlines and shade; the earlier west-pool screening figures do not apply.',
 })));
 
-export function getScreeningLayouts(siteId,program='spa') {
-  return siteId==='sternicza-11'?(program==='spa'?spaLayouts:layouts):Object.freeze([]);
+// The edge-packed programme brings the third full-height crown forward into
+// the soil beside the pool. Keep the historical spa arrays above unchanged.
+// These catalog-sized crowns deliberately overhang some pool/spa hardscape;
+// all trunks have a 1 m illustrative planting allowance and crowns stay inside
+// the parcel. The fire bowl itself is outside all crown footprints. This is a
+// design comparison, not a nursery root-ball or fire-clearance certification.
+// See docs/edge-screening-comparison.md for every named and walkable check.
+export const STERNICZA_EDGE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:17.6,y:34.9},
+  {typeId:'austrian-pine-tall',x:12.9,y:34.3},
+  {typeId:'austrian-pine-tall',x:14.4,y:25.7},
+]);
+export const STERNICZA_EDGE_LIVING_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.9,y:27.3},
+  {typeId:'austrian-pine-tall',x:12.5,y:33.4},
+  {typeId:'austrian-pine-tall',x:15.2,y:23.2},
+]);
+const edgeSettings=Object.freeze({...STERNICZA_LAYOUT_SETTINGS,gardenProgram:'spa-edge'});
+const edgeLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Three 9.5 m pines · balanced views · default',
+    note:'Three full-height pines, including a forward crown beside the pool. Balances living-room, terrace, jacuzzi and garden views. Some PCK3 remains visible; inspect each view. Crowns overhang pool/spa edges and need individual planting and maintenance checks.',
+    settings:edgeSettings,trees:STERNICZA_EDGE_TREES}),
+  Object.freeze({id:'living-priority',label:'Three 9.5 m pines · living-room priority',
+    note:'Prioritizes the living-room and terrace sightlines at the same plant cost. At the starting assumptions, the seated living-room samples are hidden and two standing-view sample rays remain. More of PCK3 is visible from the fire lounge and pool paths. Actual foliage has gaps.',
+    settings:edgeSettings,trees:STERNICZA_EDGE_LIVING_TREES}),
+  Object.freeze({id:'mixed-pines',label:'Two 9.5 m + one 5.5 m pine · lower plant cost',
+    note:'Saves 43,000 PLN in catalog plant cost against three tall pines. More sampled PCK3 remains visible from the living room, jacuzzi and several garden positions. Delivery and installation are extra.',
+    settings:edgeSettings,trees:treesFrom([
+      {typeId:'austrian-pine-tall',x:14.4,y:26.4},
+      {typeId:'austrian-pine-tall',x:13,y:33.8},
+      {typeId:'austrian-pine-large',x:16.8,y:33.8},
+    ])}),
+  Object.freeze({id:'budget-pines',label:'One 9.5 m + two 5.5 m pines · budget comparison',
+    note:'A lower plant-cost comparison that favors the main terrace and garden viewpoint but leaves substantially more exposure from dining, loungers and pool paths. Compare every occupied area.',
+    settings:edgeSettings,trees:treesFrom([
+      {typeId:'austrian-pine-tall',x:14.2,y:25.7},
+      {typeId:'austrian-pine-large',x:13.3,y:33.1},
+      {typeId:'austrian-pine-large',x:9.3,y:24.7},
+    ])}),
+  Object.freeze({id:'hedges-only',label:'4 m hedges + 0.5 m fill · no specimen trees',
+    note:'The edge-packed spa with the same hedges, fill and terrace, without specimen trees.',
+    settings:edgeSettings,trees:Object.freeze([])}),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-edge') {
+  return siteId==='sternicza-11'?(program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }

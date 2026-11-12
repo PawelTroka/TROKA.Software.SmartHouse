@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.7.0';
+import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.8.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const ringOpen=ring=>ring.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring;
@@ -39,10 +39,20 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
   if(sauna){
     const g=new THREE.Group();g.name='six-person-corner-sauna';group.add(g);
     const floor=levels.sauna.floorZ,roof=levels.sauna.roofZ;
-    prism(g,'sauna-pad',sauna.footprint,levels.sauna.groundZ-.6,floor,mat.stone);
+    // In the edge layout the mapped footprint is the outer envelope. Put
+    // panel thickness and glazing frames inside it, so measured boundary
+    // clearances agree with the actual rendered wall faces.
+    const edgePanel=(a,b,trim=0)=>{
+      if(program.id!=='spa-edge')return [a,b];
+      const len=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/len,dy=(b[1]-a[1])/len;
+      return [[a[0]-dy*.07+dx*trim,a[1]+dx*.07+dy*trim],
+        [b[0]-dy*.07-dx*trim,b[1]+dx*.07-dy*trim]];
+    };
+    prism(g,'sauna-pad',sauna.footprint,levels.sauna.padBaseZ??levels.sauna.groundZ-.6,floor,mat.stone);
+    for(const [i,step] of (levels.sauna.entrySteps||[]).entries())prism(g,`sauna-entry-step-${i}`,step.footprint,step.baseZ,step.topZ,mat.stoneLight);
     prism(g,'sauna-warm-floor',sauna.footprint,floor,floor+.025,mat.woodLight,false);
     for(const [i,wall] of sauna.walls.entries()){
-      const [a,b]=wall.points||[wall.a,wall.b];
+      const [a,b]=edgePanel(...(wall.points||[wall.a,wall.b]));
       const base=floor+wall.bottom,height=wall.top-wall.bottom;
       panel(g,`sauna-wall-${i}`,a,b,base,height,.14,mat.wood);
       const len=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/len,dy=(b[1]-a[1])/len;
@@ -53,7 +63,7 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
       }
     }
     for(const [i,glass] of sauna.glazing.entries()){
-      const [a,b]=glass.points||[glass.a,glass.b];
+      const [a,b]=edgePanel(...(glass.points||[glass.a,glass.b]),.07);
       const base=floor+glass.bottom,height=glass.top-glass.bottom;
       panel(g,`sauna-glazing-${i}`,a,b,base,height,.022,mat.glass,false);
       panel(g,'sauna-glazing-sill',a,b,base,.045,.065,mat.metal,false);
@@ -83,21 +93,25 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
     prism(g,'sauna-roof',sauna.footprint,roof-.10,roof,mat.metal);
     // A recessed warm line makes the glazed corner legible without pretending
     // the interior light contributes to the analytical daylight calculation.
-    if(mat.spaGlow)for(const glazing of sauna.glazing){const [a,b]=glazing.points||[glazing.a,glazing.b];panel(g,'sauna-warm-light',a,b,roof-.17,.025,.035,mat.spaGlow,false);}
+    if(mat.spaGlow)for(const glazing of sauna.glazing){const [a,b]=edgePanel(...(glazing.points||[glazing.a,glazing.b]),.07);panel(g,'sauna-warm-light',a,b,roof-.17,.025,.035,mat.spaGlow,false);}
   }
 
   const plunge=program.coldPlunge;
   if(plunge){
     const g=new THREE.Group();g.name='cold-plunge';group.add(g);
     const z=levels.coldPlunge.baseZ,bottom=levels.coldPlunge.bottomZ,h=levels.coldPlunge.rimZ-bottom,t=plunge.rim??.12;
-    for(const [x,y,w,l] of [[plunge.x-.18,plunge.y-.18,plunge.width+.36,.18],[plunge.x-.18,plunge.y+plunge.length,plunge.width+.36,.18],[plunge.x-.18,plunge.y,.18,plunge.length],[plunge.x+plunge.width,plunge.y,.18,plunge.length]])box(g,'plunge-pad',x,y,z-.10,w,l,.12,mat.stone);
+    const pad=plunge.pad??.18,padBase=levels.coldPlunge.padBaseZ??z-.10,padTop=z+.02;
+    for(const [x,y,w,l] of [[plunge.x-pad,plunge.y-pad,plunge.width+2*pad,pad],[plunge.x-pad,plunge.y+plunge.length,plunge.width+2*pad,pad],[plunge.x-pad,plunge.y,pad,plunge.length],[plunge.x+plunge.width,plunge.y,pad,plunge.length]])box(g,'plunge-pad',x,y,padBase,w,l,padTop-padBase,mat.stone);
     box(g,'plunge-basin-floor',plunge.x,plunge.y,bottom-.10,plunge.width,plunge.length,.10,mat.basin);
     box(g,'plunge-long-side',plunge.x,plunge.y,bottom,plunge.width,t,h,mat.stone);
     box(g,'plunge-long-side',plunge.x,plunge.y+plunge.length-t,bottom,plunge.width,t,h,mat.stone);
     box(g,'plunge-end',plunge.x,plunge.y,bottom,t,plunge.length,h,mat.stone);
     box(g,'plunge-end',plunge.x+plunge.width-t,plunge.y,bottom,t,plunge.length,h,mat.stone);
     box(g,'cold-plunge-water',plunge.x+t,plunge.y+t,levels.coldPlunge.waterZ-.018,plunge.width-2*t,plunge.length-2*t,.018,mat.waterLight,false);
-    for(const [i,step] of levels.coldPlunge.steps.entries())box(g,`plunge-access-step-${i}`,step.x,step.y,z,step.width,step.length,step.topZ-z,mat.woodLight,false);
+    for(const [i,step] of levels.coldPlunge.steps.entries()){
+      const base=step.baseZ??z;
+      box(g,`plunge-access-step-${i}`,step.x,step.y,base,step.width,step.length,step.topZ-base,mat.woodLight,false);
+    }
   }
 
   const pit=program.firepit;

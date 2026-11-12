@@ -7,14 +7,15 @@ import {
   jacuzziBounds,
   spaLevels,
   saunaOpaqueFaces,
-} from './geometry.js?v=1.7.0';
-import {gazeDirection} from './orientation.js?v=1.7.0';
-import {localSunDirection} from './solar.js?v=1.7.0';
-import {getSiteProfile} from './sites.js?v=1.7.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.7.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.7.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.7.0';
-import {terraceStairs} from './layout.js?v=1.7.0';
+} from './geometry.js?v=1.8.0';
+import {gazeDirection} from './orientation.js?v=1.8.0';
+import {localSunDirection} from './solar.js?v=1.8.0';
+import {getSiteProfile} from './sites.js?v=1.8.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.8.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.8.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.8.0';
+import {terraceStairs} from './layout.js?v=1.8.0';
+import {gardenDimensions, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.8.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -52,9 +53,9 @@ export function spaPlanMarkup(program,{X,Y,scale,labels=true,subtle=false}) {
   const rect=(r,attrs='')=>`<rect x="${X(r.x)}" y="${Y(r.y)}" width="${r.width*scale}" height="${r.length*scale}" ${attrs}/>`;
   const text=(label,x,y,fill=C.ink,size=9)=>`<text x="${X(x)}" y="${Y(y)}" text-anchor="middle" fill="${fill}" font-size="${size}" font-weight="650" paint-order="stroke" stroke="${C.paper}" stroke-width="2">${esc(label)}</text>`;
   const {sauna:s,firepit:f,coldPlunge:c}=program;
-  const sauna=s?`<g data-spa-object="sauna"><polygon points="${poly(s.footprint)}" fill="#9d8065" fill-opacity="${subtle ? .4 : .85}" stroke="#634b39" stroke-width="1.4"/>${(s.benches||[]).map(b=>rect(b,'fill="#d2b594" fill-opacity=".8"')).join('')}${(s.glazing||[]).map(({a,b})=>`<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#6aa8a4" stroke-width="3"/>`).join('')}${labels?text('SAUNA · 6',s.x+s.width*.43,s.y+s.length*.62):''}</g>`:'';
+  const sauna=s?`<g data-spa-object="sauna">${(s.entrySteps||[]).map(step=>`<polygon data-spa-object="sauna-step" points="${poly(step.footprint)}" fill="#c9b391" stroke="#9c8769" stroke-width=".7"/>`).join('')}<polygon points="${poly(s.footprint)}" fill="#9d8065" fill-opacity="${subtle ? .4 : .85}" stroke="#634b39" stroke-width="1.4"/>${(s.benches||[]).map(b=>rect(b,'fill="#d2b594" fill-opacity=".8"')).join('')}${(s.glazing||[]).map(({a,b})=>`<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#6aa8a4" stroke-width="3"/>`).join('')}${labels?text('SAUNA · 6',s.x+s.width*.43,s.y+s.length*.62):''}</g>`:'';
   const pit=f?`<g data-spa-object="firepit">${rect(f,`rx="${.12*scale}" fill="#c9ba9e" fill-opacity="${subtle ? .15 : .8}" stroke="#968267" stroke-width="1.4"`)}${(f.seats||[]).map(b=>rect(b,'fill="#a99272" stroke="#7f705c" stroke-width=".6"')).join('')}${(f.steps||[]).map(step=>rect(step,'fill="none" stroke="#7f705c" stroke-width=".7"')).join('')}<circle cx="${X(f.x+f.width/2)}" cy="${Y(f.y+f.length*.58)}" r="${.45*scale}" fill="#8c5940" stroke="#d3a36d" stroke-width="1.4"/>${labels?text(`FIREPIT −${fmt(f.depth,2)} m`,f.x+f.width/2,f.y+f.length+.65,C.ink,8.5):''}</g>`:'';
-  const plunge=c?`<g data-spa-object="cold-plunge">${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text('COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
+  const plunge=c?`<g data-spa-object="cold-plunge">${(c.steps||[]).map(step=>rect(step,'data-spa-object="plunge-step" fill="#c9b391" stroke="#9c8769" stroke-width=".7"')).join('')}${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text('COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
   return subtle?`<g pointer-events="none">${sauna+pit+plunge}</g>`:sauna+pit+plunge;
 }
 
@@ -79,9 +80,10 @@ function criticalRay(data, analysis) {
     !best || r.screen.requiredHeight > best.screen.requiredHeight ? r : best, null);
 }
 
-export function planLayout(scope, data, container) {
+export function planLayout(scope, data, container, drawingFrame=false) {
   const plot = getSiteProfile(data.site.id || 'sternicza-11', data).bounds;
   let bounds = {minX: plot.minX - 3.5, maxX: plot.maxX + 4.2, minY: plot.minY - 4.2, maxY: plot.maxY + 4.2};
+  if(scope==='detail')bounds={minX:plot.minX-1.3,maxX:plot.maxX+1.3,minY:data.site.rearMidpoint[1]-1.1,maxY:plot.maxY+1.5};
   if (scope === 'context') {
     const points = [...data.site.boundary, ...data.buildings.filter(b => b.kind === 'target').flatMap(b => b.footprint)];
     bounds = {
@@ -93,9 +95,9 @@ export function planLayout(scope, data, container) {
   }
   // Match the available panel instead of shrinking a thousand-pixel drawing.
   // Coordinates still share one metres-to-pixels factor in both directions.
-  const W = Math.max(360, Math.min(960, container.clientWidth || 720));
-  const H = Math.max(230, (container.clientHeight || 480) - (W < 500 ? 96 : 78));
-  const padding = W < 500 ? 28 : 34;
+  const W = Math.max(280, Math.min(960, container.clientWidth || 720));
+  const H = Math.max(230, (container.clientHeight || 480) - (drawingFrame?0:(W < 500 ? 96 : 78)));
+  const padding = scope==='detail'?18:W < 500 ? 28 : 34;
   const scale = Math.min((W - padding * 2) / (bounds.maxX - bounds.minX), (H - padding * 2) / (bounds.maxY - bounds.minY));
   const left = (W - scale * (bounds.maxX - bounds.minX)) / 2;
   const top = (H - scale * (bounds.maxY - bounds.minY)) / 2;
@@ -108,11 +110,13 @@ export function planLayout(scope, data, container) {
 }
 
 /** Render an interactive, metrically scaled plan. Source coordinates remain unmodified. */
-export function renderPlan(container, data, settings, observer, analysis, onPick, options = {}) {
-  const scope = container.dataset.mapScope === 'context' ? 'context' : 'garden';
-  const l = planLayout(scope, data, container), {X, Y, scale, W, H} = l;
+export function renderPlan(container, data, settings, observer, analysis, onPick, options = {}, measuredFrame=null) {
+  const scope = ['detail','garden','context'].includes(container.dataset.mapScope)?container.dataset.mapScope:settings.showDimensions!==false?'detail':'garden';
+  const measured=scope!=='context'&&settings.showDimensions!==false,stacked=(container.clientWidth||760)<720;
+  const frame=measuredFrame||{clientWidth:(container.clientWidth||760)-(measured&&!stacked?292:26),clientHeight:measured&&stacked?360:Math.max(300,(container.clientHeight||480)-100)};
+  const l = planLayout(scope, data, frame,true), {X, Y, scale, W, H} = l;
   const treeVolumes = screeningTreeVolumes(settings, data);
-  const trees = treePlanMarkup(treeVolumes, {X, Y, scale, selectedTreeId: options.selectedTreeId, interactive: true});
+  const trees = treePlanMarkup(treeVolumes, {X, Y, scale, selectedTreeId: options.selectedTreeId, interactive: true,labels:!measured});
   const site = data.site;
   const profile = getSiteProfile(site.id || 'sternicza-11', data), plot = profile.bounds;
   const middleX = (plot.minX + plot.maxX) / 2;
@@ -139,7 +143,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const hedges = hedgeSegments(settings, data).filter(h => h.height > 0 && (h.topA > h.baseA || h.topB > h.baseB)).map(h =>
     `<line x1="${X(h.a[0])}" y1="${Y(h.a[1])}" x2="${X(h.b[0])}" y2="${Y(h.b[1])}" stroke="${C.hedge}" stroke-width="${Math.max(scope === 'garden' ? 4 : 2, scale * .65)}" stroke-linecap="square"/>`
   ).join('');
-  const detail = scope === 'garden';
+  const detail = scope !== 'context';
   const compact = scale < 10;
   const {drop:terraceDrop} = terraceGroundReference(settings,data);
   const steps = terraceStairs(terrace,terrace.depth,terraceDrop,settings,data);
@@ -158,7 +162,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   ];
   const north = localSunDirection(0, 0, data), compassX = W - 34, compassY = 48;
   const compass = `<g aria-label="True north"><circle cx="${compassX}" cy="${compassY}" r="23" fill="#fffdf5" fill-opacity=".94" stroke="${C.line}"/><line x1="${compassX}" y1="${compassY}" x2="${compassX + north[0] * 18}" y2="${compassY + north[1] * 18}" stroke="${C.ink}" stroke-width="2"/><text x="${compassX + north[0] * 31}" y="${compassY + north[1] * 31 + 3}" text-anchor="middle" font-size="11" font-weight="700">N</text></g>`;
-  const dimensions = detail ? `
+  const dimensions = scope==='garden' && settings.showDimensions!==false ? `
     <line x1="${X(plot.minX)}" y1="${Y(plot.minY - 1.1)}" x2="${X(plot.minX + frontage)}" y2="${Y(plot.minY - 1.1)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
     <text x="${X(plot.minX + frontage / 2)}" y="${Y(plot.minY - 1.1) - 5}" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">${fmt(frontage, 2)} m ${compact ? '' : 'mapped '}frontage</text>
     <line x1="${X(plot.minX - 1.6)}" y1="${Y(plot.minY)}" x2="${X(plot.minX - 1.6)}" y2="${Y(plot.minY + depth)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
@@ -172,8 +176,10 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const garage = site.garage && !settings.removeGarage ? `<polygon points="${polys(site.garage.footprint)}" fill="#a7a393" stroke="#8b8a7b"/>${detail ? label(compact ? 'Garage' : 'EXISTING GARAGE', ...centroid(site.garage.footprint), 'font-size="10" fill="#fffdf6"') : ''}` : '';
   const rays = ray ? `<line x1="${X(observer.x)}" y1="${Y(observer.y)}" x2="${X(ray.target[0])}" y2="${Y(ray.target[1])}" stroke="${ray.visible ? C.ray : C.clear}" stroke-width="2" stroke-dasharray="6 5" opacity=".9"/>` +
     (ray.screen ? `<circle cx="${X(ray.screen.x)}" cy="${Y(ray.screen.y)}" r="5" fill="${C.paper}" stroke="${ray.visible ? C.ray : C.clear}" stroke-width="2"/>` : '') : '';
-  const sideY = rearY + Math.max(1.5, (plot.maxY - rearY) * .3);
+  const sideY = scope==='detail'?rearY-.65:rearY + Math.max(1.5, (plot.maxY - rearY) * .3);
   const scalebar = detail ? 5 : 20;
+  const dimensionRecords=measured?gardenDimensions(settings,data):[];
+  const objectDimensions=dimensionPlanMarkup(dimensionRecords,{X,Y,scale,keyed:true});
   const xScale = 38, yScale = H - 32;
   const svg = `
     <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation;${options.placingTree ? 'cursor:crosshair;' : ''}" tabindex="0" role="group" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place ${options.placingTree ? 'the selected tree' : 'a viewpoint'}. Arrow keys move ${options.placingTree ? 'the selected tree' : 'the viewpoint'} by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
@@ -190,25 +196,25 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${rect(terrace.x, rearY, terrace.width, terrace.depth, `fill="${C.stone}" stroke="#c9bda5" stroke-width="1.2"`)}
         ${program.active?Array.from({length:steps.count},(_,i)=>rect(steps.x,steps.y+i*.29,steps.width,.29,'fill="#d2c5ad" stroke="#b4a78e" stroke-width=".6"')).join(''):rect(terrace.x, rearY + terrace.depth, terrace.width, .42, 'fill="#d2c5ad"')}
         ${jacuzzi ? rect(jacuzziX, jacuzziY, jacuzzi.x1 - jacuzzi.x0, jacuzzi.y1 - jacuzzi.y0, `rx="2" fill="${C.waterLight}" stroke="#f8f4e9" stroke-width="${detail ? 2 : 1}"`) : ''}
-        ${program.active&&jacuzzi?`<line x1="${X(jacuzzi.x0)}" y1="${Y(jacuzzi.y1)}" x2="${X(jacuzzi.x1)}" y2="${Y(jacuzzi.y1)}" stroke="#46898b" stroke-width="2.4"/>${detail?label('EDGE SPA',jacuzzi.x0+jacuzzi.width/2,jacuzzi.y0+jacuzzi.length/2,'font-size="8" fill="#3b7778"'):''}`:''}
-        ${detail ? label(compact ? 'Terrace' : 'TERRACE', terrace.x + terrace.width - 2.7, rearY + 2.45, `font-size="${compact ? 9 : 12}" fill="#746c59"`) : ''}
-        ${detail && !compact ? label(fmt(terrace.width) + ' × ' + fmt(terrace.depth) + ' m', terrace.x + terrace.width - 2.7, rearY + Math.min(3.4, terrace.depth - .4), 'font-size="10" fill="#746c59"') : ''}
+        ${program.active&&jacuzzi?`<line x1="${X(jacuzzi.x0)}" y1="${Y(jacuzzi.y1)}" x2="${X(jacuzzi.x1)}" y2="${Y(jacuzzi.y1)}" stroke="#46898b" stroke-width="2.4"/>${detail&&!measured?label('EDGE SPA',jacuzzi.x0+jacuzzi.width/2,jacuzzi.y0+jacuzzi.length/2,'font-size="8" fill="#3b7778"'):''}`:''}
+        ${detail&&!measured ? label(compact ? 'Terrace' : 'TERRACE', terrace.x + terrace.width - 2.7, rearY + 2.45, `font-size="${compact ? 9 : 12}" fill="#746c59"`) : ''}
         ${pool ? rect(pool.x, pool.y, pool.width, pool.length, `rx="2" fill="${C.water}" stroke="#eae5d7" stroke-width="${detail ? 3 : 1.5}"`) : ''}
         ${detail && pool ? `<line x1="${X(pool.x + .35)}" y1="${Y(pool.y + .6)}" x2="${X(pool.x + pool.width - .35)}" y2="${Y(pool.y + .6)}" stroke="#c7dfd9" stroke-width="2"/>` : ''}
-        ${detail && pool ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">${compact ? 'Pool' : `POOL ${fmt(pool.width)} × ${fmt(pool.length)} m`}</text>` : ''}
-        ${spaPlanMarkup(program,{X,Y,scale,labels:detail})}
+        ${detail && pool&&!measured ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">POOL</text>` : ''}
+        ${spaPlanMarkup(program,{X,Y,scale,labels:detail&&!measured})}
         ${garage}
         ${hedges}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
         <polygon points="${polys(cone)}" fill="${C.observer}" opacity=".18"/>
         ${rays}
         ${trees}
+        ${objectDimensions}
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="${detail ? 6 : 4}" fill="${C.observer}" stroke="#fffdf5" stroke-width="2"/>
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="2" fill="${C.ink}"/>
         ${detail ? compact ? `<text x="${X(observer.x) + 9}" y="${Y(observer.y) + 3}" font-size="9" fill="${C.ink}">View</text>` : `<rect x="${X(observer.x) - 58}" y="${Y(observer.y) - 30}" width="116" height="19" rx="9" fill="#fffdf5" fill-opacity=".94"/><text x="${X(observer.x)}" y="${Y(observer.y) - 17}" text-anchor="middle" font-size="10" fill="${C.ink}">${esc(observer.label || 'Viewpoint')}</text>` : ''}
         ${dimensions}
         ${label(`${profile.streetLabel} · ${detail ? 'STREET / ' : ''}${profile.frontBearingLabel}`, middleX, plot.minY - 3.4, `font-size="${compact ? 9 : 11}" fill="#5f685e"`)}
-        ${detail ? label(`REAR GARDEN / ${profile.rearBearingLabel} ↓`, middleX, plot.maxY + 2.3, `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : ''}
+        ${detail ? label(`REAR GARDEN / ${profile.rearBearingLabel} ↓`, middleX, plot.maxY + (scope==='detail'?.95:2.3), `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : ''}
         ${detail ? label(`RIGHT · ${profile.sideLabels.right.toUpperCase()}`, plot.minX + 2.6, sideY, 'font-size="9" fill="#31513a"') + label(`LEFT · ${profile.sideLabels.left.toUpperCase()}`, plot.maxX - 2.6, sideY, 'font-size="9" fill="#31513a"') : ''}
         ${compass}
         <path d="M${xScale} ${yScale - 6}v6h${scalebar * scale}v-6" fill="none" stroke="${C.ink}" stroke-width="2"/>
@@ -220,17 +226,22 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
     <div class="diagram-toolbar" style="display:flex;flex:0 0 auto;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px">
       <p style="margin:0;font-size:11px;color:${options.placingTree ? '#9b6922' : C.muted}">${options.placingTree ? 'Tap bare garden ground to place the selected tree.' : detail ? `Tap the plot to move your viewpoint.${treeVolumes.length ? ' Tap a tree to select it.' : ''}` : 'Mapped footprints and sampled roof heights.'}</p>
       <div style="display:flex;gap:5px" aria-label="Plan extent">
-        <button type="button" data-map-scope="garden" aria-pressed="${scope === 'garden'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'garden' ? C.ink : 'transparent'};color:${scope === 'garden' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Garden</button>
+        <button type="button" data-map-scope="detail" aria-pressed="${scope === 'detail'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'detail' ? C.ink : 'transparent'};color:${scope === 'detail' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Garden detail</button>
+        <button type="button" data-map-scope="garden" aria-pressed="${scope === 'garden'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'garden' ? C.ink : 'transparent'};color:${scope === 'garden' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Whole plot</button>
         <button type="button" data-map-scope="context" aria-pressed="${scope === 'context'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'context' ? C.ink : 'transparent'};color:${scope === 'context' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Neighbourhood</button>
       </div>
     </div>
-    <div style="flex:1;min-height:0;display:flex;overflow:hidden;border:1px solid ${C.line};border-radius:12px;background:${C.paper}">${svg}</div>
+    ${measured?`<p class="plan-site-note">Full mapped site: ${fmt(frontage,2)} × ${fmt(depth,2)} m · house setback ${fmt(setback,1)} m · ${scope==='detail'?'rear garden enlarged below':'whole plot'}</p>`:''}
+    <div class="plan-workspace ${measured?'plan-workspace--measured':''} ${measured&&stacked?'plan-workspace--stacked':''}"><div class="plan-drawing" data-plan-drawing>${svg}</div>${measured?dimensionScheduleMarkup(dimensionRecords):''}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
       <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Privacy targets</span><span>Left / right: from house toward rear garden ↓</span>
       ${treeVolumes.length ? '<span><b style="color:#41694d">◯</b> Tree crowns · dashed = no foliage credit / invalid</span>' : ''}
       ${detail ? `<span title="Ground on terrace centreline, 0.6 m beyond the outer edge.">${terraceDrop>=0?'Terrace drop':'Garden above terrace'} <b>${fmt(Math.abs(terraceDrop), 2)} m</b> · centreline, 0.6 m beyond edge</span>` : ''}
+      ${measured?'<span>Small keys link the fine dimension lines to the readable schedule.</span>':''}
     </div>`;
 
+  const drawing=container.querySelector('[data-plan-drawing]');
+  if(!measuredFrame&&drawing?.clientWidth>0&&drawing?.clientHeight>0)return renderPlan(container,data,settings,observer,analysis,onPick,options,{clientWidth:drawing.clientWidth,clientHeight:drawing.clientHeight});
   for (const button of container.querySelectorAll('[data-map-scope]')) button.onclick = () => {
     container.dataset.mapScope = button.dataset.mapScope;
     renderPlan(container, data, settings, observer, analysis, onPick, options);
@@ -326,6 +337,19 @@ export function spaSectionCuts(settings,data,origin,direction){
   ].filter(c=>c.interval&&c.interval[1]-c.interval[0]>1e-7);
 }
 
+/** Vertical dimensions belong only to objects actually cut by this section. */
+export function spaSectionDimensionMarkup(cuts,{X,Y,minS=-Infinity,maxS=Infinity}){
+  return `<g class="section-dimensions" pointer-events="none">${cuts.map(c=>{
+    const a=Math.max(minS,c.interval[0]),b=Math.min(maxS,c.interval[1]);
+    if(b<=a)return '';
+    const bottom=c.kind==='sauna'?c.floorZ:c.kind==='firepit'?c.floorZ:c.bottomZ;
+    const top=c.kind==='sauna'?c.roofZ:c.kind==='firepit'?c.rimZ:c.waterZ;
+    if(!Number.isFinite(bottom)||!Number.isFinite(top))return '';
+    const x=X(b)+5,y0=Y(bottom),y1=Y(top),prefix=c.kind==='sauna'?'h ':c.kind==='firepit'?'drop ':'water ';
+    return `<g data-section-dimension="${c.kind}"><path d="M${x},${y0}V${y1}M${x-3},${y0}h6M${x-3},${y1}h6"/><text x="${x+5}" y="${(y0+y1)/2+2.5}">${prefix}${formatDimension(top-bottom)}</text></g>`;
+  }).join('')}</g>`;
+}
+
 /** Equal-scale section along one actual sampled ray, not a whole-garden promise. */
 export function renderSection(container, data, settings, observer, analysis, measuredFrame = null) {
   const ray = criticalRay(data, analysis);
@@ -415,6 +439,14 @@ export function renderSection(container, data, settings, observer, analysis, mea
     }
     return `<g data-spa-section="${c.kind}"><rect x="${X(a)}" y="${Y(c.waterZ)}" width="${(b-a)*scale}" height="${(c.waterZ-c.bottomZ)*scale}" fill="${C.waterLight}" fill-opacity=".65"/><path d="M${X(a)} ${Y(c.groundZ)}V${Y(c.bottomZ)}H${X(b)}V${Y(c.groundZ)}" stroke="#8e9b94" stroke-width="1.5" fill="none"/><line x1="${X(a)}" x2="${X(b)}" y1="${Y(c.waterZ)}" y2="${Y(c.waterZ)}" stroke="#4f9496" stroke-width="2"/>${caption}</g>`;
   }).join('');
+  const spaDimensions=settings.showDimensions!==false?spaSectionDimensionMarkup(spaCuts,{X,Y,minS,maxS}):'';
+  const entryStairsSvg=program.active?[
+    ...(levels.sauna.entrySteps||[]).map(step=>({step,kind:'sauna-step',interval:linePolygonInterval(origin,direction,step.footprint)})),
+    ...levels.coldPlunge.steps.map(step=>({step,kind:'plunge-step',interval:sectionRect(origin,direction,step)})),
+  ].filter(c=>c.interval&&c.interval[1]>minS&&c.interval[0]<maxS).map(({step,kind,interval})=>{
+    const [a,b]=clipped(interval),base=step.baseZ??gardenGroundAt(...xy((a+b)/2),settings,data);
+    return `<rect data-spa-section="${kind}" x="${X(a)}" y="${Y(step.topZ)}" width="${(b-a)*scale}" height="${Math.max(0,step.topZ-base)*scale}" fill="#c2ac89" stroke="#98866b" stroke-width=".5"/>`;
+  }).join(''):'';
   const statusColor = ray.visible ? C.ray : C.clear;
   const topOfScreen = screen ? (screen.topZ ?? screen.groundZ + screen.height) : null;
   // Both displayed heights share today's planting base. For retained foliage,
@@ -502,13 +534,14 @@ export function renderSection(container, data, settings, observer, analysis, mea
           <path d="${profilePath('proposed')}" fill="none" stroke="${C.hedgeDark}" stroke-width="1.5"/>
           <path d="${existingPath}" fill="none" stroke="${C.existing}" stroke-width="1.2" stroke-dasharray="3 4"/>
           ${screen && screen.groundZ > gardenGroundAt(screen.x, screen.y, settings, data) + .01 ? `<rect x="${X(screen.distance) - .48 * scale}" y="${Y(screen.groundZ)}" width="${.96 * scale}" height="${(screen.groundZ - gardenGroundAt(screen.x, screen.y, settings, data)) * scale}" fill="${C.soil}"/>` : ''}
-          ${houseFloor}${terraceFloor}${spaSvg}
+          ${houseFloor}${terraceFloor}${spaSvg}${entryStairsSvg}
           ${canopySvg}
           ${treesSvg}
           ${screenSvg}
           ${buildingMark}
           <line x1="${X(0)}" y1="${Y(observer.z)}" x2="${X(D)}" y2="${Y(target[2])}" stroke="${statusColor}" stroke-width="2" stroke-dasharray="${ray.visible ? 'none' : '6 4'}"/>
           ${person}
+          ${spaDimensions}
           ${dimension}
         </g>
       </svg>
