@@ -4,6 +4,10 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.6.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.6.0)**
 
+![Sternicza mixed pine default viewed from the jacuzzi in Garden Lab 1.6.0](pine-layouts-preview-1.6.0.jpg)
+
+*Browser verification of version 1.6.0: the new default from the seated jacuzzi viewpoint. Crowns are geometric approximations; remaining slivers and exposure from other viewpoints are included in the comparison.*
+
 ## Sternicza planting defaults · 1.6.0
 
 Fresh and reset Sternicza designs start with **two 9.5 m Austrian pines and one 5.5 m Austrian pine**, positioned against PCK 3 sightlines. The catalog plant subtotal is **136,700 PLN**. This is a design starting point, not a best-value claim or a guarantee of full concealment. Existing saved designs keep their trees; select **Strategic pines · 2 tall + 1 large · default** to apply the new layout.
@@ -21,7 +25,7 @@ The mixed default saves **43,000 PLN** in plant reference costs compared with th
 
 See the [13-view comparison, sunlight tradeoffs and assumptions](docs/pck3-layout-comparison.md), [recorded results](docs/pck3-layout-comparison.json), and [reproducible bounded search](scripts/search-pck3-layouts.mjs). The search is a constrained design comparison, not proof of a global optimum. Plant prices remain separate from unquoted delivery, crane/unloading, planting, anchoring and establishment.
 
-**Verification:** 148 automated tests pass, including default placement, all historical link baselines, v7 saved designs and v8 empty-tree sharing.
+**Verification:** 148 automated tests pass, including default placement, all historical link baselines, v7 saved designs and v8 empty-tree sharing. The hosted preview was checked for all four planting choices and prices, PCK 3 living-room counts, tree-free v7/v8 shared links, Reset, property isolation and a rendered jacuzzi view. The browser reported no script errors.
 
 State version **8** preserves all older links and per-property saves. Versions 1–7 that omitted trees remain tree-free; version 7 explicit trees and saved scenario A retain their geometry and prices. New links always include the actual tree array, including an explicit empty array, so a later default change cannot silently alter an existing shared planting design.
 
