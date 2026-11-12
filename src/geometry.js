@@ -63,10 +63,10 @@ export function floorElevation(settings, data) {
   return data.site.floorReference.z + number(settings.floorHeight, 1.2);
 }
 
-/** Proposed built-in tub follows the terrace's right edge and front clearance. */
+/** Right means looking from the house into the garden: the west / low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
   const depth = number(settings.terraceDepth, 4.2), size = 2.2;
-  const x0 = data.site.terrace.x + data.site.terrace.width - size - 0.15;
+  const x0 = data.site.terrace.x + 0.15;
   const y0 = data.site.rearMidpoint[1] + Math.min(1.45, Math.max(0.15, depth - size - 0.15));
   return { x0, x1: x0 + size, y0, y1: y0 + size, width: size, length: size, z: floorElevation(settings, data) };
 }
@@ -138,7 +138,9 @@ export function hedgeSegments(settings = {}, data) {
   const segments = [];
   for (let i = 0; i < p.length - 1; i++) {
     const name = data.site.boundaryNames[i];
-    const side = name === 'rear' ? 'rear' : name.startsWith('east') ? 'right' : name.startsWith('west') ? 'left' : null;
+    // Physical sides are named from the house looking toward +y (SSW).
+    // The north-up-ish plan has east on screen-right, but that is the viewer's LEFT.
+    const side = name === 'rear' ? 'rear' : name.startsWith('east') ? 'left' : name.startsWith('west') ? 'right' : null;
     if (!side) continue;
     let a = p[i], b = p[i + 1];
     const startY = data.site.rearMidpoint[1];
@@ -177,8 +179,8 @@ export function canopyIntersection(observer, target, settings, data) {
       hits.push({ x, y, z: c.z, t: r, part: 'roof' });
     }
   }
-  const edges = [[[c.x0, c.y0], [c.x0, c.y1], 'left-fascia'],
-    [[c.x1, c.y0], [c.x1, c.y1], 'right-fascia'],
+  const edges = [[[c.x0, c.y0], [c.x0, c.y1], 'right-fascia'],
+    [[c.x1, c.y0], [c.x1, c.y1], 'left-fascia'],
     [[c.x0, c.y1], [c.x1, c.y1], 'front-fascia']];
   for (const [a, b, part] of edges) {
     const hit = segmentIntersection(e, t, a, b);

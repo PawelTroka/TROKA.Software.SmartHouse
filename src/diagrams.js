@@ -4,7 +4,9 @@ import {
   hedgeSegments,
   canopyBounds,
   jacuzziBounds,
-} from './geometry.js';
+} from './geometry.js?v=1.3.1';
+import {gazeDirection} from './orientation.js?v=1.3.1';
+import {localSunDirection} from './solar.js?v=1.3.1';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -114,14 +116,18 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const jacuzzi = jacuzziBounds(settings, data);
   const jacuzziX = jacuzzi.x0, jacuzziY = jacuzzi.y0;
   const canopy = settings.canopyEnabled ? canopyBounds(settings, data) : null;
-  const yaw = number(settings.lookYaw) * Math.PI / 180;
+  const yaw = number(settings.lookYaw);
   const coneRadius = detail ? 4.5 : 7;
-  const coneHalf = 32 * Math.PI / 180;
+  const coneHalf = 32;
   const cone = [
     [observer.x, observer.y],
-    [observer.x + Math.sin(yaw - coneHalf) * coneRadius, observer.y + Math.cos(yaw - coneHalf) * coneRadius],
-    [observer.x + Math.sin(yaw + coneHalf) * coneRadius, observer.y + Math.cos(yaw + coneHalf) * coneRadius],
+    ...[yaw - coneHalf, yaw + coneHalf].map(angle => {
+      const direction = gazeDirection(angle);
+      return [observer.x + direction[0] * coneRadius, observer.y + direction[1] * coneRadius];
+    }),
   ];
+  const north = localSunDirection(0, 0, data), compassX = W - 34, compassY = 48;
+  const compass = `<g aria-label="True north"><circle cx="${compassX}" cy="${compassY}" r="23" fill="#fffdf5" fill-opacity=".94" stroke="${C.line}"/><line x1="${compassX}" y1="${compassY}" x2="${compassX + north[0] * 18}" y2="${compassY + north[1] * 18}" stroke="${C.ink}" stroke-width="2"/><text x="${compassX + north[0] * 31}" y="${compassY + north[1] * 31 + 3}" text-anchor="middle" font-size="11" font-weight="700">N</text></g>`;
   const dimensions = detail ? `
     <line x1="${X(0)}" y1="${Y(-1.1)}" x2="${X(20.32)}" y2="${Y(-1.1)}" stroke="${C.muted}" marker-start="url(#plan-tick)" marker-end="url(#plan-tick)"/>
     <text x="${X(10.16)}" y="${Y(-1.1) - 5}" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="${C.muted}">${compact ? '20.32 m frontage' : '20.32 m mapped frontage'}</text>
@@ -160,8 +166,8 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${rect(terrace.x, rearY, terrace.width, terrace.depth, `fill="${C.stone}" stroke="#c9bda5" stroke-width="1.2"`)}
         ${rect(terrace.x, rearY + terrace.depth, terrace.width, .42, 'fill="#d2c5ad"')}
         ${rect(jacuzziX, jacuzziY, 2.2, 2.2, `rx="2" fill="${C.waterLight}" stroke="#f8f4e9" stroke-width="${detail ? 2 : 1}"`)}
-        ${detail ? label(compact ? 'Terrace' : 'TERRACE', terrace.x + 2.7, rearY + 2.45, `font-size="${compact ? 9 : 12}" fill="#746c59"`) : ''}
-        ${detail && !compact ? label('8.5 × ' + fmt(terrace.depth) + ' m', terrace.x + 2.7, rearY + 3.4, 'font-size="10" fill="#746c59"') : ''}
+        ${detail ? label(compact ? 'Terrace' : 'TERRACE', terrace.x + terrace.width - 2.7, rearY + 2.45, `font-size="${compact ? 9 : 12}" fill="#746c59"`) : ''}
+        ${detail && !compact ? label('8.5 × ' + fmt(terrace.depth) + ' m', terrace.x + terrace.width - 2.7, rearY + 3.4, 'font-size="10" fill="#746c59"') : ''}
         ${rect(pool.x, pool.y, pool.width, pool.length, `rx="2" fill="${C.water}" stroke="#eae5d7" stroke-width="${detail ? 3 : 1.5}"`)}
         ${detail ? `<line x1="${X(pool.x + .35)}" y1="${Y(pool.y + .6)}" x2="${X(pool.x + pool.width - .35)}" y2="${Y(pool.y + .6)}" stroke="#c7dfd9" stroke-width="2"/>` : ''}
         ${detail ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">${compact ? 'Pool' : 'POOL 3.5 × 8 m'}</text>` : ''}
@@ -176,6 +182,8 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${dimensions}
         ${detail ? label('STERNICZA · STREET / NNE', 10.2, -3.4, `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : label('Sternicza / NNE', 10.2, -3.7, 'font-size="10" fill="#5f685e"')}
         ${detail ? label('REAR GARDEN / SSW ↓', 10.2, 40.5, `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : ''}
+        ${detail ? label('RIGHT · W', 3.1, 24, 'font-size="9" fill="#31513a"') + label('LEFT · E', 17.2, 24, 'font-size="9" fill="#31513a"') : ''}
+        ${compass}
         <path d="M${xScale} ${yScale - 6}v6h${scalebar * scale}v-6" fill="none" stroke="${C.ink}" stroke-width="2"/>
         <text x="${xScale + scalebar * scale / 2}" y="${yScale - 10}" text-anchor="middle" font-size="11">${scalebar} m</text>
       </g>
@@ -191,7 +199,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
     </div>
     <div style="flex:1;min-height:0;display:flex;overflow:hidden;border:1px solid ${C.line};border-radius:12px;background:${C.paper}">${svg}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
-      <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Apartments</span>
+      <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Apartments</span><span>Left / right: from house toward rear garden ↓</span>
       ${detail ? `<span>Terrace drop <b>${fmt(terraceDrop, 2)} m</b></span>` : ''}
     </div>`;
 

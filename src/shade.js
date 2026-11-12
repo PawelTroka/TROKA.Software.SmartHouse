@@ -3,15 +3,24 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, pointInPolygon } from './geometry.js';
+import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.3.1';
 
 const EPS = 1e-8;
-const RAY_OFFSET = .025;
+const RAY_OFFSET = .005;
+// Receiving surfaces match the rendered water, before the 5 mm ray clearance.
+const POOL_WATER_ABOVE_CENTRE_GROUND = .055;
+const JACUZZI_WATER_ABOVE_FLOOR = -.115;
+const JACUZZI_WATER_INSET = .16, JACUZZI_WATER_CORNER_RADIUS = .14;
 const num = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
 const point = p => Array.isArray(p) ? p : [p.x, p.y, p.z];
 const openRing = ring => ring?.length > 1 && Math.hypot(ring[0][0] - ring.at(-1)[0], ring[0][1] - ring.at(-1)[1]) < EPS ? ring.slice(0, -1) : (ring || []).slice();
 const rectangle = (x0, y0, x1, y1) => [[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
 const rectContains = (x,y,r) => x >= r.x0-EPS && x <= r.x1+EPS && y >= r.y0-EPS && y <= r.y1+EPS;
+const roundedRectContains = (x,y,r,radius) => {
+  if(!rectContains(x,y,r))return false;
+  const dx=Math.max(r.x0+radius-x,0,x-(r.x1-radius)),dy=Math.max(r.y0+radius-y,0,y-(r.y1-radius));
+  return dx*dx+dy*dy<=radius*radius+EPS;
+};
 const dot = (a,b) => a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
 const cross = (a,b) => [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const sub = (a,b) => [a[0]-b[0],a[1]-b[1],a[2]-b[2]];
@@ -154,23 +163,27 @@ function makeOccluders(settings,data) {
     contextOccluderCache.set(data,context);
   }
   objects.push(...context);
-  if(house?.footprint?.length){
-    const ring=openRing(house.footprint),x0=Math.min(...ring.map(p=>p[0])),y0=Math.min(...ring.map(p=>p[1]));
-    const eaves=Math.max(floor+5.5,10.1);
-    add(prism('house','House',ring,num(house.baseZ),eaves));
-    add(mesh('house-roof','House roof',gableFaces(ring,eaves,eaves+2.5,'x')));
-    add(mesh('house-front-gable','House front gable',gableFaces(rectangle(x0+4,y0-.05,x0+7.4,y0+3.6),eaves+.04,eaves+1.7,'y')));
-    add(prism('house-chimney','House chimney',rectangle(x0+7.6,y0+4.8,x0+8.28,y0+5.6),eaves+1.4,eaves+2.65));
-  }
-  if(settings.removeGarage===false&&garage?.footprint?.length){
-    const eaves=num(garage.roofZ,7.72)-.7;
-    add(prism('garage','Retained garage',garage.footprint,num(garage.baseZ),eaves));
-    add(mesh('garage-roof','Retained garage roof',gableFaces(garage.footprint,eaves,num(garage.roofTopZ,8.69),'y')));
-  }
+  const addMeasuredBuilding=(building,id,label,axis)=>{
+    if(!building?.footprint?.length)return;
+    const ring=openRing(building.footprint),returns=(building.roofPoints||[]).map(point).filter(p=>p.length>=3&&p.every(Number.isFinite));
+    // Fixed source elevations, shared with the renderer. Changing a proposed
+    // interior floor must never lift the existing building's shadow-casting roof.
+    const sampled=returns.length>6,eaves=sampled?Math.min(...returns.map(p=>p[2])):num(building.roofZ,num(building.baseZ)+7);
+    add(prism(id,label,ring,num(building.baseZ),eaves));
+    add(mesh(`${id}-roof`,`${label} roof`,sampled?sampledRoofFaces(ring,returns,eaves)
+      :gableFaces(ring,eaves,Math.max(eaves,num(building.roofTopZ,eaves)),axis)));
+  };
+  addMeasuredBuilding(house,'house','House','x');
+  if(settings.removeGarage===false)addMeasuredBuilding(garage,'garage','Retained garage','y');
   const t=site.terrace,depth=num(settings.terraceDepth,t?.depth||4.2);
   if(t){
     const ground=gardenGroundAt(t.x+t.width/2,rear+depth/2,settings,data),base=Math.min(ground,floor-.15);
-    add(prism('terrace-edge','Raised terrace',rectangle(t.x,rear,t.x+t.width,rear+depth),base,floor));
+    // The recessed tub is a real hole. A solid deck prism would enclose its
+    // below-floor water receiver and incorrectly shade it even at solar zenith.
+    const tub=jacuzziBounds(settings,data),x0=t.x,x1=t.x+t.width,y0=rear,y1=rear+depth;
+    const hx0=Math.max(x0,tub.x0),hx1=Math.min(x1,tub.x1),hy0=Math.max(y0,tub.y0),hy1=Math.min(y1,tub.y1);
+    const deckPieces=hx0<hx1&&hy0<hy1?[[x0,y0,hx0,y1],[hx1,y0,x1,y1],[hx0,y0,hx1,hy0],[hx0,hy1,hx1,y1]]:[[x0,y0,x1,y1]];
+    for(const [a,b,c,d]of deckPieces)if(c-a>EPS&&d-b>EPS)add(prism('terrace-edge','Raised terrace',rectangle(a,b,c,d),base,floor));
   }
   const segments=hedgeSegments(settings,data);
   for(const segment of segments){
@@ -214,14 +227,16 @@ function makeReceivers(settings,data,size=1){
   const {site}=data,ring=openRing(site.boundary),xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]),rear=site.rearMidpoint[1];
   const t=site.terrace,p=site.pool,terrace=t?{x0:t.x,y0:rear,x1:t.x+t.width,y1:rear+num(settings.terraceDepth,t.depth)}:null;
   const pool=p?{x0:p.x,y0:p.y,x1:p.x+p.width,y1:p.y+p.length}:null;
-  const poolZ=p?gardenGroundAt(p.x+p.width/2,p.y+p.length/2,settings,data)+.105:0;
+  const tub=t?jacuzziBounds(settings,data):null;
+  const tubWater=tub?{x0:tub.x0+JACUZZI_WATER_INSET,x1:tub.x1-JACUZZI_WATER_INSET,y0:tub.y0+JACUZZI_WATER_INSET,y1:tub.y1-JACUZZI_WATER_INSET}:null;
+  const poolZ=p?gardenGroundAt(p.x+p.width/2,p.y+p.length/2,settings,data)+POOL_WATER_ABOVE_CENTRE_GROUND:0;
   const floor=floorElevation(settings,data),segments=hedgeSegments(settings,data),cells=[];
   for(let y=Math.floor(Math.min(...ys)/size)*size+size/2;y<Math.max(...ys);y+=size){
     for(let x=Math.floor(Math.min(...xs)/size)*size+size/2;x<Math.max(...xs);x+=size){
       if(!pointInPolygon([x,y],ring)||site.house?.footprint&&pointInPolygon([x,y],site.house.footprint))continue;
       if(settings.removeGarage===false&&site.garage?.footprint&&pointInPolygon([x,y],site.garage.footprint))continue;
-      const zone=terrace&&rectContains(x,y,terrace)?'terrace':pool&&rectContains(x,y,pool)?'pool':y>=rear?'garden':'front';
-      const z=zone==='terrace'?floor:zone==='pool'?poolZ:bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
+      const zone=tubWater&&roundedRectContains(x,y,tubWater,JACUZZI_WATER_CORNER_RADIUS)?'jacuzzi':terrace&&rectContains(x,y,terrace)?'terrace':pool&&rectContains(x,y,pool)?'pool':y>=rear?'garden':'front';
+      const z=zone==='jacuzzi'?floor+JACUZZI_WATER_ABOVE_FLOOR:zone==='terrace'?floor:zone==='pool'?poolZ:bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
       cells.push({x,y,z,size,zone});
     }
   }
@@ -235,9 +250,34 @@ export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify(geometryKeys.map(k=>settings[k]));
   const cached=geometryCache.get(data);
   if(cached?.signature===signature)return cached.geometry;
-  const geometry={occluders:makeOccluders(settings,data),cells:makeReceivers(settings,data),cellSize:1};
+  const pool=data.site.pool,tub=data.site.terrace?jacuzziBounds(settings,data):null;
+  const terrain={maxZ:Math.max(...data.terrain.elevations)+Math.max(0,num(settings.gardenRaise))+Math.max(0,num(settings.bedRaise)),segments:hedgeSegments(settings,data),
+    cutouts:[...(pool?[{x0:pool.x,x1:pool.x+pool.width,y0:pool.y,y1:pool.y+pool.length}]:[]),...(tub?[tub]:[])]};
+  const geometry={occluders:makeOccluders(settings,data),cells:makeReceivers(settings,data),cellSize:1,terrain};
   geometryCache.set(data,{signature,geometry});
   return geometry;
+}
+
+/** Local terrain only: bounded native DTM samples, never a clamped distant horizon. */
+function terrainSunBlocker(origin,direction,settings,data,terrain,maxDistance=Infinity){
+  if(!terrain||origin[2]>terrain.maxZ+EPS)return null;
+  const horizontal=Math.hypot(direction[0],direction[1]);
+  if(horizontal<EPS)return null;
+  const c=data.coordinates,t=data.terrain;
+  for(let horizontalDistance=.5;horizontalDistance<=180;horizontalDistance+=.5){
+    const distance=horizontalDistance/horizontal;
+    if(distance>=maxDistance)return null;
+    const x=origin[0]+distance*direction[0],y=origin[1]+distance*direction[1],z=origin[2]+distance*direction[2];
+    if(z>terrain.maxZ+EPS)return null;
+    const e=c.localOriginEN[0]+x*c.xUnitEN[0]+y*c.yUnitEN[0],n=c.localOriginEN[1]+x*c.xUnitEN[1]+y*c.yUnitEN[1];
+    const gx=(e-t.originEN[0])/t.cellSize,gy=(n-t.originEN[1])/t.cellSize;
+    if(gx<0||gy<0||gx>t.columns-1||gy>t.rows-1)return null;
+    // Both water bodies are excavations, not original DTM receiving surfaces.
+    if(terrain.cutouts.some(r=>rectContains(x,y,r)))continue;
+    const ground=bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,terrain.segments);
+    if(z<ground-EPS)return {id:'terrain',label:'Local terrain / raised garden',distance,point:[x,y,z]};
+  }
+  return null;
 }
 
 /** Direct-beam visibility at an arbitrary outdoor receiver; no indoor claim. */
@@ -245,7 +285,10 @@ export function sunlightAtPoint(receiver,settings,data,sun,geometry=prepareSunGe
   if(settings.sunEnabled===false)return {state:'disabled',sunlit:false,blocker:null};
   if(!sun?.isDaylight||!sun.direction||sun.direction[2]<=0)return {state:'night',sunlit:false,blocker:null};
   const origin=point(receiver).slice();origin[2]+=RAY_OFFSET;
-  const blocker=firstSunBlocker(origin,sun.direction,geometry.occluders);
+  const length=Math.hypot(...sun.direction),direction=sun.direction.map(v=>v/length);
+  if(!Number.isFinite(length)||length<EPS)return {state:'night',sunlit:false,blocker:null};
+  const objectBlocker=firstSunBlocker(origin,direction,geometry.occluders);
+  const blocker=terrainSunBlocker(origin,direction,settings,data,geometry.terrain,objectBlocker?.distance)||objectBlocker;
   return {state:blocker?'shade':'sun',sunlit:!blocker,blocker};
 }
 
@@ -255,7 +298,7 @@ export function sunlightAtPoint(receiver,settings,data,sun,geometry=prepareSunGe
  * than being reported as architectural shade; weather is deliberately absent.
  */
 export function analyzeSunlight(settings,data,sun){
-  const geometry=prepareSunGeometry(settings,data),zones=Object.fromEntries(['garden','terrace','pool','front'].map(k=>[k,{sunlit:0,shaded:0,total:0,percent:null}]));
+  const geometry=prepareSunGeometry(settings,data),zones=Object.fromEntries(['garden','terrace','jacuzzi','pool','front'].map(k=>[k,{sunlit:0,shaded:0,total:0,percent:null}]));
   const daylight=settings.sunEnabled!==false&&sun?.isDaylight===true&&sun?.direction?.[2]>0;
   const status=settings.sunEnabled===false?'disabled':daylight?'daylight':'night';
   const cells=geometry.cells.map(cell=>{
@@ -265,7 +308,7 @@ export function analyzeSunlight(settings,data,sun){
   });
   for(const zone of Object.values(zones))zone.percent=daylight&&zone.total?zone.sunlit/zone.total*100:null;
   return {status,isDaylight:daylight,cells,zones,cellSize:geometry.cellSize,direction:sun?.direction||null,
-    modelNote:'Direct sun at 1 m outdoor sample points. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
-    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled apartment roofs, schematic house/garage roofs, opaque hedges and the proposed canopy.',
-    limitations:'No weather, diffuse/reflected light, existing tree crowns, decorative planting/furniture, or distant terrain horizon. Samples approximate surface area; building details and foliage permeability remain simplified.'};
+    modelNote:'Direct sun at 1 m outdoor sample points, including local terrain sampled every 0.5 m along each ray. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
+    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges and the proposed canopy. Pool and recessed jacuzzi water use matched surface heights and excavated openings.',
+    limitations:'No weather, diffuse/reflected light, existing tree crowns, decorative planting/furniture/rims, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; roof interpolation, missing-roof fallbacks and foliage permeability remain simplified.'};
 }
