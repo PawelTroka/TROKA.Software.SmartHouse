@@ -3,9 +3,9 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.7.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.7.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.7.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.8.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.8.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.8.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 0,
@@ -68,6 +68,30 @@ export function floorElevation(settings, data) {
   return data.site.floorReference.z + number(settings.floorHeight, 1.2);
 }
 
+/** Sample the actual mapped grade across a flat polygon pad, not just its centre. */
+function padGradeRange(footprint,settings,data){
+  const xs=footprint.map(p=>p[0]),ys=footprint.map(p=>p[1]);
+  const x0=Math.min(...xs),y0=Math.min(...ys),w=Math.max(...xs)-x0,l=Math.max(...ys)-y0;
+  const nx=Math.max(1,Math.ceil(w/.25)),ny=Math.max(1,Math.ceil(l/.25));
+  const grades=footprint.map(p=>gardenGroundAt(...p,settings,data));
+  for(let ix=0;ix<=nx;ix++)for(let iy=0;iy<=ny;iy++){
+    const p=[x0+w*ix/nx,y0+l*iy/ny];
+    if(pointInPolygon(p,footprint))grades.push(gardenGroundAt(...p,settings,data));
+  }
+  return {low:Math.min(...grades),high:Math.max(...grades)};
+}
+const footprintOf=r=>r.footprint||[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
+
+/** Even risers from the outer approach grade to the destination surface. */
+function entryStepLevels(steps,finishZ,settings,data){
+  const front=footprintOf(steps[0]),a=front[0],b=front[1];
+  const approachZ=Math.max(...[a,b,[(a[0]+b[0])/2,(a[1]+b[1])/2]].map(p=>gardenGroundAt(...p,settings,data)));
+  const riser=(finishZ-approachZ)/(steps.length+1);
+  return {approachZ,riser,steps:steps.map((step,i)=>({...step,
+    baseZ:padGradeRange(footprintOf(step),settings,data).low-.08,
+    topZ:approachZ+(i+1)*riser}))};
+}
+
 /** Flat proposed pads use explicit references; they do not flatten the garden. */
 export function spaLevels(settings={},data){
   const program=gardenProgram(settings,data),p=poolBounds(settings,data);
@@ -86,15 +110,26 @@ export function spaLevels(settings={},data){
     bottomZ:poolGround+p.waterOffset-p.waterDepth,copingTopZ:poolGround+.075,
     copingBaseZ:program.active?poolLow-.08:poolGround-.045}:null,sauna:null,firepit:null,coldPlunge:null};
   if(!program.active)return result;
+  const edge=program.id==='spa-edge';
   const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
-  const sa=program.sauna,sg=highest(sa),sf=sg+sa.floorOffset;
+  const sa=program.sauna,sr=edge?padGradeRange(sa.footprint,settings,data):null,sg=sr?.high??highest(sa),sf=sg+sa.floorOffset;
   result.sauna={groundZ:sg,floorZ:sf,roofZ:sf+sa.height};
+  if(edge){
+    const entry=entryStepLevels(sa.entrySteps,sf,settings,data);
+    Object.assign(result.sauna,{padBaseZ:sr.low-.08,entrySteps:entry.steps,entryGroundZ:entry.approachZ,entryRiser:entry.riser});
+  }
   const f=program.firepit,fg=highest(f),ff=fg-f.depth;
   result.firepit={groundZ:fg,floorZ:ff,rimZ:fg,
     steps:f.steps.map(step=>({...step,topZ:fg-step.depth})),seatZ:ff+f.seatHeight};
-  const c=program.coldPlunge,cg=highest(c),cw=cg+c.waterOffset;
+  const c=program.coldPlunge,cp=c.pad??.18;
+  const cr=edge?padGradeRange(footprintOf({x:c.x-cp,y:c.y-cp,width:c.width+2*cp,length:c.length+2*cp}),settings,data):null;
+  const cg=cr?.high??highest(c),cw=cg+c.waterOffset;
   result.coldPlunge={groundZ:cg,baseZ:cg,rimZ:cg+c.height,waterZ:cw,bottomZ:cw-c.waterDepth,
-    steps:c.steps.map(step=>({...step,topZ:cg+step.height}))};
+    steps:edge?[]:c.steps.map(step=>({...step,topZ:cg+step.height}))};
+  if(edge){
+    const entry=entryStepLevels(c.steps,result.coldPlunge.rimZ,settings,data);
+    Object.assign(result.coldPlunge,{padBaseZ:cr.low-.08,steps:entry.steps,entryGroundZ:entry.approachZ,entryRiser:entry.riser});
+  }
   return result;
 }
 
@@ -107,7 +142,7 @@ export function saunaOpaqueFaces(settings={},data){
     faces.push({id:`sauna-wall-${i}`,label:'Sauna wall',part:'wall',vertices:[
       [...wall.a,low],[...wall.b,low],[...wall.b,high],[...wall.a,high]]});
   }
-  const ring=sauna.footprint.slice(0,-1),roofBottom=levels.roofZ-.10,padBottom=levels.groundZ-.6;
+  const ring=sauna.footprint.slice(0,-1),roofBottom=levels.roofZ-.10,padBottom=levels.padBaseZ??levels.groundZ-.6;
   for(let i=0;i<ring.length;i++){
     const a=ring[i],b=ring[(i+1)%ring.length];
     faces.push({id:`sauna-roof-edge-${i}`,label:'Sauna roof edge',part:'wall',vertices:[
@@ -125,6 +160,34 @@ export function saunaOpaqueFaces(settings={},data){
 export function spaLayoutWarnings(settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return [];
   const warnings=[];
+  if(program.id==='spa-edge')warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
+  if(program.id==='spa-edge'&&number(settings.bedRaise)>0){
+    // The illustrated hedge beds taper inward over 0.85m, as in the sunlight
+    // receiver/terrain model. Close-set structures need a retaining detail if
+    // that added soil reaches above their finished pad or coping.
+    const segments=hedgeSegments(settings,data),levels=spaLevels(settings,data);
+    const bedTop=(x,y)=>{
+      let rise=0;
+      for(const {a,b} of segments){
+        const dx=b[0]-a[0],dy=b[1]-a[1],length2=dx*dx+dy*dy;
+        const t=((x-a[0])*dx+(y-a[1])*dy)/length2;
+        if(t<0||t>1)continue;
+        const inward=(-dy*(x-a[0])+dx*(y-a[1]))/Math.sqrt(length2);
+        if(inward>=0&&inward<.85)rise=Math.max(rise,number(settings.bedRaise)*(1-inward/.85));
+      }
+      return gardenGroundAt(x,y,settings,data)+rise;
+    };
+    const expanded=(r,pad)=>footprintOf({x:r.x-pad,y:r.y-pad,width:r.width+2*pad,length:r.length+2*pad});
+    const checks=[['pool coping',expanded(program.pool,program.pool.coping),levels.pool.copingTopZ],
+      ['sauna floor',program.sauna.footprint,levels.sauna.floorZ],
+      ['cold-plunge pad',expanded(program.coldPlunge,program.coldPlunge.pad),levels.coldPlunge.baseZ+.02]];
+    const conflicts=checks.filter(([,ring,top])=>ring.slice(0,-1).some((a,i)=>{
+      const b=ring[i+1],count=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.25));
+      for(let j=0;j<=count;j++)if(bedTop(a[0]+(b[0]-a[0])*j/count,a[1]+(b[1]-a[1])*j/count)>top+.005)return true;
+      return false;
+    })).map(([label])=>label);
+    if(conflicts.length)warnings.push(`Raised hedge beds reach above the ${conflicts.join(', ')}. Adjust bed height or hedge inset, or detail retaining edges and finished levels.`);
+  }
   const stairs=terraceStairs(data.site.terrace,number(settings.terraceDepth,4.2),terraceGroundReference(settings,data).drop,settings,data);
   if(stairs.count&&rectanglesOverlap(stairs,program.firepit,.25))warnings.push('The terrace stair run reaches the sunken lounge. Reduce the terrace depth or floor height, or redesign the steps before building.');
   if(settings.removeGarage===false&&data.site.garage)warnings.push('This pool position occupies part of the existing garage site. The spa layout requires removal of the detached garage.');
@@ -137,6 +200,12 @@ export function spaSurfaceAt(x,y,settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return null;
   const levels=spaLevels(settings,data);
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
+  const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
+  if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
+  if(program.id==='spa-edge'){
+    const plungeStep=levels.coldPlunge.steps.find(step=>withinRect(x,y,step));
+    if(plungeStep)return {surface:'plunge-entry',groundZ:plungeStep.topZ};
+  }
   if(withinRect(x,y,program.firepit)){
     const step=levels.firepit.steps.find(r=>withinRect(x,y,r));
     return {surface:'firepit',groundZ:step?step.topZ:levels.firepit.floorZ};
@@ -194,7 +263,7 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   }
   const eyeHeight = number(settings.eyeHeight, defaultEye);
   const groundZ = surface==='floor'?floorElevation(s,data):surface==='sauna'?levels.sauna.floorZ:
-    surface==='firepit'?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data);
+    ['firepit','sauna-entry','plunge-entry'].includes(surface)?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data);
   const target=program.active&&(preset==='sauna'||preset==='firepit')?program[preset==='sauna'?'sauna':'firepit'].viewpoint.lookAt:null;
   const defaultLookYaw=target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
   return {x,y,z:groundZ+eyeHeight,preset,label,eyeHeight,groundZ,surface,defaultLookYaw,defaultLookPitch:0};

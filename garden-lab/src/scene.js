@@ -1,17 +1,19 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.7.0';
-import { sampledRoofFaces } from './shade.js?v=1.7.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.7.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.7.0';
-import { getSiteProfile } from './sites.js?v=1.7.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.7.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.7.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.7.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.7.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.7.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.7.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.8.0';
+import { sampledRoofFaces } from './shade.js?v=1.8.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.8.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.8.0';
+import { getSiteProfile } from './sites.js?v=1.8.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.8.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.8.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.8.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.8.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.8.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.8.0';
+import { gardenDimensions } from './dimensions.js?v=1.8.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.8.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -268,6 +270,7 @@ export function createScene(container, data, callbacks = {}) {
   labelLayer.className = 'scene-label-layer';
   labelLayer.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none';
   container.append(labelLayer);
+  const dimensionOverlay=createDimensionOverlay(container,scene,()=>[staticGroup,buildingGroup,designGroup]);
   let disposed = false, renderPending = false, mode = 'orbit', currentSettings = {}, currentObserver = null, currentAnalysis = null;
   let designSignature = '', observerSignature = '', eyeYaw = 0, eyePitch = 0, eyeFov=65, storedYaw = null, storedPitch = null;
   let lastWidth = 1, lastHeight = 1;
@@ -883,6 +886,7 @@ export function createScene(container, data, callbacks = {}) {
       if(roofGeometry){const roofMesh=new THREE.Mesh(roofGeometry,mat.roof);roofMesh.castShadow=true;roofMesh.receiveShadow=true;designGroup.add(roofMesh);}
       else designGroup.add(polygonPrism(g.footprint,eaves,num(g.roofTopZ,eaves),mat.roof));
     }
+    dimensionOverlay.update(gardenDimensions(settings,data));
     shadowBoundsDirty=true;
   }
 
@@ -1034,7 +1038,7 @@ export function createScene(container, data, callbacks = {}) {
       shadowCameraDirty=false;
     }
     if(sky)sky.position.copy(camera.position);
-    renderer.render(scene,camera);renderLabels();
+    renderer.render(scene,camera);renderLabels();dimensionOverlay.render(camera,lastWidth,lastHeight,mode);
   }
   function requestRender() {if(!renderPending&&!disposed){renderPending=true;requestAnimationFrame(renderNow);}}
   controls.addEventListener('change',requestRender);
@@ -1076,7 +1080,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
+    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
@@ -1162,6 +1166,7 @@ export function createScene(container, data, callbacks = {}) {
 
   function dispose(){
     if(disposed)return;disposed=true;resizeObserver.disconnect();controls.dispose();
+    dimensionOverlay.dispose();
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const materials=new Set();scene.traverse(o=>{o.geometry?.dispose();if(o.isInstancedMesh)o.dispose?.();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));});materials.forEach(m=>m.dispose());
     textures?.dispose();sun.shadow.dispose();

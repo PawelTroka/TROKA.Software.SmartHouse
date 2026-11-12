@@ -64,7 +64,7 @@ test('current links preserve every editable cost and building assumption with co
  const state={...DEFAULTS,linkedHedges:true,buyNewThujas:false,raiseNewHedges:false,includeHighFeatures:true};
  for(const [key,f] of Object.entries({...COST_FIELDS,...BUILDING_FIELDS}))state[key]=Math.round((f.min+(f.max-f.min)*.37)*100)/100;
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=9&site=sternicza-11&'));
+ assert.ok(encoded.startsWith('v=10&site=sternicza-11&'));
  for(const key of Object.keys({...COST_FIELDS,...BUILDING_FIELDS})){
   assert.ok(key in FIELDS);
   assert.equal(restored[key],state[key],key);
@@ -75,7 +75,7 @@ test('current links preserve every editable cost and building assumption with co
 test('solar settings round-trip with the design, costs, buildings and independent hedges',()=>{
  const state={...DEFAULTS,mode:'sun',sunDate:'2026-12-21',sunMinutes:962,sunEnabled:false,sunPathVisible:true,hedgeRear:6,hedgeLeft:3.5,hedgeRight:2.5,gardenRaise:.35,costFillRate:90,b9HeightDelta:2};
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=9&site=sternicza-11&'));
+ assert.ok(encoded.startsWith('v=10&site=sternicza-11&'));
  assert.ok(MODES.includes('sun'));
  assert.equal(FIELDS.sunMinutes.group,'solar');
  for(const key of ['mode','sunDate','sunMinutes','sunEnabled','sunPathVisible','hedgeRear','hedgeLeft','hedgeRight','gardenRaise','costFillRate','b9HeightDelta'])assert.equal(restored[key],state[key],key);
@@ -105,7 +105,7 @@ test('v1 and v2 links preserve legacy assumptions and adopt stable solar default
   for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(restored[key],DEFAULTS[key],`v${version} ${key}`);
  }
  const defaultLink=new URLSearchParams(encodeState(DEFAULTS));
- assert.equal(defaultLink.get('v'),'9');assert.equal(defaultLink.get('site'),'sternicza-11');
+ assert.equal(defaultLink.get('v'),'10');assert.equal(defaultLink.get('site'),'sternicza-11');
  assert.deepEqual(JSON.parse(defaultLink.get('screeningTrees')),DEFAULTS.screeningTrees);
  assert.deepEqual(decodeState('#v=6&hedgeRear=10&sunDate=2026-12-21'),DEFAULTS);
 });
@@ -119,7 +119,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,9);
+ assert.equal(STATE_VERSION,10);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -227,18 +227,18 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v9 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
- assert.equal(DEFAULTS.gardenProgram,'spa');
- for(const gardenProgram of ['spa','classic']){
-  const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram==='spa',costSpaSauna:85400};
+test('v10 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+ assert.equal(DEFAULTS.gardenProgram,'spa-edge');
+ for(const gardenProgram of ['spa-edge','spa','classic']){
+  const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
   const params=new URLSearchParams(encodeState(input));
-  assert.equal(params.get('v'),'9');
+  assert.equal(params.get('v'),'10');
   assert.equal(params.get('gardenProgram'),gardenProgram,'The programme must remain explicit even when it matches fresh defaults');
   assert.equal(params.get('screeningTrees'),'[]');
   assert.deepEqual(decodeState(params.toString()),input);
-  assert.deepEqual(migrateSavedState(input,9),input);
+  assert.deepEqual(migrateSavedState(input,10),input);
  }
- assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa');
+ assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-edge');
 });
 
 test('spa viewpoint and garage invariants survive URL and saved-state sanitization',()=>{
@@ -268,4 +268,31 @@ test('installed spa allowances are editable finite amounts and round-trip indepe
   assert.equal(sanitizeState({[key]:3000000})[key],2000000);
  }
  assert.equal(sanitizeState({...input,costSpaSauna:0}).costSpaPool,quotes.costSpaPool,'Clearing one quote must not change another');
+});
+
+test('v9 saves keep the previous spa, planting positions and uncluttered view',()=>{
+ const previous=decodeState('v=9&site=sternicza-11');
+ assert.equal(previous.gardenProgram,'spa');
+ assert.equal(previous.showDimensions,false);
+ assert.deepEqual(previous.screeningTrees.map(tree=>[tree.x,tree.y,tree.height]),[[17,35.3,9.5],[13.3,35.3,9.5],[16.6,22.1,5.5]]);
+ assert.equal(decodeState('v=9&site=sternicza-11&gardenProgram=spa-edge').gardenProgram,'spa','Old versions cannot select geometry they never encoded');
+ const customised={siteId:'sternicza-11',gardenProgram:'spa',screeningTrees:[],hedgeLeft:3.2,hedgeRight:5.1,costSpaSauna:72500};
+ const saved=migrateSavedState(customised,9);
+ for(const [key,value] of Object.entries(customised))assert.deepEqual(saved[key],value,key);
+ assert.equal(saved.showDimensions,false);
+ assert.deepEqual(decodeState(encodeState(saved)),saved,'Re-sharing preserves the previous geometry and display');
+});
+
+test('dimension visibility is independent, shared and absent from historical defaults',()=>{
+ assert.equal(DEFAULTS.showDimensions,true);
+ for(const version of [1,2,3,4,5,6,7,8,9]){
+  assert.equal(decodeState(`v=${version}${version>=6?'&site=sternicza-11':''}`).showDimensions,false,`v${version}`);
+ }
+ for(const showDimensions of [true,false]){
+  const original={...DEFAULTS,showDimensions,showRays:!showDimensions};
+  assert.deepEqual(decodeState(encodeState(original)),original);
+  assert.equal(scenarioState('default',original).showDimensions,showDimensions);
+  assert.equal(changeHedgeHeight(original,'hedgeLeft',2.8).showDimensions,showDimensions);
+ }
+ assert.equal(sanitizeState({showDimensions:'false'}).showDimensions,true);
 });

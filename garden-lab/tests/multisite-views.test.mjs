@@ -58,7 +58,10 @@ test('second-site plan reports actual dimensions, north-facing sides and no inhe
   const data=fixture(),frame=container('garden');
   renderPlan(frame,data,settings,observer,{rays:[]});
   for(const text of ['Korzeniowskiego 40','16.00 m mapped frontage','30.00 m mapped depth','4.0 metres from the street',
-    'REAR GARDEN / NNE','RIGHT · EAST','LEFT · WEST','8.0 × 4.0 m','POOL 3.0 × 7.0 m'])assert.ok(frame.innerHTML.includes(text),text);
+    'REAR GARDEN / NNE','RIGHT · EAST','LEFT · WEST'])assert.ok(frame.innerHTML.includes(text),text);
+  for(const [id,value] of [['terrace-width','8.00 m'],['terrace-length','4.00 m'],['pool-width','3.00 m'],['pool-length','7.00 m']]){
+    assert.match(frame.innerHTML,new RegExp(`data-dimension-record="${id}"[^>]*>${value.replace(' m','').replace('.','\\.')}</span>`),`${id} reports the second property's own size in the readable schedule`);
+  }
   for(const text of ['STERNICZA','20.32','38.21','EXISTING GARAGE','NaN','undefined'])assert.ok(!frame.innerHTML.includes(text),text);
 });
 

@@ -103,6 +103,27 @@ test('terrace sun receivers and opaque treads follow the rendered stair levels w
   }
 });
 
+test('corner access steps use their grade-aware bases and receiver heights',()=>{
+  const edge={...settings,gardenProgram:'spa-edge'},levels=spaLevels(edge,source),g=prepareSunGeometry(edge,source);
+  for(const [id,steps] of [['sauna-entry-step',levels.sauna.entrySteps],['cold-plunge-step',levels.coldPlunge.steps]]){
+    const bodies=g.occluders.filter(o=>o.id===id);
+    assert.equal(bodies.length,steps.length);
+    for(const [i,body] of bodies.entries()){
+      near(body.base,steps[i].baseZ);near(body.top,steps[i].topZ);
+      assert.ok(body.top>body.base,'Access treads cannot disappear below a higher pad reference');
+    }
+  }
+  for(const step of levels.sauna.entrySteps){
+    for(const cell of g.cells.filter(c=>pointInPolygon([c.x,c.y],step.footprint)))near(cell.z,step.topZ);
+  }
+  const pads=g.occluders.filter(o=>o.id==='cold-plunge-pad');
+  assert.equal(pads.length,4);
+  for(const pad of pads){near(pad.base,levels.coldPlunge.padBaseZ);near(pad.top,levels.coldPlunge.baseZ+.02);}
+  const padCell=g.cells.find(c=>c.x===6.5&&c.y===36.5);
+  assert.ok(padCell,'The rear pad ring remains an outdoor receiver');
+  near(padCell.z,levels.coldPlunge.baseZ+.02);
+});
+
 test('plan and shade maps share spa footprints while sections show only finite intersections and actual excavation depths',()=>{
   const observer=observerForPreset('sofa',settings,source),sun=sunForSettings({...settings,sunDate:'2026-06-21',sunMinutes:720},source);
   const plan=frame(),map=frame();

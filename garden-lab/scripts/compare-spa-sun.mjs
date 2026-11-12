@@ -5,9 +5,13 @@ import {getSiteProfile} from '../src/sites.js';
 import {sunForSettings} from '../src/solar.js';
 import {analyzeSunlight} from '../src/shade.js';
 import {poolBounds} from '../src/garden-program.js';
+import {getScreeningLayouts} from '../src/screening-layouts.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url),'utf8'));
-const defaults=createStateModel(getSiteProfile('sternicza-11',data)).DEFAULTS;
+// Freeze the original v1.7 study: newer fresh defaults must not rewrite its layout.
+const model=createStateModel(getSiteProfile('sternicza-11',data));
+const layout=getScreeningLayouts('sternicza-11','spa').find(item=>item.id==='default');
+const defaults=model.sanitizeState({...model.DEFAULTS,...layout.settings,screeningTrees:layout.trees});
 const eastOnly={...data,site:{...data.site,pool:poolBounds(defaults,data)}};
 const metrics=(settings,source=data)=>{
   const sun=sunForSettings(settings,source),shade=analyzeSunlight(settings,source,sun);

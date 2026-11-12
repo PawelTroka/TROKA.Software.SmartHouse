@@ -1,5 +1,5 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled} from './garden-program.js?v=1.7.0';
+import {gardenProgram,spaEnabled} from './garden-program.js?v=1.8.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
