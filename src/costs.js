@@ -3,8 +3,9 @@
  * not the full property. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments } from './geometry.js?v=1.6.0';
-import { getTreeType } from './tree-catalog.js?v=1.6.0';
+import { hedgeSegments } from './geometry.js?v=1.7.0';
+import { getTreeType } from './tree-catalog.js?v=1.7.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.7.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -24,6 +25,11 @@ export const COST_FIELDS = Object.freeze({
   costScreeningDelivery: treeField('Screening-tree delivery', 100000, 'PLN/order', 'One allowance for trees whose supplier price excludes delivery; 0 means unquoted. No delivery charge is added for a pleached-only order.'),
   costScreeningCrane: treeField('Screening-tree crane / unloading', 100000, 'PLN/order', 'One lifting/access allowance for large specimens; 0 means unquoted. Not automatically applied to pleached hornbeam panels.'),
   costScreeningEstablishment: treeField('Screening-tree irrigation / establishment', 100000, 'PLN/order', 'Editable allowance for establishment work across the tree order. 0 means unquoted; this is not an annual maintenance model.'),
+  ...Object.fromEntries([
+    ['costSpaPool','Swimming pool · installed'],['costSpaJacuzzi','Edge jacuzzi · installed'],
+    ['costSpaSauna','Six-person sauna · installed'],['costSpaColdPlunge','Cold plunge · installed'],
+    ['costSpaFirepit','Sunken fire lounge · installed'],
+  ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','0 means unquoted. Include structure, equipment, excavation, drainage, connections and installation in the contractor allowance.'),group:'cost-spa'}])),
   costAreaOverride: field('Fill area override', 0, 0, 1000, 1, 'm²', '0 uses mapped rear area minus pool, terrace and retained structures. A positive value changes cost quantities only.'),
   costBedWidth: field('Raised hedge bed width', 1, .3, 3, .1, 'm', 'Width centred on the hedge line and clipped to the property; overlapping corners count once.'),
   costTopsoilDepth: field('Topsoil within added depth', .15, 0, .5, .05, 'm', 'Topsoil replaces part of the fill; it is not added above the selected raise.'),
@@ -138,18 +144,19 @@ const quantityCache = new WeakMap();
 /** Areas on the mapped plan, before soil-depth and delivery multipliers. */
 export function gardenQuantities(settings, data) {
   const c = costSettings(settings);
-  const signature = JSON.stringify([settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
+  const signature = JSON.stringify([settings.gardenProgram,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
     settings.hedgeInset ?? 0, c.costBedWidth, ...['Rear', 'Left', 'Right'].map(side => positive(settings[`hedge${side}`] ?? 2.5) > 0)]);
   // data.site survives building sensitivity overrides, so cost geometry is reused.
   const cached = quantityCache.get(data.site);
   if (cached?.signature === signature) return cached.value;
   const rearY = data.site.rearMidpoint[1];
   const rear = clipHalfPlane(openRing(data.site.boundary), p => p[1] - rearY);
-  const t = data.site.terrace, pool = data.site.pool;
+  const t = data.site.terrace, pool = poolBounds(settings,data),program=gardenProgram(settings,data);
   const exclusions = [data.site.house.footprint,
-    rectangle(t.x, rearY, t.width, positive(settings.terraceDepth ?? t.depth)),
-    rectangle(pool.x, pool.y, pool.width, pool.length)];
+    rectangle(t.x, rearY, t.width, positive(settings.terraceDepth ?? t.depth))];
+  if(pool)exclusions.push(rectangle(pool.x, pool.y, pool.width, pool.length));
   if (settings.removeGarage === false && data.site.garage?.footprint) exclusions.push(data.site.garage.footprint);
+  if(program.active)for(const item of [program.sauna,program.firepit,program.coldPlunge])exclusions.push(item.footprint);
   const rearGrossArea = polygonArea(rear), excludedArea = unionAreaInside(rear, exclusions);
   const automaticArea = Math.max(0, rearGrossArea - excludedArea);
   const segments = hedgeSegments(settings, data);
@@ -177,6 +184,14 @@ export function gardenQuantities(settings, data) {
   const value = { rearGrossArea, excludedArea, automaticArea, bedArea, lengths };
   quantityCache.set(data.site, { signature, value });
   return value;
+}
+
+export function estimateSpaCosts(settings,data) {
+  const enabled=gardenProgram(settings,data).active,c=costSettings(settings);
+  const rows=enabled?Object.entries(COST_FIELDS).filter(([,f])=>f.group==='cost-spa').map(([key,f])=>({key,label:f.label,amount:c[key],quoted:c[key]>0})):[];
+  const knownBase=range(sum(rows.map(row=>row.amount))),unquoted=rows.filter(row=>!row.quoted);
+  return {enabled,rows,unquoted,knownBase,knownSubtotal:withContingency(knownBase,c.costContingency),
+    total:unquoted.length?null:withContingency(knownBase,c.costContingency),status:!enabled?'none':unquoted.length?'quote-required':'estimate'};
 }
 
 export function thujaUnitPrice(height, customPrice = 0, factor = 100) {
@@ -319,14 +334,17 @@ export function estimateCosts(settings = {}, data) {
   if (hasEarthwork) notes.push('Earthwork excludes garage demolition, excavated-pool soil reuse, topsoil stripping/disposal, new paving and professional design. Retaining, drainage, transport and access are editable allowances.');
   if (c.costAreaOverride > 0) notes.push('Area override changes cost quantities only. Bed overlap assumes the raised garden area includes the hedge beds up to the selected area.');
   const screeningTrees = estimateScreeningTreeCosts(settings);
+  const spa=estimateSpaCosts(settings,data);
+  if(spa.enabled)notes.push('Spa structures use installed contractor allowances, not catalog estimates. Fill excludes sauna, sunken lounge and cold-plunge footprints. The fire lounge needs its own excavation, waterproofing and drainage design; pool and jacuzzi hydraulics, structural support and overflow collection are included only when quoted.');
+  if(spa.unquoted.length)notes.push(`Spa items awaiting installed quotes: ${spa.unquoted.map(item=>item.label).join(', ')}. Zero is not a free installation.`);
   if (screeningTrees.plantQuoteCount) notes.push('An edited screening tree is not supported by its catalog price reference. Enter a plant-only quote for that specimen; prices are not extrapolated to other dimensions.');
   if (screeningTrees.unquotedServices.length) notes.push(`Screening-tree services not yet budgeted: ${screeningTrees.unquotedServices.map(item => item.label.toLowerCase()).join(', ')}. Zero means unquoted; the known subtotal includes only priced items.`);
   if (screeningTrees.count) notes.push('Screening-tree prices describe purchased specimens, not mature sizes or guaranteed available stock. Only enabled trees are included. Catalog references were reviewed 12 November 2026; crown shape and density still need specimen confirmation.');
   if (screeningTrees.rows.some(row => row.typeId === 'serbian-spruce' || row.typeId === 'pleached-hornbeam')) notes.push('Serbian spruce and pleached hornbeam use displayed retail amounts whose VAT basis needs supplier confirmation. Enter final tax-inclusive quotes for purchasing.');
   // Combine unadjusted branches first; apply uncertainty once to the upper sum.
-  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase]);
+  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase,spa.knownBase]);
   const knownSubtotal = withContingency(knownBase, c.costContingency);
-  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required';
+  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required' || spa.status==='quote-required';
   return {
     currency: 'PLN', basisDate: '2026-11-12', contingencyPercent: c.costContingency,
     hedges: { sides, count, length, spacing: c.costSpacing, procurement: c.buyNewThujas,
@@ -338,8 +356,8 @@ export function estimateCosts(settings = {}, data) {
       looseVolume: looseFillVolume + looseTopsoilVolume, looseFactor: c.costLooseFactor,
       loads, fillLoads, topsoilLoads, truckCapacity: c.costTruckCapacity,
       lines: earthLines, baseTotal: earthBase, total: earthTotal, status: hasEarthwork ? 'estimate' : 'none' },
-    screeningTrees,
+    screeningTrees,spa,
     total: unknown ? null : knownSubtotal, knownSubtotal,
-    status: unknown ? 'quote-required' : count > 0 || hasEarthwork || screeningTrees.count > 0 ? 'estimate' : 'none', notes,
+    status: unknown ? 'quote-required' : count > 0 || hasEarthwork || screeningTrees.count > 0 || spa.enabled ? 'estimate' : 'none', notes,
   };
 }

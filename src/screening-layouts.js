@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.6.0';
+import {getTreeType} from './tree-catalog.js?v=1.7.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -51,6 +51,32 @@ const layouts = Object.freeze([
     settings:STERNICZA_LAYOUT_SETTINGS,trees:Object.freeze([])}),
 ]);
 
-export function getScreeningLayouts(siteId) {
-  return siteId==='sternicza-11'?layouts:Object.freeze([]);
+// The east-pool spa programme needs different planting positions. Keep the
+// previous arrays above for older shared designs and the explicit comparison.
+const spaTrees = Object.freeze({
+  default:treesFrom([
+    {typeId:'austrian-pine-tall',x:17,y:35.3},
+    {typeId:'austrian-pine-tall',x:13.3,y:35.3},
+    {typeId:'austrian-pine-large',x:16.6,y:22.1},
+  ]),
+  'three-tall-pines':treesFrom([
+    {typeId:'austrian-pine-tall',x:17,y:35.3},
+    {typeId:'austrian-pine-tall',x:13.3,y:35.3},
+    {typeId:'austrian-pine-tall',x:2.9,y:26.8},
+  ]),
+  'budget-pines':treesFrom([
+    {typeId:'austrian-pine-tall',x:17,y:35.3},
+    {typeId:'austrian-pine-large',x:12.7,y:35.7},
+    {typeId:'austrian-pine-large',x:16.6,y:22.1},
+  ]),
+  'hedges-only':Object.freeze([]),
+});
+const spaLayouts=Object.freeze(layouts.map(layout=>Object.freeze({...layout,
+  settings:Object.freeze({...layout.settings,gardenProgram:'spa'}),trees:spaTrees[layout.id],
+  note:layout.id==='hedges-only'?'The spa layout with 4 m hedges and no specimen trees.'
+    :'Trees positioned around the east pool and spa rooms. Compare the current sightlines and shade; the earlier west-pool screening figures do not apply.',
+})));
+
+export function getScreeningLayouts(siteId,program='spa') {
+  return siteId==='sternicza-11'?(program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }

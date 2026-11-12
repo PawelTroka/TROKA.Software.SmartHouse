@@ -1,8 +1,10 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.6.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.6.0';
-import {getSiteProfile} from './sites.js?v=1.6.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.6.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.6.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.7.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.7.0';
+import {getSiteProfile} from './sites.js?v=1.7.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.7.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.7.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.7.0';
+import {spaPlanMarkup} from './diagrams.js?v=1.7.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -30,13 +32,16 @@ export function renderSunReadouts(sun,shade,settings){
   const dayMinutes=Math.round(sun.daylightMinutes);
   $('sun-daylength').textContent=`${Math.floor(dayMinutes/60)} h ${dayMinutes%60} min`;
   document.querySelectorAll('[data-sun-season]').forEach(b=>b.setAttribute('aria-pressed',String(settings.sunDate.slice(5)===b.dataset.sunSeason)));
-  for(const zone of ['garden','terrace','jacuzzi','pool']){
-    const result=shade.zones[zone],value=result.percent;
+  for(const zone of ['garden','terrace','jacuzzi','pool','coldPlunge','firepit']){
+    const result=shade.zones[zone],value=result?.percent;
+    if(!$(`sunlit-${zone}`))continue;
+    const card=['coldPlunge','firepit'].includes(zone)?($(`sunlit-${zone}`).closest('[data-spa-sun-zone]')||$(`sunlit-${zone}`).parentElement):null;
+    if(card)card.hidden=!result?.total;
     $(`sunlit-${zone}`).textContent=Number.isFinite(value)?value>0&&value<1?'<1%':value>99&&value<100?'>99%':`${Math.round(value)}%`:'—';
     $(`sunlit-${zone}-bar`).style.width=Number.isFinite(value)?`${value}%`:'0%';
-    $(`sunlit-${zone}-count`).textContent=shade.status==='night'?'Sun below horizon':shade.status==='disabled'?'Simulation off':result.total?`${result.sunlit} / ${result.total} points in direct sun`:'No outdoor sample points';
+    $(`sunlit-${zone}-count`).textContent=shade.status==='night'?'Sun below horizon':shade.status==='disabled'?'Simulation off':result?.total?`${result.sunlit} / ${result.total} points in direct sun`:'No outdoor sample points';
   }
-  $('sun-analysis-note').textContent=shade.status==='night'?'The sun is below the horizon. There is no direct sunlight; this is different from shade cast by a building or hedge.':shade.status==='disabled'?'Enable real sunlight to calculate shade for the selected date and time.':'Direct sun at outdoor sample points, spaced 1 m apart. Includes mapped buildings and roofs, opaque hedges, canopy, local terrain and added screening trees. Leafy tree crowns are dense-volume approximations; existing unmapped trees and decorative plants are excluded.';
+  $('sun-analysis-note').textContent=shade.status==='night'?'The sun is below the horizon. There is no direct sunlight; this is different from shade cast by a building or hedge.':shade.status==='disabled'?'Enable real sunlight to calculate shade for the selected date and time.':`Direct sun at outdoor sample points, spaced 1 m apart. Includes mapped buildings and roofs, opaque hedges, canopy, local terrain and added screening trees.${shade.zones.firepit?' Sauna walls and roof cast shade; its glass stays transparent. Sunken-lounge samples follow the lowered floor and entry treads.':''} Leafy tree crowns are dense-volume approximations; existing unmapped trees and decorative plants are excluded.`;
   $('sun-results').dataset.status=shade.status;
   const W=600,H=102,left=25,right=12,top=9,bottom=21;
   const X=m=>left+(W-left-right)*m/1440,Y=e=>top+(70-e)/85*(H-top-bottom);
@@ -68,7 +73,8 @@ export function renderSunMap(container,data,settings,sun,shade){
   const rect=(x,y,w,h,attrs)=>`<rect x="${X(x)}" y="${Y(y)}" width="${w*scale}" height="${h*scale}" ${attrs}/>`;
   const label=(text,x,y,size=11)=>`<text x="${X(x)}" y="${Y(y)}" text-anchor="middle" font-size="${size}" font-weight="600" fill="#294735" paint-order="stroke" stroke="#fffef9" stroke-width="3" stroke-linejoin="round">${escape(text)}</text>`;
   const centre=p=>p.reduce((a,v)=>[a[0]+v[0]/p.length,a[1]+v[1]/p.length],[0,0]);
-  const {site}=data,t={...site.terrace,depth:settings.terraceDepth},p=site.pool,c=settings.canopyEnabled?canopyBounds(settings,data):null,j=jacuzziBounds(settings,data);
+  const {site}=data,t={...site.terrace,depth:settings.terraceDepth},p=poolBounds(settings,data),c=settings.canopyEnabled?canopyBounds(settings,data):null,j=jacuzziBounds(settings,data);
+  const program=gardenProgram(settings,data);
   const context=data.buildings.filter(b=>b.footprint?.length&&b.kind!=='house'&&b.kind!=='garage'&&b.id!==site.house.id&&b.id!==site.garage?.id).map(b=>{
     const bc=centre(b.footprint);
     return `<polygon points="${poly(b.footprint)}" fill="${b.kind==='target'?'#d0b7a7':'#dedfd5'}" stroke="#b7c0b3" stroke-width="1"/>${scope==='context'&&b.kind==='target'?label(b.label.replace(' apartment block','').replace(' continuation',''),bc[0],bc[1],compact?9:11):''}`;
@@ -88,8 +94,9 @@ export function renderSunMap(container,data,settings,sun,shade){
   const poolFill=p?rect(p.x,p.y,p.width,p.length,'fill="#aed2ce"'):'';
   const poolOutline=p?rect(p.x,p.y,p.width,p.length,'fill="none" stroke="#437b80" stroke-width="1.5"'):'';
   const garage=site.garage&&!settings.removeGarage?`<polygon points="${poly(site.garage.footprint)}" fill="#babfb3" stroke="#7e8f7a"/>`:'';
+  const spa=spaPlanMarkup(program,{X,Y,scale,labels:detail,subtle:true});
   const labels=detail?`${label('TERRACE',t.x+t.width/2,t.y+t.depth/2,10)}${p?label('POOL',p.x+p.width/2,p.y+p.length/2,10):''}${label(profile.streetLabel,(plot.minX+plot.maxX)/2,plot.minY-1,10)}${label(`RIGHT · ${profile.sideLabels.right.toUpperCase()}`,plot.minX+2.6,sideY,9)}${label(`LEFT · ${profile.sideLabels.left.toUpperCase()}`,plot.maxX-2.6,sideY,9)}`:'';
-  container.innerHTML=`<div class="sun-map-toolbar"><div class="map-scope" role="group" aria-label="Shade map extent"><button data-sun-scope="garden" aria-pressed="${detail}">Garden</button><button data-sun-scope="context" aria-pressed="${!detail}">Neighbourhood</button></div><span>${escape(formatSolarTime(sun.resolvedMinutes))} · ${sun.elevation.toFixed(1)}°</span></div><svg class="sun-map-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escape(`${shade.status} map for ${profile.label}, ${sun.date} at ${formatSolarTime(sun.resolvedMinutes)}. Gold cells receive direct sun; green cells are shaded.`)}"><defs><clipPath id="sun-plot-clip"><polygon points="${poly(site.boundary)}"/></clipPath></defs><rect width="${W}" height="${H}" fill="#f2f3eb"/>${context}<polygon points="${poly(site.boundary)}" fill="#e2e7d8" stroke="#78917a" stroke-width="1.6"/>${rect(t.x,t.y,t.width,t.depth,'fill="#e9e1d1"')}${poolFill}<g clip-path="url(#sun-plot-clip)">${cellMarkup}</g><polygon points="${poly(site.house.footprint)}" fill="#babfb3" stroke="#7e8f7a" stroke-width="1.3"/>${garage}${rect(t.x,t.y,t.width,t.depth,'fill="none" stroke="#a79a7f" stroke-width="1.3"')}${poolOutline}${hedges}<g pointer-events="none">${trees}</g>${canopy}${detail?jacuzzi:''}${label('HOUSE',houseC[0],houseC[1])}${labels}${compass}<g transform="translate(20 ${H-20})"><path d="M0 -4V0H${5*scale}V-4" fill="none" stroke="#5d735c" stroke-width="1.5"/><text x="${2.5*scale}" y="13" font-size="10" text-anchor="middle" fill="#5d735c">5 m</text></g></svg><div class="sun-map-legend"><span><i style="background:${colors.sun}"></i>Direct sun</span><span><i style="background:${colors.shade}"></i>Modeled shade</span>${shade.status==='night'?`<span><i style="background:${colors.night}"></i>Night</span>`:''}<span>Left / right: from house toward rear ↓</span>${settings.screeningTrees?.length?'<span>Tree crowns outlined · winter follows foliage mode</span>':''}<span class="sun-map-detail" id="sun-map-detail">${shade.status==='daylight'?'Tap a coloured cell to identify its blocker.':shade.status==='night'?'Sun below the horizon.':'Enable real sunlight to see shade.'}</span></div>`;
+  container.innerHTML=`<div class="sun-map-toolbar"><div class="map-scope" role="group" aria-label="Shade map extent"><button data-sun-scope="garden" aria-pressed="${detail}">Garden</button><button data-sun-scope="context" aria-pressed="${!detail}">Neighbourhood</button></div><span>${escape(formatSolarTime(sun.resolvedMinutes))} · ${sun.elevation.toFixed(1)}°</span></div><svg class="sun-map-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escape(`${shade.status} map for ${profile.label}, ${sun.date} at ${formatSolarTime(sun.resolvedMinutes)}. Gold cells receive direct sun; green cells are shaded.`)}"><defs><clipPath id="sun-plot-clip"><polygon points="${poly(site.boundary)}"/></clipPath></defs><rect width="${W}" height="${H}" fill="#f2f3eb"/>${context}<polygon points="${poly(site.boundary)}" fill="#e2e7d8" stroke="#78917a" stroke-width="1.6"/>${rect(t.x,t.y,t.width,t.depth,'fill="#e9e1d1"')}${poolFill}<g clip-path="url(#sun-plot-clip)">${cellMarkup}</g><polygon points="${poly(site.house.footprint)}" fill="#babfb3" stroke="#7e8f7a" stroke-width="1.3"/>${garage}${rect(t.x,t.y,t.width,t.depth,'fill="none" stroke="#a79a7f" stroke-width="1.3"')}${poolOutline}${spa}${hedges}<g pointer-events="none">${trees}</g>${canopy}${detail?jacuzzi:''}${label('HOUSE',houseC[0],houseC[1])}${labels}${compass}<g transform="translate(20 ${H-20})"><path d="M0 -4V0H${5*scale}V-4" fill="none" stroke="#5d735c" stroke-width="1.5"/><text x="${2.5*scale}" y="13" font-size="10" text-anchor="middle" fill="#5d735c">5 m</text></g></svg><div class="sun-map-legend"><span><i style="background:${colors.sun}"></i>Direct sun</span><span><i style="background:${colors.shade}"></i>Modeled shade</span>${shade.status==='night'?`<span><i style="background:${colors.night}"></i>Night</span>`:''}<span>Left / right: from house toward rear ↓</span>${program.active?'<span>Sauna roof · blue glass front · sunken lounge −0.60 m</span>':''}${settings.screeningTrees?.length?'<span>Tree crowns outlined · winter follows foliage mode</span>':''}<span class="sun-map-detail" id="sun-map-detail">${shade.status==='daylight'?'Tap a coloured cell to identify its blocker.':shade.status==='night'?'Sun below the horizon.':'Enable real sunlight to see shade.'}</span></div>`;
   container.querySelectorAll('[data-sun-scope]').forEach(button=>button.addEventListener('click',()=>{container.dataset.sunScope=button.dataset.sunScope;renderSunMap(container,data,settings,sun,shade);}));
   container.querySelector('svg').addEventListener('click',event=>{
     const target=event.target.closest('[data-sun-cell]');if(!target)return;

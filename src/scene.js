@@ -1,15 +1,17 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.6.0';
-import { sampledRoofFaces } from './shade.js?v=1.6.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.6.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.6.0';
-import { getSiteProfile } from './sites.js?v=1.6.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.6.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.6.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.6.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.6.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.7.0';
+import { sampledRoofFaces } from './shade.js?v=1.7.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.7.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.7.0';
+import { getSiteProfile } from './sites.js?v=1.7.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.7.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.7.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.7.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.7.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.7.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.7.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -22,6 +24,13 @@ const centroid = ring => {
   const r = closeRing(ring);
   return r.reduce((s, p) => [s[0] + p[0] / r.length, s[1] + p[1] / r.length], [0, 0]);
 };
+
+/** Exact rectangular openings shared by both rendered terrain layers. */
+export function designTerrainCutouts(settings,data){
+  const tub=jacuzziBounds(settings,data),program=gardenProgram(settings,data),p=poolBounds(settings,data);
+  const rect=r=>({x0:r.x,x1:r.x+r.width,y0:r.y,y1:r.y+r.length});
+  return[rect(p),{x0:tub.x0,x1:tub.x1,y0:tub.y0,y1:tub.y1},...(program.active?[rect(program.firepit),rect(program.coldPlunge)]:[])];
+}
 
 function contains(x, y, ring) {
   let inside = false;
@@ -245,6 +254,8 @@ export function createScene(container, data, callbacks = {}) {
   standard('treeSpruce', '#4d6a53', { map: textures?.foliage, vertexColors: true });
   standard('treeDeciduous', '#718b53', { map: textures?.foliage, vertexColors: true });
   standard('treeGhost', '#a89178', { transparent: true, opacity: .22, depthWrite: false, vertexColors: true });
+  standard('spaGlow', '#ffdf9c', {emissive:'#ffb95e',emissiveIntensity:.65,roughness:.8});
+  standard('fireGlow', '#aa5230', {emissive:'#c34916',emissiveIntensity:.4,roughness:1});
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
   scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
@@ -453,8 +464,9 @@ export function createScene(container, data, callbacks = {}) {
     shadowBoundsDirty=true;
   }
 
-  const poolCutout=()=>({x0:data.site.pool.x,x1:data.site.pool.x+data.site.pool.width,y0:data.site.pool.y,y1:data.site.pool.y+data.site.pool.length});
-  const waterCutouts=settings=>{const tub=jacuzziBounds(settings,data);return[poolCutout(),{x0:tub.x0,x1:tub.x1,y0:tub.y0,y1:tub.y1}];};
+  // Both terrain meshes use the same real openings: no grass or context slab
+  // may cross the swimming water, recessed plunge or the sunken firepit floor.
+  const waterCutouts=settings=>designTerrainCutouts(settings,data);
   let contextTerrain=null,contextTerrainCutouts='';
   function syncContextTerrain(settings){
     const cutouts=waterCutouts(settings),signature=JSON.stringify(cutouts);
@@ -660,7 +672,7 @@ export function createScene(container, data, callbacks = {}) {
 
   function addShrubs(group,settings) {
     const placements=[];
-    const pool=data.site.pool,t=data.site.terrace;
+    const program=gardenProgram(settings,data),pool=poolBounds(settings,data),t=data.site.terrace;
     for(const {a,b} of hedgeSegments(settings,data)){
       const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),n=Math.max(1,Math.floor(len/1.45));
       for(let i=0;i<n;i++){
@@ -668,6 +680,7 @@ export function createScene(container, data, callbacks = {}) {
         if(!contains(x,y,data.site.boundary)||contains(x,y,data.site.house.footprint))continue;
         if(x>pool.x-.75&&x<pool.x+pool.width+.75&&y>pool.y-.75&&y<pool.y+pool.length+.75)continue;
         if(x>t.x-.6&&x<t.x+t.width+.6&&y>t.y-.6&&y<t.y+num(settings.terraceDepth,t.depth)+.6)continue;
+        if(program.active&&[program.sauna,program.firepit,program.coldPlunge].some(r=>x>r.x-.8&&x<r.x+r.width+.8&&y>r.y-.8&&y<r.y+r.length+.8))continue;
         placements.push([x,y,.35+(Math.sin(x+y)*.5+.5)*.3]);
       }
     }
@@ -682,6 +695,7 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   function addGarden(group,settings) {
+    const program=gardenProgram(settings,data);
     const rear=data.site.rearMidpoint[1],floor=data.site.floorReference.z+num(settings.floorHeight,1.2),terrace=data.site.terrace;
     const depth=num(settings.terraceDepth,terrace.depth),x=terrace.x,width=terrace.width;
     const ground=gardenGroundAt(x+width/2,rear+depth/2,settings,data);
@@ -707,11 +721,34 @@ export function createScene(container, data, callbacks = {}) {
       if(ty>jy&&ty<jacuzzi.y1){line(group,[[x,ty,floor+.006],[jx,ty,floor+.006]],'#8c816c',.32);line(group,[[jacuzzi.x1,ty,floor+.006],[x+width,ty,floor+.006]],'#8c816c',.32);}
       else line(group,[[x,ty,floor+.006],[x+width,ty,floor+.006]],'#8c816c',.32);
     }
-    roundedSlab(group,jx,jy,floor-.68,2.2,2.2,.74,.26,mat.basin,.13);
-    roundedSlab(group,jx+.13,jy+.13,floor-.69,1.94,1.94,.04,.15,mat.basin);
-    roundedSlab(group,jx-.015,jy-.015,floor+.015,2.23,2.23,.075,.26,mat.stoneLight,.17);
-    // Integrated water top: floor - 0.115 m; analytical receiver adds 0.005 m.
-    const tubWater=roundedSlab(group,jx+.16,jy+.16,floor-.13,1.88,1.88,.015,.14,mat.waterLight,0,false);
+    let tubWater;
+    if(program.active){
+      const waterZ=num(jacuzzi.waterZ,floor-.035);
+      // Three coping sides and one low spill lip make the garden-facing edge
+      // continuous with the water. The dark slot is a proposed catch channel,
+      // not a waterfall flowing into the planting or over the terrace stairs.
+      box(group,jx,jy,floor-.70,2.2,2.2,.06,mat.basin);
+      box(group,jx,jy,floor-.68,.13,2.2,.71,mat.basin);
+      box(group,jacuzzi.x1-.13,jy,floor-.68,.13,2.2,.71,mat.basin);
+      box(group,jx,jy,floor-.68,2.2,.13,.71,mat.basin);
+      box(group,jx,jacuzzi.y1-.09,floor-.68,2.2,.09,waterZ-(floor-.68)-.008,mat.stoneLight);
+      box(group,jx-.025,jy-.025,floor+.015,.18,2.225,.06,mat.stoneLight,false);
+      box(group,jacuzzi.x1-.155,jy-.025,floor+.015,.18,2.225,.06,mat.stoneLight,false);
+      box(group,jx-.025,jy-.025,floor+.015,2.25,.18,.06,mat.stoneLight,false);
+      const channel=box(group,jx+.13,jacuzzi.y1,waterZ-.11,1.94,.10,.035,mat.metal,false);
+      channel.name='jacuzzi-overflow-channel';
+      const spill=box(group,jx+.13,jacuzzi.y1-.015,waterZ-.08,1.94,.018,.08,mat.waterLight,false);
+      spill.name='jacuzzi-overflow-edge';
+      const w=jacuzzi.waterBounds;
+      tubWater=roundedSlab(group,w.x0,w.y0,waterZ-.015,w.x1-w.x0,w.y1-w.y0,.015,.025,mat.waterLight,0,false);
+      box(group,w.x0,w.y1,waterZ-.012,w.x1-w.x0,jacuzzi.y1-w.y1,.012,mat.waterLight,false);
+    }else{
+      roundedSlab(group,jx,jy,floor-.68,2.2,2.2,.74,.26,mat.basin,.13);
+      roundedSlab(group,jx+.13,jy+.13,floor-.69,1.94,1.94,.04,.15,mat.basin);
+      roundedSlab(group,jx-.015,jy-.015,floor+.015,2.23,2.23,.075,.26,mat.stoneLight,.17);
+      // Classic integrated water top: floor - 0.115 m.
+      tubWater=roundedSlab(group,jx+.16,jy+.16,floor-.13,1.88,1.88,.015,.14,mat.waterLight,0,false);
+    }
     tubWater.name='jacuzzi-water';
     for(const sx of [jx+.17,jx+1.55])roundedSlab(group,sx,jy+.25,floor-.42,.48,1.35,.10,.13,mat.stoneLight);
     if(!svgMode){
@@ -719,7 +756,7 @@ export function createScene(container, data, callbacks = {}) {
       for(let i=0;i<8;i++){dummy.position.copy(point(i<4?jx+.155:jx+2.045,jy+.43+(i%4)*.44,floor-.28));dummy.updateMatrix();jets.setMatrixAt(i,dummy.matrix);}group.add(jets);
     }
     const {groundZ:stepGround,drop}=terraceGroundReference(settings,data);
-    const stairs=terraceStairs({...terrace,y:rear},depth,drop);
+    const stairs=terraceStairs({...terrace,y:rear},depth,drop,settings,data);
     if(stairs.count){
       for(let i=0;i<stairs.count;i++)box(group,stairs.x,stairs.y+i*.29,stepGround,stairs.width,.29,drop*(stairs.count-i)/stairs.count,mat.stone);
     }
@@ -729,18 +766,30 @@ export function createScene(container, data, callbacks = {}) {
     roundedSlab(group,x+width-1.18,rear+.72,floor+.26,.76,2.0,.12,.07,mat.linen);
     roundedSlab(group,x+width-1.12,rear+.78,floor+.39,.64,.38,.10,.07,mat.linen);
     roundedSlab(group,x+width-2.10,rear+1.2,floor,.65,.65,.34,.20,mat.woodLight);
-    const p=data.site.pool,px=p.x,py=p.y,pw=p.width,pl=p.length,pz=gardenGroundAt(px+pw/2,py+pl/2,settings,data)+.015;
-    box(group,px-.28,py-.28,pz-.06,pw+.56,.28,.12,mat.stoneLight,false,-70);
-    box(group,px-.28,py+pl,pz-.06,pw+.56,.28,.12,mat.stoneLight,false,-70);
-    box(group,px-.28,py,pz-.06,.28,pl,.12,mat.stoneLight,false,-70);
-    box(group,px+pw,py,pz-.06,.28,pl,.12,mat.stoneLight,false,-70);
-    // Water is 0.055 m above centre garden grade, 0.020 m below the coping top.
-    const waterTop=pz+.04;
+    const p=poolBounds(settings,data),px=p.x,py=p.y,pw=p.width,pl=p.length,poolLevels=spaLevels(settings,data).pool,pz=poolLevels.groundZ+.015;
+    const copingBase=poolLevels.copingBaseZ,copingHeight=poolLevels.copingTopZ-copingBase;
+    for(const [cx,cy,cw,cl] of [[px-.28,py-.28,pw+.56,.28],[px-.28,py+pl,pw+.56,.28],[px-.28,py,.28,pl],[px+pw,py,.28,pl]]){
+      const coping=box(group,cx,cy,copingBase,cw,cl,copingHeight,mat.stoneLight,false,-70);
+      coping.name=program.active?'pool-coping-and-skirt':'pool-coping';
+    }
+    // The spa rim clears the highest sampled grade and its continuous skirt
+    // reaches below the lowest. Classic retains its existing centre datum.
+    const waterTop=poolLevels.waterZ;
+    if(program.active){
+      const poolBottom=waterTop-num(p.waterDepth,1.4);
+      box(group,px,py,poolBottom-.08,pw,pl,.08,mat.basin,false);
+      box(group,px,py,poolBottom,.06,pl,waterTop-poolBottom,mat.basin,false);
+      box(group,px+pw-.06,py,poolBottom,.06,pl,waterTop-poolBottom,mat.basin,false);
+      box(group,px,py,poolBottom,pw,.06,waterTop-poolBottom,mat.basin,false);
+      box(group,px,py+pl-.06,poolBottom,pw,.06,waterTop-poolBottom,mat.basin,false);
+      // Entry ledges stay inside the water footprint, away from the garden path.
+      for(let i=0;i<3;i++)box(group,px+.10,py+.10+i*.32,waterTop-.28*(i+1),.95,.32,.12,mat.stoneLight,false);
+    }
     const poolWater=box(group,px,py,waterTop-.025,pw,pl,.025,mat.water,false,-69);
     poolWater.name='pool-water';
     for(let ty=py+.8;ty<py+pl;ty+=.8){line(group,[[px-.28,ty,pz+.067],[px,ty,pz+.067]],'#b1a994',.45);line(group,[[px+pw,ty,pz+.067],[px+pw+.28,ty,pz+.067]],'#b1a994',.45);}
     for(let y=py+1;y<py+pl-.4;y+=1.9)line(group,[[px+.12,y,waterTop+.004],[px+pw-.12,y,waterTop+.004]],'#79a5a0',.21);
-    const furniture=gardenFurniture(data);
+    const furniture=gardenFurniture(data,settings);
     for(const [lx,y] of furniture.loungers){
       const lounger={x:lx,y,width:.78,length:2};
       if(rectanglesOverlap(lounger,{x,y:rear,width,length:depth},.15)||(stairs.count&&rectanglesOverlap(lounger,stairs,.15)))continue;
@@ -761,6 +810,7 @@ export function createScene(container, data, callbacks = {}) {
         box(group,cx,cy+(cy<dy?0:.43),dz+.5,.55,.07,.35,mat.wood,false);
       }
     }
+    if(program.active)group.add(createSpaAmenityGroup(program,spaLevels(settings,data),mat,svgMode));
     addShrubs(group,settings);
   }
 
@@ -944,7 +994,7 @@ export function createScene(container, data, callbacks = {}) {
   function rebuildObserver(observer,analysis,settings) {
     removeGeometry(markerGroup);removeGeometry(rayGroup);
     if(!observer)return;
-    const ground=gardenGroundAt(observer.x,observer.y,settings,data);
+    const ground=num(observer.groundZ,gardenGroundAt(observer.x,observer.y,settings,data));
     const eye=new THREE.Mesh(new THREE.SphereGeometry(.13,svgMode?6:12,svgMode?4:8),mat.gold);
     eye.position.copy(point(observer.x,observer.y,observer.z));markerGroup.add(eye);
     line(markerGroup,[[observer.x,observer.y,ground+.03],[observer.x,observer.y,observer.z]],'#d4a64e');
@@ -1026,7 +1076,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
+    const signature=JSON.stringify([...['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
