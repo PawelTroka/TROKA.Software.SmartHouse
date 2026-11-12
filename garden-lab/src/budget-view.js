@@ -26,7 +26,7 @@ export function renderBudget(cost,settings){
   const panel=document.querySelector('.cost-panel');
   panel.dataset.status=cost.status;panel.dataset.totalLow=cost.total?.low??'';
   panel.dataset.earthworkLow=e.total.low;panel.dataset.compactedVolume=e.compactedVolume;
-  const sideLabel={rear:'Rear',left:'Left side',right:'Right side'};
+  const sideLabel={rear:'Rear',left:'Left / east',right:'Right / west'};
   let plants=h.sides.map(s=>row(`${sideLabel[s.side]} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
     amount(s.plants))).join('');

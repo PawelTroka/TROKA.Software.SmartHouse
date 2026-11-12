@@ -3,7 +3,7 @@
  * not the full property. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments } from './geometry.js';
+import { hedgeSegments } from './geometry.js?v=1.3.1';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -11,8 +11,8 @@ const field = (label, value, min, max, step, unit, help = '') => ({
 export const COST_FIELDS = Object.freeze({
   costSpacing: field('Tree spacing', .8, .3, 2, .05, 'm', 'Centre-to-centre spacing; density and nursery crown width still need checking.'),
   costTreePriceRear: field('Rear: custom tree price', 0, 0, 100000, 10, 'PLN/tree', '0 uses published stock prices. Enter a supplier quote for taller trees.'),
-  costTreePriceLeft: field('Left: custom tree price', 0, 0, 100000, 10, 'PLN/tree', '0 uses published stock prices.'),
-  costTreePriceRight: field('Right: custom tree price', 0, 0, 100000, 10, 'PLN/tree', '0 uses published stock prices.'),
+  costTreePriceLeft: field('Left / east: custom tree price', 0, 0, 100000, 10, 'PLN/tree', '0 uses published stock prices.'),
+  costTreePriceRight: field('Right / west: custom tree price', 0, 0, 100000, 10, 'PLN/tree', '0 uses published stock prices.'),
   costPriceFactor: field('Tree price multiplier', 100, 10, 500, 5, '%', 'Applies to automatic supplier-price anchors; custom unit prices are used unchanged.'),
   costPlantingRate: field('Planting allowance', 75, 0, 5000, 5, 'PLN/tree', 'Editable labour allowance; large stock and lifting can cost more.'),
   costHedgeDelivery: field('Tree delivery allowance', 1000, 0, 50000, 100, 'PLN', 'One allowance for the whole hedge order, not one per side.'),

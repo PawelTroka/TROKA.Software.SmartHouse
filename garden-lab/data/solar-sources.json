@@ -9,7 +9,7 @@
     "horizontalCRS": "EPSG:2180",
     "centralMeridianDegrees": 19,
     "gridConvergenceDegreesApprox": -0.2998818440674521,
-    "trueRearBearingDegreesApprox": 203.13098129169477,
+    "trueRearBearingDegreesApprox": 203.13098129169478,
     "orientationNote": "Spherical transverse-Mercator convergence atan(tan(longitude − 19°) × sin(latitude)); grid azimuth = true azimuth − convergence. The correction is approximately −0.300° here. An independent pyproj check returned −0.29988185370627357°, agreeing within 0.000001°."
   },
   "sources": [
@@ -54,6 +54,9 @@
     "Azimuth is measured clockwise from true north; elevation is degrees above a level geometric horizon. Direct-light rays use the geometric centre of the sun.",
     "Sunrise and sunset are apparent-horizon estimates using −0.833° for the solar disc and standard atmospheric refraction. Buildings and trees can delay direct sun at the property.",
     "The first occurrence is used for the repeated autumn DST hour. A nonexistent spring hour shifts forward by the gap; the interface receives an explicit explanatory note.",
-    "No cloud cover, diffuse-sky light, irradiance, glare or thermal load is predicted. Low-elevation atmospheric effects and uncertain building/vegetation geometry limit shadow precision."
+    "No cloud cover, diffuse-sky light, irradiance, glare or thermal load is predicted. Low-elevation atmospheric effects and uncertain building/vegetation geometry limit shadow precision.",
+    "Fresh/reset designs use 4 m thujas and 0.5 m rear-garden fill; previous shared/saved design versions retain their own geometric defaults.",
+    "Outdoor shade includes 0.5 m ray steps within the supplied terrain crop, with pool and jacuzzi excavations excluded. Roof meshes interpolate the recorded samples at fixed source elevations; changing the assumed living floor does not move these roofs.",
+    "Pool water is 0.055 m above garden grade at the pool centre. Integrated jacuzzi water is 0.115 m below the assumed terrace floor, inside its 1.88 m rounded water footprint. Numerical rays start 0.005 m above their receiving surface. Decorative water rims, furniture, foliage gaps and isolated unverified roof returns do not contribute to the sampled shade result."
   ]
 }
