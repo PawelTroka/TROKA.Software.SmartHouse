@@ -6,6 +6,8 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 ## Sternicza spa courtyard · 1.7.0
 
+![Verified terrace view of the spa courtyard](spa-terrace-preview-1.7.0.jpg)
+
 Fresh and reset Sternicza designs now use **Spa courtyard**. The pool moves to the physical **left/east** when looking from the house into the rear garden. A six-person corner sauna occupies the rear **right/west**, with glazing toward the garden centre, pool and terrace. This is a metric proposal on the existing mapped parcel, not a replacement of the source survey or a construction-ready design.
 
 | Feature | Proposed geometry |
@@ -43,9 +45,13 @@ The spa's pine presets are repositioned around the new pool and spa rooms. The t
 
 Earthwork area excludes the sauna, sunken lounge and plunge footprints as well as the pool and terrace. Five editable **installed quote** fields cover the pool, edge jacuzzi, sauna, cold plunge and fire lounge. Zero means **unquoted**, and the combined budget remains visibly incomplete. Positive quotes enter the total and receive contingency once. They should cover associated plant, excavation, foundations, services and drainage; the simulator does not invent construction prices.
 
+![View from the six-person corner sauna toward the pool, lounge, terrace and jacuzzi](spa-sauna-view-1.7.0.jpg)
+
+![Seated jacuzzi view looking down toward the terrace-edge overflow concept](spa-jacuzzi-edge-1.7.0.jpg)
+
 **State version 9** records the garden layout explicitly. Existing v1–8 links and saved scenarios restore the **previous layout**, including their actual tree arrays and prices. Switch **Garden layout → Spa courtyard** or use Reset to apply the new design. Known named planting presets change to their matching spa/classic positions; custom trees are retained with placement warnings. Korzeniowskiego stays on its own existing layout. Preview deployments retain separate storage.
 
-**Automated validation:** 183 tests pass, including shared geometry, recessed surfaces, sauna glazing, terrain clearance, shadow receivers, quote accounting and v1–9 state compatibility. The static build succeeds.
+**Automated validation:** 183 tests pass, including shared geometry, recessed surfaces, sauna glazing, terrain clearance, shadow receivers, quote accounting and v1–9 state compatibility. The static build succeeds. Hosted **WebGL** browser checks verified the plan, sauna panorama, recessed lounge and pool, the open overflow jacuzzi, 4 m → 3 m independent east-hedge sunlight changes (0% → 56% display), v8 classic restoration, spa quote accounting and Korzeniowskiego isolation. A 390 × 844 responsive check had no horizontal page overflow. No browser script errors were reported. The screenshots above are from that hosted review.
 
 ![Sternicza mixed pine default viewed from the jacuzzi in Garden Lab 1.6.0](pine-layouts-preview-1.6.0.jpg)
 
