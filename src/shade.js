@@ -3,9 +3,9 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.5.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.5.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.5.0';
+import { terrainAt, gardenGroundAt, floorElevation, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon } from './geometry.js?v=1.6.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.6.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.6.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;

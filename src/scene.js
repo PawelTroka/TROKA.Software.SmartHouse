@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.5.0';
-import { sampledRoofFaces } from './shade.js?v=1.5.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.5.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.5.0';
-import { getSiteProfile } from './sites.js?v=1.5.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.5.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.5.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.5.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.5.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds } from './geometry.js?v=1.6.0';
+import { sampledRoofFaces } from './shade.js?v=1.6.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.6.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.6.0';
+import { getSiteProfile } from './sites.js?v=1.6.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.6.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.6.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.6.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.6.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.

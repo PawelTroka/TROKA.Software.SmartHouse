@@ -1,8 +1,8 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.5.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.5.0';
-import {getSiteProfile} from './sites.js?v=1.5.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.5.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.5.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.6.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.6.0';
+import {getSiteProfile} from './sites.js?v=1.6.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.6.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.6.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
