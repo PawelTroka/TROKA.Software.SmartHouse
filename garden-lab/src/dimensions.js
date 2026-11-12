@@ -181,11 +181,13 @@ export function gardenDimensions(settings={},data){
     const h=candidates.sort((a,b)=>distance(b.a,b.b)-distance(a.a,a.b))[0];
     if(!h)continue;
     const p=midpoint(h.a,h.b),base=(h.baseA+h.baseB)/2,top=(h.topA+h.topB)/2;
+    if(top<=base+EPS)continue;
     addVertical(`hedge-${side}-height`,`hedge-${side}`,'height',p,base,top,{description:`${side} hedge exposed height`,datum:'current planting soil to hedge top',
       sceneText:`${side} hedge ${formatDimension(top-base,{digits:1})}`,planText:`${side} h ${formatDimension(top-base,{digits:1})}`,
       planAnchor:[p[0]+(side==='left'?-1.5:side==='right'?1.5:0),p[1]+(side==='rear'?-.65:0)],priority:3});
   }
-  for(const [i,tree] of screeningTreeVolumes(settings,data).filter(v=>v.enabled!==false).entries()){
+  for(const [i,tree] of screeningTreeVolumes(settings,data).entries()){
+    if(tree.enabled===false)continue;
     const cos=Math.cos(tree.rotationRadians),sin=Math.sin(tree.rotationRadians),z=tree.crownCenter[2];
     const local=(x,y)=>[tree.x+x*cos-y*sin,tree.y+x*sin+y*cos];
     addHorizontal(`${tree.id}-crown-width`,tree.id,'width',local(-tree.crownWidth/2,0),local(tree.crownWidth/2,0),z,{description:`Tree ${i+1} crown width`,
@@ -202,8 +204,84 @@ export function gardenDimensions(settings={},data){
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+const featureNames={terrace:['D','Terrace'],jacuzzi:['J','Jacuzzi · outer rim'],pool:['P','Pool · water footprint'],
+  sauna:['S','Sauna'],firepit:['F','Lounge · incl. coping'],'cold-plunge':['C','Cold plunge · outer rim'],
+  'hedge-rear':['H1','Rear hedge'],'hedge-left':['H2','Left hedge'],'hedge-right':['H3','Right hedge']};
+const gapNames={
+  'pool-boundary':'Pool coping → plot boundary','sauna-right-boundary':'Sauna → right boundary',
+  'sauna-rear-boundary':'Sauna → rear boundary','cold-plunge-boundary':'Plunge pad → rear boundary',
+  'terrace-lounge':'Terrace → lounge coping','pool-lounge':'Pool coping → lounge coping','sauna-plunge':'Sauna → plunge pad',
+};
+
+/** Group every record once; the key links quiet plan marks to readable numbers. */
+export function dimensionScheduleGroups(records){
+  const groups=[],features=new Map();
+  for(const record of records){
+    if(record.kind==='clearance')continue;
+    let group=features.get(record.feature);
+    if(!group){
+      const treeNumber=/^Tree (\d+)/.exec(record.description||'')?.[1];
+      const [key,label]=featureNames[record.feature]||[treeNumber?`T${treeNumber}`:record.feature,treeNumber?`Tree ${treeNumber} · crown`:record.feature];
+      group={key,label,feature:record.feature,records:[],type:record.feature.startsWith('hedge-')?'hedge':treeNumber?'tree':'feature'};
+      features.set(record.feature,group);groups.push(group);
+    }
+    group.records.push(record);
+  }
+  const gaps=records.filter(r=>r.kind==='clearance').map((record,i)=>({key:`G${i+1}`,label:gapNames[record.id]||record.description,
+    feature:record.feature,records:[record],type:'gap'}));
+  return [...groups,...gaps];
+}
+
+/** All widths, depths, heights and clearances stay present, without a label cloud. */
+export function dimensionScheduleMarkup(records){
+  if(!records.length)return '';
+  const groups=dimensionScheduleGroups(records);
+  const value=r=>`<span data-dimension-record="${esc(r.id)}" title="${esc(r.description||r.id)}${r.datum?` · ${esc(r.datum)}`:''}">${esc(formatDimension(r.value,{approximate:r.kind==='clearance'}))}</span>`;
+  const rows=type=>groups.filter(g=>type==='objects'?g.type==='feature':type==='planting'?g.type==='tree'||g.type==='hedge':g.type==='gap').map(g=>{
+    const width=g.records.find(r=>r.kind==='width'),length=g.records.find(r=>r.kind==='length');
+    const footprint=width&&length?`<span class="dimension-footprint"><span data-dimension-record="${esc(width.id)}" title="${esc(width.description)}">${width.value.toFixed(2)}</span> × <span data-dimension-record="${esc(length.id)}" title="${esc(length.description)}">${length.value.toFixed(2)}</span> m</span>`:'';
+    const details=g.records.filter(r=>!footprint||(r!==width&&r!==length)).map(r=>{
+      const prefix=r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':'';
+      return `<span class="dimension-detail">${prefix}${value(r)}</span>`;
+    }).join('<span class="dimension-separator"> · </span>');
+    return `<li data-dimension-group="${esc(g.key)}"><span class="dimension-key ${g.type==='gap'?'dimension-key-gap':''}">${esc(g.key)}</span><div><div class="dimension-row-heading"><strong>${esc(g.label)}</strong>${footprint}</div>${details?`<div class="dimension-row-values">${details}</div>`:''}</div></li>`;
+  }).join('');
+  return `<aside class="dimension-schedule" aria-label="Garden dimensions in metres"><header><strong>Dimensions</strong><span>Metres · concept model</span></header>
+    <section><h4>Objects · width × length</h4><ul>${rows('objects')}</ul></section>
+    <section><h4>Finished-edge gaps</h4><ul class="dimension-gap-list">${rows('gaps')}</ul></section>
+    <section><h4>Planting · crown width × depth</h4><ul>${rows('planting')}</ul></section>
+    <p>Keys match the fine lines in the drawing. Gaps use mapped boundaries and finished outer edges. <b>h</b>: sauna floor / planting soil to top; water: surface to floor; entry rise: approach to entry. Terrace drop uses the centreline, 0.6 m beyond the deck.</p></aside>`;
+}
+
+function keyedPlanMarkup(records,{X,Y,scale}){
+  const groups=dimensionScheduleGroups(records),lines=[],pins=[],occupied=[];
+  const horizontal=records.filter(r=>Math.hypot(r.lineB[0]-r.lineA[0],r.lineB[1]-r.lineA[1])>1e-6);
+  for(const r of horizontal){
+    const a=[X(r.lineA[0]),Y(r.lineA[1])],b=[X(r.lineB[0]),Y(r.lineB[1])],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1,nx=-dy/len*2.3,ny=dx/len*2.3;
+    lines.push(`<path data-dimension="${esc(r.id)}" d="M${a[0]},${a[1]}L${b[0]},${b[1]}M${a[0]-nx},${a[1]-ny}l${nx*2},${ny*2}M${b[0]-nx},${b[1]-ny}l${nx*2},${ny*2}"><title>${esc(r.description)}: ${esc(r.text)}</title></path>`);
+  }
+  // A single compact mark per object replaces several overlapping height and
+  // size notes. Boundary gaps get their own small keys on the measured line.
+  for(const group of groups.filter(g=>g.type!=='hedge')){
+    const r=group.records[0],width=group.records.find(v=>v.kind==='width'),length=group.records.find(v=>v.kind==='length');
+    const pts=width&&length?[width.a,width.b,length.a,length.b]:[r.a,r.b];
+    const p=[(Math.min(...pts.map(v=>v[0]))+Math.max(...pts.map(v=>v[0])))/2,(Math.min(...pts.map(v=>v[1]))+Math.max(...pts.map(v=>v[1])))/2];
+    const origin=[X(p[0]),Y(p[1])],w=group.key.length>1?25:20,h=19;
+    let chosen=origin;
+    const offsets=[[0,0],[0,-18],[0,18],[-24,0],[24,0],[-24,-18],[24,18],[0,-36],[0,36],[-42,0],[42,0]];
+    for(const offset of offsets){
+      const q=[origin[0]+offset[0],origin[1]+offset[1]],box={x:q[0]-w/2,y:q[1]-h/2,w,h};
+      if(!occupied.some(a=>box.x<a.x+a.w+3&&box.x+box.w+3>a.x&&box.y<a.y+a.h+3&&box.y+box.h+3>a.y)){chosen=q;occupied.push(box);break;}
+    }
+    if(Math.hypot(chosen[0]-origin[0],chosen[1]-origin[1])>4)lines.push(`<path class="dimension-leader" d="M${origin[0]},${origin[1]}L${chosen[0]},${chosen[1]}"/>`);
+    pins.push(`<g class="dimension-plan-key ${group.type==='gap'?'dimension-plan-key-gap':''}" data-dimension-key="${esc(group.key)}" transform="translate(${chosen[0]},${chosen[1]})"><title>${esc(group.label)} · ${group.records.map(v=>`${esc(v.description)} ${esc(v.text)}`).join('; ')}</title><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="5"/><text y="3.4" text-anchor="middle">${esc(group.key)}</text></g>`);
+  }
+  return records.length?`<g class="plan-dimensions plan-dimensions-keyed" pointer-events="none" aria-label="Dimension keys; values in the adjacent schedule"><g class="dimension-lines">${lines.join('')}</g>${pins.join('')}</g>`:'';
+}
+
 /** Exact lines stay fixed; text may shift a few pixels to avoid other labels. */
-export function dimensionPlanMarkup(records,{X,Y,scale}){
+export function dimensionPlanMarkup(records,{X,Y,scale,keyed=false}){
+  if(keyed)return keyedPlanMarkup(records,{X,Y,scale});
   const occupied=[],lines=[],labels=[];
   const fontSize=scale<8?8:9, textHeight=fontSize+3;
   const collides=box=>occupied.some(r=>box.x<r.x+r.w+2&&box.x+box.w+2>r.x&&box.y<r.y+r.h+1&&box.y+box.h+1>r.y);

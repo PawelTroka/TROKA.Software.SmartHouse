@@ -8,6 +8,8 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 The latest fresh/reset design is **Spa courtyard · near plot edges**. The pool is farther toward the physical **left/east**, the six-person sauna is tucked into the far **right/west rear corner**, and the cold plunge is next to the rear boundary. The large terrace and edge jacuzzi remain, with the sunken fire lounge in the middle.
 
+![Terrace view with three tall screening pines, perimeter spa layout and fine dimensions](edge-terrace-dimensions-1.8.0.jpg)
+
 ### Finished edges and real levels
 
 | Feature | Size | Mapped boundary clearance |
@@ -42,9 +44,13 @@ The comparison includes both historical planting arrangements, same-position siz
 
 The **Dimensions** checkbox above the viewer is on in fresh designs. It shows fine lines and metre labels in the 3D model, eye view, plan and garden shade map. Sightline sections label only objects actually cut by that section. Measurements include feature width/length, boundary gaps, selected gaps between features, terrace and lounge drops, water depths, sauna height, separate hedge heights, and tree height/crown sizes.
 
-3D labels remain small, avoid overlapping one another and disappear behind opaque geometry. The plan gives the complete set; hover a label for its measurement basis. Lines are non-interactive, so selecting a viewpoint or tree still works. The switch is independent of sightline rays and is saved/shared with the design. JSON exports include the full metric records even when the overlay is hidden.
+3D labels remain small, avoid overlapping one another and disappear behind opaque geometry. With dimensions on, the plan starts in **Garden detail**: a closer drawing with quiet keys and a complete measurement schedule beside it (below it on a phone). **Whole plot** and **Neighbourhood** remain available. The sunlight map uses the same readable keys and schedule. Measurement bases are included in the scenario export. Lines are non-interactive, so selecting a viewpoint or tree still works. The switch is independent of sightline rays and is saved/shared with the design. JSON exports include the full metric records even when the overlay is hidden.
+
+![Garden detail plan with quiet dimension keys and a readable measurement schedule](edge-plan-dimensions-1.8.0.jpg)
 
 **State version 10** preserves older designs: v9 keeps the original spa and its actual pines; v1–8 keep the original west-pool arrangement. Existing scenarios do not silently acquire taller trees or move their pool. Select the new garden layout, use Reset, or follow the current Sternicza link above to load the latest defaults. Known named planting layouts transfer to a compatible preset; custom trees remain with conflict warnings. Korzeniowskiego retains its own geometry.
+
+**Verification:** 212 automated checks pass and the static build succeeds. Hosted browser checks cover the three-pine presets, live PCK3 counts, independent hedges, fill-responsive terrace drop, dimension visibility, readable plan and sun-map schedules, v9 saved designs, property isolation and a 390 × 844 phone layout. All 40 current dimension records appear in the schedule; the phone schedule scrolls without horizontal overflow. The browser reported no script errors.
 
 ## Previous spa courtyard · 1.7.0
 

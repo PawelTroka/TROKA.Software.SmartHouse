@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {closestSegments,closestFootprints,closestBoundary,gardenDimensions,dimensionPlanMarkup} from '../src/dimensions.js';
+import {closestSegments,closestFootprints,closestBoundary,gardenDimensions,dimensionPlanMarkup,dimensionScheduleMarkup,dimensionScheduleGroups} from '../src/dimensions.js';
 import {createDimensionGroup,createDimensionOverlay} from '../src/scene-dimensions.js';
 import * as THREE from '../vendor/three.module.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
 import {spaLevels,terraceGroundReference} from '../src/geometry.js';
-import {spaSectionCuts,spaSectionDimensionMarkup} from '../src/diagrams.js';
+import {spaSectionCuts,spaSectionDimensionMarkup,planLayout,renderPlan} from '../src/diagrams.js';
+import {sunMapBounds} from '../src/sun-view.js';
 import {createScreeningTree} from '../src/screening-trees.js';
 import {toWorld} from '../src/orientation.js';
 
@@ -132,4 +133,58 @@ test('label occlusion excludes instanced decorations and caches a stationary cam
     camera.position.x=.2;camera.updateMatrixWorld();overlay.render(camera,600,600);assert.equal(solidRays,2);
     overlay.dispose();
   }finally{globalThis.document=previous;}
+});
+
+test('keyed plans retain every metric exactly once in the expanded schedule',()=>{
+  const trees=[12,15,17].map((x,i)=>({...createScreeningTree('austrian-pine-tall',{id:`test-${i}`,x,y:34}),height:9.5}));
+  const dimensions=gardenDimensions({...settings,screeningTrees:trees},data),schedule=dimensionScheduleMarkup(dimensions);
+  for(const record of dimensions)assert.equal((schedule.match(new RegExp(`data-dimension-record="${record.id}"`,'g'))||[]).length,1,record.id);
+  assert.match(schedule,/Pool coping → plot boundary/);assert.doesNotMatch(schedule,/Pool coping → left boundary/);
+  for(const width of [340,600]){
+    const frame=planLayout('detail',data,{clientWidth:width,clientHeight:500},true);
+    const markup=dimensionPlanMarkup(dimensions,{...frame,keyed:true});
+    assert.doesNotMatch(markup,/data-dimension-label=/,'The crowded numeric cloud is not used');
+    const keys=[...markup.matchAll(/data-dimension-key="([^"]+)" transform="translate\(([-.\d]+),([-.\d]+)\)"/g)].map(m=>({key:m[1],x:Number(m[2]),y:Number(m[3]),width:m[1].length>1?25:20}));
+    assert.equal(keys.length,dimensionScheduleGroups(dimensions).filter(g=>g.type!=='hedge').length);
+    for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++)assert.ok(Math.abs(keys[i].x-keys[j].x)>=(keys[i].width+keys[j].width)/2||Math.abs(keys[i].y-keys[j].y)>=19,`${width}px: ${keys[i].key} overlaps ${keys[j].key}`);
+  }
+});
+
+test('garden detail enlarges the rear garden while full-plot and neighbourhood remain available',()=>{
+  const frame={clientWidth:600,clientHeight:560},detail=planLayout('detail',data,frame,true),whole=planLayout('garden',data,frame,true);
+  assert.ok(detail.scale>whole.scale*1.65);assert.ok(detail.bounds.minY>16);
+  assert.ok(sunMapBounds('detail',data).minY>16);
+  assert.ok(whole.bounds.minY<0);assert.ok(whole.bounds.maxY>38);
+  const container={dataset:{},...frame,innerHTML:'',querySelectorAll(){return [];},querySelector(){return {addEventListener(){}};}};
+  renderPlan(container,data,settings,{x:10,y:21,z:5,label:'Terrace'}, {rays:[]});
+  assert.match(container.innerHTML,/data-map-scope="detail" aria-pressed="true"/);
+  assert.match(container.innerHTML,/Whole plot/);assert.match(container.innerHTML,/Neighbourhood/);
+  assert.match(container.innerHTML,/plan-workspace--stacked/);assert.match(container.innerHTML,/dimension-schedule/);
+});
+
+test('measurement schedule names the correct direction when garden is above the terrace',()=>{
+  const dimensions=gardenDimensions({...settings,floorHeight:.2,gardenRaise:.8},data),drop=dimensions.find(r=>r.id==='terrace-drop');
+  assert.ok(drop.b[2]<drop.a[2]);
+  const html=dimensionScheduleMarkup(dimensions);
+  assert.match(html,/garden above deck <span data-dimension-record="terrace-drop"/);
+  assert.doesNotMatch(html,/drop <span data-dimension-record="terrace-drop"/);
+  assert.match(dimensionScheduleMarkup(gardenDimensions(settings,data)),/drop <span data-dimension-record="terrace-drop"/);
+});
+
+test('disabling a specimen preserves the numbering used by its tree controls and map description',()=>{
+  const trees=[12,15,17].map((x,i)=>({...createScreeningTree('austrian-pine-tall',{id:`pine-${i+1}`,x,y:34}),enabled:i!==0}));
+  const dimensions=gardenDimensions({...settings,screeningTrees:trees},data);
+  assert.equal(dimensions.some(r=>r.feature==='pine-1'),false);
+  const groups=dimensionScheduleGroups(dimensions).filter(g=>g.type==='tree');
+  assert.deepEqual(groups.map(g=>[g.feature,g.key]),[['pine-2','T2'],['pine-3','T3']]);
+  assert.equal(dimensions.find(r=>r.id==='pine-2-height').description,'Tree 2 height');
+});
+
+test('buried retained hedges never acquire a positive exposed-height dimension',()=>{
+  const s={...settings,hedgeRear:.2,hedgeLeft:.2,hedgeRight:.2,gardenRaise:1,raiseNewHedges:false};
+  const buried=gardenDimensions(s,data);
+  assert.equal(buried.some(r=>r.feature.startsWith('hedge-')),false);
+  const visible=gardenDimensions({...s,hedgeRear:1.3},data);
+  near(visible.find(r=>r.id==='hedge-rear-height').value,.3);
+  assert.equal(visible.some(r=>r.id==='hedge-left-height'||r.id==='hedge-right-height'),false);
 });
