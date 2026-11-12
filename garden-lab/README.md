@@ -4,6 +4,10 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.4.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.4.0)**
 
+![Published Korzeniowskiego 40 simulator with the summer shade map](korzeniowskiego-preview-1.4.0.jpg)
+
+*Published version 1.4.0 at the main GitHub Pages URL. The screenshot shows the initial 4 m hedges / +0.5 m garden scenario at 12:00 on 21 June 2026, with the street at the top and the NNE rear garden below.*
+
 ## Two properties · 1.4.0
 
 The **Property** selector switches between complete site datasets. Each property keeps its own current design and saved scenario A. Share links and exported scenarios include the selected property. Changing properties never applies the other property's heights, camera, building overrides, costs or saved comparison.
