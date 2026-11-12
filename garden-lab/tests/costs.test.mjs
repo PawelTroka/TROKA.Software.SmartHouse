@@ -20,7 +20,8 @@ function simpleSite() {
     },
   };
 }
-const design = { hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 1, terraceDepth: 4, removeGarage: true };
+// The historic fill/cost fixtures deliberately retain the original west-pool layout.
+const design = { gardenProgram: 'classic', hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 1, terraceDepth: 4, removeGarage: true };
 
 test('independent hedge heights price only each respective side and count no front hedge', () => {
   const a = estimateCosts({ ...design, costSpacing: 1 }, simpleSite());
@@ -63,6 +64,13 @@ test('overlapping excluded footprints are subtracted only once', () => {
   const data = simpleSite();
   data.site.pool = { x: 8, y: 19, width: 3, length: 2 }; // entirely under terrace
   near(gardenQuantities(design, data).automaticArea, 400 - 32);
+});
+
+test('a classic garden with no pool leaves its area available for fill', () => {
+  const data = simpleSite();
+  delete data.site.pool;
+  near(gardenQuantities(design, data).automaticArea, 400 - 32);
+  near(estimateCosts({ ...design, gardenRaise: .5 }, data).earthworks.gardenVolume, 184);
 });
 
 test('a half-metre raise partitions topsoil inside the total fill and applies loose factor once', () => {

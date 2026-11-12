@@ -5,6 +5,8 @@ import {createStateModel,STATE_VERSION} from '../src/state.js';
 import {getSiteProfile,resolveSiteId} from '../src/sites.js';
 import {createScreeningTree,screeningTreeVolumes} from '../src/screening-trees.js';
 import {getTreeType} from '../src/tree-catalog.js';
+import {getScreeningLayouts,STERNICZA_STRATEGIC_TREES} from '../src/screening-layouts.js';
+import {gardenProgram,poolBounds} from '../src/garden-program.js';
 
 const sterniczaData=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const korzData=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json',import.meta.url)));
@@ -12,7 +14,9 @@ const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
 test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
-  assert.equal(STATE_VERSION,8);
+  assert.equal(STATE_VERSION,9);
+  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa');
+  assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
   assert.deepEqual(sternicza.sanitizeState().screeningTrees,sternicza.DEFAULTS.screeningTrees);
@@ -29,6 +33,7 @@ test('every pre-v8 omitted-tree link keeps its original tree-free meaning',()=>{
     assert.deepEqual(restored.screeningTrees,[],`v${version} must not inherit new default pines`);
     assert.equal(restored.hedgeRear,version<=3?2.5:4);
     assert.equal(restored.gardenRaise,version<=3?0:.5);
+    assert.equal(restored.gardenProgram,'classic',`v${version} retains the original pool and garden`);
   }
   assert.deepEqual(korz.decodeState('v=7&site=korzeniowskiego-40').screeningTrees,[]);
 });
@@ -37,7 +42,7 @@ test('v7 shared trees and saved A retain independent geometry, quotes and season
   for(const model of [sternicza,korz]){
     const custom=createScreeningTree('broad-hornbeam',{id:'my-old-tree',x:14,y:26});
     Object.assign(custom,{crownWidth:3.2,crownDepth:2.4,rotation:37,unitPrice:24149,enabled:false});
-    const saved={...model.DEFAULTS,screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
+    const saved={...model.DEFAULTS,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
       floorHeight:1.85,preset:'jacuzzi',sunDate:'2026-12-21',costScreeningPlanting:750};
     const migrated=model.migrateSavedState(saved,7);
     assert.deepEqual(migrated,saved);
@@ -52,11 +57,11 @@ test('v7 shared trees and saved A retain independent geometry, quotes and season
   }
 });
 
-test('v8 links explicitly retain an empty planting design and malformed trees never add default screening',()=>{
+test('v9 links explicitly retain an empty planting design and malformed trees never add default screening',()=>{
   for(const model of [sternicza,korz]){
     const clear={...model.DEFAULTS,screeningTrees:[]};
     const params=new URLSearchParams(model.encodeState(clear));
-    assert.equal(params.get('v'),'8');assert.equal(params.get('screeningTrees'),'[]');
+    assert.equal(params.get('v'),'9');assert.equal(params.get('screeningTrees'),'[]');
     assert.deepEqual(model.decodeState(params.toString()),clear);
     assert.equal(resolveSiteId('?site=unknown',`#${params}`),model.DEFAULTS.siteId);
     const normal=new URLSearchParams(model.encodeState(model.DEFAULTS));
@@ -66,6 +71,70 @@ test('v8 links explicitly retain an empty planting design and malformed trees ne
       assert.deepEqual(model.decodeState(params.toString()).screeningTrees,[]);
     }
   }
+});
+
+test('v8 omitted planting uses the original west-pool layout, while explicit empty and custom designs survive',()=>{
+  const originalCoordinates=[[16.1,29.6],[12.2,32.6],[15.7,22.8]];
+  assert.deepEqual(STERNICZA_STRATEGIC_TREES.map(tree=>[tree.x,tree.y]),originalCoordinates,'The published v8 default is frozen, independent of the v9 spa layout');
+  for(const restored of [sternicza.decodeState('v=8&site=sternicza-11'),sternicza.migrateSavedState({siteId:'sternicza-11'},8)]){
+    assert.equal(restored.gardenProgram,'classic');
+    assert.deepEqual(restored.screeningTrees.map(tree=>[tree.x,tree.y]),originalCoordinates);
+    const pool=poolBounds(restored,sterniczaData);
+    assert.equal(pool.x,5.8);assert.equal(pool.y,25);
+    assert.equal(gardenProgram(restored,sterniczaData).sauna,null);
+    assert.deepEqual(sternicza.decodeState(sternicza.encodeState(restored)),restored,'A newly shared old design retains the old geometry');
+  }
+  const custom=createScreeningTree('broad-hornbeam',{id:'v8-custom',x:12.3,y:34.1,unitPrice:28700});
+  for(const trees of [[],[custom]]){
+    const params=new URLSearchParams({v:'8',site:'sternicza-11',gardenProgram:'spa',screeningTrees:JSON.stringify(trees)});
+    const shared=sternicza.decodeState(params.toString());
+    assert.equal(shared.gardenProgram,'classic','A pre-v9 link cannot opt into a programme it never encoded');
+    assert.deepEqual(shared.screeningTrees,trees);
+    assert.deepEqual(sternicza.migrateSavedState({siteId:'sternicza-11',screeningTrees:trees},8).screeningTrees,trees);
+  }
+});
+
+test('each programme chooses its own planting layouts while preserving the comparison and installed quotes',()=>{
+  const old=sternicza.decodeState('v=8&site=sternicza-11');
+  const spa=sternicza.DEFAULTS;
+  for(const current of [old,spa])for(const layout of getScreeningLayouts('sternicza-11',current.gardenProgram)){
+    const next=sternicza.scenarioState(layout.id,{...current,floorHeight:1.8,sunDate:'2026-12-21',costSpaSauna:85400});
+    assert.equal(next.gardenProgram,current.gardenProgram);
+    assert.deepEqual(next.screeningTrees,layout.trees);
+    assert.equal(next.floorHeight,1.8);assert.equal(next.sunDate,'2026-12-21');assert.equal(next.costSpaSauna,85400);
+    assert.ok(sternicza.matchesScenario(layout.id,next));
+  }
+  assert.notDeepEqual(sternicza.scenarioState('default',old).screeningTrees,sternicza.scenarioState('default',spa).screeningTrees);
+});
+
+test('all spa planting presets leave tree trunks clear of the pool, spa rooms, dining and loungers',()=>{
+  const distanceToRect=(tree,rect)=>Math.hypot(
+    Math.max(rect.x-tree.x,0,tree.x-rect.x-rect.width),
+    Math.max(rect.y-tree.y,0,tree.y-rect.y-rect.length));
+  for(const layout of getScreeningLayouts('sternicza-11','spa')){
+    const state=sternicza.scenarioState(layout.id,sternicza.DEFAULTS);
+    const program=gardenProgram(state,sterniczaData);
+    const furniture=[program.furniture.dining,...program.furniture.loungers.map(([x,y])=>({x,y,width:.78,length:2}))];
+    for(const tree of screeningTreeVolumes(state,sterniczaData)){
+      assert.ok(tree.plantable,`${layout.id}: ${tree.id} is planted in soil`);
+      assert.ok(tree.crownInside,`${layout.id}: ${tree.id} stays inside the parcel`);
+      assert.ok(furniture.every(rect=>distanceToRect(tree,rect)>tree.trunkRadius+.15),`${layout.id}: ${tree.id} leaves dining and lounger footprints clear`);
+      assert.equal(tree.warnings.some(message=>message.includes('crown overhangs')),false,`${layout.id}: crowns clear fixed hardscape`);
+    }
+  }
+});
+
+test('Korzeniowskiego ignores the Sternicza spa programme across fresh, historical and new shared designs',()=>{
+  const pool=korzData.site.pool;
+  for(const version of [6,7,8,9]){
+    const settings=korz.decodeState(`v=${version}&site=korzeniowskiego-40&gardenProgram=spa&preset=sauna`);
+    assert.equal(settings.gardenProgram,'classic');assert.equal(settings.preset,'garden');
+    assert.deepEqual(settings.screeningTrees,[]);
+    assert.equal(gardenProgram(settings,korzData).active,false);
+    for(const key of ['x','y','width','length'])assert.equal(poolBounds(settings,korzData)[key],pool[key]);
+  }
+  assert.deepEqual(getScreeningLayouts('korzeniowskiego-40','spa'),[]);
+  assert.equal(korz.sanitizeState({...korz.DEFAULTS,gardenProgram:'spa'}).gardenProgram,'classic');
 });
 
 test('named planting layouts restore compatible garden assumptions while keeping the user comparison context',()=>{

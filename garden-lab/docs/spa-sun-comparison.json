@@ -1,0 +1,1813 @@
+{
+  "method": "Direct-sun visibility on a fixed 1 m outdoor sample grid, in Europe/Warsaw local civil time. Spa pool edge rays sample the centre of each clipped water-cell portion, avoiding zero-area coping boundaries. Pool percentages describe sample fractions, not integrated daily solar energy. Whole-grid alignment produces 24 west-pool and 27 east-pool samples for the same 3.5 × 8 m footprint.",
+  "limits": "Mapped buildings/roofs, ideal opaque hedges, local terrain, spa construction and dense proposed tree crowns are modeled. Existing unmapped trees, weather, diffuse/reflected light and actual foliage permeability are absent. Cold plunge and fire lounge have very few samples. This is a design comparison, not a certified daylight study.",
+  "settings": {
+    "hedgeRear": 4,
+    "hedgeLeft": 4,
+    "hedgeRight": 4,
+    "hedgeInset": 0.5,
+    "gardenRaise": 0.5,
+    "bedRaise": 0,
+    "floorHeight": 1.2,
+    "terraceDepth": 4.2,
+    "removeGarage": true,
+    "canopyEnabled": false
+  },
+  "oldPool": {
+    "x": 5.8,
+    "y": 25,
+    "width": 3.5,
+    "length": 8
+  },
+  "newPool": {
+    "x": 14.7,
+    "y": 24.5,
+    "width": 3.5,
+    "length": 8,
+    "waterDepth": 1.4,
+    "waterOffset": 0.055,
+    "coping": 0.28
+  },
+  "defaultTrees": [
+    {
+      "id": "pine-1",
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "x": 17,
+      "y": 35.3
+    },
+    {
+      "id": "pine-2",
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "x": 13.3,
+      "y": 35.3
+    },
+    {
+      "id": "pine-3",
+      "typeId": "austrian-pine-large",
+      "height": 5.5,
+      "crownBase": 1.3,
+      "crownWidth": 3.5,
+      "crownDepth": 3.5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "x": 16.6,
+      "y": 22.1
+    }
+  ],
+  "rows": [
+    {
+      "date": "2026-03-21",
+      "time": "09:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": 25.38,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 95.8,
+            "sunlit": 23,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 87.9,
+            "sunlit": 29,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 66.7,
+            "sunlit": 2,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 23,
+          "PCK 3": 1
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 87.9,
+            "sunlit": 29,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 66.7,
+            "sunlit": 2,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 87.5,
+            "sunlit": 28,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 44.4,
+            "sunlit": 4,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 21.9,
+            "sunlit": 7,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 75,
+            "sunlit": 3,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 44.4,
+            "sunlit": 4,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      }
+    },
+    {
+      "date": "2026-03-21",
+      "time": "12:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": 35.91,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 50,
+            "sunlit": 12,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 33,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 12,
+          "PCK 3": 9,
+          "Rear hedge / bed": 3
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 33,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "PCK 3": 24,
+          "Rear hedge / bed": 3
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 32,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "PCK 3": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 96.9,
+            "sunlit": 31,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "PCK 3": 13,
+          "Austrian pine · very tall 9.5 m": 14
+        }
+      }
+    },
+    {
+      "date": "2026-03-21",
+      "time": "15:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": 23.8,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 16.7,
+            "sunlit": 4,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 39.4,
+            "sunlit": 13,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Neighbouring building 4": 8,
+          "direct sun": 4,
+          "Rear hedge / bed": 12
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 55.6,
+            "sunlit": 15,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 39.4,
+            "sunlit": 13,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 15,
+          "Rear hedge / bed": 12
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 66.7,
+            "sunlit": 18,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 40.6,
+            "sunlit": 13,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 11.1,
+            "sunlit": 1,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 18,
+          "Rear hedge / bed": 9
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 18.5,
+            "sunlit": 5,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 40.6,
+            "sunlit": 13,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 11.1,
+            "sunlit": 1,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 5,
+          "Austrian pine · very tall 9.5 m": 17,
+          "Rear hedge / bed": 5
+        }
+      }
+    },
+    {
+      "date": "2026-03-21",
+      "time": "18:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": -0.73,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 24
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "night": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "night": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "night": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "night": 27
+        }
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "09:00",
+      "timezone": "CEST · UTC+02:00",
+      "elevationDegrees": 38.01,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 24,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 72.7,
+            "sunlit": 24,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 72.7,
+            "sunlit": 24,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 71.9,
+            "sunlit": 23,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 100,
+            "sunlit": 2,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 66.7,
+            "sunlit": 6,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 62.5,
+            "sunlit": 20,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 100,
+            "sunlit": 2,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 66.7,
+            "sunlit": 6,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "12:00",
+      "timezone": "CEST · UTC+02:00",
+      "elevationDegrees": 57.79,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 24,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 33,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 27,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 33,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 27,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 32,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 100,
+            "sunlit": 2,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 88.9,
+            "sunlit": 8,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 81.5,
+            "sunlit": 22,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 96.9,
+            "sunlit": 31,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 77.8,
+            "sunlit": 7,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 22,
+          "Austrian pine · very tall 9.5 m": 5
+        }
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "15:00",
+      "timezone": "CEST · UTC+02:00",
+      "elevationDegrees": 50.39,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 24,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 33,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 27,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 33,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 3,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 100,
+            "sunlit": 27,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 32,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 100,
+            "sunlit": 2,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 100,
+            "sunlit": 9,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 44.4,
+            "sunlit": 12,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 100,
+            "sunlit": 32,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 100,
+            "sunlit": 4,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 100,
+            "sunlit": 2,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 100,
+            "sunlit": 9,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "direct sun": 12,
+          "Austrian pine · very tall 9.5 m": 15
+        }
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "18:00",
+      "timezone": "CEST · UTC+02:00",
+      "elevationDegrees": 25.65,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 66.7,
+            "sunlit": 22,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Right hedge / bed": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 66.7,
+            "sunlit": 22,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Neighbouring building 4": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 68.8,
+            "sunlit": 22,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Neighbouring building 4": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 68.8,
+            "sunlit": 22,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Neighbouring building 4": 27
+        }
+      }
+    },
+    {
+      "date": "2026-12-21",
+      "time": "09:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": 4.61,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 16,
+          "Rear hedge / bed": 7,
+          "Local terrain / raised garden": 1
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 24,
+          "Local terrain / raised garden": 3
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 27
+        }
+      }
+    },
+    {
+      "date": "2026-12-21",
+      "time": "12:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": 12.08,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Rear hedge / bed": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 12,
+          "Rear hedge / bed": 12,
+          "Local terrain / raised garden": 3
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 12,
+          "Rear hedge / bed": 15
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Left hedge / bed": 12,
+          "Rear hedge / bed": 13,
+          "Austrian pine · very tall 9.5 m": 2
+        }
+      }
+    },
+    {
+      "date": "2026-12-21",
+      "time": "15:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": 1.5,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 24
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Rear hedge / bed": 11,
+          "Local terrain / raised garden": 13
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "Rear hedge / bed": 16,
+          "Local terrain / raised garden": 11
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Rear hedge / bed": 24,
+          "Raised pool coping": 3
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": 0,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "Rear hedge / bed": 20,
+          "Austrian pine · very tall 9.5 m": 4,
+          "Raised pool coping": 3
+        }
+      }
+    },
+    {
+      "date": "2026-12-21",
+      "time": "18:00",
+      "timezone": "CET · UTC+01:00",
+      "elevationDegrees": -21.19,
+      "oldWestNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 24
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "night": 24
+        }
+      },
+      "eastOnlyNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 33
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 3
+          }
+        },
+        "poolBlockers": {
+          "night": 27
+        }
+      },
+      "newEastSpaNoTrees": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "night": 27
+        }
+      },
+      "newEastSpaDefaults": {
+        "zones": {
+          "pool": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 27
+          },
+          "terrace": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 32
+          },
+          "jacuzzi": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 4
+          },
+          "coldPlunge": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 2
+          },
+          "firepit": {
+            "percent": null,
+            "sunlit": 0,
+            "total": 9
+          }
+        },
+        "poolBlockers": {
+          "night": 27
+        }
+      }
+    }
+  ],
+  "individualTrees": [
+    {
+      "date": "2026-06-21",
+      "time": "12:00",
+      "treeId": "pine-1",
+      "typeId": "austrian-pine-tall",
+      "x": 17,
+      "y": 35.3,
+      "zones": {
+        "pool": {
+          "percent": 81.5,
+          "sunlit": 22,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 100,
+          "sunlit": 32,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 88.9,
+          "sunlit": 8,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 22,
+        "Austrian pine · very tall 9.5 m": 5
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "12:00",
+      "treeId": "pine-2",
+      "typeId": "austrian-pine-tall",
+      "x": 13.3,
+      "y": 35.3,
+      "zones": {
+        "pool": {
+          "percent": 100,
+          "sunlit": 27,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 100,
+          "sunlit": 32,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 0,
+          "sunlit": 0,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 77.8,
+          "sunlit": 7,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 27
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "12:00",
+      "treeId": "pine-3",
+      "typeId": "austrian-pine-large",
+      "x": 16.6,
+      "y": 22.1,
+      "zones": {
+        "pool": {
+          "percent": 100,
+          "sunlit": 27,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 96.9,
+          "sunlit": 31,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 88.9,
+          "sunlit": 8,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 27
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "15:00",
+      "treeId": "pine-1",
+      "typeId": "austrian-pine-tall",
+      "x": 17,
+      "y": 35.3,
+      "zones": {
+        "pool": {
+          "percent": 81.5,
+          "sunlit": 22,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 100,
+          "sunlit": 32,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 100,
+          "sunlit": 9,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 22,
+        "Austrian pine · very tall 9.5 m": 5
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "15:00",
+      "treeId": "pine-2",
+      "typeId": "austrian-pine-tall",
+      "x": 13.3,
+      "y": 35.3,
+      "zones": {
+        "pool": {
+          "percent": 44.4,
+          "sunlit": 12,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 100,
+          "sunlit": 32,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 100,
+          "sunlit": 9,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 12,
+        "Austrian pine · very tall 9.5 m": 15
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "15:00",
+      "treeId": "pine-3",
+      "typeId": "austrian-pine-large",
+      "x": 16.6,
+      "y": 22.1,
+      "zones": {
+        "pool": {
+          "percent": 100,
+          "sunlit": 27,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 100,
+          "sunlit": 32,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 100,
+          "sunlit": 9,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 27
+      }
+    }
+  ],
+  "eastHedgeSensitivity": [
+    {
+      "date": "2026-06-21",
+      "time": "09:00",
+      "leftHedgeMetres": 4,
+      "trees": "all spa defaults",
+      "zones": {
+        "pool": {
+          "percent": 0,
+          "sunlit": 0,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 62.5,
+          "sunlit": 20,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 66.7,
+          "sunlit": 6,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "Left hedge / bed": 27
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "09:00",
+      "leftHedgeMetres": 3,
+      "trees": "all spa defaults",
+      "zones": {
+        "pool": {
+          "percent": 55.6,
+          "sunlit": 15,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 62.5,
+          "sunlit": 20,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 66.7,
+          "sunlit": 6,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 15,
+        "Left hedge / bed": 12
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "time": "09:00",
+      "leftHedgeMetres": 2.5,
+      "trees": "all spa defaults",
+      "zones": {
+        "pool": {
+          "percent": 66.7,
+          "sunlit": 18,
+          "total": 27
+        },
+        "terrace": {
+          "percent": 62.5,
+          "sunlit": 20,
+          "total": 32
+        },
+        "jacuzzi": {
+          "percent": 100,
+          "sunlit": 4,
+          "total": 4
+        },
+        "coldPlunge": {
+          "percent": 100,
+          "sunlit": 2,
+          "total": 2
+        },
+        "firepit": {
+          "percent": 66.7,
+          "sunlit": 6,
+          "total": 9
+        }
+      },
+      "poolBlockers": {
+        "direct sun": 18,
+        "Left hedge / bed": 9
+      }
+    }
+  ]
+}

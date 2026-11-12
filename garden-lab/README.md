@@ -2,15 +2,64 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.6.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.6.0)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.7.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.7.0)**
+
+## Sternicza spa courtyard · 1.7.0
+
+![Verified terrace view of the spa courtyard](spa-terrace-preview-1.7.0.jpg)
+
+Fresh and reset Sternicza designs now use **Spa courtyard**. The pool moves to the physical **left/east** when looking from the house into the rear garden. A six-person corner sauna occupies the rear **right/west**, with glazing toward the garden centre, pool and terrace. This is a metric proposal on the existing mapped parcel, not a replacement of the source survey or a construction-ready design.
+
+| Feature | Proposed geometry |
+| --- | --- |
+| Pool | 8 × 3.5 m water footprint, x 14.7 / y 24.5; coping remains inside the parcel |
+| Corner sauna | 4.2 × 4.1 m overall, chamfered glazed corner, L-shaped benches for six; x 3.3 / y 30.5 |
+| Terrace jacuzzi | 2.2 × 2.2 m, outer end aligned with the terrace edge; water 35 mm below the terrace and a garden-facing overflow lip with a catch slot |
+| Sunken fire lounge | 4.4 × 4.4 m, floor 0.6 m below its rim, built-in seating and four 150 mm steps; x 8.4 / y 26.8 |
+| Cold plunge | 2.2 × 1.3 m beside the sauna, 1.1 m water depth, raised rim and entry steps; x 8.3 / y 33.2 |
+
+Coordinates use the simulator's local metre frame. The pool coping and flat spa pads account for the mapped slope; the garden itself retains that slope under a uniform soil addition. The pool occupies part of the old garage position, so this layout includes removing the detached garage. Sauna, firepit, pool and plunge do not overlap, and the default firepit-to-pool-coping passage is at least 1.5 m. Extreme terrace height/depth changes can lengthen the stairs into the fire lounge; an in-app message identifies that conflict.
+
+**Corner sauna** and **Sunken lounge** are new eye-level viewpoints. The sauna opens diagonally toward the house and garden centre. Its glass is transparent to the numerical sightline and sunlight calculations; opaque timber, roof and raised pad are modeled. The fire-lounge observer stands or sits relative to its lowered floor, rather than floating at garden grade. The plan, section, 3D model and sun map share these positions and elevations.
+
+The jacuzzi is an **overflow-style concept**. Final structural support, waterproofing, balance tank/circulation and the overflow detail require a pool designer. The sunken lounge also needs an actual drainage and retaining design; its illustrated floor drop is not an excavation quantity or a claim that it can drain by gravity.
+
+### Sunlight is a tradeoff
+
+The requested left-side location is not uniformly sunnier in the current model. With the same 4 m hedges and no specimen trees, it gains some March afternoon sun but loses June morning sun to the east hedge. The new specimen trees can shade the pool around noon and later in the afternoon. The comparison is recorded in [spa sunlight results](docs/spa-sun-comparison.json) and can be reproduced with `node scripts/compare-spa-sun.mjs`.
+
+| Moment, Europe/Warsaw | Previous west pool, no trees | New east pool, no trees | New east pool, default pines |
+| --- | ---: | ---: | ---: |
+| 21 March, 15:00 | 16.7% | 66.7% | 18.5% |
+| 21 June, 09:00 | 100% | 0% | 0% |
+| 21 June, 12:00 | 100% | 100% | 81.5% |
+| 21 June, 15:00 | 100% | 100% | 44.4% |
+
+With the default pines retained, reducing only the east hedge from 4 m to 3 m changes June 21 at 09:00 from **0% to 55.6%** sampled pool sun; 2.5 m gives **66.7%**. This is a useful adjustable tradeoff, rather than a reason to assume the moved pool is automatically sunnier at every time.
+
+Use **Sun & shade**, compare seasons and times, lower **Left hedge** independently if useful, and compare **Hedges only** against the pine layouts. Pool, jacuzzi, cold-plunge water and the sunken lounge floor each have direct-sun sample readouts. These are coarse 1 m-grid sample fractions at an instant, not daily sunshine hours, energy or a guarantee about actual foliage.
+
+### Planting, quotes and compatibility
+
+The spa's pine presets are repositioned around the new pool and spa rooms. The two tall default trees are at (17, 35.3) and (13.3, 35.3); the smaller tree is at (16.6, 22.1). Plant reference prices and sizes are unchanged. These are clear-space starting positions, not a newly optimized or guaranteed PCK 3 screen. **The v1.6 visibility counts below apply only to the previous west-pool layout.**
+
+Earthwork area excludes the sauna, sunken lounge and plunge footprints as well as the pool and terrace. Five editable **installed quote** fields cover the pool, edge jacuzzi, sauna, cold plunge and fire lounge. Zero means **unquoted**, and the combined budget remains visibly incomplete. Positive quotes enter the total and receive contingency once. They should cover associated plant, excavation, foundations, services and drainage; the simulator does not invent construction prices.
+
+![View from the six-person corner sauna toward the pool, lounge, terrace and jacuzzi](spa-sauna-view-1.7.0.jpg)
+
+![Seated jacuzzi view looking down toward the terrace-edge overflow concept](spa-jacuzzi-edge-1.7.0.jpg)
+
+**State version 9** records the garden layout explicitly. Existing v1–8 links and saved scenarios restore the **previous layout**, including their actual tree arrays and prices. Switch **Garden layout → Spa courtyard** or use Reset to apply the new design. Known named planting presets change to their matching spa/classic positions; custom trees are retained with placement warnings. Korzeniowskiego stays on its own existing layout. Preview deployments retain separate storage.
+
+**Automated validation:** 183 tests pass, including shared geometry, recessed surfaces, sauna glazing, terrain clearance, shadow receivers, quote accounting and v1–9 state compatibility. The static build succeeds. Hosted **WebGL** browser checks verified the plan, sauna panorama, recessed lounge and pool, the open overflow jacuzzi, 4 m → 3 m independent east-hedge sunlight changes (0% → 56% display), v8 classic restoration, spa quote accounting and Korzeniowskiego isolation. A 390 × 844 responsive check had no horizontal page overflow. No browser script errors were reported. The screenshots above are from that hosted review.
 
 ![Sternicza mixed pine default viewed from the jacuzzi in Garden Lab 1.6.0](pine-layouts-preview-1.6.0.jpg)
 
 *Browser verification of version 1.6.0: the new default from the seated jacuzzi viewpoint. Crowns are geometric approximations; remaining slivers and exposure from other viewpoints are included in the comparison.*
 
-## Sternicza planting defaults · 1.6.0
+## Previous west-pool planting study · 1.6.0
 
-Fresh and reset Sternicza designs start with **two 9.5 m Austrian pines and one 5.5 m Austrian pine**, positioned against PCK 3 sightlines. The catalog plant subtotal is **136,700 PLN**. This is a design starting point, not a best-value claim or a guarantee of full concealment. Existing saved designs keep their trees; select **Strategic pines · 2 tall + 1 large · default** to apply the new layout.
+In the previous west-pool design, Sternicza starts with **two 9.5 m Austrian pines and one 5.5 m Austrian pine**, positioned against PCK 3 sightlines. The catalog plant subtotal is **136,700 PLN**. This is a design starting point, not a best-value claim or a guarantee of full concealment. Existing saved designs keep their trees; select **Previous layout** and **Strategic pines · 2 tall + 1 large · default** to reproduce this study.
 
 | Planting scenario | Specimens | Catalog plants only |
 | --- | --- | ---: |
@@ -295,6 +344,8 @@ Audited zero-inset benchmark requirements are **13.7132423316 m** for the seated
 | `src/costs.js` | Hedge quantities, fill geometry, material/load quantities and editable PLN budgets |
 | `src/budget-view.js` | Budget summaries, itemised costs and price-source presentation |
 | `src/solar.js` | Solar direction, mapped orientation, Warsaw civil time and daily horizon events |
+| `src/garden-program.js` | Shared metric spa footprints and previous-layout compatibility |
+| `src/scene-spa.js` | Sauna, plunge and recessed lounge meshes using shared absolute levels |
 | `src/shade.js` | Outdoor direct-sun rays, modeled blockers and 1 m sampled shade coverage |
 | `src/sun-view.js` | Seasonal controls, daily elevation chart, shade map and zone readouts |
 | `src/sun.css` | Responsive sun controls and shade-map presentation |

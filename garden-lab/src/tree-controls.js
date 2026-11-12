@@ -1,6 +1,6 @@
-import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.6.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.6.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.6.0';
+import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.7.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.7.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.7.0';
 
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

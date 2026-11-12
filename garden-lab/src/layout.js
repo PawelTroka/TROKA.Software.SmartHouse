@@ -1,4 +1,5 @@
 /** Shared metric layout helpers. All positions are local metres. */
+import {gardenProgram,spaEnabled} from './garden-program.js?v=1.7.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -10,7 +11,9 @@ export function rectCorners(rect,padding=0) {
 }
 
 /** Low furniture only: it illustrates the proposal and is excluded from sun rays. */
-export function gardenFurniture(data) {
+export function gardenFurniture(data,settings={}) {
+  const program=gardenProgram(settings,data);
+  if(program.active)return program.furniture;
   if(data.site.id==='korzeniowskiego-40') {
     const p=data.site.pool,b=boundsOf(data.site.boundary);
     return {
@@ -24,9 +27,10 @@ export function gardenFurniture(data) {
 }
 
 /** The illustrated terrace steps follow the actual selected floor-to-ground drop. */
-export function terraceStairs(terrace,depth,drop) {
+export function terraceStairs(terrace,depth,drop,settings={},data) {
   const count=drop>.1?Math.max(1,Math.ceil(drop/.18)):0;
-  return {x:terrace.x+1,y:terrace.y+depth,width:3,length:count*.29,count,drop:Math.max(0,drop)};
+  const spa=data&&spaEnabled(settings,data);
+  return {x:terrace.x+(spa?3.6:1),y:terrace.y+depth,width:3,length:count*.29,count,drop:Math.max(0,drop)};
 }
 export function rectanglesOverlap(a,b,gap=0) {
   return a.x<b.x+b.width+gap&&a.x+a.width+gap>b.x
