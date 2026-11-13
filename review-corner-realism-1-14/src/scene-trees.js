@@ -90,19 +90,20 @@ function addPine(group, v, materials, svgMode, valid) {
   };
   const foliage = geometryCollector(true);
   const pad = new THREE.SphereGeometry(1, svgMode ? 6 : 10, svgMode ? 4 : 7);
+  const needleTip = new THREE.SphereGeometry(1, 6, 4);
   let padCount = 0;
-  const addPad = (center, size, angle, shade) => {
+  const addPad = (center, size, angle, shade, tip = false) => {
     if (!v.foliageActive) return;
     padCount++;
     const cos = Math.cos(angle), sin = Math.sin(angle), detail = random() * 20;
-    foliage.append(pad, ([x, y, z]) => {
-      // Inward-only surface lobes make individual needle pads uneven without
-      // relying on a smooth oval hidden underneath the visible foliage.
-      const ruffle = .89 + .065 * Math.sin(x * 10 + y * 4 + detail) * Math.cos(z * 9 - y * 6)
-        + .035 * Math.sin(z * 17 + x * 13 + detail);
+    foliage.append(tip ? needleTip : pad, ([x, y, z]) => {
+      // Deep inward notches and upturned, flattened branch fans interrupt the
+      // smooth ball silhouette. Small tip fans replace each rounded outer pad.
+      const ruffle = .76 + .14 * Math.sin(x * 10 + y * 4 + detail) * Math.cos(z * 9 - y * 6)
+        + .09 * Math.sin(z * 17 + x * 13 + detail);
       const u = x * size[0] * ruffle, w = z * size[2] * ruffle;
       return inside([(center[0] + u * cos - w * sin) * radii[0],
-        (center[1] + y * size[1] * ruffle) * radii[1],
+        (center[1] + ((y < 0 ? y * .68 : y * .85) + x * .24) * size[1] * ruffle) * radii[1],
         (center[2] + u * sin + w * cos) * radii[2]]);
     }, ([, y]) => {
       const tone = shade + .11 * (y * .5 + .5);
@@ -111,19 +112,19 @@ function addPine(group, v, materials, svgMode, valid) {
   };
   const levels = svgMode ? 6 : 9;
   for (let level = 0; level < levels; level++) {
-    const y = -.86 + level / (levels - 1) * 1.72;
+    const y = -.86 + level / (levels - 1) * 1.72 + Math.sin(phase + level * 1.8) * .022;
     const reach = Math.sqrt(1 - y * y);
     const count = svgMode ? 6 : 8 + level % 2;
     const layerPhase = phase + level * 2.399963;
     // The central pads overlap the surrounding branch pads. Realistic needles
     // and stepped edges remain visible, with a dense interior suitable for a screen.
     addPad([Math.cos(layerPhase) * .04, y, Math.sin(layerPhase) * .04],
-      [reach * .51, svgMode ? .22 : .17, reach * .51], layerPhase, .77 + random() * .10);
+      [reach * .58, svgMode ? .27 : .23, reach * .58], layerPhase, .70 + random() * .09);
     for (let i = 0; i < count; i++) {
       const az = layerPhase + i * TAU / count + (random() - .5) * .19;
       const cos = Math.cos(az), sin = Math.sin(az);
-      const reachFraction = .60 + random() * .085;
-      const yJitter = (random() - .5) * .045;
+      const reachFraction = .56 + random() * .16;
+      const yJitter = (random() - .5) * .15;
       const center = [cos * reach * reachFraction, y + yJitter, sin * reach * reachFraction];
       const baseY = Math.max(-.96, y - .13);
       const joint = [cos * reach * .40 * radii[0], (y - .045) * radii[1], sin * reach * .40 * radii[2]];
@@ -131,14 +132,18 @@ function addPine(group, v, materials, svgMode, valid) {
       const radius = Math.max(.012, (v.trunkRadius || .12) * (.27 - level / levels * .13));
       branch([0, baseY * radii[1], 0], joint, radius, radius * .64);
       branch(joint, end, radius * .64);
-      addPad(center, [reach * (.46 + random() * .035), svgMode ? .22 : .15 + random() * .018, reach * .35],
+      addPad(center, [reach * (.44 + random() * .09), svgMode ? .21 : .12 + random() * .04, reach * (.27 + random() * .11)],
         az, .78 + random() * .13);
       if (!svgMode) {
         const fork = az + (i % 2 ? 1 : -1) * .35;
         const forkEnd = [Math.cos(fork) * reach * .85 * radii[0], (y + .08) * radii[1], Math.sin(fork) * reach * .85 * radii[2]];
         branch(joint, forkEnd, radius * .42);
-        addPad([Math.cos(fork) * reach * .80, y + .065, Math.sin(fork) * reach * .80],
-          [reach * .21, .115, reach * .23], fork, .86 + random() * .10);
+        for(let shoot=0;shoot<3;shoot++){
+          const tipAngle=fork+(shoot-1)*.17+(random()-.5)*.12;
+          const tipReach=reach*(.79+random()*.13),tipY=y+yJitter+.045+(random()-.5)*.09;
+          addPad([Math.cos(tipAngle)*tipReach,tipY,Math.sin(tipAngle)*tipReach],
+            [reach*(.14+random()*.035),.065+random()*.035,reach*.115],tipAngle,.83+random()*.12,true);
+        }
       }
     }
   }
@@ -146,6 +151,7 @@ function addPine(group, v, materials, svgMode, valid) {
   addPad([0, .95, 0], [.22, .09, .22], phase, .92);
   addPad([0, -.95, 0], [.22, .075, .22], phase + 1, .80);
   pad.dispose();
+  needleTip.dispose();
   const crownStemBottom = Math.max(-radii[1] * .94, (v.trunkTopZ ?? centreZ) - centreZ);
   branch([0, crownStemBottom, 0], [0, radii[1] * .94, 0], (v.trunkRadius || .12) * .44, .018);
   const branchMesh = new THREE.Mesh(branches.finish(), materials.bark);
