@@ -1,15 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {closestSegments,closestFootprints,closestBoundary,gardenDimensions,dimensionPlanMarkup,dimensionScheduleMarkup,dimensionScheduleGroups} from '../src/dimensions.js';
+import {closestSegments,closestFootprints,closestBoundary,footprintEnvelope,nearbyDimensionBuildings,dimensionsForScope,gardenDimensions,dimensionPlanMarkup,dimensionScheduleMarkup,dimensionScheduleGroups} from '../src/dimensions.js';
 import {createDimensionGroup,createDimensionOverlay} from '../src/scene-dimensions.js';
 import * as THREE from '../vendor/three.module.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
-import {spaLevels,terraceGroundReference} from '../src/geometry.js';
+import {spaLevels,terraceGroundReference,jacuzziBounds} from '../src/geometry.js';
 import {spaSectionCuts,spaSectionDimensionMarkup,planLayout,renderPlan} from '../src/diagrams.js';
 import {sunMapBounds} from '../src/sun-view.js';
 import {createScreeningTree} from '../src/screening-trees.js';
 import {toWorld} from '../src/orientation.js';
+// Match the runtime module identity: its WeakMap remembers immutable baselines.
+import {applyBuildingOverrides} from '../src/buildings.js?v=1.10.0';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const other=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json',import.meta.url)));
@@ -99,7 +101,8 @@ test('plan has every numeric dimension while 3D uses depth-tested coordinate-cor
     assert.equal(line.material.depthTest,true);assert.equal(line.material.depthWrite,false);
     assert.ok(line.material.opacity<=.55);assert.equal(line.castShadow,false);
     const coordinates=line.geometry.attributes.position.array,wanted=toWorld(...dimensions[i].lineA);
-    wanted.forEach((v,j)=>near(coordinates[j],v,2e-6));
+    // GPU vertex positions are Float32, including the more distant buildings.
+    wanted.forEach((v,j)=>assert.equal(coordinates[j],Math.fround(v)));
   }
 });
 
@@ -140,13 +143,21 @@ test('keyed plans retain every metric exactly once in the expanded schedule',()=
   const dimensions=gardenDimensions({...settings,screeningTrees:trees},data),schedule=dimensionScheduleMarkup(dimensions);
   for(const record of dimensions)assert.equal((schedule.match(new RegExp(`data-dimension-record="${record.id}"`,'g'))||[]).length,1,record.id);
   assert.match(schedule,/Pool coping → plot boundary/);assert.doesNotMatch(schedule,/Pool coping → left boundary/);
-  for(const width of [340,600]){
-    const frame=planLayout('detail',data,{clientWidth:width,clientHeight:500},true);
-    const markup=dimensionPlanMarkup(dimensions,{...frame,keyed:true});
-    assert.doesNotMatch(markup,/data-dimension-label=/,'The crowded numeric cloud is not used');
-    const keys=[...markup.matchAll(/data-dimension-key="([^"]+)" transform="translate\(([-.\d]+),([-.\d]+)\)"/g)].map(m=>({key:m[1],x:Number(m[2]),y:Number(m[3]),width:m[1].length>1?25:20}));
-    assert.equal(keys.length,dimensionScheduleGroups(dimensions).filter(g=>g.type!=='hedge').length);
-    for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++)assert.ok(Math.abs(keys[i].x-keys[j].x)>=(keys[i].width+keys[j].width)/2||Math.abs(keys[i].y-keys[j].y)>=19,`${width}px: ${keys[i].key} overlaps ${keys[j].key}`);
+  for(const scope of ['detail','garden','context'])for(const width of [340,600]){
+    const frame=planLayout(scope,data,{clientWidth:width,clientHeight:500},true),selected=dimensionsForScope(dimensions,scope);
+    const markup=dimensionPlanMarkup(selected,{...frame,keyed:true,numericKeys:true,viewport:{width:frame.W,height:frame.H}});
+    assert.doesNotMatch(markup,/data-dimension-label=/,'Each object has one compact key with a number');
+    assert.doesNotMatch(markup,/NaN|Infinity/);
+    const keys=[...markup.matchAll(/data-dimension-key="([^"]+)" data-dimension-label-width="([-.\d]+)" transform="translate\(([-.\d]+),([-.\d]+)\)"/g)].map(m=>({key:m[1],width:Number(m[2]),x:Number(m[3]),y:Number(m[4])}));
+    assert.ok(keys.length>0);
+    assert.ok(keys.length<=dimensionScheduleGroups(selected).filter(g=>g.type!=='hedge').length,'Crowded labels may be omitted; their measurements stay in the schedule');
+    for(const key of keys){
+      assert.ok(key.x-key.width/2>=5&&key.x+key.width/2<=frame.W-5);
+      assert.ok(key.y-9.5>=5&&key.y+9.5<=frame.H-5);
+    }
+    for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++)assert.ok(Math.abs(keys[i].x-keys[j].x)>=(keys[i].width+keys[j].width)/2||Math.abs(keys[i].y-keys[j].y)>=19,`${scope} ${width}px: ${keys[i].key} overlaps ${keys[j].key}`);
+    const scopeSchedule=dimensionScheduleMarkup(selected);
+    for(const record of selected)assert.equal((scopeSchedule.match(new RegExp(`data-dimension-record="${record.id}"`,'g'))||[]).length,1,record.id);
   }
 });
 
@@ -187,4 +198,109 @@ test('buried retained hedges never acquire a positive exposed-height dimension',
   const visible=gardenDimensions({...s,hedgeRear:1.3},data);
   near(visible.find(r=>r.id==='hedge-rear-height').value,.3);
   assert.equal(visible.some(r=>r.id==='hedge-left-height'||r.id==='hedge-right-height'),false);
+});
+
+test('rotated footprint envelopes retain true spans and contained footprints have no gap',()=>{
+  const angle=Math.PI/6,rotate=([x,y])=>[25+x*Math.cos(angle)-y*Math.sin(angle),-9+x*Math.sin(angle)+y*Math.cos(angle)];
+  const box=footprintEnvelope(rect(0,0,10,4).map(rotate));
+  near(box.width,10);near(box.length,4);near(box.area,40);
+  assert.ok(Math.abs(box.corners[0][1]-box.corners[1][1])>1,'Envelope follows the footprint bearing');
+  near(closestFootprints(rect(0,0,10,10),rect(2,2,1,1)).distance,0);
+  near(closestFootprints([[5,5]],rect(0,0,10,10)).distance,0);
+  near(closestFootprints(rect(0,0,10,10),rect(10,3,1,1)).distance,0);
+});
+
+test('plot area, every parcel segment and real house walls stay separate from enclosing spans',()=>{
+  const r=records(settings),ring=data.site.boundary;
+  near(r.get('plot-area').value,766.857893142941);assert.equal(r.get('plot-area').unit,'m²');
+  near(r.get('plot-width').value,20.32090125701205);
+  near(r.get('plot-depth').value,38.21412931043182);
+  near(r.get('house-front-boundary').value,9.09588503);
+  near(r.get('house-footprint-area').value,97.97719999938);
+  for(let i=0;i<ring.length-1;i++)near(r.get(`plot-edge-${i+1}`).value,Math.hypot(ring[i+1][0]-ring[i][0],ring[i+1][1]-ring[i][1]));
+  for(let i=0;i<data.site.house.footprint.length-1;i++){
+    const a=data.site.house.footprint[i],b=data.site.house.footprint[i+1];
+    near(r.get(`house-wall-${i+1}`).value,Math.hypot(b[0]-a[0],b[1]-a[1]));
+  }
+  assert.match(r.get('house-width').datum,/envelope/);
+  assert.match(r.get('house-wall-1').datum,/actual footprint edge/);
+  const otherRecords=gardenDimensions({...settings,siteId:'korzeniowskiego-40',gardenProgram:'classic'},other);
+  const otherMap=new Map(otherRecords.map(r=>[r.id,r]));
+  assert.ok(otherMap.get('house-footprint-area').value<otherMap.get('house-width').value*otherMap.get('house-length').value-5,'Recesses are excluded from polygon area');
+  assert.equal(otherRecords.filter(r=>r.kind==='wall').length,other.site.house.footprint.length-1);
+});
+
+test('PCK3 gaps use actual closest parcel and house edges and follow overrides exactly once',()=>{
+  const r=records(settings),target=data.buildings.find(b=>b.index===9),gap=r.get('building-9-plot-gap');
+  near(gap.value,6.753105669928048);
+  near(r.get('building-9-house-gap').value,27.27354350467764);
+  near(gap.a[0],22.1770554415615);near(gap.b[0],20.318700726597523);
+  near(gap.b[1],37.882021894020255);
+  near(r.get('building-9-roof-height').value,target.roofTopZ-target.baseZ);
+  assert.match(r.get('building-9-roof-height').heightBasis,/LiDAR/);
+  assert.match(r.get('building-4-roof-height').heightBasis,/median/);
+  const changed={...settings,b9DistanceDelta:4,b9HeightDelta:2.5};
+  const adjusted=applyBuildingOverrides(data,changed),block=adjusted.buildings.find(b=>b.index===9);
+  const changedRecords=gardenDimensions(changed,data),changedMap=new Map(changedRecords.map(r=>[r.id,r]));
+  near(changedMap.get('building-9-plot-gap').value,closestBoundary(block.footprint,adjusted).distance);
+  assert.notEqual(changedMap.get('building-9-plot-gap').value,gap.value);
+  near(changedMap.get('building-9-roof-height').value,r.get('building-9-roof-height').value+2.5);
+  assert.equal(changedMap.get('building-9-roof-height').heightBasis,'adjusted sensitivity model');
+  assert.deepEqual(gardenDimensions(changed,adjusted),changedRecords,'Viewer and export inputs must not apply deltas twice');
+});
+
+test('nearby-building measurements select actual nearest context and named targets on both properties',()=>{
+  for(const d of [data,other]){
+    const list=nearbyDimensionBuildings(d),ids=new Set(list.map(b=>b.id));
+    const eligible=d.buildings.filter(b=>b.footprint?.length>2&&b.id!==d.site.house.id&&b.id!==d.site.garage?.id);
+    const nearest=eligible.slice().sort((a,b)=>closestBoundary(a.footprint,d).distance-closestBoundary(b.footprint,d).distance).slice(0,8);
+    for(const block of [...nearest,...eligible.filter(b=>b.kind==='target')])assert.ok(ids.has(block.id),`${d.site.id}: ${block.id}`);
+    assert.equal(ids.has(d.site.house.id),false);
+    const all=gardenDimensions({...settings,siteId:d.site.id},d);
+    assert.equal(dimensionsForScope(all,'detail').some(r=>r.scope==='context'||r.scope==='site'),false);
+    assert.equal(dimensionsForScope(all,'garden').some(r=>r.scope==='context'),false);
+    assert.equal(dimensionsForScope(all,'context').some(r=>r.scope==='garden'),false);
+    for(const b of list)assert.ok(dimensionsForScope(all,'context').some(r=>r.id===`${b.id}-plot-gap`));
+    for(const r of all){assert.ok(Number.isFinite(r.value),r.id);for(const p of [r.a,r.b,r.lineA,r.lineB,r.anchor])assert.ok(p.every(Number.isFinite),r.id);}
+  }
+});
+
+test('compact spa dimensions follow the shared seating and technical access geometry',()=>{
+  const state={...settings,gardenProgram:'spa-compact'},r=records(state),tub=jacuzziBounds(state,data),program=gardenProgram(state,data);
+  near(r.get('jacuzzi-width').value,2.3);near(r.get('jacuzzi-length').value,2.3);
+  near(r.get('jacuzzi-service-width').value,tub.width+2*tub.serviceAccess.clearance);
+  near(r.get('jacuzzi-service-length').value,tub.length+2*tub.serviceAccess.clearance);
+  near(r.get('jacuzzi-service-clearance').value,.6);
+  near(r.get('jacuzzi-water-depth').value,tub.waterZ-tub.bottomZ);
+  near(r.get('sauna-width').value,program.sauna.width);near(r.get('sauna-length').value,program.sauna.length);
+  near(r.get('sauna-height').value,program.sauna.height);
+  const html=dimensionScheduleMarkup([...r.values()]);
+  assert.match(html,/Jacuzzi · 7 seats · outer rim/);assert.match(html,/Sauna · 6 seats · outer envelope/);
+  assert.match(html,/technical access envelope/);
+  const old=records(settings);
+  assert.equal(old.has('jacuzzi-service-clearance'),false,'Legacy design does not gain a modern supplier envelope');
+});
+
+test('tree boundary and pool clearances measure stem centres and pair spacing in the current state',()=>{
+  const trees=[{id:'near-edge',x:19,y:36},{id:'inner-pine',x:15,y:34}].map(t=>createScreeningTree('austrian-pine-tall',t));
+  const r=records({...settings,screeningTrees:trees}),pool=poolBounds(settings,data),coping=rect(pool.x-pool.coping,pool.y-pool.coping,pool.width+pool.coping*2,pool.length+pool.coping*2);
+  near(r.get('tree-spacing-near-edge-inner-pine').value,Math.sqrt(20));
+  for(const tree of trees){
+    near(r.get(`${tree.id}-boundary`).value,closestBoundary([[tree.x,tree.y]],data).distance);
+    near(r.get(`${tree.id}-pool`).value,closestFootprints([[tree.x,tree.y]],coping).distance);
+    assert.match(r.get(`${tree.id}-boundary`).datum,/trunk-centre/);
+    assert.match(r.get(`${tree.id}-pool`).datum,/not a root clearance/);
+  }
+});
+
+test('neighbourhood maps retain dimension schedules and 3D context text uses actual target dimensions',()=>{
+  const all=gardenDimensions(settings,data),context=dimensionsForScope(all,'context');
+  assert.ok(context.some(r=>r.id==='building-9-width'&&r.sceneText.includes('PCK 3')));
+  assert.ok(context.some(r=>r.id==='building-9-roof-height'&&r.sceneText.includes('PCK 3')));
+  assert.ok(context.some(r=>r.id==='building-9-plot-gap'&&r.sceneText.includes('6.75')));
+  const container={dataset:{mapScope:'context'},clientWidth:1000,clientHeight:640,innerHTML:'',querySelectorAll(){return [];},querySelector(){return {addEventListener(){}};}};
+  renderPlan(container,data,settings,{x:10,y:21,z:5,label:'Terrace'},{rays:[]});
+  assert.match(container.innerHTML,/Nearby buildings · oriented envelopes/);
+  assert.match(container.innerHTML,/data-dimension-record="building-9-plot-gap"/);
+  assert.doesNotMatch(container.innerHTML,/data-dimension-record="pool-width"/,'Garden detail belongs in its own selected extent');
 });

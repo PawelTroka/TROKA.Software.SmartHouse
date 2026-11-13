@@ -20,13 +20,14 @@ const base={...recorded.settings,screeningTrees:[]};
 const visible=(observer,trees)=>analyzeVisibility(observer,{...base,screeningTrees:trees},data).byBlock.find(block=>block.id===recorded.target.id);
 const close=(actual,expected,label)=>assert.ok(Math.abs(actual-expected)<1e-8,`${label}: ${actual} versus ${expected}`);
 
-test('fresh Sternicza uses the measured rear-left grove and retains its catalog plant subtotal',()=>{
+test('published v11 Sternicza retains the measured rear-left grove and catalog plant subtotal',()=>{
   assert.equal(recorded.target.id,'building-9');
   assert.deepEqual(corner.trees,STERNICZA_CORNER_TREES);
   assert.deepEqual(corner.trees,selected.trees);
-  assert.equal(model.DEFAULTS.gardenProgram,'spa-edge');
-  assert.deepEqual(model.sanitizeState().screeningTrees,corner.trees);
-  for(const [key,value] of Object.entries(corner.settings))assert.equal(model.DEFAULTS[key],value,key);
+  const historical=model.decodeState('v=11&site=sternicza-11');
+  assert.equal(historical.gardenProgram,'spa-edge');
+  assert.deepEqual(historical.screeningTrees,corner.trees);
+  for(const [key,value] of Object.entries(corner.settings))assert.equal(historical[key],value,key);
 
   const costs=estimateScreeningTreeCosts({...base,screeningTrees:corner.trees});
   assert.equal(costs.count,3);

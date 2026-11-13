@@ -14,7 +14,7 @@ const sternicza=JSON.parse(readFileSync(new URL('../data/site-data.json',import.
 // importing dimensions, indices or a detached garage from the original property.
 function fixture(){
   const angle=28*Math.PI/180;
-  const house={id:'house-40',kind:'house',footprint:rect(2,4,10,8),baseZ:2,roofZ:12};
+  const house={id:'house-40',index:0,label:'Korzeniowskiego 40',kind:'house',footprint:rect(2,4,10,8),baseZ:2,roofZ:12};
   return {
     coordinates:{localOriginEN:[0,0],xUnitEN:[-Math.cos(angle),Math.sin(angle)],yUnitEN:[Math.sin(angle),Math.cos(angle)],
       yGridAzimuth:28,latitude:54.40753,longitude:18.63009,horizontalCRS:'EPSG:2180'},
@@ -35,6 +35,11 @@ function container(scope){
 }
 const settings={...DEFAULT_SETTINGS,terraceDepth:4,floorHeight:1.7,removeGarage:false};
 const observer={x:7,y:14,z:5.35,label:'Terrace',eyeHeight:1.65};
+const assertDimension=(html,id,value)=>{
+  const match=html.match(new RegExp(`data-dimension-record="${id}"[^>]*>([^<]+)</span>`));
+  assert.ok(match,`${id} appears in the selected extent's dimension schedule`);
+  assert.equal(Number.parseFloat(match[1].replace('≈ ','')),value,`${id} reports this property's geometry`);
+};
 
 test('plan and shade-map extents fit the selected plot and include streetward context',()=>{
   const data=fixture(),frame=container();
@@ -57,11 +62,10 @@ test('plan and shade-map extents fit the selected plot and include streetward co
 test('second-site plan reports actual dimensions, north-facing sides and no inherited garage',()=>{
   const data=fixture(),frame=container('garden');
   renderPlan(frame,data,settings,observer,{rays:[]});
-  for(const text of ['Korzeniowskiego 40','16.00 m mapped frontage','30.00 m mapped depth','4.0 metres from the street',
+  for(const text of ['Korzeniowskiego 40','4.0 metres from the street',
     'REAR GARDEN / NNE','RIGHT · EAST','LEFT · WEST'])assert.ok(frame.innerHTML.includes(text),text);
-  for(const [id,value] of [['terrace-width','8.00 m'],['terrace-length','4.00 m'],['pool-width','3.00 m'],['pool-length','7.00 m']]){
-    assert.match(frame.innerHTML,new RegExp(`data-dimension-record="${id}"[^>]*>${value.replace(' m','').replace('.','\\.')}</span>`),`${id} reports the second property's own size in the readable schedule`);
-  }
+  for(const [id,value] of [['plot-width',16],['plot-depth',30],['house-front-boundary',4],
+    ['terrace-width',8],['terrace-length',4],['pool-width',3],['pool-length',7]])assertDimension(frame.innerHTML,id,value);
   for(const text of ['STERNICZA','20.32','38.21','EXISTING GARAGE','NaN','undefined'])assert.ok(!frame.innerHTML.includes(text),text);
 });
 
@@ -77,13 +81,15 @@ test('second-site shade map accepts no detached garage and labels its real physi
   const data=fixture(),frame=container('garden'),sun=sunForSettings({sunDate:'2026-06-21',sunMinutes:720},data);
   renderSunMap(frame,data,settings,sun,{status:'daylight',cells:[]});
   for(const text of ['Korzeniowskiego 40','KORZENIOWSKIEGO','RIGHT · EAST','LEFT · WEST'])assert.ok(frame.innerHTML.includes(text),text);
+  for(const [id,value] of [['plot-width',16],['plot-depth',30],['house-front-boundary',4]])assertDimension(frame.innerHTML,id,value);
   for(const text of ['STERNICZA','NaN','undefined'])assert.ok(!frame.innerHTML.includes(text),text);
 });
 
 test('the original plan and budget preserve Sternicza labels while costs name the new site correctly',()=>{
   const frame=container('garden');
   renderPlan(frame,sternicza,{...settings,floorHeight:1.2},observer,{rays:[]});
-  for(const text of ['Sternicza 11','20.32 m mapped frontage','38.21 m mapped depth','REAR GARDEN / SSW','LEFT · EAST','RIGHT · WEST'])assert.ok(frame.innerHTML.includes(text),text);
+  for(const text of ['Sternicza 11','REAR GARDEN / SSW','LEFT · EAST','RIGHT · WEST'])assert.ok(frame.innerHTML.includes(text),text);
+  for(const [id,value] of [['plot-width',20.32],['plot-depth',38.21],['house-front-boundary',9.10]])assertDimension(frame.innerHTML,id,value);
   assert.deepEqual(budgetSideLabels(sternicza),{rear:'Rear',left:'Left / east',right:'Right / west'});
   assert.deepEqual(budgetSideLabels(fixture()),{rear:'Rear',left:'Left / west',right:'Right / east'});
   assert.deepEqual(budgetSideLabels(),budgetSideLabels(sternicza));

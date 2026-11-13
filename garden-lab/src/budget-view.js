@@ -1,5 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.9.0';
+import {getSiteProfile} from './sites.js?v=1.10.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.10.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -12,6 +13,15 @@ function amount(value,rounded=false){
 }
 const row=(label,quantity,total)=>`<tr><th scope="row">${label}</th><td>${quantity}</td><td>${total}</td></tr>`;
 const table=(heading,rows)=>`<div class="budget-table-wrap"><h4>${heading}</h4><table class="budget-table"><thead><tr><th scope="col">Item</th><th scope="col">Quantity / basis</th><th scope="col">PLN</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+const statusLabel=status=>({'planning-allowance':'Planning allowance · not a supplier quote','user-quote':'Your quote / allowance',
+  'quote-required':'Quote required','catalog-reference':'Catalog reference','included-or-not-required':'Included / not required'}[status]||status);
+function installedRows(items){
+  return items.map(item=>{
+    const references=(item.referenceIds||[]).map(id=>GARDEN_PRICE_REFERENCES.find(source=>source.id===id)).filter(Boolean);
+    const links=references.map(source=>`<a href="${escape(source.url)}" target="_blank" rel="noopener noreferrer">${escape(source.title)}</a>`).join(' · ');
+    return row(escape(item.label),`${escape(item.basis)}<small>${escape(statusLabel(item.priceStatus))}</small><small>${escape(item.scope)}</small>${links?`<small>Product benchmark: ${links}</small>`:''}`,amount(item.cost));
+  }).join('');
+}
 
 export function budgetSideLabels(data){
   const profile=getSiteProfile(data?.site?.id||'sternicza-11',data);
@@ -20,10 +30,18 @@ export function budgetSideLabels(data){
 
 export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks,t=cost.screeningTrees;
-  const spa=cost.spa;
+  const spa=cost.spa,garden=cost.garden;
   if($('spa-cost'))$('spa-cost').textContent=spa?.status==='quote-required'?(spa.knownBase.low>0?`${amount(spa.knownSubtotal,true)} + quotes`:'Quote needed'):amount(spa?.total);
-  if($('spa-quantity'))$('spa-quantity').textContent=spa?.enabled?`${spa.rows.filter(row=>row.quoted).length} of ${spa.rows.length} installed allowances entered`:'No spa programme selected';
-  if($('spa-cost-detail'))$('spa-cost-detail').innerHTML=spa?.enabled?table('Spa construction · your installed allowances',spa.rows.map(item=>row(escape(item.label),'Complete installed allowance',item.quoted?money(item.amount):'Quote needed')).join('')):'';
+  if($('spa-quantity'))$('spa-quantity').textContent=spa?.enabled?spa.planningEnabled
+    ?`${spa.rows.length} installed items · ${spa.rows.filter(row=>row.quoted).length} quote overrides`
+    :`${spa.rows.filter(row=>row.quoted).length} of ${spa.rows.length} installed allowances entered`:'No spa programme selected';
+  if($('spa-cost-detail'))$('spa-cost-detail').innerHTML=spa?.enabled?table('Spa construction · installed scope',installedRows(spa.rows))+
+    `<p class="field-note">Each full installation is counted once. Catalog product prices are separate benchmarks, not extra additions or received site quotations. ${spa.overflow?'Custom overflow is a complete bespoke allowance; the factory Vienna spa is not certified for this conversion.':'The seven-seat spa retains its factory shell; removable terrace hatches preserve technical access.'}</p>`:'';
+  if($('garden-cost-card'))$('garden-cost-card').hidden=!garden?.enabled;
+  if($('garden-cost'))$('garden-cost').textContent=garden?.enabled?`${amount(garden.total||garden.knownSubtotal,true)}${garden.status==='quote-required'?' + quotes':''}`:money(0);
+  if($('garden-quantity'))$('garden-quantity').textContent=garden?.enabled?`${garden.rows.length} garden-work lines · ${n(garden.quantities.terraceNet)} m² terrace finish`:'Additional garden scope not selected';
+  if($('garden-cost-detail'))$('garden-cost-detail').innerHTML=garden?.enabled?table('Garden finishes and enabling work',installedRows(garden.rows))+
+    '<p class="field-note">Mapped quantities and design assumptions are shown separately. The 20% ornamental-bed share, 12 lighting fittings and unit rates are provisional; replace their complete installed totals in Budget assumptions. These items exclude spa equipment, hedge / specimen supply and bulk garden fill.</p>':'';
   $('hedge-cost').textContent=amount(h.total,true);
   $('earthwork-cost').textContent=amount(e.total,true);
   $('combined-cost').textContent=amount(cost.total,true);
@@ -34,13 +52,14 @@ export function renderBudget(cost,settings,data){
     ?`${t.count} enabled ${t.count===1?'tree':'trees'} · ${amount(t.plantsKnown)} known plant supply${t.plantQuoteCount?` · ${t.plantQuoteCount} specimen ${t.plantQuoteCount===1?'quote':'quotes'} needed`:''}`
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
-    ?`Some plants, services or spa installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices in Screening trees and installed allowances in Budget assumptions.`
-    :`PLN planning budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance. Site allowances and rates are editable.`;
+    ?`Some plants, services or garden installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices and installed quotes, or enable planning allowances.`
+    :`PLN ${garden?.enabled?'rear-garden':'planning'} budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance once. ${cost.planningEnabled?'Installed ranges are planning assumptions, not received supplier quotes.':'Site allowances and rates are editable.'}`;
   $('cost-status').classList.toggle('needs-quote',cost.status==='quote-required');
   const panel=document.querySelector('.cost-panel');
   panel.dataset.status=cost.status;panel.dataset.totalLow=cost.total?.low??'';
   panel.dataset.earthworkLow=e.total.low;panel.dataset.compactedVolume=e.compactedVolume;
   panel.dataset.screeningTreeCount=t?.count||0;panel.dataset.screeningTreeKnownLow=t?.knownSubtotal.low||0;
+  panel.dataset.gardenKnownLow=garden?.knownBase.low||0;panel.dataset.planningEnabled=cost.planningEnabled?'true':'false';
   const sideLabel=budgetSideLabels(data);
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
@@ -66,12 +85,10 @@ export function renderBudget(cost,settings,data){
     let treeRows=t.rows.map((tree,index)=>row(`${index+1}. ${escape(tree.label)}`,
       `${n(tree.height,2)} m tall · ${n(tree.crownWidth,2)} × ${n(tree.crownDepth,2)} m crown<small>${escape(tree.unit.source==='custom'?'Your plant-only quote':tree.unit.source==='unquoted'?'Custom dimensions need a supplier quote':'Published purchased-stock reference')}</small>`,
       amount(tree.plants))).join('');
-    const serviceAmount=id=>t.lineStatuses[id]==='quote-required'?'Quote needed':money(t.lines[id]);
-    treeRows+=row('Planting',`${t.count} trees × ${money(settings.costScreeningPlanting||0)}`,serviceAmount('planting'));
-    treeRows+=row('Anchoring',`${t.count} trees × ${money(settings.costScreeningAnchoring||0)}`,serviceAmount('anchoring'));
-    treeRows+=row('Delivery',t.allDeliveryIncluded?'Included in these supplier prices':'One order allowance',serviceAmount('delivery'));
-    treeRows+=row('Crane / unloading',t.liftingRequired?'One order allowance':'Not automatically required for these panels',serviceAmount('equipment'));
-    treeRows+=row('Irrigation / establishment','One order allowance',serviceAmount('establishment'));
+    for(const service of t.serviceRows||[]){
+      const basis=service.id==='delivery'&&t.allDeliveryIncluded?'Included in these supplier prices':service.basis;
+      treeRows+=row(escape(service.label),`${escape(basis)}<small>${escape(statusLabel(service.priceStatus))}</small>`,amount(service.cost));
+    }
     const unknown=t.rows.filter(tree=>tree.unit.status==='quote-required').map(tree=>`${tree.label}: ${tree.unit.reason}`);
     $('screening-tree-detail').innerHTML=table('Screening trees · purchased plants and services',treeRows)+
       `<p class="field-note">${t.status==='quote-required'?'Known costs only':'Planning subtotal'}: ${amount(t.knownSubtotal,true)}. ${t.status==='quote-required'?'Unquoted plants or services are excluded; this is not a complete installed price. ':''}Disabled trees are excluded. Catalog Wyplatane panels include delivery; custom plant-only quotes and other suppliers use one separate delivery allowance.</p>`+
@@ -114,6 +131,20 @@ export function renderTreePriceSources(sources){
     const link=sourceLink(source);if(!link)continue;
     const li=document.createElement('li'),detail=document.createElement('small');
     detail.textContent=source.priceBasis||source.note||'';
+    li.append(link,detail);list.append(li);
+  }
+}
+
+export function renderGardenPriceSources(sources){
+  const date=$('garden-price-date'),list=$('garden-source-list');
+  if(date)date.textContent=`Reviewed ${sources.reviewedAt}. ${sources.summary}`;
+  if(!list)return;
+  list.replaceChildren();
+  for(const source of sources.sources||[]){
+    const link=sourceLink(source);if(!link)continue;
+    const li=document.createElement('li'),detail=document.createElement('small');
+    const price=source.from?`From ${money(source.low)}`:amount(source);
+    detail.textContent=`Catalog reference · ${price}. ${source.tax} ${source.scope}`;
     li.append(link,detail);list.append(li);
   }
 }

@@ -9,7 +9,7 @@ import {renderBudget} from '../src/budget-view.js';
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const korz=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json',import.meta.url)));
 const model=createStateModel(getSiteProfile('sternicza-11',data));
-const base={...model.DEFAULTS,gardenProgram:'spa',screeningTrees:[],costContingency:25};
+const base={...model.DEFAULTS,gardenProgram:'spa',screeningTrees:[],costContingency:25,costUsePlanningAllowances:false};
 // Arbitrary contractor quotes test accounting; these are not supplier estimates.
 const quotes={costSpaPool:243000,costSpaJacuzzi:71600,costSpaSauna:85400,costSpaColdPlunge:22300,costSpaFirepit:52000};
 const sumQuotes=Object.values(quotes).reduce((sum,value)=>sum+value,0);

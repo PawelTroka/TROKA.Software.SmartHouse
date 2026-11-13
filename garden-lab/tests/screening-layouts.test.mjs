@@ -14,7 +14,7 @@ const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
 test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
-  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-edge');
+  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-compact');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
@@ -22,7 +22,8 @@ test('fresh Sternicza starts with checked planting positions while Korzeniowskie
   assert.deepEqual(sternicza.sanitizeState({screeningTrees:[]}).screeningTrees,[]);
   const volumes=screeningTreeVolumes(sternicza.DEFAULTS,sterniczaData);
   assert.ok(volumes.every(volume=>volume.plantable),'Every default trunk must have a valid planting position');
-  assert.ok(volumes.every(volume=>volume.crownInside),'Default crowns stay inside the property');
+  assert.equal(volumes.filter(volume=>!volume.crownInside).length,1,'The farther-left comparison explicitly includes one overhanging crown');
+  assert.match(getScreeningLayouts('sternicza-11')[0].note,/overhang/i,'The default must disclose the boundary condition');
 });
 
 test('every pre-v8 omitted-tree link keeps its original tree-free meaning',()=>{
@@ -129,7 +130,7 @@ test('all spa planting presets leave tree trunks clear of the pool, spa rooms, d
 
 test('Korzeniowskiego ignores the Sternicza spa programme across fresh, historical and new shared designs',()=>{
   const pool=korzData.site.pool;
-  for(const version of [6,7,8,9,10,11]){
+  for(const version of [6,7,8,9,10,11,12]){
     const settings=korz.decodeState(`v=${version}&site=korzeniowskiego-40&gardenProgram=spa&preset=sauna`);
     assert.equal(settings.gardenProgram,'classic');assert.equal(settings.preset,'garden');
     assert.deepEqual(settings.screeningTrees,[]);

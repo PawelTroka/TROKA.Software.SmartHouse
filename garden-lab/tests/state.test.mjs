@@ -120,7 +120,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,11);
+ assert.equal(STATE_VERSION,12);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -228,18 +228,18 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v11 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
- assert.equal(DEFAULTS.gardenProgram,'spa-edge');
- for(const gardenProgram of ['spa-edge','spa','classic']){
+test('v12 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+ assert.equal(DEFAULTS.gardenProgram,'spa-compact');
+ for(const gardenProgram of ['spa-compact','spa-edge','spa','classic']){
   const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
   const params=new URLSearchParams(encodeState(input));
   assert.equal(params.get('v'),String(STATE_VERSION));
   assert.equal(params.get('gardenProgram'),gardenProgram,'The programme must remain explicit even when it matches fresh defaults');
   assert.equal(params.get('screeningTrees'),'[]');
   assert.deepEqual(decodeState(params.toString()),input);
-  assert.deepEqual(migrateSavedState(input,11),input);
+  assert.deepEqual(migrateSavedState(input,STATE_VERSION),input);
  }
- assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-edge');
+ assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-compact');
 });
 
 test('spa viewpoint and garage invariants survive URL and saved-state sanitization',()=>{
@@ -301,8 +301,8 @@ test('sparse v10 links and saves retain the published balanced pines when fresh 
   old.screeningTrees[0].x=0;
   assert.deepEqual(future.decodeState('v=10&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),expected,'Restored objects do not mutate the frozen v10 baseline');
  }
- assert.deepEqual(future.decodeState('v=11&site=sternicza-11').screeningTrees,futureTrees);
- assert.equal(future.decodeState('v=11&site=sternicza-11').showDimensions,false);
+ assert.deepEqual(future.decodeState('v=12&site=sternicza-11').screeningTrees,futureTrees);
+ assert.equal(future.decodeState('v=12&site=sternicza-11').showDimensions,false);
 });
 
 test('explicit v10 empty or custom trees, geometry and quotes migrate without moving the design',()=>{
@@ -339,4 +339,38 @@ test('dimension visibility is independent, shared and absent from historical def
   assert.equal(changeHedgeHeight(original,'hedgeLeft',2.8).showDimensions,showDimensions);
  }
  assert.equal(sanitizeState({showDimensions:'false'}).showDimensions,true);
+});
+
+test('sparse v11 designs keep the previous corner trees, large spa and quote-only budget',()=>{
+ const expected=[[13.1,34.45],[14.35,31],[17.6,34.5]];
+ const futureTrees=DEFAULTS.screeningTrees.map((tree,index)=>({...tree,x:16+index,y:34}));
+ const profile=getSiteProfile('sternicza-11');
+ const future=createStateModel({...profile,defaults:{...profile.defaults,screeningTrees:futureTrees,showDimensions:false}});
+ for(const old of [future.decodeState('v=11&site=sternicza-11'),future.migrateSavedState({siteId:'sternicza-11'},11)]){
+  assert.equal(old.gardenProgram,'spa-edge');assert.equal(old.showDimensions,true);
+  assert.equal(old.costUsePlanningAllowances,false);assert.equal(old.jacuzziOverflow,false);
+  assert.deepEqual(old.screeningTrees.map(t=>[t.x,t.y]),expected);
+  assert.ok(old.screeningTrees.every(t=>t.height===9.5&&t.crownWidth===5));
+  assert.deepEqual(future.decodeState(future.encodeState(old)),old,'Sharing a historical design explicitly retains its scope');
+ }
+ assert.equal(decodeState('v=11&site=sternicza-11&gardenProgram=spa-compact').gardenProgram,'spa-edge');
+ const custom={siteId:'sternicza-11',gardenProgram:'spa-edge',screeningTrees:[],costSpaSauna:75400,hedgeLeft:3.2};
+ const restored=migrateSavedState(custom,11);
+ for(const [key,value] of Object.entries(custom))assert.deepEqual(restored[key],value,key);
+ assert.equal(restored.costUsePlanningAllowances,false);
+});
+
+test('v12 shares whole-garden quotes and optional overflow independently without changing old baselines',()=>{
+ assert.equal(DEFAULTS.costUsePlanningAllowances,true);assert.equal(DEFAULTS.jacuzziOverflow,false);
+ for(const costUsePlanningAllowances of [false,true])for(const jacuzziOverflow of [false,true]){
+  const custom={...DEFAULTS,costUsePlanningAllowances,jacuzziOverflow,costGardenLighting:21700,costGardenTerrace:73800};
+  assert.deepEqual(decodeState(encodeState(custom)),custom);
+  assert.deepEqual(migrateSavedState(custom,12),custom);
+  const compared=scenarioState('contained-corner',custom);
+  for(const key of ['costUsePlanningAllowances','jacuzziOverflow','costGardenLighting','costGardenTerrace'])assert.equal(compared[key],custom[key],key);
+ }
+ const korz=createStateModel(getSiteProfile('korzeniowskiego-40'));
+ assert.equal(korz.DEFAULTS.costUsePlanningAllowances,false);
+ assert.equal(korz.decodeState('v=12&site=korzeniowskiego-40&gardenProgram=spa-compact').gardenProgram,'classic');
+ assert.equal(sanitizeState({jacuzziOverflow:'true'}).jacuzziOverflow,false);
 });
