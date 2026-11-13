@@ -1,5 +1,33 @@
 # Garden pricing and sizing references
 
+## v1.13 current default — full perimeter and 6 m pool
+
+The current `spa-aligned` default includes 4 m thujas around the complete plot, with the proposed front access openings retained. The main garden and all prices remain calculated by `estimateCosts`; moving the crowns does not add another tree order.
+
+| Hedge side | Planted length | Trees at 0.8 m spacing |
+|---|---:|---:|
+| Front, excluding openings | 14.115847 m | 19 |
+| Left | 36.890267 m | 47 |
+| Right | 37.207342 m | 47 |
+| Rear | 19.057872 m | 24 |
+| **Total** | **107.271328 m** | **137** |
+
+The hedge subtotal is **52,375 PLN** before contingency: 41,100 plant supply, 10,275 planting and 1,000 shared delivery. Extending the sides adds 44 thujas and 16,500 PLN versus v1.12. The additional 35.030950 m of front-side planting adds **1,226.08–2,277.01 PLN** of provisional drip distribution, using the existing 1 m strip method. Those sections create no front fill or raised-bed quantity.
+
+The **6 × 3.5 m pool** retains its 150,000–230,000 PLN complete installed planning allowance pending a project quotation. Its smaller footprint adds 3.5 m² to landscape/fill quantities relative to the 7 m pool, including 1.75 m³ of finished rear fill at the default raise. Total finished fill is **158.339646 m³**.
+
+| Category | Before contingency, PLN |
+|---|---:|
+| Thujas, planting and shared delivery | 52,375.00 |
+| Rear earthworks | 46,662.63 |
+| Three 9.5 m pines and services | 195,750.00–221,100.00 |
+| Five spa installations | 355,000.00–550,000.00 |
+| Garden finishes and enabling work | 154,508.83–283,755.91 |
+| **Total before contingency** | **804,296.46–1,153,893.54** |
+| **Displayed total, 20% on upper once** | **804,296.46–1,384,672.24** |
+
+The displayed total is 18,411.31–23,802.91 PLN above v1.12. Published plant references and planning rates below are unchanged; these amounts are not received site-specific contractor quotations. New driveway, gates and boundary fencing remain outside this garden scope. Historical snapshots below retain their original quantities.
+
 Reviewed **13 November 2026**. No site-specific quotations have been entered in this simulator. The simulator separates public product references, preliminary installed-work allowances and amounts entered by the user. It does not describe a manufacturer catalog price as the price of the complete construction shown in the model.
 
 ## Public product references
@@ -28,7 +56,7 @@ These ranges are **design assumptions**, not researched local labour tariffs, co
 
 | Installed item | Planning range, before contingency | Included scope |
 | --- | ---: | --- |
-| Pool 7 × 3.5 m; historic 8 × 3.5 m option retains this range | **150,000–230,000 PLN** | Pool / filtration / heating / cover, excavation and disposal, support, coping, delivery, object connections and commissioning |
+| Pool 6 × 3.5 m; historic 7 m and 8 m options retain this range pending quotations | **150,000–230,000 PLN** | Pool / filtration / heating / cover, excavation and disposal, support, coping, delivery, object connections and commissioning |
 | Sealed seven-seat recessed spa | **75,000–105,000 PLN** | Factory-style spa, support and service chamber, local connections, delivery and commissioning |
 | Optional custom overflow spa | **105,000–165,000 PLN** | Complete alternative bespoke system, structure, balance tank and hydraulics; replaces the sealed-spa allowance |
 | Compact six-seat sauna | **65,000–95,000 PLN** | Cabin / heater / glazing, base, access steps, delivery, local connection and installation |
@@ -36,7 +64,7 @@ These ranges are **design assumptions**, not researched local labour tariffs, co
 | Custom cold-plunge feature | **25,000–45,000 PLN** | Shell / chiller, pad, steps and local installation |
 | Sunken fire lounge | **40,000–75,000 PLN** | Excavation / disposal, structure, waterproofing, drainage, seats / cushions, burner and fuel installation |
 
-The latest pool moves 5 m toward the house and shortens by 1 m to free the planting corridor. Its turnkey allowance remains **150,000–230,000 PLN** until a supplier prices the revised design; reducing water area does not establish proportional savings in excavation, equipment or installation. The geometry does update rear fill and finishes: the 3.5 m² reduction in water footprint leaves another 1.75 m³ to raise at the default 0.5 m garden level. Coping and access surfaces remain excluded from lawn and ornamental finishes.
+Compared with v1.12, the latest pool moves 5 m toward the house and shortens from 7 m to 6 m to free the planting corridor. Its turnkey allowance remains **150,000–230,000 PLN** until a supplier prices the revised design; reducing water area does not establish proportional savings in excavation, equipment or installation. The geometry does update rear fill and finishes: the 3.5 m² reduction in water footprint leaves another 1.75 m³ to raise at the default 0.5 m garden level. Coping and access surfaces remain excluded from lawn and ornamental finishes.
 
 ### Garden finishes and enabling work
 
@@ -109,7 +137,7 @@ For the previous compact program, three catalog-size pines, 4 m hedges on the th
 | **Total before contingency** | **777,581–1,124,956** |
 | **Displayed total with 20% on upper bound** | **777,581–1,349,948** |
 
-### Current v1.11 default snapshot
+### Previous v1.11 default snapshot
 
 For `spa-screened`, the 7.0 × 3.5 m pool, the same three catalog-size pines, the front hedge in addition to the rear-garden hedges, a 0.5 m garden raise, the garage removed and no canopy:
 

@@ -197,7 +197,7 @@ function syncControls(){
   $('garden-program-wrap').hidden=profile.id!=='sternicza-11';
   $('garden-program').value=settings.gardenProgram;
   $('garden-program-note').textContent=aligned
-    ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool toward the house; three overlapping 9.5 m pine crowns spread across PCK3. The nearest and centre trunks are about 3.10 m apart. At the default assumptions the living-room façade samples are covered, with a small roof strip remaining. The lower sunken lounge is more exposed. Full-perimeter thujas cover front, left, right and rear, apart from the access openings.`
+    ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool toward the house; three overlapping 9.5 m pine crowns spread across PCK3. The nearest and centre trunks are about 3.05 m apart. The living-room and jacuzzi views improve substantially, with small gaps and roof-edge slivers remaining. The rear garden viewpoint and sunken lounge remain exposed. Full-perimeter thujas cover front, left, right and rear, apart from the access openings.`
     :grove
     ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool beside the close rear-left/east grove. The default nearest pine is just 2.00 m from the centre pine, 1.00 m beyond the far water edge. All three crowns overlap. Front thujas screen the street with access openings. Compare PCK3 from each viewpoint; the compact group leaves more of the building visible from the living room.`
     :screened

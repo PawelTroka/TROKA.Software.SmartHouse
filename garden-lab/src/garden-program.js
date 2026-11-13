@@ -8,7 +8,8 @@ export function spaEnabled(settings={},data){
 export function poolBounds(settings={},data){
   const aligned=settings.gardenProgram==='spa-aligned',screened=settings.gardenProgram==='spa-screened',grove=settings.gardenProgram==='spa-grove';
   // The aligned grove needs soil beyond the shorter 6 m pool for the forward
-  // crown. Older programmes retain their exact published pool geometry.
+  // trunk and its close centre companion. Older programmes retain their exact
+  // published pool geometry; neither observers nor mapped buildings move.
   const pool=spaEnabled(settings,data)?{x:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(settings.gardenProgram)?15.7:14.7,
     y:aligned||screened?19.5:24.5,width:3.5,length:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;

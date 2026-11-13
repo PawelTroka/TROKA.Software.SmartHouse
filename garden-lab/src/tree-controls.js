@@ -1,6 +1,7 @@
 import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.13.0';
 import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.13.0';
 import {screeningTreeUnitPrice} from './costs.js?v=1.13.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.13.0';
 
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -9,6 +10,8 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 export function createTreeControls({getSettings, getData, getObserver, getAnalysis, bounds, onChange, onViewChange, notify}) {
   const $ = id => document.getElementById(id);
   let selectedId = null, placing = false, suggestion = '', suggestionSignature = '', inventorySignature = '', targetSignature = '';
+  let facadeAnalysis = null;
+  const facadeResults = new Map();
   // Placement scores belong to one observer, date and geometry. Keep camera and
   // price edits out, but invalidate the result when its screening context changes.
   function screeningSignature(state) {
@@ -196,8 +199,15 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     $('tree-find-position').disabled=!targets.length||state.preset==='front';
     const analysis=getAnalysis(),target=(analysis?.byBlock || []).find(block=>block.id===$('tree-target').value);
     const targetRays=(analysis?.rays||[]).filter(ray=>ray.blockId===target?.id);
-    const visibleSurface=kind=>{const rays=targetRays.filter(ray=>ray.kind===kind);return `${rays.filter(ray=>ray.visible).length} / ${rays.length}`;};
-    $('tree-target-current').textContent=state.preset==='front'?'Choose a rear-garden or living-room viewpoint to compare the pine screen against nearby buildings.':target?`${target.label} · visible samples: façade ${visibleSurface('facade')}; roof ${visibleSurface('roof')}. Total ${target.visible} / ${target.total}. These counts describe sampled points, not visible building area.`:'';
+    const roofRays=targetRays.filter(ray=>ray.kind==='roof');
+    if(facadeAnalysis!==analysis){facadeAnalysis=analysis;facadeResults.clear();}
+    let facade;
+    if(target&&state.preset!=='front'&&data&&analysis?.observer){
+      if(!facadeResults.has(target.id))facadeResults.set(target.id,analyzeFacadeVisibility(analysis.observer,target.id,state,data));
+      facade=facadeResults.get(target.id);
+    }
+    const facadeText=facade?.status==='ok'?`${facade.visible} / ${facade.total} (${facade.spacing.toFixed(2)} m grid)`:`unavailable — ${facade?.reason||'Choose a valid viewpoint.'}`;
+    $('tree-target-current').textContent=state.preset==='front'?'Choose a rear-garden or living-room viewpoint to compare the pine screen against nearby buildings.':target&&facade?`${target.label} · visible façade points: ${facadeText}; roof points: ${roofRays.filter(ray=>ray.visible).length} / ${roofRays.length}. These are finite samples, not visible area. Check Eye level for gaps between crowns.`:'';
   }
 
   return {

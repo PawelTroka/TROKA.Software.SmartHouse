@@ -210,14 +210,14 @@ const groveLayouts=Object.freeze([
 // occupied views. The forward crown needs the 6 m pool's released soil strip.
 // Preserve every older array so saved designs retain their published meaning.
 export const STERNICZA_ALIGNED_TREES=treesFrom([
-  {typeId:'austrian-pine-tall',x:17.5,y:26.8},
-  {typeId:'austrian-pine-tall',x:14.85,y:28.4},
-  {typeId:'austrian-pine-tall',x:12.05,y:32.35},
+  {typeId:'austrian-pine-tall',x:17,y:26.8},
+  {typeId:'austrian-pine-tall',x:14.4,y:28.4},
+  {typeId:'austrian-pine-tall',x:12.6,y:32.7},
 ]);
 const alignedSettings=Object.freeze({...screenedSettings,gardenProgram:'spa-aligned',hedgeFullPerimeter:true});
 const alignedLayouts=Object.freeze([
   Object.freeze({id:'default',label:'PCK3-aligned grove · default',
-    note:'Three 9.5 m pines fan across PCK3, with the forward and centre trunks 3.10 m apart and overlapping crowns joining the rear tree. All three modeled crowns fit inside the parcel. The pool is 6 × 3.5 m, with 1.02 m from its far coping to the forward trunk. At the starting assumptions, no PCK3 facade samples are visible from either living-room preset, the terrace, jacuzzi or named garden viewpoint; 7 seated and 12 standing living-room roof samples remain. The sunken lounge remains exposed. Four-metre thujas follow the full front, left, right and rear edges, with access openings. Actual foliage has gaps.',
+    note:'Three 9.5 m pines fan across PCK3, with the forward and centre trunks 3.05 m apart and overlapping crowns joining the rear tree. All three modeled crowns fit inside the parcel. The pool is 6 × 3.5 m, with 1.02 m from its far coping to the forward trunk. At the starting assumptions, the dense facade check finds about 99% of living-room, 94% of jacuzzi and 91% of named garden wall samples hidden. Some facade and roof areas remain visible, especially from the garden and sunken lounge. The rear trunk is 1.00 m from the fixed garden viewpoint. Four-metre thujas follow the full front, left, right and rear edges, with access openings. Actual foliage has gaps.',
     settings:alignedSettings,trees:STERNICZA_ALIGNED_TREES}),
   Object.freeze({id:'previous-close-grove',label:'Previous close rear grove · same 6 m pool',
     note:'The previous 2 m close-pair tree positions on the current pool and perimeter-hedge plan, for a direct planting comparison. Choose the previous close-grove garden layout to restore its 7 m pool as well.',
