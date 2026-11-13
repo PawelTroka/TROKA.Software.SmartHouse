@@ -534,14 +534,21 @@ export function createScene(container, data, callbacks = {}) {
   // Both terrain meshes use the same real openings: no grass or context slab
   // may cross the swimming water, recessed plunge or the sunken firepit floor.
   const waterCutouts=settings=>designTerrainCutouts(settings,data);
-  let contextTerrain=null,contextTerrainCutouts='';
+  let contextTerrains=[],contextTerrainCutouts='';
   function syncContextTerrain(settings){
     const cutouts=waterCutouts(settings),signature=JSON.stringify(cutouts);
     if(signature===contextTerrainCutouts)return;
     contextTerrainCutouts=signature;
-    if(contextTerrain){contextTerrain.geometry.dispose();staticGroup.remove(contextTerrain);}
+    for(const mesh of contextTerrains){mesh.geometry.dispose();staticGroup.remove(mesh);}
     const extent=[surroundings.minX,surroundings.minY,surroundings.maxX,surroundings.maxY];
-    contextTerrain=makeTerrain(staticGroup,extent,svgMode?12:4,(x,y)=>contextGrade(x,y)-.015,mat.walkway,null,false,cutouts);
+    // A coarse context triangle can bridge above the native front lawn even
+    // when its vertices sit below it. Match the lawn's vertices and cutouts
+    // inside its frame, then use the coarser grid only outside that frame.
+    const localFrame={x0:plot.minX-.1,y0:plot.minY-.1,x1:plot.maxX+.1,y1:plot.maxY+.1};
+    contextTerrains=[
+      makeTerrain(staticGroup,extent,svgMode?12:4,(x,y)=>contextGrade(x,y)-.015,mat.walkway,null,false,[...cutouts,localFrame]),
+      makeTerrain(staticGroup,[localFrame.x0,localFrame.y0,localFrame.x1,localFrame.y1],svgMode?2:.65,(x,y)=>terrainAt(x,y,data)-.015,mat.walkway,null,false,cutouts),
+    ];
   }
   syncContextTerrain({terraceDepth:data.site.terrace.depth});
   const road=makeTerrain(staticGroup,[-65,-7.8,115,-2],4,(x,y)=>contextGrade(x,y)+.025,mat.road);
