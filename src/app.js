@@ -1,17 +1,17 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.11.0';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.11.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.11.0';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.11.0';
-import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.11.0';
-import {createTreeControls} from './tree-controls.js?v=1.11.0';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout} from './geometry.js?v=1.11.0';
-import {renderPlan,renderSection} from './diagrams.js?v=1.11.0';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.11.0';
-import {analyzeSunlight} from './shade.js?v=1.11.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.11.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.11.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.11.0';
-import {gardenDimensions} from './dimensions.js?v=1.11.0';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.12.0';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.12.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.12.0';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.12.0';
+import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.12.0';
+import {createTreeControls} from './tree-controls.js?v=1.12.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout} from './geometry.js?v=1.12.0';
+import {renderPlan,renderSection} from './diagrams.js?v=1.12.0';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.12.0';
+import {analyzeSunlight} from './shade.js?v=1.12.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.12.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.12.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.12.0';
+import {gardenDimensions} from './dimensions.js?v=1.12.0';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -55,7 +55,7 @@ function readSaved(suffix=''){
   const current=safeRead(`${storageKey}${suffix}`,null);
   if(current&&typeof current==='object'&&!Array.isArray(current)&&current.siteId===profile.id)return migrateSavedState(current,STATE_VERSION);
   if(previewScope)return suffix?null:sanitizeState(DEFAULTS);
-  for(const version of [12,11,10,9,8,7,6]){
+  for(const version of [13,12,11,10,9,8,7,6]){
     const previousSite=safeRead(`garden-lab-${profile.id}-v${version}${suffix}`,null);
     if(previousSite&&typeof previousSite==='object'&&!Array.isArray(previousSite)&&previousSite.siteId===profile.id)return migrateSavedState(previousSite,version);
   }
@@ -65,7 +65,7 @@ function readSaved(suffix=''){
   }
   return suffix?null:sanitizeState(DEFAULTS);
 }
-let settings=/^#v=(?:[1-9]|1[0-3])(?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
+let settings=/^#v=(?:[1-9]|1[0-4])(?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
 if(!profile.hasGarage)settings.removeGarage=true;
 let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
@@ -191,12 +191,14 @@ function syncBuildingControls(){
 
 function syncControls(){
   const program=gardenProgram(settings,baseData),spa=program.active;
-  const screened=settings.gardenProgram==='spa-screened';
-  const compact=screened||settings.gardenProgram==='spa-compact',tub=jacuzziBounds(settings,baseData),pool=poolBounds(settings,baseData);
+  const grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened';
+  const compact=grove||screened||settings.gardenProgram==='spa-compact',tub=jacuzziBounds(settings,baseData),pool=poolBounds(settings,baseData);
   const edge=settings.gardenProgram==='spa-edge';
   $('garden-program-wrap').hidden=profile.id!=='sternicza-11';
   $('garden-program').value=settings.gardenProgram;
-  $('garden-program-note').textContent=screened
+  $('garden-program-note').textContent=grove
+    ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool beside the close rear-left/east grove. The default nearest pine is just 2.00 m from the centre pine, 1.00 m beyond the far water edge. All three crowns overlap. Front thujas screen the street with access openings. Compare PCK3 from each viewpoint; the compact group leaves more of the building visible from the living room.`
+    :screened
     ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool moved toward the house, with the nearest tall pine at its far end. The other two pines complete the left/east screening group. Front thujas add a street screen with access openings. Compare the living-room, jacuzzi and garden views.`
     :compact
     ?'Pool along the left/east boundary; compact six-person sauna tucked into the far right/west corner; cold plunge beside the rear boundary. The outer pine moves farther left toward PCK3. Compare all viewpoints and the crown overhang shown in the dimensions.'
@@ -204,7 +206,7 @@ function syncControls(){
     ?'Pool near the left/east edge; sauna in the far right/west rear corner; cold plunge by the rear boundary. The narrow pool-to-boundary strip is planting space; pool access is from the inner garden. The default groups three tall pines at the far-left end of the pool. This favors the jacuzzi and garden views; use Balanced views or Living-room priority to compare the more exposed house sightlines.'
     :spa
     ?'East-side pool; rear-right sauna facing the garden; edge jacuzzi, sunken lounge and cold plunge. New planting presets fit this layout. The previous screening figures apply only to the previous layout.'
-    :'Original west-pool layout. Choose Pool-end pines + front hedge for the latest arrangement. Custom tree positions are retained and checked for conflicts.';
+    :'Original west-pool layout. Choose Close pine grove + front hedge for the latest arrangement. Custom tree positions are retained and checked for conflicts.';
   const hasFront=profile.id==='sternicza-11',front=frontHedgeLayout(settings,baseData);
   document.querySelector('[data-field="hedgeFront"]').hidden=!hasFront;
   document.querySelector('[data-field="costTreePriceFront"]').hidden=!hasFront;
@@ -417,7 +419,7 @@ $('garden-program').addEventListener('change',e=>{
     settings=scenarioState(layouts.some(item=>item.id===planting.id)?planting.id:'default',settings);
   }
   showingA=false;comparisonB=null;treeControls?.cancelPlacement();syncControls();update();
-  toast(settings.gardenProgram==='spa-screened'?'Pool-end pines and front street hedge selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
+  toast(settings.gardenProgram==='spa-grove'?'Close pine grove and front street hedge selected.':settings.gardenProgram==='spa-screened'?'Previous spaced pine screen selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
 });
 $('reset').addEventListener('click',()=>{stopSunPlayback();settings=sanitizeState(DEFAULTS);showingA=false;comparisonB=null;treeControls?.cancelPlacement();$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
 $('reset-camera').addEventListener('click',()=>{const initial=observerForPreset(settings.preset,settings,data);settings.lookYaw=initial.defaultLookYaw??0;settings.lookPitch=initial.defaultLookPitch??0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);toast('View reset');});
@@ -441,7 +443,7 @@ $('about-open').addEventListener('click',()=>$('about').showModal());
 $('about-close').addEventListener('click',()=>$('about').close());
 $('about').addEventListener('click',e=>{if(e.target===$('about')){const r=$('about').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('about').close();}});
 window.addEventListener('hashchange',()=>{
-  if(!/^#v=(?:[1-9]|1[0-3])(?:&|$)/.test(location.hash))return;
+  if(!/^#v=(?:[1-9]|1[0-4])(?:&|$)/.test(location.hash))return;
   const destination=resolveSiteId(location.search,location.hash);
   if(destination!==profile.id){const url=new URL(location.href);url.searchParams.set('site',destination);location.assign(url.href);return;}
   stopSunPlayback();settings=decodeState(location.hash);if(!profile.hasGarage)settings.removeGarage=true;showingA=false;syncControls();update();
@@ -454,7 +456,7 @@ try{
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   fetch(new URL('../data/garden-budget-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Garden price sources unavailable');return r.json();}).then(renderGardenPriceSources).catch(()=>{$('garden-price-date').textContent='Garden supplier references and estimate assumptions are documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.11.0');
+    const {createScene}=await import('./scene.js?v=1.12.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

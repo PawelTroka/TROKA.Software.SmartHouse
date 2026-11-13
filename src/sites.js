@@ -1,5 +1,5 @@
-import {getBuildingTargets} from './buildings.js?v=1.11.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.11.0';
+import {getBuildingTargets} from './buildings.js?v=1.12.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.12.0';
 
 export const DEFAULT_SITE_ID = 'sternicza-11';
 export const SITE_OPTIONS = Object.freeze([
@@ -11,12 +11,12 @@ const finite = (value,fallback) => Number.isFinite(value)?value:fallback;
 const wrap = angle => ((angle%360)+360)%360;
 const cardinal = angle => ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(wrap(angle)/22.5)%16];
 
-/** Property-aware v6–v13 share links win; older links always refer to Sternicza. */
+/** Property-aware v6–v14 share links win; older links always refer to Sternicza. */
 export function resolveSiteId(search='',hash='') {
   const params=new URLSearchParams(String(search).replace(/^\?/,''));
   const shared=new URLSearchParams(String(hash).replace(/^#/,''));
   const version=shared.get('v');
-  if(['6','7','8','9','10','11','12','13'].includes(version))return known(shared.get('site'))?shared.get('site'):DEFAULT_SITE_ID;
+  if(['6','7','8','9','10','11','12','13','14'].includes(version))return known(shared.get('site'))?shared.get('site'):DEFAULT_SITE_ID;
   if(['1','2','3','4','5'].includes(version))return DEFAULT_SITE_ID;
   return known(params.get('site'))?params.get('site'):DEFAULT_SITE_ID;
 }
