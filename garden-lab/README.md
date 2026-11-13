@@ -8,6 +8,8 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 The new **Pool-end pines + front hedge · latest** layout adds the street screen and brings the nearest pine forward beside the far end of the pool. The pool moves **5.0 m toward the house**, from local y24.5 to y19.5, and shortens from **8.0 to 7.0 m** while retaining its **3.5 m width**. The compact six-person sauna and seven-seat spa remain the same sizes.
 
+![Verified whole-plot plan showing the front hedge, access openings and pool-end pines](front-hedge-pool-plan-1.11.0.jpg)
+
 ### Front street privacy
 
 The fresh Sternicza default includes **4 m thujas across 14.12 m of planted frontage**, at the existing front-ground elevation. The proposed **1.20 m pedestrian opening** aligns with the illustrated west-side approach; the **4.00 m vehicle opening** sits at the east-side passage. These are explicit design positions, not surveyed gates. Openings and oblique side-passage views remain clear. The two hedge spans require **19 thujas at 0.8 m spacing**.
@@ -39,6 +41,8 @@ On June 21, the moved pool has **16/24 sunlit samples at noon** and **8/24 at 15
 Front thujas add **5,700 PLN in referenced plant supply**, **1,425 PLN in planting allowance**, and **494–918 PLN in drip-irrigation allowance**. The existing hedge-delivery allowance is counted once. Proposed new gate and driveway construction are not priced as part of this hedge addition.
 
 The complete updated garden planning range is **785,885–1,360,869 PLN**; the upper bound includes a **20% uncertainty allowance once**. The shorter pool retains its **150,000–230,000 PLN installed planning range** until a project quote establishes a saving. Its smaller footprint adds 3.5 m² to landscape/fill quantities. See the [itemised budget and supplier references](docs/garden-budget-2026-11-13.md).
+
+**Validation:** all 271 automated checks pass and the static build succeeds. The hosted preview was checked for the whole-plot dimensions, street view, independent front-height control, hedge quantities and main PCK3 counts. See the [release check record](docs/release-1.11.0-validation.md).
 
 Schema **v13** explicitly preserves the new programme and independent front setting. Older shared links and saved designs keep their original pool, trees and front-off state; the new-default link above or Reset loads the revised design. Korzeniowskiego retains its existing front and garden proposal.
 
