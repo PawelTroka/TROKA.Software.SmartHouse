@@ -21,7 +21,7 @@ const ringDistance=(point,ring)=>Math.min(...ring.map((a,i)=>distance(point,a,ri
 const visible=(observer,trees)=>analyzeVisibility(observer,{...base,screeningTrees:trees},data).byBlock.find(b=>b.id==='building-9');
 
 test('edge design retains the previous balanced comparison and its full-height forward crown',()=>{
- assert.deepEqual(getScreeningLayouts('sternicza-11'),layouts);
+ assert.deepEqual(getScreeningLayouts('sternicza-11','spa-edge'),layouts);
  assert.deepEqual(layouts.map(l=>l.id),['default','balanced-views','living-priority','mixed-pines','budget-pines','hedges-only']);
  assert.deepEqual(balanced.trees,STERNICZA_EDGE_TREES);
  assert.equal(STERNICZA_EDGE_TREES.length,3);

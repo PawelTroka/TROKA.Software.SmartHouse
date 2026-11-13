@@ -3,11 +3,11 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.9.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.9.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.9.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.9.0';
-import { terraceStairs } from './layout.js?v=1.9.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.10.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.10.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.10.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.10.0';
+import { terraceStairs } from './layout.js?v=1.10.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -199,7 +199,7 @@ function spaOccluders(settings,data) {
     {x:c.x,y:c.y+r,width:r,length:c.length-2*r},
     {x:c.x+c.width-r,y:c.y+r,width:r,length:c.length-2*r},
   ])slab('cold-plunge-rim','Cold-plunge basin rim',wall,cz.bottomZ,cz.rimZ);
-  if(program.id==='spa-edge'){
+  if(['spa-edge','spa-compact'].includes(program.id)){
     const pad=c.pad??.18;
     for(const strip of [
       {x:c.x-pad,y:c.y-pad,width:c.width+2*pad,length:pad},
@@ -327,7 +327,7 @@ function makeReceivers(settings,data,size=1){
       let z=zone==='jacuzzi'?tub.waterZ:zone==='terrace'?floor:zone==='pool'?poolZ:zone==='coldPlunge'?levels.coldPlunge.waterZ:zone==='firepit'?(pitStep?.topZ??levels.firepit.floorZ):bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
       if(zone==='garden'&&program.active){
         if(rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
-        if(program.id==='spa-edge'&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
+        if(['spa-edge','spa-compact'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
         const step=levels.coldPlunge.steps.find(r=>rectContains(x,y,rectBounds(r)));
         if(step)z=step.topZ;
         const saunaStep=levels.sauna.entrySteps?.find(r=>pointInPolygon([x,y],r.footprint));
@@ -352,7 +352,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'];
+const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21']);

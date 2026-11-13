@@ -1,0 +1,3653 @@
+{
+  "observedAt": "2026-11-13",
+  "target": {
+    "id": "building-9",
+    "label": "PCK3"
+  },
+  "settings": {
+    "siteId": "sternicza-11",
+    "gardenProgram": "spa-compact",
+    "screeningTrees": [],
+    "hedgeRear": 4,
+    "hedgeLeft": 4,
+    "hedgeRight": 4,
+    "hedgeInset": 0.5,
+    "gardenRaise": 0.5,
+    "bedRaise": 0,
+    "raiseNewHedges": true,
+    "terraceDepth": 4.2,
+    "floorHeight": 1.2,
+    "removeGarage": true,
+    "canopyEnabled": false,
+    "includeHighFeatures": false,
+    "jacuzziOverflow": false,
+    "treeLeafMode": "auto",
+    "sunDate": "2026-06-21",
+    "sunMinutes": 720,
+    "sunEnabled": true
+  },
+  "geometry": {
+    "pool": {
+      "x": 15.7,
+      "y": 24.5,
+      "width": 3.5,
+      "length": 8,
+      "waterDepth": 1.4,
+      "waterOffset": 0.055,
+      "coping": 0.28
+    },
+    "jacuzzi": {
+      "x0": 5.509167656420745,
+      "x1": 7.809167656420745,
+      "y0": 19.915083036928557,
+      "y1": 22.215083036928558,
+      "width": 2.3,
+      "length": 2.3,
+      "z": 3.6375585030942297,
+      "infinity": false,
+      "overflow": false,
+      "waterOffset": -0.115,
+      "waterZ": 3.5225585030942295,
+      "bottomZ": 2.8575585030942294,
+      "externalHeight": 0.9,
+      "seats": 7,
+      "seatCentres": [
+        [
+          5.959167656420745,
+          20.365083036928556
+        ],
+        [
+          6.659167656420745,
+          20.235083036928557
+        ],
+        [
+          7.359167656420745,
+          20.365083036928556
+        ],
+        [
+          7.4891676564207454,
+          21.065083036928556
+        ],
+        [
+          7.359167656420745,
+          21.76508303692856
+        ],
+        [
+          5.959167656420745,
+          21.76508303692856
+        ],
+        [
+          5.829167656420745,
+          21.065083036928556
+        ]
+      ],
+      "serviceAccess": {
+        "clearance": 0.6,
+        "x0": 4.909167656420745,
+        "x1": 8.409167656420745,
+        "y0": 19.315083036928556,
+        "y1": 22.81508303692856,
+        "datum": "Required technical access; removable deck and garden-side service access, not extra water area."
+      },
+      "waterBounds": {
+        "x0": 5.669167656420745,
+        "x1": 7.649167656420745,
+        "y0": 20.075083036928557,
+        "y1": 22.055083036928558
+      }
+    },
+    "sauna": {
+      "x": 1.35,
+      "y": 34.65,
+      "width": 3,
+      "length": 2.4,
+      "height": 2.3
+    },
+    "poolEastCopingToBoundary": 0.8231032747990469
+  },
+  "observers": [
+    {
+      "id": "sofa",
+      "x": 9.609167656420745,
+      "y": 15.515083036928559,
+      "z": 4.83755850309423,
+      "eyeHeight": 1.2,
+      "surface": "floor",
+      "weight": 3
+    },
+    {
+      "id": "standing",
+      "x": 9.609167656420745,
+      "y": 15.515083036928559,
+      "z": 5.28755850309423,
+      "eyeHeight": 1.65,
+      "surface": "floor",
+      "weight": 3
+    },
+    {
+      "id": "terrace",
+      "x": 9.609167656420745,
+      "y": 21.215083036928558,
+      "z": 5.28755850309423,
+      "eyeHeight": 1.65,
+      "surface": "floor",
+      "weight": 3
+    },
+    {
+      "id": "jacuzzi",
+      "x": 6.659167656420745,
+      "y": 21.065083036928556,
+      "z": 4.33755850309423,
+      "eyeHeight": 0.7,
+      "surface": "floor",
+      "weight": 3
+    },
+    {
+      "id": "garden",
+      "x": 11.8,
+      "y": 32.1,
+      "z": 4.709118128937396,
+      "eyeHeight": 1.65,
+      "surface": "garden",
+      "weight": 2
+    },
+    {
+      "id": "sauna",
+      "x": 3.1,
+      "y": 36.6,
+      "z": 4.901809231063911,
+      "eyeHeight": 1.6,
+      "surface": "sauna",
+      "weight": 1
+    },
+    {
+      "id": "firepit",
+      "x": 10.600000000000001,
+      "y": 30.68,
+      "z": 3.5789492686619475,
+      "eyeHeight": 1.1,
+      "surface": "firepit",
+      "weight": 1
+    },
+    {
+      "id": "terrace-left-seated",
+      "x": 12.8,
+      "y": 20.4,
+      "z": 4.83755850309423,
+      "eyeHeight": 1.2,
+      "surface": "floor",
+      "weight": 1
+    },
+    {
+      "id": "terrace-left-standing",
+      "x": 12.8,
+      "y": 21.3,
+      "z": 5.28755850309423,
+      "eyeHeight": 1.65,
+      "surface": "floor",
+      "weight": 1
+    },
+    {
+      "id": "terrace-right-standing",
+      "x": 8,
+      "y": 21.3,
+      "z": 5.28755850309423,
+      "eyeHeight": 1.65,
+      "surface": "floor",
+      "weight": 1
+    },
+    {
+      "id": "loungers-seated",
+      "x": 12.7,
+      "y": 23.7,
+      "z": 4.012888907494769,
+      "eyeHeight": 1,
+      "surface": "garden",
+      "weight": 1
+    },
+    {
+      "id": "dining-seated",
+      "x": 5.4,
+      "y": 25.5,
+      "z": 4.099023010693668,
+      "eyeHeight": 1.2,
+      "surface": "garden",
+      "weight": 1
+    },
+    {
+      "id": "right-garden-path",
+      "x": 6.6,
+      "y": 30,
+      "z": 4.559490809838865,
+      "eyeHeight": 1.65,
+      "surface": "garden",
+      "weight": 1
+    },
+    {
+      "id": "pool-west-path",
+      "x": 14.1,
+      "y": 29,
+      "z": 4.714130978065954,
+      "eyeHeight": 1.65,
+      "surface": "garden",
+      "weight": 1
+    },
+    {
+      "id": "pool-rear-path",
+      "x": 17.8,
+      "y": 33.5,
+      "z": 5.09674101003682,
+      "eyeHeight": 1.65,
+      "surface": "garden",
+      "weight": 1
+    },
+    {
+      "id": "rear-centre-path",
+      "x": 10.6,
+      "y": 36,
+      "z": 5.030601075562982,
+      "eyeHeight": 1.65,
+      "surface": "garden",
+      "weight": 1
+    },
+    {
+      "id": "cold-plunge-seated",
+      "x": 7.7,
+      "y": 36.2,
+      "z": 4.442229248865042,
+      "eyeHeight": 1.1,
+      "surface": "garden",
+      "weight": 1
+    }
+  ],
+  "method": {
+    "region": {
+      "minX": 13.5,
+      "maxX": 19.3,
+      "minY": 29,
+      "maxY": 37.1
+    },
+    "grid": 0.25,
+    "refinement": 0.1,
+    "beamWidth": 64,
+    "coordinatePasses": 3,
+    "minimumTreeSpacing": 3,
+    "maxGroupDiameter": 7,
+    "candidateCount": 328,
+    "rootSpaceAllowance": "At least 1 m from trunk centre to parcel boundary and modeled ground obstacles, furniture and stepping stones; illustrative allowance, not an actual nursery root-ball measurement.",
+    "crownRule": "Full 5 m nominal crowns may cross the parcel edge. Their complete volumes receive screening/shade credit; the selected outer crown overhang is explicitly disclosed.",
+    "objective": "0.6 mean + 0.3 minimum among seated living room, standing living room, jacuzzi and garden, plus 0.1 weighted coverage of 17 views.",
+    "outsideCreditSensitivity": "Also count only intersections whose first tree entry lies inside the parcel. This diagnoses dependence on outside crown volume; it is not a pruning specification.",
+    "selectedRounding": "The compact default is an intentional mild adjustment of the published grove: outer pine +0.50 m east, rear inner pine +0.20 m east/+0.05 m rear, middle pine unchanged. Connected overlapping crowns and rear grouping take priority over the search visibility score. The wider search-derived arrangement remains a separately named comparison. Every reported ray is recomputed.",
+    "verification": "Every reported visibility count checked against the complete analyzeVisibility engine.",
+    "caveat": "Bounded comparison of dense ideal crown shapes. No claim of a global optimum or complete real-world screening."
+  },
+  "optimisticUnion": {
+    "candidateCount": 336,
+    "description": "Union of all accepted grid/refined crowns ignoring spacing and tree count. A sampled-region diagnostic, not a feasible design or continuous upper bound.",
+    "views": [
+      {
+        "id": "sofa",
+        "visible": 146,
+        "total": 420
+      },
+      {
+        "id": "standing",
+        "visible": 162,
+        "total": 420
+      },
+      {
+        "id": "terrace",
+        "visible": 31,
+        "total": 420
+      },
+      {
+        "id": "jacuzzi",
+        "visible": 25,
+        "total": 460
+      },
+      {
+        "id": "garden",
+        "visible": 0,
+        "total": 420
+      },
+      {
+        "id": "sauna",
+        "visible": 0,
+        "total": 460
+      },
+      {
+        "id": "firepit",
+        "visible": 0,
+        "total": 420
+      },
+      {
+        "id": "terrace-left-seated",
+        "visible": 91,
+        "total": 420
+      },
+      {
+        "id": "terrace-left-standing",
+        "visible": 82,
+        "total": 420
+      },
+      {
+        "id": "terrace-right-standing",
+        "visible": 21,
+        "total": 420
+      },
+      {
+        "id": "loungers-seated",
+        "visible": 21,
+        "total": 420
+      },
+      {
+        "id": "dining-seated",
+        "visible": 72,
+        "total": 460
+      },
+      {
+        "id": "right-garden-path",
+        "visible": 93,
+        "total": 460
+      },
+      {
+        "id": "pool-west-path",
+        "visible": 0,
+        "total": 420
+      },
+      {
+        "id": "pool-rear-path",
+        "visible": 0,
+        "total": 420
+      },
+      {
+        "id": "rear-centre-path",
+        "visible": 0,
+        "total": 460
+      },
+      {
+        "id": "cold-plunge-seated",
+        "visible": 0,
+        "total": 460
+      }
+    ]
+  },
+  "layouts": [
+    {
+      "name": "Hedges and compact spa only",
+      "plantPLN": 0,
+      "trees": [],
+      "trunkBounds": null,
+      "crownEnvelope": null,
+      "pairDistances": [],
+      "score": 0.0675740563784042,
+      "weightedCoverage": 0.18164118490205447,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 399,
+          "total": 420,
+          "blocked": 21,
+          "coverage": 0.05,
+          "visibleWithoutOutsideEntryCredit": 399
+        },
+        {
+          "id": "standing",
+          "visible": 403,
+          "total": 420,
+          "blocked": 17,
+          "coverage": 0.04047619047619048,
+          "visibleWithoutOutsideEntryCredit": 403
+        },
+        {
+          "id": "terrace",
+          "visible": 398,
+          "total": 420,
+          "blocked": 22,
+          "coverage": 0.05238095238095238,
+          "visibleWithoutOutsideEntryCredit": 398
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 418,
+          "total": 460,
+          "blocked": 42,
+          "coverage": 0.09130434782608696,
+          "visibleWithoutOutsideEntryCredit": 418
+        },
+        {
+          "id": "garden",
+          "visible": 392,
+          "total": 420,
+          "blocked": 28,
+          "coverage": 0.06666666666666667,
+          "visibleWithoutOutsideEntryCredit": 392
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 370,
+          "total": 420,
+          "blocked": 50,
+          "coverage": 0.11904761904761904,
+          "visibleWithoutOutsideEntryCredit": 370
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 396,
+          "total": 420,
+          "blocked": 24,
+          "coverage": 0.05714285714285714,
+          "visibleWithoutOutsideEntryCredit": 396
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 398,
+          "total": 420,
+          "blocked": 22,
+          "coverage": 0.05238095238095238,
+          "visibleWithoutOutsideEntryCredit": 398
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 398,
+          "total": 420,
+          "blocked": 22,
+          "coverage": 0.05238095238095238,
+          "visibleWithoutOutsideEntryCredit": 398
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 394,
+          "total": 420,
+          "blocked": 26,
+          "coverage": 0.06190476190476191,
+          "visibleWithoutOutsideEntryCredit": 394
+        },
+        {
+          "id": "dining-seated",
+          "visible": 413,
+          "total": 460,
+          "blocked": 47,
+          "coverage": 0.10217391304347827,
+          "visibleWithoutOutsideEntryCredit": 413
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 409,
+          "total": 460,
+          "blocked": 51,
+          "coverage": 0.1108695652173913,
+          "visibleWithoutOutsideEntryCredit": 409
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 394,
+          "total": 420,
+          "blocked": 26,
+          "coverage": 0.06190476190476191,
+          "visibleWithoutOutsideEntryCredit": 394
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 244,
+          "total": 420,
+          "blocked": 176,
+          "coverage": 0.41904761904761906,
+          "visibleWithoutOutsideEntryCredit": 244
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 56,
+          "total": 460,
+          "blocked": 404,
+          "coverage": 0.8782608695652174,
+          "visibleWithoutOutsideEntryCredit": 56
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 13,
+          "total": 460,
+          "blocked": 447,
+          "coverage": 0.9717391304347827,
+          "visibleWithoutOutsideEntryCredit": 13
+        }
+      ],
+      "placement": [],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": []
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": []
+        }
+      ],
+      "sunlight": [
+        {
+          "date": "2026-03-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 110,
+              "total": 309,
+              "percent": 35.6
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 120,
+              "total": 261,
+              "percent": 45.98
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 540,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 201,
+              "total": 309,
+              "percent": 65.05
+            },
+            "terrace": {
+              "sunlit": 23,
+              "total": 32,
+              "percent": 71.88
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 181,
+              "total": 261,
+              "percent": 69.35
+            },
+            "firepit": {
+              "sunlit": 6,
+              "total": 9,
+              "percent": 66.67
+            },
+            "coldPlunge": {
+              "sunlit": 2,
+              "total": 2,
+              "percent": 100
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 223,
+              "total": 309,
+              "percent": 72.17
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 18,
+              "total": 27,
+              "percent": 66.67
+            },
+            "front": {
+              "sunlit": 182,
+              "total": 261,
+              "percent": 69.73
+            },
+            "firepit": {
+              "sunlit": 8,
+              "total": 9,
+              "percent": 88.89
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 900,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 186,
+              "total": 309,
+              "percent": 60.19
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 27,
+              "total": 27,
+              "percent": 100
+            },
+            "front": {
+              "sunlit": 156,
+              "total": 261,
+              "percent": 59.77
+            },
+            "firepit": {
+              "sunlit": 9,
+              "total": 9,
+              "percent": 100
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-09-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 85,
+              "total": 309,
+              "percent": 27.51
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 100,
+              "total": 261,
+              "percent": 38.31
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contained corner comparison",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 13.1,
+          "y": 34.45,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 14.35,
+          "y": 31,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 17.6,
+          "y": 34.5,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 4.500000000000002,
+        "depth": 3.5
+      },
+      "crownEnvelope": {
+        "width": 9.500000000000002,
+        "depth": 8.5
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 3.669468626381757
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 4.50027776920492
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 4.7762432936357015
+        }
+      ],
+      "score": 0.6487645325688803,
+      "weightedCoverage": 0.7702540213409779,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 213,
+          "total": 420,
+          "blocked": 207,
+          "coverage": 0.4928571428571429,
+          "visibleWithoutOutsideEntryCredit": 213
+        },
+        {
+          "id": "standing",
+          "visible": 225,
+          "total": 420,
+          "blocked": 195,
+          "coverage": 0.4642857142857143,
+          "visibleWithoutOutsideEntryCredit": 225
+        },
+        {
+          "id": "terrace",
+          "visible": 83,
+          "total": 420,
+          "blocked": 337,
+          "coverage": 0.8023809523809524,
+          "visibleWithoutOutsideEntryCredit": 83
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 33,
+          "total": 460,
+          "blocked": 427,
+          "coverage": 0.9282608695652174,
+          "visibleWithoutOutsideEntryCredit": 33
+        },
+        {
+          "id": "garden",
+          "visible": 1,
+          "total": 420,
+          "blocked": 419,
+          "coverage": 0.9976190476190476,
+          "visibleWithoutOutsideEntryCredit": 1
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 27,
+          "total": 420,
+          "blocked": 393,
+          "coverage": 0.9357142857142857,
+          "visibleWithoutOutsideEntryCredit": 27
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 172,
+          "total": 420,
+          "blocked": 248,
+          "coverage": 0.5904761904761905,
+          "visibleWithoutOutsideEntryCredit": 172
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 161,
+          "total": 420,
+          "blocked": 259,
+          "coverage": 0.6166666666666667,
+          "visibleWithoutOutsideEntryCredit": 161
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 44,
+          "total": 420,
+          "blocked": 376,
+          "coverage": 0.8952380952380953,
+          "visibleWithoutOutsideEntryCredit": 44
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 95,
+          "total": 420,
+          "blocked": 325,
+          "coverage": 0.7738095238095238,
+          "visibleWithoutOutsideEntryCredit": 95
+        },
+        {
+          "id": "dining-seated",
+          "visible": 95,
+          "total": 460,
+          "blocked": 365,
+          "coverage": 0.7934782608695652,
+          "visibleWithoutOutsideEntryCredit": 95
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 153,
+          "total": 460,
+          "blocked": 307,
+          "coverage": 0.6673913043478261,
+          "visibleWithoutOutsideEntryCredit": 153
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 12,
+          "total": 420,
+          "blocked": 408,
+          "coverage": 0.9714285714285714,
+          "visibleWithoutOutsideEntryCredit": 12
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 53,
+          "total": 420,
+          "blocked": 367,
+          "coverage": 0.8738095238095238,
+          "visibleWithoutOutsideEntryCredit": 53
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 56,
+          "total": 460,
+          "blocked": 404,
+          "coverage": 0.8782608695652174,
+          "visibleWithoutOutsideEntryCredit": 56
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 13,
+          "total": 460,
+          "blocked": 447,
+          "coverage": 0.9717391304347827,
+          "visibleWithoutOutsideEntryCredit": 13
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 3.551089540299649,
+          "minimumHardscapeCentreDistance": 2.8585485827601405,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-2), Austrian pine · very tall 9.5 m (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 5.956682123798412,
+          "minimumHardscapeCentreDistance": 1.0700000000000003,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1), Austrian pine · very tall 9.5 m (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 2.712794768890238,
+          "minimumHardscapeCentreDistance": 1.7199999999999989,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1), Austrian pine · very tall 9.5 m (pine-2). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 22.703100127074006
+            },
+            {
+              "id": "pine-2",
+              "degrees": 26.35219829231716
+            },
+            {
+              "id": "pine-3",
+              "degrees": 21.85729611574222
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 21.510563249304152
+            },
+            {
+              "id": "pine-2",
+              "degrees": 24.990736028338528
+            },
+            {
+              "id": "pine-3",
+              "degrees": 20.73416037843447
+            }
+          ]
+        }
+      ],
+      "sunlight": [
+        {
+          "date": "2026-03-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 97,
+              "total": 309,
+              "percent": 31.39
+            },
+            "terrace": {
+              "sunlit": 21,
+              "total": 32,
+              "percent": 65.63
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 120,
+              "total": 261,
+              "percent": 45.98
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 540,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 126,
+              "total": 309,
+              "percent": 40.78
+            },
+            "terrace": {
+              "sunlit": 23,
+              "total": 32,
+              "percent": 71.88
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 181,
+              "total": 261,
+              "percent": 69.35
+            },
+            "firepit": {
+              "sunlit": 6,
+              "total": 9,
+              "percent": 66.67
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 176,
+              "total": 309,
+              "percent": 56.96
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 13,
+              "total": 27,
+              "percent": 48.15
+            },
+            "front": {
+              "sunlit": 182,
+              "total": 261,
+              "percent": 69.73
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 900,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 157,
+              "total": 309,
+              "percent": 50.81
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 156,
+              "total": 261,
+              "percent": 59.77
+            },
+            "firepit": {
+              "sunlit": 9,
+              "total": 9,
+              "percent": 100
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-09-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 61,
+              "total": 309,
+              "percent": 19.74
+            },
+            "terrace": {
+              "sunlit": 29,
+              "total": 32,
+              "percent": 90.63
+            },
+            "jacuzzi": {
+              "sunlit": 0,
+              "total": 4,
+              "percent": 0
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 100,
+              "total": 261,
+              "percent": 38.31
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Selected left-edge grove",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 13.3,
+          "y": 34.5,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 14.35,
+          "y": 31,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 18.1,
+          "y": 34.5,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 4.800000000000001,
+        "depth": 3.5
+      },
+      "crownEnvelope": {
+        "width": 9.8,
+        "depth": 8.5
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 3.654107278118692
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 4.800000000000001
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 5.129571132170799
+        }
+      ],
+      "score": 0.6594776238254499,
+      "weightedCoverage": 0.7840619525402135,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 202,
+          "total": 420,
+          "blocked": 218,
+          "coverage": 0.5190476190476191,
+          "visibleWithoutOutsideEntryCredit": 202
+        },
+        {
+          "id": "standing",
+          "visible": 216,
+          "total": 420,
+          "blocked": 204,
+          "coverage": 0.4857142857142857,
+          "visibleWithoutOutsideEntryCredit": 216
+        },
+        {
+          "id": "terrace",
+          "visible": 76,
+          "total": 420,
+          "blocked": 344,
+          "coverage": 0.819047619047619,
+          "visibleWithoutOutsideEntryCredit": 76
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 46,
+          "total": 460,
+          "blocked": 414,
+          "coverage": 0.9,
+          "visibleWithoutOutsideEntryCredit": 46
+        },
+        {
+          "id": "garden",
+          "visible": 1,
+          "total": 420,
+          "blocked": 419,
+          "coverage": 0.9976190476190476,
+          "visibleWithoutOutsideEntryCredit": 1
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 24,
+          "total": 420,
+          "blocked": 396,
+          "coverage": 0.9428571428571428,
+          "visibleWithoutOutsideEntryCredit": 24
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 153,
+          "total": 420,
+          "blocked": 267,
+          "coverage": 0.6357142857142857,
+          "visibleWithoutOutsideEntryCredit": 153
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 145,
+          "total": 420,
+          "blocked": 275,
+          "coverage": 0.6547619047619048,
+          "visibleWithoutOutsideEntryCredit": 145
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 44,
+          "total": 420,
+          "blocked": 376,
+          "coverage": 0.8952380952380953,
+          "visibleWithoutOutsideEntryCredit": 44
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 72,
+          "total": 420,
+          "blocked": 348,
+          "coverage": 0.8285714285714286,
+          "visibleWithoutOutsideEntryCredit": 72
+        },
+        {
+          "id": "dining-seated",
+          "visible": 104,
+          "total": 460,
+          "blocked": 356,
+          "coverage": 0.7739130434782608,
+          "visibleWithoutOutsideEntryCredit": 104
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 160,
+          "total": 460,
+          "blocked": 300,
+          "coverage": 0.6521739130434783,
+          "visibleWithoutOutsideEntryCredit": 160
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 6,
+          "total": 420,
+          "blocked": 414,
+          "coverage": 0.9857142857142858,
+          "visibleWithoutOutsideEntryCredit": 6
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 0,
+          "total": 420,
+          "blocked": 420,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 56,
+          "total": 460,
+          "blocked": 404,
+          "coverage": 0.8782608695652174,
+          "visibleWithoutOutsideEntryCredit": 56
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 13,
+          "total": 460,
+          "blocked": 447,
+          "coverage": 0.9717391304347827,
+          "visibleWithoutOutsideEntryCredit": 13
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 3.4977844916542074,
+          "minimumHardscapeCentreDistance": 2.729981684920247,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-2), Austrian pine · very tall 9.5 m (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 5.956682123798412,
+          "minimumHardscapeCentreDistance": 1.0700000000000003,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": false,
+          "boundaryCentreDistance": 2.212795530196079,
+          "minimumHardscapeCentreDistance": 1.7199999999999989,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0.2872044698039211,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 22.64331969009883
+            },
+            {
+              "id": "pine-2",
+              "degrees": 26.35219829231716
+            },
+            {
+              "id": "pine-3",
+              "degrees": 21.636002181859283
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 21.455456983789183
+            },
+            {
+              "id": "pine-2",
+              "degrees": 24.990736028338528
+            },
+            {
+              "id": "pine-3",
+              "degrees": 20.521088130132902
+            }
+          ]
+        }
+      ],
+      "sunlight": [
+        {
+          "date": "2026-03-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 96,
+              "total": 309,
+              "percent": 31.07
+            },
+            "terrace": {
+              "sunlit": 21,
+              "total": 32,
+              "percent": 65.63
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 120,
+              "total": 261,
+              "percent": 45.98
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 540,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 125,
+              "total": 309,
+              "percent": 40.45
+            },
+            "terrace": {
+              "sunlit": 23,
+              "total": 32,
+              "percent": 71.88
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 181,
+              "total": 261,
+              "percent": 69.35
+            },
+            "firepit": {
+              "sunlit": 6,
+              "total": 9,
+              "percent": 66.67
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 177,
+              "total": 309,
+              "percent": 57.28
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 11,
+              "total": 27,
+              "percent": 40.74
+            },
+            "front": {
+              "sunlit": 182,
+              "total": 261,
+              "percent": 69.73
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 900,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 158,
+              "total": 309,
+              "percent": 51.13
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 1,
+              "total": 27,
+              "percent": 3.7
+            },
+            "front": {
+              "sunlit": 156,
+              "total": 261,
+              "percent": 59.77
+            },
+            "firepit": {
+              "sunlit": 9,
+              "total": 9,
+              "percent": 100
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-09-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 63,
+              "total": 309,
+              "percent": 20.39
+            },
+            "terrace": {
+              "sunlit": 29,
+              "total": 32,
+              "percent": 90.63
+            },
+            "jacuzzi": {
+              "sunlit": 0,
+              "total": 4,
+              "percent": 0
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 100,
+              "total": 261,
+              "percent": 38.31
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wider left-edge comparison",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 13.5,
+          "y": 35,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 14.4,
+          "y": 30,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 19.3,
+          "y": 33.8,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 5.800000000000001,
+        "depth": 5
+      },
+      "crownEnvelope": {
+        "width": 10.8,
+        "depth": 10
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 5.080354318352215
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 5.92283715798434
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 6.200806399170997
+        }
+      ],
+      "score": 0.7330335244465679,
+      "weightedCoverage": 0.8276954929128844,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 153,
+          "total": 420,
+          "blocked": 267,
+          "coverage": 0.6357142857142857,
+          "visibleWithoutOutsideEntryCredit": 156
+        },
+        {
+          "id": "standing",
+          "visible": 168,
+          "total": 420,
+          "blocked": 252,
+          "coverage": 0.6,
+          "visibleWithoutOutsideEntryCredit": 169
+        },
+        {
+          "id": "terrace",
+          "visible": 36,
+          "total": 420,
+          "blocked": 384,
+          "coverage": 0.9142857142857143,
+          "visibleWithoutOutsideEntryCredit": 36
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 43,
+          "total": 460,
+          "blocked": 417,
+          "coverage": 0.9065217391304348,
+          "visibleWithoutOutsideEntryCredit": 43
+        },
+        {
+          "id": "garden",
+          "visible": 3,
+          "total": 420,
+          "blocked": 417,
+          "coverage": 0.9928571428571429,
+          "visibleWithoutOutsideEntryCredit": 3
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 38,
+          "total": 420,
+          "blocked": 382,
+          "coverage": 0.9095238095238095,
+          "visibleWithoutOutsideEntryCredit": 38
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 91,
+          "total": 420,
+          "blocked": 329,
+          "coverage": 0.7833333333333333,
+          "visibleWithoutOutsideEntryCredit": 99
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 82,
+          "total": 420,
+          "blocked": 338,
+          "coverage": 0.8047619047619048,
+          "visibleWithoutOutsideEntryCredit": 86
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 28,
+          "total": 420,
+          "blocked": 392,
+          "coverage": 0.9333333333333333,
+          "visibleWithoutOutsideEntryCredit": 28
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 21,
+          "total": 420,
+          "blocked": 399,
+          "coverage": 0.95,
+          "visibleWithoutOutsideEntryCredit": 22
+        },
+        {
+          "id": "dining-seated",
+          "visible": 101,
+          "total": 460,
+          "blocked": 359,
+          "coverage": 0.7804347826086957,
+          "visibleWithoutOutsideEntryCredit": 101
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 150,
+          "total": 460,
+          "blocked": 310,
+          "coverage": 0.6739130434782609,
+          "visibleWithoutOutsideEntryCredit": 150
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 0,
+          "total": 420,
+          "blocked": 420,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 141,
+          "total": 420,
+          "blocked": 279,
+          "coverage": 0.6642857142857143,
+          "visibleWithoutOutsideEntryCredit": 141
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 49,
+          "total": 460,
+          "blocked": 411,
+          "coverage": 0.8934782608695652,
+          "visibleWithoutOutsideEntryCredit": 49
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 13,
+          "total": 460,
+          "blocked": 447,
+          "coverage": 0.9717391304347827,
+          "visibleWithoutOutsideEntryCredit": 13
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 2.994541146243055,
+          "minimumHardscapeCentreDistance": 2.9350979540724014,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": []
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 5.904937143756463,
+          "minimumHardscapeCentreDistance": 1.0199999999999996,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": false,
+          "boundaryCentreDistance": 1.0115758180093253,
+          "minimumHardscapeCentreDistance": 1.019999999999996,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 1.4884241819906747,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 22.184575122805228
+            },
+            {
+              "id": "pine-2",
+              "degrees": 27.601517072432518
+            },
+            {
+              "id": "pine-3",
+              "degrees": 21.282616944875922
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 21.0231449871936
+            },
+            {
+              "id": "pine-2",
+              "degrees": 26.1779094595593
+            },
+            {
+              "id": "pine-3",
+              "degrees": 20.157250509333238
+            }
+          ]
+        }
+      ],
+      "sunlight": [
+        {
+          "date": "2026-03-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 96,
+              "total": 309,
+              "percent": 31.07
+            },
+            "terrace": {
+              "sunlit": 16,
+              "total": 32,
+              "percent": 50
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 120,
+              "total": 261,
+              "percent": 45.98
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 540,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 122,
+              "total": 309,
+              "percent": 39.48
+            },
+            "terrace": {
+              "sunlit": 23,
+              "total": 32,
+              "percent": 71.88
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 181,
+              "total": 261,
+              "percent": 69.35
+            },
+            "firepit": {
+              "sunlit": 5,
+              "total": 9,
+              "percent": 55.56
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 177,
+              "total": 309,
+              "percent": 57.28
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 9,
+              "total": 27,
+              "percent": 33.33
+            },
+            "front": {
+              "sunlit": 182,
+              "total": 261,
+              "percent": 69.73
+            },
+            "firepit": {
+              "sunlit": 1,
+              "total": 9,
+              "percent": 11.11
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 900,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 154,
+              "total": 309,
+              "percent": 49.84
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 3,
+              "total": 27,
+              "percent": 11.11
+            },
+            "front": {
+              "sunlit": 156,
+              "total": 261,
+              "percent": 59.77
+            },
+            "firepit": {
+              "sunlit": 9,
+              "total": 9,
+              "percent": 100
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-09-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 59,
+              "total": 309,
+              "percent": 19.09
+            },
+            "terrace": {
+              "sunlit": 25,
+              "total": 32,
+              "percent": 78.13
+            },
+            "jacuzzi": {
+              "sunlit": 0,
+              "total": 4,
+              "percent": 0
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 100,
+              "total": 261,
+              "percent": 38.31
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "All three farther east in rear corner",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 15.2,
+          "y": 34,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 18.7,
+          "y": 34.2,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 17,
+          "y": 36.5,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 3.5,
+        "depth": 2.5
+      },
+      "crownEnvelope": {
+        "width": 8.5,
+        "depth": 7.5
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 3.505709628591621
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 3.0805843601498726
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 2.860069929215016
+        }
+      ],
+      "score": 0.5038541168975952,
+      "weightedCoverage": 0.6736343366778148,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 242,
+          "total": 420,
+          "blocked": 178,
+          "coverage": 0.4238095238095238,
+          "visibleWithoutOutsideEntryCredit": 242
+        },
+        {
+          "id": "standing",
+          "visible": 262,
+          "total": 420,
+          "blocked": 158,
+          "coverage": 0.3761904761904762,
+          "visibleWithoutOutsideEntryCredit": 262
+        },
+        {
+          "id": "terrace",
+          "visible": 121,
+          "total": 420,
+          "blocked": 299,
+          "coverage": 0.7119047619047619,
+          "visibleWithoutOutsideEntryCredit": 121
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 163,
+          "total": 460,
+          "blocked": 297,
+          "coverage": 0.6456521739130435,
+          "visibleWithoutOutsideEntryCredit": 163
+        },
+        {
+          "id": "garden",
+          "visible": 121,
+          "total": 420,
+          "blocked": 299,
+          "coverage": 0.7119047619047619,
+          "visibleWithoutOutsideEntryCredit": 121
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 119,
+          "total": 420,
+          "blocked": 301,
+          "coverage": 0.7166666666666667,
+          "visibleWithoutOutsideEntryCredit": 119
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 134,
+          "total": 420,
+          "blocked": 286,
+          "coverage": 0.680952380952381,
+          "visibleWithoutOutsideEntryCredit": 135
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 126,
+          "total": 420,
+          "blocked": 294,
+          "coverage": 0.7,
+          "visibleWithoutOutsideEntryCredit": 129
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 139,
+          "total": 420,
+          "blocked": 281,
+          "coverage": 0.669047619047619,
+          "visibleWithoutOutsideEntryCredit": 139
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 39,
+          "total": 420,
+          "blocked": 381,
+          "coverage": 0.9071428571428571,
+          "visibleWithoutOutsideEntryCredit": 41
+        },
+        {
+          "id": "dining-seated",
+          "visible": 203,
+          "total": 460,
+          "blocked": 257,
+          "coverage": 0.558695652173913,
+          "visibleWithoutOutsideEntryCredit": 203
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 259,
+          "total": 460,
+          "blocked": 201,
+          "coverage": 0.4369565217391304,
+          "visibleWithoutOutsideEntryCredit": 260
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 0,
+          "total": 420,
+          "blocked": 420,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 7,
+          "total": 420,
+          "blocked": 413,
+          "coverage": 0.9833333333333333,
+          "visibleWithoutOutsideEntryCredit": 7
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 15,
+          "total": 460,
+          "blocked": 445,
+          "coverage": 0.967391304347826,
+          "visibleWithoutOutsideEntryCredit": 21
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 1,
+          "total": 460,
+          "blocked": 459,
+          "coverage": 0.9978260869565218,
+          "visibleWithoutOutsideEntryCredit": 7
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 3.966252839181521,
+          "minimumHardscapeCentreDistance": 1.2396773773849379,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-2), Austrian pine · very tall 9.5 m (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": false,
+          "boundaryCentreDistance": 1.6122729269113303,
+          "minimumHardscapeCentreDistance": 1.4200000000000017,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0.8877270730886697,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1), Austrian pine · very tall 9.5 m (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": false,
+          "boundaryCentreDistance": 1.436788493884295,
+          "minimumHardscapeCentreDistance": 3.719999999999999,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 1.063211506115705,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1), Austrian pine · very tall 9.5 m (pine-2). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 23.02592136003613
+            },
+            {
+              "id": "pine-2",
+              "degrees": 21.46687659023912
+            },
+            {
+              "id": "pine-3",
+              "degrees": 20.173685658546145
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 21.841969552079163
+            },
+            {
+              "id": "pine-2",
+              "degrees": 20.348709367100792
+            },
+            {
+              "id": "pine-3",
+              "degrees": 19.116480592761913
+            }
+          ]
+        }
+      ],
+      "sunlight": [
+        {
+          "date": "2026-03-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 100,
+              "total": 309,
+              "percent": 32.36
+            },
+            "terrace": {
+              "sunlit": 31,
+              "total": 32,
+              "percent": 96.88
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 120,
+              "total": 261,
+              "percent": 45.98
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 540,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 153,
+              "total": 309,
+              "percent": 49.51
+            },
+            "terrace": {
+              "sunlit": 23,
+              "total": 32,
+              "percent": 71.88
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 181,
+              "total": 261,
+              "percent": 69.35
+            },
+            "firepit": {
+              "sunlit": 6,
+              "total": 9,
+              "percent": 66.67
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 188,
+              "total": 309,
+              "percent": 60.84
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 10,
+              "total": 27,
+              "percent": 37.04
+            },
+            "front": {
+              "sunlit": 182,
+              "total": 261,
+              "percent": 69.73
+            },
+            "firepit": {
+              "sunlit": 4,
+              "total": 9,
+              "percent": 44.44
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "minutes": 900,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 175,
+              "total": 309,
+              "percent": 56.63
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 7,
+              "total": 27,
+              "percent": 25.93
+            },
+            "front": {
+              "sunlit": 156,
+              "total": 261,
+              "percent": 59.77
+            },
+            "firepit": {
+              "sunlit": 9,
+              "total": 9,
+              "percent": 100
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        },
+        {
+          "date": "2026-09-21",
+          "minutes": 720,
+          "timeZone": "Europe/Warsaw",
+          "zones": {
+            "garden": {
+              "sunlit": 69,
+              "total": 309,
+              "percent": 22.33
+            },
+            "terrace": {
+              "sunlit": 32,
+              "total": 32,
+              "percent": 100
+            },
+            "jacuzzi": {
+              "sunlit": 4,
+              "total": 4,
+              "percent": 100
+            },
+            "pool": {
+              "sunlit": 0,
+              "total": 27,
+              "percent": 0
+            },
+            "front": {
+              "sunlit": 100,
+              "total": 261,
+              "percent": 38.31
+            },
+            "firepit": {
+              "sunlit": 0,
+              "total": 9,
+              "percent": 0
+            },
+            "coldPlunge": {
+              "sunlit": 0,
+              "total": 2,
+              "percent": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balanced views comparison",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 17.6,
+          "y": 34.9,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 12.9,
+          "y": 34.3,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 14.4,
+          "y": 25.7,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 4.700000000000001,
+        "depth": 9.2
+      },
+      "crownEnvelope": {
+        "width": 9.700000000000001,
+        "depth": 14.2
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 4.738143096192855
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 9.740636529508736
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 8.729833904490965
+        }
+      ],
+      "score": 0.9153754578754578,
+      "weightedCoverage": 0.9189719700589265,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 41,
+          "total": 420,
+          "blocked": 379,
+          "coverage": 0.9023809523809524,
+          "visibleWithoutOutsideEntryCredit": 41
+        },
+        {
+          "id": "standing",
+          "visible": 44,
+          "total": 420,
+          "blocked": 376,
+          "coverage": 0.8952380952380953,
+          "visibleWithoutOutsideEntryCredit": 44
+        },
+        {
+          "id": "terrace",
+          "visible": 20,
+          "total": 420,
+          "blocked": 400,
+          "coverage": 0.9523809523809523,
+          "visibleWithoutOutsideEntryCredit": 20
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 43,
+          "total": 460,
+          "blocked": 417,
+          "coverage": 0.9065217391304348,
+          "visibleWithoutOutsideEntryCredit": 43
+        },
+        {
+          "id": "garden",
+          "visible": 2,
+          "total": 420,
+          "blocked": 418,
+          "coverage": 0.9952380952380953,
+          "visibleWithoutOutsideEntryCredit": 2
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 17,
+          "total": 420,
+          "blocked": 403,
+          "coverage": 0.9595238095238096,
+          "visibleWithoutOutsideEntryCredit": 17
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 33,
+          "total": 420,
+          "blocked": 387,
+          "coverage": 0.9214285714285714,
+          "visibleWithoutOutsideEntryCredit": 33
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 7,
+          "total": 420,
+          "blocked": 413,
+          "coverage": 0.9833333333333333,
+          "visibleWithoutOutsideEntryCredit": 7
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 48,
+          "total": 420,
+          "blocked": 372,
+          "coverage": 0.8857142857142857,
+          "visibleWithoutOutsideEntryCredit": 48
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 10,
+          "total": 420,
+          "blocked": 410,
+          "coverage": 0.9761904761904762,
+          "visibleWithoutOutsideEntryCredit": 10
+        },
+        {
+          "id": "dining-seated",
+          "visible": 95,
+          "total": 460,
+          "blocked": 365,
+          "coverage": 0.7934782608695652,
+          "visibleWithoutOutsideEntryCredit": 95
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 146,
+          "total": 460,
+          "blocked": 314,
+          "coverage": 0.6826086956521739,
+          "visibleWithoutOutsideEntryCredit": 146
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 24,
+          "total": 420,
+          "blocked": 396,
+          "coverage": 0.9428571428571428,
+          "visibleWithoutOutsideEntryCredit": 24
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 26,
+          "total": 420,
+          "blocked": 394,
+          "coverage": 0.9380952380952381,
+          "visibleWithoutOutsideEntryCredit": 26
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 56,
+          "total": 460,
+          "blocked": 404,
+          "coverage": 0.8782608695652174,
+          "visibleWithoutOutsideEntryCredit": 56
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 13,
+          "total": 460,
+          "blocked": 447,
+          "coverage": 0.9717391304347827,
+          "visibleWithoutOutsideEntryCredit": 13
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 2.7134927913592506,
+          "minimumHardscapeCentreDistance": 2.1199999999999974,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-2). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 3.7043808771152564,
+          "minimumHardscapeCentreDistance": 2.9429237163066233,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 5.904850841828349,
+          "minimumHardscapeCentreDistance": 1.0199999999999996,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 21.488139595431615
+            },
+            {
+              "id": "pine-2",
+              "degrees": 22.84410311703002
+            },
+            {
+              "id": "pine-3",
+              "degrees": 36.18250828040885
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 20.380683304550317
+            },
+            {
+              "id": "pine-2",
+              "degrees": 21.641732154511367
+            },
+            {
+              "id": "pine-3",
+              "degrees": 34.4882709358023
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Living-room priority comparison",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 13.9,
+          "y": 27.3,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 12.5,
+          "y": 33.4,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 15.2,
+          "y": 23.2,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 2.6999999999999993,
+        "depth": 10.2
+      },
+      "crownEnvelope": {
+        "width": 7.699999999999999,
+        "depth": 15.2
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 6.258594091327538
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 4.301162633521314
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 10.551303237041385
+        }
+      ],
+      "score": 0.8827966236661888,
+      "weightedCoverage": 0.8692705844879758,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 0,
+          "total": 420,
+          "blocked": 420,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "standing",
+          "visible": 2,
+          "total": 420,
+          "blocked": 418,
+          "coverage": 0.9952380952380953,
+          "visibleWithoutOutsideEntryCredit": 2
+        },
+        {
+          "id": "terrace",
+          "visible": 2,
+          "total": 420,
+          "blocked": 418,
+          "coverage": 0.9952380952380953,
+          "visibleWithoutOutsideEntryCredit": 2
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 5,
+          "total": 460,
+          "blocked": 455,
+          "coverage": 0.9891304347826086,
+          "visibleWithoutOutsideEntryCredit": 5
+        },
+        {
+          "id": "garden",
+          "visible": 95,
+          "total": 420,
+          "blocked": 325,
+          "coverage": 0.7738095238095238,
+          "visibleWithoutOutsideEntryCredit": 95
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 153,
+          "total": 420,
+          "blocked": 267,
+          "coverage": 0.6357142857142857,
+          "visibleWithoutOutsideEntryCredit": 153
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 1,
+          "total": 420,
+          "blocked": 419,
+          "coverage": 0.9976190476190476,
+          "visibleWithoutOutsideEntryCredit": 1
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 0,
+          "total": 420,
+          "blocked": 420,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 1,
+          "total": 420,
+          "blocked": 419,
+          "coverage": 0.9976190476190476,
+          "visibleWithoutOutsideEntryCredit": 1
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 117,
+          "total": 420,
+          "blocked": 303,
+          "coverage": 0.7214285714285714,
+          "visibleWithoutOutsideEntryCredit": 117
+        },
+        {
+          "id": "dining-seated",
+          "visible": 118,
+          "total": 460,
+          "blocked": 342,
+          "coverage": 0.7434782608695653,
+          "visibleWithoutOutsideEntryCredit": 118
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 171,
+          "total": 460,
+          "blocked": 289,
+          "coverage": 0.6282608695652174,
+          "visibleWithoutOutsideEntryCredit": 171
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 369,
+          "total": 420,
+          "blocked": 51,
+          "coverage": 0.12142857142857143,
+          "visibleWithoutOutsideEntryCredit": 369
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 244,
+          "total": 420,
+          "blocked": 176,
+          "coverage": 0.41904761904761906,
+          "visibleWithoutOutsideEntryCredit": 244
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 56,
+          "total": 460,
+          "blocked": 404,
+          "coverage": 0.8782608695652174,
+          "visibleWithoutOutsideEntryCredit": 56
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 13,
+          "total": 460,
+          "blocked": 447,
+          "coverage": 0.9717391304347827,
+          "visibleWithoutOutsideEntryCredit": 13
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 6.403851568571879,
+          "minimumHardscapeCentreDistance": 1.0199999999999996,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 4.610881279767403,
+          "minimumHardscapeCentreDistance": 2.0799999999999947,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 5.10641220994766,
+          "minimumHardscapeCentreDistance": 1.0199999999999996,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": false,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+            "The crown overlaps Austrian pine · very tall 9.5 m (pine-1). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 32.96266243636128
+            },
+            {
+              "id": "pine-2",
+              "degrees": 23.734209294076756
+            },
+            {
+              "id": "pine-3",
+              "degrees": 41.587877422544686
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 31.358545915334016
+            },
+            {
+              "id": "pine-2",
+              "degrees": 22.479864831005276
+            },
+            {
+              "id": "pine-3",
+              "degrees": 39.77913587872317
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bounded search result",
+      "plantPLN": 179700,
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 14.35,
+          "y": 30,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 13.5,
+          "y": 35.1,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 19.25,
+          "y": 33.8,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "trunkBounds": {
+        "width": 5.75,
+        "depth": 5.100000000000001
+      },
+      "crownEnvelope": {
+        "width": 10.75,
+        "depth": 10.100000000000001
+      },
+      "pairDistances": [
+        {
+          "first": "pine-1",
+          "second": "pine-2",
+          "metres": 5.170348150753488
+        },
+        {
+          "first": "pine-1",
+          "second": "pine-3",
+          "metres": 6.200806399170997
+        },
+        {
+          "first": "pine-2",
+          "second": "pine-3",
+          "metres": 5.895125104694557
+        }
+      ],
+      "score": 0.7308058608058609,
+      "weightedCoverage": 0.8280896639592293,
+      "views": [
+        {
+          "id": "sofa",
+          "visible": 155,
+          "total": 420,
+          "blocked": 265,
+          "coverage": 0.6309523809523809,
+          "visibleWithoutOutsideEntryCredit": 158
+        },
+        {
+          "id": "standing",
+          "visible": 170,
+          "total": 420,
+          "blocked": 250,
+          "coverage": 0.5952380952380952,
+          "visibleWithoutOutsideEntryCredit": 170
+        },
+        {
+          "id": "terrace",
+          "visible": 38,
+          "total": 420,
+          "blocked": 382,
+          "coverage": 0.9095238095238095,
+          "visibleWithoutOutsideEntryCredit": 38
+        },
+        {
+          "id": "jacuzzi",
+          "visible": 39,
+          "total": 460,
+          "blocked": 421,
+          "coverage": 0.9152173913043479,
+          "visibleWithoutOutsideEntryCredit": 39
+        },
+        {
+          "id": "garden",
+          "visible": 5,
+          "total": 420,
+          "blocked": 415,
+          "coverage": 0.9880952380952381,
+          "visibleWithoutOutsideEntryCredit": 5
+        },
+        {
+          "id": "sauna",
+          "visible": 0,
+          "total": 460,
+          "blocked": 460,
+          "coverage": 1,
+          "visibleWithoutOutsideEntryCredit": 0
+        },
+        {
+          "id": "firepit",
+          "visible": 40,
+          "total": 420,
+          "blocked": 380,
+          "coverage": 0.9047619047619048,
+          "visibleWithoutOutsideEntryCredit": 40
+        },
+        {
+          "id": "terrace-left-seated",
+          "visible": 92,
+          "total": 420,
+          "blocked": 328,
+          "coverage": 0.780952380952381,
+          "visibleWithoutOutsideEntryCredit": 99
+        },
+        {
+          "id": "terrace-left-standing",
+          "visible": 82,
+          "total": 420,
+          "blocked": 338,
+          "coverage": 0.8047619047619048,
+          "visibleWithoutOutsideEntryCredit": 87
+        },
+        {
+          "id": "terrace-right-standing",
+          "visible": 27,
+          "total": 420,
+          "blocked": 393,
+          "coverage": 0.9357142857142857,
+          "visibleWithoutOutsideEntryCredit": 27
+        },
+        {
+          "id": "loungers-seated",
+          "visible": 22,
+          "total": 420,
+          "blocked": 398,
+          "coverage": 0.9476190476190476,
+          "visibleWithoutOutsideEntryCredit": 22
+        },
+        {
+          "id": "dining-seated",
+          "visible": 99,
+          "total": 460,
+          "blocked": 361,
+          "coverage": 0.7847826086956522,
+          "visibleWithoutOutsideEntryCredit": 99
+        },
+        {
+          "id": "right-garden-path",
+          "visible": 144,
+          "total": 460,
+          "blocked": 316,
+          "coverage": 0.6869565217391305,
+          "visibleWithoutOutsideEntryCredit": 144
+        },
+        {
+          "id": "pool-west-path",
+          "visible": 2,
+          "total": 420,
+          "blocked": 418,
+          "coverage": 0.9952380952380953,
+          "visibleWithoutOutsideEntryCredit": 2
+        },
+        {
+          "id": "pool-rear-path",
+          "visible": 138,
+          "total": 420,
+          "blocked": 282,
+          "coverage": 0.6714285714285714,
+          "visibleWithoutOutsideEntryCredit": 138
+        },
+        {
+          "id": "rear-centre-path",
+          "visible": 39,
+          "total": 460,
+          "blocked": 421,
+          "coverage": 0.9152173913043479,
+          "visibleWithoutOutsideEntryCredit": 39
+        },
+        {
+          "id": "cold-plunge-seated",
+          "visible": 12,
+          "total": 460,
+          "blocked": 448,
+          "coverage": 0.9739130434782609,
+          "visibleWithoutOutsideEntryCredit": 12
+        }
+      ],
+      "placement": [
+        {
+          "id": "pine-1",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 5.95493706762588,
+          "minimumHardscapeCentreDistance": 1.0700000000000003,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": [
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        },
+        {
+          "id": "pine-2",
+          "plantable": true,
+          "crownInside": true,
+          "boundaryCentreDistance": 2.894554858072896,
+          "minimumHardscapeCentreDistance": 3.011444835954994,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 0,
+          "warnings": []
+        },
+        {
+          "id": "pine-3",
+          "plantable": true,
+          "crownInside": false,
+          "boundaryCentreDistance": 1.061575741878742,
+          "minimumHardscapeCentreDistance": 1.019999999999996,
+          "observerClear": true,
+          "allowanceAccepted": true,
+          "searchAccepted": true,
+          "nominalCrownOverhang": 1.438424258121258,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        }
+      ],
+      "livingAngularChecks": [
+        {
+          "id": "sofa",
+          "maximumUnscreenedTargetElevation": 26.080005770265295,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 27.61401160618906
+            },
+            {
+              "id": "pine-2",
+              "degrees": 22.106586495145166
+            },
+            {
+              "id": "pine-3",
+              "degrees": 21.3050414604716
+            }
+          ]
+        },
+        {
+          "id": "standing",
+          "maximumUnscreenedTargetElevation": 25.457178447104464,
+          "maximumCrownElevations": [
+            {
+              "id": "pine-1",
+              "degrees": 26.18911905005936
+            },
+            {
+              "id": "pine-2",
+              "degrees": 20.95000177641326
+            },
+            {
+              "id": "pine-3",
+              "degrees": 20.178648132369812
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

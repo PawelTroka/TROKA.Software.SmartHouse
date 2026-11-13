@@ -27,7 +27,7 @@ test('explicit property identity survives share links and legacy links select on
   assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=3&hedgeRear=8'),'sternicza-11');
   assert.equal(resolveSiteId('?site=sternicza-11','#v=6&site=korzeniowskiego-40'),'korzeniowskiego-40');
   assert.equal(resolveSiteId('?site=unknown'),'sternicza-11');
-  for(const version of [10,11])assert.equal(resolveSiteId('?site=sternicza-11',`#v=${version}&site=korzeniowskiego-40`),'korzeniowskiego-40');
+  for(const version of [10,11,12])assert.equal(resolveSiteId('?site=sternicza-11',`#v=${version}&site=korzeniowskiego-40`),'korzeniowskiego-40');
   assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=6&site=unknown'),'sternicza-11');
   const active=createStateModel(getSiteProfile('korzeniowskiego-40',otherSite()));
   const scenario={...active.DEFAULTS,hedgeLeft:2,hedgeRight:6,lookYaw:35,costTreePriceLeft:120,costTreePriceRight:980,b70HeightDelta:2,sunDate:'2026-12-21'};

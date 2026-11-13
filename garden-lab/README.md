@@ -2,9 +2,67 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.9.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.9.0#v=11&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.10.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.10.0#v=12&site=sternicza-11)**
 
-## Sternicza: three 9.5 m pines in a compact rear-left grove · 1.9.0
+## Left-edge pines, compact spa, more measurements and a complete garden budget · 1.10.0
+
+Choose **Compact spa · left-edge pines · latest** to load the new garden geometry. The pool stays along the physical left/east boundary, the smaller sauna remains tucked against the rear-right/west corner, and the jacuzzi remains recessed at the outside edge of the living-room terrace. The terrain and fixed living-floor reference remain shared by the drawings, visibility and sun calculations.
+
+### Compact pines farther left, with the tradeoff measured
+
+All three pines remain **9.5 m tall**, with nominal **5 × 5 m crowns**, in a compact grove at the rear-left/east end of the pool. Their trunk positions are **(13.30, 34.50), (14.35, 31.00), (18.10, 34.50) m**. Larger X means farther left/east looking from the house. The outer pine moves **0.50 m farther left**, the rear inner pine moves **0.20 m left and 0.05 m rearward**, and the middle pine stays in place.
+
+The trunk group remains **4.8 × 3.5 m** and its nominal crowns form a **connected overlapping group**: pine 1 overlaps both other crowns. The outer trunk is approximately **2.21 m inside** the actual parcel boundary and its modeled crown extends approximately **0.29 m beyond** it. The preset and tree warnings disclose this assumption. **Contained corner** restores the previous grove with all crowns inside the parcel.
+
+| PCK3 viewpoint | Previous contained grove, under current compact geometry | New compact left-edge default |
+| --- | ---: | ---: |
+| Living room seated | 213 / 420 visible samples | **202 / 420** |
+| Living room standing | 225 / 420 | **216 / 420** |
+| Terrace standing | 83 / 420 | **76 / 420** |
+| Jacuzzi seated | 33 / 460 | **46 / 460** |
+| Named garden position | 1 / 420 | **1 / 420** |
+
+The house-screening improvement is modest: the new grove hides **51.9%** of seated and **48.6%** of standing living-room samples, **90.0%** at the jacuzzi and **99.8%** at the named garden position. It **does not hide PCK3 completely**. Counts are sampled target points, not façade-area percentages; real foliage has gaps.
+
+**Wider left-edge · stronger house screen** retains the more spread-out arrangement as an explicit comparison. It hides 63.6% of seated and 60.0% of standing living-room samples, but its 5 m crowns no longer overlap and the outer crown extends 1.49 m beyond the boundary. **Balanced views** and **Living-room priority** also remain available. The [17-view comparison](docs/left-edge-screening-comparison.md), [recorded geometry/results](docs/left-edge-screening-comparison.json) and [reproducible study](scripts/search-left-edge-pck3-layouts.mjs) cover all positions and tradeoffs. At June 21 noon the default pool's sunlit samples change from 13/27 to 11/27, and at 15:00 from 0/27 to 1/27; compare seasons and times before choosing.
+
+### Capacity-based sauna and jacuzzi
+
+| Feature | New geometry | Basis |
+| --- | --- | --- |
+| Six-person corner sauna | **3.00 × 2.40 × 2.30 m** external envelope, six distinct seated positions | RoyalSauna Premium size reference; diagonal glazing remains a custom concept. Previous enclosure was 4.20 × 4.10 × 2.65 m. |
+| Seven-seat jacuzzi | **2.30 × 2.30 × 0.90 m** external reference, seven illustrative seat positions | Wellis Vienna Life has seven actual seated places. Previous 2.20 m square was not oversized for seven. |
+| Jacuzzi service space | **0.60 m on every side**, **3.50 × 3.50 m** total envelope | Technical access through removable decking and garden-side access; not extra water area. |
+
+The default is a sealed factory-style spa recessed flush with the deck. **Custom overflow / infinity concept** is a separate toggle and complete installed budget alternative. It is not represented as a certified modification to the Vienna shell. The modeled water level, sun receivers and rendering update together. Sauna bench geometry, glass, approach steps and sitting height follow the smaller enclosure and actual grade. The illustration is not a manufacturer construction drawing.
+
+### Measurements from garden to neighbourhood
+
+Keep **Dimensions** on and choose **Garden detail**, **Whole plot** or **Neighbourhood** in Plan or Sun & shade. Fine lines and numbered keys accompany a complete measurement schedule. The 3D/eye views use small labels with collision and occlusion handling.
+
+Measurements now include every parcel segment and actual polygon area, house wall segments and setbacks, oriented building envelopes, nearby-building roof heights, shortest plot-to-building and house-to-building gaps, feature-to-feature gaps, tree spacing, trunk-to-boundary distances and service access. An envelope is explicitly distinguished from the actual footprint or wall length.
+
+The mapped model gives **20.32 × 38.21 m maximum local-axis plot spans**, **766.86 m² actual polygon area**, **9.10 m from the house to the street-side parcel boundary**, **6.75 m from PCK3's footprint to the nearest actual parcel segment**, and **27.27 m from the house footprint to PCK3's footprint**. These are model-derived measurements, not a construction survey. Building sensitivity adjustments update these distances and heights without being applied twice.
+
+### Itemised garden costs and supplier references
+
+The budget now covers the five spa installations plus terrace and steps, paths and paving, furniture, ornamental planting, lawn, irrigation, lighting, shared garden utilities, garage demolition, design and an optional canopy. Specimen delivery, lifting, planting, anchoring and establishment are included as explicit planning ranges when enabled.
+
+| Default category | PLN before contingency |
+| --- | ---: |
+| 4 m hedge planting | 28,750 |
+| 0.5 m raised-garden earthworks | 46,129 |
+| Three large pines and services | 195,750–221,100 |
+| Pool, seven-seat spa, sauna, plunge and sunken lounge | 355,000–550,000 |
+| Garden finishes and enabling works | 151,952–278,978 |
+| **Total before contingency** | **777,581–1,124,956** |
+| **Displayed planning range, 20% on upper figure only** | **777,581–1,349,948** |
+
+Published product prices and installed-work assumptions are separately labelled. No site-specific supplier quotations have been received. Positive quote fields replace the entire relevant line; catalog benchmarks are never added again. Disabling planning allowances makes missing quotes explicit instead of treating unpriced work as free. [The price and methodology audit](docs/garden-budget-2026-11-13.md) documents sources reviewed on **13 November 2026**, scope mismatches, tax treatment and provisional quantities. House renovation, a basement garage, front driveway/boundary work, major incoming utility upgrades and running bills are outside this rear-garden total.
+
+**State version 12** preserves old links and saved designs, including the previous v11 trees, large sauna, 2.2 m overflow-style tub and quote-only budget. The latest link above explicitly loads the new defaults. Korzeniowskiego retains its own geometry and default budget scope.
+
+## Previous rear-left grove · 1.9.0
 
 Fresh/reset Sternicza designs now group **three 9.5 m Austrian pines** behind and along the far end of the left/east pool. Left means looking from the house into the rear garden. Their trunk centres occupy a **4.50 × 3.50 m** rectangle, with **3.67–4.78 m** spacing between trunks. The modeled **5 m crowns overlap**, forming a canopy envelope approximately **9.50 × 8.50 m**. The pool, corner sauna, plunge, edge jacuzzi, sunken lounge, terrain and dimension overlay retain the perimeter layout introduced in 1.8.
 
@@ -33,7 +91,7 @@ The corner grove also changes shade. On June 21 at noon, the pool stays at **13/
 
 ## Previous perimeter layout and dimensions · 1.8.0
 
-Version 1.8 introduced **Spa courtyard · near plot edges**, retained as the current garden programme. The pool is farther toward the physical **left/east**, the six-person sauna is tucked into the far **right/west rear corner**, and the cold plunge is next to the rear boundary. The large terrace and edge jacuzzi remain, with the sunken fire lounge in the middle. Its former planting default is now the **Balanced views** comparison; the results and screenshots in this section describe that earlier arrangement.
+Version 1.8 introduced **Spa courtyard · near plot edges**, retained as a previous garden programme. The pool is farther toward the physical **left/east**, the six-person sauna is tucked into the far **right/west rear corner**, and the cold plunge is next to the rear boundary. The large terrace and edge jacuzzi remain, with the sunken fire lounge in the middle. Its former planting default is now the **Balanced views** comparison; the results and screenshots in this section describe that earlier arrangement.
 
 ![Terrace view with three tall screening pines, perimeter spa layout and fine dimensions](edge-terrace-dimensions-1.8.0.jpg)
 
