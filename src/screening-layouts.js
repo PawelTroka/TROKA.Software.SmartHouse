@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.10.0';
+import {getTreeType} from './tree-catalog.js?v=1.11.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -163,6 +163,26 @@ const compactLayouts=Object.freeze([
   ...edgeLayouts.filter(layout=>layout.id!=='default').map(layout=>Object.freeze({...layout,settings:compactSettings})),
 ]);
 
-export function getScreeningLayouts(siteId,program='spa-compact') {
-  return siteId==='sternicza-11'?(program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+// A forward pine sits beside the far corner of the moved 7 m pool. This is a
+// deliberately staggered group, not the old compact triangle. The two rear
+// crowns keep the garden and jacuzzi screen while the closer crown intercepts
+// the higher living-room sightlines. Historical arrays above remain unchanged.
+export const STERNICZA_POOL_END_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13,y:34.1},
+  {typeId:'austrian-pine-tall',x:14.4,y:25.7},
+  {typeId:'austrian-pine-tall',x:17.6,y:34.9},
+]);
+const screenedSettings=Object.freeze({...compactSettings,gardenProgram:'spa-screened',hedgeFront:4});
+const screenedLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Three 9.5 m pines · pool-end screen · default',
+    note:'The pool moves 5 m toward the house and shortens to 7 × 3.5 m. The nearest pine sits beside its far corner, 0.8 m toward the house from the water end, with a 1.02 m trunk-to-coping gap. Two pines remain in the rear-left/east area; all three modeled crowns fit inside the parcel. At the starting assumptions about 90% of living-room, 92% of jacuzzi, 95% of sunken-lounge and over 99% of named garden PCK3 samples are hidden; paths and dining can remain more exposed. Actual foliage has gaps.',
+    settings:screenedSettings,trees:STERNICZA_POOL_END_TREES}),
+  Object.freeze({id:'previous-compact-grove',label:'Previous compact grove · same moved pool',
+    note:'The v1.10 pine positions on the moved 7 m pool plan, for a direct tree-position comparison. Select the previous compact spa garden layout to restore its original 8 m pool as well.',
+    settings:screenedSettings,trees:STERNICZA_LEFT_EDGE_TREES}),
+  ...compactLayouts.filter(layout=>layout.id!=='default').map(layout=>Object.freeze({...layout,settings:screenedSettings})),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-screened') {
+  return siteId==='sternicza-11'?(program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }

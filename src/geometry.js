@@ -3,12 +3,12 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.10.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.10.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.10.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.11.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.11.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.11.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
-  hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 0,
+  hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0,
   gardenRaise: 0, bedRaise: 0, raiseNewHedges: true,
   floorHeight: 1.2, removeGarage: true,
   canopyEnabled: false, canopyDepth: 4.2, canopyHeight: 2.7,
@@ -110,7 +110,7 @@ export function spaLevels(settings={},data){
     bottomZ:poolGround+p.waterOffset-p.waterDepth,copingTopZ:poolGround+.075,
     copingBaseZ:program.active?poolLow-.08:poolGround-.045}:null,sauna:null,firepit:null,coldPlunge:null};
   if(!program.active)return result;
-  const edge=['spa-edge','spa-compact'].includes(program.id);
+  const edge=['spa-edge','spa-compact','spa-screened'].includes(program.id);
   const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
   const sa=program.sauna,sr=edge?padGradeRange(sa.footprint,settings,data):null,sg=sr?.high??highest(sa),sf=sg+sa.floorOffset;
   result.sauna={groundZ:sg,floorZ:sf,roofZ:sf+sa.height};
@@ -160,15 +160,16 @@ export function saunaOpaqueFaces(settings={},data){
 export function spaLayoutWarnings(settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return [];
   const warnings=[];
-  if(['spa-edge','spa-compact'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
-  if(['spa-edge','spa-compact'].includes(program.id)&&number(settings.bedRaise)>0){
+  if(['spa-edge','spa-compact','spa-screened'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
+  if(['spa-edge','spa-compact','spa-screened'].includes(program.id)&&number(settings.bedRaise)>0){
     // The illustrated hedge beds taper inward over 0.85m, as in the sunlight
     // receiver/terrain model. Close-set structures need a retaining detail if
     // that added soil reaches above their finished pad or coping.
     const segments=hedgeSegments(settings,data),levels=spaLevels(settings,data);
     const bedTop=(x,y)=>{
       let rise=0;
-      for(const {a,b} of segments){
+      for(const {a,b,side} of segments){
+        if(side==='front')continue;
         const dx=b[0]-a[0],dy=b[1]-a[1],length2=dx*dx+dy*dy;
         const t=((x-a[0])*dx+(y-a[1])*dy)/length2;
         if(t<0||t>1)continue;
@@ -202,7 +203,7 @@ export function spaSurfaceAt(x,y,settings={},data){
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
   const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
   if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
-  if(['spa-edge','spa-compact'].includes(program.id)){
+  if(['spa-edge','spa-compact','spa-screened'].includes(program.id)){
     const plungeStep=levels.coldPlunge.steps.find(step=>withinRect(x,y,step));
     if(plungeStep)return {surface:'plunge-entry',groundZ:plungeStep.topZ};
   }
@@ -225,7 +226,7 @@ export function terraceGroundReference(settings = {}, data) {
 
 /** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
-  const compact=settings.gardenProgram==='spa-compact'&&spaEnabled(settings,data);
+  const compact=['spa-compact','spa-screened'].includes(settings.gardenProgram)&&spaEnabled(settings,data);
   const depth = number(settings.terraceDepth, 4.2), size = compact?2.3:2.2;
   const spa=spaEnabled(settings,data);
   const infinity=spa&&(!compact||settings.jacuzziOverflow===true);
@@ -257,6 +258,10 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
     garden: [...garden, 1.65, 'Garden · standing', 'garden'],
     custom: [number(s.observerX, garden[0]), number(s.observerY, garden[1]), 1.65, 'Custom viewpoint', 'auto'],
   };
+  if((data.site.id||settings.siteId||'sternicza-11')==='sternicza-11'){
+    const houseX=data.site.house.footprint.map(p=>p[0]),frontY=Math.min(...data.site.house.footprint.map(p=>p[1]));
+    values.front=[(Math.min(...houseX)+Math.max(...houseX))/2,Math.max(2,frontY*.55),1.65,'Front garden · street view','garden'];
+  }
   if(program.active){
     const sa=program.sauna.viewpoint,fp=program.firepit.viewpoint;
     values.sauna=[sa.x,sa.y,sa.eyeHeight,'Sauna · seated','sauna'];
@@ -271,7 +276,7 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const groundZ = surface==='floor'?floorElevation(s,data):surface==='sauna'?levels.sauna.floorZ:
     ['firepit','sauna-entry','plunge-entry'].includes(surface)?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data);
   const target=program.active&&(preset==='sauna'||preset==='firepit')?program[preset==='sauna'?'sauna':'firepit'].viewpoint.lookAt:null;
-  const defaultLookYaw=target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
+  const defaultLookYaw=preset==='front'?180:target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
   return {x,y,z:groundZ+eyeHeight,preset,label,eyeHeight,groundZ,surface,defaultLookYaw,defaultLookPitch:0};
 }
 
@@ -305,11 +310,42 @@ function insetBoundary(boundary, inset) {
   return [...result, result[0]];
 }
 
+/** Front planting follows existing street-side grade; rear earthworks stop at the house. */
+export function hedgeGroundAt(x,y,side,settings={},data){
+  return terrainAt(x,y,data)+(side==='front'?0:number(settings.gardenRaise)+number(settings.bedRaise));
+}
+
 export function hedgeTopAt(x, y, side, settings, data) {
   const s = settingsWithDefaults(settings);
   const h = number(s[`hedge${side[0].toUpperCase()}${side.slice(1)}`]);
   const original = terrainAt(x, y, data);
-  return original + Math.max(0, h) + (s.raiseNewHedges ? number(s.gardenRaise) + number(s.bedRaise) : 0);
+  return (s.raiseNewHedges?hedgeGroundAt(x,y,side,s,data):original)+Math.max(0,h);
+}
+
+/**
+ * Proposed street planting, with explicit access gaps. The mapped source has
+ * no gate survey: pedestrian access follows the existing illustrated west
+ * approach centred at x=2.30m; the
+ * vehicle opening meets the east-side passage beside the house. No gate leaf
+ * receives opaque-screen credit. This proposal applies only to Sternicza 11.
+ */
+export function frontHedgeLayout(settings={},data){
+  const empty={segments:[],openings:[],length:0,assumption:''};
+  if((data.site.id||settings.siteId||'sternicza-11')!=='sternicza-11'||number(settings.hedgeFront)<=0)return empty;
+  const boundary=insetBoundary(data.site.boundary,clamp(number(settings.hedgeInset),0,3));
+  const index=data.site.boundaryNames.findIndex(name=>name==='street'||name==='front'||name.startsWith('front-'));
+  if(index<0)return empty;
+  const a=boundary[index],b=boundary[index+1],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+  if(length<8)return empty;
+  const point=d=>[a[0]+dx*d/length,a[1]+dy*d/length];
+  const projected=((2.3-a[0])*dx-a[1]*dy)/length;
+  const pedestrianCentre=clamp(projected,.6+EPS,length-5.2);
+  const gaps=[{id:'front-pedestrian-opening',label:'Pedestrian opening · proposed',start:pedestrianCentre-.6,end:pedestrianCentre+.6},
+    {id:'front-vehicle-opening',label:'Vehicle opening · proposed',start:length-4,end:length}];
+  const spans=[[0,gaps[0].start],[gaps[0].end,gaps[1].start]];
+  return {segments:spans.filter(([start,end])=>end-start>EPS).map(([start,end],i)=>({id:`front-span-${i+1}`,a:point(start),b:point(end),length:end-start})),
+    openings:gaps.map(g=>({id:g.id,label:g.label,a:point(g.start),b:point(g.end),width:g.end-g.start})),
+    length:length-5.2,assumption:'Proposed 1.20 m pedestrian and 4.00 m vehicle openings; gate positions are not surveyed. Openings receive no privacy-screen credit. Front planting stays at existing grade.'};
 }
 
 /** Full segment fields are for rendering; ray tests interpolate the native DTM. */
@@ -335,9 +371,14 @@ export function hedgeSegments(settings = {}, data) {
       if (b[1] < startY) { const t = (startY - b[1]) / (a[1] - b[1]); b = [b[0] + t * (a[0] - b[0]), startY]; }
     }
     const height = Math.max(0, number(s[`hedge${side[0].toUpperCase()}${side.slice(1)}`]));
-    const baseAt = p => terrainAt(...p, data) + number(s.gardenRaise) + number(s.bedRaise);
+    const baseAt = p => hedgeGroundAt(...p,side,s,data);
     segments.push({ side, a, b, height, baseA: baseAt(a), baseB: baseAt(b),
       topA: hedgeTopAt(...a, side, s, data), topB: hedgeTopAt(...b, side, s, data) });
+  }
+  for(const span of frontHedgeLayout(s,data).segments){
+    const {a,b}=span,side='front',height=Math.max(0,number(s.hedgeFront));
+    segments.push({...span,side,height,baseA:hedgeGroundAt(...a,side,s,data),baseB:hedgeGroundAt(...b,side,s,data),
+      topA:hedgeTopAt(...a,side,s,data),topB:hedgeTopAt(...b,side,s,data)});
   }
   return segments;
 }
@@ -387,7 +428,7 @@ export function screenOnRay(observer, target, settings, data, segments) {
     if (!hit || hit.t <= EPS || hit.t >= 1 - EPS) continue;
     const z = e[2] + hit.t * (b[2] - e[2]);
     const originalGround = terrainAt(hit.x, hit.y, data);
-    const groundZ = originalGround + number(s.gardenRaise) + number(s.bedRaise);
+    const groundZ = hedgeGroundAt(hit.x,hit.y,segment.side,s,data);
     // New planting is measured above the new bed; retained top heights are
     // measured above the ORIGINAL terrain, so filling never lifts old foliage.
     const referenceGroundZ = s.raiseNewHedges ? groundZ : originalGround;
@@ -453,8 +494,8 @@ export function analyzeVisibility(observer, settings = {}, data) {
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
   if (!s.removeGarage && data.site.garage) blockers.push(data.site.garage);
-  const worstRequiredHedge = { rear: 0, left: 0, right: 0, overall: 0 };
-  const remainingRequiredHedge = { rear: 0, left: 0, right: 0, overall: 0 };
+  const worstRequiredHedge = { rear: 0, left: 0, right: 0, front: 0, overall: 0 };
+  const remainingRequiredHedge = { rear: 0, left: 0, right: 0, front: 0, overall: 0 };
   let criticalRay = null;
   for (const block of targetBuildings) {
     const blockRays = [], samples = s.includeHighFeatures ? [...block.samples, ...block.highFeatures] : block.samples;

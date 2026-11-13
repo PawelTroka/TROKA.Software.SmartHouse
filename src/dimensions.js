@@ -3,10 +3,10 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.10.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments} from './geometry.js?v=1.10.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.10.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.10.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.11.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout} from './geometry.js?v=1.11.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.11.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.11.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -194,6 +194,8 @@ export function gardenDimensions(settings={},data){
     addVertical('pool-water-depth','pool','waterDepth',[pool.x+pool.width*.65,pool.y+pool.length*.7],levels.pool.bottomZ,levels.pool.waterZ,{description:'Pool water depth',datum:'water surface to pool floor',
       anchor:[pool.x+pool.width*.65,pool.y+pool.length*.7,levels.pool.waterZ+.15],planText:`water ${formatDimension(pool.waterDepth)}`,sceneText:`water ${formatDimension(pool.waterDepth)}`,priority:3});
     addGap('pool-boundary','pool',closestBoundary(rect(pool,pool.coping),data,program.active?'left':null),'Pool outer coping to mapped parcel boundary');
+    if(program.id==='spa-screened')addGap('pool-house','circulation',closestFootprints(rect(pool,pool.coping),data.site.house.footprint),'Pool outer coping to house wall',{
+      datum:'shortest horizontal outer coping to mapped house wall; conceptual clearance',priority:1,sceneText:null});
   }
 
   if(program.active){
@@ -250,15 +252,27 @@ export function gardenDimensions(settings={},data){
 
   // One height reference for each independently controlled hedge, not every
   // short source segment. Midpoints keep those references away from corners.
-  for(const side of ['rear','left','right']){
+  for(const side of ['rear','left','right','front']){
     const candidates=hedgeSegments(settings,data).filter(h=>h.side===side&&h.height>0);
     const h=candidates.sort((a,b)=>distance(b.a,b.b)-distance(a.a,a.b))[0];
     if(!h)continue;
     const p=midpoint(h.a,h.b),base=(h.baseA+h.baseB)/2,top=(h.topA+h.topB)/2;
     if(top<=base+EPS)continue;
-    addVertical(`hedge-${side}-height`,`hedge-${side}`,'height',p,base,top,{description:`${side} hedge exposed height`,datum:'current planting soil to hedge top',
+    addVertical(`hedge-${side}-height`,`hedge-${side}`,'height',p,base,top,{description:`${side} hedge exposed height`,datum:side==='front'?'existing front grade to hedge top; rear fill and hedge-bed raise excluded':'current planting soil to hedge top',
       sceneText:`${side} hedge ${formatDimension(top-base,{digits:1})}`,planText:`${side} h ${formatDimension(top-base,{digits:1})}`,
-      planAnchor:[p[0]+(side==='left'?-1.5:side==='right'?1.5:0),p[1]+(side==='rear'?-.65:0)],priority:3});
+      planAnchor:[p[0]+(side==='left'?-1.5:side==='right'?1.5:0),p[1]+(side==='rear'?-.65:side==='front'?.65:0)],priority:3,
+      ...(side==='front'?{scope:'site',groupType:'hedge'}:{})});
+  }
+  const front=frontHedgeLayout(settings,data);
+  for(const [i,span] of front.segments.entries()){
+    addHorizontal(`front-hedge-span-${i+1}`,'hedge-front','plantedLength',span.a,span.b,Math.max(ground(...span.a),ground(...span.b))+.15,{
+      description:`Front thuja planted span ${i+1}`,datum:front.assumption,offset:[0,1],scope:'site',groupType:'hedge',
+      sceneText:null,planText:`H4 · span ${i+1} ${formatDimension(span.length)}`,priority:3});
+  }
+  for(const [i,gap] of front.openings.entries()){
+    addHorizontal(gap.id,gap.id,'width',gap.a,gap.b,Math.max(ground(...gap.a),ground(...gap.b))+.15,{
+      description:gap.label,datum:'Proposed clear opening in the front hedge; no gate leaf or screen credit',offset:[0,1],scope:'site',
+      groupKey:i?'VG':'PG',groupLabel:gap.label,groupType:'feature',sceneText:`${i?'vehicle':'pedestrian'} ${formatDimension(gap.width)}`,priority:2});
   }
   for(const [i,tree] of screeningTreeVolumes(settings,data).entries()){
     if(tree.enabled===false)continue;
@@ -341,7 +355,7 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const featureNames={terrace:['D','Terrace'],jacuzzi:['J','Jacuzzi · outer rim'],pool:['P','Pool · water footprint'],
   sauna:['S','Sauna'],firepit:['F','Lounge · incl. coping'],'cold-plunge':['C','Cold plunge · outer rim'],
   dining:['DN','Dining platform'],plot:['PL','Plot · maximum local-axis spans'],house:['H','House · footprint envelope'],
-  'hedge-rear':['H1','Rear hedge'],'hedge-left':['H2','Left hedge'],'hedge-right':['H3','Right hedge']};
+  'hedge-rear':['H1','Rear hedge'],'hedge-left':['H2','Left hedge'],'hedge-right':['H3','Right hedge'],'hedge-front':['H4','Front thuja · two planted spans']};
 const gapNames={
   'pool-boundary':'Pool coping → plot boundary','sauna-right-boundary':'Sauna → right boundary',
   'sauna-rear-boundary':'Sauna → rear boundary','cold-plunge-boundary':'Plunge pad → rear boundary',
@@ -376,7 +390,7 @@ export function dimensionScheduleMarkup(records){
     const width=g.records.find(r=>r.kind==='width'),length=g.records.find(r=>r.kind==='length');
     const footprint=width&&length?`<span class="dimension-footprint"><span data-dimension-record="${esc(width.id)}" title="${esc(width.description)}">${width.value.toFixed(2)}</span> × <span data-dimension-record="${esc(length.id)}" title="${esc(length.description)}">${length.value.toFixed(2)}</span> m</span>`:'';
     const details=g.records.filter(r=>!footprint||(r!==width&&r!==length)).map(r=>{
-      const prefix=r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':r.kind==='clearStem'?'clear stem ':r.kind==='area'?'area ':r.kind==='wall'?`wall ${r.id.split('-').at(-1)} `:'';
+      const prefix=r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':r.kind==='clearStem'?'clear stem ':r.kind==='area'?'area ':r.kind==='wall'?`wall ${r.id.split('-').at(-1)} `:r.kind==='plantedLength'?`span ${r.id.split('-').at(-1)} `:'';
       return `<span class="dimension-detail">${prefix}${value(r)}</span>`;
     }).join('<span class="dimension-separator"> · </span>');
     return `<li data-dimension-group="${esc(g.key)}"><span class="dimension-key ${g.type==='gap'?'dimension-key-gap':''}">${esc(g.key)}</span><div><div class="dimension-row-heading"><strong>${esc(g.label)}</strong>${footprint}</div>${details?`<div class="dimension-row-values">${details}</div>`:''}</div></li>`;
@@ -398,7 +412,7 @@ function keyedPlanMarkup(records,{X,Y,scale,numericKeys=false,viewport=null}){
   }
   // A single compact mark per object replaces several overlapping height and
   // size notes. Boundary gaps get their own small keys on the measured line.
-  for(const group of groups.filter(g=>g.type!=='hedge')){
+  for(const group of groups.filter(g=>g.type!=='hedge'||g.feature==='hedge-front')){
     const r=group.records[0],width=group.records.find(v=>v.kind==='width'),length=group.records.find(v=>v.kind==='length');
     const pts=width&&length?[width.a,width.b,length.a,length.b]:[r.a,r.b];
     const p=[(Math.min(...pts.map(v=>v[0]))+Math.max(...pts.map(v=>v[0])))/2,(Math.min(...pts.map(v=>v[1]))+Math.max(...pts.map(v=>v[1])))/2];
