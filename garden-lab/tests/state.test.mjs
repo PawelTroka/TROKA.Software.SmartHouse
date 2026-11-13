@@ -120,7 +120,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,13);
+ assert.equal(STATE_VERSION,14);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -228,9 +228,9 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v13 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
- assert.equal(DEFAULTS.gardenProgram,'spa-screened');
- for(const gardenProgram of ['spa-screened','spa-compact','spa-edge','spa','classic']){
+test('v14 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+ assert.equal(DEFAULTS.gardenProgram,'spa-grove');
+ for(const gardenProgram of ['spa-grove','spa-screened','spa-compact','spa-edge','spa','classic']){
   const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
   const params=new URLSearchParams(encodeState(input));
   assert.equal(params.get('v'),String(STATE_VERSION));
@@ -239,7 +239,7 @@ test('v13 explicitly shares the chosen garden programme and never restores omitt
   assert.deepEqual(decodeState(params.toString()),input);
   assert.deepEqual(migrateSavedState(input,STATE_VERSION),input);
  }
- assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-screened');
+ assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-grove');
 });
 
 test('spa viewpoint and garage invariants survive URL and saved-state sanitization',()=>{
@@ -301,8 +301,8 @@ test('sparse v10 links and saves retain the published balanced pines when fresh 
   old.screeningTrees[0].x=0;
   assert.deepEqual(future.decodeState('v=10&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),expected,'Restored objects do not mutate the frozen v10 baseline');
  }
- assert.deepEqual(future.decodeState('v=13&site=sternicza-11').screeningTrees,futureTrees);
- assert.equal(future.decodeState('v=13&site=sternicza-11').showDimensions,false);
+ assert.deepEqual(future.decodeState('v=14&site=sternicza-11').screeningTrees,futureTrees);
+ assert.equal(future.decodeState('v=14&site=sternicza-11').showDimensions,false);
 });
 
 test('explicit v10 empty or custom trees, geometry and quotes migrate without moving the design',()=>{

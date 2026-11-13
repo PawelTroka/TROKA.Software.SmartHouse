@@ -16,8 +16,8 @@ const base=study.settings,state={...base,screeningTrees:STERNICZA_POOL_END_TREES
 const selected=study.layouts.find(l=>l.id==='selected'),previous=study.layouts.find(l=>l.id==='previous-v12');
 const close=(a,b,label)=>assert.ok(Math.abs(a-b)<1e-8,`${label}: ${a} versus ${b}`);
 
-test('pool-end default is explicit, preserves the previous pool and keeps compact spa capacities',()=>{
- const fresh=getScreeningLayouts('sternicza-11').find(l=>l.id==='default');
+test('published v1.11 pool-end layout is explicit, preserves the previous pool and keeps compact spa capacities',()=>{
+ const fresh=getScreeningLayouts('sternicza-11','spa-screened').find(l=>l.id==='default');
  assert.equal(fresh.settings.gardenProgram,'spa-screened');assert.equal(fresh.settings.hedgeFront,4);
  assert.deepEqual(fresh.trees,STERNICZA_POOL_END_TREES);assert.deepEqual(fresh.trees,selected.trees);
  assert.deepEqual(fresh.trees.map(t=>[t.x,t.y]),[[13,34.1],[14.4,25.7],[17.6,34.9]]);
