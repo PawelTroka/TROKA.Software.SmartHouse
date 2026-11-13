@@ -2,11 +2,49 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.10.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.10.0#v=12&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.11.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.11.0#v=13&site=sternicza-11)**
 
-## Left-edge pines, compact spa, more measurements and a complete garden budget · 1.10.0
+## Front street hedge and pool-end pine screen · 1.11.0
 
-Choose **Compact spa · left-edge pines · latest** to load the new garden geometry. The pool stays along the physical left/east boundary, the smaller sauna remains tucked against the rear-right/west corner, and the jacuzzi remains recessed at the outside edge of the living-room terrace. The terrain and fixed living-floor reference remain shared by the drawings, visibility and sun calculations.
+The new **Pool-end pines + front hedge · latest** layout adds the street screen and brings the nearest pine forward beside the far end of the pool. The pool moves **5.0 m toward the house**, from local y24.5 to y19.5, and shortens from **8.0 to 7.0 m** while retaining its **3.5 m width**. The compact six-person sauna and seven-seat spa remain the same sizes.
+
+### Front street privacy
+
+The fresh Sternicza default includes **4 m thujas across 14.12 m of planted frontage**, at the existing front-ground elevation. The proposed **1.20 m pedestrian opening** aligns with the illustrated west-side approach; the **4.00 m vehicle opening** sits at the east-side passage. These are explicit design positions, not surveyed gates. Openings and oblique side-passage views remain clear. The two hedge spans require **19 thujas at 0.8 m spacing**.
+
+Use the independent **Front hedge · street** height control, the **Front garden · Street view** button, or **Plan → Whole plot** to inspect the screen and its dimensions. The front viewpoint describes the street screen instead of displaying unrelated rear-building coverage percentages. Rendering, sightline intersections, sunlight and quantities all use the same two planted spans. Rear earthworks never raise the front hedge.
+
+### Three pines beside the moved pool
+
+The three 9.5 m Austrian pines now stand at **(13.0,34.1), (14.4,25.7), (17.6,34.9) m**, with unchanged 5 m crown diameters and 2.5 m clear stems. The nearest tree sits **0.80 m toward the house from the far water end**, beside that corner, with **1.02 m from trunk centre to outer coping**. All three nominal crowns fit inside the mapped parcel. This is a staggered screen, with the two rear pines remaining in the left/east garden area.
+
+The pool has a **1.23 m shortest outer-coping-to-house gap**, **1.56 m to the terrace edge**, and **0.82 m to the left/east plot boundary**. These are geometric planning clearances, not surveyed construction approvals. Root-ball, lifting and maintenance details still need to match the purchased specimens.
+
+| PCK3 viewpoint | Previous v1.10 hidden samples | New v1.11 hidden samples |
+| --- | ---: | ---: |
+| Living room · seated | 51.9% | **90.2%** |
+| Living room · standing | 48.6% | **90.0%** |
+| Terrace · standing | 81.9% | **96.9%** |
+| Jacuzzi · seated | 90.0% | **92.0%** |
+| Garden preset · standing | 99.8% | **99.8%** |
+| Sunken lounge · seated | 94.3% | **94.5%** |
+| Sauna · seated | 100% | **100%** |
+
+The [full 19-view study](docs/pool-end-screening-comparison.md), [recorded geometry and results](docs/pool-end-screening-comparison.json), and [reproducible comparison](scripts/compare-pool-end-screening.mjs) include the remaining exposed positions. Dining is **78.0%** screened, the right garden path **64.6%**, the new inner pool path **59.8%**, and the far pool end **76.4%**. The design improves the main occupied views; it does not conceal PCK3 from every walking position. These percentages count target samples, not façade area, and assume dense crown envelopes with no foliage gaps.
+
+On June 21, the moved pool has **16/24 sunlit samples at noon** and **8/24 at 15:00**, versus 11/27 and 1/27 before. The forward pine also adds terrace shade: noon drops from 32/32 to **25/32** on June 21, and from 29/32 to **10/32** on September 21. The same scene geometry drives both the privacy and sunlight calculations.
+
+### Budget and saved designs
+
+Front thujas add **5,700 PLN in referenced plant supply**, **1,425 PLN in planting allowance**, and **494–918 PLN in drip-irrigation allowance**. The existing hedge-delivery allowance is counted once. Proposed new gate and driveway construction are not priced as part of this hedge addition.
+
+The complete updated garden planning range is **785,885–1,360,869 PLN**; the upper bound includes a **20% uncertainty allowance once**. The shorter pool retains its **150,000–230,000 PLN installed planning range** until a project quote establishes a saving. Its smaller footprint adds 3.5 m² to landscape/fill quantities. See the [itemised budget and supplier references](docs/garden-budget-2026-11-13.md).
+
+Schema **v13** explicitly preserves the new programme and independent front setting. Older shared links and saved designs keep their original pool, trees and front-off state; the new-default link above or Reset loads the revised design. Korzeniowskiego retains its existing front and garden proposal.
+
+## Previous release: left-edge pines, compact spa, measurements and budget · 1.10.0
+
+The **Previous compact spa · rear-left grove** option retains this published garden geometry. The pool stays along the physical left/east boundary, the smaller sauna remains tucked against the rear-right/west corner, and the jacuzzi remains recessed at the outside edge of the living-room terrace. The terrain and fixed living-floor reference remain shared by the drawings, visibility and sun calculations.
 
 ![Hosted dimensioned plan with the compact grove, six-person sauna, seven-seat spa and service access](compact-spa-plan-1.10.0.jpg)
 

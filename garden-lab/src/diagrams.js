@@ -3,19 +3,20 @@ import {
   gardenGroundAt,
   terraceGroundReference,
   hedgeSegments,
+  frontHedgeLayout,
   canopyBounds,
   jacuzziBounds,
   spaLevels,
   saunaOpaqueFaces,
-} from './geometry.js?v=1.10.0';
-import {gazeDirection} from './orientation.js?v=1.10.0';
-import {localSunDirection} from './solar.js?v=1.10.0';
-import {getSiteProfile} from './sites.js?v=1.10.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.10.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.10.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.10.0';
-import {terraceStairs} from './layout.js?v=1.10.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.10.0';
+} from './geometry.js?v=1.11.0';
+import {gazeDirection} from './orientation.js?v=1.11.0';
+import {localSunDirection} from './solar.js?v=1.11.0';
+import {getSiteProfile} from './sites.js?v=1.11.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.11.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.11.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.11.0';
+import {terraceStairs} from './layout.js?v=1.11.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.11.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -141,8 +142,10 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   }).join('');
 
   const hedges = hedgeSegments(settings, data).filter(h => h.height > 0 && (h.topA > h.baseA || h.topB > h.baseB)).map(h =>
-    `<line x1="${X(h.a[0])}" y1="${Y(h.a[1])}" x2="${X(h.b[0])}" y2="${Y(h.b[1])}" stroke="${C.hedge}" stroke-width="${Math.max(scope === 'garden' ? 4 : 2, scale * .65)}" stroke-linecap="square"/>`
+    `<line data-hedge-side="${h.side}" x1="${X(h.a[0])}" y1="${Y(h.a[1])}" x2="${X(h.b[0])}" y2="${Y(h.b[1])}" stroke="${C.hedge}" stroke-width="${Math.max(scope === 'garden' ? 4 : 2, scale * .65)}" stroke-linecap="${h.side==='front'?'butt':'square'}"/>`
   ).join('');
+  const front=frontHedgeLayout(settings,data);
+  const frontOpenings=front.openings.map(g=>`<line data-front-opening="${g.id}" x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="#a58d6a" stroke-width="1.2" stroke-dasharray="3 3"><title>${esc(g.label)}: ${fmt(g.width,2)} m · no opaque gate in this model</title></line>`).join('');
   const detail = scope !== 'context';
   const compact = scale < 10;
   const {drop:terraceDrop} = terraceGroundReference(settings,data);
@@ -197,6 +200,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${spaPlanMarkup(program,{X,Y,scale,labels:detail&&!measured})}
         ${garage}
         ${hedges}
+        ${frontOpenings}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
         <polygon points="${polys(cone)}" fill="${C.observer}" opacity=".18"/>
         ${rays}
@@ -224,6 +228,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
       </div>
     </div>
     ${measured?`<p class="plan-site-note">Mapped street frontage ${fmt(frontage,2)} m · depth ${fmt(depth,2)} m · house setback ${fmt(setback,1)} m · ${scope==='detail'?'rear garden enlarged below':scope==='context'?'nearest buildings and privacy targets':'whole plot'}</p>`:''}
+    ${front.length>0&&scope!=='detail'?`<p class="plan-site-note">Front thuja ${fmt(front.length,2)} m planted · proposed openings: pedestrian 1.20 m, vehicle 4.00 m. Gate positions need confirmation; openings remain visible through.</p>`:''}
     <div class="plan-workspace ${measured?'plan-workspace--measured':''} ${measured&&stacked?'plan-workspace--stacked':''}"><div class="plan-drawing" data-plan-drawing>${svg}</div>${measured?dimensionScheduleMarkup(dimensionRecords):''}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
       <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Privacy targets</span><span>Left / right: from house toward rear garden ↓</span>

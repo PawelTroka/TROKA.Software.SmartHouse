@@ -14,7 +14,7 @@ const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
 test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
-  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-compact');
+  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-screened');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
@@ -22,8 +22,8 @@ test('fresh Sternicza starts with checked planting positions while Korzeniowskie
   assert.deepEqual(sternicza.sanitizeState({screeningTrees:[]}).screeningTrees,[]);
   const volumes=screeningTreeVolumes(sternicza.DEFAULTS,sterniczaData);
   assert.ok(volumes.every(volume=>volume.plantable),'Every default trunk must have a valid planting position');
-  assert.equal(volumes.filter(volume=>!volume.crownInside).length,1,'The farther-left comparison explicitly includes one overhanging crown');
-  assert.match(getScreeningLayouts('sternicza-11')[0].note,/overhang/i,'The default must disclose the boundary condition');
+  assert.ok(volumes.every(volume=>volume.crownInside),'The new default keeps every modelled crown within the parcel');
+  assert.match(getScreeningLayouts('sternicza-11')[0].note,/fit inside the parcel/i,'The default describes its boundary condition');
 });
 
 test('every pre-v8 omitted-tree link keeps its original tree-free meaning',()=>{
@@ -42,7 +42,7 @@ test('v7 shared trees and saved A retain independent geometry, quotes and season
   for(const model of [sternicza,korz]){
     const custom=createScreeningTree('broad-hornbeam',{id:'my-old-tree',x:14,y:26});
     Object.assign(custom,{crownWidth:3.2,crownDepth:2.4,rotation:37,unitPrice:24149,enabled:false});
-    const saved={...model.DEFAULTS,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
+    const saved={...model.DEFAULTS,hedgeFront:0,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
       floorHeight:1.85,preset:'jacuzzi',sunDate:'2026-12-21',costScreeningPlanting:750};
     const migrated=model.migrateSavedState(saved,7);
     assert.deepEqual(migrated,saved);

@@ -1,6 +1,6 @@
-import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.10.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.10.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.10.0';
+import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.11.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.11.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.11.0';
 
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -193,9 +193,9 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     $('tree-warning').textContent=warnings.join(' ');
     $('tree-warning').hidden=!warnings.length;
     $('tree-foliage-status').textContent=!tree.enabled?'This tree is off: excluded from screening, shade and purchase costs.':!volume?.plantable?'This location is not counted as screening. Move the trunk to a planting area.':volume?.foliageActive?`${type.evergreen?'Evergreen crown':'Leaf-on crown'} is included in privacy and shade. Dense foliage is an approximation.`:'Leaf-off comparison: this deciduous crown does not receive opaque-foliage credit.';
-    $('tree-find-position').disabled=!targets.length;
+    $('tree-find-position').disabled=!targets.length||state.preset==='front';
     const target=(getAnalysis()?.byBlock || []).find(block=>block.id===$('tree-target').value);
-    $('tree-target-current').textContent=target?`${target.label}: ${target.visible} of ${target.total} sampled points remain visible from this viewpoint.`:'';
+    $('tree-target-current').textContent=state.preset==='front'?'Choose a rear-garden or living-room viewpoint to compare the pine screen against nearby buildings.':target?`${target.label}: ${target.visible} of ${target.total} sampled points remain visible from this viewpoint.`:'';
   }
 
   return {

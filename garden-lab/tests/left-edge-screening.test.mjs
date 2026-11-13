@@ -21,7 +21,7 @@ const visible=(observer,trees)=>analyzeVisibility(observer,{...base,screeningTre
 const close=(a,b,label)=>assert.ok(Math.abs(a-b)<1e-8,`${label}: ${a} versus ${b}`);
 
 test('compact spa defaults move the outer crown left while preserving published corner layouts',()=>{
- assert.deepEqual(getScreeningLayouts('sternicza-11'),compact);
+ assert.notDeepEqual(getScreeningLayouts('sternicza-11'),compact,'The published compact geometry remains a separate historical choice');
  assert.deepEqual(fresh.trees,STERNICZA_LEFT_EDGE_TREES);
  assert.deepEqual(fresh.trees,selected.trees);
  assert.equal(fresh.settings.gardenProgram,'spa-compact');

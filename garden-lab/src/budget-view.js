@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.10.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.10.0';
+import {getSiteProfile} from './sites.js?v=1.11.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.11.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -53,14 +53,14 @@ export function renderBudget(cost,settings,data){
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
     ?`Some plants, services or garden installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices and installed quotes, or enable planning allowances.`
-    :`PLN ${garden?.enabled?'rear-garden':'planning'} budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance once. ${cost.planningEnabled?'Installed ranges are planning assumptions, not received supplier quotes.':'Site allowances and rates are editable.'}`;
+    :`PLN ${garden?.enabled?(h.sides.some(side=>side.side==='front')?'rear garden + front hedge':'rear-garden'):'planning'} budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance once. ${cost.planningEnabled?'Installed ranges are planning assumptions, not received supplier quotes.':'Site allowances and rates are editable.'}`;
   $('cost-status').classList.toggle('needs-quote',cost.status==='quote-required');
   const panel=document.querySelector('.cost-panel');
   panel.dataset.status=cost.status;panel.dataset.totalLow=cost.total?.low??'';
   panel.dataset.earthworkLow=e.total.low;panel.dataset.compactedVolume=e.compactedVolume;
   panel.dataset.screeningTreeCount=t?.count||0;panel.dataset.screeningTreeKnownLow=t?.knownSubtotal.low||0;
   panel.dataset.gardenKnownLow=garden?.knownBase.low||0;panel.dataset.planningEnabled=cost.planningEnabled?'true':'false';
-  const sideLabel=budgetSideLabels(data);
+  const sideLabel={...budgetSideLabels(data),front:'Front / street'};
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
     amount(s.plants))).join('');
