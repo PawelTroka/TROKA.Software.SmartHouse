@@ -1,19 +1,19 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.10.0';
-import { sampledRoofFaces } from './shade.js?v=1.10.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.10.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.10.0';
-import { getSiteProfile } from './sites.js?v=1.10.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.10.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.10.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.10.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.10.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.10.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.10.0';
-import { gardenDimensions } from './dimensions.js?v=1.10.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.10.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.11.0';
+import { sampledRoofFaces } from './shade.js?v=1.11.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.11.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.11.0';
+import { getSiteProfile } from './sites.js?v=1.11.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.11.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.11.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.11.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.11.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.11.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.11.0';
+import { gardenDimensions } from './dimensions.js?v=1.11.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.11.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -619,7 +619,7 @@ export function createScene(container, data, callbacks = {}) {
       const inward=[-dy/length*.12,dx/length*.12];
       for(let i=0;i<n;i++){
         const u=i/n,v=(i+1)/n,p=[a[0]+dx*u,a[1]+dy*u],q=[a[0]+dx*v,a[1]+dy*v];
-        const groundP=gardenGroundAt(...p,settings,data)+num(settings.bedRaise),groundQ=gardenGroundAt(...q,settings,data)+num(settings.bedRaise);
+        const groundP=hedgeGroundAt(...p,segment.side,settings,data),groundQ=hedgeGroundAt(...q,segment.side,settings,data);
         const topP=hedgeTopAt(...p,segment.side,settings,data),topQ=hedgeTopAt(...q,segment.side,settings,data);
         if(topP<=groundP && topQ<=groundQ)continue;
         triangles.push(localTriangle([...p,groundP],[...q,groundQ],[...q,topQ]),localTriangle([...p,groundP],[...q,topQ],[...p,topP]));
@@ -637,10 +637,12 @@ export function createScene(container, data, callbacks = {}) {
         const count=Math.max(1,Math.ceil(length/spacing));
         for(let j=0;j<count;j++){
           const t=(j+.5)/count,px=a[0]+dx*t-dy/length*.14,py=a[1]+dy*t+dx/length*.14;
-          const ground=gardenGroundAt(px,py,settings,data)+num(settings.bedRaise);
+          const ground=hedgeGroundAt(px,py,segment.side,settings,data);
           const top=hedgeTopAt(px,py,segment.side,settings,data),h=Math.max(0,top-ground);
           if(h<.12)continue;
-          const radius=Math.min(.65,.36+h*.045),phase=px*2.31+py*1.79;
+          // Keep the proposed street openings clear of decorative crown
+          // overhang, matching the analytical screen ends and dimension lines.
+          const radius=Math.min(.65,.36+h*.045,segment.side==='front'?Math.min(t,1-t)*length*.9:Infinity),phase=px*2.31+py*1.79;
           for(let k=0;k<7;k++){
             const q=k/6,scale=(1-q*.76),z=ground+h*(.12+q*.77);
             crowns.push({x:px+Math.sin(phase+k)*radius*.10,y:py+Math.cos(phase+k*.7)*radius*.10,z,
@@ -652,7 +654,7 @@ export function createScene(container, data, callbacks = {}) {
           }
         }
       }
-      if(num(settings.bedRaise)>0){
+      if(segment.side!=='front'&&num(settings.bedRaise)>0){
         const soil=[];
         for(let i=0;i<n;i++){
           const u=i/n,v=(i+1)/n,p=[a[0]+dx*u,a[1]+dy*u],q=[a[0]+dx*v,a[1]+dy*v];
@@ -868,7 +870,12 @@ export function createScene(container, data, callbacks = {}) {
       box(designGroup,centre-.6,.25,frontZ+.015,1.2,Math.max(.1,h.minY-.25),.035,mat.stone,false,-80);
     }else{
       const frontZ=terrainAt(5,5,data);
-      box(designGroup,1.0,.4,frontZ+.01,2.6,9.1,.04,mat.stone,false,-80);
+      // Match the proposed 1.20 m pedestrian gap, then widen to the existing
+      // illustrative approach. This drawing is not surveyed front paving.
+      if(num(settings.hedgeFront)>0){
+        box(designGroup,1.7,.4,frontZ+.01,1.2,1.3,.04,mat.stone,false,-80);
+        box(designGroup,1.0,1.7,frontZ+.01,2.6,7.8,.04,mat.stone,false,-80);
+      }else box(designGroup,1.0,.4,frontZ+.01,2.6,9.1,.04,mat.stone,false,-80);
       box(designGroup,4.1,1.7,frontZ+.01,10.9,1.1,.04,mat.stone,false,-80);
     }
     addHouse(designGroup,settings);
@@ -1089,7 +1096,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
+    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);

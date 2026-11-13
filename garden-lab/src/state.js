@@ -1,11 +1,11 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.10.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.10.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.10.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.10.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.10.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.10.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.11.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.11.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.11.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.11.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.11.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.11.0';
 
-export const STATE_VERSION = 12;
+export const STATE_VERSION = 13;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -17,11 +17,16 @@ const V11_STERNICZA_TREES=Object.freeze([[13.1,34.45],[14.35,31],[17.6,34.5]].ma
   id:`pine-${index+1}`,typeId:'austrian-pine-tall',height:9.5,crownBase:2.5,crownWidth:5,crownDepth:5,
   rotation:0,enabled:true,unitPrice:0,x,y,
 })));
+const V12_STERNICZA_TREES=Object.freeze([[13.3,34.5],[14.35,31],[18.1,34.5]].map(([x,y],index)=>Object.freeze({
+  id:`pine-${index+1}`,typeId:'austrian-pine-tall',height:9.5,crownBase:2.5,crownWidth:5,crownDepth:5,
+  rotation:0,enabled:true,unitPrice:0,x,y,
+})));
 
 const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeLeft: {label:'Left hedge · east',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeRight: {label:'Right hedge · west',min:0,max:15,step:0.1,value:4,group:'hedge'},
+  hedgeFront: {label:'Front hedge · street',min:0,max:15,step:0.1,value:0,group:'hedge'},
   gardenRaise: {label:'Raise the whole rear garden',min:0,max:1,step:0.05,value:0.5,group:'terrain'},
   bedRaise: {label:'Extra height under the hedges',min:0,max:1,step:0.05,value:0,group:'terrain'},
   terraceDepth: {label:'Terrace depth',min:3,max:6,step:0.1,value:4.2,group:'terrace'},
@@ -40,10 +45,10 @@ const BASE_FIELDS = Object.freeze({
   ...COST_FIELDS,
   ...BUILDING_FIELDS,
 });
-export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','sauna','firepit','custom']);
+export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -58,7 +63,11 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
-  const V11_DEFAULTS=Object.freeze({...DEFAULTS,costUsePlanningAllowances:false,jacuzziOverflow:false,
+  const V12_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFront:0,showDimensions:true,
+    costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
+    gardenProgram:siteId===DEFAULT_SITE_ID?'spa-compact':'classic',
+    screeningTrees:siteId===DEFAULT_SITE_ID?V12_STERNICZA_TREES:Object.freeze([])});
+  const V11_DEFAULTS=Object.freeze({...V12_DEFAULTS,costUsePlanningAllowances:false,jacuzziOverflow:false,
     showDimensions:true,gardenProgram:siteId===DEFAULT_SITE_ID?'spa-edge':'classic',
     screeningTrees:siteId===DEFAULT_SITE_ID?V11_STERNICZA_TREES:Object.freeze([])});
   const V10_DEFAULTS=Object.freeze({...V11_DEFAULTS,showDimensions:true,gardenProgram:siteId===DEFAULT_SITE_ID?'spa-edge':'classic',
@@ -81,9 +90,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
-    if(['spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
-    if(siteId!==DEFAULT_SITE_ID)out.gardenProgram='classic';
-    if(['spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
+    if(['spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
+    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.hedgeFront=0;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
+    if(['spa-screened','spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
     else if(['sauna','firepit'].includes(out.preset)){out.preset='garden';out.eyeHeight=1.65;}
     if(MODES.includes(input.mode))out.mode=input.mode;
     if(Object.hasOwn(input,'screeningTrees'))out.screeningTrees=sanitizeScreeningTrees(input.screeningTrees,profile.bounds);
@@ -93,10 +102,12 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   function sanitizeState(input={}) {return sanitizeWithDefaults(input,DEFAULTS);}
   function restoreVersionedState(input,version) {
     if(version<6&&siteId!==DEFAULT_SITE_ID)return sanitizeState();
-    const restoredInput=version<=8?{...input,gardenProgram:'classic'}:
-      version===9&&['spa-edge','spa-compact'].includes(input.gardenProgram)?{...input,gardenProgram:'spa'}:
-      version<=11&&input.gardenProgram==='spa-compact'?{...input,gardenProgram:'spa-edge'}:input;
-    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:DEFAULTS);
+    const oldInput=version<=12?{...input,hedgeFront:0}:input;
+    const restoredInput=version<=8?{...oldInput,gardenProgram:'classic'}:
+      version===9&&['spa-edge','spa-compact','spa-screened'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa'}:
+      version<=11&&['spa-compact','spa-screened'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-edge'}:
+      version===12&&oldInput.gardenProgram==='spa-screened'?{...oldInput,gardenProgram:'spa-compact'}:oldInput;
+    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:DEFAULTS);
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
@@ -138,10 +149,11 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   function scenarioState(name,current=DEFAULTS) {
     const layout=getScreeningLayouts(siteId,current.gardenProgram).find(item=>item.id===name);
     if(layout)return sanitizeState({...current,...layout.settings,screeningTrees:layout.trees});
-    const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
-    if(name==='default')Object.assign(s,{hedgeRear:DEFAULTS.hedgeRear,hedgeLeft:DEFAULTS.hedgeLeft,hedgeRight:DEFAULTS.hedgeRight,gardenRaise:DEFAULTS.gardenRaise});
-    if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,bedRaise:.5});
-    if(name==='tall'||name==='canopy')Object.assign(s,{hedgeRear:6,hedgeLeft:6,hedgeRight:6});
+    const frontEnabled=siteId===DEFAULT_SITE_ID&&current.hedgeFront>0;
+    const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,hedgeFront:frontEnabled?2.5:0,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
+    if(name==='default')Object.assign(s,{hedgeRear:DEFAULTS.hedgeRear,hedgeLeft:DEFAULTS.hedgeLeft,hedgeRight:DEFAULTS.hedgeRight,hedgeFront:DEFAULTS.hedgeFront,gardenRaise:DEFAULTS.gardenRaise});
+    if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,hedgeFront:frontEnabled?4:0,bedRaise:.5});
+    if(name==='tall'||name==='canopy')Object.assign(s,{hedgeRear:6,hedgeLeft:6,hedgeRight:6,hedgeFront:frontEnabled?6:0});
     if(name==='canopy')Object.assign(s,{canopyEnabled:true,canopyHeight:DEFAULTS.canopyHeight,canopyDepth:DEFAULTS.canopyDepth,canopyWidth:DEFAULTS.canopyWidth,fasciaDepth:DEFAULTS.fasciaDepth});
     return s;
   }
@@ -149,7 +161,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     const state=sanitizeState(current),layout=getScreeningLayouts(siteId,state.gardenProgram).find(item=>item.id===name);
     if(!profile.screeningLayouts?.length&&state.screeningTrees.length)return false;
     const candidate=scenarioState(name,state);
-    const keys=layout?Object.keys(layout.settings):['hedgeRear','hedgeLeft','hedgeRight','gardenRaise','bedRaise','canopyEnabled','raiseNewHedges'];
+    const keys=layout?Object.keys(layout.settings):['hedgeRear','hedgeLeft','hedgeRight','hedgeFront','gardenRaise','bedRaise','canopyEnabled','raiseNewHedges'];
     if(!keys.every(key=>candidate[key]===state[key]))return false;
     if(state.canopyEnabled&&!['canopyDepth','canopyHeight','canopyWidth','fasciaDepth'].every(key=>candidate[key]===state[key]))return false;
     if(layout){
@@ -167,7 +179,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     return next;
   }
   function changeHedgeHeight(state,key,value) {
-    const keys=['hedgeRear','hedgeLeft','hedgeRight'];
+    const keys=siteId===DEFAULT_SITE_ID?['hedgeRear','hedgeLeft','hedgeRight','hedgeFront']:['hedgeRear','hedgeLeft','hedgeRight'];
     if(!keys.includes(key))return sanitizeState(state);
     const next=sanitizeState({...state,[key]:value});
     if(next.linkedHedges)for(const side of keys)next[side]=next[key];

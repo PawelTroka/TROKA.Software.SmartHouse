@@ -1,6 +1,6 @@
-# Rear-garden pricing and sizing references
+# Garden pricing and sizing references
 
-Reviewed **13 November 2026**. No suppliers have been contacted and no site-specific quotations have been received. The simulator separates public product references, preliminary installed-work allowances and amounts entered by the user. It does not describe a manufacturer catalog price as the price of the complete construction shown in the model.
+Reviewed **13 November 2026**. No site-specific quotations have been entered in this simulator. The simulator separates public product references, preliminary installed-work allowances and amounts entered by the user. It does not describe a manufacturer catalog price as the price of the complete construction shown in the model.
 
 ## Public product references
 
@@ -28,13 +28,15 @@ These ranges are **design assumptions**, not researched local labour tariffs, co
 
 | Installed item | Planning range, before contingency | Included scope |
 | --- | ---: | --- |
-| Pool 8 × 3.5 m | **150,000–230,000 PLN** | Pool / filtration / heating / cover, excavation and disposal, support, coping, delivery, object connections and commissioning |
+| Pool 7 × 3.5 m; historic 8 × 3.5 m option retains this range | **150,000–230,000 PLN** | Pool / filtration / heating / cover, excavation and disposal, support, coping, delivery, object connections and commissioning |
 | Sealed seven-seat recessed spa | **75,000–105,000 PLN** | Factory-style spa, support and service chamber, local connections, delivery and commissioning |
 | Optional custom overflow spa | **105,000–165,000 PLN** | Complete alternative bespoke system, structure, balance tank and hydraulics; replaces the sealed-spa allowance |
 | Compact six-seat sauna | **65,000–95,000 PLN** | Cabin / heater / glazing, base, access steps, delivery, local connection and installation |
 | Legacy 4.2 × 4.1 m sauna | **85,000–135,000 PLN** | Larger installed envelope; applies only if the older program is selected with planning ranges on |
 | Custom cold-plunge feature | **25,000–45,000 PLN** | Shell / chiller, pad, steps and local installation |
 | Sunken fire lounge | **40,000–75,000 PLN** | Excavation / disposal, structure, waterproofing, drainage, seats / cushions, burner and fuel installation |
+
+The latest pool moves 5 m toward the house and shortens by 1 m to free the planting corridor. Its turnkey allowance remains **150,000–230,000 PLN** until a supplier prices the revised design; reducing water area does not establish proportional savings in excavation, equipment or installation. The geometry does update rear fill and finishes: the 3.5 m² reduction in water footprint leaves another 1.75 m³ to raise at the default 0.5 m garden level. Coping and access surfaces remain excluded from lawn and ornamental finishes.
 
 ### Garden finishes and enabling work
 
@@ -45,7 +47,7 @@ These ranges are **design assumptions**, not researched local labour tariffs, co
 | Movable furniture | Dining set **16,000–25,000**, loungers **2,850–5,000 each**, delivery / placement assistance **500–1,500 PLN** | Built-in lounge seating is in the fire-lounge line. The named Cloveris products advertise free delivery; the generic allowance reserves delivery / handling for other selections and can be replaced by the actual full-line price |
 | Ornamental planting | **20%** of remaining garden after hedge beds, hardscape and paths; **180–350 PLN/m²** | Plants, mulch and labour; no hedge / specimen supply or added bulk topsoil |
 | Lawn finish | Remaining landscape surface; **40–75 PLN/m²** | Lawn and fine grading, not a second purchase of bulk fill/topsoil |
-| Permanent irrigation | Beds, hedges and lawn; **35–65 PLN/m²** | Permanent distribution / controls; excludes specimen establishment visits |
+| Permanent irrigation | Rear beds, hedges and lawn plus a **1 m-wide planted-strip equivalent for the front hedge**; **35–65 PLN/m²** | Permanent distribution / controls, including front drip irrigation; excludes specimen establishment visits and front lawn / earthworks |
 | Lighting | **12 assumed fittings × 700–1,500 PLN** | Fittings and local wiring; spa-integrated lights are in their object budgets |
 | Shared utilities | **12,000–25,000 PLN** | Garden feeder / distribution, water feed and common drain connections; excludes duplicate object hookups and garden-fill drainage |
 | Garage demolition | Mapped garage footprint × **500–900 PLN/m²** | Removal and waste handling; only charged when the detached garage is removed |
@@ -53,6 +55,23 @@ These ranges are **design assumptions**, not researched local labour tariffs, co
 | Optional canopy | Width × depth × **1,700–3,000 PLN/m²** | Selected canopy and installation; no charge when disabled |
 
 The ornamental-bed share and lighting count are declared layout assumptions, not measured design quantities. Whole-line quote overrides let the user replace their corresponding cost totals. The plan geometry supplies the terrace, spa, dining, path, canopy and garage quantities. Lawn and planting finishes exclude pool coping and access stairs already priced under the corresponding objects. Overlapping hardscape exclusions count once.
+
+### Front / street thujas
+
+The front hedge uses the same **4 m stock-height assumption** as the rear hedges. At the default 0.50 m inset, it has two planted spans of **1.20 m and 12.92 m**, or **14.12 m in total**. A proposed **1.20 m pedestrian opening** aligned with the illustrated west-side path and **4.00 m vehicle opening** at the east end are excluded. The opening locations are design assumptions, not surveyed gate positions; the open gaps provide no hedge-screening credit.
+
+At **0.80 m** planting centres, the two separate spans require **2 + 17 = 19 thujas**. Each span rounds up separately. The existing [Serdyński Smaragd reference](https://www.serdynski.pl/pl/offer) prices the 3.5–4.0 m stock band at **300 PLN per plant**. The additional hedge allowance is therefore:
+
+| Front-hedge item | Additional cost before contingency, PLN |
+| --- | ---: |
+| 19 thujas × 300 PLN | 5,700 |
+| Planting allowance: 19 × 75 PLN | 1,425 |
+| Additional order delivery | 0; existing 1,000 PLN shared hedge-delivery allowance remains once |
+| Front drip-irrigation allocation: 14.12 m² equivalent × 35–65 PLN/m² | 494–918 |
+| **Added allowance before contingency** | **7,619–8,043** |
+| **Added allowance with 20% on upper bound** | **7,619–9,651** |
+
+The front strip stays on original ground. Rear-garden fill and extra raised hedge beds do not add front soil volumes. The irrigation strip is a cost basis only; it does not imply a 1 m raised bed, front lawn or new paving. New gates, boundary fencing and driveway construction remain outside this scope. The front unit-price override replaces only its plant supply; stock above 4 m still requires an explicit quote. Turning off new thuja procurement removes front plant and planting charges alongside the other sides.
 
 ### Specimen-tree services
 
@@ -70,15 +89,15 @@ The ranges above are unsourced project allowances. They are explicitly separate 
 
 ## Accounting and compatibility
 
-`costUsePlanningAllowances` is enabled for a fresh compact Sternicza design. It is false for historic saved designs and for fresh Korzeniowskiego defaults. With it off, zero means “quote required” for applicable installation lines, not free work. Historic `spa` / `spa-edge` designs do not acquire the new garden-finishes scope unless planning mode or a new garden quote is deliberately selected.
+`costUsePlanningAllowances` is enabled for a fresh compact or screened Sternicza design. Saved versions through v11 default to false when this setting was omitted, as do fresh Korzeniowskiego defaults. Version 12 retains its saved setting. With it off, zero means “quote required” for applicable installation lines, not free work. Historic `spa` / `spa-edge` designs do not acquire the new garden-finishes scope unless planning mode or a new garden quote is deliberately selected.
 
-The compact program keeps its garden-work scope visible when planning mode is turned off. Its missing quotes make the overall budget incomplete rather than silently deleting those costs. Positive `costSpa*` / `costGarden*` amounts replace complete lines. Product catalog amounts shown alongside them are evidence for comparison only and are not added a second time.
+The compact and screened programs keep their garden-work scope visible when planning mode is turned off. Their missing quotes make the overall budget incomplete rather than silently deleting those costs. Positive `costSpa*` / `costGarden*` amounts replace complete lines. Product catalog amounts shown alongside them are evidence for comparison only and are not added a second time. Saved versions through v12 do not automatically acquire the new front hedge.
 
 The combined total adds the unadjusted hedge, earthwork, specimen-tree, spa and garden ranges. It then applies the selected uncertainty percentage **once, to the upper bound only**. All detail tables show their amounts before that percentage. Hedges and soil retain their existing quantities, independent side controls, soil-volume partitioning and editable rates.
 
-### Current fresh-default snapshot
+### Previous v1.10 default snapshot
 
-For the compact program, three catalog-size pines, 4 m hedges on all three sides, a 0.5 m garden raise, the garage removed and no canopy:
+For the previous compact program, three catalog-size pines, 4 m hedges on the three rear-garden sides, a 0.5 m garden raise, the garage removed and no canopy:
 
 | Category | Before contingency, PLN |
 | --- | ---: |
@@ -90,4 +109,20 @@ For the compact program, three catalog-size pines, 4 m hedges on all three sides
 | **Total before contingency** | **777,581–1,124,956** |
 | **Displayed total with 20% on upper bound** | **777,581–1,349,948** |
 
-This is a preliminary rear-garden budget, not the full property renovation. It excludes acquisition, house remodeling, a basement garage, front driveway / boundaries, major incoming utility upgrades and recurring energy or maintenance bills. Final construction quantities, procurement choices, ground conditions and supplier scope can materially change it.
+### Current v1.11 default snapshot
+
+For `spa-screened`, the 7.0 × 3.5 m pool, the same three catalog-size pines, the front hedge in addition to the rear-garden hedges, a 0.5 m garden raise, the garage removed and no canopy:
+
+| Category | Before contingency, PLN |
+| --- | ---: |
+| Hedges: 93 thujas over 72.24 m, including 19 at the front | 35,875 |
+| Rear earthworks: 313.18 m², 156.59 m³ finished added volume | 46,396 |
+| Specimen trees and services | 195,750–221,100 |
+| Five spa installations | 355,000–550,000 |
+| Garden finishes / enabling works, including front drip irrigation | 152,865–280,687 |
+| **Total before contingency** | **785,885–1,134,058** |
+| **Displayed total with 20% on upper bound** | **785,885–1,360,869** |
+
+Compared with v1.10, the displayed budget increases by **8,304 PLN at the lower bound** and **10,922 PLN at the upper bound**. The front hedge and its irrigation account for 7,619 PLN / 9,651 PLN respectively; the rest comes from the smaller pool's additional rear soil and landscape finishes. Pine purchase prices, compact sauna / spa allowances and the pool installation range are unchanged.
+
+The current scope adds the selected front hedge to the preliminary rear-garden budget. It excludes acquisition, house remodeling, a basement garage, front driveway, new gates / boundary fencing, major incoming utility upgrades and recurring energy or maintenance bills. Final construction quantities, procurement choices, ground conditions and supplier scope can materially change it.

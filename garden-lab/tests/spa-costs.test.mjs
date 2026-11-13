@@ -83,7 +83,7 @@ test('a missing installed quote leaves a visible incomplete subtotal while prese
 });
 
 test('a fully quoted spa-only project is an estimate even without hedge, tree or fill costs',()=>{
-  const e=estimateCosts({...base,...quotes,hedgeRear:0,hedgeLeft:0,hedgeRight:0,gardenRaise:0,bedRaise:0},data);
+  const e=estimateCosts({...base,...quotes,hedgeRear:0,hedgeLeft:0,hedgeRight:0,hedgeFront:0,gardenRaise:0,bedRaise:0},data);
   assert.equal(e.hedges.status,'none');assert.equal(e.earthworks.status,'none');assert.equal(e.screeningTrees.count,0);
   assert.equal(e.status,'estimate');
   near(e.total.low,sumQuotes);near(e.total.high,sumQuotes*1.25);

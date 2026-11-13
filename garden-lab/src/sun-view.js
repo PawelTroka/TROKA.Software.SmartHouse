@@ -1,11 +1,11 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.10.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.10.0';
-import {getSiteProfile} from './sites.js?v=1.10.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.10.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.10.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.10.0';
-import {spaPlanMarkup} from './diagrams.js?v=1.10.0';
-import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.10.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.11.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.11.0';
+import {getSiteProfile} from './sites.js?v=1.11.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.11.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.11.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.11.0';
+import {spaPlanMarkup} from './diagrams.js?v=1.11.0';
+import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.11.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
