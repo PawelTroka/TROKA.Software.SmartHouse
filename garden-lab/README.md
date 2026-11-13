@@ -8,6 +8,8 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 Fresh/reset Sternicza designs now group **three 9.5 m Austrian pines** behind and along the far end of the left/east pool. Left means looking from the house into the rear garden. Their trunk centres occupy a **4.50 × 3.50 m** rectangle, with **3.67–4.78 m** spacing between trunks. The modeled **5 m crowns overlap**, forming a canopy envelope approximately **9.50 × 8.50 m**. The pool, corner sauna, plunge, edge jacuzzi, sunken lounge, terrain and dimension overlay retain the perimeter layout introduced in 1.8.
 
+![Hosted garden plan showing the compact three-pine grove, spa features and dimensions](corner-grove-plan-1.9.0.jpg)
+
 The requested composition has a measurable tradeoff. It slightly improves PCK3 screening from the named jacuzzi and garden positions, but moving the forward tree back substantially weakens the living-room screen. It does **not** conceal PCK3 completely from all three areas.
 
 | View | Previous balanced arrangement: visible PCK3 samples | New corner grove: visible PCK3 samples |
@@ -26,6 +28,8 @@ These are target sample counts, not percentages of visible façade area. Real fo
 The corner grove also changes shade. On June 21 at noon, the pool stays at **13/27 sunlit grid points**, while the terrace increases from **25/32 to 32/32**. At 15:00, the pool changes from **9/27 to 0/27**. Use **Sun & shade** to compare the time and season that matter to you; the compact grove is not uniformly sunnier.
 
 **State version 11** preserves existing designs. Sparse v10 links and saves restore the exact previous balanced three-tree arrangement, including the perimeter spa and enabled dimensions. Explicit tree positions, empty arrays, disabled trees and quotes remain intact. Earlier versions and Korzeniowskiego keep their own baselines. Use the current Sternicza link above, Reset, or select the new grove to load the new proposal.
+
+**Verification:** All **218 automated checks** pass and the static build succeeds. Hosted browser checks confirm the new default, actual PCK3 counts from the seated living room, jacuzzi and garden, the unchanged plant subtotal, the Balanced views comparison, three overlapping crowns and the dimension schedule. A sparse v10 link restores the previous arrangement and 41/420 seated PCK3 count. The cloud browser does not support WebGL, so these hosted visual checks used the existing lightweight renderer and SVG plan; the WebGL-specific geometry remains covered by the existing automated tests.
 
 ## Previous perimeter layout and dimensions · 1.8.0
 
