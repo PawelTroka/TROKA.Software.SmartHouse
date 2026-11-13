@@ -1,11 +1,18 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.8.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.8.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.8.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.8.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.8.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.8.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.9.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.9.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.9.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.9.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.9.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.9.0';
 
-export const STATE_VERSION = 10;
+export const STATE_VERSION = 11;
+
+// A sparse v10 link meant the published balanced arrangement. Keep the full
+// purchased-tree snapshot independent of future presets and catalog defaults.
+const V10_STERNICZA_TREES=Object.freeze([[17.6,34.9],[12.9,34.3],[14.4,25.7]].map(([x,y],index)=>Object.freeze({
+  id:`pine-${index+1}`,typeId:'austrian-pine-tall',height:9.5,crownBase:2.5,crownWidth:5,crownDepth:5,
+  rotation:0,enabled:true,unitPrice:0,x,y,
+})));
 
 const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -32,7 +39,7 @@ const BASE_FIELDS = Object.freeze({
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','sauna','firepit','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -46,9 +53,11 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,sunPathVisible:false,screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
+  const V10_DEFAULTS=Object.freeze({...DEFAULTS,showDimensions:true,gardenProgram:siteId===DEFAULT_SITE_ID?'spa-edge':'classic',
+    screeningTrees:siteId===DEFAULT_SITE_ID?V10_STERNICZA_TREES:Object.freeze([])});
   // Versions 4–7 started without specimen trees. Their omitted field must never
   // acquire the new planting design; v7 still preserves explicitly stored trees.
-  const V9_DEFAULTS=Object.freeze({...DEFAULTS,showDimensions:false,gardenProgram:siteId===DEFAULT_SITE_ID?'spa':'classic',
+  const V9_DEFAULTS=Object.freeze({...V10_DEFAULTS,showDimensions:false,gardenProgram:siteId===DEFAULT_SITE_ID?'spa':'classic',
     screeningTrees:getScreeningLayouts(siteId,'spa').find(item=>item.id==='default')?.trees||Object.freeze([])});
   const V8_DEFAULTS=Object.freeze({...V9_DEFAULTS,gardenProgram:'classic',
     screeningTrees:getScreeningLayouts(siteId,'classic').find(item=>item.id==='default')?.trees||Object.freeze([])});
@@ -77,7 +86,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   function restoreVersionedState(input,version) {
     if(version<6&&siteId!==DEFAULT_SITE_ID)return sanitizeState();
     const restoredInput=version<=8?{...input,gardenProgram:'classic'}:version===9&&input.gardenProgram==='spa-edge'?{...input,gardenProgram:'spa'}:input;
-    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:DEFAULTS);
+    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:DEFAULTS);
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];

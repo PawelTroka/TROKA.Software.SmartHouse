@@ -7,15 +7,15 @@ import {
   jacuzziBounds,
   spaLevels,
   saunaOpaqueFaces,
-} from './geometry.js?v=1.8.0';
-import {gazeDirection} from './orientation.js?v=1.8.0';
-import {localSunDirection} from './solar.js?v=1.8.0';
-import {getSiteProfile} from './sites.js?v=1.8.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.8.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.8.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.8.0';
-import {terraceStairs} from './layout.js?v=1.8.0';
-import {gardenDimensions, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.8.0';
+} from './geometry.js?v=1.9.0';
+import {gazeDirection} from './orientation.js?v=1.9.0';
+import {localSunDirection} from './solar.js?v=1.9.0';
+import {getSiteProfile} from './sites.js?v=1.9.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.9.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.9.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.9.0';
+import {terraceStairs} from './layout.js?v=1.9.0';
+import {gardenDimensions, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.9.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
