@@ -1,0 +1,194 @@
+{
+  "reviewedAt": "2026-11-13",
+  "summary": "Published product prices, not site quotations. Installed-work ranges are separately identified planning assumptions; no supplier has been contacted. Confirm tax, availability, delivery and installation in the final offer.",
+  "sources": [
+    {
+      "id": "pool",
+      "title": "RelaxPool · 8.0 × 3.0 × 1.5 m packages",
+      "url": "https://relaxpool.pl/basen-skimmerowy-800x30x150cm-kompletny-zestaw/",
+      "low": 78160,
+      "high": 174704,
+      "status": "catalog-reference",
+      "tax": "Gross prices; Smart 78,160, Comfort 125,077, Exclusive 174,704 PLN.",
+      "scope": "Equipment package. Transport and building works priced separately; covers are optional. Reference is 3.0 m wide, while the proposed pool is 3.5 m wide."
+    },
+    {
+      "id": "jacuzzi",
+      "title": "Wellis Polska · Vienna Life · seven seated places",
+      "url": "https://www.wellispolska.pl/produkt/vienna-life/",
+      "low": 51000,
+      "high": 51000,
+      "status": "catalog-reference",
+      "tax": "Displayed retail offer; confirm tax and delivered total with the supplier.",
+      "scope": "2.30 × 2.30 × 0.90 m factory spa. Allow 0.60 m technical access on every side. Recessed installation and custom overflow are not included."
+    },
+    {
+      "id": "sauna",
+      "title": "RoyalSauna · Premium · six seated people",
+      "url": "https://www.royalsauna.pl/sauny/premium",
+      "low": 45900,
+      "high": 45900,
+      "from": true,
+      "status": "catalog-reference",
+      "tax": "Gross starting price; final amount depends on heater choice.",
+      "scope": "3.00 × 2.40 × 2.30 m external size. Prepared base and electrical connection are client scope. Proposed corner glazing is a custom design, not a quoted manufacturer variant."
+    },
+    {
+      "id": "plunge",
+      "title": "CASPERA · NØR / ARC cold plunge with chiller",
+      "url": "https://caspera.pl/pl/",
+      "low": 15990,
+      "high": 15990,
+      "status": "catalog-reference",
+      "tax": "Gross price.",
+      "scope": "Tub, chiller, case, cover, fittings and delivery included. 1.60 or 1.70 × 0.70 × 0.575 m; smaller than the proposed 2.20 × 1.30 m feature."
+    },
+    {
+      "id": "fire",
+      "title": "Planika · 2026 outdoor manufacturer price list",
+      "url": "https://planikafires.com/wp-content/uploads/2026/01/EN_PLN_Outdoor_Europe_Pricelist_01.2026.pdf",
+      "low": 5740,
+      "high": 9900,
+      "status": "catalog-reference",
+      "tax": "NET: Galio Insert manual 5,740; automatic 1000 9,900 PLN. VAT additional.",
+      "scope": "Burner only. Concrete room, seats, waterproofing, drainage and compliant fuel installation are separate."
+    },
+    {
+      "id": "furniture",
+      "title": "Cloveris · Barcelona Beige · six-person dining set",
+      "url": "https://cloveris.pl/pl/p/Barcelona-Beige-Zestaw-obiadowy-dla-6-os./3449",
+      "low": 22950,
+      "high": 22950,
+      "status": "catalog-reference",
+      "tax": "Gross retail price including 23% VAT.",
+      "scope": "Six chairs and a 2.40 × 1.15 m table. The product advertises free delivery. Optional covers, placement assistance and alternate furniture are separate."
+    },
+    {
+      "id": "lounger",
+      "title": "Cloveris · Delta Lava / Graphite · one lounger",
+      "url": "https://cloveris.pl/pl/p/Delta-Lava-Lezak-aluminiowy-Poduszka-Graphite/2579",
+      "low": 2850,
+      "high": 2850,
+      "status": "catalog-reference",
+      "tax": "Gross retail price including 23% VAT; two loungers total 5,700 PLN.",
+      "scope": "2.02 × 0.73 × 0.40 m. The product advertises free delivery. With the Barcelona set, the three-product benchmark totals 28,650 PLN; it is not added to the installed furniture allowance."
+    }
+  ],
+  "planningRates": {
+    "basis": "Unsourced design assumptions in PLN, aiming to include tax. Not supplier offers or measured contractor rates. Override complete line totals in the simulator.",
+    "rates": {
+      "pool": [
+        150000,
+        230000
+      ],
+      "jacuzzi": [
+        75000,
+        105000
+      ],
+      "overflowJacuzzi": [
+        105000,
+        165000
+      ],
+      "sauna": [
+        65000,
+        95000
+      ],
+      "legacyLargeSauna": [
+        85000,
+        135000
+      ],
+      "plunge": [
+        25000,
+        45000
+      ],
+      "firepit": [
+        40000,
+        75000
+      ],
+      "terracePerM2": [
+        1000,
+        1700
+      ],
+      "terraceSteps": [
+        8000,
+        15000
+      ],
+      "pavingPerM2": [
+        450,
+        800
+      ],
+      "diningSet": [
+        16000,
+        25000
+      ],
+      "lounger": [
+        2850,
+        5000
+      ],
+      "furnitureDelivery": [
+        500,
+        1500
+      ],
+      "plantingPerM2": [
+        180,
+        350
+      ],
+      "lawnPerM2": [
+        40,
+        75
+      ],
+      "irrigationPerM2": [
+        35,
+        65
+      ],
+      "lightFixture": [
+        700,
+        1500
+      ],
+      "utilities": [
+        12000,
+        25000
+      ],
+      "demolitionPerM2": [
+        500,
+        900
+      ],
+      "design": [
+        15000,
+        30000
+      ],
+      "canopyPerM2": [
+        1700,
+        3000
+      ],
+      "largeTreePlanting": [
+        2500,
+        6000
+      ],
+      "smallTreePlanting": [
+        300,
+        800
+      ],
+      "largeTreeAnchoring": [
+        350,
+        800
+      ],
+      "smallTreeAnchoring": [
+        149,
+        300
+      ],
+      "treeDelivery": [
+        3000,
+        8000
+      ],
+      "treeCrane": [
+        2500,
+        8000
+      ],
+      "treeEstablishment": [
+        2000,
+        5000
+      ]
+    }
+  }
+}

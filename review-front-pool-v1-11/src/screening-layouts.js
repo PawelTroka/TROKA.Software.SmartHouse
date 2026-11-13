@@ -1,0 +1,188 @@
+/**
+ * Site-specific design starting points. Coordinates are local mapped metres.
+ * This module contains data only; it does not choose positions at page load.
+ */
+import {getTreeType} from './tree-catalog.js?v=1.11.0';
+
+const treesFrom = rows => Object.freeze(rows.map((row,index) => {
+  const type=getTreeType(row.typeId);
+  if(!type)throw new Error(`Unknown tree type in planting layout: ${row.typeId}`);
+  return Object.freeze({id:`pine-${index+1}`,typeId:type.id,...type.dimensions,
+    rotation:0,enabled:true,unitPrice:0,...row});
+}));
+
+// Checked across living-room, terrace, jacuzzi and garden viewpoints. Whole
+// crowns remain inside the parcel and clear of fixed hardscape; the nearby rear
+// crowns overlap, while stems stay clear of the proposed dining and loungers.
+export const STERNICZA_STRATEGIC_TREES = treesFrom([
+  {typeId:'austrian-pine-tall',x:16.1,y:29.6},
+  {typeId:'austrian-pine-tall',x:12.2,y:32.6},
+  {typeId:'austrian-pine-large',x:15.7,y:22.8},
+]);
+export const STERNICZA_THREE_TALL_TREES = treesFrom([
+  {typeId:'austrian-pine-tall',x:16,y:30.3},
+  {typeId:'austrian-pine-tall',x:12.2,y:32.6},
+  {typeId:'austrian-pine-tall',x:16,y:24},
+]);
+export const STERNICZA_BUDGET_TREES = treesFrom([
+  {typeId:'austrian-pine-tall',x:13.6,y:24.9},
+  {typeId:'austrian-pine-large',x:11.3,y:32.9},
+  {typeId:'austrian-pine-large',x:11.3,y:26.8},
+]);
+
+export const STERNICZA_LAYOUT_SETTINGS = Object.freeze({
+  hedgeRear:4,hedgeLeft:4,hedgeRight:4,hedgeInset:.5,
+  gardenRaise:.5,bedRaise:0,raiseNewHedges:true,
+  terraceDepth:4.2,removeGarage:true,canopyEnabled:false,
+});
+
+const layouts = Object.freeze([
+  Object.freeze({id:'default',label:'Strategic pines · 2 tall + 1 large · default',
+    note:'Design starting point: two 9.5 m pines and one 5.5 m pine. Compare each viewpoint. Uses 4 m hedges, +0.5 m garden fill, a 4.2 m terrace and the garage removed.',
+    settings:STERNICZA_LAYOUT_SETTINGS,trees:STERNICZA_STRATEGIC_TREES}),
+  Object.freeze({id:'three-tall-pines',label:'Three 9.5 m pines · larger-stock comparison',
+    note:'A larger-stock comparison, not a claim of the best value. Compare its view coverage, shade and plant budget with the strategic layout.',
+    settings:STERNICZA_LAYOUT_SETTINGS,trees:STERNICZA_THREE_TALL_TREES}),
+  Object.freeze({id:'budget-pines',label:'One tall + two smaller pines · lower-cost comparison',
+    note:'One 9.5 m pine and two 5.5 m pines. Favors living-room sightlines but leaves more visible from the jacuzzi and garden. Compare each viewpoint and the plant budget.',
+    settings:STERNICZA_LAYOUT_SETTINGS,trees:STERNICZA_BUDGET_TREES}),
+  Object.freeze({id:'hedges-only',label:'4 m hedges + 0.5 m fill · no specimen trees',
+    note:'A tree-free comparison with the same hedge, garden and terrace assumptions.',
+    settings:STERNICZA_LAYOUT_SETTINGS,trees:Object.freeze([])}),
+]);
+
+// The east-pool spa programme needs different planting positions. Keep the
+// previous arrays above for older shared designs and the explicit comparison.
+const spaTrees = Object.freeze({
+  default:treesFrom([
+    {typeId:'austrian-pine-tall',x:17,y:35.3},
+    {typeId:'austrian-pine-tall',x:13.3,y:35.3},
+    {typeId:'austrian-pine-large',x:16.6,y:22.1},
+  ]),
+  'three-tall-pines':treesFrom([
+    {typeId:'austrian-pine-tall',x:17,y:35.3},
+    {typeId:'austrian-pine-tall',x:13.3,y:35.3},
+    {typeId:'austrian-pine-tall',x:2.9,y:26.8},
+  ]),
+  'budget-pines':treesFrom([
+    {typeId:'austrian-pine-tall',x:17,y:35.3},
+    {typeId:'austrian-pine-large',x:12.7,y:35.7},
+    {typeId:'austrian-pine-large',x:16.6,y:22.1},
+  ]),
+  'hedges-only':Object.freeze([]),
+});
+const spaLayouts=Object.freeze(layouts.map(layout=>Object.freeze({...layout,
+  settings:Object.freeze({...layout.settings,gardenProgram:'spa'}),trees:spaTrees[layout.id],
+  note:layout.id==='hedges-only'?'The spa layout with 4 m hedges and no specimen trees.'
+    :'Trees positioned around the east pool and spa rooms. Compare the current sightlines and shade; the earlier west-pool screening figures do not apply.',
+})));
+
+// The edge-packed programme brings the third full-height crown forward into
+// the soil beside the pool. Keep the historical spa arrays above unchanged.
+// These catalog-sized crowns deliberately overhang some pool/spa hardscape;
+// all trunks have a 1 m illustrative planting allowance and crowns stay inside
+// the parcel. The fire bowl itself is outside all crown footprints. This is a
+// design comparison, not a nursery root-ball or fire-clearance certification.
+// See docs/edge-screening-comparison.md for every named and walkable check.
+export const STERNICZA_EDGE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:17.6,y:34.9},
+  {typeId:'austrian-pine-tall',x:12.9,y:34.3},
+  {typeId:'austrian-pine-tall',x:14.4,y:25.7},
+]);
+export const STERNICZA_EDGE_LIVING_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.9,y:27.3},
+  {typeId:'austrian-pine-tall',x:12.5,y:33.4},
+  {typeId:'austrian-pine-tall',x:15.2,y:23.2},
+]);
+// The requested compact grove sits at the far-left/east end of the pool.
+// Preserve the published forward-tree arrangement above as a comparison.
+// Three 5 m crowns overlap in plan; rearward planting improves the named
+// jacuzzi/garden views but leaves more of PCK3 visible from the living room.
+// See docs/corner-screening-comparison.md for the measured tradeoff.
+export const STERNICZA_CORNER_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.1,y:34.45},
+  {typeId:'austrian-pine-tall',x:14.35,y:31},
+  {typeId:'austrian-pine-tall',x:17.6,y:34.5},
+]);
+const edgeSettings=Object.freeze({...STERNICZA_LAYOUT_SETTINGS,gardenProgram:'spa-edge'});
+const edgeLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Three 9.5 m pines · rear-left grove · default',
+    note:'Three overlapping crowns in a compact group at the far-left/east end of the pool. Strong screening from the jacuzzi and named garden position, but approximately half the sampled PCK3 points remain visible from the living room. Compare Balanced views and Living-room priority. Crowns overhang pool edges; actual foliage has gaps.',
+    settings:edgeSettings,trees:STERNICZA_CORNER_TREES}),
+  Object.freeze({id:'balanced-views',label:'Three 9.5 m pines · balanced views · previous default',
+    note:'Three full-height pines, including a forward crown beside the pool. Balances living-room, terrace, jacuzzi and garden views. Some PCK3 remains visible; inspect each view. Crowns overhang pool/spa edges and need individual planting and maintenance checks.',
+    settings:edgeSettings,trees:STERNICZA_EDGE_TREES}),
+  Object.freeze({id:'living-priority',label:'Three 9.5 m pines · living-room priority',
+    note:'Prioritizes the living-room and terrace sightlines at the same plant cost. At the starting assumptions, the seated living-room samples are hidden and two standing-view sample rays remain. More of PCK3 is visible from the fire lounge and pool paths. Actual foliage has gaps.',
+    settings:edgeSettings,trees:STERNICZA_EDGE_LIVING_TREES}),
+  Object.freeze({id:'mixed-pines',label:'Two 9.5 m + one 5.5 m pine · lower plant cost',
+    note:'Saves 43,000 PLN in catalog plant cost against three tall pines. Compared with Balanced views, more sampled PCK3 remains visible from the living room, jacuzzi and several garden positions. Delivery and installation are extra.',
+    settings:edgeSettings,trees:treesFrom([
+      {typeId:'austrian-pine-tall',x:14.4,y:26.4},
+      {typeId:'austrian-pine-tall',x:13,y:33.8},
+      {typeId:'austrian-pine-large',x:16.8,y:33.8},
+    ])}),
+  Object.freeze({id:'budget-pines',label:'One 9.5 m + two 5.5 m pines · budget comparison',
+    note:'A lower plant-cost comparison that favors the main terrace and garden viewpoint but leaves substantially more exposure from dining, loungers and pool paths. Compare every occupied area.',
+    settings:edgeSettings,trees:treesFrom([
+      {typeId:'austrian-pine-tall',x:14.2,y:25.7},
+      {typeId:'austrian-pine-large',x:13.3,y:33.1},
+      {typeId:'austrian-pine-large',x:9.3,y:24.7},
+    ])}),
+  Object.freeze({id:'hedges-only',label:'4 m hedges + 0.5 m fill · no specimen trees',
+    note:'The edge-packed spa with the same hedges, fill and terrace, without specimen trees.',
+    settings:edgeSettings,trees:Object.freeze([])}),
+]);
+
+// Keep the requested rear-left grove compact while moving it slightly east.
+// Pine 1 overlaps both other nominal crowns, preserving a connected canopy.
+// The historical spa-edge arrays above remain literal and unchanged. The
+// outer crown crosses the east boundary by about 0.29 m; its full volume is
+// an explicit design assumption, not an approved planting right.
+export const STERNICZA_LEFT_EDGE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.3,y:34.5},
+  {typeId:'austrian-pine-tall',x:14.35,y:31},
+  {typeId:'austrian-pine-tall',x:18.1,y:34.5},
+]);
+export const STERNICZA_WIDER_LEFT_EDGE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.5,y:35},
+  {typeId:'austrian-pine-tall',x:14.4,y:30},
+  {typeId:'austrian-pine-tall',x:19.3,y:33.8},
+]);
+const compactSettings=Object.freeze({...edgeSettings,gardenProgram:'spa-compact'});
+const compactLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Three 9.5 m pines · compact left-edge grove · default',
+    note:'A compact connected grove at the rear-left/east pool end. The outer pine moves 0.50 m farther left and the rear inner pine 0.20 m left; the middle pine stays in place. Nominal crowns overlap through the rear inner pine. Tree 3\'s modeled crown extends approximately 0.29 m beyond the left boundary; full-crown screening assumes this overhang. Living-room screening improves only modestly: about half the sampled PCK3 points remain visible. Compare Wider left-edge, Balanced views and Living-room priority.',
+    settings:compactSettings,trees:STERNICZA_LEFT_EDGE_TREES}),
+  Object.freeze({id:'wider-left-edge',label:'Wider left-edge · stronger house screen',
+    note:'Spreads the three pines across a 5.8 × 5.0 m trunk envelope and brings the middle crown forward. It hides more sampled PCK3 points from the house, but the 5 m crowns no longer overlap in plan. The outer crown extends approximately 1.49 m beyond the left boundary. This is a wider comparison, not the compact-grove default or a complete-concealment guarantee.',
+    settings:compactSettings,trees:STERNICZA_WIDER_LEFT_EDGE_TREES}),
+  Object.freeze({id:'contained-corner',label:'Three 9.5 m pines · contained corner · previous grove',
+    note:'The previous corner group with all three modeled crowns inside the parcel. It retains stronger screening from the named jacuzzi and garden positions but leaves more of PCK3 visible from the living room. Crowns overhang parts of the pool; actual foliage has gaps.',
+    settings:compactSettings,trees:STERNICZA_CORNER_TREES}),
+  ...edgeLayouts.filter(layout=>layout.id!=='default').map(layout=>Object.freeze({...layout,settings:compactSettings})),
+]);
+
+// A forward pine sits beside the far corner of the moved 7 m pool. This is a
+// deliberately staggered group, not the old compact triangle. The two rear
+// crowns keep the garden and jacuzzi screen while the closer crown intercepts
+// the higher living-room sightlines. Historical arrays above remain unchanged.
+export const STERNICZA_POOL_END_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13,y:34.1},
+  {typeId:'austrian-pine-tall',x:14.4,y:25.7},
+  {typeId:'austrian-pine-tall',x:17.6,y:34.9},
+]);
+const screenedSettings=Object.freeze({...compactSettings,gardenProgram:'spa-screened',hedgeFront:4});
+const screenedLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Three 9.5 m pines · pool-end screen · default',
+    note:'The pool moves 5 m toward the house and shortens to 7 × 3.5 m. The nearest pine sits beside its far corner, 0.8 m toward the house from the water end, with a 1.02 m trunk-to-coping gap. Two pines remain in the rear-left/east area; all three modeled crowns fit inside the parcel. At the starting assumptions about 90% of living-room, 92% of jacuzzi, 95% of sunken-lounge and over 99% of named garden PCK3 samples are hidden; paths and dining can remain more exposed. Actual foliage has gaps.',
+    settings:screenedSettings,trees:STERNICZA_POOL_END_TREES}),
+  Object.freeze({id:'previous-compact-grove',label:'Previous compact grove · same moved pool',
+    note:'The v1.10 pine positions on the moved 7 m pool plan, for a direct tree-position comparison. Select the previous compact spa garden layout to restore its original 8 m pool as well.',
+    settings:screenedSettings,trees:STERNICZA_LEFT_EDGE_TREES}),
+  ...compactLayouts.filter(layout=>layout.id!=='default').map(layout=>Object.freeze({...layout,settings:screenedSettings})),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-screened') {
+  return siteId==='sternicza-11'?(program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+}
