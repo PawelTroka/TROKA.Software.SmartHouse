@@ -2,7 +2,21 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.12.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.12.0#v=14&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.13.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.13.0#v=15&site=sternicza-11)**
+
+## PCK3 façade screen and full-perimeter thujas · 1.13.0
+
+The default now spreads three overlapping 9.5 m Austrian-pine crowns across PCK3's façade, following the supplied visual reference. The trees are at **(17.50, 26.80), (14.85, 28.40), (12.05, 32.35) m**. The nearest and centre trunks are **3.10 m apart**, with another **4.84 m** between centre and rear tree; the crowns form a connected group and remain inside the parcel.
+
+The pool moves toward the house and shortens to **6.0 × 3.5 m**, leaving **1.02 m between the nearest trunk and far coping**. This space brings the screening crown forward enough to intercept the higher living-room sightlines. The compact six-person sauna and seven-seat jacuzzi retain their established dimensions.
+
+**Façade samples are now reported separately from roof samples.** From the default seated living room, 0/55 façade points and 7/365 roof points remain visible; standing, 0/55 façade and 12/365 roof. The terrace, jacuzzi, named garden and sauna presets have no visible PCK3 samples. The sunken lounge remains more exposed: 17/55 façade and 183/365 roof points remain visible. This is a sampled dense-crown model, not a guarantee for every position or actual foliage. See the [geometry and view comparison](docs/aligned-grove-screening-comparison.md).
+
+**Thujas now follow the entire plot perimeter:** front, full left side, full right side and rear. Side planting continues beside the house to the street. The front retains the proposed 1.2 m pedestrian and 4.0 m vehicle openings. At 0.5 m inset there are **107.27 m of planted hedge**, versus 72.24 m before; at 0.8 m spacing the budget includes **137 thujas**, versus 93. The new front-side sections remain on existing grade; rear fill does not lift the front garden.
+
+The hedge subtotal is **52,375 PLN** before contingency: 41,100 plants, 10,275 planting and 1,000 shared delivery. The complete current planning range is **804,296–1,384,672 PLN**, with 20% uncertainty applied to the upper total once. The smaller pool retains its existing installed planning allowance pending a project quotation. Added front-side irrigation and revised rear quantities are included.
+
+Schema **v15** preserves the full-perimeter setting explicitly. Existing v14 and older links retain their original planting extents, pool and trees. The latest link above or Reset opens the revised design.
 
 ## Close pine grove · 1.12.0
 

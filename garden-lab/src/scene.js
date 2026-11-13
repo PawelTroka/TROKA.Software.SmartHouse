@@ -1,19 +1,19 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.12.0';
-import { sampledRoofFaces } from './shade.js?v=1.12.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.12.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.12.0';
-import { getSiteProfile } from './sites.js?v=1.12.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.12.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.12.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.12.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.12.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.12.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.12.0';
-import { gardenDimensions } from './dimensions.js?v=1.12.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.12.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.13.0';
+import { sampledRoofFaces } from './shade.js?v=1.13.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.13.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.13.0';
+import { getSiteProfile } from './sites.js?v=1.13.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.13.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.13.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.13.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.13.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.13.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.13.0';
+import { gardenDimensions } from './dimensions.js?v=1.13.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.13.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -619,8 +619,8 @@ export function createScene(container, data, callbacks = {}) {
       const inward=[-dy/length*.12,dx/length*.12];
       for(let i=0;i<n;i++){
         const u=i/n,v=(i+1)/n,p=[a[0]+dx*u,a[1]+dy*u],q=[a[0]+dx*v,a[1]+dy*v];
-        const groundP=hedgeGroundAt(...p,segment.side,settings,data),groundQ=hedgeGroundAt(...q,segment.side,settings,data);
-        const topP=hedgeTopAt(...p,segment.side,settings,data),topQ=hedgeTopAt(...q,segment.side,settings,data);
+        const groundP=hedgeGroundAt(...p,segment.side,settings,data,segment.groundZone),groundQ=hedgeGroundAt(...q,segment.side,settings,data,segment.groundZone);
+        const topP=hedgeTopAt(...p,segment.side,settings,data,segment.groundZone),topQ=hedgeTopAt(...q,segment.side,settings,data,segment.groundZone);
         if(topP<=groundP && topQ<=groundQ)continue;
         triangles.push(localTriangle([...p,groundP],[...q,groundQ],[...q,topQ]),localTriangle([...p,groundP],[...q,topQ],[...p,topP]));
         // The mathematical hedge plane is retained. Thin volume makes it legible in plan.
@@ -637,8 +637,8 @@ export function createScene(container, data, callbacks = {}) {
         const count=Math.max(1,Math.ceil(length/spacing));
         for(let j=0;j<count;j++){
           const t=(j+.5)/count,px=a[0]+dx*t-dy/length*.14,py=a[1]+dy*t+dx/length*.14;
-          const ground=hedgeGroundAt(px,py,segment.side,settings,data);
-          const top=hedgeTopAt(px,py,segment.side,settings,data),h=Math.max(0,top-ground);
+          const ground=hedgeGroundAt(px,py,segment.side,settings,data,segment.groundZone);
+          const top=hedgeTopAt(px,py,segment.side,settings,data,segment.groundZone),h=Math.max(0,top-ground);
           if(h<.12)continue;
           // Keep the proposed street openings clear of decorative crown
           // overhang, matching the analytical screen ends and dimension lines.
@@ -654,7 +654,7 @@ export function createScene(container, data, callbacks = {}) {
           }
         }
       }
-      if(segment.side!=='front'&&num(settings.bedRaise)>0){
+      if(segment.side!=='front'&&segment.groundZone!=='front'&&num(settings.bedRaise)>0){
         const soil=[];
         for(let i=0;i<n;i++){
           const u=i/n,v=(i+1)/n,p=[a[0]+dx*u,a[1]+dy*u],q=[a[0]+dx*v,a[1]+dy*v];
@@ -665,7 +665,7 @@ export function createScene(container, data, callbacks = {}) {
         }
         const bed=new THREE.Mesh(geometryFromTriangles(soil),mat.grass);bed.receiveShadow=true;group.add(bed);
       }
-      if(svgMode){const verts=[];for(let i=0;i<=n;i++){const t=i/n,x=a[0]+dx*t,y=a[1]+dy*t;verts.push([x,y,hedgeTopAt(x,y,segment.side,settings,data)+.015]);}line(group,verts,'#68815a',.7);}
+      if(svgMode){const verts=[];for(let i=0;i<=n;i++){const t=i/n,x=a[0]+dx*t,y=a[1]+dy*t;verts.push([x,y,hedgeTopAt(x,y,segment.side,settings,data,segment.groundZone)+.015]);}line(group,verts,'#68815a',.7);}
     }
     if(crowns.length){
       const geometry=new THREE.IcosahedronGeometry(1,1),foliage=new THREE.InstancedMesh(geometry,mat.thuja,crowns.length),dummy=new THREE.Object3D();
@@ -1096,7 +1096,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
+    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);

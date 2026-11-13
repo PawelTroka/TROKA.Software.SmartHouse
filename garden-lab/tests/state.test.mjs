@@ -4,6 +4,7 @@ import {createStateModel,STATE_VERSION,DEFAULTS,FIELDS,MODES,sanitizeState,encod
 import {COST_FIELDS} from '../src/costs.js';
 import {BUILDING_FIELDS} from '../src/buildings.js';
 import {getSiteProfile} from '../src/sites.js';
+import {getScreeningLayouts} from '../src/screening-layouts.js';
 test('share links preserve fill, fixed floors, independent hedge heights and observer settings',()=>{
  const state={...DEFAULTS,hedgeRear:6,hedgeLeft:4,hedgeRight:2.5,gardenRaise:.5,bedRaise:.25,floorHeight:1.2,raiseNewHedges:false,preset:'custom',observerX:7.2,observerY:28,mode:'section',canopyEnabled:true,fasciaDepth:.35};
  const decoded=decodeState(encodeState(state));
@@ -120,7 +121,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,14);
+ assert.equal(STATE_VERSION,15);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -211,7 +212,7 @@ test('sparse legacy side values migrate after resolving the version-specific omi
 test('v5 physical side labels and state retain left/east and right/west without migration',()=>{
  assert.equal(FIELDS.hedgeLeft.label,'Left hedge · east');
  assert.equal(FIELDS.hedgeRight.label,'Right hedge · west');
- const current={...DEFAULTS,hedgeFront:0,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
+ const current={...DEFAULTS,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
  assert.deepEqual(decodeState(encodeState(current)),current);
  assert.deepEqual(migrateSavedState(current,5),current);
  assert.equal(decodeState('#v=5&hedgeLeft=3').hedgeRight,4);
@@ -228,9 +229,9 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v14 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
- assert.equal(DEFAULTS.gardenProgram,'spa-grove');
- for(const gardenProgram of ['spa-grove','spa-screened','spa-compact','spa-edge','spa','classic']){
+test('v15 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+ assert.equal(DEFAULTS.gardenProgram,getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default').settings.gardenProgram);
+ for(const gardenProgram of ['spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic']){
   const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
   const params=new URLSearchParams(encodeState(input));
   assert.equal(params.get('v'),String(STATE_VERSION));
@@ -239,7 +240,7 @@ test('v14 explicitly shares the chosen garden programme and never restores omitt
   assert.deepEqual(decodeState(params.toString()),input);
   assert.deepEqual(migrateSavedState(input,STATE_VERSION),input);
  }
- assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-grove');
+ assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,DEFAULTS.gardenProgram);
 });
 
 test('spa viewpoint and garage invariants survive URL and saved-state sanitization',()=>{
@@ -301,8 +302,8 @@ test('sparse v10 links and saves retain the published balanced pines when fresh 
   old.screeningTrees[0].x=0;
   assert.deepEqual(future.decodeState('v=10&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),expected,'Restored objects do not mutate the frozen v10 baseline');
  }
- assert.deepEqual(future.decodeState('v=14&site=sternicza-11').screeningTrees,futureTrees);
- assert.equal(future.decodeState('v=14&site=sternicza-11').showDimensions,false);
+ assert.deepEqual(future.decodeState('v=15&site=sternicza-11').screeningTrees,futureTrees);
+ assert.equal(future.decodeState('v=15&site=sternicza-11').showDimensions,false);
 });
 
 test('explicit v10 empty or custom trees, geometry and quotes migrate without moving the design',()=>{

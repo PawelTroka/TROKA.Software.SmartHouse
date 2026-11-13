@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.12.0';
+import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.13.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const ringOpen=ring=>ring.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring;
@@ -43,7 +43,7 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
     // panel thickness and glazing frames inside it, so measured boundary
     // clearances agree with the actual rendered wall faces.
     const edgePanel=(a,b,trim=0)=>{
-      if(!['spa-edge','spa-compact','spa-screened','spa-grove'].includes(program.id))return [a,b];
+      if(!['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id))return [a,b];
       const len=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/len,dy=(b[1]-a[1])/len;
       return [[a[0]-dy*.07+dx*trim,a[1]+dx*.07+dy*trim],
         [b[0]-dy*.07-dx*trim,b[1]+dx*.07-dy*trim]];

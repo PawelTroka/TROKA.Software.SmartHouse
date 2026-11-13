@@ -3,11 +3,11 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.12.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.12.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.12.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.12.0';
-import { terraceStairs } from './layout.js?v=1.12.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.13.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.13.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.13.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.13.0';
+import { terraceStairs } from './layout.js?v=1.13.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -199,7 +199,7 @@ function spaOccluders(settings,data) {
     {x:c.x,y:c.y+r,width:r,length:c.length-2*r},
     {x:c.x+c.width-r,y:c.y+r,width:r,length:c.length-2*r},
   ])slab('cold-plunge-rim','Cold-plunge basin rim',wall,cz.bottomZ,cz.rimZ);
-  if(['spa-edge','spa-compact','spa-screened','spa-grove'].includes(program.id)){
+  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id)){
     const pad=c.pad??.18;
     for(const strip of [
       {x:c.x-pad,y:c.y-pad,width:c.width+2*pad,length:pad},
@@ -269,9 +269,9 @@ function makeOccluders(settings,data) {
     for(let i=0;i<n;i++){
       const p=[a[0]+dx*i/n,a[1]+dy*i/n],q=[a[0]+dx*(i+1)/n,a[1]+dy*(i+1)/n];
       const baseP=terrainAt(...p,data),baseQ=terrainAt(...q,data);
-      const soilP=hedgeGroundAt(...p,segment.side,settings,data),soilQ=hedgeGroundAt(...q,segment.side,settings,data);
+      const soilP=hedgeGroundAt(...p,segment.side,settings,data,segment.groundZone),soilQ=hedgeGroundAt(...q,segment.side,settings,data,segment.groundZone);
       // Filled beds remain opaque even when retained foliage ends below them.
-      const topP=Math.max(soilP,segment.height>0?hedgeTopAt(...p,segment.side,settings,data):baseP),topQ=Math.max(soilQ,segment.height>0?hedgeTopAt(...q,segment.side,settings,data):baseQ);
+      const topP=Math.max(soilP,segment.height>0?hedgeTopAt(...p,segment.side,settings,data,segment.groundZone):baseP),topQ=Math.max(soilQ,segment.height>0?hedgeTopAt(...q,segment.side,settings,data,segment.groundZone):baseQ);
       if(topP>baseP+EPS||topQ>baseQ+EPS)faces.push([[...p,baseP],[...q,baseQ],[...q,topQ]],[[...p,baseP],[...q,topQ],[...p,topP]]);
     }
     add(mesh(`hedge-${segment.side}`,`${segment.side[0].toUpperCase()+segment.side.slice(1)} hedge / bed`,faces));
@@ -293,8 +293,8 @@ function bedSurface(x,y,ground,settings,segments){
   const raise=Math.max(0,num(settings.bedRaise));
   if(!raise)return ground;
   let rise=0;
-  for(const {a,b,side}of segments){
-    if(side==='front')continue;
+  for(const {a,b,side,groundZone}of segments){
+    if(side==='front'||groundZone==='front')continue;
     const dx=b[0]-a[0],dy=b[1]-a[1],len2=dx*dx+dy*dy,t=((x-a[0])*dx+(y-a[1])*dy)/len2;
     if(t<0||t>1)continue;
     const inward=(-dy*(x-a[0])+dx*(y-a[1]))/Math.sqrt(len2);
@@ -328,7 +328,7 @@ function makeReceivers(settings,data,size=1){
       let z=zone==='jacuzzi'?tub.waterZ:zone==='terrace'?floor:zone==='pool'?poolZ:zone==='coldPlunge'?levels.coldPlunge.waterZ:zone==='firepit'?(pitStep?.topZ??levels.firepit.floorZ):bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
       if(zone==='garden'&&program.active){
         if(rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
-        if(['spa-edge','spa-compact','spa-screened','spa-grove'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
+        if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
         const step=levels.coldPlunge.steps.find(r=>rectContains(x,y,rectBounds(r)));
         if(step)z=step.topZ;
         const saunaStep=levels.sauna.entrySteps?.find(r=>pointInPolygon([x,y],r.footprint));
@@ -353,7 +353,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'];
+const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21']);

@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.12.0';
+import {getTreeType} from './tree-catalog.js?v=1.13.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -206,6 +206,28 @@ const groveLayouts=Object.freeze([
     settings:groveSettings,trees:Object.freeze([])}),
 ]);
 
-export function getScreeningLayouts(siteId,program='spa-grove') {
-  return siteId==='sternicza-11'?(program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+// The three crowns form a connected fan across PCK3's facade in the main
+// occupied views. The forward crown needs the 6 m pool's released soil strip.
+// Preserve every older array so saved designs retain their published meaning.
+export const STERNICZA_ALIGNED_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:17.5,y:26.8},
+  {typeId:'austrian-pine-tall',x:14.85,y:28.4},
+  {typeId:'austrian-pine-tall',x:12.05,y:32.35},
+]);
+const alignedSettings=Object.freeze({...screenedSettings,gardenProgram:'spa-aligned',hedgeFullPerimeter:true});
+const alignedLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'PCK3-aligned grove · default',
+    note:'Three 9.5 m pines fan across PCK3, with the forward and centre trunks 3.10 m apart and overlapping crowns joining the rear tree. All three modeled crowns fit inside the parcel. The pool is 6 × 3.5 m, with 1.02 m from its far coping to the forward trunk. At the starting assumptions, no PCK3 facade samples are visible from either living-room preset, the terrace, jacuzzi or named garden viewpoint; 7 seated and 12 standing living-room roof samples remain. The sunken lounge remains exposed. Four-metre thujas follow the full front, left, right and rear edges, with access openings. Actual foliage has gaps.',
+    settings:alignedSettings,trees:STERNICZA_ALIGNED_TREES}),
+  Object.freeze({id:'previous-close-grove',label:'Previous close rear grove · same 6 m pool',
+    note:'The previous 2 m close-pair tree positions on the current pool and perimeter-hedge plan, for a direct planting comparison. Choose the previous close-grove garden layout to restore its 7 m pool as well.',
+    settings:alignedSettings,trees:STERNICZA_TIGHT_GROVE_TREES}),
+  ...groveLayouts.filter(layout=>!['default','hedges-only'].includes(layout.id)).map(layout=>Object.freeze({...layout,settings:alignedSettings})),
+  Object.freeze({id:'hedges-only',label:'4 m full-perimeter thujas · no specimen trees',
+    note:'The 6 m pool plan with the same full-perimeter thujas, fill and terrace, without specimen trees. Access openings remain clear.',
+    settings:alignedSettings,trees:Object.freeze([])}),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-aligned') {
+  return siteId==='sternicza-11'?(program==='spa-aligned'?alignedLayouts:program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }

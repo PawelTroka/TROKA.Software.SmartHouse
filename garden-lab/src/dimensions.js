@@ -3,10 +3,10 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.12.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout} from './geometry.js?v=1.12.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.12.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.12.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.13.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout} from './geometry.js?v=1.13.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.13.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.13.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -194,7 +194,7 @@ export function gardenDimensions(settings={},data){
     addVertical('pool-water-depth','pool','waterDepth',[pool.x+pool.width*.65,pool.y+pool.length*.7],levels.pool.bottomZ,levels.pool.waterZ,{description:'Pool water depth',datum:'water surface to pool floor',
       anchor:[pool.x+pool.width*.65,pool.y+pool.length*.7,levels.pool.waterZ+.15],planText:`water ${formatDimension(pool.waterDepth)}`,sceneText:`water ${formatDimension(pool.waterDepth)}`,priority:3});
     addGap('pool-boundary','pool',closestBoundary(rect(pool,pool.coping),data,program.active?'left':null),'Pool outer coping to mapped parcel boundary');
-    if(['spa-grove','spa-screened'].includes(program.id))addGap('pool-house','circulation',closestFootprints(rect(pool,pool.coping),data.site.house.footprint),'Pool outer coping to house wall',{
+    if(['spa-aligned','spa-grove','spa-screened'].includes(program.id))addGap('pool-house','circulation',closestFootprints(rect(pool,pool.coping),data.site.house.footprint),'Pool outer coping to house wall',{
       datum:'shortest horizontal outer coping to mapped house wall; conceptual clearance',priority:1,sceneText:null});
   }
 
@@ -254,7 +254,8 @@ export function gardenDimensions(settings={},data){
   // short source segment. Midpoints keep those references away from corners.
   for(const side of ['rear','left','right','front']){
     const candidates=hedgeSegments(settings,data).filter(h=>h.side===side&&h.height>0);
-    const h=candidates.sort((a,b)=>distance(b.a,b.b)-distance(a.a,a.b))[0];
+    const rearCandidates=candidates.filter(h=>h.groundZone!=='front');
+    const h=(rearCandidates.length?rearCandidates:candidates).sort((a,b)=>distance(b.a,b.b)-distance(a.a,a.b))[0];
     if(!h)continue;
     const p=midpoint(h.a,h.b),base=(h.baseA+h.baseB)/2,top=(h.topA+h.topB)/2;
     if(top<=base+EPS)continue;

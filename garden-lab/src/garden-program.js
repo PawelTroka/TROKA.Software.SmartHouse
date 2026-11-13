@@ -2,15 +2,15 @@
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){
-  return ['spa','spa-edge','spa-compact','spa-screened','spa-grove'].includes(settings.gardenProgram)&&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
+  return ['spa','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(settings.gardenProgram)&&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
 }
 
 export function poolBounds(settings={},data){
-  const screened=settings.gardenProgram==='spa-screened',grove=settings.gardenProgram==='spa-grove';
-  // The close grove keeps the 7 m pool, with its far end 1 m before the nearest
-  // pine. Older programmes retain their exact published pool geometry.
-  const pool=spaEnabled(settings,data)?{x:['spa-edge','spa-compact','spa-screened','spa-grove'].includes(settings.gardenProgram)?15.7:14.7,
-    y:screened?19.5:24.5,width:3.5,length:screened||grove?7:8}:data.site.pool;
+  const aligned=settings.gardenProgram==='spa-aligned',screened=settings.gardenProgram==='spa-screened',grove=settings.gardenProgram==='spa-grove';
+  // The aligned grove needs soil beyond the shorter 6 m pool for the forward
+  // crown. Older programmes retain their exact published pool geometry.
+  const pool=spaEnabled(settings,data)?{x:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(settings.gardenProgram)?15.7:14.7,
+    y:aligned||screened?19.5:24.5,width:3.5,length:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;
   return {...pool,
     waterDepth:1.4,waterOffset:.055,coping:.28};
@@ -20,7 +20,7 @@ export function poolBounds(settings={},data){
 export function gardenProgram(settings={},data){
   const active=spaEnabled(settings,data),pool=poolBounds(settings,data);
   if(!active)return {active:false,id:'classic',pool,sauna:null,firepit:null,coldPlunge:null,furniture:null};
-  const grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened',compact=grove||screened||settings.gardenProgram==='spa-compact',edge=compact||settings.gardenProgram==='spa-edge';
+  const aligned=settings.gardenProgram==='spa-aligned',grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened',compact=aligned||grove||screened||settings.gardenProgram==='spa-compact',edge=compact||settings.gardenProgram==='spa-edge';
   // These are geometric maintenance gaps to the mapped parcel, not certified
   // planning setbacks. The rear band east of the plunge remains available for
   // screening trees; pool coping retains a narrow east-side maintenance route.
@@ -102,5 +102,5 @@ export function gardenProgram(settings={},data){
     dining:{x:3.6,y:24.4,width:3.8,length:3.4},
     path:edge?[[6.7,29.5],[6.4,31.2],[5.8,32.8]]:
       [[7.1,29.5],[8.1,31.5],[11.3,32.6],[11.5,34.3]]};
-  return {active:true,id:grove?'spa-grove':screened?'spa-screened':compact?'spa-compact':edge?'spa-edge':'spa',pool,sauna,firepit,coldPlunge,furniture};
+  return {active:true,id:aligned?'spa-aligned':grove?'spa-grove':screened?'spa-screened':compact?'spa-compact':edge?'spa-edge':'spa',pool,sauna,firepit,coldPlunge,furniture};
 }
