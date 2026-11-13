@@ -6,6 +6,8 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 ## Rear-left corner, natural tree models and all-direction views · 1.14.0
 
+![Hosted terrace view of the rear-left pine group with the centre lawn open](rear-left-corner-terrace-1.14.0.png)
+
 The new **Rear-left corner grove** keeps all three pine trunks in the far-left/east part of the rear garden, at **(17.30, 31.00), (14.80, 31.10), (14.50, 34.90) m**. Their footprint spans **2.8 × 3.9 m**, with the nearest two trunks **2.50 m apart**. No pine is pulled forward into the centre of the lawn. All three nominal crowns overlap and fit within the mapped parcel; the closest crown has only about 7 mm of nominal boundary margin, so this is a model fit rather than a surveyed planting clearance.
 
 The default uses **10 m height and 6 m crown diameter**, the upper end of the existing supplier's listed **9–10 m / 4–6 m** stock band. The actual three specimens, crown density, root balls and spacing require supplier confirmation. The plant reference remains **179,700 PLN**, excluding the separately budgeted delivery, lifting and establishment. A named comparison retains the same positions at the **9.5 m / 5 m** catalogue midpoint. Older arrangements remain explicit comparisons.
@@ -30,6 +32,10 @@ Use **Look toward → Rear garden / Left boundary / Right boundary / Street**, o
 Full-perimeter thujas still cover front, left, right and rear: **107.27 m / 137 plants**, with **1.2 m pedestrian and 4.0 m vehicle openings**. The pool remains **6 × 3.5 m**, sauna **3 × 2.4 m**, and seven-seat spa **2.3 × 2.3 m**. The total planning range remains **804,296–1,384,672 PLN**, including the upper 20% allowance once.
 
 Schema **v16** gives fresh designs the corner layout. Sparse v15 links and saved designs preserve the exact previous `spa-aligned` arrangement and all earlier migrations remain available. Use the latest link above or Reset to apply the new default.
+
+![Whole-plot plan with the pine group at the rear-left/east corner and all perimeter hedges](corner-full-perimeter-plan-1.14.0.png)
+
+**Validation:** 339 automated checks pass and the hosted WebGL preview confirms the tree group, full-perimeter dimensions, street hedge comparison and all-building inspector. See the [1.14 release validation](docs/release-1.14.0-validation.md).
 
 ## PCK3 façade screen and full-perimeter thujas · 1.13.0
 

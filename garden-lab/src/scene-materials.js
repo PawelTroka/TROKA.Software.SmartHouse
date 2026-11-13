@@ -72,9 +72,12 @@ export function createSurfaceTextures() {
       }
     }
     speckles(ctx, size, 5000, ['#e0e5bd30', '#354a302b'], 1.1);
+    // Tone down the pale lime highlights under the bright outdoor lighting.
+    // This changes the leaf texture only, retaining the existing hedge volume.
+    ctx.fillStyle = 'rgba(16,43,26,.22)'; ctx.fillRect(0, 0, size, size);
   });
-  const pineNeedles = make('#a5b68d', (ctx, size) => {
-    speckles(ctx, size, 9000, ['#405c3d55', '#d6dfaa38', '#85996966'], 3);
+  const pineNeedles = make('#99ac82', (ctx, size) => {
+    speckles(ctx, size, 9000, ['#284b32aa', '#d6dfaa66', '#738d5988'], 3);
     // Dense paired needle fans sit on fine brown twigs. Each pad has its own
     // UVs, so this remains small botanical detail rather than giant leaf marks.
     for (let i = 0; i < 490; i++) {
@@ -87,8 +90,8 @@ export function createSurfaceTextures() {
         const along = random() * length * .7, fan = (random() - .5) * 2.3;
         const reach = 6 + random() * 14;
         const endX = Math.sin(fan) * reach, endY = -along - Math.cos(fan) * reach;
-        ctx.strokeStyle = ['#3b593eaa', '#637f4fcc', '#d4ddaa99', '#92ad71cc'][needle % 4];
-        ctx.lineWidth = needle % 3 ? .7 : 1.1;
+        ctx.strokeStyle = ['#24432de6', '#537545ee', '#d4ddaad0', '#89a86be6'][needle % 4];
+        ctx.lineWidth = needle % 3 ? .8 : 1.35;
         ctx.beginPath(); ctx.moveTo(0, -along); ctx.quadraticCurveTo(endX * .3, endY + 2, endX, endY); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(.8, -along); ctx.lineTo(endX + 1.2, endY + .7); ctx.stroke();
       }

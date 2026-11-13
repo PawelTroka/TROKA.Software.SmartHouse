@@ -4,6 +4,7 @@ import {screeningTreeUnitPrice} from './costs.js?v=1.14.0';
 import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.14.0';
 import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.14.0';
 
+const treeLabel = tree => `${(getTreeType(tree.typeId)?.label||'Tree').split(' · ')[0]} · ${Number(tree.height.toFixed(2))} m tall`;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -196,10 +197,10 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     $('tree-find-position').title=target?.kind==='target'&&state.preset!=='front'?'Suggest a rear-garden planting position':'Position suggestions apply to rear-garden apartment targets. The view check works in every direction.';
     if(suggestion && suggestionSignature!==screeningSignature(state))suggestion='';
     if(!trees.some(tree=>tree.id===selectedId)) {selectedId=trees.at(-1)?.id || null;placing=false;}
-    const key=trees.map(tree=>`${tree.id}:${tree.typeId}:${tree.enabled}`).join('|');
+    const key=trees.map(tree=>`${tree.id}:${tree.typeId}:${tree.height}:${tree.enabled}`).join('|');
     if(inventorySignature!==key){
       $('tree-select').replaceChildren();
-      trees.forEach((tree,index)=>{const option=document.createElement('option');option.value=tree.id;option.textContent=`${index+1}. ${getTreeType(tree.typeId)?.label || 'Tree'}${tree.enabled?'':' · off'}`;$('tree-select').append(option);});
+      trees.forEach((tree,index)=>{const option=document.createElement('option');option.value=tree.id;option.textContent=`${index+1}. ${treeLabel(tree)}${tree.enabled?'':' · off'}`;$('tree-select').append(option);});
       inventorySignature=key;
     }
     $('tree-select').value=selectedId || '';
@@ -219,7 +220,7 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     const tree=selectedTree(); if(!tree)return;
     const type=getTreeType(tree.typeId);
     $('tree-enabled').checked=tree.enabled;
-    $('tree-selected-name').textContent=type.label;
+    $('tree-selected-name').textContent=treeLabel(tree);
     for(const [key,field] of Object.entries(fields)){
       const [min,max]=field.limits || [field.min,field.max], numeric=$(`tree-${key}-value`), range=$(`tree-${key}`);
       const effectiveMax=key==='crownBase'?Math.min(max,tree.height-.2):max;
