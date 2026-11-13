@@ -10,6 +10,7 @@ import {rectCorners,terraceStairs} from '../src/layout.js';
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const recorded=JSON.parse(readFileSync(new URL('../docs/edge-screening-comparison.json',import.meta.url)));
 const layouts=getScreeningLayouts('sternicza-11','spa-edge');
+const balanced=layouts.find(l=>l.id==='balanced-views');
 const base={...recorded.settings,screeningTrees:[]};
 const p=gardenProgram(base,data);
 const terrace={...data.site.terrace,depth:base.terraceDepth};
@@ -19,10 +20,10 @@ const distance=(point,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],n=dx*dx+dy*dy,t=n?M
 const ringDistance=(point,ring)=>Math.min(...ring.map((a,i)=>distance(point,a,ring[(i+1)%ring.length])));
 const visible=(observer,trees)=>analyzeVisibility(observer,{...base,screeningTrees:trees},data).byBlock.find(b=>b.id==='building-9');
 
-test('edge design restores three catalog-size tall pines including the forward third crown',()=>{
+test('edge design retains the previous balanced comparison and its full-height forward crown',()=>{
  assert.deepEqual(getScreeningLayouts('sternicza-11'),layouts);
- assert.deepEqual(layouts.map(l=>l.id),['default','living-priority','mixed-pines','budget-pines','hedges-only']);
- assert.deepEqual(layouts[0].trees,STERNICZA_EDGE_TREES);
+ assert.deepEqual(layouts.map(l=>l.id),['default','balanced-views','living-priority','mixed-pines','budget-pines','hedges-only']);
+ assert.deepEqual(balanced.trees,STERNICZA_EDGE_TREES);
  assert.equal(STERNICZA_EDGE_TREES.length,3);
  for(const tree of STERNICZA_EDGE_TREES){
   assert.equal(tree.typeId,'austrian-pine-tall');
@@ -56,22 +57,22 @@ test('edge presets reserve actual soil around trunks and keep all modeled crowns
  }
  // Screening needs intentional crown overhang here; do not silently claim the
  // default is clear of all hardscape merely because its trunks are plantable.
- assert.ok(screeningTreeVolumes({...base,screeningTrees:layouts[0].trees},data).some(v=>v.warnings.some(w=>w.includes('overhangs'))));
+ assert.ok(screeningTreeVolumes({...base,screeningTrees:balanced.trees},data).some(v=>v.warnings.some(w=>w.includes('overhangs'))));
 });
 
 test('balanced edge pines improve the main views and retain honest side-garden residuals',()=>{
  const old=getScreeningLayouts('sternicza-11','spa')[0].trees;
  const expected={sofa:41,standing:44,terrace:20,jacuzzi:44,garden:2,sauna:0,firepit:17};
  for(const [preset,count] of Object.entries(expected)){
-  const observer=observerForPreset(preset,{...base,eyeHeight:undefined},data),after=visible(observer,layouts[0].trees);
+  const observer=observerForPreset(preset,{...base,eyeHeight:undefined},data),after=visible(observer,balanced.trees);
   assert.equal(after.visible,count,`${preset} PCK3 visible sample count`);
   if(['sofa','standing','terrace','jacuzzi'].includes(preset))assert.ok(after.visible<visible(observer,old).visible,`${preset} improves compared with behind-pool planting`);
  }
  for(const id of ['dining-seated','right-garden-path','pool-west-path','pool-rear-path','rear-centre-path']){
   const o=recorded.observers.find(o=>o.id===id);
-  assert.ok(visible(o,layouts[0].trees).visible>0,`${id} must not be described as fully screened`);
+  assert.ok(visible(o,balanced.trees).visible>0,`${id} must not be described as fully screened`);
  }
- const samePositionSmall=layouts[0].trees.map((t,i)=>i===2?{...t,typeId:'austrian-pine-large',...getTreeType('austrian-pine-large').dimensions}:t);
+ const samePositionSmall=balanced.trees.map((t,i)=>i===2?{...t,typeId:'austrian-pine-large',...getTreeType('austrian-pine-large').dimensions}:t);
  const standing=observerForPreset('standing',{...base,eyeHeight:undefined},data);
  assert.equal(visible(standing,samePositionSmall).visible,304,'Forward 5.5 m crown leaves the high house sightlines exposed');
 });
@@ -84,15 +85,15 @@ test('living-priority comparison exposes its tradeoff instead of treating it as 
  assert.equal(visible(observerForPreset('jacuzzi',{...base,eyeHeight:undefined},data),trees).visible,3);
  const poolWalk=recorded.observers.find(o=>o.id==='pool-west-path');
  assert.equal(visible(poolWalk,trees).visible,369);
- assert.ok(visible(poolWalk,trees).visible>visible(poolWalk,layouts[0].trees).visible);
+ assert.ok(visible(poolWalk,trees).visible>visible(poolWalk,balanced.trees).visible);
 });
 
 test('recorded study counts are reproduced by the complete visibility engine from every checked viewpoint',()=>{
  const selected=recorded.layouts.find(l=>l.name==='Three tall pines, screened layout');
- const deployed=layouts[0].trees.map(t=>[t.typeId,t.x,t.y]).sort();
+ const deployed=balanced.trees.map(t=>[t.typeId,t.x,t.y]).sort();
  assert.deepEqual(selected.trees.map(t=>[t.typeId,t.x,t.y]).sort(),deployed);
  for(const observer of recorded.observers){
-  const measured=visible(observer,layouts[0].trees),expected=selected.views.find(v=>v.id===observer.id);
+  const measured=visible(observer,balanced.trees),expected=selected.views.find(v=>v.id===observer.id);
   assert.equal(measured.visible,expected.visible,observer.id);
   assert.equal(measured.total,expected.total,observer.id);
  }

@@ -2,11 +2,38 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.8.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.8.0#v=10&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.9.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.9.0#v=11&site=sternicza-11)**
 
-## Sternicza: three tall pines, perimeter layout and dimensions · 1.8.0
+## Sternicza: three 9.5 m pines in a compact rear-left grove · 1.9.0
 
-The latest fresh/reset design is **Spa courtyard · near plot edges**. The pool is farther toward the physical **left/east**, the six-person sauna is tucked into the far **right/west rear corner**, and the cold plunge is next to the rear boundary. The large terrace and edge jacuzzi remain, with the sunken fire lounge in the middle.
+Fresh/reset Sternicza designs now group **three 9.5 m Austrian pines** behind and along the far end of the left/east pool. Left means looking from the house into the rear garden. Their trunk centres occupy a **4.50 × 3.50 m** rectangle, with **3.67–4.78 m** spacing between trunks. The modeled **5 m crowns overlap**, forming a canopy envelope approximately **9.50 × 8.50 m**. The pool, corner sauna, plunge, edge jacuzzi, sunken lounge, terrain and dimension overlay retain the perimeter layout introduced in 1.8.
+
+![Hosted garden plan showing the compact three-pine grove, spa features and dimensions](corner-grove-plan-1.9.0.jpg)
+
+The requested composition has a measurable tradeoff. It slightly improves PCK3 screening from the named jacuzzi and garden positions, but moving the forward tree back substantially weakens the living-room screen. It does **not** conceal PCK3 completely from all three areas.
+
+| View | Previous balanced arrangement: visible PCK3 samples | New corner grove: visible PCK3 samples |
+| --- | ---: | ---: |
+| Living room seated | 41 / 420 | **213 / 420** |
+| Living room standing | 44 / 420 | **225 / 420** |
+| Terrace standing | 20 / 420 | **83 / 420** |
+| Jacuzzi seated | 44 / 460 | **34 / 460** |
+| Garden preset | 2 / 420 | **1 / 420** |
+| Sunken lounge | 17 / 420 | **27 / 420** |
+
+These are target sample counts, not percentages of visible façade area. Real foliage has gaps. From the elevated living room, the rearward crowns appear lower; some diagonal rays also leave the plot before reaching the rear planting band. The named garden position is one point, not the whole garden. The [17-view study](docs/corner-screening-comparison.md), [recorded measurements](docs/corner-screening-comparison.json) and [reproducible search](scripts/search-corner-pck3-layouts.mjs) document the layout, assumptions and constraints.
+
+**Start with a scenario** now offers **Rear-left grove · default**, **Balanced views · previous default**, and **Living-room priority**, alongside the existing mixed-size, budget and hedges-only choices. Each of the three-tall-tree arrangements has the same **179,700 PLN plant reference subtotal**. Moving trees does not change stock size or plant price. Delivery, lifting, planting and establishment remain separately editable.
+
+The corner grove also changes shade. On June 21 at noon, the pool stays at **13/27 sunlit grid points**, while the terrace increases from **25/32 to 32/32**. At 15:00, the pool changes from **9/27 to 0/27**. Use **Sun & shade** to compare the time and season that matter to you; the compact grove is not uniformly sunnier.
+
+**State version 11** preserves existing designs. Sparse v10 links and saves restore the exact previous balanced three-tree arrangement, including the perimeter spa and enabled dimensions. Explicit tree positions, empty arrays, disabled trees and quotes remain intact. Earlier versions and Korzeniowskiego keep their own baselines. Use the current Sternicza link above, Reset, or select the new grove to load the new proposal.
+
+**Verification:** All **218 automated checks** pass and the static build succeeds. Hosted browser checks confirm the new default, actual PCK3 counts from the seated living room, jacuzzi and garden, the unchanged plant subtotal, the Balanced views comparison, three overlapping crowns and the dimension schedule. A sparse v10 link restores the previous arrangement and 41/420 seated PCK3 count. The cloud browser does not support WebGL, so these hosted visual checks used the existing lightweight renderer and SVG plan; the WebGL-specific geometry remains covered by the existing automated tests.
+
+## Previous perimeter layout and dimensions · 1.8.0
+
+Version 1.8 introduced **Spa courtyard · near plot edges**, retained as the current garden programme. The pool is farther toward the physical **left/east**, the six-person sauna is tucked into the far **right/west rear corner**, and the cold plunge is next to the rear boundary. The large terrace and edge jacuzzi remain, with the sunken fire lounge in the middle. Its former planting default is now the **Balanced views** comparison; the results and screenshots in this section describe that earlier arrangement.
 
 ![Terrace view with three tall screening pines, perimeter spa layout and fine dimensions](edge-terrace-dimensions-1.8.0.jpg)
 

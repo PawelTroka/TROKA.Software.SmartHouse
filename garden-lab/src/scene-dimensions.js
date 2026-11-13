@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.8.0';
+import {toWorld} from './orientation.js?v=1.9.0';
 
 const point=p=>new THREE.Vector3(...toWorld(...p));
 const same=(a,b)=>a.every((v,i)=>Math.abs(v-b[i])<1e-8);

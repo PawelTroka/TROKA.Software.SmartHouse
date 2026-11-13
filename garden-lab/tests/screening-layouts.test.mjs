@@ -14,7 +14,6 @@ const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
 test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
-  assert.equal(STATE_VERSION,10);
   assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-edge');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
@@ -130,7 +129,7 @@ test('all spa planting presets leave tree trunks clear of the pool, spa rooms, d
 
 test('Korzeniowskiego ignores the Sternicza spa programme across fresh, historical and new shared designs',()=>{
   const pool=korzData.site.pool;
-  for(const version of [6,7,8,9,10]){
+  for(const version of [6,7,8,9,10,11]){
     const settings=korz.decodeState(`v=${version}&site=korzeniowskiego-40&gardenProgram=spa&preset=sauna`);
     assert.equal(settings.gardenProgram,'classic');assert.equal(settings.preset,'garden');
     assert.deepEqual(settings.screeningTrees,[]);

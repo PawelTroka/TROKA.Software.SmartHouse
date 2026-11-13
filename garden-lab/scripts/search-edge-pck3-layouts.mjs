@@ -151,7 +151,7 @@ for(const [name,types,options] of [
 // Isolate size from position: replacing only the forward tree shows why the
 // restored third full-height crown matters, and the rear-east swap describes
 // the most economical same-position size reduction in this sampled study.
-const balanced=getScreeningLayouts('sternicza-11','spa-edge').find(l=>l.id==='default');
+const balanced=getScreeningLayouts('sternicza-11','spa-edge').find(l=>l.id==='balanced-views');
 for(const [name,index] of [['Balanced positions, only forward pine reduced to 5.5 m',2],['Balanced positions, only rear-east pine reduced to 5.5 m',0]]){
  const trees=balanced.trees.map((tree,i)=>i===index?{...tree,typeId:'austrian-pine-large',...getTreeType('austrian-pine-large').dimensions}:tree);
  summarize(name,stateFor(trees));
