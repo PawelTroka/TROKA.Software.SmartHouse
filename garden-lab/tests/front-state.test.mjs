@@ -5,6 +5,7 @@ import {createStateModel,STATE_VERSION} from '../src/state.js';
 import {getSiteProfile,resolveSiteId} from '../src/sites.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
 import {frontHedgeLayout,hedgeSegments,observerForPreset} from '../src/geometry.js';
+import {getScreeningLayouts} from '../src/screening-layouts.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const model=createStateModel(getSiteProfile('sternicza-11',data));
@@ -13,13 +14,13 @@ const v13Coordinates=[[13,34.1],[14.4,25.7],[17.6,34.9]];
 const groveCoordinates=[[13,34.1],[14.2,32.5],[17.6,34.9]];
 
 test('fresh street screening shares its independent height, quote and street-facing viewpoint',()=>{
-  assert.equal(STATE_VERSION,14);
-  assert.equal(model.DEFAULTS.gardenProgram,'spa-grove');
+  assert.equal(STATE_VERSION,15);
+  assert.equal(model.DEFAULTS.gardenProgram,getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default').settings.gardenProgram);
   assert.equal(model.DEFAULTS.hedgeFront,4);
   assert.equal(model.DEFAULTS.linkedHedges,false);
   const design={...model.DEFAULTS,hedgeFront:3.2,costTreePriceFront:325,preset:'front',eyeHeight:1.65,lookYaw:180,mode:'eye'};
   assert.deepEqual(model.decodeState(model.encodeState(design)),design);
-  assert.deepEqual(model.migrateSavedState(design,14),design);
+  assert.deepEqual(model.migrateSavedState(design,STATE_VERSION),design);
   assert.equal(resolveSiteId('?site=korzeniowskiego-40',`#${model.encodeState(design)}`),'sternicza-11');
   const observer=observerForPreset('front',design,data);
   assert.equal(observer.defaultLookYaw,180);
@@ -57,12 +58,14 @@ test('sparse v12 links preserve pool, trees, compact sauna and complete budget a
   }
 });
 
-test('sparse v14 designs use the corrected rear grove while retaining the front hedge',()=>{
+test('published sparse v14 designs retain the close rear grove and shorter side hedges',()=>{
   for(const fresh of [model.decodeState('v=14&site=sternicza-11'),model.migrateSavedState({siteId:'sternicza-11'},14)]){
     assert.equal(fresh.gardenProgram,'spa-grove');
     assert.equal(fresh.hedgeFront,4);
+    assert.equal(fresh.hedgeFullPerimeter,false);
     assert.deepEqual(fresh.screeningTrees.map(t=>[t.x,t.y]),groveCoordinates);
-    assert.deepEqual(fresh,model.DEFAULTS);
+    const pool=poolBounds(fresh,data);
+    assert.deepEqual([pool.x,pool.y,pool.width,pool.length],[15.7,24.5,3.5,7]);
     assert.deepEqual(model.decodeState(model.encodeState(fresh)),fresh);
   }
 });
@@ -86,8 +89,8 @@ test('sparse v13 links and saves freeze the published forward pine and moved sev
     assert.deepEqual(future.decodeState('v=13&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),v13Coordinates,
       'Editing a restored design cannot change the frozen v13 baseline');
   }
-  assert.equal(future.decodeState('v=14&site=sternicza-11').hedgeFront,2.2);
-  assert.deepEqual(future.decodeState('v=14&site=sternicza-11').screeningTrees,changedTrees);
+  assert.equal(future.decodeState('v=15&site=sternicza-11').hedgeFront,2.2);
+  assert.deepEqual(future.decodeState('v=15&site=sternicza-11').screeningTrees,changedTrees);
 });
 
 test('explicit v13 custom trees and an empty tree list retain their positions, quotes and frontage',()=>{

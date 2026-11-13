@@ -1,13 +1,13 @@
 /**
  * Editable planning costs in PLN. Quantities follow the proposed rear garden
- * and selected street hedge, not the full property. Price anchors are dated supplier observations; labour,
+ * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.12.0';
-import { getTreeType } from './tree-catalog.js?v=1.12.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.12.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.12.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.12.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.13.0';
+import { getTreeType } from './tree-catalog.js?v=1.13.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.13.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.13.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.13.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -157,7 +157,7 @@ const quantityCache = new WeakMap();
 /** Areas on the mapped plan, before soil-depth and delivery multipliers. */
 export function gardenQuantities(settings, data) {
   const c = costSettings(settings);
-  const signature = JSON.stringify([settings.gardenProgram,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
+  const signature = JSON.stringify([settings.gardenProgram,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
     settings.hedgeInset ?? 0, c.costBedWidth, ...['Rear', 'Left', 'Right', 'Front'].map(side => positive(settings[`hedge${side}`] ?? (side==='Front'?0:2.5)) > 0)]);
   // data.site survives building sensitivity overrides, so cost geometry is reused.
   const cached = quantityCache.get(data.site);
@@ -173,9 +173,9 @@ export function gardenQuantities(settings, data) {
   const rearGrossArea = polygonArea(rear), excludedArea = unionAreaInside(rear, exclusions);
   const automaticArea = Math.max(0, rearGrossArea - excludedArea);
   const segments = hedgeSegments(settings, data);
-  // The street hedge remains on original front grade. It creates no raised
-  // bed or rear-garden earthwork quantity, even when extra rear beds are on.
-  const beds = segments.filter(s => s.height > 0 && s.side !== 'front').map(s => {
+  // Street and front-side hedges remain on original grade. They create no
+  // raised bed or rear-garden fill quantity, even when extra rear beds are on.
+  const beds = segments.filter(s => s.height > 0 && s.side !== 'front' && s.groundZone !== 'front').map(s => {
     const dx = s.b[0] - s.a[0], dy = s.b[1] - s.a[1], length = Math.hypot(dx, dy);
     const nx = -dy / length * c.costBedWidth / 2, ny = dx / length * c.costBedWidth / 2;
     return [[s.a[0] + nx, s.a[1] + ny], [s.b[0] + nx, s.b[1] + ny],
@@ -197,7 +197,10 @@ export function gardenQuantities(settings, data) {
   const lengths = Object.fromEntries(['rear', 'left', 'right', 'front'].map(side => [side,
     sum(segments.filter(s => s.side === side).map(s => Math.hypot(s.b[0] - s.a[0], s.b[1] - s.a[1])))]));
   const frontSegmentLengths=segments.filter(s=>s.side==='front').map(s=>Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]));
-  const value = { rearGrossArea, excludedArea, automaticArea, bedArea, lengths, frontSegmentLengths };
+  const frontSideSegments=segments.filter(s=>s.side!=='front'&&s.groundZone==='front');
+  const frontSideHedgeLength=sum(frontSideSegments.filter(s=>s.height>0).map(s=>Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1])));
+  const value = { rearGrossArea, excludedArea, automaticArea, bedArea, lengths, frontSegmentLengths,
+    frontSideHedgeLength,fullPerimeter:frontSideSegments.length>0 };
   quantityCache.set(data.site, { signature, value });
   return value;
 }
@@ -223,7 +226,7 @@ function installationGroup(enabled, rows, c, extra = {}) {
 export function estimateSpaCosts(settings,data) {
   const program=gardenProgram(settings,data),c=costSettings(settings),enabled=program.active;
   if(!enabled)return installationGroup(false,[],c);
-  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove'].includes(program.id);
+  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id);
   const rows=[
     installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · 1 installed pool`,
       'Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. 8 × 3 m catalog packages are a reference, not a quote for this 3.5 m pool.',['pool']),
@@ -243,7 +246,7 @@ export function estimateSpaCosts(settings,data) {
 /** Finishes and enabling work; no plant supply, spa objects or bulk fill repeated. */
 export function estimateGardenCosts(settings,data,quantities=gardenQuantities(settings,data)) {
   const c=costSettings(settings),program=gardenProgram(settings,data);
-  const enabled=['spa-compact','spa-screened','spa-grove'].includes(program.id)||c.costUsePlanningAllowances||
+  const enabled=['spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id)||c.costUsePlanningAllowances||
     Object.entries(COST_FIELDS).some(([key,f])=>f.group==='cost-garden'&&c[key]>0);
   if(!enabled)return installationGroup(false,[],c,{quantities:{}});
   const terrace=data.site.terrace,tub=jacuzziBounds(settings,data);
@@ -269,10 +272,11 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
   const additionalHardscape=Math.max(0,unionAreaInside(rear,[...baseExclusions,...extra])-quantities.excludedArea);
   const landscapeArea=Math.max(0,quantities.automaticArea-quantities.bedArea-pavingArea-additionalHardscape);
   const ornamentalArea=landscapeArea*.2,lawnArea=landscapeArea-ornamentalArea;
-  // A one-metre planted-strip equivalent adds front-hedge drip distribution
-  // to the existing irrigation allowance. This is not front lawn or fill.
+  // A one-metre planted-strip equivalent adds street/front-side hedge drip
+  // distribution to the rear irrigation allowance. This is not lawn or fill.
   const frontIrrigationArea=quantities.lengths.front;
-  const irrigatedArea=landscapeArea+quantities.bedArea+frontIrrigationArea,loungers=furniture.loungers.length;
+  const frontSideIrrigationArea=positive(quantities.frontSideHedgeLength);
+  const irrigatedArea=landscapeArea+quantities.bedArea+frontIrrigationArea+frontSideIrrigationArea,loungers=furniture.loungers.length;
   const garageArea=settings.removeGarage!==false&&data.site.garage?.footprint?polygonArea(data.site.garage.footprint):0;
   const canopy=canopyBounds(settings,data),canopyArea=settings.canopyEnabled?positive(canopy.x1-canopy.x0)*positive(canopy.y1-canopy.y0):0;
   const rows=[
@@ -288,20 +292,20 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
       'Assume 20% of garden left after hedge beds and paving. Ornamental plants, mulch and planting labour; excludes thujas, specimen trees and added bulk topsoil.'),
     installedLine(c,'costGardenLawn',scaledRange(RATES.lawnPerM2,lawnArea),`${quantityText(lawnArea,'m²')} × 40–75 PLN/m²`,
       'Lawn finish and fine grading on prepared soil. No additional bulk fill or topsoil charged here.'),
-    installedLine(c,'costGardenIrrigation',scaledRange(RATES.irrigationPerM2,irrigatedArea),`${quantityText(irrigatedArea,'m² irrigation basis')} × 35–65 PLN/m²${frontIrrigationArea>EPS?` · includes ${quantityText(frontIrrigationArea,'m² front-hedge strip')}`:''}`,
-      'Permanent distribution, controls and installation for beds, hedges and lawn. Front hedge uses a provisional 1 m planted-strip width for drip irrigation only; no front lawn or fill. Specimen establishment visits / temporary root-ball watering are separate.'),
+    installedLine(c,'costGardenIrrigation',scaledRange(RATES.irrigationPerM2,irrigatedArea),`${quantityText(irrigatedArea,'m² irrigation basis')} × 35–65 PLN/m²${frontIrrigationArea>EPS?` · includes ${quantityText(frontIrrigationArea,'m² front-hedge strip')}`:''}${frontSideIrrigationArea>EPS?` + ${quantityText(frontSideIrrigationArea,'m² front-side hedge strips')}`:''}`,
+      `Permanent distribution, controls and installation for beds, hedges and lawn. ${frontSideIrrigationArea>EPS?'Street and front-side hedges use':'Front hedge uses'} a provisional 1 m planted-strip width for drip irrigation only; no front lawn or fill. Specimen establishment visits / temporary root-ball watering are separate.`),
     installedLine(c,'costGardenLighting',scaledRange(RATES.lightFixture,12),'12 assumed fittings × 700–1,500 PLN installed',
       'Landscape fittings and local low-voltage wiring. Spa built-in lights belong to their object lines; the main supply is in shared utilities.'),
     installedLine(c,'costGardenUtilities',scaledRange(RATES.utilities),'1 shared garden supply / distribution allowance',
       'Shared garden electric and water feeds, distribution and drain connections only. Object-level hookups and garden-fill drainage are excluded here to avoid duplication.'),
     installedLine(c,'costGardenDesign',scaledRange(RATES.design),'1 garden design / technical coordination package',
-      'Garden design, level coordination and structural / services coordination allowances, including the selected front hedge. House renovation, basement garage, new gates / fencing and main utility upgrades are outside this garden budget.'),
+      `Garden design, level coordination and structural / services coordination allowances, including the selected ${quantities.fullPerimeter?'full perimeter hedges':'front hedge'}. House renovation, basement garage, new gates / fencing and main utility upgrades are outside this garden budget.`),
   ];
   if(garageArea>EPS)rows.push(installedLine(c,'costGardenDemolition',scaledRange(RATES.demolitionPerM2,garageArea),`${quantityText(garageArea,'m² garage footprint')} × 500–900 PLN/m²`,
     'Allowance for removal of the detached garage and its waste transport/disposal. Final demolition method and quantities require a site quote. No separate duplicate general-waste charge.'));
   if(canopyArea>EPS)rows.push(installedLine(c,'costGardenCanopy',scaledRange(RATES.canopyPerM2,canopyArea),`${quantityText(canopyArea,'m² canopy')} × 1,700–3,000 PLN/m²`,
     'Selected terrace canopy, supports and installation; not charged when the canopy is disabled.'));
-  return installationGroup(true,rows,c,{quantities:{terraceGross,terraceNet,pavingArea,pathLength,additionalHardscape,ornamentalArea,lawnArea,irrigatedArea,frontIrrigationArea,garageArea,canopyArea,loungers}});
+  return installationGroup(true,rows,c,{quantities:{terraceGross,terraceNet,pavingArea,pathLength,additionalHardscape,ornamentalArea,lawnArea,irrigatedArea,frontIrrigationArea,frontSideIrrigationArea,garageArea,canopyArea,loungers}});
 }
 
 export function thujaUnitPrice(height, customPrice = 0, factor = 100) {
@@ -427,6 +431,7 @@ export function estimateCosts(settings = {}, data) {
   if (count && sides.some(s => s.height > 4) && !c.costHedgeEquipment) notes.push('Large-tree lifting and access are not budgeted: equipment allowance is zero.');
   if (count) notes.push('Stock height does not guarantee an opaque hedge. Spacing and crown width must be checked with the nursery.');
   if(q.frontSegmentLengths.length)notes.push('Front / street thujas are counted separately on each planted span; proposed pedestrian and vehicle openings are excluded. The street hedge follows original ground, with no front-garden fill or raised-bed charge. New gates, fencing and driveway construction are excluded.');
+  if(q.fullPerimeter)notes.push('Left and right thujas extend along the full mapped plot edges. Their front-side sections stay at original grade and add plant supply, planting labour and drip irrigation only; no front-side garden fill or raised beds are charged. Hedge delivery remains one allowance for the whole order.');
 
   const requestedArea = c.costAreaOverride > 0 ? c.costAreaOverride : q.automaticArea;
   const area = Math.min(requestedArea, q.rearGrossArea);
@@ -466,7 +471,7 @@ export function estimateCosts(settings = {}, data) {
     :'Spa structures use installed contractor allowances, not catalog estimates. Fill excludes sauna, sunken lounge and cold-plunge footprints. The fire lounge needs its own excavation, waterproofing and drainage design; pool and jacuzzi hydraulics, structural support and overflow collection are included only when quoted.');
   if(spa.unquoted.length)notes.push(`Spa items awaiting installed quotes: ${spa.unquoted.map(item=>item.label).join(', ')}. Zero is not a free installation.`);
   if(garden.unquoted.length)notes.push(`Garden works awaiting installed quotes: ${garden.unquoted.map(item=>item.label).join(', ')}. Turn on planning allowances for preliminary ranges or enter complete line quotes.`);
-  if(garden.enabled)notes.push('Scope covers the rear garden and selected front hedge: terrace, spa programme, planting, site works and selected garage removal / canopy. Property purchase, house renovation, basement garage, front driveway, gates / fencing, operating bills and major utility-capacity upgrades are excluded.');
+  if(garden.enabled)notes.push(`Scope covers the ${q.fullPerimeter?'rear garden + full perimeter hedges':'rear garden and selected front hedge'}: terrace, spa programme, planting, site works and selected garage removal / canopy. Property purchase, house renovation, basement garage, front driveway, gates / fencing, operating bills and major utility-capacity upgrades are excluded.`);
   if(garden.enabled)notes.push('No double charge for hedge/specimen supply, garden-fill drainage/retaining or spa foundations in garden finishes. Pool coping and built-in lounge seats belong to their spa lines. Terrace finish excludes the jacuzzi footprint. Ordinary paths and lawn need finish only, with bulk fill accounted separately.');
   if(c.costUsePlanningAllowances)notes.push('Planning rates are explicit design assumptions, not surveyed contractor rates. Ranges aim to include applicable tax, but published references retain their own gross/net/unspecified tax labels. No supplier has provided a site-specific offer; replace whole-line allowances with confirmed installed gross quotations.');
   if (screeningTrees.plantQuoteCount) notes.push('An edited screening tree is not supported by its catalog price reference. Enter a plant-only quote for that specimen; prices are not extrapolated to other dimensions.');
@@ -479,7 +484,7 @@ export function estimateCosts(settings = {}, data) {
   const unknown = hedgeUnknown || screeningTrees.status === 'quote-required' || spa.status==='quote-required' || garden.status==='quote-required';
   return {
     currency: 'PLN', basisDate: GARDEN_BUDGET_REVIEWED_AT, contingencyPercent: c.costContingency, planningEnabled:c.costUsePlanningAllowances,
-    hedges: { sides, count, length, spacing: c.costSpacing, procurement: c.buyNewThujas,
+    hedges: { sides, count, length, spacing: c.costSpacing, procurement: c.buyNewThujas,fullPerimeter:q.fullPerimeter,
       lines: hedgeLines, baseTotal: hedgeUnknown ? null : hedgeKnownBase,
       total: hedgeUnknown ? null : hedgeKnown, knownSubtotal: hedgeKnown,
       status: hedgeUnknown ? 'quote-required' : count > 0 ? 'estimate' : 'none' },

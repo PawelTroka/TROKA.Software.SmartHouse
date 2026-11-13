@@ -36,7 +36,7 @@ function obstacles(s){
 }
 
 test('the fresh layout is a close grove while the spaced v1.11 layout retains its geometry',()=>{
- const fresh=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default');
+ const fresh=getScreeningLayouts('sternicza-11','spa-grove').find(layout=>layout.id==='default');
  assert.equal(fresh.label,'Close pine grove · default');
  assert.equal(fresh.settings.gardenProgram,'spa-grove');assert.equal(fresh.settings.hedgeFront,4);
  assert.match(fresh.note,/2\.00 m/);assert.deepEqual(fresh.trees,STERNICZA_TIGHT_GROVE_TREES);
@@ -54,7 +54,7 @@ test('the fresh layout is a close grove while the spaced v1.11 layout retains it
  assert.deepEqual(jacuzziBounds(base,data),jacuzziBounds(previous.settings,data));
  assert.equal(jacuzziBounds(base,data).seatCentres.length,7);
  assert.deepEqual(getScreeningLayouts('korzeniowskiego-40','spa-grove'),[]);
- const comparison=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='previous-spaced-pines');
+ const comparison=getScreeningLayouts('sternicza-11','spa-grove').find(layout=>layout.id==='previous-spaced-pines');
  assert.deepEqual(comparison.settings,fresh.settings);assert.deepEqual(comparison.trees,previous.trees);
 });
 

@@ -1,6 +1,7 @@
-import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.12.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.12.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.12.0';
+import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.13.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.13.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.13.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.13.0';
 
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -9,6 +10,8 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 export function createTreeControls({getSettings, getData, getObserver, getAnalysis, bounds, onChange, onViewChange, notify}) {
   const $ = id => document.getElementById(id);
   let selectedId = null, placing = false, suggestion = '', suggestionSignature = '', inventorySignature = '', targetSignature = '';
+  let facadeAnalysis = null;
+  const facadeResults = new Map();
   // Placement scores belong to one observer, date and geometry. Keep camera and
   // price edits out, but invalidate the result when its screening context changes.
   function screeningSignature(state) {
@@ -194,8 +197,17 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     $('tree-warning').hidden=!warnings.length;
     $('tree-foliage-status').textContent=!tree.enabled?'This tree is off: excluded from screening, shade and purchase costs.':!volume?.plantable?'This location is not counted as screening. Move the trunk to a planting area.':volume?.foliageActive?`${type.evergreen?'Evergreen crown':'Leaf-on crown'} is included in privacy and shade. Dense foliage is an approximation.`:'Leaf-off comparison: this deciduous crown does not receive opaque-foliage credit.';
     $('tree-find-position').disabled=!targets.length||state.preset==='front';
-    const target=(getAnalysis()?.byBlock || []).find(block=>block.id===$('tree-target').value);
-    $('tree-target-current').textContent=state.preset==='front'?'Choose a rear-garden or living-room viewpoint to compare the pine screen against nearby buildings.':target?`${target.label}: ${target.visible} of ${target.total} sampled points remain visible from this viewpoint.`:'';
+    const analysis=getAnalysis(),target=(analysis?.byBlock || []).find(block=>block.id===$('tree-target').value);
+    const targetRays=(analysis?.rays||[]).filter(ray=>ray.blockId===target?.id);
+    const roofRays=targetRays.filter(ray=>ray.kind==='roof');
+    if(facadeAnalysis!==analysis){facadeAnalysis=analysis;facadeResults.clear();}
+    let facade;
+    if(target&&state.preset!=='front'&&data&&analysis?.observer){
+      if(!facadeResults.has(target.id))facadeResults.set(target.id,analyzeFacadeVisibility(analysis.observer,target.id,state,data));
+      facade=facadeResults.get(target.id);
+    }
+    const facadeText=facade?.status==='ok'?`${facade.visible} / ${facade.total} (${facade.spacing.toFixed(2)} m grid)`:`unavailable — ${facade?.reason||'Choose a valid viewpoint.'}`;
+    $('tree-target-current').textContent=state.preset==='front'?'Choose a rear-garden or living-room viewpoint to compare the pine screen against nearby buildings.':target&&facade?`${target.label} · visible façade points: ${facadeText}; roof points: ${roofRays.filter(ray=>ray.visible).length} / ${roofRays.length}. These are finite samples, not visible area. Check Eye level for gaps between crowns.`:'';
   }
 
   return {
