@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.13.0';
+import {getTreeType} from './tree-catalog.js?v=1.14.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -228,6 +228,53 @@ const alignedLayouts=Object.freeze([
     settings:alignedSettings,trees:Object.freeze([])}),
 ]);
 
-export function getScreeningLayouts(siteId,program='spa-aligned') {
-  return siteId==='sternicza-11'?(program==='spa-aligned'?alignedLayouts:program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+// Placement takes priority: every new-default trunk stays in the rear-left/
+// east zone, with no separate forward tree in the central garden. The default
+// uses the documented stock band's upper endpoints, not larger invented stock.
+// Availability of three specimens at both endpoints still needs confirmation.
+export const STERNICZA_REAR_CORNER_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:17.3,y:31,height:10,crownWidth:6,crownDepth:6},
+  {typeId:'austrian-pine-tall',x:14.8,y:31.1,height:10,crownWidth:6,crownDepth:6},
+  {typeId:'austrian-pine-tall',x:14.5,y:34.9,height:10,crownWidth:6,crownDepth:6},
+]);
+export const STERNICZA_CORNER_MIDPOINT_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:17.3,y:31},
+  {typeId:'austrian-pine-tall',x:14.8,y:31.1},
+  {typeId:'austrian-pine-tall',x:14.5,y:34.9},
+]);
+export const STERNICZA_COMPACT_REAR_CORNER_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:15.4,y:33.4},
+  {typeId:'austrian-pine-tall',x:17.7,y:33.4},
+  {typeId:'austrian-pine-tall',x:16.6,y:35.3},
+]);
+export const STERNICZA_FARTHER_LEFT_CORNER_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:16.7,y:32},
+  {typeId:'austrian-pine-tall',x:19,y:32},
+  {typeId:'austrian-pine-tall',x:17.9,y:33.9},
+]);
+const rearCornerSettings=Object.freeze({...alignedSettings,gardenProgram:'spa-corner'});
+const rearCornerLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Rear-left corner grove · default',
+    note:'All three pines stay together in the rear-left/east corner, with no forward central-garden tree. The nearest pair is 2.50 m apart and all modeled crowns overlap and stay inside the parcel. This default assumes specimens at the upper end of the documented 9–10 m height / 4–6 m crown stock band: 10 m high with 6 m crowns. Actual stock and crown shape are unconfirmed; the 9.5 m / 5 m midpoint is a separate comparison at the same positions. The 179,700 PLN plant subtotal is a catalog reference, not a supplier quote. Dense PCK3 wall samples hidden are about 84% seated living room, 82% standing, 73% jacuzzi and 97% at the named garden point. Parts of the facade and roof remain visible. The 6 × 3.5 m pool, other spa features and 4 m full-perimeter thujas retain their existing geometry.',
+    settings:rearCornerSettings,trees:STERNICZA_REAR_CORNER_TREES}),
+  Object.freeze({id:'catalog-midpoint-corner',label:'Same corner grove · 9.5 m / 5 m stock',
+    note:'The same rear-left/east trunk positions using the catalog-band midpoint dimensions, 9.5 m height and 5 m crown diameter. This preserves the corner grouping with less assumed crown size. All modeled crowns remain inside the parcel; some PCK3 facade and roof remains visible from the house and jacuzzi.',
+    settings:rearCornerSettings,trees:STERNICZA_CORNER_MIDPOINT_TREES}),
+  Object.freeze({id:'compact-rear-corner',label:'Tight rear-left triangle · 9.5 m stock',
+    note:'A 2.3 × 1.9 m trunk triangle farther back in the same rear-left/east corner, with every pair 2.20–2.30 m apart. All 5 m crowns fit inside the parcel. This is closest to a small rear-corner clump, but leaves substantially more PCK3 visible from the living room and jacuzzi.',
+    settings:rearCornerSettings,trees:STERNICZA_COMPACT_REAR_CORNER_TREES}),
+  Object.freeze({id:'farther-left-corner',label:'Farther-left corner · boundary overhang',
+    note:'The whole tight triangle shifts farther left/east while staying in the rear corner. Trunks remain at least 1.31 m inside the parcel, but the 5 m crowns extend about 1.19 m and 0.09 m beyond the east edge. Screening assumes those full crowns; this is not approved boundary overhang. Moving farther left does not fully hide PCK3 and reduces screening from the named garden point.',
+    settings:rearCornerSettings,trees:STERNICZA_FARTHER_LEFT_CORNER_TREES}),
+  Object.freeze({id:'previous-aligned-grove',label:'Previous v1.13 · forward screening arrangement',
+    note:'The exact v1.13 tree positions and midpoint sizes, kept as an explicit comparison. They offer stronger house screening, but spread trees forward into the central garden. They are not the new corner-constrained default.',
+    settings:rearCornerSettings,trees:STERNICZA_ALIGNED_TREES}),
+  ...alignedLayouts.filter(layout=>!['default','hedges-only'].includes(layout.id)).map(layout=>Object.freeze({...layout,settings:rearCornerSettings})),
+  Object.freeze({id:'hedges-only',label:'4 m full-perimeter thujas · no specimen trees',
+    note:'The same 6 m pool, spa geometry, garden fill and front/left/right/rear thujas without specimen trees. Pedestrian and vehicle openings remain clear.',
+    settings:rearCornerSettings,trees:Object.freeze([])}),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-corner') {
+  return siteId==='sternicza-11'?(program==='spa-corner'?rearCornerLayouts:program==='spa-aligned'?alignedLayouts:program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }

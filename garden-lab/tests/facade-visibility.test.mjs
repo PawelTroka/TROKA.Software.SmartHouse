@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {analyzeFacadeVisibility} from '../src/facade-visibility.js';
 import {analyzeVisibility,observerForPreset} from '../src/geometry.js';
-import {applyBuildingOverrides} from '../src/buildings.js?v=1.13.0';
+// Share the runtime's baseline WeakMap even after the release cache key changes.
+const runtimeVersion=JSON.parse(readFileSync(new URL('../package.json',import.meta.url))).version;
+const {applyBuildingOverrides}=await import(`../src/buildings.js?v=${runtimeVersion}`);
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 // Freeze the rejected candidate: its sparse facade samples said zero exposed
@@ -41,7 +43,7 @@ test('the facade grid covers the upper wall band, excludes roof features and lea
   assert.equal(analyzeVisibility(observer('jacuzzi'),settings,data).byBlock.find(b=>b.id==='building-9').total,460,'The main engine retains its original denominator');
 });
 
-test('other analyzed buildings stay as contextual blockers and own-house exclusion remains the shared convention',()=>{
+test('other analyzed buildings remain blockers while an indoor eye keeps the own-house convention',()=>{
   const target=data.buildings.find(b=>b.id==='building-9');
   const empty={...data,buildings:[target]},s={...settings,gardenProgram:'classic',hedgeRear:0,hedgeLeft:0,hedgeRight:0,hedgeFront:0,gardenRaise:0,screeningTrees:[]};
   const eye=observer('sofa',s,empty),baseline=analyzeFacadeVisibility(eye,target.id,s,empty,{spacing:1});

@@ -121,7 +121,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,15);
+ assert.equal(STATE_VERSION,16);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -229,9 +229,9 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v15 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+test('v16 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
  assert.equal(DEFAULTS.gardenProgram,getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default').settings.gardenProgram);
- for(const gardenProgram of ['spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic']){
+ for(const gardenProgram of ['spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic']){
   const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
   const params=new URLSearchParams(encodeState(input));
   assert.equal(params.get('v'),String(STATE_VERSION));
@@ -302,8 +302,8 @@ test('sparse v10 links and saves retain the published balanced pines when fresh 
   old.screeningTrees[0].x=0;
   assert.deepEqual(future.decodeState('v=10&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),expected,'Restored objects do not mutate the frozen v10 baseline');
  }
- assert.deepEqual(future.decodeState('v=15&site=sternicza-11').screeningTrees,futureTrees);
- assert.equal(future.decodeState('v=15&site=sternicza-11').showDimensions,false);
+ assert.deepEqual(future.decodeState('v=16&site=sternicza-11').screeningTrees,futureTrees);
+ assert.equal(future.decodeState('v=16&site=sternicza-11').showDimensions,false);
 });
 
 test('explicit v10 empty or custom trees, geometry and quotes migrate without moving the design',()=>{

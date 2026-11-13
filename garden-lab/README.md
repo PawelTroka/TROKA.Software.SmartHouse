@@ -2,7 +2,34 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.13.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.13.0#v=15&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.14.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.14.0#v=16&site=sternicza-11)**
+
+## Rear-left corner, natural tree models and all-direction views · 1.14.0
+
+The new **Rear-left corner grove** keeps all three pine trunks in the far-left/east part of the rear garden, at **(17.30, 31.00), (14.80, 31.10), (14.50, 34.90) m**. Their footprint spans **2.8 × 3.9 m**, with the nearest two trunks **2.50 m apart**. No pine is pulled forward into the centre of the lawn. All three nominal crowns overlap and fit within the mapped parcel; the closest crown has only about 7 mm of nominal boundary margin, so this is a model fit rather than a surveyed planting clearance.
+
+The default uses **10 m height and 6 m crown diameter**, the upper end of the existing supplier's listed **9–10 m / 4–6 m** stock band. The actual three specimens, crown density, root balls and spacing require supplier confirmation. The plant reference remains **179,700 PLN**, excluding the separately budgeted delivery, lifting and establishment. A named comparison retains the same positions at the **9.5 m / 5 m** catalogue midpoint. Older arrangements remain explicit comparisons.
+
+**The corner preference is now a fixed design constraint. It does not completely hide PCK3.** With dense nominal crowns, the 0.25 m façade grid reports:
+
+| Unchanged viewpoint | Visible façade points | Hidden façade samples |
+|---|---:|---:|
+| Living room, seated | 859 / 5,214 | 83.5% |
+| Living room, standing | 930 / 5,214 | 82.2% |
+| Jacuzzi, seated | 2,649 / 9,702 | 72.7% |
+| Named garden viewpoint | 139 / 5,214 | 97.3% |
+
+These are samples, not visible surface area. Real needle pads and branch gaps can expose more than the opaque analytical envelope. The previous forward arrangement hides more from the house but does not satisfy the user's requested corner layout. The [corner geometry study](docs/rear-corner-screening-comparison.md) records those tradeoffs without moving the observers or the mapped building.
+
+Pines now use deterministic tapered bark trunks, branch whorls and irregular needle pads, contained within their measured envelopes. Thuja foliage, materials, water and nearby building façade detail have been refined. Decorative windows and finishes are illustrative and do not change mapped footprints or heights.
+
+The context expands from **18 to 142 surrounding buildings**, including **85 on the far side of Sternicza**, using the original official GUGiK 2024 CityGML source within a **200 m radius**. These LoD1 flat tops describe median laser heights, not surveyed roof ridges. Selected existing detailed roof returns remain intact. A separate 4 m context DTM extends the visible ground while the property retains its original 1 m analytical terrain. See the [source record](docs/sternicza-neighborhood-expansion.md).
+
+Use **Look toward → Rear garden / Left boundary / Right boundary / Street**, or select any mapped building under **Inspect a surrounding building** and choose **Look at building**. These controls turn the camera without moving the eye. The inspector gives a separate dense façade check for every mapped building; unmapped roof detail is explicitly unavailable. The mapped house blocks cross-house rays from outdoor viewpoints, while indoor presets retain the glazing sightline assumption.
+
+Full-perimeter thujas still cover front, left, right and rear: **107.27 m / 137 plants**, with **1.2 m pedestrian and 4.0 m vehicle openings**. The pool remains **6 × 3.5 m**, sauna **3 × 2.4 m**, and seven-seat spa **2.3 × 2.3 m**. The total planning range remains **804,296–1,384,672 PLN**, including the upper 20% allowance once.
+
+Schema **v16** gives fresh designs the corner layout. Sparse v15 links and saved designs preserve the exact previous `spa-aligned` arrangement and all earlier migrations remain available. Use the latest link above or Reset to apply the new default.
 
 ## PCK3 façade screen and full-perimeter thujas · 1.13.0
 

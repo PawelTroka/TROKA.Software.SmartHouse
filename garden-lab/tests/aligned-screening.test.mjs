@@ -31,7 +31,7 @@ function obstacles(s){
 }
 
 test('the facade-aligned default has a 6 m pool while historical pool and planting geometry remain explicit',()=>{
- const fresh=getScreeningLayouts('sternicza-11')[0],previous=getScreeningLayouts('sternicza-11','spa-grove')[0];
+ const fresh=getScreeningLayouts('sternicza-11','spa-aligned')[0],previous=getScreeningLayouts('sternicza-11','spa-grove')[0];
  assert.equal(fresh.label,'PCK3-aligned grove · default');
  assert.equal(fresh.settings.gardenProgram,'spa-aligned');assert.equal(fresh.settings.hedgeFullPerimeter,true);
  assert.deepEqual(fresh.trees,STERNICZA_ALIGNED_TREES);
