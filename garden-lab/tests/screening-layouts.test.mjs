@@ -14,7 +14,7 @@ const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
 test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
-  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-screened');
+  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);

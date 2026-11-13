@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.11.0';
+import {getTreeType} from './tree-catalog.js?v=1.12.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -183,6 +183,29 @@ const screenedLayouts=Object.freeze([
   ...compactLayouts.filter(layout=>layout.id!=='default').map(layout=>Object.freeze({...layout,settings:screenedSettings})),
 ]);
 
-export function getScreeningLayouts(siteId,program='spa-screened') {
-  return siteId==='sternicza-11'?(program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+// The nearest trunk is explicitly 2.00 m from the centre trunk. All three
+// nominal 5 m crowns overlap; the user-requested close spacing takes priority
+// over the earlier forward-tree sightline optimisation. Preserve that older
+// array and programme above so existing shared designs keep their geometry.
+export const STERNICZA_TIGHT_GROVE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13,y:34.1},
+  {typeId:'austrian-pine-tall',x:14.2,y:32.5},
+  {typeId:'austrian-pine-tall',x:17.6,y:34.9},
+]);
+const groveSettings=Object.freeze({...screenedSettings,gardenProgram:'spa-grove'});
+const groveLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Close pine grove · default',
+    note:'The nearest pine sits just 2.00 m from the centre pine, keeping all three overlapping crowns together at the far-left/east pool end. The 7 × 3.5 m pool ends 1.00 m before that trunk, with 1.42 m to the coping. All three modeled crowns fit inside the parcel. At the starting assumptions, about 41% of seated living-room, 40% of standing living-room, 85% of jacuzzi and over 99% of named garden PCK3 samples are hidden. Close planting needs nursery/root-ball confirmation; actual foliage has gaps.',
+    settings:groveSettings,trees:STERNICZA_TIGHT_GROVE_TREES}),
+  Object.freeze({id:'previous-spaced-pines',label:'Previous spaced pines · same pool',
+    note:'The earlier pine positions on the close-grove pool plan, with the nearest pine 8.52 m from the centre pine. This offers stronger living-room screening, but the trees form a spaced arrangement. Choose the Previous spaced pines garden layout to restore the earlier pool position as well.',
+    settings:groveSettings,trees:STERNICZA_POOL_END_TREES}),
+  ...compactLayouts.filter(layout=>!['default','hedges-only'].includes(layout.id)).map(layout=>Object.freeze({...layout,settings:groveSettings})),
+  Object.freeze({id:'hedges-only',label:'4 m front and garden hedges · no specimen trees',
+    note:'The close-grove pool plan with the same front and garden hedges, fill and terrace, without specimen trees.',
+    settings:groveSettings,trees:Object.freeze([])}),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-grove') {
+  return siteId==='sternicza-11'?(program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }
