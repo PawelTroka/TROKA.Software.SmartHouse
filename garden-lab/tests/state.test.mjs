@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {STATE_VERSION,DEFAULTS,FIELDS,MODES,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,migrateSavedState,changeHedgeHeight} from '../src/state.js';
+import {createStateModel,STATE_VERSION,DEFAULTS,FIELDS,MODES,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,migrateSavedState,changeHedgeHeight} from '../src/state.js';
 import {COST_FIELDS} from '../src/costs.js';
 import {BUILDING_FIELDS} from '../src/buildings.js';
+import {getSiteProfile} from '../src/sites.js';
 test('share links preserve fill, fixed floors, independent hedge heights and observer settings',()=>{
  const state={...DEFAULTS,hedgeRear:6,hedgeLeft:4,hedgeRight:2.5,gardenRaise:.5,bedRaise:.25,floorHeight:1.2,raiseNewHedges:false,preset:'custom',observerX:7.2,observerY:28,mode:'section',canopyEnabled:true,fasciaDepth:.35};
  const decoded=decodeState(encodeState(state));
@@ -64,7 +65,7 @@ test('current links preserve every editable cost and building assumption with co
  const state={...DEFAULTS,linkedHedges:true,buyNewThujas:false,raiseNewHedges:false,includeHighFeatures:true};
  for(const [key,f] of Object.entries({...COST_FIELDS,...BUILDING_FIELDS}))state[key]=Math.round((f.min+(f.max-f.min)*.37)*100)/100;
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=10&site=sternicza-11&'));
+ assert.ok(encoded.startsWith(`v=${STATE_VERSION}&site=sternicza-11&`));
  for(const key of Object.keys({...COST_FIELDS,...BUILDING_FIELDS})){
   assert.ok(key in FIELDS);
   assert.equal(restored[key],state[key],key);
@@ -75,7 +76,7 @@ test('current links preserve every editable cost and building assumption with co
 test('solar settings round-trip with the design, costs, buildings and independent hedges',()=>{
  const state={...DEFAULTS,mode:'sun',sunDate:'2026-12-21',sunMinutes:962,sunEnabled:false,sunPathVisible:true,hedgeRear:6,hedgeLeft:3.5,hedgeRight:2.5,gardenRaise:.35,costFillRate:90,b9HeightDelta:2};
  const encoded=encodeState(state),restored=decodeState(`#${encoded}`);
- assert.ok(encoded.startsWith('v=10&site=sternicza-11&'));
+ assert.ok(encoded.startsWith(`v=${STATE_VERSION}&site=sternicza-11&`));
  assert.ok(MODES.includes('sun'));
  assert.equal(FIELDS.sunMinutes.group,'solar');
  for(const key of ['mode','sunDate','sunMinutes','sunEnabled','sunPathVisible','hedgeRear','hedgeLeft','hedgeRight','gardenRaise','costFillRate','b9HeightDelta'])assert.equal(restored[key],state[key],key);
@@ -105,7 +106,7 @@ test('v1 and v2 links preserve legacy assumptions and adopt stable solar default
   for(const key of ['sunDate','sunMinutes','sunEnabled','sunPathVisible'])assert.equal(restored[key],DEFAULTS[key],`v${version} ${key}`);
  }
  const defaultLink=new URLSearchParams(encodeState(DEFAULTS));
- assert.equal(defaultLink.get('v'),'10');assert.equal(defaultLink.get('site'),'sternicza-11');
+ assert.equal(defaultLink.get('v'),String(STATE_VERSION));assert.equal(defaultLink.get('site'),'sternicza-11');
  assert.deepEqual(JSON.parse(defaultLink.get('screeningTrees')),DEFAULTS.screeningTrees);
  assert.deepEqual(decodeState('#v=6&hedgeRear=10&sunDate=2026-12-21'),DEFAULTS);
 });
@@ -119,7 +120,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,10);
+ assert.equal(STATE_VERSION,11);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -227,16 +228,16 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v10 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+test('v11 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
  assert.equal(DEFAULTS.gardenProgram,'spa-edge');
  for(const gardenProgram of ['spa-edge','spa','classic']){
   const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
   const params=new URLSearchParams(encodeState(input));
-  assert.equal(params.get('v'),'10');
+  assert.equal(params.get('v'),String(STATE_VERSION));
   assert.equal(params.get('gardenProgram'),gardenProgram,'The programme must remain explicit even when it matches fresh defaults');
   assert.equal(params.get('screeningTrees'),'[]');
   assert.deepEqual(decodeState(params.toString()),input);
-  assert.deepEqual(migrateSavedState(input,10),input);
+  assert.deepEqual(migrateSavedState(input,11),input);
  }
  assert.equal(sanitizeState({gardenProgram:'<script>'}).gardenProgram,'spa-edge');
 });
@@ -281,6 +282,49 @@ test('v9 saves keep the previous spa, planting positions and uncluttered view',(
  for(const [key,value] of Object.entries(customised))assert.deepEqual(saved[key],value,key);
  assert.equal(saved.showDimensions,false);
  assert.deepEqual(decodeState(encodeState(saved)),saved,'Re-sharing preserves the previous geometry and display');
+});
+
+test('sparse v10 links and saves retain the published balanced pines when fresh defaults change',()=>{
+ const profile=getSiteProfile('sternicza-11');
+ const futureTrees=DEFAULTS.screeningTrees.map((tree,index)=>({...tree,x:15+index,y:34.8}));
+ const future=createStateModel({...profile,defaults:{...profile.defaults,screeningTrees:futureTrees,showDimensions:false}});
+ const expected=[[17.6,34.9],[12.9,34.3],[14.4,25.7]];
+ for(const old of [future.decodeState('v=10&site=sternicza-11'),future.migrateSavedState({siteId:'sternicza-11'},10)]){
+  assert.equal(old.gardenProgram,'spa-edge');assert.equal(old.showDimensions,true);
+  assert.deepEqual(old.screeningTrees.map(t=>[t.x,t.y]),expected);
+  old.screeningTrees.forEach((t,index)=>{
+   assert.equal(t.id,`pine-${index+1}`);assert.equal(t.typeId,'austrian-pine-tall');
+   assert.equal(t.height,9.5);assert.equal(t.crownBase,2.5);assert.equal(t.crownWidth,5);assert.equal(t.crownDepth,5);
+   assert.equal(t.rotation,0);assert.equal(t.enabled,true);assert.equal(t.unitPrice,0);
+  });
+  assert.deepEqual(future.decodeState(future.encodeState(old)),old,'Re-sharing writes the historical trees explicitly');
+  old.screeningTrees[0].x=0;
+  assert.deepEqual(future.decodeState('v=10&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),expected,'Restored objects do not mutate the frozen v10 baseline');
+ }
+ assert.deepEqual(future.decodeState('v=11&site=sternicza-11').screeningTrees,futureTrees);
+ assert.equal(future.decodeState('v=11&site=sternicza-11').showDimensions,false);
+});
+
+test('explicit v10 empty or custom trees, geometry and quotes migrate without moving the design',()=>{
+ const custom={...decodeState('v=10&site=sternicza-11').screeningTrees[1],id:'my-pine',x:15.4,y:34.7,rotation:28,unitPrice:61000,enabled:false};
+ for(const trees of [[],[custom]]){
+  const saved={siteId:'sternicza-11',gardenProgram:'spa-edge',screeningTrees:trees,showDimensions:false,
+   hedgeLeft:2.8,hedgeRight:5.2,preset:'jacuzzi',costScreeningPlanting:1500,costSpaSauna:82400};
+  const params=new URLSearchParams({v:'10',site:saved.siteId,...Object.fromEntries(Object.entries(saved).filter(([key])=>!['siteId','screeningTrees'].includes(key))),screeningTrees:JSON.stringify(trees)});
+  for(const old of [decodeState(params.toString()),migrateSavedState(saved,10)]){
+   for(const [key,value] of Object.entries(saved))assert.deepEqual(old[key],value,key);
+   assert.deepEqual(decodeState(encodeState(old)),old);
+  }
+ }
+ for(const bad of ['{bad','null','"oops"']){
+  const params=new URLSearchParams({v:'10',site:'sternicza-11',screeningTrees:bad});
+  assert.deepEqual(decodeState(params.toString()).screeningTrees,[],'Malformed explicit trees cannot add default screening');
+ }
+ const korz=createStateModel(getSiteProfile('korzeniowskiego-40'));
+ for(const version of [10,11]){
+  const state=korz.decodeState(`v=${version}&site=korzeniowskiego-40`);
+  assert.equal(state.gardenProgram,'classic');assert.deepEqual(state.screeningTrees,[]);assert.equal(state.showDimensions,true);
+ }
 });
 
 test('dimension visibility is independent, shared and absent from historical defaults',()=>{

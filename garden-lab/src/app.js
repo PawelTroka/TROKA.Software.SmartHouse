@@ -1,17 +1,17 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.8.0';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.8.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.8.0';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.8.0';
-import {renderBudget,renderPriceSources,renderTreePriceSources} from './budget-view.js?v=1.8.0';
-import {createTreeControls} from './tree-controls.js?v=1.8.0';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings} from './geometry.js?v=1.8.0';
-import {renderPlan,renderSection} from './diagrams.js?v=1.8.0';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.8.0';
-import {analyzeSunlight} from './shade.js?v=1.8.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.8.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.8.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.8.0';
-import {gardenDimensions} from './dimensions.js?v=1.8.0';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.9.0';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.9.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.9.0';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.9.0';
+import {renderBudget,renderPriceSources,renderTreePriceSources} from './budget-view.js?v=1.9.0';
+import {createTreeControls} from './tree-controls.js?v=1.9.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings} from './geometry.js?v=1.9.0';
+import {renderPlan,renderSection} from './diagrams.js?v=1.9.0';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.9.0';
+import {analyzeSunlight} from './shade.js?v=1.9.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.9.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.9.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.9.0';
+import {gardenDimensions} from './dimensions.js?v=1.9.0';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -55,7 +55,7 @@ function readSaved(suffix=''){
   const current=safeRead(`${storageKey}${suffix}`,null);
   if(current&&typeof current==='object'&&!Array.isArray(current)&&current.siteId===profile.id)return migrateSavedState(current,STATE_VERSION);
   if(previewScope)return suffix?null:sanitizeState(DEFAULTS);
-  for(const version of [9,8,7,6]){
+  for(const version of [10,9,8,7,6]){
     const previousSite=safeRead(`garden-lab-${profile.id}-v${version}${suffix}`,null);
     if(previousSite&&typeof previousSite==='object'&&!Array.isArray(previousSite)&&previousSite.siteId===profile.id)return migrateSavedState(previousSite,version);
   }
@@ -65,7 +65,7 @@ function readSaved(suffix=''){
   }
   return suffix?null:sanitizeState(DEFAULTS);
 }
-let settings=/^#v=(?:[1-9]|10)(?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
+let settings=/^#v=(?:[1-9]|1[01])(?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
 if(!profile.hasGarage)settings.removeGarage=true;
 let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
@@ -195,7 +195,7 @@ function syncControls(){
   $('garden-program-wrap').hidden=profile.id!=='sternicza-11';
   $('garden-program').value=settings.gardenProgram;
   $('garden-program-note').textContent=edge
-    ?'Pool near the left/east edge; sauna in the far right/west rear corner; cold plunge by the rear boundary. The narrow pool-to-boundary strip is planting space; pool access is from the inner garden. The default restores three tall screening pines. Check PCK3 from each viewpoint: foliage gaps and views between crowns can remain.'
+    ?'Pool near the left/east edge; sauna in the far right/west rear corner; cold plunge by the rear boundary. The narrow pool-to-boundary strip is planting space; pool access is from the inner garden. The default groups three tall pines at the far-left end of the pool. This favors the jacuzzi and garden views; use Balanced views or Living-room priority to compare the more exposed house sightlines.'
     :spa
     ?'East-side pool; rear-right sauna facing the garden; edge jacuzzi, sunken lounge and cold plunge. New planting presets fit this layout. The previous screening figures apply only to the previous layout.'
     :'Original west-pool layout. Choose Spa courtyard · near plot edges for the latest arrangement. Custom tree positions are retained and checked for conflicts.';
@@ -415,7 +415,7 @@ $('about-open').addEventListener('click',()=>$('about').showModal());
 $('about-close').addEventListener('click',()=>$('about').close());
 $('about').addEventListener('click',e=>{if(e.target===$('about')){const r=$('about').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('about').close();}});
 window.addEventListener('hashchange',()=>{
-  if(!/^#v=(?:[1-9]|10)(?:&|$)/.test(location.hash))return;
+  if(!/^#v=(?:[1-9]|1[01])(?:&|$)/.test(location.hash))return;
   const destination=resolveSiteId(location.search,location.hash);
   if(destination!==profile.id){const url=new URL(location.href);url.searchParams.set('site',destination);location.assign(url.href);return;}
   stopSunPlayback();settings=decodeState(location.hash);if(!profile.hasGarage)settings.removeGarage=true;showingA=false;syncControls();update();
@@ -427,7 +427,7 @@ try{
   fetch(new URL('../data/cost-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Price sources unavailable');return r.json();}).then(renderPriceSources).catch(()=>{$('price-date').textContent='Price references are also documented in the repository.';});
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.8.0');
+    const {createScene}=await import('./scene.js?v=1.9.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

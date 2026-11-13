@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.8.0';
+import {getTreeType} from './tree-catalog.js?v=1.9.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -94,16 +94,29 @@ export const STERNICZA_EDGE_LIVING_TREES=treesFrom([
   {typeId:'austrian-pine-tall',x:12.5,y:33.4},
   {typeId:'austrian-pine-tall',x:15.2,y:23.2},
 ]);
+// The requested compact grove sits at the far-left/east end of the pool.
+// Preserve the published forward-tree arrangement above as a comparison.
+// Three 5 m crowns overlap in plan; rearward planting improves the named
+// jacuzzi/garden views but leaves more of PCK3 visible from the living room.
+// See docs/corner-screening-comparison.md for the measured tradeoff.
+export const STERNICZA_CORNER_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.1,y:34.45},
+  {typeId:'austrian-pine-tall',x:14.35,y:31},
+  {typeId:'austrian-pine-tall',x:17.6,y:34.5},
+]);
 const edgeSettings=Object.freeze({...STERNICZA_LAYOUT_SETTINGS,gardenProgram:'spa-edge'});
 const edgeLayouts=Object.freeze([
-  Object.freeze({id:'default',label:'Three 9.5 m pines · balanced views · default',
+  Object.freeze({id:'default',label:'Three 9.5 m pines · rear-left grove · default',
+    note:'Three overlapping crowns in a compact group at the far-left/east end of the pool. Strong screening from the jacuzzi and named garden position, but approximately half the sampled PCK3 points remain visible from the living room. Compare Balanced views and Living-room priority. Crowns overhang pool edges; actual foliage has gaps.',
+    settings:edgeSettings,trees:STERNICZA_CORNER_TREES}),
+  Object.freeze({id:'balanced-views',label:'Three 9.5 m pines · balanced views · previous default',
     note:'Three full-height pines, including a forward crown beside the pool. Balances living-room, terrace, jacuzzi and garden views. Some PCK3 remains visible; inspect each view. Crowns overhang pool/spa edges and need individual planting and maintenance checks.',
     settings:edgeSettings,trees:STERNICZA_EDGE_TREES}),
   Object.freeze({id:'living-priority',label:'Three 9.5 m pines · living-room priority',
     note:'Prioritizes the living-room and terrace sightlines at the same plant cost. At the starting assumptions, the seated living-room samples are hidden and two standing-view sample rays remain. More of PCK3 is visible from the fire lounge and pool paths. Actual foliage has gaps.',
     settings:edgeSettings,trees:STERNICZA_EDGE_LIVING_TREES}),
   Object.freeze({id:'mixed-pines',label:'Two 9.5 m + one 5.5 m pine · lower plant cost',
-    note:'Saves 43,000 PLN in catalog plant cost against three tall pines. More sampled PCK3 remains visible from the living room, jacuzzi and several garden positions. Delivery and installation are extra.',
+    note:'Saves 43,000 PLN in catalog plant cost against three tall pines. Compared with Balanced views, more sampled PCK3 remains visible from the living room, jacuzzi and several garden positions. Delivery and installation are extra.',
     settings:edgeSettings,trees:treesFrom([
       {typeId:'austrian-pine-tall',x:14.4,y:26.4},
       {typeId:'austrian-pine-tall',x:13,y:33.8},

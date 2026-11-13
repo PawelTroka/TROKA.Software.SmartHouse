@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {SITE_OPTIONS,resolveSiteId,getSiteProfile} from '../src/sites.js';
-import {createStateModel,DEFAULTS,decodeState} from '../src/state.js';
+import {createStateModel,STATE_VERSION,DEFAULTS,decodeState} from '../src/state.js';
 import {getBuildingTargets,buildingFields,buildingAssumptions,applyBuildingOverrides} from '../src/buildings.js';
 import {sunForSettings,solarPosition,localSunDirection} from '../src/solar.js';
 
@@ -27,11 +27,12 @@ test('explicit property identity survives share links and legacy links select on
   assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=3&hedgeRear=8'),'sternicza-11');
   assert.equal(resolveSiteId('?site=sternicza-11','#v=6&site=korzeniowskiego-40'),'korzeniowskiego-40');
   assert.equal(resolveSiteId('?site=unknown'),'sternicza-11');
+  for(const version of [10,11])assert.equal(resolveSiteId('?site=sternicza-11',`#v=${version}&site=korzeniowskiego-40`),'korzeniowskiego-40');
   assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=6&site=unknown'),'sternicza-11');
   const active=createStateModel(getSiteProfile('korzeniowskiego-40',otherSite()));
   const scenario={...active.DEFAULTS,hedgeLeft:2,hedgeRight:6,lookYaw:35,costTreePriceLeft:120,costTreePriceRight:980,b70HeightDelta:2,sunDate:'2026-12-21'};
   const link=active.encodeState(scenario),restored=active.decodeState(link);
-  assert.match(link,/^v=10&site=korzeniowskiego-40&/);
+  assert.ok(link.startsWith(`v=${STATE_VERSION}&site=korzeniowskiego-40&`));
   for(const key of ['siteId','hedgeLeft','hedgeRight','lookYaw','costTreePriceLeft','costTreePriceRight','b70HeightDelta','sunDate'])assert.equal(restored[key],scenario[key],key);
   assert.deepEqual(decodeState(link),DEFAULTS,'The same controls cannot be applied to another property');
   assert.deepEqual(active.decodeState('v=6&site=sternicza-11&hedgeRear=12'),active.DEFAULTS);

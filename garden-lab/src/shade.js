@@ -3,11 +3,11 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.8.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.8.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.8.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.8.0';
-import { terraceStairs } from './layout.js?v=1.8.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.9.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.9.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.9.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.9.0';
+import { terraceStairs } from './layout.js?v=1.9.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
