@@ -8,6 +8,8 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 Choose **Compact spa · left-edge pines · latest** to load the new garden geometry. The pool stays along the physical left/east boundary, the smaller sauna remains tucked against the rear-right/west corner, and the jacuzzi remains recessed at the outside edge of the living-room terrace. The terrain and fixed living-floor reference remain shared by the drawings, visibility and sun calculations.
 
+![Hosted dimensioned plan with the compact grove, six-person sauna, seven-seat spa and service access](compact-spa-plan-1.10.0.jpg)
+
 ### Compact pines farther left, with the tradeoff measured
 
 All three pines remain **9.5 m tall**, with nominal **5 × 5 m crowns**, in a compact grove at the rear-left/east end of the pool. Their trunk positions are **(13.30, 34.50), (14.35, 31.00), (18.10, 34.50) m**. Larger X means farther left/east looking from the house. The outer pine moves **0.50 m farther left**, the rear inner pine moves **0.20 m left and 0.05 m rearward**, and the middle pine stays in place.
@@ -61,6 +63,10 @@ The budget now covers the five spa installations plus terrace and steps, paths a
 Published product prices and installed-work assumptions are separately labelled. No site-specific supplier quotations have been received. Positive quote fields replace the entire relevant line; catalog benchmarks are never added again. Disabling planning allowances makes missing quotes explicit instead of treating unpriced work as free. [The price and methodology audit](docs/garden-budget-2026-11-13.md) documents sources reviewed on **13 November 2026**, scope mismatches, tax treatment and provisional quantities. House renovation, a basement garage, front driveway/boundary work, major incoming utility upgrades and running bills are outside this rear-garden total.
 
 **State version 12** preserves old links and saved designs, including the previous v11 trees, large sauna, 2.2 m overflow-style tub and quote-only budget. The latest link above explicitly loads the new defaults. Korzeniowskiego retains its own geometry and default budget scope.
+
+**Verification:** All **247 automated checks** pass and the static build succeeds. Hosted browser review with the actual WebGL renderer confirms the compact grove, smaller sauna, seven-seat spa, readable garden and neighbourhood measurement schedules, PCK3 counts at the living room / jacuzzi / garden, the wider-layout comparison, installed-quote replacement and explicit missing-quote handling. No browser errors or warnings occurred in the reviewed preview. The documented map measurements and supplier price references were independently audited.
+
+![Hosted living-room view showing the smaller sauna and seven-seat spa, with remaining PCK3 exposure visible](compact-spa-eye-1.10.0.jpg)
 
 ## Previous rear-left grove · 1.9.0
 
