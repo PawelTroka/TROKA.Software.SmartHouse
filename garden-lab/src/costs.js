@@ -3,11 +3,11 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.13.0';
-import { getTreeType } from './tree-catalog.js?v=1.13.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.13.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.13.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.13.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.14.0';
+import { getTreeType } from './tree-catalog.js?v=1.14.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.14.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.14.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.14.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -226,7 +226,7 @@ function installationGroup(enabled, rows, c, extra = {}) {
 export function estimateSpaCosts(settings,data) {
   const program=gardenProgram(settings,data),c=costSettings(settings),enabled=program.active;
   if(!enabled)return installationGroup(false,[],c);
-  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id);
+  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id);
   const rows=[
     installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · 1 installed pool`,
       'Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. 8 × 3 m catalog packages are a reference, not a quote for this 3.5 m pool.',['pool']),
@@ -246,7 +246,7 @@ export function estimateSpaCosts(settings,data) {
 /** Finishes and enabling work; no plant supply, spa objects or bulk fill repeated. */
 export function estimateGardenCosts(settings,data,quantities=gardenQuantities(settings,data)) {
   const c=costSettings(settings),program=gardenProgram(settings,data);
-  const enabled=['spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id)||c.costUsePlanningAllowances||
+  const enabled=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id)||c.costUsePlanningAllowances||
     Object.entries(COST_FIELDS).some(([key,f])=>f.group==='cost-garden'&&c[key]>0);
   if(!enabled)return installationGroup(false,[],c,{quantities:{}});
   const terrace=data.site.terrace,tub=jacuzziBounds(settings,data);

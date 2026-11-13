@@ -11,7 +11,8 @@ import {sunMapBounds} from '../src/sun-view.js';
 import {createScreeningTree} from '../src/screening-trees.js';
 import {toWorld} from '../src/orientation.js';
 // Match the runtime module identity: its WeakMap remembers immutable baselines.
-import {applyBuildingOverrides} from '../src/buildings.js?v=1.13.0';
+const runtimeVersion=JSON.parse(readFileSync(new URL('../package.json',import.meta.url))).version;
+const {applyBuildingOverrides}=await import(`../src/buildings.js?v=${runtimeVersion}`);
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const other=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json',import.meta.url)));

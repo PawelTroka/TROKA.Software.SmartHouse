@@ -1,8 +1,10 @@
-import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.13.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.13.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.13.0';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.13.0';
+import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.14.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.14.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.14.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.14.0';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.14.0';
 
+const treeLabel = tree => `${(getTreeType(tree.typeId)?.label||'Tree').split(' · ')[0]} · ${Number(tree.height.toFixed(2))} m tall`;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -11,6 +13,7 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
   const $ = id => document.getElementById(id);
   let selectedId = null, placing = false, suggestion = '', suggestionSignature = '', inventorySignature = '', targetSignature = '';
   let facadeAnalysis = null;
+  let previousPreset = null;
   const facadeResults = new Map();
   // Placement scores belong to one observer, date and geometry. Keep camera and
   // price edits out, but invalidate the result when its screening context changes.
@@ -131,7 +134,17 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     if(placing) {onChange({mode:'plan'}); notify('Tap a soil area on the plan to place the selected tree.');}
     else {sync();onViewChange();}
   });
-  $('tree-target').addEventListener('change', () => {suggestion='';sync();});
+  function selectTarget(event){
+    $('tree-target').value=event.target.value;
+    $('view-building').value=event.target.value;
+    suggestion='';sync();
+  }
+  $('tree-target').addEventListener('change',selectTarget);
+  $('view-building').addEventListener('change',selectTarget);
+  $('view-building-look').addEventListener('click',()=>{
+    const target=surroundingBuildings(getData()).find(b=>b.id===$('view-building').value);
+    if(target)onChange({...gazeAtBuilding(getObserver(),target),mode:'eye'});
+  });
   $('tree-find-position').addEventListener('click', () => {
     const tree=selectedTree(); if(!tree)return;
     const result=suggest(tree);
@@ -145,20 +158,49 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
 
   function sync() {
     const state=getSettings(), data=getData(), trees=state.screeningTrees || [];
-    const targets=(data?.buildings || []).filter(building=>building.kind==='target');
+    const targets=surroundingBuildings(data);
     const targetKey=targets.map(building=>`${building.id}:${building.label}`).join('|');
     if(targetSignature!==targetKey) {
       const previous=$('tree-target').value; $('tree-target').replaceChildren();
-      for(const building of targets){const option=document.createElement('option');option.value=building.id;option.textContent=building.label || building.id;$('tree-target').append(option);}
-      $('tree-target').value=targets.some(building=>building.id===previous)?previous:(targets.find(building=>/PCK\s*3/i.test(building.label))?.id || targets[0]?.id || '');
+      const groups=[['Apartment screening targets',b=>b.kind==='target'],['Across the street',b=>b.kind!=='target'&&isAcrossStreet(b,data)],['Around the plot',b=>b.kind!=='target'&&!isAcrossStreet(b,data)]];
+      for(const [label,filter] of groups){
+        const rows=targets.filter(filter);if(!rows.length)continue;
+        const group=document.createElement('optgroup');group.label=label;
+        for(const building of rows){const option=document.createElement('option');option.value=building.id;option.textContent=buildingViewLabel(building,data);group.append(option);}
+        $('tree-target').append(group);
+      }
+      $('tree-target').value=targets.some(building=>building.id===previous)?previous:(defaultViewBuilding(data,state.preset==='front')?.id||'');
+      $('view-building').replaceChildren(...[...$('tree-target').children].map(node=>node.cloneNode(true)));
       targetSignature=targetKey;
     }
+    if(previousPreset!==state.preset&&(previousPreset==='front'||state.preset==='front'))
+      $('tree-target').value=defaultViewBuilding(data,state.preset==='front')?.id||'';
+    previousPreset=state.preset;
+    $('view-building').value=$('tree-target').value;
+    $('view-building-look').disabled=!targets.length;
+    const target=targets.find(b=>b.id===$('tree-target').value),analysis=getAnalysis();
+    if(facadeAnalysis!==analysis){facadeAnalysis=analysis;facadeResults.clear();}
+    let facade;
+    if(target&&data&&analysis?.observer){
+      if(!facadeResults.has(target.id))facadeResults.set(target.id,analyzeFacadeVisibility(analysis.observer,target.id,state,data));
+      facade=facadeResults.get(target.id);
+    }
+    const roofRays=(analysis?.rays||[]).filter(ray=>ray.blockId===target?.id&&ray.kind==='roof');
+    const facadeText=facade?.status==='ok'?`${facade.visible.toLocaleString()} / ${facade.total.toLocaleString()} (${facade.spacing.toFixed(2)} m grid)`:`unavailable — ${facade?.reason||'Choose a valid viewpoint.'}`;
+    const roofText=roofRays.length?`Roof points: ${roofRays.filter(ray=>ray.visible).length} / ${roofRays.length}.`:'Roof ridges and windows are unmeasured; this is the mapped median-height wall envelope.';
+    const result=target&&facade?`${buildingViewLabel(target,data)} · visible façade points: ${facadeText}. ${roofText} Dense crown-envelope approximation; real foliage has gaps.`:'';
+    $('tree-target-current').textContent=result;
+    $('view-building-result').textContent=result;
+    $('view-building-result').dataset.visible=facade?.status==='ok'?String(facade.visible):'';
+    $('view-building-result').dataset.samples=facade?.status==='ok'?String(facade.total):'';
+    $('tree-find-position').disabled=!target||target.kind!=='target'||state.preset==='front';
+    $('tree-find-position').title=target?.kind==='target'&&state.preset!=='front'?'Suggest a rear-garden planting position':'Position suggestions apply to rear-garden apartment targets. The view check works in every direction.';
     if(suggestion && suggestionSignature!==screeningSignature(state))suggestion='';
     if(!trees.some(tree=>tree.id===selectedId)) {selectedId=trees.at(-1)?.id || null;placing=false;}
-    const key=trees.map(tree=>`${tree.id}:${tree.typeId}:${tree.enabled}`).join('|');
+    const key=trees.map(tree=>`${tree.id}:${tree.typeId}:${tree.height}:${tree.enabled}`).join('|');
     if(inventorySignature!==key){
       $('tree-select').replaceChildren();
-      trees.forEach((tree,index)=>{const option=document.createElement('option');option.value=tree.id;option.textContent=`${index+1}. ${getTreeType(tree.typeId)?.label || 'Tree'}${tree.enabled?'':' · off'}`;$('tree-select').append(option);});
+      trees.forEach((tree,index)=>{const option=document.createElement('option');option.value=tree.id;option.textContent=`${index+1}. ${treeLabel(tree)}${tree.enabled?'':' · off'}`;$('tree-select').append(option);});
       inventorySignature=key;
     }
     $('tree-select').value=selectedId || '';
@@ -178,7 +220,7 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     const tree=selectedTree(); if(!tree)return;
     const type=getTreeType(tree.typeId);
     $('tree-enabled').checked=tree.enabled;
-    $('tree-selected-name').textContent=type.label;
+    $('tree-selected-name').textContent=treeLabel(tree);
     for(const [key,field] of Object.entries(fields)){
       const [min,max]=field.limits || [field.min,field.max], numeric=$(`tree-${key}-value`), range=$(`tree-${key}`);
       const effectiveMax=key==='crownBase'?Math.min(max,tree.height-.2):max;
@@ -196,18 +238,6 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     $('tree-warning').textContent=warnings.join(' ');
     $('tree-warning').hidden=!warnings.length;
     $('tree-foliage-status').textContent=!tree.enabled?'This tree is off: excluded from screening, shade and purchase costs.':!volume?.plantable?'This location is not counted as screening. Move the trunk to a planting area.':volume?.foliageActive?`${type.evergreen?'Evergreen crown':'Leaf-on crown'} is included in privacy and shade. Dense foliage is an approximation.`:'Leaf-off comparison: this deciduous crown does not receive opaque-foliage credit.';
-    $('tree-find-position').disabled=!targets.length||state.preset==='front';
-    const analysis=getAnalysis(),target=(analysis?.byBlock || []).find(block=>block.id===$('tree-target').value);
-    const targetRays=(analysis?.rays||[]).filter(ray=>ray.blockId===target?.id);
-    const roofRays=targetRays.filter(ray=>ray.kind==='roof');
-    if(facadeAnalysis!==analysis){facadeAnalysis=analysis;facadeResults.clear();}
-    let facade;
-    if(target&&state.preset!=='front'&&data&&analysis?.observer){
-      if(!facadeResults.has(target.id))facadeResults.set(target.id,analyzeFacadeVisibility(analysis.observer,target.id,state,data));
-      facade=facadeResults.get(target.id);
-    }
-    const facadeText=facade?.status==='ok'?`${facade.visible} / ${facade.total} (${facade.spacing.toFixed(2)} m grid)`:`unavailable — ${facade?.reason||'Choose a valid viewpoint.'}`;
-    $('tree-target-current').textContent=state.preset==='front'?'Choose a rear-garden or living-room viewpoint to compare the pine screen against nearby buildings.':target&&facade?`${target.label} · visible façade points: ${facadeText}; roof points: ${roofRays.filter(ray=>ray.visible).length} / ${roofRays.length}. These are finite samples, not visible area. Check Eye level for gaps between crowns.`:'';
   }
 
   return {

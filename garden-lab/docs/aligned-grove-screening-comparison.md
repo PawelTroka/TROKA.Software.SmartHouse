@@ -1,5 +1,7 @@
 # PCK3-aligned pine grove and full-perimeter thujas
 
+This document records the historical v1.13 `spa-aligned` arrangement. The current default is documented in [Rear-left corner screening comparison](rear-corner-screening-comparison.md).
+
 The `spa-aligned` default follows the supplied reference's visible intent: three connected, overlapping crowns spread across PCK3's face. The previous close rear triangle left a broad part of the building exposed from the house. This arrangement moves the group forward and spreads its screen across the main sightlines while keeping the forward and centre trees close. It substantially improves the living-room view, but does not hide all of PCK3 from every position.
 
 ## Geometry

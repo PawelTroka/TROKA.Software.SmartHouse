@@ -3,9 +3,9 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.13.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.13.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.13.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.14.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.14.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.14.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -110,7 +110,7 @@ export function spaLevels(settings={},data){
     bottomZ:poolGround+p.waterOffset-p.waterDepth,copingTopZ:poolGround+.075,
     copingBaseZ:program.active?poolLow-.08:poolGround-.045}:null,sauna:null,firepit:null,coldPlunge:null};
   if(!program.active)return result;
-  const edge=['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id);
+  const edge=['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id);
   const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
   const sa=program.sauna,sr=edge?padGradeRange(sa.footprint,settings,data):null,sg=sr?.high??highest(sa),sf=sg+sa.floorOffset;
   result.sauna={groundZ:sg,floorZ:sf,roofZ:sf+sa.height};
@@ -160,8 +160,8 @@ export function saunaOpaqueFaces(settings={},data){
 export function spaLayoutWarnings(settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return [];
   const warnings=[];
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id)&&number(settings.bedRaise)>0){
+  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
+  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id)&&number(settings.bedRaise)>0){
     // The illustrated hedge beds taper inward over 0.85m, as in the sunlight
     // receiver/terrain model. Close-set structures need a retaining detail if
     // that added soil reaches above their finished pad or coping.
@@ -203,7 +203,7 @@ export function spaSurfaceAt(x,y,settings={},data){
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
   const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
   if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned'].includes(program.id)){
+  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id)){
     const plungeStep=levels.coldPlunge.steps.find(step=>withinRect(x,y,step));
     if(plungeStep)return {surface:'plunge-entry',groundZ:plungeStep.topZ};
   }
@@ -226,7 +226,7 @@ export function terraceGroundReference(settings = {}, data) {
 
 /** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
-  const compact=['spa-compact','spa-screened','spa-grove','spa-aligned'].includes(settings.gardenProgram)&&spaEnabled(settings,data);
+  const compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)&&spaEnabled(settings,data);
   const depth = number(settings.terraceDepth, 4.2), size = compact?2.3:2.2;
   const spa=spaEnabled(settings,data);
   const infinity=spa&&(!compact||settings.jacuzziOverflow===true);
@@ -466,9 +466,32 @@ export function screenOnRay(observer, target, settings, data, segments) {
   return hits.sort((a, b) => a.t - b.t)[0] || null;
 }
 
+const buildingBoundsCache=new WeakMap();
+function intersectsBuildingBounds(a,b,building){
+  let bounds=buildingBoundsCache.get(building);
+  if(!bounds){
+    bounds=[
+      [Math.min(...building.footprint.map(p=>p[0]))-EPS,Math.max(...building.footprint.map(p=>p[0]))+EPS],
+      [Math.min(...building.footprint.map(p=>p[1]))-EPS,Math.max(...building.footprint.map(p=>p[1]))+EPS],
+      [building.baseZ-EPS,building.roofZ+EPS],
+    ];
+    buildingBoundsCache.set(building,bounds);
+  }
+  let enter=0,exit=1;
+  for(let axis=0;axis<3;axis++){
+    const d=b[axis]-a[axis],[low,high]=bounds[axis];
+    if(Math.abs(d)<EPS){if(a[axis]<low||a[axis]>high)return false;continue;}
+    const first=(low-a[axis])/d,last=(high-a[axis])/d;
+    enter=Math.max(enter,Math.min(first,last));exit=Math.min(exit,Math.max(first,last));
+    if(enter>exit)return false;
+  }
+  return true;
+}
+
 /** Finite LoD1 building prism; excludes the eye and the target endpoint. */
 export function buildingIntersection(observer, target, building) {
   const e = point3(observer), b = point3(target), hits = [];
+  if(!intersectsBuildingBounds(e,b,building))return null;
   const poly = building.footprint;
   for (let i = 0; i < poly.length - 1; i++) {
     const hit = segmentIntersection(e, b, poly[i], poly[i + 1]);
@@ -515,6 +538,9 @@ export function analyzeVisibility(observer, settings = {}, data) {
   const saunaFaces=saunaOpaqueFaces(s,data);
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
+  // From an outdoor viewpoint, the user's house also screens views across it.
+  // Indoor presets retain their open-window sightline assumption.
+  if(data.site.house&&!pointInPolygon(origin,data.site.house.footprint)&&!blockers.some(b=>b.id===data.site.house.id))blockers.push(data.site.house);
   if (!s.removeGarage && data.site.garage) blockers.push(data.site.garage);
   const worstRequiredHedge = { rear: 0, left: 0, right: 0, front: 0, overall: 0 };
   const remainingRequiredHedge = { rear: 0, left: 0, right: 0, front: 0, overall: 0 };

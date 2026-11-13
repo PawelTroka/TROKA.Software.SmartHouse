@@ -1,19 +1,20 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.13.0';
-import { sampledRoofFaces } from './shade.js?v=1.13.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.13.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.13.0';
-import { getSiteProfile } from './sites.js?v=1.13.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.13.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.13.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.13.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.13.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.13.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.13.0';
-import { gardenDimensions } from './dimensions.js?v=1.13.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.13.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.14.0';
+import { sampledRoofFaces } from './shade.js?v=1.14.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.14.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.14.0';
+import { getSiteProfile } from './sites.js?v=1.14.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.14.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.14.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.14.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.14.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.14.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.14.0';
+import { gardenDimensions } from './dimensions.js?v=1.14.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.14.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.14.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -70,7 +71,7 @@ export function orientExtrudedSlab(geometry, height) {
   return geometry;
 }
 
-function polygonPrism(ring, base, top, material) {
+function polygonPrism(ring, base, top, material, capTop = true) {
   const r = closeRing(ring), triangles = [];
   for (let i = 0; i < r.length; i++) {
     const a = r[i], b = r[(i + 1) % r.length];
@@ -79,11 +80,37 @@ function polygonPrism(ring, base, top, material) {
   }
   // Ear clipping preserves notches in real concave building footprints.
   const cap=THREE.ShapeUtils.triangulateShape(r.map(p=>new THREE.Vector2(...p)),[]);
-  for(const [a,b,c] of cap)triangles.push(toWorldRoofTriangle([...r[a],top],[...r[b],top],[...r[c],top]));
+  if(capTop)for(const [a,b,c] of cap)triangles.push(toWorldRoofTriangle([...r[a],top],[...r[b],top],[...r[c],top]));
   const mesh = new THREE.Mesh(geometryFromTriangles(triangles), material);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   return mesh;
+}
+
+/** Illustrative openings follow real wall edges; they are not surveyed window
+ * positions and do not alter the analytical building body or its height. */
+export function contextFacadePlacements(building, origin, distanceLimit = 160) {
+  const ring=closeRing(building.footprint||[]),base=Number(building.baseZ),roof=Number(building.roofZ);
+  if(ring.length<3||!Number.isFinite(base)||!Number.isFinite(roof)||roof<=base)return [];
+  const c=centroid(ring),distance=Math.hypot(c[0]-origin[0],c[1]-origin[1]);
+  if(distance>distanceLimit)return [];
+  const scale=Math.max(.2,num(building.adjustment?.scaleZ,1)),windowHeight=1.35*scale;
+  const floorCount=Math.min(24,Math.max(0,Math.floor(((roof-base)/scale-2.695)/2.9)+1));
+  const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
+  const result=[];
+  for(let side=0;side<ring.length;side++){
+    const a=ring[side],b=ring[(side+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+    if(length<1.85)continue;
+    const nx=winding*dy/length,ny=-winding*dx/length,count=Math.min(40,Math.max(1,Math.floor(length/3.5)));
+    const width=Math.min(1.1,length/count*.52);
+    for(let floor=0;floor<floorCount;floor++)for(let column=0;column<count;column++){
+      const t=(column+.5)/count,z=base+(1.9+floor*2.9)*scale;
+      if(z+windowHeight/2+.12*scale>=roof||z-windowHeight/2-.12*scale<=base)continue;
+      result.push({x:a[0]+dx*t,y:a[1]+dy*t,z,nx,ny,angle:Math.atan2(nx,ny),width,height:windowHeight,
+        detailed:distance<85,shade:Math.abs((building.index||0)*13+floor*7+column+side*3)%7});
+    }
+  }
+  return result;
 }
 
 // Rendering and numerical shade use the same measured roof triangulation.
@@ -149,6 +176,9 @@ function fallback(container, error) {
 export function createScene(container, data, callbacks = {}) {
   const profile=getSiteProfile(data.site.id||'sternicza-11',data),plot=boundsOf(data.site.boundary);
   const plotCentre=[(plot.minX+plot.maxX)/2,(plot.minY+plot.maxY)/2];
+  const surroundings=neighborhoodBounds(data),contextSpan=Math.max(surroundings.maxX-surroundings.minX,surroundings.maxY-surroundings.minY);
+  const contextGrade=(x,y)=>contains(x,y,data.site.boundary)?terrainAt(x,y,data):contextTerrainAt(x,y,data);
+  const sceneFar=Math.max(550,contextSpan*2.2+150),lightDistance=Math.max(300,contextSpan*1.6);
   let renderer, rendererType='webgl';
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
@@ -176,12 +206,12 @@ export function createScene(container, data, callbacks = {}) {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#dfe8e8');
-  scene.fog = new THREE.Fog('#dfe8e8', 120, 290);
-  const camera = new THREE.PerspectiveCamera(48, 1, 0.08, 550);
+  scene.fog = new THREE.Fog('#dfe8e8', 145, Math.max(330,contextSpan*1.55));
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.08, sceneFar);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = false;
   controls.minDistance = 3;
-  controls.maxDistance = 190;
+  controls.maxDistance = Math.max(190,contextSpan*1.2);
   controls.maxPolarAngle = Math.PI * 0.49;
   controls.screenSpacePanning = true;
   controls.zoomSpeed = 0.8;
@@ -205,7 +235,7 @@ export function createScene(container, data, callbacks = {}) {
   // invented surrounding skyline. All daylight direction comes from solar.js.
   let sky = null;
   if (!svgMode) {
-    sky = new THREE.Mesh(new THREE.SphereGeometry(410, 24, 12), new THREE.ShaderMaterial({
+    sky = new THREE.Mesh(new THREE.SphereGeometry(sceneFar*.78, 24, 12), new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false,
       uniforms: { sunDirection: { value: new THREE.Vector3(0, 1, 0) }, daylight: { value: 1 }, warmth: { value: 0 } },
       vertexShader: 'varying vec3 vDirection; void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
@@ -224,6 +254,7 @@ export function createScene(container, data, callbacks = {}) {
 
   const mat = {};
   const textures = svgMode ? null : createSurfaceTextures();
+  if(textures)scene.environment=textures.environment;
   const standard = (name, color, options = {}) => mat[name] = new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, side: THREE.DoubleSide, ...Object.fromEntries(Object.entries(options).filter(([,value])=>value!==undefined)) });
   standard('stone', textures ? '#fff7e8' : '#d7c9b3', { map: textures?.stone });
   standard('stoneLight', textures ? '#fffdf5' : '#e8dfcd', { map: textures?.stone });
@@ -234,25 +265,28 @@ export function createScene(container, data, callbacks = {}) {
   standard('woodLight', textures ? '#f0ddba' : '#b5926b', { map: textures?.wood });
   standard('metal', '#343f3b', { roughness: 0.6, metalness: 0.3 });
   standard('glass', '#94c6c3', { transparent: true, opacity: 0.13, roughness: 0.15, depthWrite: false });
-  standard('water', '#4d9d9b', { roughness: 0.16, metalness: 0.22, map: textures?.water, bumpMap: textures?.water, bumpScale: .025 });
-  standard('waterLight', '#a0d1c5', { roughness: 0.18, metalness: 0.12, transparent: !svgMode, opacity: .82, map: textures?.water });
+  const waterOptions={roughness:.14,metalness:0,clearcoat:1,clearcoatRoughness:.10,ior:1.333,
+    transparent:!svgMode,depthWrite:svgMode,side:THREE.DoubleSide,envMapIntensity:1.1,
+    ...(textures?{map:textures.water,bumpMap:textures.water,bumpScale:.022}:{}),};
+  mat.water=new THREE.MeshPhysicalMaterial({color:'#579a91',opacity:svgMode?1:.76,...waterOptions});
+  mat.waterLight=new THREE.MeshPhysicalMaterial({color:'#9acfc0',opacity:svgMode?.9:.62,...waterOptions});
   standard('basin', '#81a7a0', { roughness: .45 });
-  standard('hedge', '#496242', { map: textures?.foliage });
-  standard('thuja', '#668253', { map: textures?.foliage, roughness: .92 });
+  standard('hedge', '#849671', { map: textures?.foliage, bumpMap:textures?.foliage,bumpScale:.025 });
+  standard('thuja', '#a5b68b', { map: textures?.foliage, bumpMap:textures?.foliage,bumpScale:.018, roughness: .95 });
   standard('hedgeTop', '#476b4c');
-  standard('leaf', '#637e51');
+  standard('leaf', '#99ae7e', {map:textures?.foliage,bumpMap:textures?.foliage,bumpScale:.012,roughness:1});
   standard('grass', '#94a575', { map: textures?.grass });
   standard('context', '#d3d6d0', { map: textures?.stucco });
   standard('target', '#d5d4c7', { map: textures?.stucco });
   standard('contextRoof', '#89918c', { map: textures?.roof });
-  standard('contextWindow', '#65888e', { roughness: 0.3, metalness: .18 });
+  standard('contextWindow', '#a4bdbe', { roughness: 0.22, metalness: .15,envMapIntensity:.7 });
   standard('windowFrame', '#d6d9cb', { roughness: .65 });
   standard('road', '#b6b9b0');
   standard('walkway', '#d4d1c2');
   standard('linen', '#fffaf0', { map: textures?.textiles });
   standard('gold', '#d7a74a', { roughness: 0.55, metalness: 0.15 });
-  standard('treeBark', '#766049', { map: textures?.wood });
-  standard('treePine', '#5c7850', { map: textures?.foliage, vertexColors: true });
+  standard('treeBark', textures?'#b3a38c':'#766049', { map: textures?.bark,bumpMap:textures?.bark,bumpScale:.025,roughness:1 });
+  standard('treePine', '#5c7850', { map: textures?.pineNeedles,bumpMap:textures?.pineNeedles,bumpScale:.008, vertexColors: true,roughness:.95 });
   standard('treeSpruce', '#4d6a53', { map: textures?.foliage, vertexColors: true });
   standard('treeDeciduous', '#718b53', { map: textures?.foliage, vertexColors: true });
   standard('treeGhost', '#a89178', { transparent: true, opacity: .22, depthWrite: false, vertexColors: true });
@@ -398,90 +432,130 @@ export function createScene(container, data, callbacks = {}) {
     group.add(mesh);
   }
 
+  let contextDetails;
   function addContextBuilding(building) {
     const ring = closeRing(building.footprint || []);
     if (ring.length < 3) return;
     const c = centroid(ring), target = building.kind === 'target';
-    const base = num(building.baseZ, terrainAt(...c, data));
-    const roof = Math.max(base + 2, num(building.roofZ, base + 7));
+    const base = num(building.baseZ, contextGrade(...c)), roof = num(building.roofZ, base + 7);
+    if(roof<=base)return;
     const roofPts = (building.roofPoints || []).map(xyz).filter(p => p.length >= 3 && Number.isFinite(p[2]));
     const roofMax = Math.max(roof, ...roofPts.map(p => p[2]));
     const facadeMaterial = (target ? mat.target : mat.context).clone();
-    const palette = target ? ['#d3d2c1', '#c5ccc7', '#d4c9b5', '#c4c8bd'] : ['#d9d5cb', '#d2d8d1', '#dfd9cd'];
+    const palette = target ? ['#d3d2c1', '#c5ccc7', '#d4c9b5', '#c4c8bd'] : ['#ddd8ca', '#d2d8d1', '#e4ded0', '#cfc8bb', '#dbdcd2'];
     facadeMaterial.color.set(palette[Math.abs(building.index || 0) % palette.length]);
     facadeMaterial.userData.transient = true;
-    buildingGroup.add(polygonPrism(ring, base, roof, facadeMaterial));
-    if (target && roofPts.length > 6) {
+    const body=polygonPrism(ring, base, roof, facadeMaterial, false);
+    body.name=`context-building-${building.id}`;
+    buildingGroup.add(body);
+    if (roofPts.length > 6) {
       const roofGeometry = sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roof);
       const roofMesh = new THREE.Mesh(roofGeometry || geometryFromTriangles([]), mat.contextRoof);
-      roofMesh.castShadow = true;
-      roofMesh.receiveShadow = true;
+      roofMesh.castShadow = true; roofMesh.receiveShadow = true;
       buildingGroup.add(roofMesh);
     } else {
-      const outline = [...ring, ring[0]].map(p => [...p, roof + 0.03]);
-      line(buildingGroup, outline, '#8b9a98', 0.6);
+      // LoD1 tops remain flat at the source height; an invented pitched roof
+      // would change both the visible skyline and the user's privacy judgement.
+      const cap=THREE.ShapeUtils.triangulateShape(ring.map(p=>new THREE.Vector2(...p)),[]);
+      for(const [a,b,c] of cap)contextDetails.roofs.push(toWorldRoofTriangle([...ring[a],roof],[...ring[b],roof],[...ring[c],roof]));
     }
-    if (target && Math.hypot(c[0] - plotCentre[0], c[1] - plotCentre[1]) < 120) {
-      const heightScale = num(building.adjustment?.scaleZ, 1);
-      const windowGeometry = new THREE.PlaneGeometry(1.05, 1.35 * heightScale);
-      const frameGeometry = new THREE.PlaneGeometry(1.19, 1.49 * heightScale);
-      const positions = [];
-      const winding = Math.sign(ring.reduce((sum, a, i) => { const b = ring[(i + 1) % ring.length]; return sum + a[0] * b[1] - b[0] * a[1]; }, 0)) || 1;
-      for (let side = 0; side < ring.length; side++) {
-        const a = ring[side], b = ring[(side + 1) % ring.length], dx = b[0]-a[0], dy=b[1]-a[1], length=Math.hypot(dx,dy);
-        if (length < 1e-8) continue;
-        const nx = winding * dy / length, ny = -winding * dx / length;
-        const count = Math.max(1, Math.floor(length / 3.5));
-        const floors = Math.max(1, Math.floor((roof - base - 1) / (2.9 * heightScale)));
-        for (let floor = 0; floor < floors; floor++) for (let n = 0; n < count; n++) {
-          const t = (n + 0.5) / count, x = a[0]+dx*t, y = a[1]+dy*t;
-          // PlaneGeometry faces +Z. Its normal is the mapped outward facade
-          // normal; the pane and frame remain parallel to the actual wall.
-          positions.push({x:x+nx*.045,y:y+ny*.045,z:base+(1.9+floor*2.9)*heightScale,angle:Math.atan2(nx,ny),nx,ny});
-        }
+    contextDetails.windows.push(...contextFacadePlacements({...building,baseZ:base,roofZ:roof},plotCentre,svgMode?95:160));
+    const distance=Math.hypot(c[0]-plotCentre[0],c[1]-plotCentre[1]);
+    if(distance<125){
+      const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
+      for(let i=0;i<ring.length;i++){
+        const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+        if(length<.2)continue;
+        const nx=winding*dy/length,ny=-winding*dx/length,edge={x:(a[0]+b[0])/2,y:(a[1]+b[1])/2,nx,ny,angle:Math.atan2(nx,ny),width:length};
+        const trimHeight=Math.min(.14,(roof-base)*.04),plinthHeight=Math.min(.28,(roof-base)*.08);
+        contextDetails.roofEdges.push({...edge,z:roof-trimHeight/2,height:trimHeight,depth:.055,offset:.015});
+        contextDetails.plinths.push({...edge,z:base+plinthHeight/2,height:plinthHeight,depth:.035,offset:.012});
       }
-      if(svgMode){
-        positions.filter((_,i)=>i%2===0).forEach(p=>{const window=new THREE.Mesh(windowGeometry,mat.contextWindow);window.position.copy(point(p.x,p.y,p.z));window.rotation.set(0,p.angle,0);buildingGroup.add(window);});
-      }else{
-        const windows = new THREE.InstancedMesh(windowGeometry, mat.contextWindow, positions.length);
-        const frames = new THREE.InstancedMesh(frameGeometry, mat.windowFrame, positions.length);
-        const dummy = new THREE.Object3D();
-        positions.forEach((p,i)=>{
-          dummy.position.copy(point(p.x,p.y,p.z));dummy.rotation.set(0,p.angle,0);dummy.updateMatrix();windows.setMatrixAt(i,dummy.matrix);
-          windows.setColorAt(i, new THREE.Color(i % 7 === 0 ? '#b3c0ad' : i % 5 === 0 ? '#7f9695' : '#b3d0d0'));
-          dummy.position.copy(point(p.x - p.nx * .012,p.y - p.ny * .012,p.z));dummy.updateMatrix();frames.setMatrixAt(i,dummy.matrix);
-        });
-        windows.receiveShadow = true; frames.receiveShadow = true;
-        buildingGroup.add(frames, windows);
-      }
-      if (profile.buildingTargets.slice(0,3).some(b=>b.index===building.index)) label(building.label, [c[0],c[1],roofMax+1.1], 'target', building.id);
     }
+    if (target&&profile.buildingTargets.slice(0,3).some(b=>b.index===building.index)) label(building.label,[c[0],c[1],roofMax+1.1],'target',building.id);
+  }
+
+  function flushContextDetails(){
+    if(contextDetails.roofs.length){
+      const roofs=new THREE.Mesh(geometryFromTriangles(contextDetails.roofs),mat.contextRoof);
+      roofs.name='context-mapped-flat-roofs';roofs.castShadow=true;roofs.receiveShadow=true;buildingGroup.add(roofs);
+    }
+    const windows=contextDetails.windows;
+    if(svgMode){
+      // Merge simple fallback apertures, rather than creating thousands of SVG
+      // mesh objects. Both panes and pale frames follow the mapped wall normal.
+      const quads=(items,frame)=>items.flatMap(p=>{
+        const width=p.width+(frame?.14:0),height=p.height+(frame?.14:0),offset=frame?.025:.046;
+        const x=p.x+p.nx*offset,y=p.y+p.ny*offset,tx=p.ny*width/2,ty=-p.nx*width/2;
+        const a=[x-tx,y-ty,p.z-height/2],b=[x+tx,y+ty,p.z-height/2],c=[x+tx,y+ty,p.z+height/2],d=[x-tx,y-ty,p.z+height/2];
+        return [localTriangle(a,b,c),localTriangle(a,c,d)];
+      });
+      const subset=windows.filter((_,i)=>i%2===0);
+      if(subset.length){buildingGroup.add(new THREE.Mesh(geometryFromTriangles(quads(subset,true)),mat.windowFrame));buildingGroup.add(new THREE.Mesh(geometryFromTriangles(quads(subset,false)),mat.contextWindow));}
+      return;
+    }
+    const batch=(items,material,plane,name)=>{
+      if(!items.length)return;
+      const geometry=plane?new THREE.PlaneGeometry(1,1):new THREE.BoxGeometry(1,1,1);
+      const mesh=new THREE.InstancedMesh(geometry,material,items.length),dummy=new THREE.Object3D();
+      mesh.name=name;mesh.receiveShadow=true;
+      items.forEach((p,i)=>{
+        dummy.position.copy(point(p.x+p.nx*(p.offset||0),p.y+p.ny*(p.offset||0),p.z));
+        dummy.rotation.set(0,p.angle,0);dummy.scale.set(p.width,p.height,p.depth||1);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
+        if(p.color)mesh.setColorAt(i,new THREE.Color(p.color));
+      });
+      // Finishes do not change the source body or acquire analytical shadow credit.
+      mesh.castShadow=false;buildingGroup.add(mesh);
+    };
+    const glassColors=['#a4bdba','#799ba1','#c3d0c2','#739198','#a0b8b7','#8ba8aa','#bbc2ae'];
+    batch(windows.map(p=>({...p,offset:.046,color:glassColors[p.shade]})),mat.contextWindow,true,'context-window-panes');
+    batch(windows.map(p=>({...p,width:p.width+.14,height:p.height+.14,offset:.025})),mat.windowFrame,true,'context-window-frames');
+    const near=windows.filter(p=>p.detailed);
+    batch(near.flatMap(p=>[
+      {...p,width:.035,depth:.035,offset:.067},
+      {...p,z:p.z+p.height*.16,height:.032,depth:.035,offset:.067},
+    ]),mat.windowFrame,false,'context-window-mullions');
+    batch(near.map(p=>({...p,width:p.width+.18,height:.065,depth:.21,z:p.z-p.height/2-.06,offset:.085})),mat.stoneLight,false,'context-window-sills');
+    batch(contextDetails.roofEdges,mat.metal,false,'context-roof-edges');
+    batch(contextDetails.plinths,mat.plinth,false,'context-foundation-finishes');
   }
 
   function rebuildContextBuildings() {
     removeGeometry(buildingGroup);
+    contextDetails={windows:[],roofs:[],roofEdges:[],plinths:[]};
     for (let i = labels.length - 1; i >= 0; i--) {
       if (labels[i].kind === 'target') { labels[i].element.remove(); labels.splice(i, 1); }
     }
     (data.buildings || []).filter(b => b.id !== data.site.house.id && b.id !== data.site.garage?.id && b.kind!=='house' && b.kind!=='garage').forEach(addContextBuilding);
+    flushContextDetails();
     shadowBoundsDirty=true;
   }
 
   // Both terrain meshes use the same real openings: no grass or context slab
   // may cross the swimming water, recessed plunge or the sunken firepit floor.
   const waterCutouts=settings=>designTerrainCutouts(settings,data);
-  let contextTerrain=null,contextTerrainCutouts='';
+  let contextTerrains=[],contextTerrainCutouts='';
   function syncContextTerrain(settings){
     const cutouts=waterCutouts(settings),signature=JSON.stringify(cutouts);
     if(signature===contextTerrainCutouts)return;
     contextTerrainCutouts=signature;
-    if(contextTerrain){contextTerrain.geometry.dispose();staticGroup.remove(contextTerrain);}
-    contextTerrain=makeTerrain(staticGroup,[-65,-28,115,150],svgMode?12:3,(x,y)=>terrainAt(x,y,data)-.015,mat.walkway,null,false,cutouts);
+    for(const mesh of contextTerrains){mesh.geometry.dispose();staticGroup.remove(mesh);}
+    const extent=[surroundings.minX,surroundings.minY,surroundings.maxX,surroundings.maxY];
+    // A coarse context triangle can bridge above the native front lawn even
+    // when its vertices sit below it. Match the lawn's vertices and cutouts
+    // inside its frame, then use the coarser grid only outside that frame.
+    const localFrame={x0:plot.minX-.1,y0:plot.minY-.1,x1:plot.maxX+.1,y1:plot.maxY+.1};
+    contextTerrains=[
+      makeTerrain(staticGroup,extent,svgMode?12:4,(x,y)=>contextGrade(x,y)-.015,mat.walkway,null,false,[...cutouts,localFrame]),
+      makeTerrain(staticGroup,[localFrame.x0,localFrame.y0,localFrame.x1,localFrame.y1],svgMode?2:.65,(x,y)=>terrainAt(x,y,data)-.015,mat.walkway,null,false,cutouts),
+    ];
   }
   syncContextTerrain({terraceDepth:data.site.terrace.depth});
-  box(staticGroup, -65, -7.8, terrainAt(10,-4,data)-.02, 180, 5.8, .05, mat.road, false,-95);
-  box(staticGroup, -65, -1.9, terrainAt(10,-1,data), 180, 1.8, .05, mat.stoneLight, false,-95);
-  for (let x=-50;x<110;x+=8) box(staticGroup,x,-4.96,terrainAt(x,-5,data)+.03,3.5,.1,.015,mat.stoneLight,false,-94);
+  const road=makeTerrain(staticGroup,[-65,-7.8,115,-2],4,(x,y)=>contextGrade(x,y)+.025,mat.road);
+  road.name='context-street';if(svgMode)road.renderOrder=-95;
+  const sidewalk=makeTerrain(staticGroup,[-65,-1.9,115,-.1],4,(x,y)=>contextGrade(x,y)+.05,mat.stoneLight);
+  sidewalk.name='context-sidewalk';if(svgMode)sidewalk.renderOrder=-95;
+  for (let x=-50;x<110;x+=8) box(staticGroup,x,-4.96,contextGrade(x,-5)+.055,3.5,.1,.015,mat.stoneLight,false,-94);
   rebuildContextBuildings();
   label(profile.streetLabel, [plotCentre[0],-3.7,terrainAt(plotCentre[0],-3.7,data)+.18], 'road');
 
@@ -668,9 +742,16 @@ export function createScene(container, data, callbacks = {}) {
       if(svgMode){const verts=[];for(let i=0;i<=n;i++){const t=i/n,x=a[0]+dx*t,y=a[1]+dy*t;verts.push([x,y,hedgeTopAt(x,y,segment.side,settings,data,segment.groundZone)+.015]);}line(group,verts,'#68815a',.7);}
     }
     if(crowns.length){
-      const geometry=new THREE.IcosahedronGeometry(1,1),foliage=new THREE.InstancedMesh(geometry,mat.thuja,crowns.length),dummy=new THREE.Object3D();
-      const colors=['#a2b78e','#819f6c','#b0bf97'].map(c=>new THREE.Color(c));
-      crowns.forEach((p,i)=>{dummy.position.copy(point(p.x,p.y,p.z));dummy.scale.set(p.rx,p.rz,p.ry);dummy.rotation.set(.08*Math.sin(p.rotation),p.rotation,.06*Math.cos(p.rotation));dummy.updateMatrix();foliage.setMatrixAt(i,dummy.matrix);foliage.setColorAt(i,colors[p.color]);});
+      const geometry=new THREE.IcosahedronGeometry(1,1),vertices=geometry.getAttribute('position');
+      for(let i=0;i<vertices.count;i++){
+        const x=vertices.getX(i),y=vertices.getY(i),z=vertices.getZ(i);
+        const irregularity=.92+.065*Math.sin(x*11+y*7)*Math.cos(z*9-y*3);
+        vertices.setXYZ(i,x*irregularity,y*irregularity,z*irregularity);
+      }
+      geometry.computeVertexNormals();
+      const foliage=new THREE.InstancedMesh(geometry,mat.thuja,crowns.length),dummy=new THREE.Object3D();
+      const colors=['#d0dcc0','#bacba8','#e0e6cf'].map(c=>new THREE.Color(c));
+      crowns.forEach((p,i)=>{dummy.position.copy(point(p.x,p.y,p.z));dummy.scale.set(p.rx,p.rz,p.ry);dummy.rotation.set(0,p.rotation,0);dummy.updateMatrix();foliage.setMatrixAt(i,dummy.matrix);foliage.setColorAt(i,colors[p.color]);});
       foliage.castShadow=false;foliage.receiveShadow=true;group.add(foliage);
     }
   }
@@ -693,8 +774,16 @@ export function createScene(container, data, callbacks = {}) {
       placements.filter((_,i)=>i%3===0).forEach(([x,y,h])=>{const shrub=new THREE.Mesh(new THREE.IcosahedronGeometry(1,0),mat.leaf);shrub.position.copy(point(x,y,gardenGroundAt(x,y,settings,data)+h*.48));shrub.scale.set(.53,h,.53);group.add(shrub);});
       return;
     }
-    const geometry=new THREE.IcosahedronGeometry(1,1), instance=new THREE.InstancedMesh(geometry,mat.leaf,placements.length),dummy=new THREE.Object3D();
-    placements.forEach(([x,y,h],i)=>{dummy.position.copy(point(x,y,gardenGroundAt(x,y,settings,data)+h*.48));dummy.scale.set(.53,h,.53);dummy.rotation.y=x+y;dummy.updateMatrix();instance.setMatrixAt(i,dummy.matrix);});
+    const geometry=new THREE.IcosahedronGeometry(1,1), instance=new THREE.InstancedMesh(geometry,mat.leaf,placements.length*3),dummy=new THREE.Object3D();
+    placements.forEach(([x,y,h],i)=>{
+      const ground=gardenGroundAt(x,y,settings,data);
+      for(let cluster=0;cluster<3;cluster++){
+        const angle=x+y+cluster*Math.PI*2/3;
+        dummy.position.copy(point(x+Math.cos(angle)*.17,y+Math.sin(angle)*.17,ground+h*(.45+cluster*.025)));
+        dummy.scale.set(.36,h*(.72+cluster*.055),.35);dummy.rotation.y=angle;dummy.updateMatrix();instance.setMatrixAt(i*3+cluster,dummy.matrix);
+        instance.setColorAt(i*3+cluster,new THREE.Color(cluster===0?'#d3dfc5':cluster===1?'#bacaab':'#e0e6d2'));
+      }
+    });
     // These small plants are illustrative; the numerical shade model excludes them.
     instance.castShadow=false;instance.receiveShadow=true;group.add(instance);
   }
@@ -802,13 +891,14 @@ export function createScene(container, data, callbacks = {}) {
     const poolWater=box(group,px,py,waterTop-.025,pw,pl,.025,mat.water,false,-69);
     poolWater.name='pool-water';
     for(let ty=py+.8;ty<py+pl;ty+=.8){line(group,[[px-.28,ty,pz+.067],[px,ty,pz+.067]],'#b1a994',.45);line(group,[[px+pw,ty,pz+.067],[px+pw+.28,ty,pz+.067]],'#b1a994',.45);}
-    for(let y=py+1;y<py+pl-.4;y+=1.9)line(group,[[px+.12,y,waterTop+.004],[px+pw-.12,y,waterTop+.004]],'#79a5a0',.21);
     const furniture=gardenFurniture(data,settings);
     for(const [lx,y] of furniture.loungers){
       const lounger={x:lx,y,width:.78,length:2};
       if(rectanglesOverlap(lounger,{x,y:rear,width,length:depth},.15)||(stairs.count&&rectanglesOverlap(lounger,stairs,.15)))continue;
       const lz=gardenGroundAt(lx,y,settings,data);
-      box(group,lx,y,lz,.78,2.0,.24,mat.wood,false);
+      for(const railX of [lx,lx+.725])box(group,railX,y,lz+.16,.055,2,.08,mat.wood,false);
+      for(const crossY of [y+.04,y+1.90])box(group,lx,crossY,lz+.16,.78,.055,.08,mat.wood,false);
+      for(const footX of [lx+.06,lx+.665])for(const footY of [y+.12,y+1.77])box(group,footX,footY,lz,.05,.05,.19,mat.metal,false);
       roundedSlab(group,lx+.02,y+.03,lz+.24,.74,1.9,.1,.07,mat.linen);
       const back=box(group,lx+.02,y+.03,lz+.37,.74,.6,.09,mat.linen,false);back.rotation.x=-.3;
     }
@@ -820,8 +910,12 @@ export function createScene(container, data, callbacks = {}) {
       box(group,dx,dy,dz+.65,1.55,.8,.09,mat.woodLight,false);
       [dx+.1,dx+1.3].forEach(tx=>box(group,tx,dy+.1,dz,.12,.6,.65,mat.wood,false));
       for(const cy of [dy-.55,dy+1.0])for(const cx of [dx+.08,dx+.92]){
-        box(group,cx,cy,dz+.42,.55,.5,.08,mat.linen,false);
-        box(group,cx,cy+(cy<dy?0:.43),dz+.5,.55,.07,.35,mat.wood,false);
+        box(group,cx,cy,dz+.38,.55,.5,.06,mat.wood,false);
+        roundedSlab(group,cx+.015,cy+.015,dz+.44,.52,.47,.06,.04,mat.linen);
+        for(const legX of [cx+.045,cx+.455])for(const legY of [cy+.04,cy+.41])box(group,legX,legY,dz,.045,.045,.4,mat.wood,false);
+        const backY=cy+(cy<dy?0:.43);
+        for(const postX of [cx,cx+.50])box(group,postX,backY,dz+.45,.05,.07,.4,mat.wood,false);
+        for(const backZ of [dz+.60,dz+.78])box(group,cx,backY,backZ,.55,.07,.065,mat.wood,false);
       }
     }
     if(program.active)group.add(createSpaAmenityGroup(program,spaLevels(settings,data),mat,svgMode));
@@ -975,13 +1069,13 @@ export function createScene(container, data, callbacks = {}) {
       ambient.color.set('#f9f4e8');ambient.groundColor.set('#7e8a7c');ambient.intensity=2.25;
       if(svgAmbient){svgAmbient.color.set('#ffffff');svgAmbient.intensity=.88;}
       sun.color.set('#fff2d4');sun.intensity=svgMode?.72:3.1;sun.castShadow=!svgMode;
-      sun.position.copy(point(centre[0]-40,centre[1]-20,centre[2]+67));sun.target.position.copy(point(...centre));
+      sun.target.position.copy(point(...centre));sun.position.copy(sun.target.position).addScaledVector(point(-40,-20,67).normalize(),lightDistance);
       scene.background.set('#dfe8e8');renderer.toneMappingExposure=1.16;
     }else{
       // The ephemeris vector points FROM the plot TO the sun. In Three.js the
       // site's vertical component is Y, and garden depth becomes positive Z.
       const towardSun=point(...direction).normalize();
-      sun.target.position.copy(point(...centre));sun.position.copy(sun.target.position).addScaledVector(towardSun,300);
+      sun.target.position.copy(point(...centre));sun.position.copy(sun.target.position).addScaledVector(towardSun,lightDistance);
       sun.castShadow=daylight&&!svgMode;
       if(daylight){
         const strength=Math.pow(Math.max(0,direction[2]),.4),warmth=THREE.MathUtils.clamp(num(solar.elevation)/35,0,1);
@@ -1006,6 +1100,10 @@ export function createScene(container, data, callbacks = {}) {
       sky.material.uniforms.warmth.value=enabled?1-THREE.MathUtils.smoothstep(num(solar.elevation),0,22):0;
     }
     scene.fog.color.copy(scene.background);
+    scene.environment=textures&&(!enabled||daylight)?textures.environment:null;
+    const reflectionStrength=!enabled||daylight?1:.06;
+    mat.water.envMapIntensity=1.1*reflectionStrength;mat.waterLight.envMapIntensity=1.1*reflectionStrength;
+    mat.contextWindow.envMapIntensity=.7*reflectionStrength;
     updateSunGuide(solar,settings,enabled,daylight,centre,18);
     shadowCameraDirty=true;requestRender();
     return {enabled,isDaylight:daylight,rendererType};
