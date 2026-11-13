@@ -6,11 +6,15 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 ## Close pine grove · 1.12.0
 
+![Verified plan of the close pine grove, with the nearest and centre trunks 2.00 m apart](close-pine-grove-plan-1.12.0.jpg)
+
 The nearest pine now stands **2.00 m from the centre pine**, correcting the previous 8.52 m separation. All three nominal 5 m crowns overlap as one close grove at the rear-left/east pool end. The trees remain 9.5 m Austrian pines at **(13.0, 34.1), (14.2, 32.5), (17.6, 34.9) m**. All three modeled crowns fit inside the parcel.
 
 The **7 × 3.5 m pool** starts at **(15.7, 24.5) m** and ends 1.00 m before the nearest trunk, with a **1.42 m trunk-centre to outer-coping gap**. The independent **4 m front thuja hedge**, its pedestrian and vehicle openings, compact sauna and seven-seat jacuzzi remain part of the default. Plant quantities and planning prices are unchanged.
 
 The close spacing is the requested design preference. It hides about **41% of PCK3 samples from the seated living room, 40% standing, 85% from the jacuzzi and over 99% from the named garden viewpoint**. Those results stay visible in the simulator. The previous spaced-pine layout remains available for comparison. This is modeled crown geometry; real branches have gaps, and the close planting needs nursery/root-ball confirmation. See the [close-grove measurements and screening comparison](docs/tight-grove-screening-comparison.md).
+
+**Validation:** all 279 automated checks pass and the static build succeeds. The hosted preview confirms the 2.00 m spacing on plan, selected-tree coordinates, front hedge, capacities, budget and live PCK3 count. See the [release check record](docs/release-1.12.0-validation.md).
 
 Schema **v14** gives fresh designs the close grove. Existing v13 links and saved designs retain their published pool and tree positions; the latest-design link above or Reset selects the corrected default.
 
