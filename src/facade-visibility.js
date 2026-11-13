@@ -1,6 +1,6 @@
 /** Dense wall-only check, separate from the mapped roof/facade sample metric. */
-import {analyzeVisibility} from './geometry.js?v=1.13.0';
-import {applyBuildingOverrides} from './buildings.js?v=1.13.0';
+import {analyzeVisibility} from './geometry.js?v=1.14.0';
+import {applyBuildingOverrides} from './buildings.js?v=1.14.0';
 
 const DEFAULT_SPACING=.25,MIN_SPACING=.25,MAX_SPACING=2,MAX_POINTS=200000;
 const normalizedSpacing=value=>typeof value==='number'&&Number.isFinite(value)&&value>0

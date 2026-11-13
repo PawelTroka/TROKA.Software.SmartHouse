@@ -8,15 +8,16 @@ import {
   jacuzziBounds,
   spaLevels,
   saunaOpaqueFaces,
-} from './geometry.js?v=1.13.0';
-import {gazeDirection} from './orientation.js?v=1.13.0';
-import {localSunDirection} from './solar.js?v=1.13.0';
-import {getSiteProfile} from './sites.js?v=1.13.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.13.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.13.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.13.0';
-import {terraceStairs} from './layout.js?v=1.13.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.13.0';
+} from './geometry.js?v=1.14.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.14.0';
+import {gazeDirection} from './orientation.js?v=1.14.0';
+import {localSunDirection} from './solar.js?v=1.14.0';
+import {getSiteProfile} from './sites.js?v=1.14.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.14.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.14.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.14.0';
+import {terraceStairs} from './layout.js?v=1.14.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.14.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -85,7 +86,8 @@ export function planLayout(scope, data, container, drawingFrame=false) {
   const plot = getSiteProfile(data.site.id || 'sternicza-11', data).bounds;
   let bounds = {minX: plot.minX - 3.5, maxX: plot.maxX + 4.2, minY: plot.minY - 4.2, maxY: plot.maxY + 4.2};
   if(scope==='detail')bounds={minX:plot.minX-1.3,maxX:plot.maxX+1.3,minY:data.site.rearMidpoint[1]-1.1,maxY:plot.maxY+1.5};
-  if (scope === 'context') {
+  if (scope === 'context' && data.neighborhood?.bounds) bounds=neighborhoodBounds(data);
+  else if (scope === 'context') {
     const points = [...data.site.boundary, ...nearbyDimensionBuildings(data).flatMap(b => b.footprint)];
     bounds = {
       minX: Math.min(...points.map(p => p[0])) - 6,
@@ -227,7 +229,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         <button type="button" data-map-scope="context" aria-pressed="${scope === 'context'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'context' ? C.ink : 'transparent'};color:${scope === 'context' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Neighbourhood</button>
       </div>
     </div>
-    ${measured?`<p class="plan-site-note">Mapped street frontage ${fmt(frontage,2)} m · depth ${fmt(depth,2)} m · house setback ${fmt(setback,1)} m · ${scope==='detail'?'rear garden enlarged below':scope==='context'?'nearest buildings and privacy targets':'whole plot'}</p>`:''}
+    ${measured?`<p class="plan-site-note">Mapped street frontage ${fmt(frontage,2)} m · depth ${fmt(depth,2)} m · house setback ${fmt(setback,1)} m · ${scope==='detail'?'rear garden enlarged below':scope==='context'?(data.neighborhood?`${data.neighborhood.totalBuildingCount} mapped buildings within 200 m`:'nearest buildings and privacy targets'):'whole plot'}</p>`:''}
     ${front.length>0&&scope!=='detail'?`<p class="plan-site-note">Front thuja ${fmt(front.length,2)} m planted · proposed openings: pedestrian 1.20 m, vehicle 4.00 m. Gate positions need confirmation; openings remain visible through.</p>`:''}
     <div class="plan-workspace ${measured?'plan-workspace--measured':''} ${measured&&stacked?'plan-workspace--stacked':''}"><div class="plan-drawing" data-plan-drawing>${svg}</div>${measured?dimensionScheduleMarkup(dimensionRecords):''}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
