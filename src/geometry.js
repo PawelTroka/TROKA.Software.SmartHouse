@@ -3,9 +3,9 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.9.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.9.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.9.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.10.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.10.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.10.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeInset: 0,
@@ -110,7 +110,7 @@ export function spaLevels(settings={},data){
     bottomZ:poolGround+p.waterOffset-p.waterDepth,copingTopZ:poolGround+.075,
     copingBaseZ:program.active?poolLow-.08:poolGround-.045}:null,sauna:null,firepit:null,coldPlunge:null};
   if(!program.active)return result;
-  const edge=program.id==='spa-edge';
+  const edge=['spa-edge','spa-compact'].includes(program.id);
   const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
   const sa=program.sauna,sr=edge?padGradeRange(sa.footprint,settings,data):null,sg=sr?.high??highest(sa),sf=sg+sa.floorOffset;
   result.sauna={groundZ:sg,floorZ:sf,roofZ:sf+sa.height};
@@ -160,8 +160,8 @@ export function saunaOpaqueFaces(settings={},data){
 export function spaLayoutWarnings(settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return [];
   const warnings=[];
-  if(program.id==='spa-edge')warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
-  if(program.id==='spa-edge'&&number(settings.bedRaise)>0){
+  if(['spa-edge','spa-compact'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
+  if(['spa-edge','spa-compact'].includes(program.id)&&number(settings.bedRaise)>0){
     // The illustrated hedge beds taper inward over 0.85m, as in the sunlight
     // receiver/terrain model. Close-set structures need a retaining detail if
     // that added soil reaches above their finished pad or coping.
@@ -202,7 +202,7 @@ export function spaSurfaceAt(x,y,settings={},data){
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
   const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
   if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
-  if(program.id==='spa-edge'){
+  if(['spa-edge','spa-compact'].includes(program.id)){
     const plungeStep=levels.coldPlunge.steps.find(step=>withinRect(x,y,step));
     if(plungeStep)return {surface:'plunge-entry',groundZ:plungeStep.topZ};
   }
@@ -225,13 +225,19 @@ export function terraceGroundReference(settings = {}, data) {
 
 /** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
-  const depth = number(settings.terraceDepth, 4.2), size = 2.2;
+  const compact=settings.gardenProgram==='spa-compact'&&spaEnabled(settings,data);
+  const depth = number(settings.terraceDepth, 4.2), size = compact?2.3:2.2;
   const spa=spaEnabled(settings,data);
+  const infinity=spa&&(!compact||settings.jacuzziOverflow===true);
   const x0 = data.site.terrace.x + 0.15;
   const y0 = data.site.rearMidpoint[1] + (spa?depth-size:Math.min(1.45,Math.max(0.15,depth-size-.15)));
-  const x1=x0+size,y1=y0+size,z=floorElevation(settings,data),waterOffset=spa?-.035:-.115;
-  return {x0,x1,y0,y1,width:size,length:size,z,infinity:spa,waterOffset,waterZ:z+waterOffset,
-    waterBounds:{x0:x0+.16,x1:x1-.16,y0:y0+.16,y1:y1-(spa?.07:.16)}};
+  const x1=x0+size,y1=y0+size,z=floorElevation(settings,data),waterOffset=infinity?-.035:-.115;
+  const bottomZ=z-(compact?.78:.68);
+  return {x0,x1,y0,y1,width:size,length:size,z,infinity,overflow:infinity,waterOffset,waterZ:z+waterOffset,bottomZ,
+    externalHeight:compact?.9:.74,seats:compact?7:null,
+    seatCentres:compact?[[.45,.45],[1.15,.32],[1.85,.45],[1.98,1.15],[1.85,1.85],[.45,1.85],[.32,1.15]].map(([x,y])=>[x0+x,y0+y]):null,
+    serviceAccess:compact?{clearance:.6,x0:x0-.6,x1:x1+.6,y0:y0-.6,y1:y1+.6,datum:'Required technical access; removable deck and garden-side service access, not extra water area.'}:null,
+    waterBounds:{x0:x0+.16,x1:x1-.16,y0:y0+.16,y1:y1-(infinity?.07:.16)}};
 }
 
 /** Eye-height override is deliberate: UI should set the preset's initial value. */

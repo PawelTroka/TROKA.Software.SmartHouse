@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.9.0';
+import {getTreeType} from './tree-catalog.js?v=1.10.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -134,6 +134,35 @@ const edgeLayouts=Object.freeze([
     settings:edgeSettings,trees:Object.freeze([])}),
 ]);
 
-export function getScreeningLayouts(siteId,program='spa-edge') {
-  return siteId==='sternicza-11'?(program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+// Keep the requested rear-left grove compact while moving it slightly east.
+// Pine 1 overlaps both other nominal crowns, preserving a connected canopy.
+// The historical spa-edge arrays above remain literal and unchanged. The
+// outer crown crosses the east boundary by about 0.29 m; its full volume is
+// an explicit design assumption, not an approved planting right.
+export const STERNICZA_LEFT_EDGE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.3,y:34.5},
+  {typeId:'austrian-pine-tall',x:14.35,y:31},
+  {typeId:'austrian-pine-tall',x:18.1,y:34.5},
+]);
+export const STERNICZA_WIDER_LEFT_EDGE_TREES=treesFrom([
+  {typeId:'austrian-pine-tall',x:13.5,y:35},
+  {typeId:'austrian-pine-tall',x:14.4,y:30},
+  {typeId:'austrian-pine-tall',x:19.3,y:33.8},
+]);
+const compactSettings=Object.freeze({...edgeSettings,gardenProgram:'spa-compact'});
+const compactLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Three 9.5 m pines · compact left-edge grove · default',
+    note:'A compact connected grove at the rear-left/east pool end. The outer pine moves 0.50 m farther left and the rear inner pine 0.20 m left; the middle pine stays in place. Nominal crowns overlap through the rear inner pine. Tree 3\'s modeled crown extends approximately 0.29 m beyond the left boundary; full-crown screening assumes this overhang. Living-room screening improves only modestly: about half the sampled PCK3 points remain visible. Compare Wider left-edge, Balanced views and Living-room priority.',
+    settings:compactSettings,trees:STERNICZA_LEFT_EDGE_TREES}),
+  Object.freeze({id:'wider-left-edge',label:'Wider left-edge · stronger house screen',
+    note:'Spreads the three pines across a 5.8 × 5.0 m trunk envelope and brings the middle crown forward. It hides more sampled PCK3 points from the house, but the 5 m crowns no longer overlap in plan. The outer crown extends approximately 1.49 m beyond the left boundary. This is a wider comparison, not the compact-grove default or a complete-concealment guarantee.',
+    settings:compactSettings,trees:STERNICZA_WIDER_LEFT_EDGE_TREES}),
+  Object.freeze({id:'contained-corner',label:'Three 9.5 m pines · contained corner · previous grove',
+    note:'The previous corner group with all three modeled crowns inside the parcel. It retains stronger screening from the named jacuzzi and garden positions but leaves more of PCK3 visible from the living room. Crowns overhang parts of the pool; actual foliage has gaps.',
+    settings:compactSettings,trees:STERNICZA_CORNER_TREES}),
+  ...edgeLayouts.filter(layout=>layout.id!=='default').map(layout=>Object.freeze({...layout,settings:compactSettings})),
+]);
+
+export function getScreeningLayouts(siteId,program='spa-compact') {
+  return siteId==='sternicza-11'?(program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }
