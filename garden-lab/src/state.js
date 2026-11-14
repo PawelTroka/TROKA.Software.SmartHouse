@@ -1,11 +1,11 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.15.1';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.15.1';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.15.1';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.15.1';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.15.1';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.15.1';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.16.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.16.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.16.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.16.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.16.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.16.0';
 
-export const STATE_VERSION = 17;
+export const STATE_VERSION = 18;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -41,6 +41,14 @@ const V16_STERNICZA_TREES=Object.freeze([[17.3,31],[14.8,31.1],[14.5,34.9]].map(
   rotation:0,enabled:true,unitPrice:0,x,y,
 })));
 
+// v17's omitted trees mean the exact pictured pines, even after the fresh
+// default changes to narrower Excelsa specimens. Freeze the purchased sizes
+// here rather than resolving them from a mutable current catalogue/preset.
+const V17_STERNICZA_TREES=Object.freeze([[19.3,30.2,6],[13.8,35.8,6],[18.45,35.57,5]].map(([x,y,width],index)=>Object.freeze({
+  id:`pine-${index+1}`,typeId:'austrian-pine-tall',height:10,crownBase:2.5,crownWidth:width,crownDepth:width,
+  rotation:0,enabled:true,unitPrice:0,x,y,
+})));
+
 const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeLeft: {label:'Left hedge · east',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -67,7 +75,7 @@ const BASE_FIELDS = Object.freeze({
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -82,7 +90,11 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
-  const V16_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
+  const V17_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
+    costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
+    gardenProgram:siteId===DEFAULT_SITE_ID?'spa-pool-grove':'classic',
+    screeningTrees:siteId===DEFAULT_SITE_ID?V17_STERNICZA_TREES:Object.freeze([])});
+  const V16_DEFAULTS=Object.freeze({...V17_DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
     costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     gardenProgram:siteId===DEFAULT_SITE_ID?'spa-corner':'classic',
     screeningTrees:siteId===DEFAULT_SITE_ID?V16_STERNICZA_TREES:Object.freeze([])});
@@ -146,7 +158,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       version===14&&['spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-grove'}:
       version===15&&['spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-aligned'}:
       version===16&&oldInput.gardenProgram==='spa-pool-grove'?{...oldInput,gardenProgram:'spa-corner'}:oldInput;
-    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:DEFAULTS);
+    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:DEFAULTS);
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];

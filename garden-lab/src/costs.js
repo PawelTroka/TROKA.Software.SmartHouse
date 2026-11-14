@@ -3,11 +3,11 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.15.1';
-import { getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.15.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.15.1';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.15.1';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.15.1';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.16.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.16.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.16.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.16.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.16.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -321,6 +321,8 @@ export function thujaUnitPrice(height, customPrice = 0, factor = 100) {
 
 /**
  * A purchased specimen price applies only to the documented stock envelope.
+ * Height-only catalog listings can anchor the default assumed crown budget,
+ * but are labelled as assumptions rather than verified matching stock.
  * Round-crown depth uses the quoted diameter band as a circular assumption.
  * Panel depth is unquoted: increasing it beyond the drawing default requires
  * a custom quote rather than silently buying a much larger crown. No extrapolation.
@@ -333,16 +335,25 @@ export function screeningTreeUnitPrice(tree = {}) {
   const inBand = (value, band) => value >= band[0] - EPS && value <= band[1] + EPS;
   const mismatches = [];
   if (!inBand(dimensions.height, type.stock.height)) mismatches.push('height');
-  if (!inBand(dimensions.crownWidth, type.stock.width)) mismatches.push('crown width');
-  if (type.form !== 'panel' && !inBand(dimensions.crownDepth, type.stock.width)) mismatches.push('crown depth (assumed circular diameter)');
+  const assumedWidth = !Array.isArray(type.stock.width);
+  if (assumedWidth) {
+    if (dimensions.crownWidth > type.dimensions.crownWidth + EPS || dimensions.crownWidth <= 0) mismatches.push('unquoted crown width');
+    if (dimensions.crownDepth > type.dimensions.crownDepth + EPS || dimensions.crownDepth <= 0) mismatches.push('unquoted crown depth');
+  } else {
+    if (!inBand(dimensions.crownWidth, type.stock.width)) mismatches.push('crown width');
+    if (type.form !== 'panel' && !inBand(dimensions.crownDepth, type.stock.width)) mismatches.push('crown depth (assumed circular diameter)');
+  }
   const expandedPanelDepth = type.form === 'panel' && dimensions.crownDepth > type.dimensions.crownDepth + EPS;
   if (expandedPanelDepth) mismatches.push('panel depth');
   if (type.stock.crownBase && !inBand(dimensions.crownBase, type.stock.crownBase)) mismatches.push('clear-stem height');
-  const stockMatch = mismatches.length === 0;
+  const priceReferenceMatch = mismatches.length === 0;
+  const stockMatch = priceReferenceMatch && !assumedWidth;
   const custom = positive(tree.unitPrice);
   if (custom > 0) return { ...range(custom), status: 'estimate', source: 'custom', stockMatch, reason: 'Your plant-only unit price; installation and logistics remain separate.' };
-  if (!stockMatch) return { low: null, high: null, status: 'quote-required', source: 'unquoted', stockMatch,
-    reason: `${expandedPanelDepth ? `The supplier does not specify panel depth. A crown deeper than the ${type.dimensions.crownDepth} m drawing assumption needs a custom quote. ` : ''}Edited ${mismatches.join(', ')} is not supported by this price reference. Enter a custom plant price; prices are not extrapolated to other sizes.` };
+  if (!priceReferenceMatch) return { low: null, high: null, status: 'quote-required', source: 'unquoted', stockMatch,
+    reason: `${expandedPanelDepth ? `The supplier does not specify panel depth. A crown deeper than the ${type.dimensions.crownDepth} m drawing assumption needs a custom quote. ` : ''}${assumedWidth ? 'The supplier does not specify crown width. Enlarging the assumed crown cannot retain this budget anchor. ' : ''}Edited ${mismatches.join(', ')} is not supported by this price reference. Enter a custom plant price; prices are not extrapolated to other sizes.` };
+  if (assumedWidth) return { ...range(type.pricePLN), status: 'estimate', source: 'catalog-assumption', stockMatch: false,
+    reason: `${type.priceNote} The ${type.dimensions.crownWidth} m crown width and ${type.dimensions.crownDepth} m depth are model assumptions, not verified stock dimensions.` };
   return { ...range(type.pricePLN), status: 'estimate', source: 'published-stock', stockMatch,
     reason: type.priceNote };
 }
@@ -363,7 +374,9 @@ export function estimateScreeningTreeCosts(settings = {}) {
       height, crownWidth, crownDepth,
       unit, plants: unit.low === null ? null : range(unit.low, unit.high), status: unit.status,
       sourceUrl: type?.sourceUrl, sourceTitle: type?.sourceTitle, priceNote: type?.priceNote,
-      taxNote: type?.taxNote, deliveryIncluded: type?.deliveryIncluded === true && unit.source === 'published-stock',
+      taxNote: unit.source === 'custom' ? 'Your plant-only quote; confirm its VAT basis and enter a final gross amount for purchasing.' : type?.taxNote,
+      taxBasis: unit.source === 'custom' ? 'unspecified' : type?.taxBasis,
+      deliveryIncluded: type?.deliveryIncluded === true && unit.source === 'published-stock',
       liftingQuoteRequired: type?.liftingQuoteRequired !== false || expandedPanel };
   });
   const count = rows.length;
@@ -479,8 +492,10 @@ export function estimateCosts(settings = {}, data) {
   if(c.costUsePlanningAllowances)notes.push('Planning rates are explicit design assumptions, not surveyed contractor rates. Ranges aim to include applicable tax, but published references retain their own gross/net/unspecified tax labels. No supplier has provided a site-specific offer; replace whole-line allowances with confirmed installed gross quotations.');
   if (screeningTrees.plantQuoteCount) notes.push('An edited screening tree is not supported by its catalog price reference. Enter a plant-only quote for that specimen; prices are not extrapolated to other dimensions.');
   if (screeningTrees.unquotedServices.length) notes.push(`Screening-tree services not yet budgeted: ${screeningTrees.unquotedServices.map(item => item.label.toLowerCase()).join(', ')}. Zero means unquoted; the known subtotal includes only priced items.`);
-  if (screeningTrees.count) notes.push('Screening-tree prices describe purchased specimens, not mature sizes or guaranteed available stock. Only enabled trees are included. Catalog references were reviewed 12 November 2026; crown shape and density still need specimen confirmation.');
-  if (screeningTrees.rows.some(row => row.typeId === 'serbian-spruce' || row.typeId === 'pleached-hornbeam')) notes.push('Serbian spruce and pleached hornbeam use displayed retail amounts whose VAT basis needs supplier confirmation. Enter final tax-inclusive quotes for purchasing.');
+  if (screeningTrees.count) notes.push(`Screening-tree prices describe purchased specimens, not mature sizes or guaranteed available stock. Only enabled trees are included. Latest catalog review: ${TREE_CATALOG_REVIEWED_AT}; individual entries retain their observation dates. Crown shape and density still need specimen confirmation.`);
+  if (screeningTrees.rows.some(row => row.unit.source === 'catalog-assumption')) notes.push('Some catalog listings specify height only. Their displayed plant prices are budget anchors with assumed crown widths; these are not verified matching specimens. Enlarging an unquoted crown requires a custom price.');
+  if (screeningTrees.rows.some(row => row.taxBasis === 'net')) notes.push('Selected Markflor Thuja Brabant prices are NET, excluding VAT. The known subtotal retains those net plant amounts and is not a final tax-inclusive purchasing total; replace with a confirmed gross quote.');
+  if (screeningTrees.rows.some(row => row.taxBasis === 'unspecified' && row.unit.source !== 'custom')) notes.push('Some selected specimen prices do not state their VAT basis. Enter final tax-inclusive supplier quotes before purchasing.');
   // Combine unadjusted branches first; apply uncertainty once to the upper sum.
   const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase,spa.knownBase,garden.knownBase]);
   const knownSubtotal = withContingency(knownBase, c.costContingency);

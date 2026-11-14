@@ -1,10 +1,87 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-11-12",
+  "reviewedAt": "2026-11-14",
   "currency": "PLN",
-  "summary": "Primary Polish supplier catalog observations for purchased specimens. Stock availability, actual crown density, logistics and final quotes need confirmation. These are not mature-size or installed-price estimates.",
-  "taxNote": "Galeria Ogrodowa sales terms state displayed PLN prices include VAT. Fischer and Wyplatane amounts are recorded as displayed; a VAT statement was not located on the inspected product pages. Do not apply a blanket VAT conversion to all sources.",
+  "summary": "Primary Polish and Belgian supplier catalog observations for purchased specimens. New alternatives were checked on 14 November 2026; original entries retain their 12 November observations. Stock availability, actual crown density, logistics and final quotes need confirmation. These are not mature-size or installed-price estimates.",
+  "taxNote": "Galeria Ogrodowa and De Bruyn website terms include VAT unless stated otherwise. Markflor Brabant is explicitly NET, excluding VAT. Fischer and Wyplatane amounts are recorded as displayed, with VAT basis unconfirmed. Euro prices use a fixed 4.30 PLN/EUR planning assumption, not a live exchange rate. Do not apply a blanket tax conversion to all sources.",
   "sources": [
+    {
+      "id": "fischer-thuja-excelsa-9m",
+      "title": "Fischer nursery — Thuja Excelsa, 9 m individual specimen",
+      "url": "https://drzewkafischer.pl/index.php/solitaire/18/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 9,500 PLN for one 9 m tall × 2 m wide specimen; trunk circumference 50–60 cm. VAT basis, availability and matching multiples are not confirmed. Delivery, lifting and planting extra.",
+      "observations": [
+        { "typeId": "thuja-excelsa-9m", "heightM": [9, 9], "widthM": [2, 2], "trunkCircumferenceCM": [50, 60], "pricePLN": 9500, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "fischer-white-fir-9m",
+      "title": "Fischer nursery — white fir, 9 m individual specimen",
+      "url": "https://drzewkafischer.pl/index.php/solitaire/21/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 22,500 PLN for one 9 m tall × 4.5 m wide Abies concolor specimen; trunk circumference 110–120 cm. VAT basis, availability and matching multiples are not confirmed. Services extra.",
+      "observations": [
+        { "typeId": "white-fir-9m", "heightM": [9, 9], "widthM": [4.5, 4.5], "trunkCircumferenceCM": [110, 120], "pricePLN": 22500, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "debruyn-norway-spruce-9-10m",
+      "title": "De Bruyn — Norway spruce, 9–10 m height band",
+      "url": "https://catalog.boomkwekerij-debruyn.com/en/plantenboek/picea-abies/",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Published €3,070 per 9–10 m wired-rootball tree, converted to 13,201 PLN at the fixed planning rate 4.30 PLN/EUR. Crown width is not specified; the model's 3 m width/depth is an assumption, not verified stock. Services extra.",
+      "observations": [
+        { "typeId": "norway-spruce-9-10m", "heightM": [9, 10], "priceEUR": 3070, "exchangeRatePLNPerEUR": 4.3, "exchangeRateBasis": "Fixed planning assumption, not a live rate", "pricePLN": 13201, "taxBasis": "included", "assumedCrownWidthM": 3, "assumedCrownDepthM": 3, "stockStatus": "Height-band catalog; crown measurements and current availability unconfirmed" }
+      ]
+    },
+    {
+      "id": "markflor-thuja-brabant-6-7m",
+      "title": "Markflor — Thuja Brabant, 6–7 m soliter",
+      "url": "https://www.markflor.pl/cennik/drzewa-iglaste-bryla",
+      "observedAt": "2026-11-14",
+      "priceBasis": "2026/2027 price list: 2,800 PLN NET for a 6–7 m soliter. VAT is additional and is not silently added at an assumed rate. Crown width, current quantities and final delivered price need confirmation.",
+      "observations": [
+        { "typeId": "thuja-brabant-6-7m", "heightM": [6, 7], "pricePLN": 2800, "taxBasis": "net", "assumedCrownWidthM": 1.5, "assumedCrownDepthM": 1.5, "stockStatus": "Height-band price list; width and current quantity unconfirmed" }
+      ]
+    },
+    {
+      "id": "fischer-serbian-spruce-7m",
+      "title": "Fischer nursery — Serbian spruce, 7 m individual specimen",
+      "url": "https://drzewkafischer.pl/solitaire/76/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 8,300 PLN for one 7 m tall × 3 m wide specimen. VAT basis, availability and matching multiples are not confirmed. Delivery, lifting and planting extra.",
+      "observations": [
+        { "typeId": "serbian-spruce-7m", "heightM": [7, 7], "widthM": [3, 3], "pricePLN": 8300, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "debruyn-austrian-pine-8-9m",
+      "title": "De Bruyn — Austrian pine, 8–9 m height band",
+      "url": "https://catalog.boomkwekerij-debruyn.com/en/plantenboek/pinus-nigra-nigra/",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Published €6,174 per 8–9 m wired-rootball tree, converted to 26,548.20 PLN at the fixed planning rate 4.30 PLN/EUR. This excludes the separately priced multi-stem form. Crown width is unquoted; 3 m width/depth is an explicit model assumption. Services extra.",
+      "observations": [
+        { "typeId": "austrian-pine-debruyn-8-9m", "heightM": [8, 9], "priceEUR": 6174, "exchangeRatePLNPerEUR": 4.3, "exchangeRateBasis": "Fixed planning assumption, not a live rate", "pricePLN": 26548.2, "taxBasis": "included", "assumedCrownWidthM": 3, "assumedCrownDepthM": 3, "stockStatus": "Height-band catalog; crown measurements and current availability unconfirmed" }
+      ]
+    },
+    {
+      "id": "fischer-nordmann-fir-11m",
+      "title": "Fischer nursery — Nordmann fir, 11 m individual specimen",
+      "url": "https://drzewkafischer.pl/index.php/solitaire/75/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 28,000 PLN for one 11 m tall × 7 m wide specimen. VAT basis, current availability and matching multiples need confirmation. Its very large crown and root ball require a layout/access assessment. Services extra.",
+      "observations": [
+        { "typeId": "nordmann-fir-11m", "heightM": [11, 11], "widthM": [7, 7], "pricePLN": 28000, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "debruyn-tax-terms",
+      "title": "De Bruyn — webshop VAT terms",
+      "url": "https://www.boomkwekerij-debruyn.com/en/verkoopvoorwaarden/",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Webshop terms state that website product prices include VAT unless otherwise indicated. Confirm the final invoice for delivery to Poland; do not automatically add a blanket VAT percentage to the listed amounts."
+    },
     {
       "id": "galeria-austrian-pine",
       "title": "Galeria Ogrodowa — broad Austrian pine specimens",
@@ -92,8 +169,8 @@
     }
   ],
   "modelAssumptions": {
-    "dimensions": "Midpoints initialize purchased size bands. Ordinary-tree crown bases are drawing assumptions; quoted diameter initializes both crown width and depth. Panel clear-stem height and height/width are documented; its depth is an editable 0.4 m drawing assumption.",
-    "priceLimits": "Automatic pricing requires dimensions within the selected purchased-stock ranges. No height or width extrapolation. For ordinary crowns, depth must fit the diameter band. Panel depth is not a supplier measurement: increasing it above the 0.4 m drawing default requires a custom quote; this limit is a conservative budgeting rule, not a verified stock range. The documented panel stem and height/width remain fixed. A custom plant-only unit price can cover an independently quoted specimen.",
+    "dimensions": "Midpoints initialize purchased height bands. Crown bases are editable drawing assumptions; a quoted width initializes both width and depth. Height-only listings omit a verified width: the Norway spruce/imported pine use a 3 m model crown and Markflor Brabant uses 1.5 m. These are unverified assumptions. Panel clear-stem height and height/width are documented; its depth is a 0.4 m drawing assumption.",
+    "priceLimits": "Documented sizes use the published-stock price only within their supplied height/width bands; ordinary depth uses the quoted width band. For height-only listings, the default or smaller assumed crown may use a catalog-assumption budget anchor with stockMatch false. Increasing either assumed width or depth requires a custom plant quote. No height extrapolation or automatic discount for a smaller crown is applied. Panel depth above its 0.4 m default also requires a quote. These assumed limits are conservative budgeting rules, not verified supplier dimensions.",
     "services": "Planting, anchoring, delivery, crane/unloading and establishment are separate editable allowances. Zero means unquoted when applicable. Published-stock Wyplatane delivery is included; a catalog pleached-only order receives no extra delivery or automatic crane allowance. Custom plant-only quotes do not inherit supplier delivery. Enlarging panel height, width or assumed depth also requires an unloading allowance because handling for the changed specimen is unverified.",
     "quantity": "Only enabled trees enter the screening-tree budget. A catalog of an individual specimen does not guarantee multiple matching trees at the same price.",
     "privacy": "Geometric crown envelopes are optimistic approximations. Branch gaps, density and seasonal leaf loss prevent a guaranteed 100 percent real-world privacy claim.",
