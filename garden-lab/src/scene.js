@@ -1,20 +1,20 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.14.0';
-import { sampledRoofFaces } from './shade.js?v=1.14.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.14.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.14.0';
-import { getSiteProfile } from './sites.js?v=1.14.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.14.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.14.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.14.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.14.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.14.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.14.0';
-import { gardenDimensions } from './dimensions.js?v=1.14.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.14.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.14.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.15.0';
+import { sampledRoofFaces } from './shade.js?v=1.15.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.15.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.15.0';
+import { getSiteProfile } from './sites.js?v=1.15.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.15.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.15.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.15.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.15.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.15.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.15.0';
+import { gardenDimensions } from './dimensions.js?v=1.15.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.15.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.15.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -87,9 +87,21 @@ function polygonPrism(ring, base, top, material, capTop = true) {
   return mesh;
 }
 
+/** Match a recorded blank elevation by its two source endpoints, independently
+ * of ring winding. Keep observations separate from immutable mapped bodies. */
+function isWindowlessFacade(a,b,building,observation){
+  if(!observation||observation.officialId!==building.officialId)return false;
+  const dx=num(building.adjustment?.dx),dy=num(building.adjustment?.dy);
+  const matches=(point,recorded)=>Array.isArray(recorded)&&Math.hypot(point[0]-dx-recorded[0],point[1]-dy-recorded[1])<1e-6;
+  return (observation.windowlessEdges||[]).some(edge=>
+    (matches(a,edge.a)&&matches(b,edge.b))||(matches(a,edge.b)&&matches(b,edge.a)));
+}
+
 /** Illustrative openings follow real wall edges; they are not surveyed window
- * positions and do not alter the analytical building body or its height. */
-export function contextFacadePlacements(building, origin, distanceLimit = 160) {
+ * positions and do not alter the analytical building body or its height.
+ * A user-recorded blank wall suppresses the shared placements, so panes,
+ * frames, mullions and sills all disappear in both WebGL and SVG views. */
+export function contextFacadePlacements(building, origin, distanceLimit = 160, observation = null) {
   const ring=closeRing(building.footprint||[]),base=Number(building.baseZ),roof=Number(building.roofZ);
   if(ring.length<3||!Number.isFinite(base)||!Number.isFinite(roof)||roof<=base)return [];
   const c=centroid(ring),distance=Math.hypot(c[0]-origin[0],c[1]-origin[1]);
@@ -100,7 +112,7 @@ export function contextFacadePlacements(building, origin, distanceLimit = 160) {
   const result=[];
   for(let side=0;side<ring.length;side++){
     const a=ring[side],b=ring[(side+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
-    if(length<1.85)continue;
+    if(length<1.85||isWindowlessFacade(a,b,building,observation))continue;
     const nx=winding*dy/length,ny=-winding*dx/length,count=Math.min(40,Math.max(1,Math.floor(length/3.5)));
     const width=Math.min(1.1,length/count*.52);
     for(let floor=0;floor<floorCount;floor++)for(let column=0;column<count;column++){
@@ -459,7 +471,7 @@ export function createScene(container, data, callbacks = {}) {
       const cap=THREE.ShapeUtils.triangulateShape(ring.map(p=>new THREE.Vector2(...p)),[]);
       for(const [a,b,c] of cap)contextDetails.roofs.push(toWorldRoofTriangle([...ring[a],roof],[...ring[b],roof],[...ring[c],roof]));
     }
-    contextDetails.windows.push(...contextFacadePlacements({...building,baseZ:base,roofZ:roof},plotCentre,svgMode?95:160));
+    contextDetails.windows.push(...contextFacadePlacements({...building,baseZ:base,roofZ:roof},plotCentre,svgMode?95:160,data.facadeOverrides?.[building.id]));
     const distance=Math.hypot(c[0]-plotCentre[0],c[1]-plotCentre[1]);
     if(distance<125){
       const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;

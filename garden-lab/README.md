@@ -2,7 +2,41 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.14.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.14.0#v=16&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.15.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.15.0#v=17&site=sternicza-11)**
+
+## Reference pines, a closer 8 m pool and the blank 4h wall · 1.15.0
+
+The new default follows the user's 14 November plan: **three 10 m Austrian pines**, with one alongside the pool near the left/east boundary and two along the rear. Their local positions are **(19.30, 30.20), (13.80, 35.80), (18.45, 35.57) m**. The reference crown diameters remain **6, 6 and 5 m**. Tree 1–3 spacing is 5.44 m; tree 2–3 is 4.66 m.
+
+The pool is now **8 × 3.5 m**, 2 m longer than v1.14, at **(14.52, 26.30) m**. It moves **6.80 m rearward and 1.18 m inward**, letting it fit alongside the first pine and close to the rear pair. Measured from the full outer coping, the trunk-centre gaps are **1.00, 1.30 and 1.00 m**. The coping retains **2.00 m to the east plot edge** and **1.36 m to the sunken-lounge coping**.
+
+These are concept clearances, not surveyed root-ball or excavation requirements. The crowns deliberately follow the supplied reference, including approximately **2.00 m east overhang for Tree 1, 0.81 m rear overhang for Tree 2, and 0.64 m east / 0.16 m rear overhang for Tree 3**. The model keeps those assumptions and the over-pool crowns visible.
+
+### PCK3 visibility from unchanged viewpoints
+
+| Viewpoint | Dense façade points hidden | Roof points still exposed / 365 |
+|---|---:|---:|
+| Living room, seated | 90.35% | 105 |
+| Living room, standing | 89.09% | 131 |
+| Terrace | 95.86% | 52 |
+| Jacuzzi | 96.68% | 51 |
+| Garden preset | 99.96% | 0 |
+| Sauna | 100.00% | 0 |
+| Sunken lounge | 99.88% | 0 |
+
+The new arrangement improves living-room, jacuzzi and garden wall screening compared with v1.14. It does not conceal PCK3 from every location: the dining viewpoints still expose about 22–25% of wall samples, and roof exposure increases from the house and terrace. Dense wall and roof counts remain separate. Actual foliage has gaps. Moving the pool under the crowns also changes sunlight: on the modeled 21 June, direct sun reaches **0/24 pool samples at 12:00, 4/24 at 15:00 and 19/24 at 17:00**. These are snapshots, not daily sunlight hours. See the [complete geometry, visibility and sunlight comparison](docs/reference-pool-screening-comparison.md).
+
+### Building 4h and retained context
+
+Building 4h is the irregular neighbour against the plot's physical right/west edge, mapped as `building-4`. Its two garden-facing wall segments are now blank, following the user's observation: no decorative panes, frames, mullions or sills. Other elevations remain illustrative. The official building footprint and height remain unchanged, and the façade inspector makes clear that exposed wall area is not a window count.
+
+The **142 mapped surrounding buildings**, across-street views, **4 m thujas around every plot edge**, compact six-person sauna and seven-seat jacuzzi remain available. Historical layouts stay under their original Garden layout choices. The new pool's scenario list contains its reference pines and hedges-only, avoiding old planting presets that would overlap the moved pool.
+
+### Budget and saved designs
+
+The revised planning range is **802,926–1,382,131 PLN**, with the 20% uncertainty allowance applied to the upper total once. The three-pine supply reference remains **179,700 PLN**; the hedge supply, planting and delivery subtotal remains **52,375 PLN**. The **150,000–230,000 PLN installed-pool allowance is unchanged** and explicitly requires a project quotation for the new 8 × 3.5 m dimensions and position. Slightly lower total allowances reflect less garden fill, lawn and irrigation beneath the larger footprint; they do not indicate a cheaper pool quote.
+
+Schema **v17** opens the new reference arrangement. Existing v16 links and saved designs retain the original 6 m pool, corner trees, custom edits, hedge settings and entered prices. The latest-design link above or Reset selects the new default.
 
 ## Rear-left corner, natural tree models and all-direction views · 1.14.0
 

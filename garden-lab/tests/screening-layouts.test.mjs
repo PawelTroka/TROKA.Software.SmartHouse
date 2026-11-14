@@ -14,7 +14,7 @@ const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
 test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
-  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-corner');
+  assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-pool-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
@@ -22,8 +22,8 @@ test('fresh Sternicza starts with checked planting positions while Korzeniowskie
   assert.deepEqual(sternicza.sanitizeState({screeningTrees:[]}).screeningTrees,[]);
   const volumes=screeningTreeVolumes(sternicza.DEFAULTS,sterniczaData);
   assert.ok(volumes.every(volume=>volume.plantable),'Every default trunk must have a valid planting position');
-  assert.ok(volumes.every(volume=>volume.crownInside),'The new default keeps every modelled crown within the parcel');
-  assert.match(getScreeningLayouts('sternicza-11')[0].note,/(?:fit|stay) inside the parcel/i,'The default describes its boundary condition');
+  assert.ok(volumes.some(volume=>!volume.crownInside),'The reference planting visibly retains its boundary overhang');
+  assert.match(getScreeningLayouts('sternicza-11')[0].note,/overhang/i,'The reference layout describes its actual boundary condition');
 });
 
 test('every pre-v8 omitted-tree link keeps its original tree-free meaning',()=>{
@@ -155,15 +155,17 @@ test('named planting layouts restore compatible garden assumptions while keeping
   }
   const tall=sternicza.scenarioState('default',current);
   assert.equal(tall.screeningTrees.length,3);
-  assert.ok(tall.screeningTrees.every(tree=>tree.typeId==='austrian-pine-tall'&&tree.height===10&&tree.crownWidth===6&&tree.crownDepth===6));
-  const midpoint=sternicza.scenarioState('catalog-midpoint-corner',current);
+  assert.ok(tall.screeningTrees.every(tree=>tree.typeId==='austrian-pine-tall'&&tree.height===10));
+  assert.deepEqual(tall.screeningTrees.map(tree=>[tree.crownWidth,tree.crownDepth]),[[6,6],[6,6],[5,5]]);
+  const historicalCurrent={...current,gardenProgram:'spa-corner'};
+  const midpoint=sternicza.scenarioState('catalog-midpoint-corner',historicalCurrent);
   assert.ok(midpoint.screeningTrees.every(tree=>tree.height===9.5&&tree.crownWidth===5&&tree.crownDepth===5));
-  const budget=sternicza.scenarioState('budget-pines',current);
+  const budget=sternicza.scenarioState('budget-pines',historicalCurrent);
   assert.equal(budget.screeningTrees.filter(tree=>tree.typeId==='austrian-pine-tall').length,1);
   assert.equal(budget.screeningTrees.filter(tree=>tree.typeId==='austrian-pine-large').length,2);
   assert.equal(budget.screeningTrees.reduce((sum,tree)=>sum+getTreeType(tree.typeId).pricePLN,0),93700);
-  const standardBudget=sternicza.scenarioState('budget-pines',sternicza.DEFAULTS);
-  assert.ok(screeningTreeVolumes(standardBudget,sterniczaData).every(volume=>volume.plantable&&volume.crownInside));
+  const standardBudget=sternicza.scenarioState('budget-pines',sternicza.decodeState('v=16&site=sternicza-11'));
+  assert.ok(screeningTreeVolumes(standardBudget,sterniczaData).every(volume=>volume.plantable&&volume.crownInside),'The previous programme still restores its compatible pool and planting');
   assert.ok(screeningTreeVolumes(budget,sterniczaData).some(volume=>!volume.plantable&&volume.warnings.some(w=>w.includes('terrace stairs'))),'A higher edited floor extends stairs into one budget tree; the model must flag that collision');
   assert.deepEqual(sternicza.scenarioState('hedges-only',current).screeningTrees,[]);
   const onlyHedges=sternicza.scenarioState('tall',current);

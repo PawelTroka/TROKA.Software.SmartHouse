@@ -108,7 +108,7 @@ test('sun and privacy use the same finite canopy, leafless trees lose crown shad
   assert.notEqual(prepareSunGeometry(changed,data),a);
   assert.equal(sunlightAtPoint([13,20,0],changed,data,sun).sunlit,true);
   const shadedCell=analyzeSunlight(summer,data,sun).cells.find(cell=>cell.treeId===t.id);
-  assert.equal(shadedCell.blockedLabel,getTreeType(t.typeId).label);
+  assert.equal(shadedCell.blockedLabel,'Hornbeam · 8 m tall','Shade label describes the edited specimen, not the catalog midpoint');
 });
 
 test('tree contributions never change the audited hedge-alone requirement',()=>{

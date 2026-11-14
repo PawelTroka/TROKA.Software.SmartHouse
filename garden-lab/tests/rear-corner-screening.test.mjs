@@ -32,8 +32,8 @@ function obstacles(){
   ...p.furniture.path.map(([x,y])=>rectCorners({x,y,width:1.15,length:.9}))];
 }
 
-test('the new default puts every trunk in the rear-left zone with a close pair and contained overlapping crowns',()=>{
- const layout=getScreeningLayouts('sternicza-11')[0],trees=layout.trees;
+test('the v1.14 corner layout keeps every trunk in the rear-left zone with a close pair and contained overlapping crowns',()=>{
+ const layout=getScreeningLayouts('sternicza-11','spa-corner')[0],trees=layout.trees;
  assert.equal(layout.label,'Rear-left corner grove · default');
  assert.equal(layout.settings.gardenProgram,'spa-corner');assert.equal(layout.settings.hedgeFullPerimeter,true);
  assert.deepEqual(trees,STERNICZA_REAR_CORNER_TREES);

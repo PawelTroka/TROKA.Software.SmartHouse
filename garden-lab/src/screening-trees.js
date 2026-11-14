@@ -3,10 +3,10 @@
  * Coordinates and absolute elevations match geometry.js. Dense crowns are an
  * optimistic geometric assumption, not a measured guarantee of opaque foliage.
  */
-import { TREE_CATALOG, getTreeType } from './tree-catalog.js?v=1.14.0';
-import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.14.0';
-import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.14.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.14.0';
+import { TREE_CATALOG, getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.15.0';
+import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.15.0';
+import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.15.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.15.0';
 
 export const MAX_SCREENING_TREES = 12;
 export const TREE_LEAF_MODES = Object.freeze(['auto','leaf-on','leaf-off']);
@@ -138,7 +138,7 @@ function makeVolume(tree,settings,data,obstacles) {
   const type=getTreeType(tree.typeId),groundZ=gardenGroundAt(tree.x,tree.y,settings,data);
   const crownBottomZ=groundZ+tree.crownBase,crownTopZ=groundZ+tree.height;
   const a=tree.rotation*Math.PI/180;
-  const volume={...tree,type,label:type.label,form:type.form,evergreen:type.evergreen,
+  const volume={...tree,type,label:screeningTreeLabel(tree),form:type.form,evergreen:type.evergreen,
     groundZ,crownBottomZ,crownTopZ,
     crownCenter:[tree.x,tree.y,(crownBottomZ+crownTopZ)/2],
     crownRadii:[tree.crownWidth/2,tree.crownDepth/2,(crownTopZ-crownBottomZ)/2],

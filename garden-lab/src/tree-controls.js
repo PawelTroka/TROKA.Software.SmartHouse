@@ -1,10 +1,10 @@
-import {TREE_CATALOG, getTreeType} from './tree-catalog.js?v=1.14.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.14.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.14.0';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.14.0';
-import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.14.0';
+import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.15.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.15.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.15.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.15.0';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.15.0';
 
-const treeLabel = tree => `${(getTreeType(tree.typeId)?.label||'Tree').split(' · ')[0]} · ${Number(tree.height.toFixed(2))} m tall`;
+const treeLabel = screeningTreeLabel;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -187,7 +187,10 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     }
     const roofRays=(analysis?.rays||[]).filter(ray=>ray.blockId===target?.id&&ray.kind==='roof');
     const facadeText=facade?.status==='ok'?`${facade.visible.toLocaleString()} / ${facade.total.toLocaleString()} (${facade.spacing.toFixed(2)} m grid)`:`unavailable — ${facade?.reason||'Choose a valid viewpoint.'}`;
-    const roofText=roofRays.length?`Roof points: ${roofRays.filter(ray=>ray.visible).length} / ${roofRays.length}.`:'Roof ridges and windows are unmeasured; this is the mapped median-height wall envelope.';
+    const blankGardenWall=Boolean(data.facadeOverrides?.[target?.id]?.windowlessEdges?.length);
+    const roofText=roofRays.length?`Roof points: ${roofRays.filter(ray=>ray.visible).length} / ${roofRays.length}.`:blankGardenWall
+      ?'The garden-facing walls have no windows, following your correction. This count measures exposed wall surface; roof ridges and other window positions remain unmeasured.'
+      :'Roof ridges and windows are unmeasured; this is the mapped median-height wall envelope.';
     const result=target&&facade?`${buildingViewLabel(target,data)} · visible façade points: ${facadeText}. ${roofText} Dense crown-envelope approximation; real foliage has gaps.`:'';
     $('tree-target-current').textContent=result;
     $('view-building-result').textContent=result;
