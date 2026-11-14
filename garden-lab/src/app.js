@@ -1,18 +1,18 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.15.1';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.15.1';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.15.1';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.15.1';
-import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.15.1';
-import {createTreeControls} from './tree-controls.js?v=1.15.1';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,hedgeSegments} from './geometry.js?v=1.15.1';
-import {renderPlan,renderSection} from './diagrams.js?v=1.15.1';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.15.1';
-import {analyzeSunlight} from './shade.js?v=1.15.1';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.15.1';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.15.1';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.15.1';
-import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees} from './reference-planting.js?v=1.15.1';
-import {gardenDimensions} from './dimensions.js?v=1.15.1';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.16.0';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.16.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.16.0';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.16.0';
+import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.16.0';
+import {createTreeControls} from './tree-controls.js?v=1.16.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,hedgeSegments} from './geometry.js?v=1.16.0';
+import {renderPlan,renderSection} from './diagrams.js?v=1.16.0';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.16.0';
+import {analyzeSunlight} from './shade.js?v=1.16.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.16.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.16.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.16.0';
+import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.16.0';
+import {gardenDimensions} from './dimensions.js?v=1.16.0';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -57,7 +57,7 @@ function readSaved(suffix=''){
   const current=safeRead(`${storageKey}${suffix}`,null);
   if(current&&typeof current==='object'&&!Array.isArray(current)&&current.siteId===profile.id){if(!suffix)openedDesign='Opened saved design';return migrateSavedState(current,STATE_VERSION);}
   if(previewScope)return suffix?null:sanitizeState(DEFAULTS);
-  for(const version of [16,15,14,13,12,11,10,9,8,7,6]){
+  for(const version of Array.from({length:STATE_VERSION-6},(_,index)=>STATE_VERSION-1-index)){
     const previousSite=safeRead(`garden-lab-${profile.id}-v${version}${suffix}`,null);
     if(previousSite&&typeof previousSite==='object'&&!Array.isArray(previousSite)&&previousSite.siteId===profile.id){if(!suffix)openedDesign='Opened earlier saved design';return migrateSavedState(previousSite,version);}
   }
@@ -67,7 +67,11 @@ function readSaved(suffix=''){
   }
   return suffix?null:sanitizeState(DEFAULTS);
 }
-const openedSharedDesign=/^#v=(?:[1-9]|1[0-7])(?:&|$)/.test(location.hash);
+function hasSharedDesign(hash){
+  const match=/^#v=(\d+)(?:&|$)/.exec(hash);
+  return Boolean(match&&Number(match[1])>=1&&Number(match[1])<=STATE_VERSION);
+}
+const openedSharedDesign=hasSharedDesign(location.hash);
 let settings=openedSharedDesign?decodeState(location.hash):readSaved();
 if(openedSharedDesign)openedDesign='Opened linked design';
 if(!profile.hasGarage)settings.removeGarage=true;
@@ -76,7 +80,14 @@ let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
 function toast(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3500);}
-function persist(){try{localStorage.setItem(storageKey,JSON.stringify(settings));}catch{}}
+function persist(){
+  try{localStorage.setItem(storageKey,JSON.stringify(settings));}catch{}
+  // An opened comparison link must track edits as well as local storage;
+  // otherwise its old hash wins on reload and silently undoes a species swap.
+  if(ready&&hasSharedDesign(location.hash)){
+    const url=new URL(location.href);url.hash=encodeState(settings);history.replaceState(null,'',url);
+  }
+}
 
 const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function syncScenarioOptions(){
@@ -203,13 +214,14 @@ function syncControls(){
   $('garden-program-wrap').hidden=profile.id!=='sternicza-11';
   $('garden-program').value=settings.gardenProgram;
   $('pictured-tree-controls').hidden=profile.id!=='sternicza-11';
-  const pictureMatched=matchesPicturedTrees(settings);
-  $('pictured-tree-status').textContent=pictureMatched?'Picture matched · all three pines are 10 m tall.':`${openedDesign} · custom tree positions or sizes differ from the picture.`;
+  const pictureMatched=matchesPicturedTrees(settings),excelsaMatched=matchesExcelsaTrees(settings);
+  $('pictured-tree-status').textContent=excelsaMatched?'Latest planting · three 9 m Excelsa, with 2 m crowns at the pictured positions.':pictureMatched?'Original pine reference · three 10 m pines at the pictured positions.':`${openedDesign} · ${(settings.screeningTrees||[]).length} trees in your current comparison.`;
   $('pictured-tree-status').dataset.matches=String(pictureMatched);
-  $('pictured-tree-status').classList.toggle('different',!pictureMatched);
+  $('pictured-tree-status').dataset.planting=excelsaMatched?'excelsa':pictureMatched?'reference-pines':'custom';
+  $('pictured-tree-status').classList.remove('different');
   $('pictured-tree-coordinates').innerHTML=PICTURED_TREES.map((tree,index)=>`<tr><th scope="row">T${index+1}</th><td>${fmt(tree.x,2)}</td><td>${fmt(tree.y,2)}</td><td>${fmt(tree.height,1)}</td></tr>`).join('');
   $('garden-program-note').textContent=poolGrove
-    ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool moved toward the rear-left/east pines. The starting layout follows your reference: one pine alongside the pool and two along the rear boundary, all 10 m high. Current tree heights: ${(settings.screeningTrees||[]).filter(tree=>tree.enabled).map(tree=>`${fmt(tree.height,1)} m`).join(' · ')||'none'}. Crown overhang and trunk-to-coping distances remain visible in Plan. Full-perimeter thujas cover all four edges, with front access openings. Compare the actual PCK3 result at each viewpoint.`
+    ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool beside the rear-left/east planting. The latest default has three 9 m Excelsa with 2 m crowns: one alongside the pool and two along the rear boundary. Use a planting scenario to compare species at these same positions, or replace trees in Screening trees to keep your own positions. Current tree heights: ${(settings.screeningTrees||[]).filter(tree=>tree.enabled).map(tree=>`${fmt(tree.height,1)} m`).join(' · ')||'none'}. Crown overhang and trunk-to-coping distances remain visible in Plan. Full-perimeter thujas cover all four edges, with front access openings. Compare the actual PCK3 result at each viewpoint.`
     :corner
     ?`Previous starting layout: three pines in a 2.8 × 3.9 m rear-left/east group, with the nearest pair 2.50 m apart. Its default uses 10 m height and 6 m crowns inside the plot; actual specimens need confirmation. Custom tree positions and sizes are shown in Plan. PCK3 remains partly visible, especially from the jacuzzi. Full-perimeter thujas screen all four edges with the front access openings clear.`
     :aligned
@@ -224,7 +236,7 @@ function syncControls(){
     ?'Pool near the left/east edge; sauna in the far right/west rear corner; cold plunge by the rear boundary. The narrow pool-to-boundary strip is planting space; pool access is from the inner garden. The default groups three tall pines at the far-left end of the pool. This favors the jacuzzi and garden views; use Balanced views or Living-room priority to compare the more exposed house sightlines.'
     :spa
     ?'East-side pool; rear-right sauna facing the garden; edge jacuzzi, sunken lounge and cold plunge. New planting presets fit this layout. The previous screening figures apply only to the previous layout.'
-    :'Original west-pool layout. Choose Reference pines + longer pool for the latest arrangement. Custom tree positions are retained and checked for conflicts.';
+    :'Original west-pool layout. Choose Excelsa + longer pool for the latest arrangement. Custom tree positions are retained and checked for conflicts.';
   const hasFront=profile.id==='sternicza-11',front=frontHedgeLayout(settings,baseData);
   $('full-perimeter-wrap').hidden=!hasFront;
   $('perimeter-hedge-note').hidden=!hasFront;
@@ -447,18 +459,20 @@ $('reset-buildings').addEventListener('click',()=>{for(const key of Object.keys(
 $('reset-costs').addEventListener('click',()=>{Object.assign(settings,COST_DEFAULTS,{costUsePlanningAllowances:DEFAULTS.costUsePlanningAllowances});showingA=false;syncControls();update();toast('Cost assumptions restored; garden design unchanged.');});
 $('edit-budget').addEventListener('click',e=>{e.preventDefault();$('budget-assumptions').open=true;$('budget-assumptions').scrollIntoView({behavior:'smooth',block:'start'});});
 $('scenario').addEventListener('change',e=>{if(e.target.value!=='custom'){settings=scenarioState(e.target.value,settings);showingA=false;syncControls();update();}});
-$('apply-pictured-trees').addEventListener('click',()=>{
+function applyReferencePlanting(useExcelsa){
   if(profile.id!=='sternicza-11')return;
   stopSunPlayback();
-  settings=sanitizeState({...applyPicturedTrees(settings),mode:'plan',showDimensions:true});
-  openedDesign='Pictured planting applied';showingA=false;comparisonB=null;
+  settings=sanitizeState({... (useExcelsa?applyExcelsaTrees(settings):applyPicturedTrees(settings)),mode:'plan',showDimensions:true});
+  openedDesign=useExcelsa?'Excelsa planting applied':'Original pine reference applied';showingA=false;comparisonB=null;
   $('plan-host').dataset.mapScope='garden';
   treeControls?.cancelPlacement();syncControls();update();
   // Replace a stale shared hash as well as local storage, so reloading this
   // corrected view cannot silently restore the earlier tree coordinates.
   const url=new URL(location.href);url.hash=encodeState(settings);history.replaceState(null,'',url);
-  toast('Pictured tree positions applied: three 10 m pines. Whole-plot plan shown.');
-});
+  toast(useExcelsa?'Three 9 m Excelsa applied at the pictured positions. Plant reference: 28,500 PLN; VAT to confirm.':'Original pictured planting restored: three 10 m pines.');
+}
+$('apply-excelsa-trees').addEventListener('click',()=>applyReferencePlanting(true));
+$('apply-pictured-trees').addEventListener('click',()=>applyReferencePlanting(false));
 $('garden-program').addEventListener('change',e=>{
   stopSunPlayback();
   const planting=getScreeningLayouts(profile.id,settings.gardenProgram).find(item=>matchesScenario(item.id,settings));
@@ -468,7 +482,7 @@ $('garden-program').addEventListener('change',e=>{
     settings=scenarioState(layouts.some(item=>item.id===planting.id)?planting.id:'default',settings);
   }
   showingA=false;comparisonB=null;treeControls?.cancelPlacement();syncControls();update();
-  toast(settings.gardenProgram==='spa-pool-grove'?(planting?'Reference pine layout, longer pool and full-perimeter hedges selected.':'Longer pool selected; your custom trees are retained. Use Apply pictured tree positions to place the reference pines.'):settings.gardenProgram==='spa-corner'?'Previous rear-left corner grove selected.':settings.gardenProgram==='spa-aligned'?'PCK3-aligned pines and full-perimeter hedges selected.':settings.gardenProgram==='spa-grove'?'Close pine grove and front street hedge selected.':settings.gardenProgram==='spa-screened'?'Previous spaced pine screen selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
+  toast(settings.gardenProgram==='spa-pool-grove'?(planting?'Tree comparison, longer pool and full-perimeter hedges selected.':'Longer pool selected; your custom trees are retained. Use Apply 9 m Excelsa to restore the latest planting.'):settings.gardenProgram==='spa-corner'?'Previous rear-left corner grove selected.':settings.gardenProgram==='spa-aligned'?'PCK3-aligned pines and full-perimeter hedges selected.':settings.gardenProgram==='spa-grove'?'Close pine grove and front street hedge selected.':settings.gardenProgram==='spa-screened'?'Previous spaced pine screen selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
 });
 $('reset').addEventListener('click',()=>{stopSunPlayback();settings=sanitizeState(DEFAULTS);openedDesign='Latest defaults';showingA=false;comparisonB=null;treeControls?.cancelPlacement();$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
 $('reset-camera').addEventListener('click',()=>{const initial=observerForPreset(settings.preset,settings,data);settings.lookYaw=initial.defaultLookYaw??0;settings.lookPitch=initial.defaultLookPitch??0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);toast('View reset');});
@@ -492,7 +506,7 @@ $('about-open').addEventListener('click',()=>$('about').showModal());
 $('about-close').addEventListener('click',()=>$('about').close());
 $('about').addEventListener('click',e=>{if(e.target===$('about')){const r=$('about').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('about').close();}});
 window.addEventListener('hashchange',()=>{
-  if(!/^#v=(?:[1-9]|1[0-7])(?:&|$)/.test(location.hash))return;
+  if(!hasSharedDesign(location.hash))return;
   const destination=resolveSiteId(location.search,location.hash);
   if(destination!==profile.id){const url=new URL(location.href);url.searchParams.set('site',destination);location.assign(url.href);return;}
   stopSunPlayback();settings=decodeState(location.hash);openedDesign='Opened linked design';if(!profile.hasGarage)settings.removeGarage=true;showingA=false;syncControls();update();
@@ -505,7 +519,7 @@ try{
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   fetch(new URL('../data/garden-budget-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Garden price sources unavailable');return r.json();}).then(renderGardenPriceSources).catch(()=>{$('garden-price-date').textContent='Garden supplier references and estimate assumptions are documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.15.1');
+    const {createScene}=await import('./scene.js?v=1.16.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;syncLookDirections();}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

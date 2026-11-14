@@ -6,6 +6,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {DEFAULTS} from '../src/state.js';
+import {PICTURED_TREES} from '../src/reference-planting.js';
 import {observerForPreset,analyzeVisibility,gardenGroundAt,terraceGroundReference,jacuzziBounds} from '../src/geometry.js';
 import {analyzeFacadeVisibility} from '../src/facade-visibility.js';
 import {screeningTreeVolumes,treeRayIntersection} from '../src/screening-trees.js';
@@ -15,7 +16,8 @@ import {rectCorners,terraceStairs} from '../src/layout.js';
 
 const source=readFileSync(new URL('../data/site-data.json',import.meta.url));
 const data=JSON.parse(source);
-const settings={...DEFAULTS,gardenProgram:'spa-pool-grove',canopyEnabled:false,eyeHeight:undefined,
+// Freeze the historical pine study independently of the current species default.
+const settings={...DEFAULTS,screeningTrees:PICTURED_TREES.map(tree=>({...tree})),gardenProgram:'spa-pool-grove',canopyEnabled:false,eyeHeight:undefined,
   hedgeRear:4,hedgeLeft:4,hedgeRight:4,hedgeFront:4,hedgeInset:.5,hedgeFullPerimeter:true,
   gardenRaise:.5,bedRaise:0,raiseNewHedges:true,includeHighFeatures:false};
 const MIN_CLEARANCE=1.5,MIN_SPACING=2.8,EPS=1e-8;

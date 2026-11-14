@@ -18,16 +18,17 @@ const serviceQuotes = {
 const noOtherWork = { hedgeRear: 0, hedgeLeft: 0, hedgeRight: 0, gardenRaise: 0, bedRaise: 0 };
 
 test('catalog anchors match documented purchased sizes and dated primary-source observations', () => {
-  assert.equal(sources.reviewedAt, '2026-11-12');
+  assert.equal(sources.reviewedAt, '2026-11-14');
   const observations = sources.sources.flatMap(source => source.observations || []);
-  assert.equal(TREE_CATALOG.length, 7);
+  assert.equal(TREE_CATALOG.length, 14);
   assert.equal(new Set(TREE_CATALOG.map(type => type.id)).size, TREE_CATALOG.length);
   for (const type of TREE_CATALOG) {
     const observation = observations.find(row => row.typeId === type.id);
     assert.ok(observation, `Missing source for ${type.id}`);
     assert.equal(type.pricePLN, observation.pricePLN);
     assert.deepEqual(type.stock.height, observation.heightM);
-    assert.deepEqual(type.stock.width, observation.widthM || observation.diameterM || [observation.panelWidthM, observation.panelWidthM]);
+    assert.deepEqual(type.stock.width, observation.widthM || observation.diameterM
+      || (observation.panelWidthM === undefined ? undefined : [observation.panelWidthM, observation.panelWidthM]));
     const assessed = screeningTreeUnitPrice(tree(type.id));
     assert.equal(assessed.status, 'estimate');
     assert.equal(assessed.low, observation.pricePLN);

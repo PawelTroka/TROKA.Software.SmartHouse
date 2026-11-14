@@ -102,7 +102,7 @@ test('classic Sternicza and Korzeniowskiego budgets ignore inactive spa allowanc
 });
 
 test('the relocated eight-metre pool updates area quantities and keeps planning prices distinct from a project quote',()=>{
-  const current={...model.DEFAULTS,gardenProgram:'spa-pool-grove',costUsePlanningAllowances:true};
+  const current={...model.decodeState('v=17&site=sternicza-11'),costUsePlanningAllowances:true};
   const previous=model.decodeState('v=16&site=sternicza-11');
   const oldCost=estimateCosts(previous,data),cost=estimateCosts(current,data);
   const poolRow=cost.spa.rows.find(row=>row.key==='costSpaPool');

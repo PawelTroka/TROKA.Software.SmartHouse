@@ -2,7 +2,33 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.15.1)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.15.1#v=17&site=sternicza-11&mode=plan)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.16.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.16.0#v=18&site=sternicza-11&mode=plan)**
+
+## Priced tree alternatives and the 9 m Excelsa default · 1.16.0
+
+The latest Sternicza planting uses **three 9 m Thuja plicata ‘Excelsa’, with 2 m crowns**, at the same pictured positions: **(19.30, 30.20), (13.80, 35.80), (18.45, 35.57) m**. Their plant-only reference is **9,500 PLN each / 28,500 PLN for three**, with VAT and availability to confirm. The 8 × 3.5 m pool, full-perimeter 4 m hedges, raised garden and spa geometry remain as in the reference design.
+
+![Excelsa price and replacement controls beside the terrace view, verified in the lightweight SVG renderer](tree-alternatives-1.16.0.jpg)
+
+**Start with a scenario** now compares these three positions using Excelsa, 9 m white fir, 9–10 m Norway spruce, 6–7 m Brabant, 7 m Serbian spruce, imported 8–9 m Austrian pine, or 11 m Nordmann fir. The original broad 10 m pines and hedges-only remain named comparisons. Dropdown labels show the three-plant subtotal.
+
+For an edited planting, choose **Tree species & nursery price → Replace selected tree / Replace all trees**. This keeps IDs, positions, rotation and inclusion, while applying the selected listed height, crown defaults and price reference. Save A before changing species, then use Compare A/B. Adding, moving, duplicating and independently sizing trees remains available.
+
+Prices now distinguish published stock dimensions from assumed crowns and show the supplier's VAT basis. The two EUR prices use a labelled fixed **4.30 PLN/EUR planning conversion**. Markflor Brabant remains **net**. Enlarging an unquoted crown requires a custom price; changing a priced specimen's dimensions clears its old quote. Delivery, lifting, planting, anchoring and establishment are separate budget items. Individual specimen pages do not establish stock for three matching trees.
+
+### Screening trade-off
+
+The lower plant subtotal does not imply equal screening. At these fixed positions, the dense-envelope model hides **44.2% of PCK3 facade samples from the terrace with Excelsa**, against **95.9% with the original broad pines**. Roof samples still visible are **348 / 365 versus 52 / 365**. The new thuja, fir and spruce drawings have distinct botanical forms but stay within the same conical envelopes used by the calculations; cheaper trees never inherit the broad pine crowns.
+
+See the [complete price, geometry and seven-viewpoint comparison](docs/tree-alternatives-2026-11-14.md), including all source links and placement limits, and the [reproducible analysis script](scripts/compare-tree-alternatives.mjs).
+
+### Existing designs and validation
+
+Schema **18** selects Excelsa for a fresh design. Schema **17** links and saves retain the original pictured pines; v1–v16 migrations and Korzeniowskiego's defaults remain intact. **Apply 9 m Excelsa** explicitly replaces the planting without changing the selected garden programme or other design settings. **Restore original pine reference** remains separate. Edits to an opened comparison link update its URL as well as local storage, so reload keeps the current comparison.
+
+**Validation:** all **370 automated checks pass**, the 48-asset static build succeeds, and the hosted preview was checked for all seven options, individual/all-tree swaps, A/B, quote invalidation, reload persistence, legacy v17 restoration and property isolation. The hosted browser used the SVG fallback; its WebGL capability was disabled, so live WebGL rendering is not claimed for this release. Geometry/shadow containment is covered by automated mesh tests and code review. See the [validation record](docs/release-1.16.0-validation.md).
+
+The sections below describe earlier releases and their historical defaults.
 
 ## Pictured planting that survives reload · 1.15.1
 

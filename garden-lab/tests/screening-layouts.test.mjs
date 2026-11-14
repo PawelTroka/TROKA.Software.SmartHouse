@@ -5,7 +5,7 @@ import {createStateModel,STATE_VERSION} from '../src/state.js';
 import {getSiteProfile,resolveSiteId} from '../src/sites.js';
 import {createScreeningTree,screeningTreeVolumes} from '../src/screening-trees.js';
 import {getTreeType} from '../src/tree-catalog.js';
-import {getScreeningLayouts,STERNICZA_STRATEGIC_TREES} from '../src/screening-layouts.js';
+import {getScreeningLayouts,STERNICZA_STRATEGIC_TREES,STERNICZA_EXCELSA_TREES,STERNICZA_REFERENCE_POOL_TREES} from '../src/screening-layouts.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
 
 const sterniczaData=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
@@ -13,17 +13,24 @@ const korzData=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json'
 const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
-test('fresh Sternicza starts with checked planting positions while Korzeniowskiego stays tree-free',()=>{
+test('fresh Sternicza starts with three 9 m Excelsa at the pictured positions while Korzeniowskiego stays tree-free',()=>{
   assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-pool-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
-  assert.ok(sternicza.DEFAULTS.screeningTrees.length>0,'Do not release a placeholder planting layout');
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees,STERNICZA_EXCELSA_TREES);
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[19.3,30.2],[13.8,35.8],[18.45,35.57]]);
+  assert.ok(sternicza.DEFAULTS.screeningTrees.every(t=>t.typeId==='thuja-excelsa-9m'&&t.height===9&&t.crownWidth===2&&t.crownDepth===2));
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
   assert.deepEqual(sternicza.sanitizeState().screeningTrees,sternicza.DEFAULTS.screeningTrees);
   assert.deepEqual(sternicza.sanitizeState({screeningTrees:[]}).screeningTrees,[]);
   const volumes=screeningTreeVolumes(sternicza.DEFAULTS,sterniczaData);
   assert.ok(volumes.every(volume=>volume.plantable),'Every default trunk must have a valid planting position');
-  assert.ok(volumes.some(volume=>!volume.crownInside),'The reference planting visibly retains its boundary overhang');
-  assert.match(getScreeningLayouts('sternicza-11')[0].note,/overhang/i,'The reference layout describes its actual boundary condition');
+  assert.ok(volumes.every(volume=>volume.crownInside),'The narrower default crowns fit inside the modeled boundary at the same trunk positions');
+  const defaultLayout=getScreeningLayouts('sternicza-11')[0];
+  assert.match(defaultLayout.note,/28,500 PLN/);
+  assert.match(defaultLayout.note,/narrow tapered crowns leave more visible gaps/i);
+  const reference=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='reference-pines');
+  assert.deepEqual(reference.trees,STERNICZA_REFERENCE_POOL_TREES,'Original pine geometry remains an explicit comparison');
+  assert.match(reference.note,/overhang/i);
 });
 
 test('every pre-v8 omitted-tree link keeps its original tree-free meaning',()=>{
@@ -130,7 +137,7 @@ test('all spa planting presets leave tree trunks clear of the pool, spa rooms, d
 
 test('Korzeniowskiego ignores the Sternicza spa programme across fresh, historical and new shared designs',()=>{
   const pool=korzData.site.pool;
-  for(const version of [6,7,8,9,10,11,12]){
+  for(const version of [6,7,8,9,10,11,12,13,14,15,16,17,18]){
     const settings=korz.decodeState(`v=${version}&site=korzeniowskiego-40&gardenProgram=spa&preset=sauna`);
     assert.equal(settings.gardenProgram,'classic');assert.equal(settings.preset,'garden');
     assert.deepEqual(settings.screeningTrees,[]);
@@ -155,8 +162,8 @@ test('named planting layouts restore compatible garden assumptions while keeping
   }
   const tall=sternicza.scenarioState('default',current);
   assert.equal(tall.screeningTrees.length,3);
-  assert.ok(tall.screeningTrees.every(tree=>tree.typeId==='austrian-pine-tall'&&tree.height===10));
-  assert.deepEqual(tall.screeningTrees.map(tree=>[tree.crownWidth,tree.crownDepth]),[[6,6],[6,6],[5,5]]);
+  assert.ok(tall.screeningTrees.every(tree=>tree.typeId==='thuja-excelsa-9m'&&tree.height===9));
+  assert.deepEqual(tall.screeningTrees.map(tree=>[tree.crownWidth,tree.crownDepth]),[[2,2],[2,2],[2,2]]);
   const historicalCurrent={...current,gardenProgram:'spa-corner'};
   const midpoint=sternicza.scenarioState('catalog-midpoint-corner',historicalCurrent);
   assert.ok(midpoint.screeningTrees.every(tree=>tree.height===9.5&&tree.crownWidth===5&&tree.crownDepth===5));
@@ -182,4 +189,38 @@ test('a default label follows actual tree geometry, ignores unit-price edits and
   assert.equal(sternicza.matchesScenario('default',a),false);
   assert.notEqual(a.screeningTrees[0].x,b.screeningTrees[0].x);
   assert.deepEqual(b.screeningTrees,sternicza.DEFAULTS.screeningTrees);
+});
+
+test('priced tree comparisons keep identical trunk positions and site geometry with catalogue-sized crowns',()=>{
+  const types={default:'thuja-excelsa-9m','reference-pines':'austrian-pine-tall','white-fir-9m':'white-fir-9m',
+    'norway-spruce-9-10m':'norway-spruce-9-10m','thuja-brabant-6-7m':'thuja-brabant-6-7m',
+    'serbian-spruce-7m':'serbian-spruce-7m','austrian-pine-debruyn-8-9m':'austrian-pine-debruyn-8-9m','nordmann-fir-11m':'nordmann-fir-11m'};
+  assert.deepEqual(getScreeningLayouts('sternicza-11').map(layout=>layout.id),[...Object.keys(types),'hedges-only']);
+  const expectedPositions=[[19.3,30.2],[13.8,35.8],[18.45,35.57]];
+  const baseProgram=gardenProgram(sternicza.DEFAULTS,sterniczaData);
+  for(const[id,typeId]of Object.entries(types)){
+    const next=sternicza.scenarioState(id);
+    assert.deepEqual(next.screeningTrees.map(t=>[t.x,t.y]),expectedPositions,id);
+    assert.ok(next.screeningTrees.every(t=>t.typeId===typeId),id);
+    assert.deepEqual(gardenProgram(next,sterniczaData),baseProgram,`${id}: changing trees preserves the complete spa programme`);
+    assert.equal(next.gardenRaise,.5);assert.equal(next.hedgeFullPerimeter,true);
+    for(const key of ['hedgeFront','hedgeLeft','hedgeRight','hedgeRear'])assert.equal(next[key],4,`${id}: ${key}`);
+    if(id!=='reference-pines')for(const tree of next.screeningTrees)
+      for(const[key,value]of Object.entries(getTreeType(typeId).dimensions))assert.equal(tree[key],value,`${id}: ${key}`);
+    assert.ok(sternicza.matchesScenario(id,next));
+    assert.deepEqual(sternicza.decodeState(sternicza.encodeState(next)),next);
+  }
+});
+
+test('new tree types preserve edited dimensions and individual quotes in current links and saved designs',()=>{
+  for(const layout of getScreeningLayouts('sternicza-11').filter(layout=>layout.trees.length)){
+    const original=sternicza.scenarioState(layout.id);
+    const edited={...original,treeLeafMode:'leaf-off',screeningTrees:original.screeningTrees.map((tree,index)=>({...tree,
+      id:`quoted-${index+1}`,height:tree.height-.25,crownWidth:tree.crownWidth+.4,crownDepth:tree.crownDepth+.2,
+      rotation:17+index,unitPrice:31000+index*500,enabled:index!==1}))};
+    assert.deepEqual(sternicza.decodeState(sternicza.encodeState(edited)),edited,layout.id);
+    assert.deepEqual(sternicza.migrateSavedState(edited,STATE_VERSION),edited,layout.id);
+    const copy=sternicza.sanitizeState(edited);copy.screeningTrees[0].unitPrice=999;
+    assert.equal(edited.screeningTrees[0].unitPrice,31000,'Restoration must not mutate stored quotes');
+  }
 });

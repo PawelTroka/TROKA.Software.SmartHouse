@@ -20,7 +20,7 @@ const near=(a,b,message,tolerance=1e-8)=>assert.ok(Math.abs(a-b)<tolerance,`${me
 const gap=(tree,ring)=>closestFootprints([[tree.x,tree.y]],ring).distance;
 
 test('the screenshot reference keeps three 10 m pines on the rear/east edge and reports its boundary overhang',()=>{
- const layout=getScreeningLayouts('sternicza-11')[0],trees=layout.trees;
+ const layout=getScreeningLayouts('sternicza-11').find(item=>item.id==='reference-pines'),trees=layout.trees;
  assert.equal(layout.settings.gardenProgram,'spa-pool-grove');
  assert.deepEqual(trees,STERNICZA_REFERENCE_POOL_TREES);
  assert.deepEqual(trees.map(t=>[t.height,t.crownWidth,t.crownDepth]),[[10,6,6],[10,6,6],[10,5,5]]);
@@ -34,7 +34,9 @@ test('the screenshot reference keeps three 10 m pines on the rear/east edge and 
  near(3-closestBoundary([[trees[1].x,trees[1].y]],data,'rear').distance,.8103170159587498,'Tree 2 rear overhang');
  near(2.5-closestBoundary([[trees[2].x,trees[2].y]],data,'left').distance,.6353367267852221,'Tree 3 east overhang');
  assert.match(layout.note,/root balls, excavation, crown overhang and stock need confirmation/);
- assert.deepEqual(getScreeningLayouts('sternicza-11').map(l=>l.id),['default','hedges-only'],'Known colliding old trees are not offered on the moved pool');
+ assert.ok(getScreeningLayouts('sternicza-11').filter(l=>l.trees.length).every(l=>
+  l.trees.every((tree,index)=>tree.x===trees[index].x&&tree.y===trees[index].y)),
+  'All new species comparisons preserve the pictured positions instead of importing older colliding planting layouts');
  assert.deepEqual(getScreeningLayouts('sternicza-11','spa-corner')[0].trees,STERNICZA_REAR_CORNER_TREES);
 });
 

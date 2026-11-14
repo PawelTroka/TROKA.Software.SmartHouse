@@ -14,7 +14,7 @@ const v13Coordinates=[[13,34.1],[14.4,25.7],[17.6,34.9]];
 const groveCoordinates=[[13,34.1],[14.2,32.5],[17.6,34.9]];
 
 test('fresh street screening shares its independent height, quote and street-facing viewpoint',()=>{
-  assert.equal(STATE_VERSION,17);
+  assert.equal(STATE_VERSION,18);
   assert.equal(model.DEFAULTS.gardenProgram,getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default').settings.gardenProgram);
   assert.equal(model.DEFAULTS.hedgeFront,4);
   assert.equal(model.DEFAULTS.linkedHedges,false);
@@ -89,12 +89,12 @@ test('sparse v13 links and saves freeze the published forward pine and moved sev
     assert.deepEqual(future.decodeState('v=13&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),v13Coordinates,
       'Editing a restored design cannot change the frozen v13 baseline');
   }
-  assert.equal(future.decodeState('v=17&site=sternicza-11').hedgeFront,2.2);
-  assert.deepEqual(future.decodeState('v=17&site=sternicza-11').screeningTrees,changedTrees);
+  assert.equal(future.decodeState(`v=${STATE_VERSION}&site=sternicza-11`).hedgeFront,2.2);
+  assert.deepEqual(future.decodeState(`v=${STATE_VERSION}&site=sternicza-11`).screeningTrees,changedTrees);
 });
 
 test('explicit v13 custom trees and an empty tree list retain their positions, quotes and frontage',()=>{
-  const custom={...model.DEFAULTS.screeningTrees[1],id:'my-pine',x:16.2,y:30.4,rotation:27,unitPrice:61500,enabled:false};
+  const custom={...model.decodeState('v=13&site=sternicza-11').screeningTrees[1],id:'my-pine',x:16.2,y:30.4,rotation:27,unitPrice:61500,enabled:false};
   for(const trees of [[],[custom]]){
     const saved={siteId:'sternicza-11',gardenProgram:'spa-screened',screeningTrees:trees,
       hedgeFront:3.1,costTreePriceFront:345,showDimensions:false,costUsePlanningAllowances:false,

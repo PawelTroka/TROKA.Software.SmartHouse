@@ -121,7 +121,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,17);
+ assert.equal(STATE_VERSION,18);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -229,7 +229,7 @@ test('malformed boolean URL values leave defaults intact instead of silently dis
  assert.equal(sanitized.buyNewThujas,true);assert.equal(sanitized.b9HeightDelta,0);assert.equal(sanitized.costFillRate,0);assert.equal(sanitized.b15DistanceDelta,-15);
 });
 
-test('v17 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
+test('v18 explicitly shares the chosen garden programme and never restores omitted trees into an empty design',()=>{
  assert.equal(DEFAULTS.gardenProgram,getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default').settings.gardenProgram);
  for(const gardenProgram of ['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic']){
   const input={...DEFAULTS,gardenProgram,screeningTrees:[],removeGarage:gardenProgram!=='classic',costSpaSauna:85400};
@@ -302,8 +302,8 @@ test('sparse v10 links and saves retain the published balanced pines when fresh 
   old.screeningTrees[0].x=0;
   assert.deepEqual(future.decodeState('v=10&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),expected,'Restored objects do not mutate the frozen v10 baseline');
  }
- assert.deepEqual(future.decodeState('v=17&site=sternicza-11').screeningTrees,futureTrees);
- assert.equal(future.decodeState('v=17&site=sternicza-11').showDimensions,false);
+ assert.deepEqual(future.decodeState(`v=${STATE_VERSION}&site=sternicza-11`).screeningTrees,futureTrees);
+ assert.equal(future.decodeState(`v=${STATE_VERSION}&site=sternicza-11`).showDimensions,false);
 });
 
 test('explicit v10 empty or custom trees, geometry and quotes migrate without moving the design',()=>{
@@ -374,4 +374,48 @@ test('current shares preserve whole-garden quotes and optional overflow independ
  assert.equal(korz.DEFAULTS.costUsePlanningAllowances,false);
  assert.equal(korz.decodeState('v=12&site=korzeniowskiego-40&gardenProgram=spa-compact').gardenProgram,'classic');
  assert.equal(sanitizeState({jacuzziOverflow:'true'}).jacuzziOverflow,false);
+});
+
+test('sparse v17 links and saved designs retain the exact pictured pines independently of fresh defaults',()=>{
+ const profile=getSiteProfile('sternicza-11');
+ const futureTrees=DEFAULTS.screeningTrees.map((tree,index)=>({...tree,x:15+index,y:34,height:8}));
+ const future=createStateModel({...profile,defaults:{...profile.defaults,screeningTrees:futureTrees,showDimensions:false}});
+ const expected=[[19.3,30.2,10,6,6],[13.8,35.8,10,6,6],[18.45,35.57,10,5,5]];
+ for(const old of [future.decodeState('v=17&site=sternicza-11'),future.migrateSavedState({siteId:'sternicza-11'},17)]){
+  assert.equal(old.gardenProgram,'spa-pool-grove');assert.equal(old.showDimensions,true);
+  assert.equal(old.hedgeFullPerimeter,true);assert.equal(old.hedgeFront,4);assert.equal(old.gardenRaise,.5);
+  assert.deepEqual(old.screeningTrees.map(t=>[t.x,t.y,t.height,t.crownWidth,t.crownDepth]),expected);
+  old.screeningTrees.forEach((tree,index)=>{
+   assert.equal(tree.id,`pine-${index+1}`);assert.equal(tree.typeId,'austrian-pine-tall');
+   assert.equal(tree.crownBase,2.5);assert.equal(tree.unitPrice,0);assert.equal(tree.rotation,0);assert.equal(tree.enabled,true);
+  });
+  assert.deepEqual(future.decodeState(future.encodeState(old)),old,'Re-sharing writes the original pine dimensions explicitly');
+  old.screeningTrees[0].height=7;
+  assert.equal(future.decodeState('v=17&site=sternicza-11').screeningTrees[0].height,10,'Migration must not mutate the frozen historical snapshot');
+ }
+ assert.deepEqual(future.decodeState('v=18&site=sternicza-11').screeningTrees,futureTrees);
+ assert.equal(future.decodeState('v=18&site=sternicza-11').showDimensions,false);
+ const korz=createStateModel(getSiteProfile('korzeniowskiego-40'));
+ for(const version of [17,18]){
+  const other=korz.decodeState(`v=${version}&site=korzeniowskiego-40`);
+  assert.equal(other.gardenProgram,'classic');assert.deepEqual(other.screeningTrees,[]);
+ }
+});
+
+test('explicit v17 empty and custom planting preserves quotes and changes through migration and re-sharing',()=>{
+ const old=decodeState('v=17&site=sternicza-11');
+ const custom={...old.screeningTrees[1],id:'quoted-original',x:13.25,y:35.25,unitPrice:54321,crownWidth:5.5,crownDepth:4.8,rotation:27,enabled:false};
+ for(const trees of [[],[custom]]){
+  const saved={siteId:'sternicza-11',gardenProgram:'spa-pool-grove',screeningTrees:trees,treeLeafMode:'leaf-off',
+   hedgeLeft:3.3,hedgeRight:5.1,gardenRaise:.35,preset:'jacuzzi',costSpaPool:195000,costScreeningPlanting:2800};
+  const params=new URLSearchParams({v:'17',site:saved.siteId,...Object.fromEntries(Object.entries(saved).filter(([key])=>!['siteId','screeningTrees'].includes(key))),screeningTrees:JSON.stringify(trees)});
+  for(const restored of [decodeState(params.toString()),migrateSavedState(saved,17)]){
+   for(const[key,value]of Object.entries(saved))assert.deepEqual(restored[key],value,key);
+   assert.deepEqual(decodeState(encodeState(restored)),restored);
+  }
+ }
+ for(const bad of ['{bad','null','"oops"']){
+  const params=new URLSearchParams({v:'17',site:'sternicza-11',screeningTrees:bad});
+  assert.deepEqual(decodeState(params.toString()).screeningTrees,[]);
+ }
 });
