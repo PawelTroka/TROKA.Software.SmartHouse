@@ -2,7 +2,7 @@
 
 The `spa-pool-grove` starting design follows the user's 14 November whole-plot screenshot: **one pine at the left/east boundary and two pines near the rear boundary**. Every tree is **10 m high**. The reference's crown diameters remain 6 m, 6 m and 5 m, respectively. Tree 3 is raised from the screenshot's 9.5 m to the requested 10 m; the other two already showed 10 m.
 
-The screenshot is a visual placement reference, not a coordinate survey. The selected positions reconstruct its arrangement and displayed trunk spacings: tree 1–3 rounds to **5.44 m**, tree 2–3 to **4.66 m**, and tree 1–2 to **7.9 m** at the plan's one-decimal precision. This is a spread group along the rear/east edge, rather than the previous close triangle. No sightline optimizer moved the group into the centre of the garden.
+The screenshot is a visual placement reference, not a coordinate survey. The selected positions reconstruct its arrangement and displayed trunk spacings: tree 1–3 rounds to **5.44 m**, tree 2–3 to **4.66 m**, and tree 1–2 to approximately **7.85 m**. This is a spread group along the rear/east edge, rather than the previous close triangle. No sightline optimizer moved the group into the centre of the garden.
 
 ## Configured geometry
 
@@ -97,7 +97,7 @@ The pool is now beneath and alongside the nominal crowns and close to the rear h
 
 All three configured trees remain within the recorded 9–10 m height / 4–6 m crown supplier band. Their catalog plant reference remains **59,900 PLN each / 179,700 PLN total**. The source is the existing [Galeria Ogrodowa Austrian pine listing](https://galeriaogrodowa.pl/produkt/sosna-czarna-pinus-nigra/). Actual specimen dimensions, stock availability, delivery, lifting, planting and establishment remain subject to supplier/contractor confirmation. No new quote was requested or invented for this geometry change.
 
-The pool water area rises by 7 m² and the geometric water volume by 9.8 m³. The live estimator recalculates the area-based pool allowance and the affected paving/fill quantities from the new footprint. Its pool allowance remains a planning amount, not a signed installation quote.
+The pool water area rises by 7 m² and the geometric water volume by 9.8 m³. The live estimator updates the pool dimensions and affected garden fill, lawn and irrigation quantities from the new footprint. The whole-pool installed allowance remains 150,000–230,000 PLN, with a project quotation required for the revised dimensions and position; it is not a per-square-metre price. The complete planning range is 802,926–1,382,131 PLN, including 20% uncertainty on the upper total once. The small decrease from v1.14 comes from garden areas displaced by the larger pool, not a cheaper pool quote.
 
 The new programme offers the reference pines and a hedges-only comparison. Earlier planting positions are kept with their historical garden-program choices, rather than placing known colliding old trunks into the moved pool. Selecting the previous rear-left corner programme restores the v1.14 6 m pool and its original planting comparisons. Saved and shared schema-16 designs retain their published geometry.
 
