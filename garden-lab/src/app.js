@@ -1,17 +1,18 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.15.0';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.15.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.15.0';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.15.0';
-import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.15.0';
-import {createTreeControls} from './tree-controls.js?v=1.15.0';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,hedgeSegments} from './geometry.js?v=1.15.0';
-import {renderPlan,renderSection} from './diagrams.js?v=1.15.0';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.15.0';
-import {analyzeSunlight} from './shade.js?v=1.15.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.15.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.15.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.15.0';
-import {gardenDimensions} from './dimensions.js?v=1.15.0';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.15.1';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.15.1';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.15.1';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.15.1';
+import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.15.1';
+import {createTreeControls} from './tree-controls.js?v=1.15.1';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,hedgeSegments} from './geometry.js?v=1.15.1';
+import {renderPlan,renderSection} from './diagrams.js?v=1.15.1';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.15.1';
+import {analyzeSunlight} from './shade.js?v=1.15.1';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.15.1';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.15.1';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.15.1';
+import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees} from './reference-planting.js?v=1.15.1';
+import {gardenDimensions} from './dimensions.js?v=1.15.1';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -51,21 +52,24 @@ const BUILDING_TARGETS=getBuildingTargets(baseData),BUILDING_FIELDS=buildingFiel
 const previewScope=location.pathname.split('/').find(segment=>/^review-[a-z0-9-]+$/i.test(segment));
 const storageKey=`garden-lab-${profile.id}-v${STATE_VERSION}${previewScope?`-${previewScope}`:''}`;
 const safeRead=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}};
+let openedDesign='Latest defaults';
 function readSaved(suffix=''){
   const current=safeRead(`${storageKey}${suffix}`,null);
-  if(current&&typeof current==='object'&&!Array.isArray(current)&&current.siteId===profile.id)return migrateSavedState(current,STATE_VERSION);
+  if(current&&typeof current==='object'&&!Array.isArray(current)&&current.siteId===profile.id){if(!suffix)openedDesign='Opened saved design';return migrateSavedState(current,STATE_VERSION);}
   if(previewScope)return suffix?null:sanitizeState(DEFAULTS);
   for(const version of [16,15,14,13,12,11,10,9,8,7,6]){
     const previousSite=safeRead(`garden-lab-${profile.id}-v${version}${suffix}`,null);
-    if(previousSite&&typeof previousSite==='object'&&!Array.isArray(previousSite)&&previousSite.siteId===profile.id)return migrateSavedState(previousSite,version);
+    if(previousSite&&typeof previousSite==='object'&&!Array.isArray(previousSite)&&previousSite.siteId===profile.id){if(!suffix)openedDesign='Opened earlier saved design';return migrateSavedState(previousSite,version);}
   }
   if(profile.id===DEFAULT_SITE_ID)for(const version of [5,4,3,2,1]){
     const saved=safeRead(`sternicza-garden-lab-v${version}${suffix}`,null);
-    if(saved&&typeof saved==='object'&&!Array.isArray(saved))return migrateSavedState(saved,version);
+    if(saved&&typeof saved==='object'&&!Array.isArray(saved)){if(!suffix)openedDesign='Opened earlier saved design';return migrateSavedState(saved,version);}
   }
   return suffix?null:sanitizeState(DEFAULTS);
 }
-let settings=/^#v=(?:[1-9]|1[0-7])(?:&|$)/.test(location.hash)?decodeState(location.hash):readSaved();
+const openedSharedDesign=/^#v=(?:[1-9]|1[0-7])(?:&|$)/.test(location.hash);
+let settings=openedSharedDesign?decodeState(location.hash):readSaved();
+if(openedSharedDesign)openedDesign='Opened linked design';
 if(!profile.hasGarage)settings.removeGarage=true;
 let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
@@ -198,6 +202,12 @@ function syncControls(){
   const edge=settings.gardenProgram==='spa-edge';
   $('garden-program-wrap').hidden=profile.id!=='sternicza-11';
   $('garden-program').value=settings.gardenProgram;
+  $('pictured-tree-controls').hidden=profile.id!=='sternicza-11';
+  const pictureMatched=matchesPicturedTrees(settings);
+  $('pictured-tree-status').textContent=pictureMatched?'Picture matched · all three pines are 10 m tall.':`${openedDesign} · custom tree positions or sizes differ from the picture.`;
+  $('pictured-tree-status').dataset.matches=String(pictureMatched);
+  $('pictured-tree-status').classList.toggle('different',!pictureMatched);
+  $('pictured-tree-coordinates').innerHTML=PICTURED_TREES.map((tree,index)=>`<tr><th scope="row">T${index+1}</th><td>${fmt(tree.x,2)}</td><td>${fmt(tree.y,2)}</td><td>${fmt(tree.height,1)}</td></tr>`).join('');
   $('garden-program-note').textContent=poolGrove
     ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool moved toward the rear-left/east pines. The starting layout follows your reference: one pine alongside the pool and two along the rear boundary, all 10 m high. Current tree heights: ${(settings.screeningTrees||[]).filter(tree=>tree.enabled).map(tree=>`${fmt(tree.height,1)} m`).join(' · ')||'none'}. Crown overhang and trunk-to-coping distances remain visible in Plan. Full-perimeter thujas cover all four edges, with front access openings. Compare the actual PCK3 result at each viewpoint.`
     :corner
@@ -437,6 +447,18 @@ $('reset-buildings').addEventListener('click',()=>{for(const key of Object.keys(
 $('reset-costs').addEventListener('click',()=>{Object.assign(settings,COST_DEFAULTS,{costUsePlanningAllowances:DEFAULTS.costUsePlanningAllowances});showingA=false;syncControls();update();toast('Cost assumptions restored; garden design unchanged.');});
 $('edit-budget').addEventListener('click',e=>{e.preventDefault();$('budget-assumptions').open=true;$('budget-assumptions').scrollIntoView({behavior:'smooth',block:'start'});});
 $('scenario').addEventListener('change',e=>{if(e.target.value!=='custom'){settings=scenarioState(e.target.value,settings);showingA=false;syncControls();update();}});
+$('apply-pictured-trees').addEventListener('click',()=>{
+  if(profile.id!=='sternicza-11')return;
+  stopSunPlayback();
+  settings=sanitizeState({...applyPicturedTrees(settings),mode:'plan',showDimensions:true});
+  openedDesign='Pictured planting applied';showingA=false;comparisonB=null;
+  $('plan-host').dataset.mapScope='garden';
+  treeControls?.cancelPlacement();syncControls();update();
+  // Replace a stale shared hash as well as local storage, so reloading this
+  // corrected view cannot silently restore the earlier tree coordinates.
+  const url=new URL(location.href);url.hash=encodeState(settings);history.replaceState(null,'',url);
+  toast('Pictured tree positions applied: three 10 m pines. Whole-plot plan shown.');
+});
 $('garden-program').addEventListener('change',e=>{
   stopSunPlayback();
   const planting=getScreeningLayouts(profile.id,settings.gardenProgram).find(item=>matchesScenario(item.id,settings));
@@ -446,9 +468,9 @@ $('garden-program').addEventListener('change',e=>{
     settings=scenarioState(layouts.some(item=>item.id===planting.id)?planting.id:'default',settings);
   }
   showingA=false;comparisonB=null;treeControls?.cancelPlacement();syncControls();update();
-  toast(settings.gardenProgram==='spa-pool-grove'?(planting?'Reference pine layout, longer pool and full-perimeter hedges selected.':'Longer pool selected; your custom trees are retained. Choose the default scenario to apply the reference pines.'):settings.gardenProgram==='spa-corner'?'Previous rear-left corner grove selected.':settings.gardenProgram==='spa-aligned'?'PCK3-aligned pines and full-perimeter hedges selected.':settings.gardenProgram==='spa-grove'?'Close pine grove and front street hedge selected.':settings.gardenProgram==='spa-screened'?'Previous spaced pine screen selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
+  toast(settings.gardenProgram==='spa-pool-grove'?(planting?'Reference pine layout, longer pool and full-perimeter hedges selected.':'Longer pool selected; your custom trees are retained. Use Apply pictured tree positions to place the reference pines.'):settings.gardenProgram==='spa-corner'?'Previous rear-left corner grove selected.':settings.gardenProgram==='spa-aligned'?'PCK3-aligned pines and full-perimeter hedges selected.':settings.gardenProgram==='spa-grove'?'Close pine grove and front street hedge selected.':settings.gardenProgram==='spa-screened'?'Previous spaced pine screen selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
 });
-$('reset').addEventListener('click',()=>{stopSunPlayback();settings=sanitizeState(DEFAULTS);showingA=false;comparisonB=null;treeControls?.cancelPlacement();$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
+$('reset').addEventListener('click',()=>{stopSunPlayback();settings=sanitizeState(DEFAULTS);openedDesign='Latest defaults';showingA=false;comparisonB=null;treeControls?.cancelPlacement();$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
 $('reset-camera').addEventListener('click',()=>{const initial=observerForPreset(settings.preset,settings,data);settings.lookYaw=initial.defaultLookYaw??0;settings.lookPitch=initial.defaultLookPitch??0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);toast('View reset');});
 $('save-a').addEventListener('click',()=>{stopSunPlayback();comparisonA=sanitizeState(settings);comparisonB=null;showingA=false;try{localStorage.setItem(`${storageKey}-A`,JSON.stringify(comparisonA));}catch{}syncControls();toast('Scenario A saved. Change a setting, then compare.');});
 $('compare').addEventListener('click',()=>{stopSunPlayback();if(!comparisonA)return;if(!showingA){comparisonB=sanitizeState(settings);settings=sanitizeState({...comparisonA,mode:settings.mode});showingA=true;}else{settings=sanitizeState({...comparisonB,mode:settings.mode});showingA=false;}treeControls?.cancelPlacement();syncControls();update();toast(showingA?'Showing saved scenario A':'Back to scenario B');});
@@ -473,7 +495,7 @@ window.addEventListener('hashchange',()=>{
   if(!/^#v=(?:[1-9]|1[0-7])(?:&|$)/.test(location.hash))return;
   const destination=resolveSiteId(location.search,location.hash);
   if(destination!==profile.id){const url=new URL(location.href);url.searchParams.set('site',destination);location.assign(url.href);return;}
-  stopSunPlayback();settings=decodeState(location.hash);if(!profile.hasGarage)settings.removeGarage=true;showingA=false;syncControls();update();
+  stopSunPlayback();settings=decodeState(location.hash);openedDesign='Opened linked design';if(!profile.hasGarage)settings.removeGarage=true;showingA=false;syncControls();update();
 });
 window.addEventListener('resize',()=>{scene?.resize();if(data&&['plan','section','sun'].includes(settings.mode))showMode();});
 
@@ -483,7 +505,7 @@ try{
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   fetch(new URL('../data/garden-budget-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Garden price sources unavailable');return r.json();}).then(renderGardenPriceSources).catch(()=>{$('garden-price-date').textContent='Garden supplier references and estimate assumptions are documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.15.0');
+    const {createScene}=await import('./scene.js?v=1.15.1');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;syncLookDirections();}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Open Sun & shade for calculated shadows; 3D cast shadows need WebGL.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

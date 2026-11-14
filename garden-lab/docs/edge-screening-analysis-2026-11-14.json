@@ -1,0 +1,5454 @@
+{
+  "analysisDate": "2026-11-14",
+  "site": "sternicza-11",
+  "target": "building-9",
+  "sourceDataSha256": "7325e8655c7d2d3350a74fd5ba52764df23ada5673c1b2cb1d8ebbbb0902a1fd",
+  "method": "Existing mapped geometry; 4 m full-perimeter hedge, 0.5 m inset, +0.5 m rear garden fill and no extra bed raise. Nine fixed viewpoints. Analytic opaque crown envelopes; dense 0.25 m facade grid and original roof samples kept separate. Additional trees searched only in east-before-pool and rear strips. Lexicographic ranking: worst remaining wall+roof sample fraction first, then sum of fractions. No real-foliage or all-viewpoint guarantee.",
+  "limitations": [
+    "Sample percentages are fractions of tested points, not facade area or proof of complete concealment between samples. Only the nine listed eyes are tested; arbitrary garden positions, upstairs eyes and every possible roof point are not covered.",
+    "A root-ball-sized horizontal disc is not an excavation, utilities, foundation, access, crane, drainage, stability or transplant feasibility check. All actual specimen/root-ball dimensions and works need supplier and project confirmation.",
+    "Existing reference trees have approximately 1 m trunk-to-pool gaps and crown overhang; they are kept as the requested baseline and do not pass every new-tree clearance constraint.",
+    "The ideal 13.2 m screen follows local proposed grade and has constant full opacity. Its small height margin is a numerical model result, not a tolerance suitable for procurement or construction.",
+    "A 13 m conifer apex does not provide 13 m of continuous visual screening between trees. The schematic cone row cannot establish performance of an actual Excelsa specimen or hedge."
+  ],
+  "heightDatum": {
+    "raiseNewHedges": true,
+    "gardenRaise": 0.5,
+    "bedRaise": 0,
+    "definition": "screen.requiredHeight = ray elevation at hedge-line crossing minus referenceGroundZ. Here referenceGroundZ is local original terrain + 0.5 m in the rear garden; it equals proposed hedge soil because raiseNewHedges=true. Front planting follows original terrain.",
+    "maximumRequiredAboveNewSoil": 13.147534933230803,
+    "idealScreenHeight": 13.2,
+    "modelHeightMargin": 0.052465066769196156,
+    "idealResidualSamples": 0,
+    "idealCoversAllTestedSamples": true,
+    "unhandledBoundaryRays": 0
+  },
+  "researchedSizeLeads": [
+    {
+      "label": "Austrian pine: researched 10–11 m height / 6–7 m crown diameter band",
+      "url": "https://www.von-falkenhayn.de/sortiment/detail/solitaerbaeume-von-pinus-nigra-ssp-nigra-oesterreichische-schwarzkiefer",
+      "use": "The 7 m sensitivity uses the upper listed width, but neither shape, clear stem nor full opacity is verified."
+    },
+    {
+      "label": "Thuja plicata Excelsa: researched 12–13 m height / 3–3.5 m width / 2.7 m root-ball diameter / about 12 t lead",
+      "url": "https://www.von-falkenhayn.de/sortiment/detail/solitaerbaeume-von-thuja-plicata-excelsa-grosser-lebensbaum-2",
+      "use": "Dimensional/logistics lead only; actual stock, price, transport mass and crown profile require supplier confirmation. No width-at-upper-height measurement was supplied."
+    },
+    {
+      "label": "Polish Nurserymen Association Excelsa description",
+      "url": "https://e-katalogroslin.pl/plants/7201,zywotnik-olbrzymi-excelsa_thuja-plicata-excelsa",
+      "use": "The research describes loose branching and sparse lower growth that densifies with age. The schematic fully opaque cone with foliage from 0.3 m is optimistic, not a validated botanical shape."
+    }
+  ],
+  "boundary": [
+    {
+      "view": "sofa",
+      "observer": {
+        "x": 9.609167656420745,
+        "y": 15.515083036928559,
+        "z": 4.83755850309423,
+        "preset": "sofa",
+        "label": "Living room · seated",
+        "eyeHeight": 1.2,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 3813,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 12.69061219854854,
+      "rearRequired": 13.014075932082763,
+      "eastExitY": [
+        26.3119142497565,
+        37.38201994945952
+      ],
+      "rearExitX": [
+        13.468342224584124,
+        19.80788889783851
+      ],
+      "leftCritical": {
+        "target": [
+          22.977489156835446,
+          44.14528520518987,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.81782111050088,
+          37.378397159570405,
+          16.084097307721738
+        ],
+        "requiredHeight": 12.69061219854854,
+        "requiredExposedHeight": 12.69061219854854,
+        "referenceGroundZ": 3.3934851091731986,
+        "originalGroundZ": 2.8934851091731986,
+        "proposedGroundZ": 3.3934851091731986,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          22.31564482,
+          46.64310188,
+          21.24
+        ],
+        "kind": "roof",
+        "crossing": [
+          18.547214263640683,
+          37.41129231885836,
+          16.375436758741692
+        ],
+        "requiredHeight": 13.014075932082763,
+        "requiredExposedHeight": 13.014075932082763,
+        "referenceGroundZ": 3.361360826658929,
+        "originalGroundZ": 2.861360826658929,
+        "proposedGroundZ": 3.361360826658929,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "standing",
+      "observer": {
+        "x": 9.609167656420745,
+        "y": 15.515083036928559,
+        "z": 5.28755850309423,
+        "preset": "standing",
+        "label": "Living room · standing",
+        "eyeHeight": 1.65,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 3903,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 12.79697189529928,
+      "rearRequired": 13.147534933230803,
+      "eastExitY": [
+        26.3119142497565,
+        37.38201994945952
+      ],
+      "rearExitX": [
+        13.468342224584124,
+        19.80788889783851
+      ],
+      "leftCritical": {
+        "target": [
+          22.977489156835446,
+          44.14528520518987,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.81782111050088,
+          37.378397159570405,
+          16.190457004472478
+        ],
+        "requiredHeight": 12.79697189529928,
+        "requiredExposedHeight": 12.79697189529928,
+        "referenceGroundZ": 3.3934851091731986,
+        "originalGroundZ": 2.8934851091731986,
+        "proposedGroundZ": 3.3934851091731986,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          22.31564482,
+          46.64310188,
+          21.24
+        ],
+        "kind": "roof",
+        "crossing": [
+          18.547214263640683,
+          37.41129231885836,
+          16.508895759889732
+        ],
+        "requiredHeight": 13.147534933230803,
+        "requiredExposedHeight": 13.147534933230803,
+        "referenceGroundZ": 3.361360826658929,
+        "originalGroundZ": 2.861360826658929,
+        "proposedGroundZ": 3.361360826658929,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "terrace",
+      "observer": {
+        "x": 9.609167656420745,
+        "y": 21.215083036928558,
+        "z": 5.28755850309423,
+        "preset": "terrace",
+        "label": "Living terrace",
+        "eyeHeight": 1.65,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 3844,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 12.070709901833354,
+      "rearRequired": 12.075321129009545,
+      "eastExitY": [
+        29.60310969279381,
+        37.3614571474383
+      ],
+      "rearExitX": [
+        13.112162202998986,
+        19.809563291804984
+      ],
+      "leftCritical": {
+        "target": [
+          23.933827272278485,
+          43.87154639506329,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.817791549183134,
+          37.3614571474383,
+          15.462531891744762
+        ],
+        "requiredHeight": 12.070709901833354,
+        "requiredExposedHeight": 12.070709901833354,
+        "referenceGroundZ": 3.3918219899114073,
+        "originalGroundZ": 2.8918219899114073,
+        "proposedGroundZ": 3.3918219899114073,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          22.31564482,
+          46.64310188,
+          21.24
+        ],
+        "kind": "roof",
+        "crossing": [
+          17.70940834940626,
+          37.425167887593005,
+          15.45706607802522
+        ],
+        "requiredHeight": 12.075321129009545,
+        "requiredExposedHeight": 12.075321129009545,
+        "referenceGroundZ": 3.3817449490156752,
+        "originalGroundZ": 2.8817449490156752,
+        "proposedGroundZ": 3.3817449490156752,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "jacuzzi",
+      "observer": {
+        "x": 6.659167656420745,
+        "y": 21.065083036928556,
+        "z": 4.33755850309423,
+        "preset": "jacuzzi",
+        "label": "Jacuzzi · seated",
+        "eyeHeight": 0.7,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 6203,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 11.939629120533809,
+      "rearRequired": 11.948151801461309,
+      "eastExitY": [
+        30.77627156517575,
+        37.32850186589807
+      ],
+      "rearExitX": [
+        11.792780074114013,
+        19.782825813071902
+      ],
+      "leftCritical": {
+        "target": [
+          24.890165387721524,
+          43.59780758493671,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.817734040278104,
+          37.32850186589807,
+          15.328251538468898
+        ],
+        "requiredHeight": 11.939629120533809,
+        "requiredExposedHeight": 11.939629120533809,
+        "referenceGroundZ": 3.388622417935088,
+        "originalGroundZ": 2.888622417935088,
+        "proposedGroundZ": 3.388622417935088,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          24.65108085886076,
+          43.66624228746836,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.65712261387489,
+          37.39291024570612,
+          15.338367392457211
+        ],
+        "requiredHeight": 11.948151801461309,
+        "requiredExposedHeight": 11.948151801461309,
+        "referenceGroundZ": 3.3902155909959024,
+        "originalGroundZ": 2.8902155909959024,
+        "proposedGroundZ": 3.3902155909959024,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "garden",
+      "observer": {
+        "x": 11.8,
+        "y": 32.1,
+        "z": 4.709118128937396,
+        "preset": "garden",
+        "label": "Garden · standing",
+        "eyeHeight": 1.65,
+        "groundZ": 3.0591181289373957,
+        "surface": "garden",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 3126,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 8.671660493439724,
+      "rearRequired": 8.68087338769332,
+      "eastExitY": [
+        35.37558683806694,
+        37.35079653135456
+      ],
+      "rearExitX": [
+        13.018366214252229,
+        19.710429007812532
+      ],
+      "leftCritical": {
+        "target": [
+          27.9982642629114,
+          42.708156452025314,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.81777294578091,
+          37.35079653135456,
+          12.062442276404685
+        ],
+        "requiredHeight": 8.671660493439724,
+        "requiredExposedHeight": 8.671660493439724,
+        "referenceGroundZ": 3.390781782964962,
+        "originalGroundZ": 2.890781782964962,
+        "proposedGroundZ": 3.390781782964962,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          27.759179734050633,
+          42.77659115455696,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.710429007812532,
+          37.39202739620541,
+          12.072679467792174
+        ],
+        "requiredHeight": 8.68087338769332,
+        "requiredExposedHeight": 8.68087338769332,
+        "referenceGroundZ": 3.3918060800988545,
+        "originalGroundZ": 2.8918060800988545,
+        "proposedGroundZ": 3.3918060800988545,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "sauna",
+      "observer": {
+        "x": 3.1,
+        "y": 36.6,
+        "z": 4.901809231063911,
+        "preset": "sauna",
+        "label": "Sauna · seated",
+        "eyeHeight": 1.6,
+        "groundZ": 3.3018092310639116,
+        "surface": "sauna",
+        "defaultLookYaw": -150.00492038286023,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 0,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 0,
+      "rearRequired": 0,
+      "eastExitY": null,
+      "rearExitX": null,
+      "leftCritical": null,
+      "rearCritical": null
+    },
+    {
+      "view": "firepit",
+      "observer": {
+        "x": 10.600000000000001,
+        "y": 30.68,
+        "z": 3.5789492686619475,
+        "preset": "firepit",
+        "label": "Fire lounge · seated",
+        "eyeHeight": 1.1,
+        "groundZ": 2.4789492686619474,
+        "surface": "firepit",
+        "defaultLookYaw": 179.40812250593552,
+        "defaultLookPitch": 0
+      },
+      "unblockedRays": 2921,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 8.901216017054583,
+      "rearRequired": 8.956045096835577,
+      "eastExitY": [
+        34.81580943080989,
+        37.37570716704177
+      ],
+      "rearExitX": [
+        12.51225011022395,
+        19.7849510995144
+      ],
+      "leftCritical": {
+        "target": [
+          27.520095205189875,
+          42.84502585708861,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.81769693602156,
+          37.30723939845883,
+          12.28779925197304
+        ],
+        "requiredHeight": 8.901216017054583,
+        "requiredExposedHeight": 8.901216017054583,
+        "referenceGroundZ": 3.386583234918456,
+        "originalGroundZ": 2.886583234918456,
+        "proposedGroundZ": 3.386583234918456,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          27.281010676329117,
+          42.913460559620255,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.751303334328806,
+          37.391350444040924,
+          12.348993374444941
+        ],
+        "requiredHeight": 8.956045096835577,
+        "requiredExposedHeight": 8.956045096835577,
+        "referenceGroundZ": 3.3929482776093627,
+        "originalGroundZ": 2.8929482776093627,
+        "proposedGroundZ": 3.3929482776093627,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "dining-standing",
+      "observer": {
+        "x": 5.5,
+        "y": 26.1,
+        "z": 4.521289863735857
+      },
+      "unblockedRays": 5801,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 11.132158634006199,
+      "rearRequired": 11.187776488046325,
+      "eastExitY": [
+        33.6852769954001,
+        37.36554240942672
+      ],
+      "rearExitX": [
+        9.933370173463608,
+        19.729460535104415
+      ],
+      "leftCritical": {
+        "target": [
+          27.04192614746836,
+          42.9818952621519,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.817720000980362,
+          37.32045669429491,
+          14.520007157279881
+        ],
+        "requiredHeight": 11.132158634006199,
+        "requiredExposedHeight": 11.132158634006199,
+        "referenceGroundZ": 3.3878485232736826,
+        "originalGroundZ": 2.8878485232736826,
+        "proposedGroundZ": 3.3878485232736826,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          28.51519359,
+          44.82824787,
+          21.18
+        ],
+        "kind": "roof",
+        "crossing": [
+          19.383457283815282,
+          37.397442634452744,
+          14.570325066323692
+        ],
+        "requiredHeight": 11.187776488046325,
+        "requiredExposedHeight": 11.187776488046325,
+        "referenceGroundZ": 3.382548578277368,
+        "originalGroundZ": 2.882548578277368,
+        "proposedGroundZ": 3.382548578277368,
+        "side": "rear"
+      }
+    },
+    {
+      "view": "dining-seated",
+      "observer": {
+        "x": 5.5,
+        "y": 26.1,
+        "z": 3.971289863735857
+      },
+      "unblockedRays": 5459,
+      "withoutHedgeLineIntersection": 0,
+      "otherHedgeSides": 0,
+      "leftRequired": 10.94771303924515,
+      "rearRequired": 10.969553037143708,
+      "eastExitY": [
+        33.6852769954001,
+        37.36554240942672
+      ],
+      "rearExitX": [
+        9.933370173463608,
+        19.729460535104415
+      ],
+      "leftCritical": {
+        "target": [
+          27.04192614746836,
+          42.9818952621519,
+          19.564999999999998
+        ],
+        "kind": "facade",
+        "crossing": [
+          19.817720000980362,
+          37.32045669429491,
+          14.335561562518832
+        ],
+        "requiredHeight": 10.94771303924515,
+        "requiredExposedHeight": 10.94771303924515,
+        "referenceGroundZ": 3.3878485232736826,
+        "originalGroundZ": 2.8878485232736826,
+        "proposedGroundZ": 3.3878485232736826,
+        "side": "left"
+      },
+      "rearCritical": {
+        "target": [
+          28.51519359,
+          44.82824787,
+          21.18
+        ],
+        "kind": "roof",
+        "crossing": [
+          19.383457283815282,
+          37.397442634452744,
+          14.352101615421075
+        ],
+        "requiredHeight": 10.969553037143708,
+        "requiredExposedHeight": 10.969553037143708,
+        "referenceGroundZ": 3.382548578277368,
+        "originalGroundZ": 2.882548578277368,
+        "proposedGroundZ": 3.382548578277368,
+        "side": "rear"
+      }
+    }
+  ],
+  "hardscapeEnvelopes": [
+    {
+      "id": "house",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          4.1362222,
+          9.09588503
+        ],
+        [
+          15.15178498,
+          9.13920459
+        ],
+        [
+          15.11297263,
+          18.02756741
+        ],
+        [
+          4.10536269,
+          18.00259866
+        ],
+        [
+          4.1362222,
+          9.09588503
+        ]
+      ]
+    },
+    {
+      "id": "pool-full-coping",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          14.24,
+          26.02
+        ],
+        [
+          18.3,
+          26.02
+        ],
+        [
+          18.3,
+          34.58
+        ],
+        [
+          14.24,
+          34.58
+        ]
+      ]
+    },
+    {
+      "id": "terrace",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          5.359167656420745,
+          18.01508303692856
+        ],
+        [
+          13.859167656420745,
+          18.01508303692856
+        ],
+        [
+          13.859167656420745,
+          22.215083036928558
+        ],
+        [
+          5.359167656420745,
+          22.215083036928558
+        ]
+      ]
+    },
+    {
+      "id": "terrace-stairs",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          8.959167656420744,
+          22.215083036928558
+        ],
+        [
+          11.959167656420744,
+          22.215083036928558
+        ],
+        [
+          11.959167656420744,
+          23.665083036928557
+        ],
+        [
+          8.959167656420744,
+          23.665083036928557
+        ]
+      ]
+    },
+    {
+      "id": "jacuzzi-rim",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          5.509167656420745,
+          19.915083036928557
+        ],
+        [
+          7.809167656420745,
+          19.915083036928557
+        ],
+        [
+          7.809167656420745,
+          22.215083036928558
+        ],
+        [
+          5.509167656420745,
+          22.215083036928558
+        ]
+      ]
+    },
+    {
+      "id": "jacuzzi-service-access",
+      "kind": "reserved-access",
+      "footprint": [
+        [
+          4.909167656420745,
+          19.315083036928556
+        ],
+        [
+          8.409167656420745,
+          19.315083036928556
+        ],
+        [
+          8.409167656420745,
+          22.81508303692856
+        ],
+        [
+          4.909167656420745,
+          22.81508303692856
+        ]
+      ]
+    },
+    {
+      "id": "sauna-wall",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          1.35,
+          34.65
+        ],
+        [
+          3.4499999999999997,
+          34.65
+        ],
+        [
+          4.35,
+          35.55
+        ],
+        [
+          4.35,
+          37.05
+        ],
+        [
+          1.35,
+          37.05
+        ],
+        [
+          1.35,
+          34.65
+        ]
+      ]
+    },
+    {
+      "id": "sauna-entry-step-1",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          3.9353553390593268,
+          34.28682720163547
+        ],
+        [
+          4.713172798364529,
+          35.064644660940665
+        ],
+        [
+          4.501040764008565,
+          35.27677669529663
+        ],
+        [
+          3.7232233047033625,
+          34.49895923599143
+        ],
+        [
+          3.9353553390593268,
+          34.28682720163547
+        ]
+      ]
+    },
+    {
+      "id": "sauna-entry-step-2",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          3.7232233047033625,
+          34.49895923599143
+        ],
+        [
+          4.501040764008565,
+          35.27677669529663
+        ],
+        [
+          4.288908729652601,
+          35.48890872965259
+        ],
+        [
+          3.511091270347398,
+          34.711091270347396
+        ],
+        [
+          3.7232233047033625,
+          34.49895923599143
+        ]
+      ]
+    },
+    {
+      "id": "fire-lounge-outer-coping",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          8.32,
+          26.720000000000002
+        ],
+        [
+          8.52,
+          26.720000000000002
+        ],
+        [
+          8.52,
+          26.8
+        ],
+        [
+          12.680000000000001,
+          26.8
+        ],
+        [
+          12.680000000000001,
+          26.720000000000002
+        ],
+        [
+          12.88,
+          26.720000000000002
+        ],
+        [
+          12.88,
+          31.320000000000004
+        ],
+        [
+          8.32,
+          31.320000000000004
+        ],
+        [
+          8.32,
+          26.720000000000002
+        ]
+      ]
+    },
+    {
+      "id": "fire-lounge-step-1",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          10,
+          26.8
+        ],
+        [
+          11.2,
+          26.8
+        ],
+        [
+          11.2,
+          27.1
+        ],
+        [
+          10,
+          27.1
+        ]
+      ]
+    },
+    {
+      "id": "fire-lounge-step-2",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          10,
+          27.1
+        ],
+        [
+          11.2,
+          27.1
+        ],
+        [
+          11.2,
+          27.400000000000002
+        ],
+        [
+          10,
+          27.400000000000002
+        ]
+      ]
+    },
+    {
+      "id": "fire-lounge-step-3",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          10,
+          27.400000000000002
+        ],
+        [
+          11.2,
+          27.400000000000002
+        ],
+        [
+          11.2,
+          27.700000000000003
+        ],
+        [
+          10,
+          27.700000000000003
+        ]
+      ]
+    },
+    {
+      "id": "fire-lounge-step-4",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          10,
+          27.7
+        ],
+        [
+          11.2,
+          27.7
+        ],
+        [
+          11.2,
+          28
+        ],
+        [
+          10,
+          28
+        ]
+      ]
+    },
+    {
+      "id": "cold-plunge-pad",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.42,
+          35.37
+        ],
+        [
+          8.98,
+          35.37
+        ],
+        [
+          8.98,
+          37.029999999999994
+        ],
+        [
+          6.42,
+          37.029999999999994
+        ]
+      ]
+    },
+    {
+      "id": "cold-plunge-step-1",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.6,
+          34.05
+        ],
+        [
+          7.6,
+          34.05
+        ],
+        [
+          7.6,
+          34.349999999999994
+        ],
+        [
+          6.6,
+          34.349999999999994
+        ]
+      ]
+    },
+    {
+      "id": "cold-plunge-step-2",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.6,
+          34.349999999999994
+        ],
+        [
+          7.6,
+          34.349999999999994
+        ],
+        [
+          7.6,
+          34.64999999999999
+        ],
+        [
+          6.6,
+          34.64999999999999
+        ]
+      ]
+    },
+    {
+      "id": "cold-plunge-step-3",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.6,
+          34.65
+        ],
+        [
+          7.6,
+          34.65
+        ],
+        [
+          7.6,
+          34.949999999999996
+        ],
+        [
+          6.6,
+          34.949999999999996
+        ]
+      ]
+    },
+    {
+      "id": "cold-plunge-step-4",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.6,
+          34.949999999999996
+        ],
+        [
+          7.6,
+          34.949999999999996
+        ],
+        [
+          7.6,
+          35.24999999999999
+        ],
+        [
+          6.6,
+          35.24999999999999
+        ]
+      ]
+    },
+    {
+      "id": "cold-plunge-step-5",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.6,
+          35.25
+        ],
+        [
+          7.6,
+          35.25
+        ],
+        [
+          7.6,
+          35.55
+        ],
+        [
+          6.6,
+          35.55
+        ]
+      ]
+    },
+    {
+      "id": "dining-platform",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          3.6,
+          24.4
+        ],
+        [
+          7.4,
+          24.4
+        ],
+        [
+          7.4,
+          27.799999999999997
+        ],
+        [
+          3.6,
+          27.799999999999997
+        ]
+      ]
+    },
+    {
+      "id": "lounger-1",
+      "kind": "movable-furniture",
+      "footprint": [
+        [
+          12.3,
+          22.7
+        ],
+        [
+          13.08,
+          22.7
+        ],
+        [
+          13.08,
+          24.7
+        ],
+        [
+          12.3,
+          24.7
+        ]
+      ]
+    },
+    {
+      "id": "lounger-2",
+      "kind": "movable-furniture",
+      "footprint": [
+        [
+          13.4,
+          22.7
+        ],
+        [
+          14.18,
+          22.7
+        ],
+        [
+          14.18,
+          24.7
+        ],
+        [
+          13.4,
+          24.7
+        ]
+      ]
+    },
+    {
+      "id": "stepping-stone-1",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.7,
+          29.5
+        ],
+        [
+          7.85,
+          29.5
+        ],
+        [
+          7.85,
+          30.4
+        ],
+        [
+          6.7,
+          30.4
+        ]
+      ]
+    },
+    {
+      "id": "stepping-stone-2",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          6.4,
+          31.2
+        ],
+        [
+          7.550000000000001,
+          31.2
+        ],
+        [
+          7.550000000000001,
+          32.1
+        ],
+        [
+          6.4,
+          32.1
+        ]
+      ]
+    },
+    {
+      "id": "stepping-stone-3",
+      "kind": "hardscape",
+      "footprint": [
+        [
+          5.8,
+          32.8
+        ],
+        [
+          6.949999999999999,
+          32.8
+        ],
+        [
+          6.949999999999999,
+          33.699999999999996
+        ],
+        [
+          5.8,
+          33.699999999999996
+        ]
+      ]
+    }
+  ],
+  "search": {
+    "strips": [
+      {
+        "id": "east-before-pool",
+        "x": [
+          17,
+          18.8
+        ],
+        "y": [
+          20.5,
+          26
+        ]
+      },
+      {
+        "id": "rear",
+        "x": [
+          9.8,
+          18.8
+        ],
+        "y": [
+          35.2,
+          36.5
+        ]
+      }
+    ],
+    "gridStep": 0.3,
+    "proposedGridCount": 288,
+    "candidateCount": 108,
+    "rejected": {
+      "groundOrBoundary": 109,
+      "referenceTreeSpacing": 71
+    },
+    "minimumTrunkToAllGroundEnvelopesAndBoundary": 1.5,
+    "minimumTreeSpacing": 2.8,
+    "rootBallIllustration": {
+      "diameter": 2.7,
+      "radius": 1.35,
+      "minimumNominalDiscEdgeToEnvelope": 0.1499999999999999,
+      "note": "Only 0.15 m nominal clearance beyond that root-ball radius; not adequate evidence of working/excavation clearance."
+    },
+    "poolEastCopingToBoundary": 2.0028992160547254,
+    "rowProposal": {
+      "included": true,
+      "minimumTreeSpacing": 2.8499999999999996,
+      "clearances": [
+        {
+          "id": "schematic-conifer-1",
+          "x": 18.5,
+          "y": 21.3,
+          "plantable": true,
+          "boundaryClearance": 1.8075993746332526,
+          "minimumHardscapeCentreDistance": 4.541189271545505,
+          "nearestGroundEnvelope": "lounger-2",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 4.709646426349141
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 4.724235387869659
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 4.640832343579255
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 6.604533648281829
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 10.690832343579256
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 10.090832343579255
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 20.08183258569795
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 19.481838900106894
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 19.781838804346197
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 7.80773974976113
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 9.140021881811881
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 9.32362590412121
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 9.513148795220227
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 9.7082439194738
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 16.98809288884423
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 16.774161678009424
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 17.003308501582854
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 17.234630834456535
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 17.46804224863221
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 17.70346011377437
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 11.524755962709145
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 5.597892460560492
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 4.541189271545505
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 13.441075105809057
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 14.761859638947934
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 16.298849652659538
+            }
+          ],
+          "crownInside": true,
+          "warnings": []
+        },
+        {
+          "id": "schematic-conifer-2",
+          "x": 18.5,
+          "y": 24.2,
+          "plantable": true,
+          "boundaryClearance": 1.8057883685662086,
+          "minimumHardscapeCentreDistance": 1.8309560344257316,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 7.040658952344107
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 1.8309560344257316
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 5.047496428081954
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 6.5626689619539755
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 10.873536294545996
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 10.18542548845301
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 18.139597569957278
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 17.553264878542176
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 17.851214010492857
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 6.159123314238805
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 7.74919350642375
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 7.854934754662194
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 7.970570870395672
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 8.095677859203638
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 14.67648799951814
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 14.691238885812181
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 14.894042433134127
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 15.100082781230041
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 15.309229242519034
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 15.521356255173064
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 11.101801655587257
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 5.42
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 4.32
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 11.8959026559568
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 12.99624945897854
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 14.400086805293917
+            }
+          ],
+          "crownInside": true,
+          "warnings": []
+        },
+        {
+          "id": "schematic-conifer-3",
+          "x": 12.8,
+          "y": 36.25,
+          "plantable": true,
+          "boundaryClearance": 1.756304210077366,
+          "minimumHardscapeCentreDistance": 2.205107707119996,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 18.22763225248225
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 2.205107707119996
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 14.034916963071442
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 12.612974827431168
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 14.895882036389363
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 14.134228046626617
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 8.450000000000001
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 8.173239349789524
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 8.355829581882658
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 4.929999999999996
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 9.2888373868854
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 8.993469853176801
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 8.698419396649022
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 8.403719414640163
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 3.8200000000000003
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 5.536244214266567
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 5.4405882034941815
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 5.360037313302961
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 5.295280917949493
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 5.246903848937963
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 10.028085560065792
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 11.55
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 11.56557391572074
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 7.663223864666882
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 6.692159591641549
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 6.381614215854797
+            }
+          ],
+          "crownInside": true,
+          "warnings": []
+        },
+        {
+          "id": "schematic-conifer-4",
+          "x": 15.65,
+          "y": 36.25,
+          "plantable": true,
+          "boundaryClearance": 1.7091095700921537,
+          "minimumHardscapeCentreDistance": 1.6700000000000017,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 18.230344151804243
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 1.6700000000000017
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 14.14870929248036
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 13.1149677222559
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 16.0766148800184
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 15.261934570441856
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 11.3
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 11.000875261463063
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 11.191356291648322
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 5.654891687733723
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 10.174723583468987
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 9.905806378079472
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 9.638723981938687
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 9.373633233703995
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 6.67
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 8.271184921158518
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 8.207466113241043
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 8.15429334767888
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 8.111874012828356
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 8.080377466430638
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 11.809530049921548
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 11.832472269141391
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 11.643169671528455
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 9.75
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 9.101236179772503
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 9.066007941756945
+            }
+          ],
+          "crownInside": false,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        },
+        {
+          "id": "schematic-conifer-5",
+          "x": 18.5,
+          "y": 36.25,
+          "plantable": true,
+          "boundaryClearance": 1.6619149301069485,
+          "minimumHardscapeCentreDistance": 1.6819334112859539,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 18.53453543799313
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 1.6819334112859539
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 14.782294104824253
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 14.183180980098077
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 17.642924654343194
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 16.802437061059027
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 14.15
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 13.837690254070301
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 14.03274824443764
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 7.475914659759029
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 11.705233872076198
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 11.47224912560741
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 11.24244190556482
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 11.016011074794724
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 9.52
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 11.064357188738983
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 11.01680534456337
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 10.977249200050077
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 10.945775440780796
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 10.92245393673052
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 13.950358418334636
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 12.7584834521976
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 12.331459767602539
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 12.150925890647182
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 11.710038428630368
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 11.828144402229794
+            }
+          ],
+          "crownInside": false,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "reference",
+      "note": "Pictured three 10 m Austrian pines; 6 / 6 / 5 m opaque ellipsoidal crowns. Existing reference positions are not re-approved by this stricter planting-clearance study.",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 503,
+          "total": 5214,
+          "hiddenPercent": 90.35289604909859,
+          "roofExposed": 105,
+          "roofTotal": 365,
+          "combinedExposed": 608,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 569,
+          "total": 5214,
+          "hiddenPercent": 89.08707326428845,
+          "roofExposed": 131,
+          "roofTotal": 365,
+          "combinedExposed": 700,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 216,
+          "total": 5214,
+          "hiddenPercent": 95.8573072497123,
+          "roofExposed": 52,
+          "roofTotal": 365,
+          "combinedExposed": 268,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 322,
+          "total": 9702,
+          "hiddenPercent": 96.68109668109668,
+          "roofExposed": 51,
+          "roofTotal": 365,
+          "combinedExposed": 373,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 2,
+          "total": 5214,
+          "hiddenPercent": 99.96164173379364,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 2,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 6,
+          "total": 5214,
+          "hiddenPercent": 99.88492520138091,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 6,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2398,
+          "total": 9702,
+          "hiddenPercent": 75.28344671201815,
+          "roofExposed": 59,
+          "roofTotal": 365,
+          "combinedExposed": 2457,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 2148,
+          "total": 9702,
+          "hiddenPercent": 77.86023500309214,
+          "roofExposed": 54,
+          "roofTotal": 365,
+          "combinedExposed": 2202,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "reference-plus-terrace-roof",
+      "note": "Finite terrace canopy at the existing height/depth; local eye-position test, not a whole-garden screen.",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": true,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 25,
+          "total": 5214,
+          "hiddenPercent": 99.5205216724204,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 25,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 403,
+          "total": 5214,
+          "hiddenPercent": 92.27080935941694,
+          "roofExposed": 99,
+          "roofTotal": 365,
+          "combinedExposed": 502,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 216,
+          "total": 5214,
+          "hiddenPercent": 95.8573072497123,
+          "roofExposed": 52,
+          "roofTotal": 365,
+          "combinedExposed": 268,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 322,
+          "total": 9702,
+          "hiddenPercent": 96.68109668109668,
+          "roofExposed": 51,
+          "roofTotal": 365,
+          "combinedExposed": 373,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 2,
+          "total": 5214,
+          "hiddenPercent": 99.96164173379364,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 2,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 6,
+          "total": 5214,
+          "hiddenPercent": 99.88492520138091,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 6,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2398,
+          "total": 9702,
+          "hiddenPercent": 75.28344671201815,
+          "roofExposed": 59,
+          "roofTotal": 365,
+          "combinedExposed": 2457,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 2148,
+          "total": 9702,
+          "hiddenPercent": 77.86023500309214,
+          "roofExposed": 54,
+          "roofTotal": 365,
+          "combinedExposed": 2202,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "reference-plus-roof-0.6m-fascia",
+      "note": "Finite terrace canopy with 0.6 m fascia; structural feasibility and daylight tradeoff not assessed.",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": true,
+      "fasciaDepth": 0.6,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 3,
+          "total": 5214,
+          "hiddenPercent": 99.94246260069045,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 3,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 402,
+          "total": 5214,
+          "hiddenPercent": 92.28998849252014,
+          "roofExposed": 99,
+          "roofTotal": 365,
+          "combinedExposed": 501,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 322,
+          "total": 9702,
+          "hiddenPercent": 96.68109668109668,
+          "roofExposed": 51,
+          "roofTotal": 365,
+          "combinedExposed": 373,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 2,
+          "total": 5214,
+          "hiddenPercent": 99.96164173379364,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 2,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 6,
+          "total": 5214,
+          "hiddenPercent": 99.88492520138091,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 6,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2398,
+          "total": 9702,
+          "hiddenPercent": 75.28344671201815,
+          "roofExposed": 59,
+          "roofTotal": 365,
+          "combinedExposed": 2457,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 2148,
+          "total": 9702,
+          "hiddenPercent": 77.86023500309214,
+          "roofExposed": 54,
+          "roofTotal": 365,
+          "combinedExposed": 2202,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "reference-height-11m-only",
+      "note": "Height-only sensitivity with the pictured 6 / 6 / 5 m crown diameters and 2.5 m crown base. No matching specimen or installed quotation is assumed.",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 11,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 11,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 11,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 252,
+          "total": 5214,
+          "hiddenPercent": 95.16685845799769,
+          "roofExposed": 36,
+          "roofTotal": 365,
+          "combinedExposed": 288,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 301,
+          "total": 5214,
+          "hiddenPercent": 94.2270809359417,
+          "roofExposed": 53,
+          "roofTotal": 365,
+          "combinedExposed": 354,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 38,
+          "total": 5214,
+          "hiddenPercent": 99.27119294207903,
+          "roofExposed": 11,
+          "roofTotal": 365,
+          "combinedExposed": 49,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 174,
+          "total": 9702,
+          "hiddenPercent": 98.2065553494125,
+          "roofExposed": 6,
+          "roofTotal": 365,
+          "combinedExposed": 180,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 6,
+          "total": 5214,
+          "hiddenPercent": 99.88492520138091,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 6,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 12,
+          "total": 5214,
+          "hiddenPercent": 99.76985040276179,
+          "roofExposed": 2,
+          "roofTotal": 365,
+          "combinedExposed": 14,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2373,
+          "total": 9702,
+          "hiddenPercent": 75.54112554112554,
+          "roofExposed": 51,
+          "roofTotal": 365,
+          "combinedExposed": 2424,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 2138,
+          "total": 9702,
+          "hiddenPercent": 77.96330653473511,
+          "roofExposed": 53,
+          "roofTotal": 365,
+          "combinedExposed": 2191,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "reference-height-12m-only",
+      "note": "Height-only sensitivity with the pictured 6 / 6 / 5 m crown diameters and 2.5 m crown base. No matching specimen or installed quotation is assumed.",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 12,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 12,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 12,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 136,
+          "total": 5214,
+          "hiddenPercent": 97.39163789796702,
+          "roofExposed": 10,
+          "roofTotal": 365,
+          "combinedExposed": 146,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 151,
+          "total": 5214,
+          "hiddenPercent": 97.10395090141925,
+          "roofExposed": 12,
+          "roofTotal": 365,
+          "combinedExposed": 163,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 8,
+          "total": 5214,
+          "hiddenPercent": 99.84656693517454,
+          "roofExposed": 4,
+          "roofTotal": 365,
+          "combinedExposed": 12,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 264,
+          "total": 9702,
+          "hiddenPercent": 97.27891156462584,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 264,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 12,
+          "total": 5214,
+          "hiddenPercent": 99.76985040276179,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 12,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 20,
+          "total": 5214,
+          "hiddenPercent": 99.61641733793633,
+          "roofExposed": 4,
+          "roofTotal": 365,
+          "combinedExposed": 24,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2378,
+          "total": 9702,
+          "hiddenPercent": 75.48958977530407,
+          "roofExposed": 53,
+          "roofTotal": 365,
+          "combinedExposed": 2431,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 2150,
+          "total": 9702,
+          "hiddenPercent": 77.83962069676356,
+          "roofExposed": 53,
+          "roofTotal": 365,
+          "combinedExposed": 2203,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "same-positions-10m-by-7m-crowns",
+      "note": "All three crowns use the upper 7 m end of a researched 10–11 m tall / 6–7 m diameter supplier size band. Circular, fully opaque ellipsoids and 2.5 m clear stems are modelling assumptions; actual crown profiles and boundary overhang need confirmation.",
+      "stockBasis": "supplier-band-upper-bound",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 325,
+          "total": 5214,
+          "hiddenPercent": 93.7667817414653,
+          "roofExposed": 84,
+          "roofTotal": 365,
+          "combinedExposed": 409,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 390,
+          "total": 5214,
+          "hiddenPercent": 92.52013808975835,
+          "roofExposed": 96,
+          "roofTotal": 365,
+          "combinedExposed": 486,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 116,
+          "total": 5214,
+          "hiddenPercent": 97.77522056003069,
+          "roofExposed": 24,
+          "roofTotal": 365,
+          "combinedExposed": 140,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 123,
+          "total": 9702,
+          "hiddenPercent": 98.73222016079158,
+          "roofExposed": 25,
+          "roofTotal": 365,
+          "combinedExposed": 148,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2196,
+          "total": 9702,
+          "hiddenPercent": 77.36549165120594,
+          "roofExposed": 39,
+          "roofTotal": 365,
+          "combinedExposed": 2235,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 1959,
+          "total": 9702,
+          "hiddenPercent": 79.8082869511441,
+          "roofExposed": 38,
+          "roofTotal": 365,
+          "combinedExposed": 1997,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "same-positions-11m-by-7m-crowns",
+      "note": "All three crowns use the upper 7 m end of a researched 10–11 m tall / 6–7 m diameter supplier size band. Circular, fully opaque ellipsoids and 2.5 m clear stems are modelling assumptions; actual crown profiles and boundary overhang need confirmation.",
+      "stockBasis": "supplier-band-upper-bound",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 97,
+          "total": 5214,
+          "hiddenPercent": 98.13962408899117,
+          "roofExposed": 23,
+          "roofTotal": 365,
+          "combinedExposed": 120,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 135,
+          "total": 5214,
+          "hiddenPercent": 97.4108170310702,
+          "roofExposed": 29,
+          "roofTotal": 365,
+          "combinedExposed": 164,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 4,
+          "total": 5214,
+          "hiddenPercent": 99.92328346758727,
+          "roofExposed": 5,
+          "roofTotal": 365,
+          "combinedExposed": 9,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 1,
+          "roofTotal": 365,
+          "combinedExposed": 1,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 2170,
+          "total": 9702,
+          "hiddenPercent": 77.63347763347764,
+          "roofExposed": 37,
+          "roofTotal": 365,
+          "combinedExposed": 2207,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 1943,
+          "total": 9702,
+          "hiddenPercent": 79.97320140177283,
+          "roofExposed": 37,
+          "roofTotal": 365,
+          "combinedExposed": 1980,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "same-positions-10m-by-8m-crowns",
+      "note": "Explicitly hypothetical 8 m crown sensitivity. This is outside the currently verified supplier size band and is not advertised as available stock.",
+      "stockBasis": "hypothetical-not-verified-stock",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 8,
+          "depth": 8,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 8,
+          "depth": 8,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 8,
+          "depth": 8,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 260,
+          "total": 5214,
+          "hiddenPercent": 95.01342539317223,
+          "roofExposed": 63,
+          "roofTotal": 365,
+          "combinedExposed": 323,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 312,
+          "total": 5214,
+          "hiddenPercent": 94.01611047180667,
+          "roofExposed": 81,
+          "roofTotal": 365,
+          "combinedExposed": 393,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 69,
+          "total": 5214,
+          "hiddenPercent": 98.67663981588032,
+          "roofExposed": 15,
+          "roofTotal": 365,
+          "combinedExposed": 84,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 46,
+          "total": 9702,
+          "hiddenPercent": 99.52587095444238,
+          "roofExposed": 12,
+          "roofTotal": 365,
+          "combinedExposed": 58,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 1276,
+          "total": 9702,
+          "hiddenPercent": 86.84807256235828,
+          "roofExposed": 21,
+          "roofTotal": 365,
+          "combinedExposed": 1297,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 1051,
+          "total": 9702,
+          "hiddenPercent": 89.16718202432487,
+          "roofExposed": 18,
+          "roofTotal": 365,
+          "combinedExposed": 1069,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "same-positions-11m-by-8m-crowns",
+      "note": "Explicitly hypothetical 8 m crown sensitivity. This is outside the currently verified supplier size band and is not advertised as available stock.",
+      "stockBasis": "hypothetical-not-verified-stock",
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 11,
+          "width": 8,
+          "depth": 8,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 11,
+          "width": 8,
+          "depth": 8,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 11,
+          "width": 8,
+          "depth": 8,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 59,
+          "total": 5214,
+          "hiddenPercent": 98.86843114691216,
+          "roofExposed": 17,
+          "roofTotal": 365,
+          "combinedExposed": 76,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 91,
+          "total": 5214,
+          "hiddenPercent": 98.25469888761027,
+          "roofExposed": 19,
+          "roofTotal": 365,
+          "combinedExposed": 110,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 1,
+          "roofTotal": 365,
+          "combinedExposed": 1,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 1258,
+          "total": 9702,
+          "hiddenPercent": 87.03360131931561,
+          "roofExposed": 10,
+          "roofTotal": 365,
+          "combinedExposed": 1268,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 1133,
+          "total": 9702,
+          "hiddenPercent": 88.3219954648526,
+          "roofExposed": 7,
+          "roofTotal": 365,
+          "combinedExposed": 1140,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "reference-plus-one-east-or-rear-strip-pine",
+      "note": "Best single extra 10 m pine from the bounded east-before-pool / rear-strip grid; all new trunk-to-envelope/boundary gaps ≥1.5 m and existing trunk spacing ≥2.8 m.",
+      "addedTrees": [
+        {
+          "x": 11,
+          "y": 35.2,
+          "strip": "rear",
+          "clearances": {
+            "plantable": true,
+            "boundaryClearance": 2.835967376907311,
+            "minimumHardscapeCentreDistance": 2.0271408436514706,
+            "nearestGroundEnvelope": "cold-plunge-pad",
+            "accepted": true,
+            "allEnvelopeClearances": [
+              {
+                "id": "house",
+                "kind": "hardscape",
+                "distance": 17.181717914034092
+              },
+              {
+                "id": "pool-full-coping",
+                "kind": "hardscape",
+                "distance": 3.298787656094282
+              },
+              {
+                "id": "terrace",
+                "kind": "hardscape",
+                "distance": 12.984916963071445
+              },
+              {
+                "id": "terrace-stairs",
+                "kind": "hardscape",
+                "distance": 11.534916963071446
+              },
+              {
+                "id": "jacuzzi-rim",
+                "kind": "hardscape",
+                "distance": 13.371218328286023
+              },
+              {
+                "id": "jacuzzi-service-access",
+                "kind": "reserved-access",
+                "distance": 12.653006773676807
+              },
+              {
+                "id": "sauna-wall",
+                "kind": "hardscape",
+                "distance": 6.659204156654157
+              },
+              {
+                "id": "sauna-entry-step-1",
+                "kind": "hardscape",
+                "distance": 6.28828413249875
+              },
+              {
+                "id": "sauna-entry-step-2",
+                "kind": "hardscape",
+                "distance": 6.499412728240842
+              },
+              {
+                "id": "fire-lounge-outer-coping",
+                "kind": "hardscape",
+                "distance": 3.879999999999999
+              },
+              {
+                "id": "fire-lounge-step-1",
+                "kind": "hardscape",
+                "distance": 8.100000000000001
+              },
+              {
+                "id": "fire-lounge-step-2",
+                "kind": "hardscape",
+                "distance": 7.800000000000001
+              },
+              {
+                "id": "fire-lounge-step-3",
+                "kind": "hardscape",
+                "distance": 7.5
+              },
+              {
+                "id": "fire-lounge-step-4",
+                "kind": "hardscape",
+                "distance": 7.200000000000003
+              },
+              {
+                "id": "cold-plunge-pad",
+                "kind": "hardscape",
+                "distance": 2.0271408436514706
+              },
+              {
+                "id": "cold-plunge-step-1",
+                "kind": "hardscape",
+                "distance": 3.504639781775014
+              },
+              {
+                "id": "cold-plunge-step-2",
+                "kind": "hardscape",
+                "distance": 3.444198019858907
+              },
+              {
+                "id": "cold-plunge-step-3",
+                "kind": "hardscape",
+                "distance": 3.409178786746158
+              },
+              {
+                "id": "cold-plunge-step-4",
+                "kind": "hardscape",
+                "distance": 3.4000000000000004
+              },
+              {
+                "id": "cold-plunge-step-5",
+                "kind": "hardscape",
+                "distance": 3.400367627183861
+              },
+              {
+                "id": "dining-platform",
+                "kind": "hardscape",
+                "distance": 8.2292162445764
+              },
+              {
+                "id": "lounger-1",
+                "kind": "movable-furniture",
+                "distance": 10.580170130957256
+              },
+              {
+                "id": "lounger-2",
+                "kind": "movable-furniture",
+                "distance": 10.77079384260975
+              },
+              {
+                "id": "stepping-stone-1",
+                "kind": "hardscape",
+                "distance": 5.741297762701395
+              },
+              {
+                "id": "stepping-stone-2",
+                "kind": "hardscape",
+                "distance": 4.638156961552725
+              },
+              {
+                "id": "stepping-stone-3",
+                "kind": "hardscape",
+                "distance": 4.318854014666393
+              }
+            ],
+            "crownInside": false,
+            "warnings": [
+              "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+              "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+            ]
+          }
+        }
+      ],
+      "searchScore": {
+        "worstRemainingFraction": 0.12547051442910917,
+        "sumRemainingFractions": 0.31036424124702544
+      },
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        },
+        {
+          "x": 11,
+          "y": 35.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 503,
+          "total": 5214,
+          "hiddenPercent": 90.35289604909859,
+          "roofExposed": 105,
+          "roofTotal": 365,
+          "combinedExposed": 608,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 569,
+          "total": 5214,
+          "hiddenPercent": 89.08707326428845,
+          "roofExposed": 131,
+          "roofTotal": 365,
+          "combinedExposed": 700,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 215,
+          "total": 5214,
+          "hiddenPercent": 95.8764863828155,
+          "roofExposed": 52,
+          "roofTotal": 365,
+          "combinedExposed": 267,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 161,
+          "total": 9702,
+          "hiddenPercent": 98.34054834054834,
+          "roofExposed": 41,
+          "roofTotal": 365,
+          "combinedExposed": 202,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 2,
+          "total": 5214,
+          "hiddenPercent": 99.96164173379364,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 2,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 6,
+          "total": 5214,
+          "hiddenPercent": 99.88492520138091,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 6,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 37,
+          "total": 9702,
+          "hiddenPercent": 99.61863533292104,
+          "roofExposed": 1,
+          "roofTotal": 365,
+          "combinedExposed": 38,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 27,
+          "total": 9702,
+          "hiddenPercent": 99.72170686456401,
+          "roofExposed": 1,
+          "roofTotal": 365,
+          "combinedExposed": 28,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "reference-plus-two-east-and-rear-strip-pines",
+      "note": "Best compatible pair from the same two-strip search. Broad crowns may overhang boundaries or hardscape despite clear trunk/root-ball concept space.",
+      "addedTrees": [
+        {
+          "x": 11,
+          "y": 35.2,
+          "strip": "rear",
+          "clearances": {
+            "plantable": true,
+            "boundaryClearance": 2.835967376907311,
+            "minimumHardscapeCentreDistance": 2.0271408436514706,
+            "nearestGroundEnvelope": "cold-plunge-pad",
+            "accepted": true,
+            "allEnvelopeClearances": [
+              {
+                "id": "house",
+                "kind": "hardscape",
+                "distance": 17.181717914034092
+              },
+              {
+                "id": "pool-full-coping",
+                "kind": "hardscape",
+                "distance": 3.298787656094282
+              },
+              {
+                "id": "terrace",
+                "kind": "hardscape",
+                "distance": 12.984916963071445
+              },
+              {
+                "id": "terrace-stairs",
+                "kind": "hardscape",
+                "distance": 11.534916963071446
+              },
+              {
+                "id": "jacuzzi-rim",
+                "kind": "hardscape",
+                "distance": 13.371218328286023
+              },
+              {
+                "id": "jacuzzi-service-access",
+                "kind": "reserved-access",
+                "distance": 12.653006773676807
+              },
+              {
+                "id": "sauna-wall",
+                "kind": "hardscape",
+                "distance": 6.659204156654157
+              },
+              {
+                "id": "sauna-entry-step-1",
+                "kind": "hardscape",
+                "distance": 6.28828413249875
+              },
+              {
+                "id": "sauna-entry-step-2",
+                "kind": "hardscape",
+                "distance": 6.499412728240842
+              },
+              {
+                "id": "fire-lounge-outer-coping",
+                "kind": "hardscape",
+                "distance": 3.879999999999999
+              },
+              {
+                "id": "fire-lounge-step-1",
+                "kind": "hardscape",
+                "distance": 8.100000000000001
+              },
+              {
+                "id": "fire-lounge-step-2",
+                "kind": "hardscape",
+                "distance": 7.800000000000001
+              },
+              {
+                "id": "fire-lounge-step-3",
+                "kind": "hardscape",
+                "distance": 7.5
+              },
+              {
+                "id": "fire-lounge-step-4",
+                "kind": "hardscape",
+                "distance": 7.200000000000003
+              },
+              {
+                "id": "cold-plunge-pad",
+                "kind": "hardscape",
+                "distance": 2.0271408436514706
+              },
+              {
+                "id": "cold-plunge-step-1",
+                "kind": "hardscape",
+                "distance": 3.504639781775014
+              },
+              {
+                "id": "cold-plunge-step-2",
+                "kind": "hardscape",
+                "distance": 3.444198019858907
+              },
+              {
+                "id": "cold-plunge-step-3",
+                "kind": "hardscape",
+                "distance": 3.409178786746158
+              },
+              {
+                "id": "cold-plunge-step-4",
+                "kind": "hardscape",
+                "distance": 3.4000000000000004
+              },
+              {
+                "id": "cold-plunge-step-5",
+                "kind": "hardscape",
+                "distance": 3.400367627183861
+              },
+              {
+                "id": "dining-platform",
+                "kind": "hardscape",
+                "distance": 8.2292162445764
+              },
+              {
+                "id": "lounger-1",
+                "kind": "movable-furniture",
+                "distance": 10.580170130957256
+              },
+              {
+                "id": "lounger-2",
+                "kind": "movable-furniture",
+                "distance": 10.77079384260975
+              },
+              {
+                "id": "stepping-stone-1",
+                "kind": "hardscape",
+                "distance": 5.741297762701395
+              },
+              {
+                "id": "stepping-stone-2",
+                "kind": "hardscape",
+                "distance": 4.638156961552725
+              },
+              {
+                "id": "stepping-stone-3",
+                "kind": "hardscape",
+                "distance": 4.318854014666393
+              }
+            ],
+            "crownInside": false,
+            "warnings": [
+              "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+              "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+            ]
+          }
+        },
+        {
+          "x": 17,
+          "y": 24.4,
+          "strip": "east-before-pool",
+          "clearances": {
+            "plantable": true,
+            "boundaryClearance": 3.305663179110042,
+            "minimumHardscapeCentreDistance": 1.620000000000001,
+            "nearestGroundEnvelope": "pool-full-coping",
+            "accepted": true,
+            "allEnvelopeClearances": [
+              {
+                "id": "house",
+                "kind": "hardscape",
+                "distance": 6.645958878086986
+              },
+              {
+                "id": "pool-full-coping",
+                "kind": "hardscape",
+                "distance": 1.620000000000001
+              },
+              {
+                "id": "terrace",
+                "kind": "hardscape",
+                "distance": 3.826054096061749
+              },
+              {
+                "id": "terrace-stairs",
+                "kind": "hardscape",
+                "distance": 5.094123443604884
+              },
+              {
+                "id": "jacuzzi-rim",
+                "kind": "hardscape",
+                "distance": 9.446971012091646
+              },
+              {
+                "id": "jacuzzi-service-access",
+                "kind": "reserved-access",
+                "distance": 8.735809186063934
+              },
+              {
+                "id": "sauna-wall",
+                "kind": "hardscape",
+                "distance": 16.8625324313995
+              },
+              {
+                "id": "sauna-entry-step-1",
+                "kind": "hardscape",
+                "distance": 16.269627175414307
+              },
+              {
+                "id": "sauna-entry-step-2",
+                "kind": "hardscape",
+                "distance": 16.568894147236367
+              },
+              {
+                "id": "fire-lounge-outer-coping",
+                "kind": "hardscape",
+                "distance": 4.728297790960296
+              },
+              {
+                "id": "fire-lounge-step-1",
+                "kind": "hardscape",
+                "distance": 6.276941930590088
+              },
+              {
+                "id": "fire-lounge-step-2",
+                "kind": "hardscape",
+                "distance": 6.3976558206893275
+              },
+              {
+                "id": "fire-lounge-step-3",
+                "kind": "hardscape",
+                "distance": 6.5299310869258065
+              },
+              {
+                "id": "fire-lounge-step-4",
+                "kind": "hardscape",
+                "distance": 6.67308024828115
+              },
+              {
+                "id": "cold-plunge-pad",
+                "kind": "hardscape",
+                "distance": 13.5890139450955
+              },
+              {
+                "id": "cold-plunge-step-1",
+                "kind": "hardscape",
+                "distance": 13.471544083734425
+              },
+              {
+                "id": "cold-plunge-step-2",
+                "kind": "hardscape",
+                "distance": 13.688042226702835
+              },
+              {
+                "id": "cold-plunge-step-3",
+                "kind": "hardscape",
+                "distance": 13.907641784285358
+              },
+              {
+                "id": "cold-plunge-step-4",
+                "kind": "hardscape",
+                "distance": 14.130198158553897
+              },
+              {
+                "id": "cold-plunge-step-5",
+                "kind": "hardscape",
+                "distance": 14.355573830397725
+              },
+              {
+                "id": "dining-platform",
+                "kind": "hardscape",
+                "distance": 9.6
+              },
+              {
+                "id": "lounger-1",
+                "kind": "movable-furniture",
+                "distance": 3.92
+              },
+              {
+                "id": "lounger-2",
+                "kind": "movable-furniture",
+                "distance": 2.8200000000000003
+              },
+              {
+                "id": "stepping-stone-1",
+                "kind": "hardscape",
+                "distance": 10.475328157150974
+              },
+              {
+                "id": "stepping-stone-2",
+                "kind": "hardscape",
+                "distance": 11.642272115012602
+              },
+              {
+                "id": "stepping-stone-3",
+                "kind": "hardscape",
+                "distance": 13.098186897429736
+              }
+            ],
+            "crownInside": true,
+            "warnings": [
+              "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+            ]
+          }
+        }
+      ],
+      "searchScore": {
+        "worstRemainingFraction": 0.0833482702993368,
+        "sumRemainingFractions": 0.2349026889975184
+      },
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 10,
+          "width": 5,
+          "depth": 5,
+          "crownBase": 2.5
+        },
+        {
+          "x": 11,
+          "y": 35.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        },
+        {
+          "x": 17,
+          "y": 24.4,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 339,
+          "total": 5214,
+          "hiddenPercent": 93.49827387802071,
+          "roofExposed": 83,
+          "roofTotal": 365,
+          "combinedExposed": 422,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 369,
+          "total": 5214,
+          "hiddenPercent": 92.9228998849252,
+          "roofExposed": 96,
+          "roofTotal": 365,
+          "combinedExposed": 465,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 215,
+          "total": 5214,
+          "hiddenPercent": 95.8764863828155,
+          "roofExposed": 52,
+          "roofTotal": 365,
+          "combinedExposed": 267,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 161,
+          "total": 9702,
+          "hiddenPercent": 98.34054834054834,
+          "roofExposed": 41,
+          "roofTotal": 365,
+          "combinedExposed": 202,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 2,
+          "total": 5214,
+          "hiddenPercent": 99.96164173379364,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 2,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 6,
+          "total": 5214,
+          "hiddenPercent": 99.88492520138091,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 6,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 37,
+          "total": 9702,
+          "hiddenPercent": 99.61863533292104,
+          "roofExposed": 1,
+          "roofTotal": 365,
+          "combinedExposed": 38,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 27,
+          "total": 9702,
+          "hiddenPercent": 99.72170686456401,
+          "roofExposed": 1,
+          "roofTotal": 365,
+          "combinedExposed": 28,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "hybrid-11m-by-7m-reference-pines-plus-rear-extra",
+      "note": "Three pictured centres with hypothetical fully opaque 11 m × 7 m ellipsoidal pine crowns, plus the best checked rear-strip extra pine at 10 m × 6 m. The broad size band has a supplier lead; actual crown shape, branch density, clear stem, root balls, transport, installed cost and boundary overhang are unconfirmed. Centre clearances do not certify the larger specimens.",
+      "stockBasis": "supplier-band-upper-bound-plus-current-pine-size",
+      "addedTrees": [
+        {
+          "x": 11,
+          "y": 35.2,
+          "strip": "rear",
+          "clearances": {
+            "plantable": true,
+            "boundaryClearance": 2.835967376907311,
+            "minimumHardscapeCentreDistance": 2.0271408436514706,
+            "nearestGroundEnvelope": "cold-plunge-pad",
+            "accepted": true,
+            "allEnvelopeClearances": [
+              {
+                "id": "house",
+                "kind": "hardscape",
+                "distance": 17.181717914034092
+              },
+              {
+                "id": "pool-full-coping",
+                "kind": "hardscape",
+                "distance": 3.298787656094282
+              },
+              {
+                "id": "terrace",
+                "kind": "hardscape",
+                "distance": 12.984916963071445
+              },
+              {
+                "id": "terrace-stairs",
+                "kind": "hardscape",
+                "distance": 11.534916963071446
+              },
+              {
+                "id": "jacuzzi-rim",
+                "kind": "hardscape",
+                "distance": 13.371218328286023
+              },
+              {
+                "id": "jacuzzi-service-access",
+                "kind": "reserved-access",
+                "distance": 12.653006773676807
+              },
+              {
+                "id": "sauna-wall",
+                "kind": "hardscape",
+                "distance": 6.659204156654157
+              },
+              {
+                "id": "sauna-entry-step-1",
+                "kind": "hardscape",
+                "distance": 6.28828413249875
+              },
+              {
+                "id": "sauna-entry-step-2",
+                "kind": "hardscape",
+                "distance": 6.499412728240842
+              },
+              {
+                "id": "fire-lounge-outer-coping",
+                "kind": "hardscape",
+                "distance": 3.879999999999999
+              },
+              {
+                "id": "fire-lounge-step-1",
+                "kind": "hardscape",
+                "distance": 8.100000000000001
+              },
+              {
+                "id": "fire-lounge-step-2",
+                "kind": "hardscape",
+                "distance": 7.800000000000001
+              },
+              {
+                "id": "fire-lounge-step-3",
+                "kind": "hardscape",
+                "distance": 7.5
+              },
+              {
+                "id": "fire-lounge-step-4",
+                "kind": "hardscape",
+                "distance": 7.200000000000003
+              },
+              {
+                "id": "cold-plunge-pad",
+                "kind": "hardscape",
+                "distance": 2.0271408436514706
+              },
+              {
+                "id": "cold-plunge-step-1",
+                "kind": "hardscape",
+                "distance": 3.504639781775014
+              },
+              {
+                "id": "cold-plunge-step-2",
+                "kind": "hardscape",
+                "distance": 3.444198019858907
+              },
+              {
+                "id": "cold-plunge-step-3",
+                "kind": "hardscape",
+                "distance": 3.409178786746158
+              },
+              {
+                "id": "cold-plunge-step-4",
+                "kind": "hardscape",
+                "distance": 3.4000000000000004
+              },
+              {
+                "id": "cold-plunge-step-5",
+                "kind": "hardscape",
+                "distance": 3.400367627183861
+              },
+              {
+                "id": "dining-platform",
+                "kind": "hardscape",
+                "distance": 8.2292162445764
+              },
+              {
+                "id": "lounger-1",
+                "kind": "movable-furniture",
+                "distance": 10.580170130957256
+              },
+              {
+                "id": "lounger-2",
+                "kind": "movable-furniture",
+                "distance": 10.77079384260975
+              },
+              {
+                "id": "stepping-stone-1",
+                "kind": "hardscape",
+                "distance": 5.741297762701395
+              },
+              {
+                "id": "stepping-stone-2",
+                "kind": "hardscape",
+                "distance": 4.638156961552725
+              },
+              {
+                "id": "stepping-stone-3",
+                "kind": "hardscape",
+                "distance": 4.318854014666393
+              }
+            ],
+            "crownInside": false,
+            "warnings": [
+              "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+              "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+            ]
+          }
+        }
+      ],
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 11,
+          "y": 35.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 97,
+          "total": 5214,
+          "hiddenPercent": 98.13962408899117,
+          "roofExposed": 23,
+          "roofTotal": 365,
+          "combinedExposed": 120,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 135,
+          "total": 5214,
+          "hiddenPercent": 97.4108170310702,
+          "roofExposed": 29,
+          "roofTotal": 365,
+          "combinedExposed": 164,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 4,
+          "total": 5214,
+          "hiddenPercent": 99.92328346758727,
+          "roofExposed": 5,
+          "roofTotal": 365,
+          "combinedExposed": 9,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "hybrid-11m-by-7m-reference-pines-plus-rear-extra-and-canopy",
+      "note": "Three pictured centres with hypothetical fully opaque 11 m × 7 m ellipsoidal pine crowns, plus the best checked rear-strip extra pine at 10 m × 6 m. The broad size band has a supplier lead; actual crown shape, branch density, clear stem, root balls, transport, installed cost and boundary overhang are unconfirmed. Centre clearances do not certify the larger specimens. Adds the finite terrace canopy with 0.6 m fascia; no structural, consent or daylight assessment.",
+      "stockBasis": "supplier-band-upper-bound-plus-current-pine-size",
+      "addedTrees": [
+        {
+          "x": 11,
+          "y": 35.2,
+          "strip": "rear",
+          "clearances": {
+            "plantable": true,
+            "boundaryClearance": 2.835967376907311,
+            "minimumHardscapeCentreDistance": 2.0271408436514706,
+            "nearestGroundEnvelope": "cold-plunge-pad",
+            "accepted": true,
+            "allEnvelopeClearances": [
+              {
+                "id": "house",
+                "kind": "hardscape",
+                "distance": 17.181717914034092
+              },
+              {
+                "id": "pool-full-coping",
+                "kind": "hardscape",
+                "distance": 3.298787656094282
+              },
+              {
+                "id": "terrace",
+                "kind": "hardscape",
+                "distance": 12.984916963071445
+              },
+              {
+                "id": "terrace-stairs",
+                "kind": "hardscape",
+                "distance": 11.534916963071446
+              },
+              {
+                "id": "jacuzzi-rim",
+                "kind": "hardscape",
+                "distance": 13.371218328286023
+              },
+              {
+                "id": "jacuzzi-service-access",
+                "kind": "reserved-access",
+                "distance": 12.653006773676807
+              },
+              {
+                "id": "sauna-wall",
+                "kind": "hardscape",
+                "distance": 6.659204156654157
+              },
+              {
+                "id": "sauna-entry-step-1",
+                "kind": "hardscape",
+                "distance": 6.28828413249875
+              },
+              {
+                "id": "sauna-entry-step-2",
+                "kind": "hardscape",
+                "distance": 6.499412728240842
+              },
+              {
+                "id": "fire-lounge-outer-coping",
+                "kind": "hardscape",
+                "distance": 3.879999999999999
+              },
+              {
+                "id": "fire-lounge-step-1",
+                "kind": "hardscape",
+                "distance": 8.100000000000001
+              },
+              {
+                "id": "fire-lounge-step-2",
+                "kind": "hardscape",
+                "distance": 7.800000000000001
+              },
+              {
+                "id": "fire-lounge-step-3",
+                "kind": "hardscape",
+                "distance": 7.5
+              },
+              {
+                "id": "fire-lounge-step-4",
+                "kind": "hardscape",
+                "distance": 7.200000000000003
+              },
+              {
+                "id": "cold-plunge-pad",
+                "kind": "hardscape",
+                "distance": 2.0271408436514706
+              },
+              {
+                "id": "cold-plunge-step-1",
+                "kind": "hardscape",
+                "distance": 3.504639781775014
+              },
+              {
+                "id": "cold-plunge-step-2",
+                "kind": "hardscape",
+                "distance": 3.444198019858907
+              },
+              {
+                "id": "cold-plunge-step-3",
+                "kind": "hardscape",
+                "distance": 3.409178786746158
+              },
+              {
+                "id": "cold-plunge-step-4",
+                "kind": "hardscape",
+                "distance": 3.4000000000000004
+              },
+              {
+                "id": "cold-plunge-step-5",
+                "kind": "hardscape",
+                "distance": 3.400367627183861
+              },
+              {
+                "id": "dining-platform",
+                "kind": "hardscape",
+                "distance": 8.2292162445764
+              },
+              {
+                "id": "lounger-1",
+                "kind": "movable-furniture",
+                "distance": 10.580170130957256
+              },
+              {
+                "id": "lounger-2",
+                "kind": "movable-furniture",
+                "distance": 10.77079384260975
+              },
+              {
+                "id": "stepping-stone-1",
+                "kind": "hardscape",
+                "distance": 5.741297762701395
+              },
+              {
+                "id": "stepping-stone-2",
+                "kind": "hardscape",
+                "distance": 4.638156961552725
+              },
+              {
+                "id": "stepping-stone-3",
+                "kind": "hardscape",
+                "distance": 4.318854014666393
+              }
+            ],
+            "crownInside": false,
+            "warnings": [
+              "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+              "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+            ]
+          }
+        }
+      ],
+      "trees": [
+        {
+          "x": 19.3,
+          "y": 30.2,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 13.8,
+          "y": 35.8,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 18.45,
+          "y": 35.57,
+          "height": 11,
+          "width": 7,
+          "depth": 7,
+          "crownBase": 2.5
+        },
+        {
+          "x": 11,
+          "y": 35.2,
+          "height": 10,
+          "width": 6,
+          "depth": 6,
+          "crownBase": 2.5
+        }
+      ],
+      "canopy": true,
+      "fasciaDepth": 0.6,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 129,
+          "total": 5214,
+          "hiddenPercent": 97.5258918296893,
+          "roofExposed": 28,
+          "roofTotal": 365,
+          "combinedExposed": 157,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "ideal-continuous-left-and-rear-screen-13.2m",
+      "note": "HYPOTHETICAL OPTICAL ENVELOPE: continuous opaque surfaces on the left/east and rear hedge lines, 13.2 m above local new planting soil, with no specimen trees. It verifies the ray-height inference. It is not a plant shape, purchasable hedge, consented structure or construction proposal.",
+      "idealized": true,
+      "screenHeightAboveNewSoil": 13.2,
+      "trees": [],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 13.2,
+        "right": 4,
+        "rear": 13.2
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 0,
+          "total": 5214,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        }
+      ]
+    },
+    {
+      "id": "schematic-13m-by-3.5m-conifer-discontinuous-boundary-row",
+      "note": "Five schematic opaque right-conical crowns replace all three pictured pines, with the existing 4 m perimeter hedge below. Uses the engine's Serbian-spruce cone only as a geometry primitive: it is not a botanical, price or availability model for Thuja plicata Excelsa. Full lower foliage beginning at 0.3 m is optimistic; upper crown width is unmeasured and real crowns have gaps. The east side beside the pool remains unplanted. Two rear crowns slightly overhang the parcel and/or coping, although the illustrative root-ball discs remain clear.",
+      "schematic": true,
+      "clearances": [
+        {
+          "id": "schematic-conifer-1",
+          "x": 18.5,
+          "y": 21.3,
+          "plantable": true,
+          "boundaryClearance": 1.8075993746332526,
+          "minimumHardscapeCentreDistance": 4.541189271545505,
+          "nearestGroundEnvelope": "lounger-2",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 4.709646426349141
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 4.724235387869659
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 4.640832343579255
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 6.604533648281829
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 10.690832343579256
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 10.090832343579255
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 20.08183258569795
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 19.481838900106894
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 19.781838804346197
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 7.80773974976113
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 9.140021881811881
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 9.32362590412121
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 9.513148795220227
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 9.7082439194738
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 16.98809288884423
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 16.774161678009424
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 17.003308501582854
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 17.234630834456535
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 17.46804224863221
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 17.70346011377437
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 11.524755962709145
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 5.597892460560492
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 4.541189271545505
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 13.441075105809057
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 14.761859638947934
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 16.298849652659538
+            }
+          ],
+          "crownInside": true,
+          "warnings": []
+        },
+        {
+          "id": "schematic-conifer-2",
+          "x": 18.5,
+          "y": 24.2,
+          "plantable": true,
+          "boundaryClearance": 1.8057883685662086,
+          "minimumHardscapeCentreDistance": 1.8309560344257316,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 7.040658952344107
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 1.8309560344257316
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 5.047496428081954
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 6.5626689619539755
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 10.873536294545996
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 10.18542548845301
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 18.139597569957278
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 17.553264878542176
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 17.851214010492857
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 6.159123314238805
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 7.74919350642375
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 7.854934754662194
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 7.970570870395672
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 8.095677859203638
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 14.67648799951814
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 14.691238885812181
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 14.894042433134127
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 15.100082781230041
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 15.309229242519034
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 15.521356255173064
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 11.101801655587257
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 5.42
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 4.32
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 11.8959026559568
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 12.99624945897854
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 14.400086805293917
+            }
+          ],
+          "crownInside": true,
+          "warnings": []
+        },
+        {
+          "id": "schematic-conifer-3",
+          "x": 12.8,
+          "y": 36.25,
+          "plantable": true,
+          "boundaryClearance": 1.756304210077366,
+          "minimumHardscapeCentreDistance": 2.205107707119996,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 18.22763225248225
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 2.205107707119996
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 14.034916963071442
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 12.612974827431168
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 14.895882036389363
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 14.134228046626617
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 8.450000000000001
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 8.173239349789524
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 8.355829581882658
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 4.929999999999996
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 9.2888373868854
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 8.993469853176801
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 8.698419396649022
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 8.403719414640163
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 3.8200000000000003
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 5.536244214266567
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 5.4405882034941815
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 5.360037313302961
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 5.295280917949493
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 5.246903848937963
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 10.028085560065792
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 11.55
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 11.56557391572074
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 7.663223864666882
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 6.692159591641549
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 6.381614215854797
+            }
+          ],
+          "crownInside": true,
+          "warnings": []
+        },
+        {
+          "id": "schematic-conifer-4",
+          "x": 15.65,
+          "y": 36.25,
+          "plantable": true,
+          "boundaryClearance": 1.7091095700921537,
+          "minimumHardscapeCentreDistance": 1.6700000000000017,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 18.230344151804243
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 1.6700000000000017
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 14.14870929248036
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 13.1149677222559
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 16.0766148800184
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 15.261934570441856
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 11.3
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 11.000875261463063
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 11.191356291648322
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 5.654891687733723
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 10.174723583468987
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 9.905806378079472
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 9.638723981938687
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 9.373633233703995
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 6.67
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 8.271184921158518
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 8.207466113241043
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 8.15429334767888
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 8.111874012828356
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 8.080377466430638
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 11.809530049921548
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 11.832472269141391
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 11.643169671528455
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 9.75
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 9.101236179772503
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 9.066007941756945
+            }
+          ],
+          "crownInside": false,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        },
+        {
+          "id": "schematic-conifer-5",
+          "x": 18.5,
+          "y": 36.25,
+          "plantable": true,
+          "boundaryClearance": 1.6619149301069485,
+          "minimumHardscapeCentreDistance": 1.6819334112859539,
+          "nearestGroundEnvelope": "pool-full-coping",
+          "accepted": true,
+          "allEnvelopeClearances": [
+            {
+              "id": "house",
+              "kind": "hardscape",
+              "distance": 18.53453543799313
+            },
+            {
+              "id": "pool-full-coping",
+              "kind": "hardscape",
+              "distance": 1.6819334112859539
+            },
+            {
+              "id": "terrace",
+              "kind": "hardscape",
+              "distance": 14.782294104824253
+            },
+            {
+              "id": "terrace-stairs",
+              "kind": "hardscape",
+              "distance": 14.183180980098077
+            },
+            {
+              "id": "jacuzzi-rim",
+              "kind": "hardscape",
+              "distance": 17.642924654343194
+            },
+            {
+              "id": "jacuzzi-service-access",
+              "kind": "reserved-access",
+              "distance": 16.802437061059027
+            },
+            {
+              "id": "sauna-wall",
+              "kind": "hardscape",
+              "distance": 14.15
+            },
+            {
+              "id": "sauna-entry-step-1",
+              "kind": "hardscape",
+              "distance": 13.837690254070301
+            },
+            {
+              "id": "sauna-entry-step-2",
+              "kind": "hardscape",
+              "distance": 14.03274824443764
+            },
+            {
+              "id": "fire-lounge-outer-coping",
+              "kind": "hardscape",
+              "distance": 7.475914659759029
+            },
+            {
+              "id": "fire-lounge-step-1",
+              "kind": "hardscape",
+              "distance": 11.705233872076198
+            },
+            {
+              "id": "fire-lounge-step-2",
+              "kind": "hardscape",
+              "distance": 11.47224912560741
+            },
+            {
+              "id": "fire-lounge-step-3",
+              "kind": "hardscape",
+              "distance": 11.24244190556482
+            },
+            {
+              "id": "fire-lounge-step-4",
+              "kind": "hardscape",
+              "distance": 11.016011074794724
+            },
+            {
+              "id": "cold-plunge-pad",
+              "kind": "hardscape",
+              "distance": 9.52
+            },
+            {
+              "id": "cold-plunge-step-1",
+              "kind": "hardscape",
+              "distance": 11.064357188738983
+            },
+            {
+              "id": "cold-plunge-step-2",
+              "kind": "hardscape",
+              "distance": 11.01680534456337
+            },
+            {
+              "id": "cold-plunge-step-3",
+              "kind": "hardscape",
+              "distance": 10.977249200050077
+            },
+            {
+              "id": "cold-plunge-step-4",
+              "kind": "hardscape",
+              "distance": 10.945775440780796
+            },
+            {
+              "id": "cold-plunge-step-5",
+              "kind": "hardscape",
+              "distance": 10.92245393673052
+            },
+            {
+              "id": "dining-platform",
+              "kind": "hardscape",
+              "distance": 13.950358418334636
+            },
+            {
+              "id": "lounger-1",
+              "kind": "movable-furniture",
+              "distance": 12.7584834521976
+            },
+            {
+              "id": "lounger-2",
+              "kind": "movable-furniture",
+              "distance": 12.331459767602539
+            },
+            {
+              "id": "stepping-stone-1",
+              "kind": "hardscape",
+              "distance": 12.150925890647182
+            },
+            {
+              "id": "stepping-stone-2",
+              "kind": "hardscape",
+              "distance": 11.710038428630368
+            },
+            {
+              "id": "stepping-stone-3",
+              "kind": "hardscape",
+              "distance": 11.828144402229794
+            }
+          ],
+          "crownInside": false,
+          "warnings": [
+            "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+            "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access."
+          ]
+        }
+      ],
+      "minimumTreeSpacing": 2.8499999999999996,
+      "maximumNominalCrownBoundaryOverhang": 0.08808506989305154,
+      "maximumNominalCrownGroundEnvelopeOverlap": 0.0799999999999983,
+      "trees": [
+        {
+          "x": 18.5,
+          "y": 21.3,
+          "height": 13,
+          "width": 3.5,
+          "depth": 3.5,
+          "crownBase": 0.3
+        },
+        {
+          "x": 18.5,
+          "y": 24.2,
+          "height": 13,
+          "width": 3.5,
+          "depth": 3.5,
+          "crownBase": 0.3
+        },
+        {
+          "x": 12.8,
+          "y": 36.25,
+          "height": 13,
+          "width": 3.5,
+          "depth": 3.5,
+          "crownBase": 0.3
+        },
+        {
+          "x": 15.65,
+          "y": 36.25,
+          "height": 13,
+          "width": 3.5,
+          "depth": 3.5,
+          "crownBase": 0.3
+        },
+        {
+          "x": 18.5,
+          "y": 36.25,
+          "height": 13,
+          "width": 3.5,
+          "depth": 3.5,
+          "crownBase": 0.3
+        }
+      ],
+      "canopy": false,
+      "fasciaDepth": 0.3,
+      "hedgeHeights": {
+        "front": 4,
+        "left": 4,
+        "right": 4,
+        "rear": 4
+      },
+      "results": [
+        {
+          "view": "sofa",
+          "exposed": 2317,
+          "total": 5214,
+          "hiddenPercent": 55.561948599923284,
+          "roofExposed": 313,
+          "roofTotal": 365,
+          "combinedExposed": 2630,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "standing",
+          "exposed": 2404,
+          "total": 5214,
+          "hiddenPercent": 53.8933640199463,
+          "roofExposed": 315,
+          "roofTotal": 365,
+          "combinedExposed": 2719,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "terrace",
+          "exposed": 2349,
+          "total": 5214,
+          "hiddenPercent": 54.9482163406214,
+          "roofExposed": 250,
+          "roofTotal": 365,
+          "combinedExposed": 2599,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "jacuzzi",
+          "exposed": 4367,
+          "total": 9702,
+          "hiddenPercent": 54.98866213151927,
+          "roofExposed": 231,
+          "roofTotal": 365,
+          "combinedExposed": 4598,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "garden",
+          "exposed": 225,
+          "total": 5214,
+          "hiddenPercent": 95.68469505178366,
+          "roofExposed": 11,
+          "roofTotal": 365,
+          "combinedExposed": 236,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "sauna",
+          "exposed": 0,
+          "total": 9702,
+          "hiddenPercent": 100,
+          "roofExposed": 0,
+          "roofTotal": 365,
+          "combinedExposed": 0,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "firepit",
+          "exposed": 424,
+          "total": 5214,
+          "hiddenPercent": 91.8680475642501,
+          "roofExposed": 19,
+          "roofTotal": 365,
+          "combinedExposed": 443,
+          "combinedTotal": 5579
+        },
+        {
+          "view": "dining-standing",
+          "exposed": 3699,
+          "total": 9702,
+          "hiddenPercent": 61.873840445269025,
+          "roofExposed": 183,
+          "roofTotal": 365,
+          "combinedExposed": 3882,
+          "combinedTotal": 10067
+        },
+        {
+          "view": "dining-seated",
+          "exposed": 3378,
+          "total": 9702,
+          "hiddenPercent": 65.18243661100804,
+          "roofExposed": 170,
+          "roofTotal": 365,
+          "combinedExposed": 3548,
+          "combinedTotal": 10067
+        }
+      ]
+    }
+  ]
+}
