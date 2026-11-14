@@ -12,10 +12,11 @@ const profile=getSiteProfile('sternicza-11',data),model=createStateModel(profile
 const currentDefault=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default');
 const v14Coordinates=[[13,34.1],[14.2,32.5],[17.6,34.9]];
 const v15Coordinates=[[17,26.8],[14.4,28.4],[12.6,32.7]];
+const v16Coordinates=[[17.3,31],[14.8,31.1],[14.5,34.9]];
 
-test('fresh v16 designs use the current planting layout and thujas on every plot side',()=>{
-  assert.equal(STATE_VERSION,16);
-  for(const fresh of [model.sanitizeState(),model.decodeState('v=16&site=sternicza-11'),model.migrateSavedState({siteId:'sternicza-11'},16)]){
+test('fresh v17 designs use the current planting layout and thujas on every plot side',()=>{
+  assert.equal(STATE_VERSION,17);
+  for(const fresh of [model.sanitizeState(),model.decodeState('v=17&site=sternicza-11'),model.migrateSavedState({siteId:'sternicza-11'},17)]){
     assert.equal(fresh.hedgeFullPerimeter,true);
     assert.equal(fresh.gardenProgram,currentDefault.settings.gardenProgram);
     assert.deepEqual(fresh.screeningTrees,currentDefault.trees);
@@ -24,7 +25,7 @@ test('fresh v16 designs use the current planting layout and thujas on every plot
     for(const side of ['left','right'])assert.ok(spans.some(s=>s.side===side&&Math.min(s.a[1],s.b[1])<1),'Side hedges reach the street');
     assert.deepEqual(model.decodeState(model.encodeState(fresh)),fresh);
   }
-  assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=16&site=sternicza-11'),'sternicza-11');
+  assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=17&site=sternicza-11'),'sternicza-11');
 });
 
 test('the full-perimeter choice is explicit in shares and survives independent edits and changing future defaults',()=>{
@@ -39,7 +40,7 @@ test('the full-perimeter choice is explicit in shares and survives independent e
     assert.deepEqual(future.decodeState(encoded),original,'Opening a shared design must not change its side-hedge extent');
   }
   for(const invalid of ['true',1,null,{}])assert.equal(model.sanitizeState({hedgeFullPerimeter:invalid}).hedgeFullPerimeter,true);
-  assert.equal(model.decodeState('v=16&site=sternicza-11&hedgeFullPerimeter=0').hedgeFullPerimeter,true);
+  assert.equal(model.decodeState('v=17&site=sternicza-11&hedgeFullPerimeter=0').hedgeFullPerimeter,true);
 });
 
 test('all v1–v14 links and saved designs keep their shorter side hedges, even with an unsupported new flag',()=>{
@@ -71,7 +72,7 @@ test('v14 defaults freeze the published close grove and seven-metre pool indepen
   }
   assert.equal(future.decodeState('v=15&site=sternicza-11').gardenProgram,'spa-aligned');
   assert.deepEqual(future.decodeState('v=15&site=sternicza-11').screeningTrees.map(t=>[t.x,t.y]),v15Coordinates);
-  assert.deepEqual(future.decodeState('v=16&site=sternicza-11').screeningTrees,futureTrees);
+  assert.deepEqual(future.decodeState('v=17&site=sternicza-11').screeningTrees,futureTrees);
   for(const [version,expected] of [[8,'classic'],[9,'spa'],[10,'spa-edge'],[11,'spa-edge'],[12,'spa-compact'],[13,'spa-screened'],[14,'spa-grove']]){
     assert.equal(model.decodeState(`v=${version}&site=sternicza-11&gardenProgram=spa-aligned`).gardenProgram,expected);
   }
@@ -93,8 +94,8 @@ test('sparse v15 links and saves freeze the published aligned grove, midpoint st
   }
   assert.equal(future.decodeState('v=15&site=sternicza-11&gardenProgram=spa-corner').gardenProgram,'spa-aligned');
   assert.equal(future.migrateSavedState({siteId:'sternicza-11',gardenProgram:'spa-corner'},15).gardenProgram,'spa-aligned');
-  assert.equal(future.decodeState('v=16&site=sternicza-11').gardenProgram,'spa-corner');
-  assert.deepEqual(future.decodeState('v=16&site=sternicza-11').screeningTrees,futureTrees);
+  assert.equal(future.decodeState('v=17&site=sternicza-11').gardenProgram,'spa-corner');
+  assert.deepEqual(future.decodeState('v=17&site=sternicza-11').screeningTrees,futureTrees);
 });
 
 test('explicit custom v15 planting, empty trees, view bearing and quote overrides survive the new corner default',()=>{
@@ -108,6 +109,45 @@ test('explicit custom v15 planting, empty trees, view bearing and quote override
     for(const restored of [model.decodeState(params.toString()),model.migrateSavedState(saved,15)]){
       for(const[key,value]of Object.entries(saved))assert.deepEqual(restored[key],value,key);
       assert.deepEqual(model.decodeState(model.encodeState(restored)),restored);
+    }
+  }
+});
+
+test('sparse v16 shares and saves retain the contained corner grove and six-metre pool after v17 changes',()=>{
+  const futureTrees=model.DEFAULTS.screeningTrees.map((tree,index)=>({...tree,x:13+index,y:35,height:11,crownWidth:7,crownDepth:7}));
+  const future=createStateModel({...profile,defaults:{...profile.defaults,gardenProgram:'spa-pool-grove',screeningTrees:futureTrees,
+    hedgeFront:2.2,hedgeFullPerimeter:false,showDimensions:false,costUsePlanningAllowances:false,jacuzziOverflow:true}});
+  for(const restored of [future.decodeState('v=16&site=sternicza-11'),future.migrateSavedState({siteId:'sternicza-11'},16)]){
+    assert.equal(restored.gardenProgram,'spa-corner');
+    assert.deepEqual(restored.screeningTrees.map(tree=>[tree.x,tree.y]),v16Coordinates);
+    assert.ok(restored.screeningTrees.every(tree=>tree.typeId==='austrian-pine-tall'&&tree.height===10&&tree.crownBase===2.5&&tree.crownWidth===6&&tree.crownDepth===6));
+    assert.equal(restored.hedgeFullPerimeter,true);assert.equal(restored.hedgeFront,4);
+    assert.equal(restored.showDimensions,true);assert.equal(restored.costUsePlanningAllowances,true);assert.equal(restored.jacuzziOverflow,false);
+    const pool=poolBounds(restored,data);assert.deepEqual([pool.x,pool.y,pool.width,pool.length],[15.7,19.5,3.5,6]);
+    assert.deepEqual(future.decodeState(future.encodeState(restored)),restored);
+    restored.screeningTrees[0].x=1;
+    assert.deepEqual(future.decodeState('v=16&site=sternicza-11').screeningTrees.map(tree=>[tree.x,tree.y]),v16Coordinates);
+  }
+  assert.equal(future.decodeState('v=16&site=sternicza-11&gardenProgram=spa-pool-grove').gardenProgram,'spa-corner');
+  assert.equal(future.migrateSavedState({siteId:'sternicza-11',gardenProgram:'spa-pool-grove'},16).gardenProgram,'spa-corner');
+  assert.deepEqual(future.decodeState('v=17&site=sternicza-11').screeningTrees,futureTrees);
+  for(const [version,expected] of [[8,'classic'],[9,'spa'],[10,'spa-edge'],[11,'spa-edge'],[12,'spa-compact'],[13,'spa-screened'],[14,'spa-grove'],[15,'spa-aligned'],[16,'spa-corner']]){
+    assert.equal(model.decodeState(`v=${version}&site=sternicza-11&gardenProgram=spa-pool-grove`).gardenProgram,expected);
+  }
+});
+
+test('v16 custom tree positions, crown dimensions, empty planting and pool quotes stay intact',()=>{
+  const custom={...model.decodeState('v=16&site=sternicza-11').screeningTrees[0],id:'reference-pine',x:19.3,y:30.2,height:10,
+    crownWidth:5,crownDepth:4.8,rotation:23,unitPrice:62000,enabled:false};
+  for(const trees of [[],[custom]]){
+    const saved={siteId:'sternicza-11',gardenProgram:'spa-corner',screeningTrees:trees,hedgeFullPerimeter:true,hedgeFront:3.8,
+      costSpaPool:199000,preset:'terrace',eyeHeight:1.65,lookYaw:14,lookPitch:3,mode:'eye'};
+    const params=new URLSearchParams({v:'16',site:saved.siteId,
+      ...Object.fromEntries(Object.entries(saved).filter(([key])=>!['siteId','screeningTrees'].includes(key))),screeningTrees:JSON.stringify(trees)});
+    for(const restored of [model.decodeState(params.toString()),model.migrateSavedState(saved,16)]){
+      for(const [key,value] of Object.entries(saved))assert.deepEqual(restored[key],value,key);
+      assert.deepEqual(model.decodeState(model.encodeState(restored)),restored);
+      assert.equal(poolBounds(restored,data).length,6);
     }
   }
 });

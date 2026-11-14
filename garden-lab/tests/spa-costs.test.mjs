@@ -101,6 +101,34 @@ test('classic Sternicza and Korzeniowskiego budgets ignore inactive spa allowanc
   assert.equal(estimateSpaCosts({...base,gardenProgram:'classic'},data).status,'none');
 });
 
+test('the relocated eight-metre pool updates area quantities and keeps planning prices distinct from a project quote',()=>{
+  const current={...model.DEFAULTS,gardenProgram:'spa-pool-grove',costUsePlanningAllowances:true};
+  const previous=model.decodeState('v=16&site=sternicza-11');
+  const oldCost=estimateCosts(previous,data),cost=estimateCosts(current,data);
+  const poolRow=cost.spa.rows.find(row=>row.key==='costSpaPool');
+  assert.match(poolRow.basis,/3.5 × 8.0 m water · 28.0 m²/);
+  assert.equal(poolRow.priceStatus,'planning-allowance');
+  assert.deepEqual(poolRow.cost,{low:150000,high:230000});
+  assert.match(poolRow.scope,/revised|relocated/i);
+  assert.match(poolRow.scope,/project quotation/);
+  // The extra two metres replace seven square metres of garden. Pool
+  // excavations belong to the pool package and must not also receive fill.
+  near(oldCost.earthworks.automaticArea-cost.earthworks.automaticArea,7);
+  near(oldCost.earthworks.gardenVolume-cost.earthworks.gardenVolume,3.5);
+  assert.deepEqual(cost.hedges.baseTotal,oldCost.hedges.baseTotal);
+  assert.deepEqual(cost.screeningTrees.plantsKnown,oldCost.screeningTrees.plantsKnown);
+  assert.deepEqual(cost.screeningTrees.plantsKnown,{low:179700,high:179700});
+  assert.ok(cost.screeningTrees.rows.every(row=>/10 m tall$/.test(row.label)),'Budget rows describe the selected 10 m specimens');
+  const quoted=estimateSpaCosts({...current,costSpaPool:219000},data).rows.find(row=>row.key==='costSpaPool');
+  assert.equal(quoted.priceStatus,'user-quote');assert.deepEqual(quoted.cost,{low:219000,high:219000});
+  assert.match(quoted.scope,/entered quote covers the revised pool position and dimensions/);
+  const unquoted=estimateSpaCosts({...current,costUsePlanningAllowances:false},data).rows.find(row=>row.key==='costSpaPool');
+  assert.equal(unquoted.priceStatus,'quote-required');assert.equal(unquoted.cost,null);
+  const oldQuantities=gardenQuantities(previous,data);
+  near(oldQuantities.automaticArea,cost.earthworks.automaticArea+7);
+  near(gardenQuantities(current,data).automaticArea,cost.earthworks.automaticArea);
+});
+
 test('budget presentation distinguishes entered spa allowances from missing quotes and the incomplete total',()=>{
   const settings={...base,costSpaSauna:85400};
   const cost=estimateCosts(settings,data),nodes=new Map();

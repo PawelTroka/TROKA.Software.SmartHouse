@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {contextFacadePlacements} from '../src/scene.js';
 import {pointInPolygon} from '../src/geometry.js';
 
@@ -38,4 +39,31 @@ test('distant decoration is bounded while nearby façade detail stays available'
   assert.ok(contextFacadePlacements(building,[10,15]).some(p=>p.detailed));
   assert.ok(contextFacadePlacements(building,[10,100]).every(p=>!p.detailed));
   assert.equal(contextFacadePlacements(building,[10,300]).length,0);
+});
+
+test('building 4h has a blank garden-facing wall while its other elevations stay visible',()=>{
+  const data=JSON.parse(fs.readFileSync(new URL('../data/site-data.json',import.meta.url)));
+  const neighbour=data.buildings.find(b=>b.id==='building-4'),before=structuredClone(neighbour);
+  const observation=data.facadeOverrides['building-4'];
+  assert.equal(observation.observedName,'4h');
+  assert.match(observation.source,/User observation/);
+  assert.equal(observation.windowlessEdges.length,2);
+  const all=contextFacadePlacements(neighbour,[10,28]);
+  assert.equal(all.filter(p=>p.nx>.99).length,9,'The former repeated openings included nine panes on the garden wall');
+  for(const footprint of [neighbour.footprint,[...neighbour.footprint].reverse()]){
+    const panes=contextFacadePlacements({...neighbour,footprint},[10,28],160,observation);
+    assert.equal(panes.filter(p=>p.nx>.99).length,0,'Neither east-facing wall segment may receive a window placement');
+    assert.equal(panes.length,all.length-9,'Only the recorded garden-facing elevation changes');
+    assert.ok(panes.some(p=>p.ny<-.99),'Unobserved northern elevations retain their illustrative windows');
+  }
+  assert.deepEqual(neighbour,before,'The official mass, source height and geometry remain untouched');
+  assert.match(data.neighborhood.labelsById[neighbour.id],/4h.*without windows/);
+});
+
+test('a blank-wall observation cannot accidentally suppress another mapped building',()=>{
+  const data=JSON.parse(fs.readFileSync(new URL('../data/site-data.json',import.meta.url)));
+  const neighbour=data.buildings.find(b=>b.id==='building-4');
+  const other={...neighbour,id:'other-building',officialId:'another-official-building'};
+  assert.deepEqual(contextFacadePlacements(other,[10,28],160,data.facadeOverrides['building-4']),
+    contextFacadePlacements(other,[10,28]));
 });

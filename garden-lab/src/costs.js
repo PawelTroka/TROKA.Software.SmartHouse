@@ -3,11 +3,11 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.14.0';
-import { getTreeType } from './tree-catalog.js?v=1.14.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.14.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.14.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.14.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.15.0';
+import { getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.15.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.15.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.15.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.15.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -226,10 +226,13 @@ function installationGroup(enabled, rows, c, extra = {}) {
 export function estimateSpaCosts(settings,data) {
   const program=gardenProgram(settings,data),c=costSettings(settings),enabled=program.active;
   if(!enabled)return installationGroup(false,[],c);
-  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id);
+  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
+  const revisedPoolQuote=program.id==='spa-pool-grove'?(c.costSpaPool>0
+    ?' Confirm that the entered quote covers the revised pool position and dimensions.'
+    :' The relocated, longer pool needs a project quotation. The existing whole-pool planning range is retained until that quotation is available.') : '';
   const rows=[
-    installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · 1 installed pool`,
-      'Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. 8 × 3 m catalog packages are a reference, not a quote for this 3.5 m pool.',['pool']),
+    installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · ${(pool.width*pool.length).toFixed(1)} m² · 1 installed pool`,
+      `Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. 8 × 3 m catalog packages are a reference, not a quote for this ${pool.width.toFixed(1)} m pool.${revisedPoolQuote}`,['pool']),
     installedLine(c,'costSpaJacuzzi',scaledRange(tub.overflow?RATES.overflowJacuzzi:RATES.jacuzzi),`${tub.width.toFixed(2)} × ${tub.length.toFixed(2)} m · ${tub.overflow?'bespoke overflow concept':'7-seat factory-style spa'}`,
       tub.overflow?'Full custom overflow spa, structure, balance tank, hydraulics and installation allowance. No supplier quote; not a certified modification of Vienna Life.'
         :'Factory spa, reinforced support, recessed service chamber, local connections, delivery and commissioning. Removable terrace access is in the terrace line.',['jacuzzi'],tub.overflow?'Custom overflow jacuzzi · installed':'Seven-seat recessed jacuzzi · installed'),
@@ -246,7 +249,7 @@ export function estimateSpaCosts(settings,data) {
 /** Finishes and enabling work; no plant supply, spa objects or bulk fill repeated. */
 export function estimateGardenCosts(settings,data,quantities=gardenQuantities(settings,data)) {
   const c=costSettings(settings),program=gardenProgram(settings,data);
-  const enabled=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(program.id)||c.costUsePlanningAllowances||
+  const enabled=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)||c.costUsePlanningAllowances||
     Object.entries(COST_FIELDS).some(([key,f])=>f.group==='cost-garden'&&c[key]>0);
   if(!enabled)return installationGroup(false,[],c,{quantities:{}});
   const terrace=data.site.terrace,tub=jacuzziBounds(settings,data);
@@ -356,7 +359,7 @@ export function estimateScreeningTreeCosts(settings = {}) {
     const crownDepth = tree.crownDepth ?? type?.dimensions.crownDepth;
     const expandedPanel = type?.form === 'panel' && (height > type.dimensions.height + EPS
       || crownWidth > type.dimensions.crownWidth + EPS || crownDepth > type.dimensions.crownDepth + EPS);
-    return { id: tree.id || `tree-${index + 1}`, typeId: tree.typeId, label: type?.label || 'Unknown tree',
+    return { id: tree.id || `tree-${index + 1}`, typeId: tree.typeId, label: screeningTreeLabel(tree),
       height, crownWidth, crownDepth,
       unit, plants: unit.low === null ? null : range(unit.low, unit.high), status: unit.status,
       sourceUrl: type?.sourceUrl, sourceTitle: type?.sourceTitle, priceNote: type?.priceNote,
