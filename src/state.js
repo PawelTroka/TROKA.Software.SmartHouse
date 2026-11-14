@@ -1,11 +1,11 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.14.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.14.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.14.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.14.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.14.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.14.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.15.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.15.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.15.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.15.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.15.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.15.0';
 
-export const STATE_VERSION = 16;
+export const STATE_VERSION = 17;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -36,6 +36,11 @@ const V15_STERNICZA_TREES=Object.freeze([[17,26.8],[14.4,28.4],[12.6,32.7]].map(
   rotation:0,enabled:true,unitPrice:0,x,y,
 })));
 
+const V16_STERNICZA_TREES=Object.freeze([[17.3,31],[14.8,31.1],[14.5,34.9]].map(([x,y],index)=>Object.freeze({
+  id:`pine-${index+1}`,typeId:'austrian-pine-tall',height:10,crownBase:2.5,crownWidth:6,crownDepth:6,
+  rotation:0,enabled:true,unitPrice:0,x,y,
+})));
+
 const BASE_FIELDS = Object.freeze({
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeLeft: {label:'Left hedge · east',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -62,7 +67,7 @@ const BASE_FIELDS = Object.freeze({
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom']);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -77,7 +82,11 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
-  const V15_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
+  const V16_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
+    costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
+    gardenProgram:siteId===DEFAULT_SITE_ID?'spa-corner':'classic',
+    screeningTrees:siteId===DEFAULT_SITE_ID?V16_STERNICZA_TREES:Object.freeze([])});
+  const V15_DEFAULTS=Object.freeze({...V16_DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
     costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     gardenProgram:siteId===DEFAULT_SITE_ID?'spa-aligned':'classic',
     screeningTrees:siteId===DEFAULT_SITE_ID?V15_STERNICZA_TREES:Object.freeze([])});
@@ -116,9 +125,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
-    if(['spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
+    if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
     if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.hedgeFront=0;out.hedgeFullPerimeter=false;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
-    if(['spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
+    if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
     else if(['sauna','firepit'].includes(out.preset)){out.preset='garden';out.eyeHeight=1.65;}
     if(MODES.includes(input.mode))out.mode=input.mode;
     if(Object.hasOwn(input,'screeningTrees'))out.screeningTrees=sanitizeScreeningTrees(input.screeningTrees,profile.bounds);
@@ -130,13 +139,14 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(version<6&&siteId!==DEFAULT_SITE_ID)return sanitizeState();
     const oldInput=version<=14?{...input,hedgeFullPerimeter:false,...(version<=12?{hedgeFront:0}:{})}:input;
     const restoredInput=version<=8?{...oldInput,gardenProgram:'classic'}:
-      version===9&&['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa'}:
-      version<=11&&['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-edge'}:
-      version===12&&['spa-screened','spa-grove','spa-aligned','spa-corner'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-compact'}:
-      version===13&&['spa-grove','spa-aligned','spa-corner'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-screened'}:
-      version===14&&['spa-aligned','spa-corner'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-grove'}:
-      version===15&&oldInput.gardenProgram==='spa-corner'?{...oldInput,gardenProgram:'spa-aligned'}:oldInput;
-    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:DEFAULTS);
+      version===9&&['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa'}:
+      version<=11&&['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-edge'}:
+      version===12&&['spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-compact'}:
+      version===13&&['spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-screened'}:
+      version===14&&['spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-grove'}:
+      version===15&&['spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-aligned'}:
+      version===16&&oldInput.gardenProgram==='spa-pool-grove'?{...oldInput,gardenProgram:'spa-corner'}:oldInput;
+    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:DEFAULTS);
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];

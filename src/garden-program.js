@@ -2,15 +2,19 @@
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){
-  return ['spa','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)&&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
+  return ['spa','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(settings.gardenProgram)&&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
 }
 
 export function poolBounds(settings={},data){
-  const aligned=['spa-aligned','spa-corner'].includes(settings.gardenProgram),screened=settings.gardenProgram==='spa-screened',grove=settings.gardenProgram==='spa-grove';
+  const poolGrove=settings.gardenProgram==='spa-pool-grove',aligned=['spa-aligned','spa-corner'].includes(settings.gardenProgram),screened=settings.gardenProgram==='spa-screened',grove=settings.gardenProgram==='spa-grove';
   // The corner programme retains v1.13's 6 m pool and all other spa geometry.
   // Tree placement changes independently; neither observers nor buildings move.
-  const pool=spaEnabled(settings,data)?{x:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
-    y:aligned||screened?19.5:24.5,width:3.5,length:aligned?6:screened||grove?7:8}:data.site.pool;
+  // The screenshot-reference programme moves the full pool beside the nearest
+  // eastern trunk and immediately ahead of the two rear pines. The 1 m minimum
+  // is a conceptual trunk-centre to finished-coping allowance, not a certified
+  // root-ball, excavation or maintenance clearance. Historical pools stay fixed.
+  const pool=spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
+    y:poolGrove?26.30:aligned||screened?19.5:24.5,width:3.5,length:poolGrove?8:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;
   return {...pool,
     waterDepth:1.4,waterOffset:.055,coping:.28};
@@ -20,7 +24,7 @@ export function poolBounds(settings={},data){
 export function gardenProgram(settings={},data){
   const active=spaEnabled(settings,data),pool=poolBounds(settings,data);
   if(!active)return {active:false,id:'classic',pool,sauna:null,firepit:null,coldPlunge:null,furniture:null};
-  const corner=settings.gardenProgram==='spa-corner',aligned=corner||settings.gardenProgram==='spa-aligned',grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened',compact=aligned||grove||screened||settings.gardenProgram==='spa-compact',edge=compact||settings.gardenProgram==='spa-edge';
+  const poolGrove=settings.gardenProgram==='spa-pool-grove',corner=settings.gardenProgram==='spa-corner',aligned=poolGrove||corner||settings.gardenProgram==='spa-aligned',grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened',compact=aligned||grove||screened||settings.gardenProgram==='spa-compact',edge=compact||settings.gardenProgram==='spa-edge';
   // These are geometric maintenance gaps to the mapped parcel, not certified
   // planning setbacks. The rear band east of the plunge remains available for
   // screening trees; pool coping retains a narrow east-side maintenance route.
@@ -102,5 +106,5 @@ export function gardenProgram(settings={},data){
     dining:{x:3.6,y:24.4,width:3.8,length:3.4},
     path:edge?[[6.7,29.5],[6.4,31.2],[5.8,32.8]]:
       [[7.1,29.5],[8.1,31.5],[11.3,32.6],[11.5,34.3]]};
-  return {active:true,id:corner?'spa-corner':aligned?'spa-aligned':grove?'spa-grove':screened?'spa-screened':compact?'spa-compact':edge?'spa-edge':'spa',pool,sauna,firepit,coldPlunge,furniture};
+  return {active:true,id:poolGrove?'spa-pool-grove':corner?'spa-corner':aligned?'spa-aligned':grove?'spa-grove':screened?'spa-screened':compact?'spa-compact':edge?'spa-edge':'spa',pool,sauna,firepit,coldPlunge,furniture};
 }

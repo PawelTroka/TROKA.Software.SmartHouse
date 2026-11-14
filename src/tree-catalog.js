@@ -104,3 +104,10 @@ export const TREE_CATALOG = Object.freeze([
 
 const TYPES_BY_ID = new Map(TREE_CATALOG.map(type => [type.id, type]));
 export function getTreeType(id) { return TYPES_BY_ID.get(id) || null; }
+
+/** Describe the edited specimen, while catalog entries retain their stock midpoint. */
+export function screeningTreeLabel(tree) {
+  const type=getTreeType(tree?.typeId),height=Number(tree?.height??type?.dimensions.height);
+  const name=(type?.label||'Tree').split(' · ')[0];
+  return Number.isFinite(height)?`${name} · ${Number(height.toFixed(2))} m tall`:name;
+}
