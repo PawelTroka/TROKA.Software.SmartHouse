@@ -2,7 +2,7 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.15.1';
+import {getTreeType} from './tree-catalog.js?v=1.16.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -286,10 +286,36 @@ export const STERNICZA_REFERENCE_POOL_TREES=treesFrom([
   {typeId:'austrian-pine-tall',x:18.45,y:35.57,height:10,crownWidth:5,crownDepth:5},
 ]);
 const poolGroveSettings=Object.freeze({...rearCornerSettings,gardenProgram:'spa-pool-grove'});
+
+// Price/species comparisons retain every pictured trunk position and the same
+// pool, hedges and garden levels. Catalogue crown dimensions travel with the
+// species; cheaper stock must not inherit the old pines' much broader crowns.
+const atReferencePositions=typeId=>treesFrom(STERNICZA_REFERENCE_POOL_TREES.map(({x,y},index)=>({
+  id:`tree-${index+1}`,typeId,x,y,
+})));
+export const STERNICZA_EXCELSA_TREES=atReferencePositions('thuja-excelsa-9m');
+const samePositionAlternatives=Object.freeze([
+  Object.freeze({id:'white-fir-9m',label:'Three 9 m white firs · 67,500 PLN',
+    note:'The same pictured trunk positions with 9 m Abies concolor and 4.5 m modeled crown widths. Plant subtotal 67,500 PLN at the listed 22,500 PLN each; delivery, lifting and planting are extra. The 4.5 m width is a catalogue size, while crown base/depth are model assumptions; confirm three matching specimens and pool/root-ball clearance.'}),
+  Object.freeze({id:'norway-spruce-9-10m',label:'Three 9–10 m Norway spruces · 39,603 PLN',
+    note:'The same pictured trunk positions with 9.5 m modeled Norway spruces. Plant subtotal 39,603 PLN at 13,201 PLN each, assuming 4.30 PLN/EUR. Website prices include VAT; confirm Polish delivery and invoice terms, with installation extra. The 3 m crown width/depth is an editable model assumption, not a measured supplier crown; height alone does not establish equivalent screening.'}),
+  Object.freeze({id:'thuja-brabant-6-7m',label:'Three 6–7 m Brabant thujas · 8,400 PLN net',
+    note:'The same pictured trunk positions with 6.5 m modeled Brabant thujas. Plant subtotal 8,400 PLN net at 2,800 PLN net each; VAT, delivery, lifting and planting are additional. The 1.5 m crown width/depth is a model assumption. This shorter, narrower comparison does not promise a 10 m screen after one growing season.'}),
+  Object.freeze({id:'serbian-spruce-7m',label:'Three 7 m Serbian spruces · 24,900 PLN',
+    note:'The same pictured trunk positions with 7 m Serbian spruces. Plant subtotal 24,900 PLN at the listed 8,300 PLN each; confirm VAT, availability and installation. The 3 m width is supplier-published; crown depth/base are model assumptions. Compare the visible gaps from each occupied viewpoint.'}),
+  Object.freeze({id:'austrian-pine-debruyn-8-9m',label:'Three 8–9 m Austrian pines · approximately 79,645 PLN',
+    note:'The same pictured trunk positions with 8.5 m modeled Austrian pines. Plant subtotal approximately 79,645 PLN, assuming 4.30 PLN/EUR. Website prices include VAT; confirm Polish delivery and invoice terms, with installation extra. The 3 m crown width/depth and 2 m crown base are assumptions, not verified stock measurements. These trees do not inherit the old 6 / 6 / 5 m pine crowns.'}),
+  Object.freeze({id:'nordmann-fir-11m',label:'Three 11 m Nordmann firs · 84,000 PLN',
+    note:'The same pictured trunk positions with 11 m Nordmann firs and 7 m modeled crown widths. Plant subtotal 84,000 PLN at the listed 28,000 PLN each; confirm VAT, three matching specimens and installation. The large crowns extend across boundaries and pool space at these positions. This is a comparison, not a validated planting arrangement; actual crown depth, root balls and clearances need confirmation.'}),
+]);
 const poolGroveLayouts=Object.freeze([
-  Object.freeze({id:'default',label:'Reference pines + pool beside grove · default',
+  Object.freeze({id:'default',label:'Three 9 m Excelsa thujas · 28,500 PLN · default',
+    note:'Three Thuja plicata Excelsa stay at the exact pictured trunk positions, each modeled at 9 m high and 2 m wide. Plant subtotal 28,500 PLN at the listed 9,500 PLN each; confirm VAT, three matching specimens, delivery, lifting and planting. The narrow tapered crowns leave more visible gaps than the original broad pines. Crown base/depth are model assumptions; planting and root-ball clearances still need confirmation. The 8 × 3.5 m pool, 4 m full-perimeter hedges, +0.5 m garden fill and spa positions are unchanged. Compare each viewpoint or select the original pine reference.',
+    settings:poolGroveSettings,trees:STERNICZA_EXCELSA_TREES}),
+  Object.freeze({id:'reference-pines',label:'Original pictured pines · three 10 m trees · 179,700 PLN',
     note:'Three 10 m Austrian pines follow the supplied whole-plot reference: one by the left/east boundary and two at the rear, with 6 / 6 / 5 m crowns. Tree 1 ↔ 3 is 5.44 m and tree 2 ↔ 3 is 4.66 m. The pool is 8 × 3.5 m, moved 6.8 m rearward and 1.18 m inward, with approximately 1 m from full coping to the nearest trunk centres. All trunks remain inside the plot, but the modeled crowns extend about 2.0 m east, 0.8 m rear and 0.6 m east respectively. These are reference-based concept positions; root balls, excavation, crown overhang and stock need confirmation. Full-perimeter 4 m thujas retain their access openings. PCK3 visibility is measured separately from each view; the layout does not guarantee complete concealment. Choose the Previous rear-left corner garden layout to restore the v1.14 pool and planting comparisons.',
     settings:poolGroveSettings,trees:STERNICZA_REFERENCE_POOL_TREES}),
+  ...samePositionAlternatives.map(layout=>Object.freeze({...layout,settings:poolGroveSettings,trees:atReferencePositions(layout.id)})),
   Object.freeze({id:'hedges-only',label:'4 m full-perimeter thujas · no specimen trees',
     note:'The same 8 m pool, spa geometry, garden fill and front/left/right/rear thujas without specimen trees. Pedestrian and vehicle openings remain clear. Choose the Previous rear-left corner garden layout to restore the v1.14 pool and planting comparisons.',
     settings:poolGroveSettings,trees:Object.freeze([])}),

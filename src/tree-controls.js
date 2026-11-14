@@ -1,8 +1,9 @@
-import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.15.1';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.15.1';
-import {screeningTreeUnitPrice} from './costs.js?v=1.15.1';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.15.1';
-import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.15.1';
+import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.16.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.16.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.16.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.16.0';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.16.0';
+import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.16.0';
 
 const treeLabel = screeningTreeLabel;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
@@ -53,23 +54,27 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
 
   for (const type of TREE_CATALOG) {
     const option = document.createElement('option');
-    option.value = type.id; option.textContent = `${type.label} · ${money(type.pricePLN)}`;
+    option.value = type.id; option.textContent = `${type.label} · ${money(type.pricePLN)}${type.taxBasis==='net'?' net':''}`;
     $('tree-type').append(option);
   }
-  $('tree-type').value = 'austrian-pine-large';
+  $('tree-type').value = 'thuja-excelsa-9m';
 
   function selectedTree() { return (getSettings().screeningTrees || []).find(tree => tree.id === selectedId); }
   function changeTrees(trees) {
     onChange({screeningTrees:trees});
   }
   function patchSelected(patch) {
-    if (!selectedTree()) return;
+    const current=selectedTree();
+    if (!current) return;
     suggestion = '';
-    changeTrees(getSettings().screeningTrees.map(tree => tree.id === selectedId ? {...tree, ...patch} : {...tree}));
+    const edited=applyTreeEdit(current,patch);
+    changeTrees(getSettings().screeningTrees.map(tree => tree.id === selectedId ? edited : {...tree}));
+    if(current.unitPrice>0&&edited.unitPrice===0&&!Object.hasOwn(patch,'unitPrice'))
+      notify('Size changed; the previous specimen quote was cleared. Confirm a price for these dimensions.');
   }
   function showStock(type, host) {
     if (!type) { host.replaceChildren(); return; }
-    host.innerHTML = `<div class="tree-stock-heading"><strong>${esc(type.botanicalName)}</strong><span class="tree-season-tag">${type.evergreen ? 'Evergreen' : 'Seasonal foliage'}</span></div><p>${esc(type.stockNote)}</p><a href="${esc(type.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(type.sourceTitle)} ↗</a>`;
+    host.innerHTML = `<div class="tree-stock-heading"><strong>${esc(type.botanicalName)}</strong><span class="tree-season-tag">${type.evergreen ? 'Evergreen' : 'Seasonal foliage'}</span></div><p class="tree-stock-price">${money(type.pricePLN)} / tree · ${esc(treeTaxLabel(type))}</p><p>${esc(type.stockNote)}</p><p>${esc(type.dimensionNote)}</p><a href="${esc(type.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(type.sourceTitle)} ↗</a>`;
   }
   function targetLabel() {
     return $('tree-target').selectedOptions[0]?.textContent || 'the target building';
@@ -113,6 +118,15 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
   }
 
   $('tree-type').addEventListener('change', () => showStock(getTreeType($('tree-type').value), $('tree-stock-preview')));
+  function replaceSpecies(all) {
+    const trees=getSettings().screeningTrees||[], type=getTreeType($('tree-type').value);
+    if(!type||!trees.length||(!all&&!selectedTree()))return;
+    placing=false;suggestion='';
+    changeTrees(replaceTreeSpecies(trees,type.id,all?null:selectedId));
+    notify(`${all?`${trees.length} trees`:'Selected tree'} changed to ${type.label.split(' · ')[0]}. Positions kept; listed height, crown defaults and price reference applied.`);
+  }
+  $('tree-replace-selected').addEventListener('click',()=>replaceSpecies(false));
+  $('tree-replace-all').addEventListener('click',()=>replaceSpecies(true));
   $('tree-add').addEventListener('click', () => addTrees());
   $('tree-add-group').addEventListener('click', () => addTrees(3));
   $('tree-duplicate').addEventListener('click', () => addTrees(1,true));
@@ -126,7 +140,7 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
   });
   $('tree-reset-size').addEventListener('click', () => {
     const tree=selectedTree(), type=getTreeType(tree?.typeId);
-    if(type) { patchSelected({...type.dimensions, unitPrice:0}); notify('Supplier-size defaults restored; crown base and depth assumptions remain editable.'); }
+    if(type) { patchSelected({...type.dimensions, unitPrice:0}); notify('Size defaults restored. Crown dimensions labelled as assumptions remain editable.'); }
   });
   $('tree-place').addEventListener('click', () => {
     if(!selectedTree())return;
@@ -213,6 +227,8 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     $('tree-add').disabled=trees.length>=12;
     $('tree-add-group').disabled=trees.length>9;
     $('tree-duplicate').disabled=trees.length>=12;
+    $('tree-replace-selected').disabled=!selectedId;
+    $('tree-replace-all').disabled=!trees.length;
     $('tree-leaf-mode').value=state.treeLeafMode || 'auto';
     $('tree-suggestion').textContent=suggestion;
     $('tree-suggestion').hidden=!suggestion;
@@ -232,9 +248,9 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
       if(range){range.max=effectiveMax;range.value=tree[key];range.style.setProperty('--progress',`${100*(tree[key]-min)/(effectiveMax-min)}%`);}
     }
     const price=screeningTreeUnitPrice(tree);
-    $('tree-current-price').textContent=price.status==='quote-required'?'Custom size · plant quote needed':`${money(price.low)} plant only${price.source==='custom'?' · your quote':' · catalog reference'}`;
+    $('tree-current-price').textContent=price.status==='quote-required'?'Custom size · plant quote needed':`${money(price.low)} plant only${price.source==='custom'?' · your quote':` · ${treeTaxLabel(type)}`}`;
     $('tree-current-price').classList.toggle('needs-quote',price.status==='quote-required');
-    $('tree-price-note').textContent=`${price.reason || type.priceNote} Delivery, lifting and planting are itemised in the budget.`;
+    $('tree-price-note').textContent=`${price.reason || type.priceNote} ${price.source==='custom'?'Enter your final plant-only amount, including applicable tax.':type.taxNote} Delivery, lifting and planting are itemised in the budget.`;
     $('tree-dimension-note').textContent=type.dimensionNote;
     const volume=data?screeningTreeVolumes(state,data).find(item=>item.id===tree.id):null;
     const warnings=volume?.warnings || [];

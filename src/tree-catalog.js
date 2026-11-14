@@ -1,16 +1,22 @@
 /**
- * Purchased specimen sizes and observed Polish nursery prices, 12 November 2026.
+ * Purchased specimen sizes and observed nursery prices, reviewed November 2026.
  * These are budget anchors, not reservations, installed quotes or mature sizes.
  * Crown bases and depths are modelling assumptions unless explicitly documented.
  */
 const observedAt = '2026-11-12';
+export const TREE_CATALOG_REVIEWED_AT = '2026-11-14';
 const pineSource = 'https://galeriaogrodowa.pl/produkt/sosna-czarna-pinus-nigra/';
 const grossCatalog = 'Gross retail catalog plant price, including VAT; individual offer and availability required. Transport, unloading and planting extra.';
 const evergreenNote = 'Evergreen, but real branches and foliage have gaps. The crown envelope is an optimistic geometric screen, not guaranteed opaque coverage.';
 const roundAssumption = 'Crown base is an editable visual assumption, not a supplier measurement. Depth initially equals the listed diameter; confirm the actual crown in both directions.';
 const deciduousNote = 'Deciduous. Leaf-on coverage is seasonal; winter screening through retained dry leaves and bare branches is partial and is not credited as an opaque crown.';
+const fischerTaxNote = 'VAT basis not stated on the inspected individual-specimen page; confirm the final tax-inclusive price.';
+const fischerPriceNote = 'Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra.';
+const deBruynTaxNote = 'Website prices include VAT unless indicated otherwise under supplier webshop terms; confirm the final Polish-delivery invoice.';
+const conversionNote = 'EUR converted at a fixed planning assumption of 4.30 PLN/EUR, not a live exchange rate.';
 const entry = item => Object.freeze({
   observedAt, deliveryIncluded: false, liftingQuoteRequired: true,
+  taxBasis: item.taxBasis ?? (item.priceNote === grossCatalog ? 'included' : 'unspecified'),
   ...item,
   dimensions: Object.freeze(item.dimensions),
   stock: Object.freeze(Object.fromEntries(Object.entries(item.stock).map(([key, value]) =>
@@ -18,6 +24,91 @@ const entry = item => Object.freeze({
 });
 
 export const TREE_CATALOG = Object.freeze([
+  entry({
+    id: 'thuja-excelsa-9m', label: 'Thuja Excelsa · slender 9 m', botanicalName: "Thuja plicata 'Excelsa'",
+    form: 'cone', visualFamily: 'thuja', evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 9, crownBase: .3, crownWidth: 2, crownDepth: 2 },
+    stock: { height: [9, 9], width: [2, 2] }, pricePLN: 9500, taxBasis: 'unspecified',
+    sourceUrl: 'https://drzewkafischer.pl/index.php/solitaire/18/show', sourceTitle: 'Fischer nursery · 9 m Thuja Excelsa specimen',
+    priceNote: fischerPriceNote, taxNote: fischerTaxNote,
+    stockNote: 'One catalogued 9 m tall × 2 m wide specimen, trunk circumference 50–60 cm. A listed specimen is not confirmed current stock or a supply of three matching trees.',
+    dimensionNote: roundAssumption, seasonNote: evergreenNote,
+    suitabilityNote: 'A narrow evergreen screen. The upper crown tapers substantially; its 2 m maximum width does not form a 2 m wide wall up to 9 m.',
+  }),
+  entry({
+    id: 'white-fir-9m', label: 'White fir · broad 9 m', botanicalName: 'Abies concolor',
+    form: 'cone', visualFamily: 'fir', foliageColor: 0x6d9696, evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 9, crownBase: .4, crownWidth: 4.5, crownDepth: 4.5 },
+    stock: { height: [9, 9], width: [4.5, 4.5] }, pricePLN: 22500, taxBasis: 'unspecified',
+    sourceUrl: 'https://drzewkafischer.pl/index.php/solitaire/21/show', sourceTitle: 'Fischer nursery · 9 m white fir specimen',
+    priceNote: fischerPriceNote, taxNote: fischerTaxNote,
+    stockNote: 'One catalogued 9 m tall × 4.5 m wide specimen, trunk circumference 110–120 cm. Availability and matching multiples need confirmation.',
+    dimensionNote: roundAssumption, seasonNote: evergreenNote,
+    suitabilityNote: 'A broader, silver-green evergreen option. Confirm the actual upper-crown outline, root ball, soil, drainage and planting access.',
+  }),
+  entry({
+    id: 'norway-spruce-9-10m', label: 'Norway spruce · 9–10 m', botanicalName: 'Picea abies',
+    form: 'cone', visualFamily: 'spruce', evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 9.5, crownBase: .4, crownWidth: 3, crownDepth: 3 },
+    stock: { height: [9, 10] }, pricePLN: 13201, taxBasis: 'included',
+    sourcePriceEUR: 3070, exchangeRatePLNPerEUR: 4.30, exchangeRateNote: conversionNote,
+    sourceUrl: 'https://catalog.boomkwekerij-debruyn.com/en/plantenboek/picea-abies/', sourceTitle: 'De Bruyn · 9–10 m Norway spruce height band',
+    priceNote: `Catalog plant price €3,070 for 9–10 m wired-rootball stock. ${conversionNote} Crown width is unquoted; transport, unloading and planting extra.`,
+    taxNote: deBruynTaxNote,
+    stockNote: 'Published 9–10 m height band with a wired root ball. No crown width, root-ball dimensions or current specimen quantity is specified.',
+    dimensionNote: 'The 3 m crown width/depth and 0.4 m crown base are editable modelling assumptions, not verified supplier measurements. The catalog price is a budget anchor at these assumed dimensions; enlarging the crown needs a custom quote.',
+    seasonNote: evergreenNote,
+    suitabilityNote: 'Dense but tapered evergreen outline. Check the actual foliage at the required screening height; soil, water supply and pool/root-ball clearance require site assessment.',
+  }),
+  entry({
+    id: 'thuja-brabant-6-7m', label: 'Thuja Brabant · 6–7 m', botanicalName: "Thuja occidentalis 'Brabant'",
+    form: 'cone', visualFamily: 'thuja', evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 6.5, crownBase: .3, crownWidth: 1.5, crownDepth: 1.5 },
+    stock: { height: [6, 7] }, pricePLN: 2800, taxBasis: 'net',
+    sourceUrl: 'https://www.markflor.pl/cennik/drzewa-iglaste-bryla', sourceTitle: 'Markflor · 6–7 m Thuja Brabant soliter',
+    priceNote: 'Catalog plant-only price 2,800 PLN NET, excluding VAT, for a 6–7 m soliter. VAT, delivery, unloading and planting are additional; confirm a final gross quote.',
+    taxNote: 'NET: the supplier explicitly labels this price as excluding VAT. No tax uplift is silently assumed in the budget.',
+    stockNote: 'The 2026/2027 price list specifies 6–7 m height. Crown width, current quantities and individual specimen condition need confirmation.',
+    dimensionNote: 'The 1.5 m crown width/depth and 0.3 m crown base are editable modelling assumptions, not verified supplier measurements. The listed net price is a budget anchor; enlarging the crown needs a custom quote.',
+    seasonNote: evergreenNote,
+    suitabilityNote: 'A lower-cost narrow screen. Its purchased height is below the 9–10 m alternatives; the model does not assume unverified rapid growth.',
+  }),
+  entry({
+    id: 'serbian-spruce-7m', label: 'Serbian spruce · 7 m', botanicalName: 'Picea omorika',
+    form: 'cone', visualFamily: 'spruce', evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 7, crownBase: .4, crownWidth: 3, crownDepth: 3 },
+    stock: { height: [7, 7], width: [3, 3] }, pricePLN: 8300, taxBasis: 'unspecified',
+    sourceUrl: 'https://drzewkafischer.pl/solitaire/76/show', sourceTitle: 'Fischer nursery · 7 m Serbian spruce specimen',
+    priceNote: fischerPriceNote, taxNote: fischerTaxNote,
+    stockNote: 'One catalogued 7 m tall × 3 m wide specimen. Availability and matching multiples at this price need confirmation.',
+    dimensionNote: roundAssumption, seasonNote: evergreenNote,
+    suitabilityNote: 'A tapered evergreen crown, shorter than the pines it replaces. Use the actual purchased height in the sightline comparison.',
+  }),
+  entry({
+    id: 'austrian-pine-debruyn-8-9m', label: 'Austrian pine · imported 8–9 m', botanicalName: 'Pinus nigra nigra',
+    form: 'ellipsoid', visualFamily: 'pine', evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 8.5, crownBase: 2, crownWidth: 3, crownDepth: 3 },
+    stock: { height: [8, 9] }, pricePLN: 26548.2, taxBasis: 'included',
+    sourcePriceEUR: 6174, exchangeRatePLNPerEUR: 4.30, exchangeRateNote: conversionNote,
+    sourceUrl: 'https://catalog.boomkwekerij-debruyn.com/en/plantenboek/pinus-nigra-nigra/', sourceTitle: 'De Bruyn · 8–9 m Austrian pine height band',
+    priceNote: `Catalog plant price €6,174 for 8–9 m wired-rootball stock, excluding the separately priced multi-stem form. ${conversionNote} Crown dimensions, transport, unloading and planting need confirmation.`,
+    taxNote: deBruynTaxNote,
+    stockNote: 'Published 8–9 m height band with a wired root ball. The listing does not establish the 5–6 m wide crown used by the previous large-pine design.',
+    dimensionNote: 'The 3 m crown width/depth and 2 m crown base are editable modelling assumptions, not verified supplier measurements. The catalog price is a budget anchor at these assumed dimensions; enlarging the crown needs a custom quote.',
+    seasonNote: evergreenNote,
+    suitabilityNote: 'Retains the pine appearance at a lower catalog price. Real pines have branch gaps; confirm width in both directions, foliage base and density before comparing with a broad specimen.',
+  }),
+  entry({
+    id: 'nordmann-fir-11m', label: 'Nordmann fir · broad 11 m', botanicalName: 'Abies nordmanniana',
+    form: 'cone', visualFamily: 'fir', evergreen: true, observedAt: TREE_CATALOG_REVIEWED_AT,
+    dimensions: { height: 11, crownBase: .4, crownWidth: 7, crownDepth: 7 },
+    stock: { height: [11, 11], width: [7, 7] }, pricePLN: 28000, taxBasis: 'unspecified',
+    sourceUrl: 'https://drzewkafischer.pl/index.php/solitaire/75/show', sourceTitle: 'Fischer nursery · 11 m Nordmann fir specimen',
+    priceNote: fischerPriceNote, taxNote: fischerTaxNote,
+    stockNote: 'One catalogued 11 m tall × 7 m wide specimen. Neither current availability nor multiple matching trees is confirmed.',
+    dimensionNote: roundAssumption, seasonNote: evergreenNote,
+    suitabilityNote: 'A very broad evergreen requiring substantial space. This is a comparison option; crown overlap, boundaries, pool/root-ball clearances and lifting access must be checked.',
+  }),
   entry({
     id: 'austrian-pine-medium', label: 'Austrian pine · broad 4.25 m', botanicalName: 'Pinus nigra',
     form: 'ellipsoid', evergreen: true,

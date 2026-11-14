@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.15.1';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.15.1';
+import {getSiteProfile} from './sites.js?v=1.16.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.16.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -83,7 +83,7 @@ export function renderBudget(cost,settings,data){
   if($('screening-tree-detail')){
     if(!t?.count){$('screening-tree-detail').innerHTML='';return;}
     let treeRows=t.rows.map((tree,index)=>row(`${index+1}. ${escape(tree.label)}`,
-      `${n(tree.height,2)} m tall · ${n(tree.crownWidth,2)} × ${n(tree.crownDepth,2)} m crown<small>${escape(tree.unit.source==='custom'?'Your plant-only quote':tree.unit.source==='unquoted'?'Custom dimensions need a supplier quote':'Published purchased-stock reference')}</small>`,
+      `${n(tree.height,2)} m tall · ${n(tree.crownWidth,2)} × ${n(tree.crownDepth,2)} m crown<small>${escape(tree.unit.source==='custom'?'Your plant-only quote':tree.unit.source==='unquoted'?'Custom dimensions need a supplier quote':tree.unit.source==='catalog-assumption'?'Catalog price; crown width assumed':'Published purchased-stock reference')}</small><small>${escape(tree.taxNote||'')}</small>`,
       amount(tree.plants))).join('');
     for(const service of t.serviceRows||[]){
       const basis=service.id==='delivery'&&t.allDeliveryIncluded?'Included in these supplier prices':service.basis;
@@ -93,7 +93,7 @@ export function renderBudget(cost,settings,data){
     $('screening-tree-detail').innerHTML=table('Screening trees · purchased plants and services',treeRows)+
       `<p class="field-note">${t.status==='quote-required'?'Known costs only':'Planning subtotal'}: ${amount(t.knownSubtotal,true)}. ${t.status==='quote-required'?'Unquoted plants or services are excluded; this is not a complete installed price. ':''}Disabled trees are excluded. Catalog Wyplatane panels include delivery; custom plant-only quotes and other suppliers use one separate delivery allowance.</p>`+
       (unknown.length?`<ul class="budget-notes">${unknown.map(note=>`<li>${escape(note)}</li>`).join('')}</ul>`:'')+
-      `<p class="field-note">Tree sizes describe stock at purchase, not mature growth. The upper subtotal includes the same ${cost.contingencyPercent}% uncertainty allowance once; line items above exclude it. Pine and broad-hornbeam catalog amounts include VAT. Confirm the tax basis of the displayed Serbian spruce and pleached-hornbeam amounts.</p>`;
+      `<p class="field-note">Prices refer to purchased stock; crown dimensions marked as assumptions are editable examples. The upper subtotal includes the same ${cost.contingencyPercent}% uncertainty allowance once. Markflor Brabant is net, with VAT additional. Fischer and Wyplatane tax treatment needs confirmation; De Bruyn website prices include VAT unless otherwise stated. This comparison combines published price bases, not tax-normalised purchasing quotes.</p>`;
   }
 }
 
