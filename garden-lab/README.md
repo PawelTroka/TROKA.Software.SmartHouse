@@ -2,7 +2,23 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.15.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.15.0#v=17&site=sternicza-11)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.15.1)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.15.1#v=17&site=sternicza-11&mode=plan)**
+
+## Pictured planting that survives reload · 1.15.1
+
+The explicit **Apply pictured tree positions** action places the three reference pines at (19.30, 30.20), (13.80, 35.80), and (18.45, 35.57) m, all 10 m high. It opens the dimensioned whole-plot plan, preserves the selected pool and hedge settings, and replaces the shared URL state so an older linked design cannot restore different trees on reload. A live match status and coordinate table make the applied geometry visible.
+
+The attached reference has the same decoded pixels as the previous attachment. Its tree centres already match the source reference to roughly one screenshot pixel; the fix makes applying that reference explicit and reload-stable. The current longer pool is 3.5 × 8.0 m.
+
+![Pictured tree coordinates and dimensioned whole-plot plan](reference-placement-1.15.1.jpg)
+
+### Perimeter screening research
+
+The [geometric comparison and recommendation](docs/perimeter-screening-study-2026-11-14.md) tests 15 cases across nine fixed viewpoints. It includes actual required edge-screen heights, wider specimen crowns, extra trees restricted to boundary strips, a terrace canopy and a clearly hypothetical narrow-conifer row. The [complete tree and supplier research](docs/research-edge-screening-trees-2026-11-14.md) and [blank 4h wall options](docs/research-4h-wall-options-2026-11-14.md) distinguish published product information from confirmed site quotations.
+
+A continuous ideal opaque screen needs up to 13.15 m above the proposed planting grade for the tested PCK3 rays. This is not equivalent to a 13 m conifer with a tapered tip. The pool leaves only about 2.00 m to the east boundary, while documented giant-tree examples have 2.6–2.7 m root balls. The study keeps these installation limits visible. No alternative planting is silently applied to the user's reference design.
+
+**Validation:** 351 automated checks pass; the build succeeds. Browser checks verify old linked-state recovery, reload persistence, the retained 6 m historical and 8 m current pools, hedge settings and a compatible custom tree price. See the [release validation record](docs/release-1.15.1-validation.md).
 
 ## Reference pines, a closer 8 m pool and the blank 4h wall · 1.15.0
 

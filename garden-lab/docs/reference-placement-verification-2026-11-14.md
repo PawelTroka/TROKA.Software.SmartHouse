@@ -87,8 +87,10 @@ geometry and schema 17 remain unchanged. All historical scenarios are retained.
 passes **33 tests, 0 failures**. The new behaviour checks cover preservation of
 pool/hedge/viewpoint/budget fields, immutable reference records, custom and
 historical states, geometry-based match status and corrected shared-link round
-trips. Browser validation should additionally exercise the visible action from
-an old shared URL, reload it, and confirm the dimensioned whole-plot result.
+trips. Hosted browser validation exercised the visible action from an old shared
+URL, reloaded it, and confirmed the dimensioned whole-plot result. It also
+verified the current eight-metre pool and preservation of a custom tree price.
+See [the release validation record](release-1.15.1-validation.md).
 
 Screening percentages, crown-overhang and pool-clearance assumptions are
 unchanged; see [the existing reference-layout study](reference-pool-screening-comparison.md).
