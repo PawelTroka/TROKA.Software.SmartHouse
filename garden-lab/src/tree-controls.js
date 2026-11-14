@@ -1,8 +1,8 @@
-import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.15.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.15.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.15.0';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.15.0';
-import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.15.0';
+import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.15.1';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.15.1';
+import {screeningTreeUnitPrice} from './costs.js?v=1.15.1';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.15.1';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.15.1';
 
 const treeLabel = screeningTreeLabel;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
