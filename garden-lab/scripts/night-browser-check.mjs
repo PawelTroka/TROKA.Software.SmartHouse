@@ -109,6 +109,7 @@ async function screenshot(name,log=true){
 try {
   browser=await chromium.launch({
     headless:true,
+    executablePath:process.env.GARDEN_BROWSER_EXECUTABLE||undefined,
     args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader',
       '--ignore-gpu-blocklist','--disable-dev-shm-usage'],
   });
