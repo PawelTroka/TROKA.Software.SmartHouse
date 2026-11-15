@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.18.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.18.0';
+import {getSiteProfile} from './sites.js?v=1.19.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.19.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -42,7 +42,7 @@ export function renderBudget(cost,settings,data){
   if($('garden-cost'))$('garden-cost').textContent=garden?.enabled?`${amount(garden.total||garden.knownSubtotal,true)}${garden.status==='quote-required'?' + quotes':''}`:money(0);
   if($('garden-quantity'))$('garden-quantity').textContent=garden?.enabled?`${garden.rows.length} garden-work lines · ${n(garden.quantities.terraceNet)} m² terrace finish`:'Additional garden scope not selected';
   if($('garden-cost-detail'))$('garden-cost-detail').innerHTML=garden?.enabled?table('Garden finishes and enabling work',installedRows(garden.rows))+
-    '<p class="field-note">Mapped quantities and design assumptions are shown separately. The 20% ornamental-bed share, 12 lighting fittings and unit rates are provisional; replace their complete installed totals in Budget assumptions. These items exclude spa equipment, hedge / specimen supply and bulk garden fill.</p>':'';
+    '<p class="field-note">Mapped quantities and design assumptions are shown separately. The 20% ornamental-bed share, 12 baseline lighting fittings and unit rates are provisional. Garden pendants and hedge lanterns add their illustrated quantities using the same generic lighting rate; shade and support prices need a complete installed quote. Replace totals in Budget assumptions. These items exclude spa equipment, hedge / specimen supply and bulk garden fill.</p>':'';
   $('hedge-cost').textContent=amount(h.total,true);
   $('earthwork-cost').textContent=amount(e.total,true);
   $('combined-cost').textContent=amount(cost.total,true);

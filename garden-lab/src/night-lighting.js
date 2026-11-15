@@ -1,8 +1,9 @@
 /** Illustrative evening lighting. Intensities are relative visual controls,
  * not measured luminance, electrical wattage or a lighting-design calculation. */
 export const NIGHT_DEFAULTS=Object.freeze({
-  nightGardenLights:true,nightWindowLights:true,
-  nightGardenIntensity:75,nightWindowActivity:35,nightWindowIntensity:60,
+  nightGardenLights:true,nightPendantLights:true,nightHedgeLights:true,nightWindowLights:true,
+  nightGardenIntensity:75,nightPendantIntensity:65,nightHedgeIntensity:55,
+  nightWindowActivity:35,nightWindowIntensity:60,
 });
 
 const clamp=value=>Math.max(0,Math.min(1,value));
@@ -15,9 +16,12 @@ export function nightLightingState(solar,settings={}){
   const enabled=settings.sunEnabled!==false&&solar?.enabled!==false&&Number.isFinite(elevation);
   const t=enabled?clamp((elevation+6)/7):1;
   const activation=enabled?1-t*t*(3-2*t):0;
+  const gardenEnabled=settings.nightGardenLights!==false;
   return {
     activation,
-    gardenStrength:activation*(settings.nightGardenLights!==false?percentage(settings.nightGardenIntensity,75):0),
+    gardenStrength:activation*(gardenEnabled?percentage(settings.nightGardenIntensity,75):0),
+    pendantStrength:activation*(gardenEnabled&&settings.nightPendantLights!==false?percentage(settings.nightPendantIntensity,65):0),
+    hedgeStrength:activation*(gardenEnabled&&settings.nightHedgeLights!==false?percentage(settings.nightHedgeIntensity,55):0),
     windowStrength:activation*(settings.nightWindowLights!==false?percentage(settings.nightWindowIntensity,60):0),
     windowActivity:percentage(settings.nightWindowActivity,35),
   };

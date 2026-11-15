@@ -3,10 +3,10 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.18.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout} from './geometry.js?v=1.18.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.18.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.18.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.19.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout} from './geometry.js?v=1.19.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.19.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.19.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;

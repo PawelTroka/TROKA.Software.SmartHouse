@@ -1,8 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.18.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.18.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.18.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.18.0';
+import {toWorld} from './orientation.js?v=1.19.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.19.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.19.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.19.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.19.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -19,15 +20,18 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   const body=makeMaterial({color:'#343d38',roughness:.72,metalness:.3});
   const warmGlow=new THREE.MeshBasicMaterial({color:warm,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
   const waterGlow=new THREE.MeshBasicMaterial({color:water,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
-  for(const m of [warmGlow,waterGlow]){m.userData.transient=true;materials.add(m);}
+  const pendantGlow=new THREE.MeshBasicMaterial({color:'#ffdb9b',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
+  const hedgeGlow=new THREE.MeshBasicMaterial({color:'#ffcd87',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
+  const glowChannels=[[warmGlow,'garden'],[waterGlow,'garden'],[pendantGlow,'pendant'],[hedgeGlow,'hedge']];
+  for(const [m] of glowChannels){m.userData.transient=true;materials.add(m);}
   const mesh=(geometry,material,name,x,y,z)=>{
     geometries.add(geometry);
     const m=new THREE.Mesh(geometry,material);m.name=name;m.position.copy(point(x,y,z));
     m.receiveShadow=material===body;m.castShadow=false;group.add(m);return m;
   };
-  const emitter=(x,y,z,r=.045,color=warmGlow)=>{
+  const emitter=(x,y,z,r=.045,color=warmGlow,channel='garden')=>{
     const m=mesh(new THREE.SphereGeometry(r,svgMode?6:10,svgMode?4:6),color,'garden-luminaire-lens',x,y,z);
-    emitters.push(m);return m;
+    emitters.push({mesh:m,channel});return m;
   };
   // Small soft lens halos give legible luminaires without a full-screen bloom
   // pass. Surface illumination still comes from the finite real Three lights.
@@ -40,16 +44,16 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
     }
     haloTexture=new THREE.DataTexture(pixels,size,size,THREE.RGBAFormat);haloTexture.needsUpdate=true;
   }
-  const halo=(x,y,z,color=warm,size=.35)=>{
+  const halo=(x,y,z,color=warm,size=.35,channel='garden')=>{
     if(!haloTexture)return;
     const material=new THREE.SpriteMaterial({map:haloTexture,color,transparent:true,opacity:0,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending});
-    material.userData.transient=true;materials.add(material);haloMaterials.push(material);
+    material.userData.transient=true;materials.add(material);haloMaterials.push({material,channel});
     const sprite=new THREE.Sprite(material);sprite.name='garden-luminaire-soft-glow';sprite.position.copy(point(x,y,z));sprite.scale.set(size,size,1);group.add(sprite);
   };
-  const light=(kind,name,x,y,z,color,intensity,distance,target=null,shadows=false)=>{
+  const light=(kind,name,x,y,z,color,intensity,distance,target=null,shadows=false,channel='garden')=>{
     if(svgMode)return;
     const l=kind==='spot'?new THREE.SpotLight(color,intensity,distance,.56,.65,2):new THREE.PointLight(color,intensity,distance,2);
-    l.name=name;l.position.copy(point(x,y,z));l.userData.nominalIntensity=intensity;l.visible=false;
+    l.name=name;l.position.copy(point(x,y,z));l.userData.nominalIntensity=intensity;l.userData.nightChannel=channel;l.visible=false;
     if(target){l.target.position.copy(point(...target));group.add(l.target);}
     if(shadows){l.castShadow=true;l.shadow.mapSize.set(512,512);l.shadow.camera.near=.12;l.shadow.camera.far=distance;l.shadow.bias=-.0001;l.shadow.normalBias=.045;}
     lights.push(l);group.add(l);return l;
@@ -93,7 +97,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   const terrace=data.site.terrace,rear=data.site.rearMidpoint[1],depth=Number(settings.terraceDepth)||terrace.depth||4.2;
   const {floorZ,drop}=terraceGroundReference(settings,data),stairs=terraceStairs({...terrace,y:rear},depth,drop,settings,data);
   const stripX=stairs.count?stairs.x+stairs.width/2:terrace.x+terrace.width/2,stripWidth=stairs.count?stairs.width*.82:Math.min(3,terrace.width*.6),stripY=rear+depth+.035;
-  const strip=mesh(new THREE.BoxGeometry(stripWidth,.025,.035),warmGlow,'terrace-step-led',stripX,stripY,floorZ-.065);emitters.push(strip);
+  const strip=mesh(new THREE.BoxGeometry(stripWidth,.025,.035),warmGlow,'terrace-step-led',stripX,stripY,floorZ-.065);emitters.push({mesh:strip,channel:'garden'});
   light('point','terrace-step-light',stripX,stripY+.08,floorZ-.07,warm,17,5.5);
   fixtures.push({kind:'terrace-step-strip',x:stripX,y:stripY,z:floorZ-.065});
   // Wall-mounted submerged pool points. Their colour washes the basin and
@@ -118,14 +122,83 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
     light('point','fire-lounge-ember-glow',pit.x+pit.width/2,pit.y+pit.length*.57,levels.firepit.floorZ+.49,'#ff943f',8,3.4);
     fixtures.push({kind:'fire-lounge-glow',x:pit.x+pit.width/2,y:pit.y+pit.length*.57,z:levels.firepit.floorZ+.49});
   }
+  // The decorative fittings have real frames, cords and open woven shades.
+  // Merge each shade's ribs into one mesh rather than multiplying draw calls.
+  const shadeMaterial=makeMaterial({color:'#b59969',roughness:.92,metalness:0,side:THREE.DoubleSide});
+  const cordMaterial=makeMaterial({color:'#3d4034',roughness:.9,metalness:.1});
+  const join=(a,b,radius,material,name)=>{
+    const start=point(...a),end=point(...b),length=start.distanceTo(end);
+    if(length<.002)return;
+    const cylinder=mesh(new THREE.CylinderGeometry(radius,radius,length,svgMode?5:8),material,name,0,0,0);
+    cylinder.position.copy(start).add(end).multiplyScalar(.5);
+    cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),end.sub(start).normalize());
+    return cylinder;
+  };
+  const wovenShade=(radius,height)=>{
+    const pieces=[],positions=[],normals=[];
+    const outline=t=>radius*(.43+.57*Math.sin(Math.PI*(.17+.83*t)));
+    const ribs=svgMode?8:12;
+    for(let i=0;i<ribs;i++){
+      const angle=i*Math.PI*2/ribs,points=[];
+      for(let k=0;k<=8;k++){
+        const t=k/8,r=outline(t);
+        points.push(new THREE.Vector3(r*Math.cos(angle),height*(.5-t),r*Math.sin(angle)));
+      }
+      pieces.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),svgMode?6:10,.009,svgMode?3:4,false));
+    }
+    for(let k=0;k<=5;k++){
+      const t=k/5,ring=new THREE.TorusGeometry(outline(t),.007,3,svgMode?12:20);
+      ring.rotateX(Math.PI/2);ring.translate(0,height*(.5-t),0);pieces.push(ring);
+    }
+    for(const part of pieces){
+      const geometry=part.index?part.toNonIndexed():part;
+      positions.push(...geometry.attributes.position.array);normals.push(...geometry.attributes.normal.array);
+      if(geometry!==part)geometry.dispose();part.dispose();
+    }
+    const geometry=new THREE.BufferGeometry();
+    geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+    geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
+    return geometry;
+  };
+  const pendantLayout=pendantLightingLayout(settings,data);
+  for(const support of pendantLayout.supports){
+    join([support.x,support.y,support.baseZ],[support.x,support.y,support.topZ],support.zone==='garden'?.026:.018,body,`${support.id}-post`);
+    mesh(new THREE.CylinderGeometry(.075,.085,.045,8),body,`${support.id}-foot`,support.x,support.y,support.baseZ+.0225);
+  }
+  for(const cable of pendantLayout.cables){
+    for(let i=1;i<cable.points.length;i++)join(cable.points[i-1],cable.points[i],cable.kind==='arm'?.012:.006,cordMaterial,cable.id);
+  }
+  // At most three dining lights and four hedge lights illuminate surfaces.
+  // Every proposed lantern still has its own glowing lens and soft halo.
+  const hedgeSurfaceLights=new Set(Array.from({length:Math.min(4,pendantLayout.hedge.length)},(_,i)=>Math.floor(i*pendantLayout.hedge.length/Math.min(4,pendantLayout.hedge.length))));
+  for(const [channel,lanterns,glow,color] of [['pendant',pendantLayout.garden,pendantGlow,'#ffda9b'],['hedge',pendantLayout.hedge,hedgeGlow,'#ffcb84']]){
+    for(const [i,fixture] of lanterns.entries()){
+      const {x,y,z,radius,height,hangZ}=fixture;
+      join([x,y,hangZ],[x,y,z+height*.5],.006,cordMaterial,`${fixture.id}-drop`);
+      mesh(wovenShade(radius,height),shadeMaterial,`${fixture.id}-woven-shade`,x,y,z);
+      mesh(new THREE.CylinderGeometry(.035,.045,.055,8),body,`${fixture.id}-socket`,x,y,z+height*.35);
+      const diffuser=emitter(x,y,z-height*.1,radius*.61,glow,channel);
+      diffuser.name=`${fixture.id}-glowing-core`;diffuser.scale.y=height/(radius*1.8);
+      halo(x,y,z-height*.1,color,channel==='pendant'?radius*2.5:.48,channel);
+      if(channel==='pendant'){
+        const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,40,5.5,[x,y,fixture.groundZ],false,channel);
+        if(pendantLight){pendantLight.angle=1.02;pendantLight.penumbra=.75;}
+      }else if(hedgeSurfaceLights.has(i))light('point',`${fixture.id}-light`,x,y,z-height*.1,color,18,4.2,null,false,channel);
+      fixtures.push({...fixture,kind:channel==='pendant'?'garden-pendant':'hedge-pendant',channel});
+    }
+  }
   group.userData.fixtureSchedule=fixtures;
-  let applied=-1;
+  group.userData.pendantLayout=pendantLayout;
+  let applied={garden:-1,pendant:-1,hedge:-1};
+  const bounded=value=>Math.max(0,Math.min(1,Number.isFinite(value)?value:0));
   const apply=(strength)=>{
-    const value=Math.max(0,Math.min(1,Number.isFinite(strength)?strength:0)),changed=Math.abs(value-applied)>.0001;applied=value;
-    for(const l of lights){l.visible=value>.001;l.intensity=l.userData.nominalIntensity*value;}
-    for(const m of [warmGlow,waterGlow])m.opacity=Math.min(1,value*1.5);
-    for(const m of haloMaterials)m.opacity=value*.65;
-    for(const m of emitters)m.visible=value>.001;
+    const values=typeof strength==='number'?{garden:bounded(strength),pendant:bounded(strength),hedge:bounded(strength)}:
+      {garden:bounded(strength?.gardenStrength),pendant:bounded(strength?.pendantStrength),hedge:bounded(strength?.hedgeStrength)};
+    const changed=Object.keys(values).some(key=>Math.abs(values[key]-applied[key])>.0001);applied=values;
+    for(const l of lights){const value=values[l.userData.nightChannel];l.visible=value>.001;l.intensity=l.userData.nominalIntensity*value;}
+    for(const [m,channel] of glowChannels)m.opacity=Math.min(1,values[channel]*1.5);
+    for(const {material,channel} of haloMaterials)material.opacity=values[channel]*.65;
+    for(const {mesh,channel} of emitters)mesh.visible=values[channel]>.001;
     return changed;
   };
   apply(0);

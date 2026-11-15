@@ -221,12 +221,12 @@ test('night fixtures and neighbouring-window scenarios work on the new property 
   assert.ok(sun.elevation<-6);assert.equal(night.activation,1);
   const lighting=createGardenNightLighting(settings,data);
   try{
-    assert.ok(lighting.lightCount>=4&&lighting.lightCount<=12);
+    assert.ok(lighting.lightCount>=4&&lighting.lightCount<=19);
     for(const fixture of lighting.fixtures){
       assert.ok([fixture.x,fixture.y,fixture.z].every(Number.isFinite));
       assert.ok(pointInPolygon([fixture.x,fixture.y],data.site.boundary),fixture.kind);
     }
-    lighting.apply(night.gardenStrength);
+    lighting.apply(night);
     const lights=[];lighting.group.traverse(o=>{if(o.isLight)lights.push(o);});
     assert.ok(lights.every(l=>l.visible&&l.intensity>0&&Number.isFinite(l.intensity)));
     lighting.apply(0);assert.ok(lights.every(l=>!l.visible&&l.intensity===0));
