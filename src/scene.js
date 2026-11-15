@@ -1,20 +1,22 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.16.0';
-import { sampledRoofFaces } from './shade.js?v=1.16.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.16.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.16.0';
-import { getSiteProfile } from './sites.js?v=1.16.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.16.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.16.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.16.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.16.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.16.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.16.0';
-import { gardenDimensions } from './dimensions.js?v=1.16.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.16.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.16.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.17.0';
+import { sampledRoofFaces } from './shade.js?v=1.17.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.17.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.17.0';
+import { getSiteProfile } from './sites.js?v=1.17.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.17.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.17.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.17.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.17.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.17.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.17.0';
+import { gardenDimensions } from './dimensions.js?v=1.17.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.17.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.17.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.17.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.17.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -118,11 +120,21 @@ export function contextFacadePlacements(building, origin, distanceLimit = 160, o
     for(let floor=0;floor<floorCount;floor++)for(let column=0;column<count;column++){
       const t=(column+.5)/count,z=base+(1.9+floor*2.9)*scale;
       if(z+windowHeight/2+.12*scale>=roof||z-windowHeight/2-.12*scale<=base)continue;
-      result.push({x:a[0]+dx*t,y:a[1]+dy*t,z,nx,ny,angle:Math.atan2(nx,ny),width,height:windowHeight,
+      result.push({buildingId:building.id??building.officialId??String(building.index??''),side,floor,column,
+        x:a[0]+dx*t,y:a[1]+dy*t,z,nx,ny,angle:Math.atan2(nx,ny),width,height:windowHeight,
         detailed:distance<85,shade:Math.abs((building.index||0)*13+floor*7+column+side*3)%7});
     }
   }
   return result;
+}
+
+function windowQuadTriangles(items,frame=false,offset=frame?.025:.046){
+  return items.flatMap(p=>{
+    const width=p.width+(frame?.14:0),height=p.height+(frame?.14:0);
+    const x=p.x+p.nx*offset,y=p.y+p.ny*offset,tx=p.ny*width/2,ty=-p.nx*width/2;
+    const a=[x-tx,y-ty,p.z-height/2],b=[x+tx,y+ty,p.z-height/2],c=[x+tx,y+ty,p.z+height/2],d=[x-tx,y-ty,p.z+height/2];
+    return [localTriangle(a,b,c),localTriangle(a,c,d)];
+  });
 }
 
 // Rendering and numerical shade use the same measured roof triangulation.
@@ -304,6 +316,10 @@ export function createScene(container, data, callbacks = {}) {
   standard('treeGhost', '#a89178', { transparent: true, opacity: .22, depthWrite: false, vertexColors: true });
   standard('spaGlow', '#ffdf9c', {emissive:'#ffb95e',emissiveIntensity:.65,roughness:.8});
   standard('fireGlow', '#aa5230', {emissive:'#c34916',emissiveIntensity:.4,roughness:1});
+  // Lit neighbours are illustrative panes on already permitted facade openings.
+  // A single instanced overlay avoids thousands of individual lights. It does
+  // not create openings on the user-recorded blank faces of building 4h.
+  mat.nightWindow=new THREE.MeshBasicMaterial({color:svgMode?'#ffe1a4':'#ffffff',side:THREE.DoubleSide,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
   scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
@@ -322,6 +338,7 @@ export function createScene(container, data, callbacks = {}) {
   let lastWidth = 1, lastHeight = 1;
   let shadowBoundsDirty=true,shadowCameraDirty=true,shadowReceiverPoints=[],shadowCasterPoints=[];
   let sunPathSignature='',previousSunPath=null;
+  let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
 
   const box = (group, x, y, z, width, depth, height, material, cast = true, svgOrder = 0) => {
     if (width <= 0 || depth <= 0 || height <= 0) return null;
@@ -496,14 +513,10 @@ export function createScene(container, data, callbacks = {}) {
     if(svgMode){
       // Merge simple fallback apertures, rather than creating thousands of SVG
       // mesh objects. Both panes and pale frames follow the mapped wall normal.
-      const quads=(items,frame)=>items.flatMap(p=>{
-        const width=p.width+(frame?.14:0),height=p.height+(frame?.14:0),offset=frame?.025:.046;
-        const x=p.x+p.nx*offset,y=p.y+p.ny*offset,tx=p.ny*width/2,ty=-p.nx*width/2;
-        const a=[x-tx,y-ty,p.z-height/2],b=[x+tx,y+ty,p.z-height/2],c=[x+tx,y+ty,p.z+height/2],d=[x-tx,y-ty,p.z+height/2];
-        return [localTriangle(a,b,c),localTriangle(a,c,d)];
-      });
       const subset=windows.filter((_,i)=>i%2===0);
-      if(subset.length){buildingGroup.add(new THREE.Mesh(geometryFromTriangles(quads(subset,true)),mat.windowFrame));buildingGroup.add(new THREE.Mesh(geometryFromTriangles(quads(subset,false)),mat.contextWindow));}
+      if(subset.length){buildingGroup.add(new THREE.Mesh(geometryFromTriangles(windowQuadTriangles(subset,true)),mat.windowFrame));buildingGroup.add(new THREE.Mesh(geometryFromTriangles(windowQuadTriangles(subset,false)),mat.contextWindow));}
+      nightWindowPlacements=subset;
+      nightWindowMesh=new THREE.Mesh(geometryFromTriangles([]),mat.nightWindow);nightWindowMesh.name='context-lit-window-panes';buildingGroup.add(nightWindowMesh);
       return;
     }
     const batch=(items,material,plane,name)=>{
@@ -517,10 +530,14 @@ export function createScene(container, data, callbacks = {}) {
         if(p.color)mesh.setColorAt(i,new THREE.Color(p.color));
       });
       // Finishes do not change the source body or acquire analytical shadow credit.
-      mesh.castShadow=false;buildingGroup.add(mesh);
+      mesh.castShadow=false;buildingGroup.add(mesh);return mesh;
     };
     const glassColors=['#a4bdba','#799ba1','#c3d0c2','#739198','#a0b8b7','#8ba8aa','#bbc2ae'];
     batch(windows.map(p=>({...p,offset:.046,color:glassColors[p.shade]})),mat.contextWindow,true,'context-window-panes');
+    const nightColors=['#ffe0a3','#ffd19b','#ffedc4','#e8edda','#efc784','#ffdcac','#e2e7e3'];
+    nightWindowPlacements=windows;
+    nightWindowMesh=batch(windows.map(p=>({...p,offset:.052,color:nightColors[p.shade]})),mat.nightWindow,true,'context-lit-window-panes');
+    if(nightWindowMesh){nightWindowMesh.receiveShadow=false;nightWindowMesh.frustumCulled=false;}
     batch(windows.map(p=>({...p,width:p.width+.14,height:p.height+.14,offset:.025})),mat.windowFrame,true,'context-window-frames');
     const near=windows.filter(p=>p.detailed);
     batch(near.flatMap(p=>[
@@ -534,12 +551,14 @@ export function createScene(container, data, callbacks = {}) {
 
   function rebuildContextBuildings() {
     removeGeometry(buildingGroup);
+    nightWindowMesh=null;nightWindowPlacements=[];nightWindowSignature='';
     contextDetails={windows:[],roofs:[],roofEdges:[],plinths:[]};
     for (let i = labels.length - 1; i >= 0; i--) {
       if (labels[i].kind === 'target') { labels[i].element.remove(); labels.splice(i, 1); }
     }
     (data.buildings || []).filter(b => b.id !== data.site.house.id && b.id !== data.site.garage?.id && b.kind!=='house' && b.kind!=='garage').forEach(addContextBuilding);
     flushContextDetails();
+    applyNightLighting(lastSolar,currentSettings);
     shadowBoundsDirty=true;
   }
 
@@ -949,6 +968,7 @@ export function createScene(container, data, callbacks = {}) {
 
   function rebuildDesign(settings) {
     terrainMeshes.length=0;
+    gardenNight?.dispose();gardenNight=null;
     removeGeometry(designGroup);
     syncContextTerrain(settings);
     const boundary=data.site.boundary;
@@ -1008,6 +1028,8 @@ export function createScene(container, data, callbacks = {}) {
       if(roofGeometry){const roofMesh=new THREE.Mesh(roofGeometry,mat.roof);roofMesh.castShadow=true;roofMesh.receiveShadow=true;designGroup.add(roofMesh);}
       else designGroup.add(polygonPrism(g.footprint,eaves,num(g.roofTopZ,eaves),mat.roof));
     }
+    gardenNight=createGardenNightLighting(settings,data,{svgMode});designGroup.add(gardenNight.group);
+    applyNightLighting(lastSolar,settings);
     dimensionOverlay.update(gardenDimensions(settings,data));
     shadowBoundsDirty=true;
   }
@@ -1071,10 +1093,42 @@ export function createScene(container, data, callbacks = {}) {
     if(daylight){sunMarker.position.copy(domePoint(solar.direction));sunMarker.material.color.copy(sun.color);}
   }
 
+  function applyNightLighting(solar,settings=currentSettings){
+    const night=nightLightingState(solar,settings);
+    const changed=gardenNight?.apply(night.gardenStrength);
+    if(changed&&renderer.shadowMap)renderer.shadowMap.needsUpdate=true;
+    if(nightWindowMesh){
+      const signature=String(night.windowActivity);
+      if(signature!==nightWindowSignature){
+        nightWindowSignature=signature;
+        if(svgMode){
+          nightWindowMesh.geometry.dispose();nightWindowMesh.geometry=geometryFromTriangles(windowQuadTriangles(nightWindowPlacements.filter(p=>isWindowLit(p,night.windowActivity)),false,.052));
+        }else{
+          const dummy=new THREE.Object3D();
+          nightWindowPlacements.forEach((p,i)=>{
+            dummy.position.copy(point(p.x+p.nx*.052,p.y+p.ny*.052,p.z));dummy.rotation.set(0,p.angle,0);
+            dummy.scale.set(p.width,isWindowLit(p,night.windowActivity)?p.height:0,1);dummy.updateMatrix();nightWindowMesh.setMatrixAt(i,dummy.matrix);
+          });
+          nightWindowMesh.instanceMatrix.needsUpdate=true;
+        }
+      }
+      nightWindowMesh.visible=night.windowStrength>.001&&night.windowActivity>0;
+      mat.nightWindow.opacity=Math.min(.98,night.windowStrength*1.35);
+    }
+    // Shared spa finish materials participate in the same garden-light switch.
+    // No permanent daytime emissive glow or lit pool remains when switched off.
+    mat.spaGlow.emissiveIntensity=night.gardenStrength*1.6;
+    mat.fireGlow.emissiveIntensity=night.gardenStrength*2.0;
+    mat.water.emissive.set('#278a83');mat.water.emissiveIntensity=night.gardenStrength*.14;
+    mat.waterLight.emissive.set('#3baca0');mat.waterLight.emissiveIntensity=night.gardenStrength*.17;
+    return night;
+  }
+
   function updateSun(solar,settings=currentSettings) {
     currentSettings={...currentSettings,...settings};
     const direction=solar?.direction;
     const enabled=settings.sunEnabled!==false&&solar?.enabled!==false&&Array.isArray(direction)&&direction.length===3&&direction.every(Number.isFinite)&&Math.hypot(...direction)>0;
+    lastSolar={...solar,enabled};
     const daylight=enabled&&solar.isDaylight===true&&direction[2]>0;
     const c=centroid(data.site.boundary),centre=[c[0],c[1],gardenGroundAt(c[0],c[1],settings,data)+.1];
     if(!enabled){
@@ -1116,6 +1170,7 @@ export function createScene(container, data, callbacks = {}) {
     const reflectionStrength=!enabled||daylight?1:.06;
     mat.water.envMapIntensity=1.1*reflectionStrength;mat.waterLight.envMapIntensity=1.1*reflectionStrength;
     mat.contextWindow.envMapIntensity=.7*reflectionStrength;
+    applyNightLighting(lastSolar,settings);
     updateSunGuide(solar,settings,enabled,daylight,centre,18);
     shadowCameraDirty=true;requestRender();
     return {enabled,isDaylight:daylight,rendererType};
@@ -1216,6 +1271,7 @@ export function createScene(container, data, callbacks = {}) {
       eyeFov=num(settings.fov,eyeFov);camera.fov=eyeFov;camera.updateProjectionMatrix();orientEye();
     }
     observerSignature=nextObserverSignature;
+    applyNightLighting(lastSolar,settings);
     for(const l of labels){
       if(l.kind!=='target')continue;
       const result=analysis?.byBlock?.find(b=>b.id===l.id);
@@ -1295,7 +1351,7 @@ export function createScene(container, data, callbacks = {}) {
     dimensionOverlay.dispose();
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const materials=new Set();scene.traverse(o=>{o.geometry?.dispose();if(o.isInstancedMesh)o.dispose?.();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));});materials.forEach(m=>m.dispose());
-    textures?.dispose();sun.shadow.dispose();
+    gardenNight?.dispose();textures?.dispose();sun.shadow.dispose();
     renderer.dispose?.();renderer.domElement.remove();labelLayer.remove();
   }
   return {available:true,rendererType,update,updateSun,setView,resize,dispose,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};

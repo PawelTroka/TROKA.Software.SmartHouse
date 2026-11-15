@@ -3,14 +3,15 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.16.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.16.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.16.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.17.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.17.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.17.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.17.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
   gardenRaise: 0, bedRaise: 0, raiseNewHedges: true,
-  floorHeight: 1.2, removeGarage: true,
+  floorHeight: 1.2, firstFloorRise: 3, atticRise: 6, removeGarage: true,
   canopyEnabled: false, canopyDepth: 4.2, canopyHeight: 2.7,
   canopyWidth: 8.5, fasciaDepth: 0.3, terraceDepth: 4.2,
   includeHighFeatures: false,
@@ -244,6 +245,17 @@ export function jacuzziBounds(settings = {}, data) {
 /** Eye-height override is deliberate: UI should set the preset's initial value. */
 export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const s = settingsWithDefaults(settings), [mx, rearY] = data.site.rearMidpoint;
+  const upper = upperFloorPreset(preset);
+  if (upper) {
+    const position = upperFloorWindowPosition(upper.facing, data);
+    const floorRise = upper.level === 'first' ? number(s.firstFloorRise, 3) : number(s.atticRise, 6);
+    const eyeHeight = number(settings.eyeHeight, upper.eyeHeight);
+    const groundZ = floorElevation(s, data) + floorRise;
+    return {...position, preset, label: upper.label, eyeHeight, groundZ, z: groundZ + eyeHeight,
+      surface: 'upper-floor', level: upper.level, floorLevel: upper.floorLevel, facing: upper.facing,
+      posture: upper.posture, floorRise, windowAssumed: true,
+      defaultLookYaw: upper.defaultLookYaw, defaultLookPitch: upper.defaultLookPitch};
+  }
   const depth = number(s.terraceDepth, 4.2), width = data.site.terrace.width;
   const tub = jacuzziBounds(s, data);
   const sofa = data.site.observers?.sofa || [mx, rearY - 2.5];

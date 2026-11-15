@@ -1,11 +1,12 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.16.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.16.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.16.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.16.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.16.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.16.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.17.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.17.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.17.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.17.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.17.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.17.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.17.0';
 
-export const STATE_VERSION = 18;
+export const STATE_VERSION = 19;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -62,6 +63,8 @@ const BASE_FIELDS = Object.freeze({
   fasciaDepth: {label:'Front & side fascia drop',min:0,max:1,step:0.05,value:0.3,group:'canopy'},
   canopyWidth: {label:'Canopy width',min:4,max:11,step:0.1,value:8.5,group:'canopy'},
   floorHeight: {label:'Living floor above original garden',min:0,max:2.5,step:0.05,value:1.2,group:'assumption'},
+  firstFloorRise: {label:'First floor above living floor',min:2,max:4.5,step:0.05,value:3,group:'upperfloor'},
+  atticRise: {label:'Strych floor above living floor',min:4.5,max:9,step:0.05,value:6,group:'upperfloor'},
   eyeHeight: {label:'Eye above supporting floor / ground',min:0.4,max:2,step:0.05,value:1.2,group:'assumption'},
   hedgeInset: {label:'Hedge screen inset from boundary',min:0,max:1.5,step:0.05,value:0.5,group:'assumption'},
   observerX: {label:'Observer across the plot (x)',min:0.5,max:19.8,step:0.1,value:9.6091676564,group:'assumption'},
@@ -69,13 +72,16 @@ const BASE_FIELDS = Object.freeze({
   lookYaw: {label:'Look direction',min:-180,max:180,step:1,value:0,group:'look',unit:'°'},
   lookPitch: {label:'Look up / down',min:-60,max:60,step:1,value:0,group:'look',unit:'°'},
   sunMinutes: {label:'Time of day in Warsaw',min:0,max:1439,step:1,value:SOLAR_DEFAULTS.sunMinutes,group:'solar'},
+  nightGardenIntensity: {label:'Garden light brightness',min:0,max:100,step:1,value:75,group:'night',unit:'%'},
+  nightWindowActivity: {label:'Neighbour window activity',min:0,max:100,step:1,value:35,group:'night',unit:'%'},
+  nightWindowIntensity: {label:'Neighbour window brightness',min:0,max:100,step:1,value:60,group:'night',unit:'%'},
   ...COST_FIELDS,
   ...BUILDING_FIELDS,
 });
-export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom']);
+export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom',...UPPER_FLOOR_PRESETS.map(p=>p.id)]);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -89,6 +95,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
+    nightGardenLights:true,nightWindowLights:true,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
   const V17_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
     costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
@@ -134,6 +141,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       if(typeof input[key]==='number'&&Number.isFinite(input[key]))out[key]=Math.max(f.min,Math.min(f.max,input[key]));
     }
     out.sunMinutes=Math.round(out.sunMinutes);
+    out.atticRise=Math.max(out.atticRise,out.firstFloorRise+.5);
     out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;

@@ -7,7 +7,7 @@ export function renderNightReadouts(sun,settings){
   const light=nightLightingState(sun,settings);
   const active=light.activation>.001;
   const phase=!settings.sunEnabled?'Neutral daylight':!active?'Daylight':light.activation<.99?'Dusk':'After dark';
-  $('night-summary').textContent=`${phase} · ${active&&(light.gardenStrength>0||light.windowStrength>0)?'lights on':'lights off'}`;
+  $('night-summary').textContent=`${phase} · ${active&&(light.gardenStrength>0||(light.windowStrength>0&&light.windowActivity>0))?'lights on':'lights off'}`;
   $('nightGardenLights').checked=settings.nightGardenLights;
   $('nightWindowLights').checked=settings.nightWindowLights;
   $('night-status').textContent=!settings.sunEnabled
