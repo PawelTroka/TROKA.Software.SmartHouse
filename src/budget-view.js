@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.17.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.17.0';
+import {getSiteProfile} from './sites.js?v=1.18.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.18.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -18,14 +18,15 @@ const statusLabel=status=>({'planning-allowance':'Planning allowance · not a su
 function installedRows(items){
   return items.map(item=>{
     const references=(item.referenceIds||[]).map(id=>GARDEN_PRICE_REFERENCES.find(source=>source.id===id)).filter(Boolean);
-    const links=references.map(source=>`<a href="${escape(source.url)}" target="_blank" rel="noopener noreferrer">${escape(source.title)}</a>`).join(' · ');
+    const links=references.map(source=>`<a href="${escape(source.url)}" target="_blank" rel="noopener noreferrer">${escape(item.referenceLabels?.[source.id]||source.title)}</a>`).join(' · ');
     return row(escape(item.label),`${escape(item.basis)}<small>${escape(statusLabel(item.priceStatus))}</small><small>${escape(item.scope)}</small>${links?`<small>Product benchmark: ${links}</small>`:''}`,amount(item.cost));
   }).join('');
 }
 
 export function budgetSideLabels(data){
   const profile=getSiteProfile(data?.site?.id||'sternicza-11',data);
-  return {rear:'Rear',left:`Left / ${profile.sideLabels.left}`,right:`Right / ${profile.sideLabels.right}`};
+  return {rear:'Rear',left:`Left / ${profile.sideLabels.left}`,right:`Right / ${profile.sideLabels.right}`,
+    ...(data?.site?.edgeLabels?.front?{front:data.site.edgeLabels.front}:{})};
 }
 
 export function renderBudget(cost,settings,data){
@@ -35,8 +36,8 @@ export function renderBudget(cost,settings,data){
   if($('spa-quantity'))$('spa-quantity').textContent=spa?.enabled?spa.planningEnabled
     ?`${spa.rows.length} installed items · ${spa.rows.filter(row=>row.quoted).length} quote overrides`
     :`${spa.rows.filter(row=>row.quoted).length} of ${spa.rows.length} installed allowances entered`:'No spa programme selected';
-  if($('spa-cost-detail'))$('spa-cost-detail').innerHTML=spa?.enabled?table('Spa construction · installed scope',installedRows(spa.rows))+
-    `<p class="field-note">Each full installation is counted once. Catalog product prices are separate benchmarks, not extra additions or received site quotations. ${spa.overflow?'Custom overflow is a complete bespoke allowance; the factory Vienna spa is not certified for this conversion.':'The seven-seat spa retains its factory shell; removable terrace hatches preserve technical access.'}</p>`:'';
+  if($('spa-cost-detail'))$('spa-cost-detail').innerHTML=spa?.enabled?table(escape(spa.scopeLabel||'Spa construction · installed scope'),installedRows(spa.rows))+
+    `<p class="field-note">Each full installation is counted once. Catalog product prices are separate benchmarks, not extra additions or received site quotations. ${spa.scopeId==='pool-and-jacuzzi'?'The compact jacuzzi is a size placeholder; seating capacity, model and service access need supplier confirmation. Confirm the mapped ks200 sewer route before fixing pool siting.':spa.overflow?'Custom overflow is a complete bespoke allowance; the factory Vienna spa is not certified for this conversion.':'The seven-seat spa retains its factory shell; removable terrace hatches preserve technical access.'}</p>`:'';
   if($('garden-cost-card'))$('garden-cost-card').hidden=!garden?.enabled;
   if($('garden-cost'))$('garden-cost').textContent=garden?.enabled?`${amount(garden.total||garden.knownSubtotal,true)}${garden.status==='quote-required'?' + quotes':''}`:money(0);
   if($('garden-quantity'))$('garden-quantity').textContent=garden?.enabled?`${garden.rows.length} garden-work lines · ${n(garden.quantities.terraceNet)} m² terrace finish`:'Additional garden scope not selected';
@@ -60,7 +61,7 @@ export function renderBudget(cost,settings,data){
   panel.dataset.earthworkLow=e.total.low;panel.dataset.compactedVolume=e.compactedVolume;
   panel.dataset.screeningTreeCount=t?.count||0;panel.dataset.screeningTreeKnownLow=t?.knownSubtotal.low||0;
   panel.dataset.gardenKnownLow=garden?.knownBase.low||0;panel.dataset.planningEnabled=cost.planningEnabled?'true':'false';
-  const sideLabel={...budgetSideLabels(data),front:'Front / street'};
+  const sideLabel={front:'Front / street',...budgetSideLabels(data)};
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
     amount(s.plants))).join('');
@@ -76,7 +77,7 @@ export function renderBudget(cost,settings,data){
   earth+=row('Drainage','Provisional allowance',money(e.lines.drainage));
   earth+=row('Access / preparation','Provisional allowance',money(e.lines.access));
   $('cost-detail-content').innerHTML=table('Thujas by side · supply and installation',plants)+quantities+
-    `<p class="field-note">Gross rear area ${n(e.rearGrossArea)} m²; ${n(e.excludedArea)} m² excluded for the pool, terrace${spa?.enabled?', sauna, sunken lounge, cold plunge':''} and retained structures. Topsoil is included within the selected raise. Loose material uses your ${n(e.looseFactor,2)}× delivery multiplier.</p>`+
+    `<p class="field-note">Gross rear area ${n(e.rearGrossArea)} m²; ${n(e.excludedArea)} m² excluded for the pool, terrace${spa?.enabled&&spa.scopeId!=='pool-and-jacuzzi'?', sauna, sunken lounge, cold plunge':''} and retained structures. Topsoil is included within the selected raise. Loose material uses your ${n(e.looseFactor,2)}× delivery multiplier.</p>`+
     table('Rear-garden earthworks',earth)+
     `<p class="field-note">Line items exclude the ${cost.contingencyPercent}% upper-budget uncertainty allowance. Published plant bands are price references, not a guaranteed current offer. Enter supplier-confirmed final amounts, including applicable tax, for a purchasing budget.</p>`+
     `<ul class="budget-notes">${cost.notes.map(note=>`<li>${escape(note)}</li>`).join('')}</ul>`;

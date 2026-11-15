@@ -3,10 +3,10 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.17.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout} from './geometry.js?v=1.17.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.17.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.17.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.18.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout} from './geometry.js?v=1.18.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.18.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.18.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -270,10 +270,11 @@ export function gardenDimensions(settings={},data){
       description:`Front thuja planted span ${i+1}`,datum:front.assumption,offset:[0,1],scope:'site',groupType:'hedge',
       sceneText:null,planText:`H4 · span ${i+1} ${formatDimension(span.length)}`,priority:3});
   }
-  for(const [i,gap] of front.openings.entries()){
+  const access=[...front.openings,...boundaryAccessLayout(settings,data)];
+  for(const [i,gap] of access.entries()){
     addHorizontal(gap.id,gap.id,'width',gap.a,gap.b,Math.max(ground(...gap.a),ground(...gap.b))+.15,{
-      description:gap.label,datum:'Proposed clear opening in the front hedge; no gate leaf or screen credit',offset:[0,1],scope:'site',
-      groupKey:i?'VG':'PG',groupLabel:gap.label,groupType:'feature',sceneText:`${i?'vehicle':'pedestrian'} ${formatDimension(gap.width)}`,priority:2});
+      description:gap.label,datum:'Proposed clear boundary opening; no gate leaf or screen credit',offset:[0,1],scope:'site',
+      groupKey:gap.edgeIndex===undefined?(i?'VG':'PG'):`A${i+1}`,groupLabel:gap.label,groupType:'feature',sceneText:`access ${formatDimension(gap.width)}`,priority:2});
   }
   for(const [i,tree] of screeningTreeVolumes(settings,data).entries()){
     if(tree.enabled===false)continue;
@@ -356,7 +357,7 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const featureNames={terrace:['D','Terrace'],jacuzzi:['J','Jacuzzi · outer rim'],pool:['P','Pool · water footprint'],
   sauna:['S','Sauna'],firepit:['F','Lounge · incl. coping'],'cold-plunge':['C','Cold plunge · outer rim'],
   dining:['DN','Dining platform'],plot:['PL','Plot · maximum local-axis spans'],house:['H','House · footprint envelope'],
-  'hedge-rear':['H1','Rear hedge'],'hedge-left':['H2','Left hedge'],'hedge-right':['H3','Right hedge'],'hedge-front':['H4','Front thuja · two planted spans']};
+  'hedge-rear':['H1','Rear hedge'],'hedge-left':['H2','Left hedge'],'hedge-right':['H3','Right hedge'],'hedge-front':['H4','Front thuja · planted spans']};
 const gapNames={
   'pool-boundary':'Pool coping → plot boundary','sauna-right-boundary':'Sauna → right boundary',
   'sauna-rear-boundary':'Sauna → rear boundary','cold-plunge-boundary':'Plunge pad → rear boundary',

@@ -2,27 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.17.0">
+  <meta name="application-version" content="1.18.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
-  <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno.">
-  <title>Garden Lab · Brzeźno properties</title>
+  <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
+  <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.17.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.17.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.17.0">
+  <link rel="stylesheet" href="./style.css?v=1.18.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.18.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.18.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
   <header class="header">
-    <div class="brand"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M3 15 16 4l13 11M7 12v16h18V12M12 28V18h8v10"/><path d="M3 28h26"/></svg><div><span class="eyebrow" id="property-name">BRZEŹNO PROPERTIES</span><h1>Garden Lab<span class="brand-dot">.</span></h1></div></div>
+    <div class="brand"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M3 15 16 4l13 11M7 12v16h18V12M12 28V18h8v10"/><path d="M3 28h26"/></svg><div><span class="eyebrow" id="property-name">GDAŃSK PROPERTIES</span><h1>Garden Lab<span class="brand-dot">.</span></h1></div></div>
     <div class="site-switcher"><label for="site-select">PROPERTY</label><select id="site-select" aria-label="Choose property"></select></div>
     <div class="header-actions"><button id="save-a" class="button subtle" title="Keep this configuration as scenario A">Save A</button><button id="compare" class="button subtle" disabled>Compare A/B</button><button id="share" class="button primary"><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m8 12 4-4M7 7l-2 2a3 3 0 0 0 4 4l2-2M9 9l2-2a3 3 0 0 1 4 4l-2 2"/></svg>Share view</button></div>
   </header>
-  <div class="context-bar"><span><i class="status-dot"></i> Gdańsk · Brzeźno</span><span id="plot-dimensions">Loading mapped plot…</span><span id="geometry-status">Mapped terrain + building data</span><button id="about-open">Model & sources <span aria-hidden="true">↗</span></button></div>
+  <div class="context-bar"><span><i class="status-dot"></i> <span id="location-label">Gdańsk</span></span><span id="plot-dimensions">Loading mapped plot…</span><span id="geometry-status">Mapped terrain + building data</span><button id="about-open">Model & sources <span aria-hidden="true">↗</span></button></div>
   <main class="workspace" id="workspace">
     <aside class="controls" aria-label="Simulation controls">
-      <div class="control-intro"><span class="eyebrow">EXPLORE THE POSSIBILITIES</span><h2>Design the view.</h2><p>Adjust the landscape. See what changes from the places you actually use.</p></div>
+      <div class="control-intro"><span class="eyebrow">EXPLORE THE POSSIBILITIES</span><h2>Design the view.</h2><p>Adjust the landscape. See what changes from the places you actually use.</p><p id="site-evidence-note" class="field-note" hidden></p></div>
       <div class="mobile-comparison"><button id="save-a-mobile" class="button subtle">Save A</button><button id="compare-mobile" class="button subtle" disabled>Compare A/B</button></div>
       <section class="control-section viewpoint-section"><div class="section-heading"><h3><span>01</span> Where are you looking from?</h3></div><div class="viewpoints" id="viewpoints">
         <button data-preset="sofa" aria-pressed="true"><span>◧</span>Living room<small>Seated</small></button><button data-preset="standing" aria-pressed="false"><span>♙</span>Living room<small>Standing</small></button><button data-preset="terrace" aria-pressed="false"><span>▱</span>Terrace<small>Standing</small></button><button data-preset="jacuzzi" aria-pressed="false"><span>≈</span>Jacuzzi<small>Seated</small></button><button data-preset="garden" aria-pressed="false"><span>♧</span>Garden<small>Standing</small></button><button data-preset="sauna" data-spa-preset hidden aria-pressed="false"><span>♨</span>Corner sauna<small>Seated · 6 places</small></button><button data-preset="firepit" data-spa-preset hidden aria-pressed="false"><span>♨</span>Sunken lounge<small>Seated</small></button><button data-preset="front" hidden aria-pressed="false"><span>♧</span>Front garden<small>Street view</small></button><button data-preset="custom" aria-pressed="false"><span>⌖</span>Choose a spot<small>Tap the plan</small></button>
@@ -83,7 +83,7 @@
           <details class="night-adjustments" id="night-adjustments"><summary>Lighting &amp; neighbouring windows</summary><div class="night-body">
             <div class="night-switches"><label class="switch-row"><span>Garden lights<small>Warm tree, terrace and path accents; soft pool and spa glow.</small></span><input id="nightGardenLights" type="checkbox" role="switch" checked></label><label class="switch-row"><span>Neighbouring windows<small>Include nearby buildings and homes across the street.</small></span><input id="nightWindowLights" type="checkbox" role="switch" checked></label></div>
             <div id="night-controls" class="night-fields"></div>
-            <p class="field-note" id="night-status" aria-live="polite"></p><p class="field-note night-model-note">Lighting follows the selected date and local time, fading in at dusk. Window locations and activity are illustrative; building 4h’s garden-facing walls stay blank. Brightness is a visual comparison, not a lux calculation. Lighting does not change the geometric screening percentages.</p>
+            <p class="field-note" id="night-status" aria-live="polite"></p><p class="field-note night-model-note">Lighting follows the selected date and local time, fading in at dusk. Window locations and activity are illustrative. Brightness is a visual comparison, not a lux calculation. Lighting does not change the geometric screening percentages.</p>
           </div></details>
         </section>
         <div class="look-directions" role="group" aria-label="Look around the property"><span>Look toward</span><button type="button" data-look-yaw="0" aria-pressed="false">Rear garden</button><button type="button" data-look-yaw="-90" aria-pressed="false">Left boundary</button><button type="button" data-look-yaw="90" aria-pressed="false">Right boundary</button><button type="button" data-look-yaw="180" aria-pressed="false">Street</button></div>
@@ -111,6 +111,6 @@
   <div id="toast" class="toast" role="status"></div>
   <dialog id="about"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.17.0"></script>
+  <script type="module" src="./src/app.js?v=1.18.0"></script>
 </body>
 </html>
