@@ -1,4 +1,4 @@
-import {terrainAt} from './geometry.js?v=1.17.0';
+import {terrainAt} from './geometry.js?v=1.18.0';
 
 /** The expanded DTM is for rendering only; property levels retain the native grid. */
 export function contextTerrainAt(x,y,data){
@@ -44,7 +44,11 @@ export function buildingViewLabel(building,data){
 
 export function isAcrossStreet(building,data){
   const context=building.context||data.neighborhood?.originalContextById?.[building.id];
-  return context?.streetSide?context.streetSide==='across-street':buildingCenter(building)[1]<Math.min(...data.site.boundary.map(p=>p[1]));
+  if(context?.streetSide)return context.streetSide==='across-street';
+  const [x,y]=buildingCenter(building),facade=data.site.streetView?.facade;
+  if(facade==='right')return x<Math.min(...data.site.boundary.map(p=>p[0]));
+  if(facade==='left')return x>Math.max(...data.site.boundary.map(p=>p[0]));
+  return y<Math.min(...data.site.boundary.map(p=>p[1]));
 }
 
 export function defaultViewBuilding(data,front=false){

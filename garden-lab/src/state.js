@@ -1,10 +1,10 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.17.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.17.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.17.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.17.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.17.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.17.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.17.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.18.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.18.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.18.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.18.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.18.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.18.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.18.0';
 
 export const STATE_VERSION = 19;
 
@@ -86,6 +86,8 @@ const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,1
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const siteId=profile.id;
+  const hasFrontHedge=profile.hasFrontHedge??siteId===DEFAULT_SITE_ID;
+  const hasFullPerimeterHedges=profile.hasFullPerimeterHedges??siteId===DEFAULT_SITE_ID;
   const fields={...BASE_FIELDS};
   for(const key of Object.keys(BUILDING_FIELDS))delete fields[key];
   Object.assign(fields,buildingFields(profile.buildingTargets));
@@ -94,7 +96,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const FIELDS=Object.freeze(Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,Object.freeze(value)])));
   const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
-    linkedHedges:false,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
+    linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     nightGardenLights:true,nightWindowLights:true,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
   const V17_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
@@ -146,7 +148,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
-    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.hedgeFront=0;out.hedgeFullPerimeter=false;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
+    if(siteId!==DEFAULT_SITE_ID)out.gardenProgram='classic';
+    if(!hasFrontHedge){out.hedgeFront=0;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
+    if(!hasFullPerimeterHedges)out.hedgeFullPerimeter=false;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
     else if(['sauna','firepit'].includes(out.preset)){out.preset='garden';out.eyeHeight=1.65;}
     if(MODES.includes(input.mode))out.mode=input.mode;
@@ -208,7 +212,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   function scenarioState(name,current=DEFAULTS) {
     const layout=getScreeningLayouts(siteId,current.gardenProgram).find(item=>item.id===name);
     if(layout)return sanitizeState({...current,...layout.settings,screeningTrees:layout.trees});
-    const frontEnabled=siteId===DEFAULT_SITE_ID&&current.hedgeFront>0;
+    const frontEnabled=hasFrontHedge&&current.hedgeFront>0;
     const s=sanitizeState({...current,hedgeRear:2.5,hedgeLeft:2.5,hedgeRight:2.5,hedgeFront:frontEnabled?2.5:0,gardenRaise:0,bedRaise:0,canopyEnabled:false,raiseNewHedges:true});
     if(name==='default')Object.assign(s,{hedgeRear:DEFAULTS.hedgeRear,hedgeLeft:DEFAULTS.hedgeLeft,hedgeRight:DEFAULTS.hedgeRight,hedgeFront:DEFAULTS.hedgeFront,gardenRaise:DEFAULTS.gardenRaise});
     if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,hedgeFront:frontEnabled?4:0,bedRaise:.5});
@@ -238,7 +242,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     return next;
   }
   function changeHedgeHeight(state,key,value) {
-    const keys=siteId===DEFAULT_SITE_ID?['hedgeRear','hedgeLeft','hedgeRight','hedgeFront']:['hedgeRear','hedgeLeft','hedgeRight'];
+    const keys=hasFrontHedge?['hedgeRear','hedgeLeft','hedgeRight','hedgeFront']:['hedgeRear','hedgeLeft','hedgeRight'];
     if(!keys.includes(key))return sanitizeState(state);
     const next=sanitizeState({...state,[key]:value});
     if(next.linkedHedges)for(const side of keys)next[side]=next[key];

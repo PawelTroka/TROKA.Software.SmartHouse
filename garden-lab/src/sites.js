@@ -1,15 +1,16 @@
-import {getBuildingTargets} from './buildings.js?v=1.17.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.17.0';
+import {getBuildingTargets} from './buildings.js?v=1.18.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.18.0';
 
 export const DEFAULT_SITE_ID = 'sternicza-11';
 export const SITE_OPTIONS = Object.freeze([
   Object.freeze({id:DEFAULT_SITE_ID,label:'Sternicza 11',address:'Sternicza 11, Gdańsk Brzeźno',streetLabel:'STERNICZA',dataPath:'data/site-data.json'}),
   Object.freeze({id:'korzeniowskiego-40',label:'Korzeniowskiego 40',address:'Korzeniowskiego 40, Gdańsk Brzeźno',streetLabel:'KORZENIOWSKIEGO',dataPath:'data/korzeniowskiego-40.json'}),
+  Object.freeze({id:'nadmorska-17',label:'Nadmorska 17',address:'Nadmorska 17, Gdańsk Jelitkowo',streetLabel:'NADMORSKA',dataPath:'data/nadmorska-17.json'}),
 ]);
 const known = id => SITE_OPTIONS.some(site=>site.id===id);
 const finite = (value,fallback) => Number.isFinite(value)?value:fallback;
 const wrap = angle => ((angle%360)+360)%360;
-const cardinal = angle => ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(wrap(angle)/22.5)%16];
+const cardinal = angle => Number.isFinite(angle)?['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(wrap(angle)/22.5)%16]:'—';
 
 /** Property-aware v6–v19 share links win; older links always refer to Sternicza. */
 export function resolveSiteId(search='',hash='') {
@@ -40,22 +41,33 @@ function rearBoundaryY(x,boundary,fallback) {
 /** Geographic metadata and design limits are evaluated from the selected data. */
 export function getSiteProfile(siteId=DEFAULT_SITE_ID,data) {
   const option=SITE_OPTIONS.find(site=>site.id===siteId)||SITE_OPTIONS[0];
-  const legacy=option.id===DEFAULT_SITE_ID,site=data?.site||{},coordinates=data?.coordinates||{};
+  const legacy=option.id===DEFAULT_SITE_ID,korzeniowskiego=option.id==='korzeniowskiego-40',site=data?.site||{},coordinates=data?.coordinates||{};
+  const hasFrontHedge=typeof site.frontHedgeEnabled==='boolean'?site.frontHedgeEnabled:legacy||option.id==='nadmorska-17';
+  const hasFullPerimeterHedges=hasFrontHedge;
   if(site.id&&site.id!==option.id)throw new Error('Site dataset does not match the selected property.');
   const bounds=boundaryBounds(site.boundary)||(legacy?{minX:0,maxX:20.320901257,maxY:38.21412931,minY:0}:null);
-  const sideLabels={left:legacy?'east':'west',right:legacy?'west':'east',...(site.sideLabels||{})};
+  const sideLabels={left:legacy?'east':korzeniowskiego?'west':'left side',right:legacy?'west':korzeniowskiego?'east':'right side',...(site.sideLabels||{})};
   const latitude=finite(coordinates.latitude,legacy?54.405452:undefined),longitude=finite(coordinates.longitude,legacy?18.6312142:undefined);
   const convergence=finite(coordinates.gridConvergenceDegrees,Number.isFinite(latitude)&&Number.isFinite(longitude)
     ?Math.atan(Math.tan((longitude-19)*Math.PI/180)*Math.sin(latitude*Math.PI/180))*180/Math.PI:0);
   const uy=coordinates.yUnitEN,ux=coordinates.xUnitEN;
-  const rearBearing=wrap(finite(coordinates.yGridAzimuth,uy?Math.atan2(uy[0],uy[1])*180/Math.PI:legacy?203.43086313576222:28.4)+convergence);
+  const rearBearing=wrap(finite(coordinates.yGridAzimuth,uy?Math.atan2(uy[0],uy[1])*180/Math.PI:legacy?203.43086313576222:korzeniowskiego?28.4:NaN)+convergence);
   const leftBearing=wrap(ux?Math.atan2(ux[0],ux[1])*180/Math.PI+convergence:rearBearing-90);
-  const rear=site.rearMidpoint||[9.6091676564,18.0150830369];
+  const houseBounds=boundaryBounds(site.house?.footprint);
+  const rear=site.rearMidpoint||(houseBounds?[(houseBounds.minX+houseBounds.maxX)/2,houseBounds.maxY]:legacy?[9.6091676564,18.0150830369]:[NaN,NaN]);
   const terrace=site.terrace;
   const screeningLayouts=getScreeningLayouts(option.id),startingLayout=screeningLayouts.find(layout=>layout.id==='default');
-  const defaults=legacy?{hedgeFront:4,...startingLayout?.settings,screeningTrees:startingLayout?.trees||Object.freeze([])}:{floorHeight:1.7,hedgeRear:4,hedgeLeft:4,hedgeRight:4,hedgeFront:0,gardenRaise:.5,removeGarage:true};
+  const defaultHedges=site.defaultHedges||{};
+  const defaults=legacy?{hedgeFront:4,...startingLayout?.settings,screeningTrees:startingLayout?.trees||Object.freeze([])}:{
+    floorHeight:finite(site.defaultFloorHeight,korzeniowskiego?1.7:1.5),
+    hedgeRear:finite(defaultHedges.rear,4),hedgeLeft:finite(defaultHedges.left,4),hedgeRight:finite(defaultHedges.right,4),
+    hedgeFront:hasFrontHedge?finite(defaultHedges.front,4):0,hedgeFullPerimeter:hasFullPerimeterHedges,
+    gardenRaise:finite(site.defaultGardenRaise,korzeniowskiego?.5:0),removeGarage:true,
+    costUsePlanningAllowances:option.id==='nadmorska-17',
+  };
   const fieldOverrides={
     hedgeLeft:{label:`Left hedge · ${sideLabels.left}`},hedgeRight:{label:`Right hedge · ${sideLabels.right}`},
+    ...(site.edgeLabels?.front?{hedgeFront:{label:`Front hedge · ${site.edgeLabels.front}`},costTreePriceFront:{label:`Front / ${site.edgeLabels.front}: custom tree price`}}:{}),
     costTreePriceLeft:{label:`Left / ${sideLabels.left}: custom tree price`},
     costTreePriceRight:{label:`Right / ${sideLabels.right}: custom tree price`},
   };
@@ -64,7 +76,7 @@ export function getSiteProfile(siteId=DEFAULT_SITE_ID,data) {
     let availableDepth=Math.max(.1,rearLimit-rear[1]-.5);
     const pool=site.pool;
     if(pool&&pool.x<terrace.x+terrace.width&&pool.x+pool.width>terrace.x&&pool.y>rear[1])availableDepth=Math.min(availableDepth,pool.y-rear[1]-.5);
-    const maxDepth=Math.max(.1,Math.min(6,Math.floor(availableDepth*10)/10));
+    const maxDepth=Math.max(.1,Math.min(6,finite(terrace.maxDepth,6),Math.floor(availableDepth*10)/10));
     const minDepth=Math.min(3,maxDepth),depth=Math.max(minDepth,Math.min(maxDepth,finite(terrace.depth,4.2)));
     const canopyWidth=Math.min(terrace.width,11);
     const garden=site.observers?.garden;
@@ -84,6 +96,6 @@ export function getSiteProfile(siteId=DEFAULT_SITE_ID,data) {
     leftBearingLabel:cardinal(leftBearing),rightBearingLabel:cardinal(leftBearing+180),
     defaults:Object.freeze(defaults),fieldOverrides:Object.freeze(fieldOverrides),screeningLayouts,
     buildingTargets:getBuildingTargets(data||(legacy?undefined:{buildings:[]})),
-    hasGarage:Boolean(site.garage||(!data&&legacy)),
+    hasGarage:Boolean(site.garage||(!data&&legacy)),hasFrontHedge,hasFullPerimeterHedges,
   });
 }

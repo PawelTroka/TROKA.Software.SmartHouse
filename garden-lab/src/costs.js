@@ -3,11 +3,11 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.17.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.17.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.17.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.17.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.17.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.18.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.18.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.18.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.18.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.18.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -224,9 +224,19 @@ function installationGroup(enabled, rows, c, extra = {}) {
 }
 
 export function estimateSpaCosts(settings,data) {
-  const program=gardenProgram(settings,data),c=costSettings(settings),enabled=program.active;
+  const program=gardenProgram(settings,data),c=costSettings(settings),nadmorska=data.site.id==='nadmorska-17',enabled=program.active||nadmorska;
   if(!enabled)return installationGroup(false,[],c);
   const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
+  if(nadmorska){
+    const rows=[];
+    if(pool)rows.push(installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · ${(pool.width*pool.length).toFixed(1)} m² · 1 proposed pool`,
+      'Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. The existing 150,000–230,000 PLN whole-pool planning range is a benchmark, not a quotation or a price scaled to these dimensions. The 8 × 3 m catalog package differs from this proposal. Confirm the mapped ks200 sewer route and service access before fixing the pool position; utility diversion is not priced.',['pool']));
+    const jacuzzi=installedLine(c,'costSpaJacuzzi',scaledRange(RATES.jacuzzi),`${tub.width.toFixed(2)} × ${tub.length.toFixed(2)} m · factory-style spa concept · seating capacity unverified`,
+      'Factory spa, reinforced support, service access, local connections, delivery and commissioning. The 75,000–105,000 PLN installed range is an existing planning benchmark. The referenced Vienna Life is 2.30 × 2.30 m and is not the specified model for this smaller concept; capacity, shell dimensions and technical access need supplier confirmation. Removable terrace access is in the terrace line.',['jacuzzi'],'Compact jacuzzi · installed');
+    jacuzzi.referenceLabels={jacuzzi:'Wellis Polska · Vienna Life · comparison product, different footprint'};
+    rows.push(jacuzzi);
+    return installationGroup(true,rows,c,{overflow:false,scopeId:'pool-and-jacuzzi',scopeLabel:'Pool and jacuzzi · installed scope'});
+  }
   const revisedPoolQuote=program.id==='spa-pool-grove'?(c.costSpaPool>0
     ?' Confirm that the entered quote covers the revised pool position and dimensions.'
     :' The relocated, longer pool needs a project quotation. The existing whole-pool planning range is retained until that quotation is available.') : '';
@@ -248,8 +258,8 @@ export function estimateSpaCosts(settings,data) {
 
 /** Finishes and enabling work; no plant supply, spa objects or bulk fill repeated. */
 export function estimateGardenCosts(settings,data,quantities=gardenQuantities(settings,data)) {
-  const c=costSettings(settings),program=gardenProgram(settings,data);
-  const enabled=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)||c.costUsePlanningAllowances||
+  const c=costSettings(settings),program=gardenProgram(settings,data),nadmorska=data.site.id==='nadmorska-17';
+  const enabled=nadmorska||['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)||c.costUsePlanningAllowances||
     Object.entries(COST_FIELDS).some(([key,f])=>f.group==='cost-garden'&&c[key]>0);
   if(!enabled)return installationGroup(false,[],c,{quantities:{}});
   const terrace=data.site.terrace,tub=jacuzziBounds(settings,data);
@@ -290,7 +300,7 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
       'Dining pad plus a 1.15 m path with 90% stone coverage. Finish and local sub-base; excludes pool coping, terrace, access stairs and spa foundations.'),
     installedLine(c,'costGardenFurniture',addRanges([scaledRange(RATES.diningSet),scaledRange(RATES.lounger,loungers),scaledRange(RATES.furnitureDelivery)]),
       `1 dining set (6 seats) + ${loungers} loungers + delivery / handling allowance`,
-      'Movable furniture only. Built-in lounge seats/cushions are in the fire-lounge line. The named Cloveris benchmarks advertise free delivery; the generic range reserves 500–1,500 PLN for alternative delivery or placement assistance. Product references are not additional costs.',['furniture','lounger']),
+      `${nadmorska?'Movable furniture only.':'Movable furniture only. Built-in lounge seats/cushions are in the fire-lounge line.'} The named Cloveris benchmarks advertise free delivery; the generic range reserves 500–1,500 PLN for alternative delivery or placement assistance. Product references are not additional costs.`,['furniture','lounger']),
     installedLine(c,'costGardenPlanting',scaledRange(RATES.plantingPerM2,ornamentalArea),`${quantityText(ornamentalArea,'m² assumed beds')} × 180–350 PLN/m²`,
       'Assume 20% of garden left after hedge beds and paving. Ornamental plants, mulch and planting labour; excludes thujas, specimen trees and added bulk topsoil.'),
     installedLine(c,'costGardenLawn',scaledRange(RATES.lawnPerM2,lawnArea),`${quantityText(lawnArea,'m²')} × 40–75 PLN/m²`,
@@ -446,7 +456,9 @@ export function estimateCosts(settings = {}, data) {
   if (hedgeUnknown) notes.push('No published stock-price anchor above 4 m. Enter a custom PLN/tree price for every affected side; the known subtotal is incomplete.');
   if (count && sides.some(s => s.height > 4) && !c.costHedgeEquipment) notes.push('Large-tree lifting and access are not budgeted: equipment allowance is zero.');
   if (count) notes.push('Stock height does not guarantee an opaque hedge. Spacing and crown width must be checked with the nursery.');
-  if(q.frontSegmentLengths.length)notes.push('Front / street thujas are counted separately on each planted span; proposed pedestrian and vehicle openings are excluded. The street hedge follows original ground, with no front-garden fill or raised-bed charge. New gates, fencing and driveway construction are excluded.');
+  if(q.frontSegmentLengths.length)notes.push(data.site.id==='nadmorska-17'
+    ?`${data.site.edgeLabels?.front||'Neighbour boundary'} thujas are counted separately on each planted span. This edge remains at original ground, with no added fill or raised-bed charge. New gates, fencing and driveway construction are excluded.`
+    :'Front / street thujas are counted separately on each planted span; proposed pedestrian and vehicle openings are excluded. The street hedge follows original ground, with no front-garden fill or raised-bed charge. New gates, fencing and driveway construction are excluded.');
   if(q.fullPerimeter)notes.push('Left and right thujas extend along the full mapped plot edges. Their front-side sections stay at original grade and add plant supply, planting labour and drip irrigation only; no front-side garden fill or raised beds are charged. Hedge delivery remains one allowance for the whole order.');
 
   const requestedArea = c.costAreaOverride > 0 ? c.costAreaOverride : q.automaticArea;
@@ -482,13 +494,17 @@ export function estimateCosts(settings = {}, data) {
   const screeningTrees = estimateScreeningTreeCosts(settings);
   const spa=estimateSpaCosts(settings,data);
   const garden=estimateGardenCosts(settings,data,q);
-  if(spa.enabled)notes.push(c.costUsePlanningAllowances
-    ?'Installed spa ranges are planning assumptions, supported by separate product references. They include each object’s foundations, local connections and commissioning. They are not supplier quotations for this site.'
-    :'Spa structures use installed contractor allowances, not catalog estimates. Fill excludes sauna, sunken lounge and cold-plunge footprints. The fire lounge needs its own excavation, waterproofing and drainage design; pool and jacuzzi hydraulics, structural support and overflow collection are included only when quoted.');
+  if(spa.enabled)notes.push(spa.scopeId==='pool-and-jacuzzi'
+    ?'Nadmorska spa scope includes the proposed pool and compact jacuzzi only. Installed ranges are existing planning benchmarks, not supplier quotations. Confirm the mapped ks200 sewer route before fixing pool siting; diversion work is not priced. Jacuzzi seating capacity and service access remain unverified.'
+    :c.costUsePlanningAllowances
+      ?'Installed spa ranges are planning assumptions, supported by separate product references. They include each object’s foundations, local connections and commissioning. They are not supplier quotations for this site.'
+      :'Spa structures use installed contractor allowances, not catalog estimates. Fill excludes sauna, sunken lounge and cold-plunge footprints. The fire lounge needs its own excavation, waterproofing and drainage design; pool and jacuzzi hydraulics, structural support and overflow collection are included only when quoted.');
   if(spa.unquoted.length)notes.push(`Spa items awaiting installed quotes: ${spa.unquoted.map(item=>item.label).join(', ')}. Zero is not a free installation.`);
   if(garden.unquoted.length)notes.push(`Garden works awaiting installed quotes: ${garden.unquoted.map(item=>item.label).join(', ')}. Turn on planning allowances for preliminary ranges or enter complete line quotes.`);
   if(garden.enabled)notes.push(`Scope covers the ${q.fullPerimeter?'rear garden + full perimeter hedges':'rear garden and selected front hedge'}: terrace, spa programme, planting, site works and selected garage removal / canopy. Property purchase, house renovation, basement garage, front driveway, gates / fencing, operating bills and major utility-capacity upgrades are excluded.`);
-  if(garden.enabled)notes.push('No double charge for hedge/specimen supply, garden-fill drainage/retaining or spa foundations in garden finishes. Pool coping and built-in lounge seats belong to their spa lines. Terrace finish excludes the jacuzzi footprint. Ordinary paths and lawn need finish only, with bulk fill accounted separately.');
+  if(garden.enabled)notes.push(spa.scopeId==='pool-and-jacuzzi'
+    ?'Hedge/specimen supply, bulk fill, spa foundations and pool coping are counted in their own lines. Terrace finish excludes the jacuzzi footprint. Ordinary paths and lawn receive finish only, with bulk fill accounted separately.'
+    :'No double charge for hedge/specimen supply, garden-fill drainage/retaining or spa foundations in garden finishes. Pool coping and built-in lounge seats belong to their spa lines. Terrace finish excludes the jacuzzi footprint. Ordinary paths and lawn need finish only, with bulk fill accounted separately.');
   if(c.costUsePlanningAllowances)notes.push('Planning rates are explicit design assumptions, not surveyed contractor rates. Ranges aim to include applicable tax, but published references retain their own gross/net/unspecified tax labels. No supplier has provided a site-specific offer; replace whole-line allowances with confirmed installed gross quotations.');
   if (screeningTrees.plantQuoteCount) notes.push('An edited screening tree is not supported by its catalog price reference. Enter a plant-only quote for that specimen; prices are not extrapolated to other dimensions.');
   if (screeningTrees.unquotedServices.length) notes.push(`Screening-tree services not yet budgeted: ${screeningTrees.unquotedServices.map(item => item.label.toLowerCase()).join(', ')}. Zero means unquoted; the known subtotal includes only priced items.`);

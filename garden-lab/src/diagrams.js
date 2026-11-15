@@ -4,20 +4,21 @@ import {
   terraceGroundReference,
   hedgeSegments,
   frontHedgeLayout,
+  boundaryAccessLayout,
   canopyBounds,
   jacuzziBounds,
   spaLevels,
   saunaOpaqueFaces,
-} from './geometry.js?v=1.17.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.17.0';
-import {gazeDirection} from './orientation.js?v=1.17.0';
-import {localSunDirection} from './solar.js?v=1.17.0';
-import {getSiteProfile} from './sites.js?v=1.17.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.17.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.17.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.17.0';
-import {terraceStairs} from './layout.js?v=1.17.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.17.0';
+} from './geometry.js?v=1.18.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.18.0';
+import {gazeDirection} from './orientation.js?v=1.18.0';
+import {localSunDirection} from './solar.js?v=1.18.0';
+import {getSiteProfile} from './sites.js?v=1.18.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.18.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.18.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.18.0';
+import {terraceStairs} from './layout.js?v=1.18.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.18.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -147,7 +148,10 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
     `<line data-hedge-side="${h.side}" x1="${X(h.a[0])}" y1="${Y(h.a[1])}" x2="${X(h.b[0])}" y2="${Y(h.b[1])}" stroke="${C.hedge}" stroke-width="${Math.max(scope === 'garden' ? 4 : 2, scale * .65)}" stroke-linecap="${h.side==='front'?'butt':'square'}"/>`
   ).join('');
   const front=frontHedgeLayout(settings,data);
-  const frontOpenings=front.openings.map(g=>`<line data-front-opening="${g.id}" x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="#a58d6a" stroke-width="1.2" stroke-dasharray="3 3"><title>${esc(g.label)}: ${fmt(g.width,2)} m · no opaque gate in this model</title></line>`).join('');
+  const access=[...front.openings,...boundaryAccessLayout(settings,data)];
+  const frontOpenings=access.map(g=>`<line data-front-opening="${g.id}" x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="#a58d6a" stroke-width="1.2" stroke-dasharray="3 3"><title>${esc(g.label)}: ${fmt(g.width,2)} m · no opaque gate in this model</title></line>`).join('');
+  const mappedRoads=data.neighborhood?.roads?.filter(r=>r.footprint?.length>=3)||[];
+  const roadMarkup=mappedRoads.map(road=>`<polygon points="${polys(road.footprint)}" fill="#dfdfd6" stroke="#caccc3" stroke-width=".6"/>${road.labelPosition?label(road.label,...road.labelPosition,'font-size="9" fill="#5f685e"'):''}`).join('');
   const detail = scope !== 'context';
   const compact = scale < 10;
   const {drop:terraceDrop} = terraceGroundReference(settings,data);
@@ -180,13 +184,13 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const objectDimensions=dimensionPlanMarkup(dimensionRecords,{X,Y,scale,keyed:true,numericKeys:true,viewport:{width:W,height:H}});
   const xScale = 38, yScale = H - 32;
   const svg = `
-    <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation;${options.placingTree ? 'cursor:crosshair;' : ''}" tabindex="0" role="group" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place ${options.placingTree ? 'the selected tree' : 'a viewpoint'}. Arrow keys move ${options.placingTree ? 'the selected tree' : 'the viewpoint'} by half a metre. Top is the street side, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
+    <svg class="diagram-plan-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;min-height:0;display:block;touch-action:manipulation;${options.placingTree ? 'cursor:crosshair;' : ''}" tabindex="0" role="group" aria-roledescription="interactive site plan" aria-label="${esc(`Mapped site plan for ${profile.label}. Click the plot to place ${options.placingTree ? 'the selected tree' : 'a viewpoint'}. Arrow keys move ${options.placingTree ? 'the selected tree' : 'the viewpoint'} by half a metre. Top is ${site.planTopLabel||'the street side'}, bottom is the rear garden toward ${profile.rearBearingLabel}.`)}">
       <title>${esc(profile.label)} — mapped plot and proposed garden</title>
-      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the street-side parcel boundary. Proposed terrace, jacuzzi, pool${program.active?', six-person sauna, sunken firepit and cold plunge':''} are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
+      <desc>Plot approximately ${fmt(frontage, 2)} by ${fmt(depth, 2)} metres. House begins approximately ${fmt(setback)} metres from the ${esc(site.planTopLabel||'street-side parcel boundary')}. Proposed terrace, jacuzzi, pool${program.active?', six-person sauna, sunken firepit and cold plunge':''} are design assumptions. Green lines show hedge screen planes. Dashed line is one sampled sightline.</desc>
       <defs><clipPath id="plan-clip"><rect width="${W}" height="${H}"/></clipPath><marker id="plan-tick" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M4 0V8" stroke="${C.muted}"/></marker></defs>
       <rect width="${W}" height="${H}" fill="${C.paper}"/>
       <g clip-path="url(#plan-clip)" font-family="Inter,system-ui,sans-serif" font-size="14" fill="${C.ink}">
-        ${rect(l.bounds.minX - 5, plot.minY - 6, l.bounds.maxX - l.bounds.minX + 10, 5.8, `fill="#dfdfd6"`)}
+        ${mappedRoads.length?roadMarkup:rect(l.bounds.minX - 5, plot.minY - 6, l.bounds.maxX - l.bounds.minX + 10, 5.8, `fill="#dfdfd6"`)}
         ${nearby}
         <polygon points="${polys(site.boundary)}" fill="${C.land}" stroke="${C.muted}" stroke-width="1.4" stroke-dasharray="4 3"/>
         <polygon points="${polys(site.house.footprint)}" fill="${C.roof}" stroke="#696f69"/>
@@ -211,7 +215,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="${detail ? 6 : 4}" fill="${C.observer}" stroke="#fffdf5" stroke-width="2"/>
         <circle cx="${X(observer.x)}" cy="${Y(observer.y)}" r="2" fill="${C.ink}"/>
         ${detail ? compact ? `<text x="${X(observer.x) + 9}" y="${Y(observer.y) + 3}" font-size="9" fill="${C.ink}">View</text>` : `<rect x="${X(observer.x) - 58}" y="${Y(observer.y) - 30}" width="116" height="19" rx="9" fill="#fffdf5" fill-opacity=".94"/><text x="${X(observer.x)}" y="${Y(observer.y) - 17}" text-anchor="middle" font-size="10" fill="${C.ink}">${esc(observer.label || 'Viewpoint')}</text>` : ''}
-        ${label(`${profile.streetLabel} · ${detail ? 'STREET / ' : ''}${profile.frontBearingLabel}`, middleX, plot.minY - 3.4, `font-size="${compact ? 9 : 11}" fill="#5f685e"`)}
+        ${label(`${site.planTopLabel||profile.streetLabel} · ${profile.frontBearingLabel}`, middleX, plot.minY - 3.4, `font-size="${compact ? 9 : 11}" fill="#5f685e"`)}
         ${detail ? label(`REAR GARDEN / ${profile.rearBearingLabel} ↓`, middleX, plot.maxY + (scope==='detail'?.95:2.3), `font-size="${compact ? 9 : 11}" fill="#5f685e"`) : ''}
         ${detail ? label(`RIGHT · ${profile.sideLabels.right.toUpperCase()}`, plot.minX + 2.6, sideY, 'font-size="9" fill="#31513a"') + label(`LEFT · ${profile.sideLabels.left.toUpperCase()}`, plot.maxX - 2.6, sideY, 'font-size="9" fill="#31513a"') : ''}
         ${compass}
@@ -229,8 +233,8 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         <button type="button" data-map-scope="context" aria-pressed="${scope === 'context'}" class="diagram-scope-button" style="border:1px solid ${C.line};border-radius:999px;padding:8px 12px;background:${scope === 'context' ? C.ink : 'transparent'};color:${scope === 'context' ? '#fff' : C.ink};font:inherit;font-size:12px;cursor:pointer">Neighbourhood</button>
       </div>
     </div>
-    ${measured?`<p class="plan-site-note">Mapped street frontage ${fmt(frontage,2)} m · depth ${fmt(depth,2)} m · house setback ${fmt(setback,1)} m · ${scope==='detail'?'rear garden enlarged below':scope==='context'?(data.neighborhood?`${data.neighborhood.totalBuildingCount} mapped buildings within 200 m`:'nearest buildings and privacy targets'):'whole plot'}</p>`:''}
-    ${front.length>0&&scope!=='detail'?`<p class="plan-site-note">Front thuja ${fmt(front.length,2)} m planted · proposed openings: pedestrian 1.20 m, vehicle 4.00 m. Gate positions need confirmation; openings remain visible through.</p>`:''}
+    ${measured?`<p class="plan-site-note">Mapped ${esc(site.frontageLabel||'street frontage')} ${fmt(frontage,2)} m · depth ${fmt(depth,2)} m · house setback ${fmt(setback,1)} m · ${scope==='detail'?'rear garden enlarged below':scope==='context'?(data.neighborhood?`${data.neighborhood.totalBuildingCount} mapped buildings within ${data.neighborhood.radius??200} m`:'nearest buildings and privacy targets'):'whole plot'}</p>`:''}
+    ${access.length&&scope!=='detail'?`<p class="plan-site-note">Proposed access openings: ${access.map(g=>`${esc(g.label.replace(' · proposed',''))} ${fmt(g.width,2)} m`).join(' · ')}. Positions need confirmation; gaps receive no screening credit.</p>`:''}
     <div class="plan-workspace ${measured?'plan-workspace--measured':''} ${measured&&stacked?'plan-workspace--stacked':''}"><div class="plan-drawing" data-plan-drawing>${svg}</div>${measured?dimensionScheduleMarkup(dimensionRecords):''}</div>
     <div style="display:flex;flex:0 0 auto;gap:9px;flex-wrap:wrap;margin-top:6px;color:${C.muted};font-size:10px;line-height:1.4">
       <span><b style="color:${C.hedge}">━</b> Hedge</span><span><b style="color:${C.ray}">┄</b> Sightline</span><span><b style="color:${C.targetStroke}">■</b> Privacy targets</span><span>Left / right: from house toward rear garden ↓</span>
