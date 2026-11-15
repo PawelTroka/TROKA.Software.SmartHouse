@@ -1,0 +1,273 @@
+{
+  "version": "1.20.1",
+  "tested_head": "b16ad7c1c6f103a454988583e4efbfa7444f84eb",
+  "pull_request": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/20",
+  "ci_run": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43754166114",
+  "automated_tests": 455,
+  "static_assets": 57,
+  "hedge_lighting": {
+    "surface_lights_per_fixture": true,
+    "max_fixture_count": 24,
+    "nominal_intensity": 72,
+    "previous_intensity": 18,
+    "range_metres": 6,
+    "previous_range_metres": 4.2,
+    "default_dimmer": 85
+  },
+  "state_schema": 20,
+  "light_containment": "Local point and spot illumination is constrained to the mapped plot polygon; no physical hedge-shadow claim.",
+  "source_commit": "1068e2eab8a2f62596ffc042195191300188a4c4",
+  "browser_checks": 24,
+  "interior_surface_comparison": {
+    "lowPercent": 25,
+    "highPercent": 85,
+    "lowSurface": {
+      "width": 1004,
+      "height": 542,
+      "patches": [
+        {
+          "id": "rear-lantern-8-foliage",
+          "pixels": 560,
+          "brightenedPixels": 362,
+          "brightnessGain": 6024.000000000006
+        },
+        {
+          "id": "rear-lantern-9-foliage",
+          "pixels": 660,
+          "brightenedPixels": 409,
+          "brightnessGain": 7441.333333333327
+        },
+        {
+          "id": "rear-lantern-10-foliage",
+          "pixels": 651,
+          "brightenedPixels": 388,
+          "brightnessGain": 7565.333333333335
+        },
+        {
+          "id": "side-lantern-2-ground",
+          "pixels": 704,
+          "brightenedPixels": 704,
+          "brightnessGain": 51213.00000000006
+        },
+        {
+          "id": "side-lantern-3-ground",
+          "pixels": 756,
+          "brightenedPixels": 754,
+          "brightnessGain": 47607.33333333323
+        }
+      ],
+      "outsidePatches": [
+        {
+          "id": "outside-rear-west-ground",
+          "bounds": [
+            0.28,
+            0.74,
+            0.3,
+            0.775
+          ],
+          "pixelBounds": [
+            281,
+            401,
+            301,
+            420
+          ],
+          "pixels": 380,
+          "brightenedPixels": 0,
+          "meanLumaGain": 0,
+          "meanPositiveLumaGain": 0,
+          "meanRgbGain": 0,
+          "meanPositiveRgbGain": 0,
+          "maxLumaGain": 0
+        },
+        {
+          "id": "outside-rear-middle-ground",
+          "bounds": [
+            0.405,
+            0.88,
+            0.43,
+            0.92
+          ],
+          "pixelBounds": [
+            407,
+            477,
+            432,
+            499
+          ],
+          "pixels": 550,
+          "brightenedPixels": 0,
+          "meanLumaGain": 0,
+          "meanPositiveLumaGain": 0,
+          "meanRgbGain": 0,
+          "meanPositiveRgbGain": 0,
+          "maxLumaGain": 0
+        },
+        {
+          "id": "outside-side-lane-ground",
+          "bounds": [
+            0.921,
+            0.526,
+            0.944,
+            0.57
+          ],
+          "pixelBounds": [
+            925,
+            285,
+            948,
+            309
+          ],
+          "pixels": 552,
+          "brightenedPixels": 0,
+          "meanLumaGain": 0,
+          "meanPositiveLumaGain": 0,
+          "meanRgbGain": 0,
+          "meanPositiveRgbGain": 0,
+          "maxLumaGain": 0
+        }
+      ]
+    },
+    "surface": {
+      "width": 1004,
+      "height": 542,
+      "patches": [
+        {
+          "id": "rear-lantern-8-foliage",
+          "pixels": 560,
+          "brightenedPixels": 399,
+          "brightnessGain": 15735.333333333336
+        },
+        {
+          "id": "rear-lantern-9-foliage",
+          "pixels": 660,
+          "brightenedPixels": 480,
+          "brightnessGain": 18729.666666666657
+        },
+        {
+          "id": "rear-lantern-10-foliage",
+          "pixels": 651,
+          "brightenedPixels": 445,
+          "brightnessGain": 18932.33333333335
+        },
+        {
+          "id": "side-lantern-2-ground",
+          "pixels": 704,
+          "brightenedPixels": 704,
+          "brightnessGain": 102940.99999999988
+        },
+        {
+          "id": "side-lantern-3-ground",
+          "pixels": 756,
+          "brightenedPixels": 755,
+          "brightnessGain": 100441.00000000006
+        }
+      ],
+      "outsidePatches": [
+        {
+          "id": "outside-rear-west-ground",
+          "bounds": [
+            0.28,
+            0.74,
+            0.3,
+            0.775
+          ],
+          "pixelBounds": [
+            281,
+            401,
+            301,
+            420
+          ],
+          "pixels": 380,
+          "brightenedPixels": 0,
+          "meanLumaGain": 0,
+          "meanPositiveLumaGain": 0,
+          "meanRgbGain": 0,
+          "meanPositiveRgbGain": 0,
+          "maxLumaGain": 0
+        },
+        {
+          "id": "outside-rear-middle-ground",
+          "bounds": [
+            0.405,
+            0.88,
+            0.43,
+            0.92
+          ],
+          "pixelBounds": [
+            407,
+            477,
+            432,
+            499
+          ],
+          "pixels": 550,
+          "brightenedPixels": 0,
+          "meanLumaGain": 0,
+          "meanPositiveLumaGain": 0,
+          "meanRgbGain": 0,
+          "meanPositiveRgbGain": 0,
+          "maxLumaGain": 0
+        },
+        {
+          "id": "outside-side-lane-ground",
+          "bounds": [
+            0.921,
+            0.526,
+            0.944,
+            0.57
+          ],
+          "pixelBounds": [
+            925,
+            285,
+            948,
+            309
+          ],
+          "pixels": 552,
+          "brightenedPixels": 0,
+          "meanLumaGain": 0,
+          "meanPositiveLumaGain": 0,
+          "meanRgbGain": 0,
+          "meanPositiveRgbGain": 0,
+          "maxLumaGain": 0
+        }
+      ]
+    },
+    "outsideLimits": {
+      "meanPositiveLumaGain": 0.5,
+      "brightenedPixelFraction": 0.01,
+      "lumaPixelThreshold": 3
+    },
+    "isolated": {
+      "activation": 1,
+      "garden": 0,
+      "pendants": 0,
+      "hedge": 0.85,
+      "windows": 0,
+      "mode": "orbit"
+    },
+    "restored": {
+      "activation": 1,
+      "garden": 0.75,
+      "pendants": 0.8,
+      "hedge": 0.85,
+      "windows": 0.6,
+      "mode": "orbit"
+    },
+    "allOtherLightsOff": true
+  },
+  "mobile_webgl": {
+    "renderer": "WebGL",
+    "lights": {
+      "activation": 1,
+      "garden": 0.75,
+      "pendants": 0.8,
+      "hedge": 0.85,
+      "windows": 0.6,
+      "mode": "orbit"
+    },
+    "hedgePixels": {
+      "width": 360,
+      "height": 271,
+      "changedPixels": 27578,
+      "warmBrightenedPixels": 6763,
+      "brightnessGain": 467439.3333333343
+    }
+  }
+}
