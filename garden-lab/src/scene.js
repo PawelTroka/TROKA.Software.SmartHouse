@@ -17,6 +17,7 @@ import { createDimensionOverlay } from './scene-dimensions.js?v=1.20.1';
 import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.20.1';
 import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.20.1';
 import { createGardenNightLighting } from './scene-night-lights.js?v=1.20.1';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.20.1';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -217,6 +218,7 @@ export function createScene(container, data, callbacks = {}) {
     }
   }
   const svgMode=rendererType==='svg';
+  const gardenLightBoundary=svgMode?null:createGardenLightBoundary(data.site.boundary);
   renderer.setPixelRatio?.(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1272,6 +1274,7 @@ export function createScene(container, data, callbacks = {}) {
   function update(settings,observer,analysis,activeData=data) {
     if(activeData!==data){
       data=activeData;
+      gardenLightBoundary?.setBoundary(data.site.boundary);
       rebuildContextBuildings();
       // Optional high roof returns are part of the design group and must move
       // with their building as well. The camera and terrain renderer persist.
@@ -1282,6 +1285,9 @@ export function createScene(container, data, callbacks = {}) {
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
+    // Includes static streets/buildings, instanced foliage, water and any new
+    // transient materials introduced by this design or observer rebuild.
+    gardenLightBoundary?.install(scene);
     if(mode==='eye'){
       if(settings.lookYaw!==storedYaw||settings.lookPitch!==storedPitch||nextObserverSignature!==observerSignature){eyeYaw=num(settings.lookYaw);eyePitch=num(settings.lookPitch);}
       storedYaw=settings.lookYaw;storedPitch=settings.lookPitch;

@@ -157,6 +157,8 @@ async function warmLightDifference(unlit,lit){
  * desktop viewport below. Each patch is below/in front of a hedge lantern,
  * outside its bulb, woven shade and halo. Rear fixtures 8–10 and side fixtures
  * 2–3 previously had no real light; glowing fittings alone must not pass this.
+ * Three additional ground patches sit well beyond the rear/side hedge faces,
+ * clear of foliage triangles, fixture halos and labels, to detect light spill.
  * This reads rendered pixels only, without inspecting private scene objects. */
 async function hedgeSurfaceDifference(unlit,lit){
   return await page.evaluate(async({before,after})=>{
@@ -184,7 +186,30 @@ async function hedgeSurfaceDifference(unlit,lit){
       }
       return {id,pixels:(x1-x0)*(y1-y0),brightenedPixels,brightnessGain};
     });
-    return {width:on.width,height:on.height,patches};
+    const outsidePatches=[
+      {id:'outside-rear-west-ground',bounds:[.280,.740,.300,.775]},
+      {id:'outside-rear-middle-ground',bounds:[.405,.880,.430,.920]},
+      {id:'outside-side-lane-ground',bounds:[.921,.526,.944,.570]},
+    ].map(({id,bounds})=>{
+      const [x0,y0,x1,y1]=bounds.map((value,i)=>Math.round(value*(i%2?on.height:on.width)));
+      let brightenedPixels=0,lumaGain=0,positiveLumaGain=0,rgbGain=0,positiveRgbGain=0,maxLumaGain=0;
+      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+        const i=(y*on.width+x)*4;
+        const dr=on.pixels[i]-off.pixels[i],dg=on.pixels[i+1]-off.pixels[i+1],db=on.pixels[i+2]-off.pixels[i+2];
+        // Luma is measured in rendered 8-bit sRGB code units. Positive-only
+        // means prevent darker pixels from cancelling leaked illumination.
+        const luma=.2126*dr+.7152*dg+.0722*db,rgb=(dr+dg+db)/3;
+        if(luma>3)brightenedPixels++;
+        lumaGain+=luma;positiveLumaGain+=Math.max(0,luma);
+        rgbGain+=rgb;positiveRgbGain+=Math.max(0,rgb);
+        maxLumaGain=Math.max(maxLumaGain,luma);
+      }
+      const pixels=(x1-x0)*(y1-y0);
+      return {id,bounds,pixelBounds:[x0,y0,x1,y1],pixels,brightenedPixels,
+        meanLumaGain:lumaGain/pixels,meanPositiveLumaGain:positiveLumaGain/pixels,
+        meanRgbGain:rgbGain/pixels,meanPositiveRgbGain:positiveRgbGain/pixels,maxLumaGain};
+    });
+    return {width:on.width,height:on.height,patches,outsidePatches};
   },{before:unlit.toString('base64'),after:lit.toString('base64')});
 }
 async function scenePngScreenshot(name){
@@ -339,6 +364,14 @@ async function verifyHedgeSurfaceLighting(){
   const sumGain=result=>result.patches.reduce((sum,patch)=>sum+patch.brightnessGain,0);
   assert.ok(sumGain(surface)>sumGain(lowSurface)*1.1,
     'Hedge dimmer must visibly increase surface illumination from 25% to '+original.hedge+'%: '+JSON.stringify({lowSurface,surface}));
+  const outsideLimits={meanPositiveLumaGain:.5,brightenedPixelFraction:.01,lumaPixelThreshold:3};
+  for(const [percent,result] of [[25,lowSurface],[original.hedge,surface]]){
+    for(const patch of result.outsidePatches){
+      assert.ok(patch.meanPositiveLumaGain<=outsideLimits.meanPositiveLumaGain&&
+        patch.brightenedPixels<=patch.pixels*outsideLimits.brightenedPixelFraction,
+      'Hedge light must leave ground beyond the plot effectively unchanged at '+percent+'%: '+JSON.stringify({patch,limits:outsideLimits}));
+    }
+  }
   const isolated=await lightState();
   assert.equal(isolated.garden,0);assert.equal(isolated.pendants,0);assert.equal(isolated.windows,0);
   assert.ok(Math.abs(isolated.hedge-original.hedge/100)<.002);
@@ -348,9 +381,10 @@ async function verifyHedgeSurfaceLighting(){
   await page.locator('#nightWindowLights').setChecked(original.windowsOn);
   await setNumber('nightGardenIntensity-value',original.garden);
   assert.deepEqual(await lightState(),originalLights,'Isolated hedge verification restores every lighting channel');
-  report.nadmorska.hedgeSurfaceLighting={lowPercent:25,highPercent:original.hedge,lowSurface,surface,
+  report.nadmorska.hedgeSurfaceLighting={lowPercent:25,highPercent:original.hedge,lowSurface,surface,outsideLimits,
     isolated,restored:await lightState(),allOtherLightsOff:true};
   check('Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels');
+  check('At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged');
 }
 async function verifyNadmorska(){
   await page.setViewportSize({width:1430,height:1040});

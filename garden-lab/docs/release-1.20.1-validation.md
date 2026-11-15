@@ -10,10 +10,16 @@ Each installed hedge lantern now has its own warm, shadowless local point light.
 
 The layout continues to cap hedge fittings at 24. With the existing maximum 12 landscape lights and three dining pendants, the full scene contains at most 39 local lights. No new hedge shadow maps are allocated. The SVG fallback retains its lightweight visible fixtures and channel glow; it does not simulate surface illumination.
 
+## Interior light containment
+
+The first WebGL review exposed a bright band of illumination outside the parcel: shadowless point lights were passing through the hedge and reaching the street. The renderer now applies the exact mapped polygon as a boundary for local garden-light contributions. Direct point and spot illumination is retained inside the parcel; ambient light, sunlight and emissive neighbouring windows remain independent of this constraint.
+
+The boundary works with the actual concave plot outline and instanced foliage. It introduces no additional shadow maps. This is an explicit visual boundary constraint, not physical ray-traced occlusion by hedge leaves or walls; light passing through an access opening is also contained at the parcel boundary. The isolated-light browser comparison checks both improved interior surfaces and the absence of the exterior floodlit band.
+
 Dining-pendant output, neighbouring-window settings, landscape lighting, fixture placement and cost quantities are unchanged. Schema 20 and all saved percentages remain intact. The correction therefore reaches existing shared layouts without resetting the garden or raising unrelated dimmers.
 
 ## Verification gate
 
 - Geometry, layout, saved-state and lighting tests cover all three properties. Rendering checks require a real local light for every hedge fitting, independent channel control, bounded light counts and complete extinction with daylight or the appropriate switches.
-- The WebGL browser gate isolates hedge lanterns from landscape, dining and window lighting, compares the rendered ground and foliage at fixed cameras, exercises the hedge dimmer and saves screenshots. Mobile night rendering is checked as well as the existing property, sharing and mobile-layout scenarios.
+- The WebGL browser gate isolates hedge lanterns from landscape, dining and window lighting, compares interior foliage/ground and exterior ground at fixed cameras, exercises the hedge dimmer and saves screenshots. Mobile night rendering is checked as well as the existing property, sharing and mobile-layout scenarios.
 - The static build and every runtime cache key use version 1.20.1. Publication uses the tested source assets. Executed test counts, screenshot evidence and deployment results are recorded in the pull request and release evidence.
