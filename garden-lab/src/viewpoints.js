@@ -18,7 +18,25 @@ export const UPPER_FLOOR_PRESETS = Object.freeze([
     }))))
 ]);
 
-export const upperFloorPreset = id => UPPER_FLOOR_PRESETS.find(preset => preset.id === id);
+function streetWindowFrame(data) {
+  const street=data?.site?.streetView||{};
+  const axis=street.axis==='x'||street.facade==='left'||street.facade==='right'?'x':'y';
+  const side=street.side==='max'||street.facade==='left'||street.facade==='rear'?'max':'min';
+  const outward=side==='max'?1:-1;
+  const inferredYaw=axis==='x'?(outward<0?90:-90):(outward<0?180:0);
+  const yaw=Number.isFinite(street.lookYaw)?street.lookYaw:Number.isFinite(street.yaw)?street.yaw:inferredYaw;
+  return {axis,side,outward,yaw,label:street.label};
+}
+
+/** Corner properties can face a street through a side facade. Catalogue IDs
+ * stay stable for existing shares; only the active property's view is resolved. */
+export function upperFloorPreset(id,data) {
+  const preset=UPPER_FLOOR_PRESETS.find(preset=>preset.id===id);
+  if(!preset||preset.facing!=='street'||!data?.site?.streetView)return preset;
+  const street=streetWindowFrame(data);
+  return Object.freeze({...preset,defaultLookYaw:street.yaw,
+    label:street.label?preset.label.replace(' · street · ',` · ${street.label} · `):preset.label});
+}
 
 /**
  * Intersect the centreline with the actual house footprint instead of its
@@ -28,25 +46,24 @@ export const upperFloorPreset = id => UPPER_FLOOR_PRESETS.find(preset => preset.
  */
 export function upperFloorWindowPosition(facing, data) {
   const ring = data.site.house.footprint;
-  const xs = ring.map(point => point[0]);
-  const x = (Math.min(...xs) + Math.max(...xs)) / 2;
-  const intersections = [];
-  for (let i = 0; i < ring.length; i++) {
-    const a = ring[i], b = ring[(i + 1) % ring.length], dx = b[0] - a[0];
-    if (Math.abs(dx) < 1e-9) {
-      if (Math.abs(x - a[0]) < 1e-9) intersections.push(a[1], b[1]);
+  const frame=facing==='street'?streetWindowFrame(data):{axis:'y',side:'max',outward:1};
+  const along=frame.axis==='x'?0:1,cross=1-along;
+  const crossCoordinates=ring.map(point=>point[cross]);
+  const centre=(Math.min(...crossCoordinates)+Math.max(...crossCoordinates))/2;
+  const intersections=[];
+  for(let i=0;i<ring.length;i++){
+    const a=ring[i],b=ring[(i+1)%ring.length],delta=b[cross]-a[cross];
+    if(Math.abs(delta)<1e-9){
+      if(Math.abs(centre-a[cross])<1e-9)intersections.push(a[along],b[along]);
       continue;
     }
-    const t = (x - a[0]) / dx;
-    if (t >= 0 && t <= 1) intersections.push(a[1] + t * (b[1] - a[1]));
+    const t=(centre-a[cross])/delta;
+    if(t>=0&&t<=1)intersections.push(a[along]+t*(b[along]-a[along]));
   }
-  if (!intersections.length) throw new Error('Upper-floor views require a valid mapped house footprint.');
-  const facadeY = facing === 'street' ? Math.min(...intersections) : Math.max(...intersections);
-  const facadeOffset = .25;
-  return {
-    x,
-    y: facadeY + (facing === 'street' ? -facadeOffset : facadeOffset),
-    facadePosition: {x, y: facadeY},
-    facadeOffset,
-  };
+  if(!intersections.length)throw new Error('Upper-floor views require a valid mapped house footprint.');
+  const facade=frame.side==='min'?Math.min(...intersections):Math.max(...intersections);
+  const facadeOffset=.25,position=[],facadePosition=[];
+  position[along]=facade+frame.outward*facadeOffset;position[cross]=centre;
+  facadePosition[along]=facade;facadePosition[cross]=centre;
+  return {x:position[0],y:position[1],facadePosition:{x:facadePosition[0],y:facadePosition[1]},facadeOffset};
 }

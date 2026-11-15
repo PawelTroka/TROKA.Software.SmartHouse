@@ -3,10 +3,10 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.17.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.17.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.17.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.17.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.18.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.18.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.18.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.18.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -245,7 +245,7 @@ export function jacuzziBounds(settings = {}, data) {
 /** Eye-height override is deliberate: UI should set the preset's initial value. */
 export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const s = settingsWithDefaults(settings), [mx, rearY] = data.site.rearMidpoint;
-  const upper = upperFloorPreset(preset);
+  const upper = upperFloorPreset(preset,data);
   if (upper) {
     const position = upperFloorWindowPosition(upper.facing, data);
     const floorRise = upper.level === 'first' ? number(s.firstFloorRise, 3) : number(s.atticRise, 6);
@@ -270,9 +270,10 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
     garden: [...garden, 1.65, 'Garden · standing', 'garden'],
     custom: [number(s.observerX, garden[0]), number(s.observerY, garden[1]), 1.65, 'Custom viewpoint', 'auto'],
   };
-  if((data.site.id||settings.siteId||'sternicza-11')==='sternicza-11'){
+  if(supportsFrontHedges(settings,data)){
     const houseX=data.site.house.footprint.map(p=>p[0]),frontY=Math.min(...data.site.house.footprint.map(p=>p[1]));
-    values.front=[(Math.min(...houseX)+Math.max(...houseX))/2,Math.max(2,frontY*.55),1.65,'Front garden · street view','garden'];
+    const front=data.site.observers?.front||[(Math.min(...houseX)+Math.max(...houseX))/2,Math.max(2,frontY*.55)];
+    values.front=[...front,1.65,'Front garden · street view','garden'];
   }
   if(program.active){
     const sa=program.sauna.viewpoint,fp=program.firepit.viewpoint;
@@ -288,7 +289,7 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const groundZ = surface==='floor'?floorElevation(s,data):surface==='sauna'?levels.sauna.floorZ:
     ['firepit','sauna-entry','plunge-entry'].includes(surface)?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data);
   const target=program.active&&(preset==='sauna'||preset==='firepit')?program[preset==='sauna'?'sauna':'firepit'].viewpoint.lookAt:null;
-  const defaultLookYaw=preset==='front'?180:target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
+  const defaultLookYaw=preset==='front'?number(data.site.streetView?.lookYaw,data.site.streetView?.yaw??180):target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
   return {x,y,z:groundZ+eyeHeight,preset,label,eyeHeight,groundZ,surface,defaultLookYaw,defaultLookPitch:0};
 }
 
@@ -322,8 +323,9 @@ function insetBoundary(boundary, inset) {
   return [...result, result[0]];
 }
 
-const fullPerimeterHedges=(settings,data)=>settings.hedgeFullPerimeter===true
-  &&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
+const supportsFrontHedges=(settings,data)=>data.site.frontHedgeEnabled
+  ??['sternicza-11','nadmorska-17'].includes(data.site.id||settings.siteId||'sternicza-11');
+const fullPerimeterHedges=(settings,data)=>settings.hedgeFullPerimeter===true&&supportsFrontHedges(settings,data);
 
 /**
  * Street/front-side planting follows existing grade; rear earthworks stop at
@@ -348,11 +350,12 @@ export function hedgeTopAt(x, y, side, settings, data,groundZone) {
  * no gate survey: pedestrian access follows the existing illustrated west
  * approach centred at x=2.30m; the
  * vehicle opening meets the east-side passage beside the house. No gate leaf
- * receives opaque-screen credit. This proposal applies only to Sternicza 11.
+ * receives opaque-screen credit. Other properties supply their own openings
+ * as distances along the street edge; Sternicza retains its original layout.
  */
 export function frontHedgeLayout(settings={},data){
   const empty={segments:[],openings:[],length:0,assumption:''};
-  if((data.site.id||settings.siteId||'sternicza-11')!=='sternicza-11'||number(settings.hedgeFront)<=0)return empty;
+  if(!supportsFrontHedges(settings,data)||number(settings.hedgeFront)<=0)return empty;
   const boundary=insetBoundary(data.site.boundary,clamp(number(settings.hedgeInset),0,3));
   const index=data.site.boundaryNames.findIndex(name=>name==='street'||name==='front'||name.startsWith('front-'));
   if(index<0)return empty;
@@ -361,19 +364,43 @@ export function frontHedgeLayout(settings={},data){
   const point=d=>[a[0]+dx*d/length,a[1]+dy*d/length];
   const projected=((2.3-a[0])*dx-a[1]*dy)/length;
   const pedestrianCentre=clamp(projected,.6+EPS,length-5.2);
-  const gaps=[{id:'front-pedestrian-opening',label:'Pedestrian opening · proposed',start:pedestrianCentre-.6,end:pedestrianCentre+.6},
+  const legacyGaps=[{id:'front-pedestrian-opening',label:'Pedestrian opening · proposed',start:pedestrianCentre-.6,end:pedestrianCentre+.6},
     {id:'front-vehicle-opening',label:'Vehicle opening · proposed',start:length-4,end:length}];
-  const spans=[[0,gaps[0].start],[gaps[0].end,gaps[1].start]];
+  const configured=data.site.frontAccessOpenings;
+  const gaps=(Array.isArray(configured)?configured.map((g,i)=>({
+    id:g.id||`front-${g.kind||i+1}-opening`,label:g.label||'Access opening · proposed',
+    start:clamp(number(g.from),0,length),end:clamp(number(g.to),0,length),
+  })):legacyGaps).filter(g=>g.end-g.start>EPS).sort((a,b)=>a.start-b.start);
+  const spans=[];let cursor=0;
+  for(const gap of gaps){if(gap.start>cursor+EPS)spans.push([cursor,gap.start]);cursor=Math.max(cursor,gap.end);}
+  if(cursor<length-EPS)spans.push([cursor,length]);
   return {segments:spans.filter(([start,end])=>end-start>EPS).map(([start,end],i)=>({id:`front-span-${i+1}`,a:point(start),b:point(end),length:end-start})),
     openings:gaps.map(g=>({id:g.id,label:g.label,a:point(g.start),b:point(g.end),width:g.end-g.start})),
-    length:length-5.2,assumption:'Proposed 1.20 m pedestrian and 4.00 m vehicle openings; gate positions are not surveyed. Openings receive no privacy-screen credit. Front planting stays at existing grade.'};
+    length:spans.reduce((sum,[start,end])=>sum+end-start,0),assumption:data.site.frontAccessNote||'Proposed 1.20 m pedestrian and 4.00 m vehicle openings; gate positions are not surveyed. Openings receive no privacy-screen credit. Front planting stays at existing grade.'};
+}
+
+/** Explicit access on other boundary edges, including a corner property's
+ * street-side entrance. Distances follow each mapped edge's vertex order. */
+export function boundaryAccessLayout(settings={},data){
+  const p=insetBoundary(data.site.boundary,clamp(number(settings.hedgeInset),0,3));
+  return (data.site.boundaryOpenings||[]).flatMap((opening,i)=>{
+    const index=opening.edgeIndex;
+    if(!Number.isInteger(index)||index<0||index>=p.length-1)return [];
+    const a=p[index],b=p[index+1],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+    if(length<EPS)return [];
+    const start=clamp(number(opening.from),0,length),end=clamp(number(opening.to),0,length);
+    if(end<=start+EPS)return [];
+    const point=d=>[a[0]+dx*d/length,a[1]+dy*d/length];
+    return [{id:opening.id||`boundary-opening-${i+1}`,label:opening.label||'Access opening · proposed',
+      edgeIndex:index,start,end,a:point(start),b:point(end),width:end-start}];
+  });
 }
 
 /** Full segment fields are for rendering; ray tests interpolate the native DTM. */
 export function hedgeSegments(settings = {}, data) {
   const s = settingsWithDefaults(settings);
   const p = insetBoundary(data.site.boundary, clamp(number(s.hedgeInset), 0, 3));
-  const segments = [],fullPerimeter=fullPerimeterHedges(s,data);
+  const segments = [],fullPerimeter=fullPerimeterHedges(s,data),access=boundaryAccessLayout(s,data);
   const append=(side,a,b,groundZone)=>{
     const height = Math.max(0, number(s[`hedge${side[0].toUpperCase()}${side.slice(1)}`]));
     const baseAt = p => hedgeGroundAt(...p,side,s,data,groundZone);
@@ -398,7 +425,17 @@ export function hedgeSegments(settings = {}, data) {
       if (a[1] < startY) { const t = (startY - a[1]) / (b[1] - a[1]); a = [a[0] + t * (b[0] - a[0]), startY]; }
       if (b[1] < startY) { const t = (startY - b[1]) / (a[1] - b[1]); b = [b[0] + t * (a[0] - b[0]), startY]; }
     }
-    if(fullPerimeter&&side!=='rear'){
+    const start=Math.hypot(a[0]-p[i][0],a[1]-p[i][1]),end=Math.hypot(b[0]-p[i][0],b[1]-p[i][1]);
+    const length=Math.hypot(p[i+1][0]-p[i][0],p[i+1][1]-p[i][1]);
+    if(length<EPS)continue;
+    const gaps=access.filter(g=>g.edgeIndex===i&&g.end>start&&g.start<end).sort((g,h)=>g.start-h.start);
+    const spans=[];let cursor=start;
+    for(const gap of gaps){if(gap.start>cursor+EPS)spans.push([cursor,Math.min(end,gap.start)]);cursor=Math.max(cursor,gap.end);}
+    if(cursor<end-EPS)spans.push([cursor,end]);
+    const point=d=>[p[i][0]+(p[i+1][0]-p[i][0])*d/length,p[i][1]+(p[i+1][1]-p[i][1])*d/length];
+    for(const [from,to] of spans){
+      a=point(from);b=point(to);
+      if(fullPerimeter&&side!=='rear'){
       // The two side hedges cover the complete mapped edge, including every
       // small cadastral kink. Split at the fill limit so rendering never turns
       // the rear 0.5 m raise into a long slope through the front garden.
@@ -407,7 +444,8 @@ export function hedgeSegments(settings = {}, data) {
         append(side,a,join,a[1]<startY?'front':'rear');
         append(side,join,b,b[1]<startY?'front':'rear');
       }else append(side,a,b,(a[1]+b[1])/2<startY?'front':'rear');
-    }else append(side,a,b,fullPerimeter?'rear':undefined);
+      }else append(side,a,b,fullPerimeter?'rear':undefined);
+    }
   }
   for(const span of frontHedgeLayout(s,data).segments){
     const {a,b}=span,side='front',height=Math.max(0,number(s.hedgeFront));

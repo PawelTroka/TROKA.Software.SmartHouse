@@ -1,22 +1,22 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.17.0';
-import { sampledRoofFaces } from './shade.js?v=1.17.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.17.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.17.0';
-import { getSiteProfile } from './sites.js?v=1.17.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.17.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.17.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.17.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.17.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.17.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.17.0';
-import { gardenDimensions } from './dimensions.js?v=1.17.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.17.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.17.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.17.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.17.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.18.0';
+import { sampledRoofFaces } from './shade.js?v=1.18.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.18.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.18.0';
+import { getSiteProfile } from './sites.js?v=1.18.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.18.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.18.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.18.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.18.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.18.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.18.0';
+import { gardenDimensions } from './dimensions.js?v=1.18.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.18.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.18.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.18.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.18.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -283,8 +283,8 @@ export function createScene(container, data, callbacks = {}) {
   standard('stone', textures ? '#fff7e8' : '#d7c9b3', { map: textures?.stone });
   standard('stoneLight', textures ? '#fffdf5' : '#e8dfcd', { map: textures?.stone });
   standard('wall', '#f2f0e8', { map: textures?.stucco });
-  standard('plinth', '#b5ae9e');
-  standard('roof', textures ? '#b7b9b0' : '#3a4544', { roughness: 0.78, map: textures?.roof });
+  standard('plinth', data.site.id==='nadmorska-17'?'#9b5e4c':'#b5ae9e');
+  standard('roof', data.site.id==='nadmorska-17'?'#bd7960':textures?'#b7b9b0':'#3a4544', { roughness: 0.78, map: textures?.roof });
   standard('wood', textures ? '#d4bfa0' : '#9c7957', { map: textures?.wood });
   standard('woodLight', textures ? '#f0ddba' : '#b5926b', { map: textures?.wood });
   standard('metal', '#343f3b', { roughness: 0.6, metalness: 0.3 });
@@ -582,15 +582,25 @@ export function createScene(container, data, callbacks = {}) {
     ];
   }
   syncContextTerrain({terraceDepth:data.site.terrace.depth});
-  const road=makeTerrain(staticGroup,[-65,-7.8,115,-2],4,(x,y)=>contextGrade(x,y)+.025,mat.road);
-  road.name='context-street';if(svgMode)road.renderOrder=-95;
-  const sidewalk=makeTerrain(staticGroup,[-65,-1.9,115,-.1],4,(x,y)=>contextGrade(x,y)+.05,mat.stoneLight);
-  sidewalk.name='context-sidewalk';if(svgMode)sidewalk.renderOrder=-95;
-  for (let x=-50;x<110;x+=8) box(staticGroup,x,-4.96,contextGrade(x,-5)+.055,3.5,.1,.015,mat.stoneLight,false,-94);
+  const mappedRoads=data.neighborhood?.roads?.filter(r=>r.footprint?.length>=3)||[];
+  if(mappedRoads.length){
+    for(const source of mappedRoads){
+      const b=boundsOf(source.footprint);
+      const road=makeTerrain(staticGroup,[b.minX,b.minY,b.maxX,b.maxY],svgMode?3:1.5,(x,y)=>contextGrade(x,y)+.025,mat.road,source.footprint);
+      road.name=source.id||'context-road';if(svgMode)road.renderOrder=-95;
+      if(source.labelPosition){const [x,y]=source.labelPosition;label(source.label,[x,y,contextGrade(x,y)+.18],'road');}
+    }
+  }else{
+    const road=makeTerrain(staticGroup,[-65,-7.8,115,-2],4,(x,y)=>contextGrade(x,y)+.025,mat.road);
+    road.name='context-street';if(svgMode)road.renderOrder=-95;
+    const sidewalk=makeTerrain(staticGroup,[-65,-1.9,115,-.1],4,(x,y)=>contextGrade(x,y)+.05,mat.stoneLight);
+    sidewalk.name='context-sidewalk';if(svgMode)sidewalk.renderOrder=-95;
+    for (let x=-50;x<110;x+=8) box(staticGroup,x,-4.96,contextGrade(x,-5)+.055,3.5,.1,.015,mat.stoneLight,false,-94);
+    label(profile.streetLabel, [plotCentre[0],-3.7,terrainAt(plotCentre[0],-3.7,data)+.18], 'road');
+  }
   rebuildContextBuildings();
-  label(profile.streetLabel, [plotCentre[0],-3.7,terrainAt(plotCentre[0],-3.7,data)+.18], 'road');
 
-  /** Fit proposed glazing and finishes to the actual second site's wall edges.
+  /** Fit proposed glazing and finishes to each mapped property's wall edges.
    * The mapped footprint and sampled roof remain the existing envelope. */
   function addMappedHouse(group,settings) {
     const h=data.site.house,envelope=localRoofEnvelope(h),{ring,samples,base}=envelope;
@@ -632,7 +642,8 @@ export function createScene(container, data, callbacks = {}) {
         panel(lo,hi,floor+.04,top-.04,mat.glass,.018,false);
         for(const u of [lo,lo+(hi-lo)/3,lo+2*(hi-lo)/3,hi])panel(u-.023/len,u+.023/len,floor,top,mat.metal,.035,false);
         panel(lo,hi,floor,floor+.045,mat.metal,.04,false);panel(lo,hi,top-.045,top,mat.metal,.04,false);
-      }else panel(0,1,base,eaves,mat.wall);
+      }else if(data.site.id==='nadmorska-17'){panel(0,1,base,floor,mat.plinth);panel(0,1,floor,eaves,mat.wall);}
+      else panel(0,1,base,eaves,mat.wall);
       // Repeated openings are a restrained renovation proposal, never surveyed windows.
       const count=Math.max(1,Math.floor(len/3.1));
       for(let z=floor+(i===edgeIndex?3.35:.5);len>=1.5&&z+1.5<maxEaves-.25;z+=3.0){
@@ -657,7 +668,7 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   function addHouse(group, settings) {
-    if(data.site.id==='korzeniowskiego-40'){addMappedHouse(group,settings);return;}
+    if(data.site.id&&data.site.id!=='sternicza-11'){addMappedHouse(group,settings);return;}
     const house = data.site.house, ring=closeRing(house.footprint);
     const xs=ring.map(p=>p[0]), ys=ring.map(p=>p[1]), x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), rear=data.site.rearMidpoint[1];
     const roofPoints=(house.roofPoints||[]).map(xyz).filter(p=>p.length>=3&&Number.isFinite(p[2]));
@@ -991,7 +1002,13 @@ export function createScene(container, data, callbacks = {}) {
       }
       const fillEdge=new THREE.Mesh(geometryFromTriangles(faces),mat.plinth);fillEdge.receiveShadow=true;if(svgMode)fillEdge.renderOrder=-89;designGroup.add(fillEdge);
     }
-    if(data.site.id==='korzeniowskiego-40'){
+    if(data.site.id==='nadmorska-17'){
+      // This corner property has its own entrance and paving proposal.
+      for(const pad of data.site.approachPads||[]){
+        const z=terrainAt(pad.x+pad.width/2,pad.y+pad.length/2,data);
+        box(designGroup,pad.x,pad.y,z+.015,pad.width,pad.length,.035,mat.stone,false,-80);
+      }
+    }else if(data.site.id==='korzeniowskiego-40'){
       const h=boundsOf(data.site.house.footprint),centre=(h.minX+h.maxX)/2,frontZ=terrainAt(centre,h.minY/2,data);
       box(designGroup,centre-.6,.25,frontZ+.015,1.2,Math.max(.1,h.minY-.25),.035,mat.stone,false,-80);
     }else{

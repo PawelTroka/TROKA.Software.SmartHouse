@@ -1,8 +1,22 @@
-# Brzeźno · Garden Lab
+# Gdańsk · Garden Lab
 
-An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
+An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.17.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.17.0#v=19&site=sternicza-11&mode=plan)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.18.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.18.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.18.0)**
+
+## Nadmorska 17, Jelitkowo · 1.18.0
+
+The third property is built from its own cadastral parcels, mapped building footprints, 2024 terrain and selected LiDAR roof samples. The original user-supplied cadastral screenshot identifies parcels **226101_1.0008.135/8 and 226101_1.0008.136/2**. Their official ULDK polygons form a **709.29 m²** union. The listing advertises **800 m²**, and an earlier manual outline was **809 m²**; the simulator displays this discrepancy and follows the mapped boundary without enlargement. Mapping does not verify the sale boundary or ownership.
+
+The broad garden faces **303.04° true / northwest**. The principal Nadmorska entrance street is to the right/northeast, not opposite the garden. Ground-level street and four upstairs street presets look toward that actual side, with matching camera and analysis coordinates. The opposite edge faces the neighbouring property. Two mapped road parcels and an interpreted southwest access strip make the corner context visible. The southwest strip's width is illustrative.
+
+The own-house model follows its irregular footprint and sampled roofs, with cream walls, a brick-coloured plinth and terracotta roof finish inspired by the supplied exterior photograph. Neighbour windows are illustrative. The lounge floor starts **1.50 m above the original garden reference**, from the owner's R4 measurement, with no new garden fill by default. Its registration to the terrain grid remains approximate. First-floor and tower-level rises and window positions are editable concepts; the tower is a small room, not a full second storey.
+
+The initial proposal fits a **7 × 3 m pool**, **10 × 3.8 m raised terrace**, compact **2.2 × 2.2 m jacuzzi**, stairs, dining and loungers inside the mapped property. Four-metre hedges follow all four boundary roles. The neighbour-facing edge is continuous; proposed pedestrian and vehicle gaps are on the actual entrance side and stay clear in rendering, dimensions, quantities and visibility rays. The mapped ks200 sewer route needs site verification before choosing pool foundations or utility diversions. No new specimen trees are copied from Sternicza.
+
+Nadmorska inherits the daylight, seasonal shade, night lighting, lit-neighbour-window controls, ground and upstairs viewpoints, dimensions, tree editing, comparison A/B, sharing and export features. Its budget includes its pool and jacuzzi, terrace and garden work; absent sauna, plunge and fire lounge are excluded. Published product references remain benchmarks and installed ranges remain planning allowances until replaced by quotes. Switching off allowances leaves missing quotes visible.
+
+See [site evidence and rebuilding](docs/nadmorska-site-model.md) and [release validation](docs/release-1.18.0-validation.md). Earlier properties, schema-19 state and historical share links retain their respective geometry and saved designs.
 
 ## Garden after dark and upper-floor views · 1.17.0
 

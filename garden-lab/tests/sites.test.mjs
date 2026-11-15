@@ -22,7 +22,7 @@ function otherSite(){
 }
 
 test('explicit property identity survives share links and legacy links select only Sternicza',()=>{
-  assert.equal(SITE_OPTIONS.length,2);
+  assert.deepEqual(SITE_OPTIONS.map(site=>site.id),['sternicza-11','korzeniowskiego-40','nadmorska-17']);
   assert.equal(resolveSiteId('?site=korzeniowskiego-40'),'korzeniowskiego-40');
   assert.equal(resolveSiteId('?site=korzeniowskiego-40','#v=3&hedgeRear=8'),'sternicza-11');
   assert.equal(resolveSiteId('?site=sternicza-11','#v=6&site=korzeniowskiego-40'),'korzeniowskiego-40');
