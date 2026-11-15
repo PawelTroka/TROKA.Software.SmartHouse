@@ -119,6 +119,7 @@ function renderSiteDetails(){
   $('location-label').textContent=site.district?`Gdańsk · ${site.district}`:profile.id==='nadmorska-17'?'Gdańsk · Jelitkowo':'Gdańsk · Brzeźno';
   $('site-evidence-note').hidden=!site.areaNote;
   $('site-evidence-note').textContent=site.areaNote||'';
+  document.querySelector('.night-model-note').textContent=`Lighting follows the selected date and local time, fading in at dusk. Window locations and activity are illustrative.${profile.id==='sternicza-11'?' Building 4h’s garden-facing walls stay blank.':''} Brightness is a visual comparison, not a lux calculation. Lighting does not change the geometric screening percentages.`;
   if(site.streetView){
     const frontButton=document.querySelector('[data-preset="front"]');frontButton.replaceChildren();
     const icon=document.createElement('span');icon.textContent='♧';
@@ -131,7 +132,7 @@ function renderSiteDetails(){
   $('plot-dimensions').textContent=`${fmt(width,1)} × ${fmt(depth,1)} m · ${fmt(site.area,0)} m² mapped plot`;
   $('hedge-orientation').textContent=`Looking from the house into the rear garden: left is ${profile.sideLabels.left}, right is ${profile.sideLabels.right}.`;
   $('site-orientation').innerHTML=`Looking from house to garden (${esc(profile.rearBearingLabel)}): <strong>left = ${esc(profile.sideLabels.left)}</strong> · <strong>right = ${esc(profile.sideLabels.right)}</strong>. Plans keep ${esc(site.planTopLabel||'the street')} at the top.`;
-  $('terrace-proposal').textContent=`Proposed ${fmt(t.width,1)} m wide terrace. The latest compact layout includes a 2.3 × 2.3 m seven-seat spa on the right when looking out.`;
+  $('terrace-proposal').textContent=profile.id==='sternicza-11'?`Proposed ${fmt(t.width,1)} m wide terrace. The latest compact layout includes a 2.3 × 2.3 m seven-seat spa on the right when looking out.`:`Proposed ${fmt(t.width,1)} m wide terrace, with a compact jacuzzi and steps to the garden. Dimensions and siting are design assumptions.`;
   $('floor-assumption-note').textContent=site.floorHeightNote||`The initial living floor is assumed ${fmt(DEFAULTS.floorHeight,1)} m above the original garden reference. Adjust it to a measured level. Garden levels come from the terrain grid.`;
   $('removeGarage').closest('label').hidden=!profile.hasGarage;$('removeGarage').disabled=!profile.hasGarage;
   const highCount=(baseData.buildings||[]).reduce((n,b)=>n+(b.highFeatures?.length||0),0);

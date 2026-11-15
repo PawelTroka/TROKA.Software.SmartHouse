@@ -16,8 +16,23 @@ The model's garden axis is northwest; its main street is to the right/northeast.
 
 The initial complete Nadmorska garden planning range is approximately 398,000–734,000 PLN, with the upper uncertainty allowance applied once. It is a planning range with product benchmarks, not a received project quotation. The pool requires services verification; the mapped ks200 route is disclosed, and unpriced utility diversions are not implicitly included.
 
-## Visual review and publication
+## Browser verification
 
-Hosted preview review and production publication are being completed. This record will be updated with observed results before release handover.
+The hosted preview was inspected in the supported cloud browser. Nadmorska appears alongside Sternicza and Korzeniowskiego, with its own location, plot-area discrepancy, source information and budget. The mapped house, tower roof, pool, terrace, full-perimeter hedge and surrounding buildings render in the lightweight SVG fallback used by that browser.
 
-The local browser was not used for visual evidence. The connected Browser extension was unavailable in this session; the supported cloud-browser fallback is used for the hosted review. No browser security restrictions were changed.
+Manual interactions confirmed:
+
+- First-floor street standing looks toward Nadmorska, at a 6.15 m eye elevation above the original garden reference. The right-side hedge and two proposed gate openings are described correctly.
+- Tower-concept garden seated uses an 8.70 m eye elevation and the northwest garden direction. The assumed floor rises and unsurveyed window positions remain explicit.
+- Preview night selects 23:30; neighbouring windows can be switched off while garden lights remain enabled, and restored independently.
+- Whole-plot mode displays the actual irregular cadastral boundary, entry-side street, neighbour-side boundary, 3 × 7 m pool and linked dimension schedule. The desktop page fits its viewport.
+
+The CI browser harness exercises the actual WebGL renderer, property switching, Nadmorska day/night views, the side-facing upstairs preset, independent lighting controls, a rendered pool-light pixel comparison, plot dimensions and a 390 px mobile viewport. It saves day, night and plan screenshots as the `garden-lab-browser-evidence` artifact. The hosted cloud inspection uses SVG, so it is not evidence of WebGL surface-light or shadow quality. The browser job is the release gate for those rendering checks.
+
+## Release references
+
+- Source and CI results: [PR #17](https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/17).
+- Property entry point: [Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17).
+- Dataset provenance and limitations: [Nadmorska site model](nadmorska-site-model.md).
+
+The production static build uses coordinated `1.18.0` module cache keys. Saved designs remain isolated by property and schema-19 links remain readable.

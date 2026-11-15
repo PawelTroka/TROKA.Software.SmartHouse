@@ -106,6 +106,183 @@ async function screenshot(name,log=true){
   return buffer;
 }
 
+
+/** Read rendered PNGs, without accessing scene objects or private app state.
+ * The blue-green pixel mask distinguishes water glow from warm path lights. */
+async function waterGlowDifference(unlit,lit){
+  return await page.evaluate(async({before,after})=>{
+    const decode=async source=>{
+      const picture=new Image();picture.src='data:image/png;base64,'+source;await picture.decode();
+      const canvas=new OffscreenCanvas(picture.width,picture.height),context=canvas.getContext('2d');
+      context.drawImage(picture,0,0);
+      return {width:picture.width,height:picture.height,pixels:context.getImageData(0,0,picture.width,picture.height).data};
+    };
+    const off=await decode(before),on=await decode(after);
+    if(off.width!==on.width||off.height!==on.height)throw new Error('Water comparison changed screenshot dimensions');
+    let aquaPixels=0,brighterAquaPixels=0,brightnessGain=0;
+    for(let i=0;i<on.pixels.length;i+=4){
+      const [r,g,b]=on.pixels.subarray(i,i+3);
+      if(g<=25||b<=20||g<r*1.15||b<r*1.12||g<b*.8||g>b*1.35)continue;
+      aquaPixels++;
+      const gain=(g+b-off.pixels[i+1]-off.pixels[i+2])/2;
+      if(gain>2){brighterAquaPixels++;brightnessGain+=gain;}
+    }
+    return {width:on.width,height:on.height,aquaPixels,brighterAquaPixels,brightnessGain};
+  },{before:unlit.toString('base64'),after:lit.toString('base64')});
+}
+async function pngScreenshot(name){
+  await details('#sun-controls',false);
+  await details('#night-adjustments',false);
+  await page.locator('#viewport').scrollIntoViewIfNeeded();
+  await frames();
+  await page.locator('#viewport').screenshot({path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css'});
+  report.screenshots.push(name+'.png');
+}
+async function chooseProperty(id){
+  await Promise.all([
+    page.waitForURL(url=>url.searchParams.get('site')===id&&!url.hash,{waitUntil:'domcontentloaded'}),
+    page.locator('#site-select').selectOption(id),
+  ]);
+  await waitReady();
+  assert.equal(await page.locator('#site-select').inputValue(),id);
+  assert.equal(await page.locator('html').getAttribute('data-site'),id);
+}
+async function verifyNadmorska(){
+  await page.setViewportSize({width:1430,height:1040});
+  await frames();
+  const options=await page.locator('#site-select option').evaluateAll(nodes=>nodes.map(node=>({id:node.value,label:node.textContent})));
+  assert.deepEqual(options,[{id:'sternicza-11',label:'Sternicza 11'},{id:'korzeniowskiego-40',label:'Korzeniowskiego 40'},{id:'nadmorska-17',label:'Nadmorska 17'}]);
+  check('The property selector exposes all three independently named properties');
+
+  // Exercise the real selector, including clearing the prior Sternicza share
+  // hash, before testing the third property. This also protects the older site.
+  await chooseProperty('korzeniowskiego-40');
+  assert.equal(Number(await page.locator('#floorHeight-value').inputValue()),1.7);
+  assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
+  await selectPreset(UPPER_FLOOR_PRESETS.find(p=>p.id==='first-garden-standing'));
+  assert.ok((await page.locator('#observer-readout').innerText()).includes('6.35 m above original garden reference'));
+  check('Switching to Korzeniowskiego preserves its own floor height and upstairs view');
+
+  await chooseProperty('nadmorska-17');
+  assert.equal(await page.locator('#property-name').innerText(),'NADMORSKA 17');
+  assert.equal(Number(await page.locator('#floorHeight-value').inputValue()),1.5);
+  assert.equal(Number(await page.locator('#gardenRaise-value').inputValue()),0);
+  assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
+  assert.match(await page.locator('#tree-count').innerText(),/^0\s*\/\s*12$/,'No Sternicza specimen trees may leak into Nadmorska');
+  assert.match(await page.locator('#site-evidence-note').innerText(),/709\.29[\s\S]*800/);
+  assert.match(await page.locator('#plot-dimensions').innerText(),/709 m² mapped plot/);
+  const siteData=JSON.parse(await readFile(path.join(publicRoot,'data/nadmorska-17.json'),'utf8'));
+  assert.doesNotMatch(siteData.roofEvidence||'',/INTERIM/i);
+  assert.ok(siteData.site.house.roofPoints.length>30,'The browser build must contain the final LiDAR data');
+  const roofCount=[siteData.site.house,siteData.site.garage,...siteData.buildings].filter(Boolean).reduce((total,b)=>total+(b.roofPoints?.length||0),0);
+  await page.locator('#about-open').click();
+  await page.locator('#about').waitFor({state:'visible'});
+  const sourceText=await page.locator('#about-content').innerText();
+  assert.match(sourceText,/709\.29 m²/);
+  const roofReadout=sourceText.match(/([\d,.\s\u00a0]+) reduced roof points/);
+  assert.ok(roofReadout,'Mapped-source panel must report the actual roof evidence');
+  assert.equal(Number(roofReadout[1].replace(/\D/g,'')),roofCount);
+  assert.ok(await page.locator('#about-content a[href*="DanePomiaroweLAZ"]').count()>0);
+  assert.doesNotMatch(sourceText,/INTERIM|NaN|undefined/);
+  await page.locator('#about-close').click();
+  for(const id of ['observer-readout','terrace-drop','sun-elevation','sun-bearing','combined-cost','neighborhood-status'])
+    assert.doesNotMatch(await page.locator('#'+id).innerText(),/NaN|Infinity|undefined|Calculating/,'Unresolved readout '+id);
+  report.nadmorska={roofPoints:roofCount,surroundingBuildings:siteData.buildings.length,roofTopZ:siteData.site.house.roofTopZ};
+  check('Nadmorska WebGL load uses its own plot, floor and final LiDAR roof evidence');
+
+  await page.locator('#showDimensions').uncheck();
+  await details('#sun-controls',false);
+  const street={...UPPER_FLOOR_PRESETS.find(p=>p.id==='first-street-standing'),label:'First floor · bedroom / office · Nadmorska · standing'};
+  report.nadmorska.street=await selectPreset(street);
+  assert.ok((await page.locator('#observer-readout').innerText()).includes('6.15 m above original garden reference'));
+  assert.equal(await page.locator('[data-look-yaw="90"]').getAttribute('aria-pressed'),'true');
+  assert.match(await page.locator('[data-look-yaw="90"]').innerText(),/Nadmorska/);
+  assert.equal(await page.locator('[data-look-yaw="180"]').getAttribute('aria-pressed'),'false');
+  await page.locator('#share').click();
+  const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
+  assert.equal(shared.get('site'),'nadmorska-17');
+  assert.equal(shared.get('preset'),'first-street-standing');
+  assert.equal(Number(shared.get('lookYaw')),90,'Street view must look through the right facade, toward Nadmorska');
+  check('Nadmorska first-floor street control points +90 degrees and shares that exact direction');
+
+  await page.locator('#preview-night').click();
+  await waitLight('nightActivation','positive');
+  await waitLight('nightWindows','positive');
+  await details('#night-adjustments',true);
+  await setNumber('nightWindowActivity-value',0);
+  const noWindows=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  await setNumber('nightWindowActivity-value',100);
+  const allWindows=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  assert.ok(!noWindows.equals(allWindows),'Nadmorska across-street window activity must visibly change its WebGL scene');
+  await setNumber('nightWindowActivity-value',35);
+  await page.locator('#nightWindowLights').uncheck();
+  await waitLight('nightWindows','zero');
+  assert.ok((await lightState()).garden>0);
+  await page.locator('#nightWindowLights').check();
+  await waitLight('nightWindows','positive');
+  report.nadmorska.windowActivityVisible=true;
+
+  // A fixed overview includes both water bodies. The scene renders on demand,
+  // so switching garden lights must change the pixels, not an animated clock.
+  await details('#night-adjustments',false);
+  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('#preview-day').click();
+  await waitLight('nightActivation','zero');
+  await pngScreenshot('nadmorska-day');
+  await page.locator('#preview-night').click();
+  await waitLight('nightGarden','positive');
+  await details('#night-adjustments',true);
+  await page.locator('#nightGardenLights').uncheck();
+  await waitLight('nightGarden','zero');
+  assert.ok((await lightState()).windows>0,'Garden lights must not disable neighbouring windows');
+  await frames();
+  const unlitWater=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  await page.locator('#nightGardenLights').check();
+  await waitLight('nightGarden','positive');
+  await frames();
+  const litWater=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  report.nadmorska.waterGlow=await waterGlowDifference(unlitWater,litWater);
+  assert.ok(report.nadmorska.waterGlow.brighterAquaPixels>20,'The WebGL water glow must brighten visible blue-green pixels: '+JSON.stringify(report.nadmorska.waterGlow));
+  assert.equal(await page.locator('#sun-time').inputValue(),'23:30');
+  await pngScreenshot('nadmorska-night');
+  report.nadmorska.night=await lightState();
+  check('Nadmorska window activity, independent light switches and visible WebGL water glow work after dark');
+
+  await page.locator('#preview-day').click();
+  await waitLight('nightActivation','zero');
+  await page.locator('#showDimensions').check();
+  await page.locator('[data-mode="plan"]').click();
+  await page.locator('#plan-host').waitFor({state:'visible'});
+  await page.locator('#plan-host [data-map-scope="garden"]').click();
+  await page.waitForFunction(()=>document.querySelector('#plan-host [data-map-scope="garden"]')?.getAttribute('aria-pressed')==='true'
+    &&document.querySelector('#plan-host [data-dimension-record="plot-area"]')?.textContent.includes('709.29'));
+  await frames();
+  assert.equal(await page.locator('#plan-host [data-map-scope="garden"]').getAttribute('aria-pressed'),'true');
+  const dimension=async id=>{
+    const text=await page.locator('#plan-host [data-dimension-record="'+id+'"]').first().innerText();
+    return Number.parseFloat(text.replace('≈ ',''));
+  };
+  assert.equal(await dimension('plot-area'),709.29);
+  assert.equal(await dimension('pool-width'),3);
+  assert.equal(await dimension('pool-length'),7);
+  assert.equal(await dimension('entry-pedestrian'),1.2);
+  assert.equal(await dimension('entry-vehicle'),4);
+  const planText=await page.locator('#plan-host').innerText();
+  assert.doesNotMatch(planText,/NaN|undefined|STERNICZA|PCK3/);
+  await pngScreenshot('nadmorska-plan');
+  check('Nadmorska whole-plot plan shows 709.29 square metres, pool sizes and both side access openings');
+
+  await page.setViewportSize({width:390,height:844});
+  await frames();
+  await page.waitForFunction(()=>document.documentElement.scrollWidth<=innerWidth+2,null,{timeout:10000});
+  report.nadmorska.mobile=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+  assert.ok(report.nadmorska.mobile.scrollWidth<=report.nadmorska.mobile.width+2,JSON.stringify(report.nadmorska.mobile));
+  assert.equal(await page.locator('#site-select').inputValue(),'nadmorska-17');
+  assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
+  await pngScreenshot('nadmorska-mobile-plan');
+  check('Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page');
+}
+
 try {
   browser=await chromium.launch({
     headless:true,
@@ -250,6 +427,8 @@ try {
     path:path.join(resultsRoot,'mobile-night.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
   });
   check('Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow');
+
+  await verifyNadmorska();
 
   assert.deepEqual(pageErrors,[],'Unhandled JavaScript errors');
   assert.deepEqual(consoleErrors,[],'Browser console errors');

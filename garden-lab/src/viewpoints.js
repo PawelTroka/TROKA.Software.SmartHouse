@@ -32,10 +32,14 @@ function streetWindowFrame(data) {
  * stay stable for existing shares; only the active property's view is resolved. */
 export function upperFloorPreset(id,data) {
   const preset=UPPER_FLOOR_PRESETS.find(preset=>preset.id===id);
-  if(!preset||preset.facing!=='street'||!data?.site?.streetView)return preset;
+  if(!preset)return preset;
+  const label=data?.site?.id==='nadmorska-17'&&preset.level==='attic'
+    ?preset.label.replace('Second floor · strych','Tower level · concept'):preset.label;
+  if(preset.facing!=='street'||!data?.site?.streetView)
+    return label===preset.label?preset:Object.freeze({...preset,label});
   const street=streetWindowFrame(data);
   return Object.freeze({...preset,defaultLookYaw:street.yaw,
-    label:street.label?preset.label.replace(' · street · ',` · ${street.label} · `):preset.label});
+    label:street.label?label.replace(' · street · ',` · ${street.label} · `):label});
 }
 
 /**
