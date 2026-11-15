@@ -4,7 +4,20 @@
   "tested_head": "f7297f9b228c97d721be58dd39be5074d14230c4",
   "pull_request": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/18",
   "ci_run": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43740752388",
+  "pages_run": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43741314460",
   "automated_tests": 437,
   "browser_checks": 20,
-  "static_assets": 56
+  "static_assets": 56,
+  "live_verification": {
+    "version": "1.19.0",
+    "renderer": "WebGL",
+    "property": "nadmorska-17",
+    "independent_pendant_and_hedge_switches": "passed",
+    "restored_intensities": {
+      "pendants": 65,
+      "hedge_lanterns": 55
+    },
+    "browser_warnings_and_errors": [],
+    "screenshot": "nadmorska-live-night.png"
+  }
 }
