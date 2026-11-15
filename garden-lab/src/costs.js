@@ -3,11 +3,11 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.16.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.16.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.16.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.16.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.16.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.17.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.17.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.17.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.17.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.17.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',

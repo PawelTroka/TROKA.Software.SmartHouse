@@ -4,6 +4,18 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.16.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.16.0#v=18&site=sternicza-11&mode=plan)**
 
+## Garden after dark and upper-floor views · 1.17.0
+
+A new **Garden after dark** panel offers **Preview night** (23:30 on the selected date), Daylight, separate garden/window switches, two brightness controls and a neighbouring-window activity control. Lights follow calculated solar elevation, fading in between +1° and −6°.
+
+The proposed garden scheme includes warm tree uplights, low path lights, a terrace-step strip, underwater pool/spa light, sauna light and a restrained ember glow. Nearby and across-street buildings have a stable illustrative selection of lit panes. Building 4h's two recorded blank garden elevations remain blank. Brightness is a visual scenario, not a photometric or electrical specification; window activity does not represent actual residents. Geometric screening counts remain independent of lighting.
+
+Eight added viewpoints cover first-floor bedroom/office and second-floor **strych** outlooks to the garden and street, each seated and standing. First-floor and strych levels initially sit **3.00 m** and **6.00 m above the living floor**, editable under **Calibrate upstairs floor heights**. Seated eyes use 1.20 m and standing eyes 1.65 m above their supporting floor. Concept window views start 0.25 m outside the mapped façade; actual room/window positions and roof openings are not surveyed. The camera and screening calculations use the same observer coordinates.
+
+Schema **19** retains existing layouts, trees, quotes and solar settings when opening v18 saves or links. New floor/light controls and viewpoint IDs travel with saved designs, comparisons, exports and shared views. The 9 m Excelsa default and pictured planting positions from v1.16 are unchanged.
+
+Validation is recorded in [the release record](docs/release-1.17.0-validation.md).
+
 ## Priced tree alternatives and the 9 m Excelsa default · 1.16.0
 
 The latest Sternicza planting uses **three 9 m Thuja plicata ‘Excelsa’, with 2 m crowns**, at the same pictured positions: **(19.30, 30.20), (13.80, 35.80), (18.45, 35.57) m**. Their plant-only reference is **9,500 PLN each / 28,500 PLN for three**, with VAT and availability to confirm. The 8 × 3.5 m pool, full-perimeter 4 m hedges, raised garden and spa geometry remain as in the reference design.

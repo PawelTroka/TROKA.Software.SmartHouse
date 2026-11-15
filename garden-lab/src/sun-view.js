@@ -1,11 +1,11 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.16.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.16.0';
-import {getSiteProfile} from './sites.js?v=1.16.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.16.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.16.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.16.0';
-import {spaPlanMarkup} from './diagrams.js?v=1.16.0';
-import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.16.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds} from './geometry.js?v=1.17.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.17.0';
+import {getSiteProfile} from './sites.js?v=1.17.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.17.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.17.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.17.0';
+import {spaPlanMarkup} from './diagrams.js?v=1.17.0';
+import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.17.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -24,7 +24,7 @@ export function renderSunReadouts(sun,shade,settings){
   $('sun-time-note').textContent=sun.timeNote||'';
   $('sun-time-note').hidden=!sun.timeNote;
   $('sun-clock-label').textContent=`${formatSolarTime(sun.resolvedMinutes)} · ${sun.isDaylight?'Sun above horizon':'Sun below horizon'}`;
-  $('sun-summary').textContent=settings.sunEnabled?`${new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(`${sun.date}T12:00:00Z`))} · ${formatSolarTime(sun.resolvedMinutes)} · ${sun.isDaylight?`${sun.elevation.toFixed(1)}° elevation`:'Night'}`:'Neutral lighting';
+  $('sun-summary').textContent=settings.sunEnabled?`${new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(`${sun.date}T12:00:00Z`))} · ${formatSolarTime(sun.resolvedMinutes)} · ${sun.isDaylight?`${sun.elevation.toFixed(1)}° elevation`:sun.elevation>-6?'Twilight':'Night'}`:'Neutral lighting';
   $('sun-elevation').textContent=`${sun.elevation.toFixed(1)}°`;
   $('sun-bearing').textContent=`${compassPoint(sun.azimuth)} · ${sun.azimuth.toFixed(0)}°`;
   $('sunrise-time').textContent=formatSolarTime(sun.sunriseMinutes);
