@@ -54,7 +54,7 @@ export function pendantLightingLayout(settings={},data){
   // first, then the other axis; a collision omits the frame instead of shifting
   // the garden's pool, furniture, stairs or mapped house.
   const dining=gardenFurniture(data,settings).dining;
-  if(dining){
+  if(dining&&(!data.site.garage||settings.removeGarage!==false)){
     const centre=[dining.x+dining.width/2,dining.y+dining.length/2];
     const axes=dining.width>=dining.length?[0,1]:[1,0];
     for(const axis of axes){

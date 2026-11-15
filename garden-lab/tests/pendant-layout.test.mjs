@@ -96,7 +96,7 @@ test('the dining frame follows raised ground but does not inherit an unrelated h
 
 test('turning lights off retains the installed fixtures, while an obstructed dining location omits its frame',()=>{
   const {data,settings}=sites[2];
-  assert.deepEqual(pendantLightingLayout({...settings,nightGardenLights:false,nightGardenPendants:false,nightHedgePendants:false},data),pendantLightingLayout(settings,data));
+  assert.deepEqual(pendantLightingLayout({...settings,nightGardenLights:false,nightPendantLights:false,nightHedgeLights:false},data),pendantLightingLayout(settings,data));
   const copy=structuredClone(data),pool=poolBounds(settings,data);
   copy.site.furniture={...gardenFurniture(data,settings),dining:{x:pool.x+.4,y:pool.y+1,width:1.2,length:2}};
   const obstructed=pendantLightingLayout(settings,copy);
@@ -105,4 +105,16 @@ test('turning lights off retains the installed fixtures, while an obstructed din
   const current=pendantLightingLayout(settings,data),post=current.supports.find(s=>s.zone==='garden');
   const withTree=pendantLightingLayout({...settings,screeningTrees:[{id:'tree-at-post',x:post.x,y:post.y,enabled:true}]},data);
   assert.ok(withTree.supports.every(s=>d([s.x,s.y],[post.x,post.y])>.44),'An added specimen trunk cannot contain a lighting support');
+});
+
+test('retaining the garage omits dining pendants with the dining furniture and keeps valid hedge lanterns',()=>{
+  const {data,settings}=sites[0],layout=pendantLightingLayout({...settings,removeGarage:false},data);
+  assert.equal(layout.garden.length,0);
+  assert.ok(layout.supports.every(s=>s.zone==='hedge'),'The hidden dining setting has no pendant supports');
+  assert.ok(layout.cables.every(c=>c.zone==='hedge'),'The hidden dining setting has no hanging frame');
+  assert.ok(layout.hedge.length>0);
+  for(const fixture of [...layout.hedge,...layout.supports]){
+    assert.ok(pointInPolygon([fixture.x,fixture.y],data.site.boundary),fixture.id);
+    assert.ok(!pointInPolygon([fixture.x,fixture.y],data.site.garage.footprint),fixture.id+' must clear the retained garage');
+  }
 });

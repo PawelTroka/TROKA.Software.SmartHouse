@@ -16,10 +16,12 @@ The garden-lighting budget adds the illustrated pendant counts to its existing 1
 
 ## Verification
 
-`npm test`: **436 passed, 0 failed**. New checks cover all three properties, fixtures and supports inside valid garden geometry, access gaps, raised ground, low/removed hedges, trunk collisions, independent lighting channels, saved-state compatibility, the SVG fallback, bounded GPU lights and budget quantities/quote replacement. Earlier front/perimeter budget tests now include the corresponding additional hedge lanterns while protecting all unrelated budget lines.
+`npm test`: **437 passed, 0 failed**. New checks cover all three properties, fixtures and supports inside valid garden geometry, access gaps, raised ground, low/removed hedges, trunk collisions, independent lighting channels, saved-state compatibility, the SVG fallback, bounded GPU lights and budget quantities/quote replacement. Earlier front/perimeter budget tests now include the corresponding additional hedge lanterns while protecting all unrelated budget lines. Keeping Sternicza's garage now hides the dining pendants together with the dining furniture; a regression protects that optional layout while retaining clear hedge lanterns.
 
 `npm run build` succeeds. Module cache keys and application metadata use 1.19.0.
 
 The WebGL browser release gate checks actual warm pixel changes from each new channel with landscape accents off, independent switches, the garden master switch, share/reload of edited brightness and an explicit off state, unchanged non-lighting settings, and daytime deactivation. It captures `nadmorska-pendants-night.png` alongside the existing daylight, night, plan and mobile evidence. The existing browser checks cover all three properties and upstairs views. Cloud-browser review may use the lightweight SVG fallback; surface illumination is checked in the real WebGL CI renderer.
+
+The initial [WebGL CI run](https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43738060480) passed all **20 browser checks**, with no console or unhandled JavaScript errors. Its rendered night screenshot was visually reviewed: the three dining shades, illuminated table and inner-hedge lanterns are visible. The final garage-visibility correction adds one automated regression; current CI and publication status are recorded in [PR #18](https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/18).
 
 Surface-light count remains capped at 19: at most 12 existing lights, three garden pendants and four hedge lights. The other hedge lanterns still show their luminous cores and soft halos. The simulation is an illustrative lighting comparison, not a lux calculation, electrical plan or support-structure design.
