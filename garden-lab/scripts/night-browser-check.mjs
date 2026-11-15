@@ -153,6 +153,49 @@ async function warmLightDifference(unlit,lit){
     return {width:on.width,height:on.height,changedPixels,warmBrightenedPixels,brightnessGain};
   },{before:unlit.toString('base64'),after:lit.toString('base64')});
 }
+/** Registered surface patches in Nadmorska's fixed default orbit view at the
+ * desktop viewport below. Each patch is below/in front of a hedge lantern,
+ * outside its bulb, woven shade and halo. Rear fixtures 8–10 and side fixtures
+ * 2–3 previously had no real light; glowing fittings alone must not pass this.
+ * This reads rendered pixels only, without inspecting private scene objects. */
+async function hedgeSurfaceDifference(unlit,lit){
+  return await page.evaluate(async({before,after})=>{
+    const decode=async source=>{
+      const picture=new Image();picture.src='data:image/png;base64,'+source;await picture.decode();
+      const canvas=new OffscreenCanvas(picture.width,picture.height),context=canvas.getContext('2d');
+      context.drawImage(picture,0,0);
+      return {width:picture.width,height:picture.height,pixels:context.getImageData(0,0,picture.width,picture.height).data};
+    };
+    const off=await decode(before),on=await decode(after);
+    if(off.width!==on.width||off.height!==on.height)throw new Error('Hedge comparison changed screenshot dimensions');
+    const patches=[
+      {id:'rear-lantern-8-foliage',bounds:[.400,.693,.428,.731]},
+      {id:'rear-lantern-9-foliage',bounds:[.344,.637,.374,.677]},
+      {id:'rear-lantern-10-foliage',bounds:[.293,.586,.324,.626]},
+      {id:'side-lantern-2-ground',bounds:[.785,.534,.817,.574]},
+      {id:'side-lantern-3-ground',bounds:[.757,.625,.793,.665]},
+    ].map(({id,bounds})=>{
+      const [x0,y0,x1,y1]=bounds.map((value,i)=>Math.round(value*(i%2?on.height:on.width)));
+      let brightenedPixels=0,brightnessGain=0;
+      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+        const i=(y*on.width+x)*4;
+        const gain=(on.pixels[i]+on.pixels[i+1]+on.pixels[i+2]-off.pixels[i]-off.pixels[i+1]-off.pixels[i+2])/3;
+        if(gain>3){brightenedPixels++;brightnessGain+=gain;}
+      }
+      return {id,pixels:(x1-x0)*(y1-y0),brightenedPixels,brightnessGain};
+    });
+    return {width:on.width,height:on.height,patches};
+  },{before:unlit.toString('base64'),after:lit.toString('base64')});
+}
+async function scenePngScreenshot(name){
+  await page.locator('#scene-host').scrollIntoViewIfNeeded();
+  await frames();
+  const buffer=await page.locator('#scene-host').screenshot({
+    path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css',
+  });
+  report.screenshots.push(name+'.png');
+  return buffer;
+}
 async function pngScreenshot(name){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
@@ -266,6 +309,48 @@ async function verifyPendantLighting(){
   assert.equal(restoredWindowActivity,70);
   report.nadmorska.pendantLighting={gardenPixels:pendantPixels,hedgePixels,restored:await lightState(),restoredWindowActivity,sharedReloadPassed:true};
   await pngScreenshot('nadmorska-pendants-night');
+}
+async function verifyHedgeSurfaceLighting(){
+  assert.equal(await page.locator('#viewport').getAttribute('data-mode'),'orbit');
+  await page.locator('#reset-camera').click();
+  await frames();
+  await details('#night-adjustments',true);
+  const original={garden:Number(await page.locator('#nightGardenIntensity-value').inputValue()),
+    hedge:Number(await page.locator('#nightHedgeIntensity-value').inputValue()),
+    pendantOn:await page.locator('#nightPendantLights').isChecked(),
+    hedgeOn:await page.locator('#nightHedgeLights').isChecked(),
+    windowsOn:await page.locator('#nightWindowLights').isChecked()};
+  const originalLights=await lightState(),observer=await page.locator('#observer-readout').innerText();
+  await setNumber('nightGardenIntensity-value',0);
+  await page.locator('#nightPendantLights').uncheck();
+  await page.locator('#nightWindowLights').uncheck();
+  await page.locator('#nightHedgeLights').uncheck();
+  for(const key of ['nightGarden','nightPendants','nightHedge','nightWindows'])await waitLight(key,'zero');
+  const off=await scenePngScreenshot('nadmorska-hedge-isolated-off');
+  await page.locator('#nightHedgeLights').check();
+  await setNumber('nightHedgeIntensity-value',25);
+  await waitLight('nightHedge','positive');
+  const low=await scenePngScreenshot('nadmorska-hedge-isolated-low');
+  await setNumber('nightHedgeIntensity-value',original.hedge);
+  const on=await scenePngScreenshot('nadmorska-hedge-isolated-on');
+  const lowSurface=await hedgeSurfaceDifference(off,low),surface=await hedgeSurfaceDifference(off,on);
+  for(const patch of surface.patches)assert.ok(patch.brightenedPixels>20,
+    'Hedge light must illuminate foliage/ground beyond the fitting at '+patch.id+': '+JSON.stringify(patch));
+  const sumGain=result=>result.patches.reduce((sum,patch)=>sum+patch.brightnessGain,0);
+  assert.ok(sumGain(surface)>sumGain(lowSurface)*1.1,
+    'Hedge dimmer must visibly increase surface illumination from 25% to '+original.hedge+'%: '+JSON.stringify({lowSurface,surface}));
+  const isolated=await lightState();
+  assert.equal(isolated.garden,0);assert.equal(isolated.pendants,0);assert.equal(isolated.windows,0);
+  assert.ok(Math.abs(isolated.hedge-original.hedge/100)<.002);
+  assert.equal(await page.locator('#observer-readout').innerText(),observer);
+  await page.locator('#nightPendantLights').setChecked(original.pendantOn);
+  await page.locator('#nightHedgeLights').setChecked(original.hedgeOn);
+  await page.locator('#nightWindowLights').setChecked(original.windowsOn);
+  await setNumber('nightGardenIntensity-value',original.garden);
+  assert.deepEqual(await lightState(),originalLights,'Isolated hedge verification restores every lighting channel');
+  report.nadmorska.hedgeSurfaceLighting={lowPercent:25,highPercent:original.hedge,lowSurface,surface,
+    isolated,restored:await lightState(),allOtherLightsOff:true};
+  check('Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels');
 }
 async function verifyNadmorska(){
   await page.setViewportSize({width:1430,height:1040});
@@ -393,6 +478,7 @@ async function verifyNadmorska(){
   check('Nadmorska window activity, independent light switches and visible WebGL water glow work after dark');
 
   await verifyPendantLighting();
+  await verifyHedgeSurfaceLighting();
 
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
@@ -430,6 +516,31 @@ async function verifyNadmorska(){
     'The busier evening setting remains selected after all night, share, plan and mobile checks');
   await pngScreenshot('nadmorska-mobile-plan');
   check('Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page');
+
+  // Exercise the larger set of active real lights at the mobile viewport too.
+  // This is a rendering/correctness gate, not a hardware performance benchmark.
+  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('#showDimensions').uncheck();
+  await page.locator('#preview-night').click();
+  await waitLight('nightHedge','positive');
+  assert.equal(await page.locator('#scene-host canvas').count(),1,'Mobile night must retain real WebGL');
+  await details('#night-adjustments',true);
+  await page.locator('#nightHedgeLights').uncheck();
+  await waitLight('nightHedge','zero');
+  const mobileWithoutHedge=await scenePngScreenshot('nadmorska-mobile-hedge-off');
+  await page.locator('#nightHedgeLights').check();
+  await waitLight('nightHedge','positive');
+  const mobileWithHedge=await scenePngScreenshot('nadmorska-mobile-night');
+  const mobileHedgePixels=await warmLightDifference(mobileWithoutHedge,mobileWithHedge);
+  assert.ok(mobileHedgePixels.changedPixels>30&&mobileHedgePixels.warmBrightenedPixels>12,
+    'Mobile WebGL must visibly render the hedge-light change: '+JSON.stringify(mobileHedgePixels));
+  report.nadmorska.mobileNight={renderer:'WebGL',lights:await lightState(),hedgePixels:mobileHedgePixels};
+  check('The 390px mobile night scene renders all active hedge lighting and visibly responds to its switch in WebGL');
+  await page.locator('#preview-day').click();
+  await waitLight('nightActivation','zero');
+  await page.locator('#showDimensions').check();
+  await page.locator('[data-mode="plan"]').click();
+  await page.locator('#plan-host').waitFor({state:'visible'});
 }
 
 try {

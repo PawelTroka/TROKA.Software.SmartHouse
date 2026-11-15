@@ -2,7 +2,15 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.20.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.20.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.20.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.20.1)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.20.1)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.20.1)**
+
+## Light from every inner-thuja lantern · 1.20.1
+
+Every hanging lantern on the garden-facing sides of the thujas now lights nearby foliage and ground. Previously only four hedge fittings cast real surface light; the remaining fittings had glowing cores and shades. Each installed hedge lantern now has a warm local light, with four times the previous nominal output and a 6 m falloff range instead of 4.2 m. The 85% hedge dimmer remains adjustable under **Garden after dark → Lighting & neighbouring windows**.
+
+This correction is specific to the hedge lanterns. Dining pendants, neighbouring windows, layout, fitting counts and saved lighting settings retain their existing values. Schema 20 continues to load existing designs; the stronger hedge rendering also applies when opening an older saved design with its own dimmer setting. The light count is bounded at 39, including at most 24 hedge lights; hedge lights do not add shadow maps.
+
+[Open the corrected Nadmorska night view](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.20.1#v=20&site=nadmorska-17&mode=orbit&sunMinutes=1410&showDimensions=false&nightHedgeIntensity=85). See [release validation](docs/release-1.20.1-validation.md) for the focused lighting checks.
 
 ## Brighter pendants and a busier evening · 1.20.0
 

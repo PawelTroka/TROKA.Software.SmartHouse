@@ -115,9 +115,14 @@ test('proposed garden fixtures keep finite positions and a bounded GPU light cou
     const lighting=createGardenNightLighting(model.DEFAULTS,siteData);
     try{
       const lights=[];lighting.group.traverse(object=>{if(object.isLight)lights.push(object);});
-      assert.ok(lights.length>0&&lights.length<=19,'The scene caps landscape lights at 12, dining pendants at 3 and hedge illumination at 4');
+      assert.ok(lights.length>0&&lights.length<=39,'The scene caps landscape lights at 12, dining pendants at 3 and hedge illumination at 24');
       assert.equal(lighting.lightCount,lights.length);
       assert.ok(lights.filter(light=>light.castShadow).length<=3,'Only the limited tree uplights acquire local shadow maps');
+      assert.ok(lights.filter(light=>light.userData.nightChannel==='garden').length<=12);
+      assert.ok(lights.filter(light=>light.userData.nightChannel==='pendant').length<=3);
+      const hedgeLights=lights.filter(light=>light.userData.nightChannel==='hedge');
+      assert.ok(hedgeLights.length<=24);
+      assert.ok(hedgeLights.every(light=>!light.castShadow),'Brighter hedge lanterns do not add shadow-map passes');
       for(const fixture of lighting.fixtures)for(const key of ['x','y','z'])assert.ok(Number.isFinite(fixture[key]),fixture.kind+'.'+key);
       for(const light of lights){
         assert.ok(light.position.toArray().every(Number.isFinite),light.name);
