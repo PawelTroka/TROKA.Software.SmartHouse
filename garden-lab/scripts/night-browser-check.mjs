@@ -131,8 +131,8 @@ async function waterGlowDifference(unlit,lit){
     return {width:on.width,height:on.height,aquaPixels,brighterAquaPixels,brightnessGain};
   },{before:unlit.toString('base64'),after:lit.toString('base64')});
 }
-/** The compared scene has fixed geometry, camera and window activity. Count
- * actual warm pixels brightened by a single pendant channel, not UI changes. */
+/** The compared scene has fixed geometry and camera. Count actual warm pixels
+ * brightened by the one lighting control under test, not UI changes. */
 async function warmLightDifference(unlit,lit){
   return await page.evaluate(async({before,after})=>{
     const decode=async source=>{
@@ -142,7 +142,7 @@ async function warmLightDifference(unlit,lit){
       return {width:picture.width,height:picture.height,pixels:context.getImageData(0,0,picture.width,picture.height).data};
     };
     const off=await decode(before),on=await decode(after);
-    if(off.width!==on.width||off.height!==on.height)throw new Error('Pendant comparison changed screenshot dimensions');
+    if(off.width!==on.width||off.height!==on.height)throw new Error('Warm-light comparison changed screenshot dimensions');
     let changedPixels=0,warmBrightenedPixels=0,brightnessGain=0;
     for(let i=0;i<on.pixels.length;i+=4){
       const [r,g,b]=on.pixels.subarray(i,i+3),[r0,g0,b0]=off.pixels.subarray(i,i+3);
@@ -176,10 +176,12 @@ async function verifyPendantLighting(){
     garden:Number(await page.locator('#nightGardenIntensity-value').inputValue()),
     pendants:Number(await page.locator('#nightPendantIntensity-value').inputValue()),
     hedge:Number(await page.locator('#nightHedgeIntensity-value').inputValue()),
+    windowActivity:Number(await page.locator('#nightWindowActivity-value').inputValue()),
   };
   assert.equal(await page.locator('#nightPendantLights').isChecked(),true);
   assert.equal(await page.locator('#nightHedgeLights').isChecked(),true);
-  assert.equal(original.pendants,65);assert.equal(original.hedge,55);
+  assert.equal(original.pendants,80);assert.equal(original.hedge,85);
+  assert.equal(original.windowActivity,70);
   await page.locator('#share').click();
   const designWithoutLighting=()=>Object.fromEntries([...new URLSearchParams(new URL(page.url()).hash.slice(1))]
     .filter(([key])=>!key.startsWith('night')).sort(([a],[b])=>a.localeCompare(b)));
@@ -248,6 +250,8 @@ async function verifyPendantLighting(){
   assert.equal(Number(await page.locator('#nightGardenIntensity-value').inputValue()),0);
   assert.equal(Number(await page.locator('#nightPendantIntensity-value').inputValue()),27);
   assert.equal(Number(await page.locator('#nightHedgeIntensity-value').inputValue()),43);
+  assert.equal(Number(await page.locator('#nightWindowActivity-value').inputValue()),original.windowActivity,
+    'Sharing and reloading edited pendants must retain the busier neighbouring-window setting');
   assert.equal(await page.locator('#sun-time').inputValue(),'23:30');
   assert.deepEqual(designWithoutLighting(),originalDesign);
   check('Pendant switches and dimmers survive Share and reload without changing the property or garden layout');
@@ -258,7 +262,9 @@ async function verifyPendantLighting(){
   await setNumber('nightPendantIntensity-value',original.pendants);
   await setNumber('nightHedgeIntensity-value',original.hedge);
   await waitLight('nightGarden','positive');await waitLight('nightPendants','positive');await waitLight('nightHedge','positive');
-  report.nadmorska.pendantLighting={gardenPixels:pendantPixels,hedgePixels,restored:await lightState(),sharedReloadPassed:true};
+  const restoredWindowActivity=Number(await page.locator('#nightWindowActivity-value').inputValue());
+  assert.equal(restoredWindowActivity,70);
+  report.nadmorska.pendantLighting={gardenPixels:pendantPixels,hedgePixels,restored:await lightState(),restoredWindowActivity,sharedReloadPassed:true};
   await pngScreenshot('nadmorska-pendants-night');
 }
 async function verifyNadmorska(){
@@ -323,18 +329,37 @@ async function verifyNadmorska(){
   await waitLight('nightActivation','positive');
   await waitLight('nightWindows','positive');
   await details('#night-adjustments',true);
+  const windowActivityOriginal=Number(await page.locator('#nightWindowActivity-value').inputValue());
+  assert.equal(windowActivityOriginal,70);
   await setNumber('nightWindowActivity-value',0);
   const noWindows=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
   await setNumber('nightWindowActivity-value',100);
   const allWindows=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
   assert.ok(!noWindows.equals(allWindows),'Nadmorska across-street window activity must visibly change its WebGL scene');
+
+  // Compare the previous and new evening activity in the same street view.
+  // Only the occupancy control changes; the camera and every light dimmer stay fixed.
+  const fixedView={observer:await page.locator('#observer-readout').innerText(),lights:await lightState()};
   await setNumber('nightWindowActivity-value',35);
+  const quieterWindows=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  await setNumber('nightWindowActivity-value',windowActivityOriginal);
+  const busierWindows=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  const windowActivityPixels=await warmLightDifference(quieterWindows,busierWindows);
+  assert.ok(windowActivityPixels.warmBrightenedPixels>50,
+    'Increasing window activity from 35% to 70% must visibly add warm lit windows: '+JSON.stringify(windowActivityPixels));
+  assert.deepEqual({observer:await page.locator('#observer-readout').innerText(),lights:await lightState()},fixedView,
+    'Window activity comparison must retain its camera, twilight phase and other lighting strengths');
+  assert.equal(await page.locator('[data-preset="first-street-standing"]').getAttribute('aria-pressed'),'true');
+  report.nadmorska.windowActivityComparison={from:35,to:windowActivityOriginal,...windowActivityPixels};
+  check('The busier 70% evening visibly lights more neighbouring windows than 35% in the same WebGL street view');
   await page.locator('#nightWindowLights').uncheck();
   await waitLight('nightWindows','zero');
   assert.ok((await lightState()).garden>0);
   await page.locator('#nightWindowLights').check();
   await waitLight('nightWindows','positive');
+  assert.equal(Number(await page.locator('#nightWindowActivity-value').inputValue()),windowActivityOriginal);
   report.nadmorska.windowActivityVisible=true;
+  await pngScreenshot('nadmorska-street-busy-evening');
 
   // A fixed overview includes both water bodies. The scene renders on demand,
   // so switching garden lights must change the pixels, not an animated clock.
@@ -401,6 +426,8 @@ async function verifyNadmorska(){
   assert.ok(report.nadmorska.mobile.scrollWidth<=report.nadmorska.mobile.width+2,JSON.stringify(report.nadmorska.mobile));
   assert.equal(await page.locator('#site-select').inputValue(),'nadmorska-17');
   assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
+  assert.equal(Number(await page.locator('#nightWindowActivity-value').inputValue()),70,
+    'The busier evening setting remains selected after all night, share, plan and mobile checks');
   await pngScreenshot('nadmorska-mobile-plan');
   check('Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page');
 }
@@ -472,6 +499,7 @@ try {
   const gardenOriginal=await page.locator('#nightGardenIntensity-value').inputValue();
   const windowOriginal=await page.locator('#nightWindowIntensity-value').inputValue();
   const activityOriginal=await page.locator('#nightWindowActivity-value').inputValue();
+  assert.equal(Number(activityOriginal),70,'Sternicza also starts with the busier neighbouring-window default');
   await setNumber('nightGardenIntensity-value',25);
   const gardenLow=(await lightState()).garden;
   await setNumber('nightGardenIntensity-value',90);

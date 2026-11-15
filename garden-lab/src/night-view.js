@@ -1,4 +1,4 @@
-import {nightLightingState} from './night-lighting.js?v=1.19.0';
+import {nightLightingState} from './night-lighting.js?v=1.20.0';
 
 const $=id=>document.getElementById(id);
 

@@ -46,7 +46,7 @@ test('night settings reject invalid types and clamp numerical percentages withou
     nightGardenIntensity:-20,nightWindowIntensity:500,nightWindowActivity:NaN});
   assert.equal(state.nightGardenLights,true);assert.equal(state.nightWindowLights,true);
   assert.equal(state.nightGardenIntensity,0);assert.equal(state.nightWindowIntensity,100);
-  assert.equal(state.nightWindowActivity,35);
+  assert.equal(state.nightWindowActivity,70);
   assert.deepEqual(state.screeningTrees,model.DEFAULTS.screeningTrees);
   assert.equal(state.sunDate,model.DEFAULTS.sunDate);assert.equal(state.sunMinutes,model.DEFAULTS.sunMinutes);
 });

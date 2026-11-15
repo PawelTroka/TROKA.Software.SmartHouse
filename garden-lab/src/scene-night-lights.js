@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.19.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.19.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.19.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.19.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.19.0';
+import {toWorld} from './orientation.js?v=1.20.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.20.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.20.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.20.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.20.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -124,7 +124,11 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   }
   // The decorative fittings have real frames, cords and open woven shades.
   // Merge each shade's ribs into one mesh rather than multiplying draw calls.
-  const shadeMaterial=makeMaterial({color:'#b59969',roughness:.92,metalness:0,side:THREE.DoubleSide});
+  // Every shade shows warm transmitted light, including the hedge fittings
+  // without a real point light. Separate materials retain independent dimmers.
+  const shadeEmission=new THREE.Color('#ffc781');
+  const shadeMaterials=Object.fromEntries(['pendant','hedge'].map(channel=>[channel,
+    makeMaterial({color:'#b59969',roughness:.92,metalness:0,side:THREE.DoubleSide,emissiveIntensity:0})]));
   const cordMaterial=makeMaterial({color:'#3d4034',roughness:.9,metalness:.1});
   const join=(a,b,radius,material,name)=>{
     const start=point(...a),end=point(...b),length=start.distanceTo(end);
@@ -175,11 +179,11 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
     for(const [i,fixture] of lanterns.entries()){
       const {x,y,z,radius,height,hangZ}=fixture;
       join([x,y,hangZ],[x,y,z+height*.5],.006,cordMaterial,`${fixture.id}-drop`);
-      mesh(wovenShade(radius,height),shadeMaterial,`${fixture.id}-woven-shade`,x,y,z);
+      mesh(wovenShade(radius,height),shadeMaterials[channel],`${fixture.id}-woven-shade`,x,y,z);
       mesh(new THREE.CylinderGeometry(.035,.045,.055,8),body,`${fixture.id}-socket`,x,y,z+height*.35);
       const diffuser=emitter(x,y,z-height*.1,radius*.61,glow,channel);
       diffuser.name=`${fixture.id}-glowing-core`;diffuser.scale.y=height/(radius*1.8);
-      halo(x,y,z-height*.1,color,channel==='pendant'?radius*2.5:.48,channel);
+      halo(x,y,z-height*.1,color,channel==='pendant'?radius*2.5:.60,channel);
       if(channel==='pendant'){
         const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,40,5.5,[x,y,fixture.groundZ],false,channel);
         if(pendantLight){pendantLight.angle=1.02;pendantLight.penumbra=.75;}
@@ -197,7 +201,12 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
     const changed=Object.keys(values).some(key=>Math.abs(values[key]-applied[key])>.0001);applied=values;
     for(const l of lights){const value=values[l.userData.nightChannel];l.visible=value>.001;l.intensity=l.userData.nominalIntensity*value;}
     for(const [m,channel] of glowChannels)m.opacity=Math.min(1,values[channel]*1.5);
-    for(const {material,channel} of haloMaterials)material.opacity=values[channel]*.65;
+    for(const {material,channel} of haloMaterials)material.opacity=values[channel]*(channel==='hedge'?.85:.65);
+    for(const [channel,material] of Object.entries(shadeMaterials)){
+      material.emissiveIntensity=values[channel]*.45;
+      // SVGRenderer adds emissive directly and does not apply its intensity.
+      material.emissive.copy(shadeEmission).multiplyScalar(svgMode?material.emissiveIntensity:1);
+    }
     for(const {mesh,channel} of emitters)mesh.visible=values[channel]>.001;
     return changed;
   };
