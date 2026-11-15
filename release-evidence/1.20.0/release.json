@@ -20,5 +20,17 @@
     "changedPixels": 7194,
     "warmBrightenedPixels": 4545,
     "brightnessGain": 675976.0000000088
+  },
+  "deployment_run": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43743401153",
+  "production_commit": "334f2ceb2d28e1095307313c7c1f93f5dc25ee33",
+  "live_verification": {
+    "version": "1.20.0",
+    "renderer": "WebGL",
+    "property": "Nadmorska 17",
+    "nightWindowActivity": 70,
+    "nightPendantIntensity": 80,
+    "nightHedgeIntensity": 85,
+    "console_warnings_or_errors": [],
+    "screenshot": "nadmorska-live-night.png"
   }
 }
