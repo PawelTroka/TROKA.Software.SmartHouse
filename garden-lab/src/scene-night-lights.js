@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.20.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.20.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.20.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.20.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.20.0';
+import {toWorld} from './orientation.js?v=1.20.1';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.20.1';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.20.1';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.20.1';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.20.1';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -124,8 +124,8 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   }
   // The decorative fittings have real frames, cords and open woven shades.
   // Merge each shade's ribs into one mesh rather than multiplying draw calls.
-  // Every shade shows warm transmitted light, including the hedge fittings
-  // without a real point light. Separate materials retain independent dimmers.
+  // Every shade also shows warm transmitted light. Separate materials retain
+  // independent dimmers, including in the simplified SVG renderer.
   const shadeEmission=new THREE.Color('#ffc781');
   const shadeMaterials=Object.fromEntries(['pendant','hedge'].map(channel=>[channel,
     makeMaterial({color:'#b59969',roughness:.92,metalness:0,side:THREE.DoubleSide,emissiveIntensity:0})]));
@@ -172,11 +172,12 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   for(const cable of pendantLayout.cables){
     for(let i=1;i<cable.points.length;i++)join(cable.points[i-1],cable.points[i],cable.kind==='arm'?.012:.006,cordMaterial,cable.id);
   }
-  // At most three dining lights and four hedge lights illuminate surfaces.
-  // Every proposed lantern still has its own glowing lens and soft halo.
-  const hedgeSurfaceLights=new Set(Array.from({length:Math.min(4,pendantLayout.hedge.length)},(_,i)=>Math.floor(i*pendantLayout.hedge.length/Math.min(4,pendantLayout.hedge.length))));
+  // Every inner-hedge lantern must illuminate nearby foliage and ground, not
+  // just its own lens. Layout caps the hedge at 24 fixtures: with three dining
+  // and at most twelve landscape lights, the scene remains bounded at 39.
+  // These short-range hedge sources do not add shadow maps.
   for(const [channel,lanterns,glow,color] of [['pendant',pendantLayout.garden,pendantGlow,'#ffda9b'],['hedge',pendantLayout.hedge,hedgeGlow,'#ffcb84']]){
-    for(const [i,fixture] of lanterns.entries()){
+    for(const fixture of lanterns){
       const {x,y,z,radius,height,hangZ}=fixture;
       join([x,y,hangZ],[x,y,z+height*.5],.006,cordMaterial,`${fixture.id}-drop`);
       mesh(wovenShade(radius,height),shadeMaterials[channel],`${fixture.id}-woven-shade`,x,y,z);
@@ -187,7 +188,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
       if(channel==='pendant'){
         const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,40,5.5,[x,y,fixture.groundZ],false,channel);
         if(pendantLight){pendantLight.angle=1.02;pendantLight.penumbra=.75;}
-      }else if(hedgeSurfaceLights.has(i))light('point',`${fixture.id}-light`,x,y,z-height*.1,color,18,4.2,null,false,channel);
+      }else light('point',`${fixture.id}-light`,x,y,z-height*.1,color,72,6,null,false,channel);
       fixtures.push({...fixture,kind:channel==='pendant'?'garden-pendant':'hedge-pendant',channel});
     }
   }
