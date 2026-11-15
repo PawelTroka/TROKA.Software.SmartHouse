@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.18.0">
+  <meta name="application-version" content="1.19.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
   <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
   <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.18.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.18.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.18.0">
+  <link rel="stylesheet" href="./style.css?v=1.19.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.19.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.19.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
@@ -81,7 +81,8 @@
         <section class="night-controls" aria-label="Garden after dark">
           <div class="night-heading"><div><span class="night-symbol" aria-hidden="true">☾</span><strong>Garden after dark</strong><span id="night-summary">Lights follow the sun</span></div><div class="night-preview-actions"><button id="preview-night" class="button night-preview" type="button">Preview night</button><button id="preview-day" class="text-button" type="button">Daylight</button></div></div>
           <details class="night-adjustments" id="night-adjustments"><summary>Lighting &amp; neighbouring windows</summary><div class="night-body">
-            <div class="night-switches"><label class="switch-row"><span>Garden lights<small>Warm tree, terrace and path accents; soft pool and spa glow.</small></span><input id="nightGardenLights" type="checkbox" role="switch" checked></label><label class="switch-row"><span>Neighbouring windows<small>Include nearby buildings and homes across the street.</small></span><input id="nightWindowLights" type="checkbox" role="switch" checked></label></div>
+            <div class="night-switches"><label class="switch-row"><span>Garden lights<small>Master switch for pendants, lanterns, landscape accents and water glow.</small></span><input id="nightGardenLights" type="checkbox" role="switch" checked></label><label class="switch-row"><span>Neighbouring windows<small>Include nearby buildings and homes across the street.</small></span><input id="nightWindowLights" type="checkbox" role="switch" checked></label></div>
+            <div class="night-switches night-pendant-switches"><label class="switch-row"><span>Garden pendants<small>Warm hanging shades over the garden seating.</small></span><input id="nightPendantLights" type="checkbox" role="switch" checked></label><label class="switch-row"><span>Thuja-side lanterns<small>Hanging lights along the inner sides of the hedges.</small></span><input id="nightHedgeLights" type="checkbox" role="switch" checked></label></div>
             <div id="night-controls" class="night-fields"></div>
             <p class="field-note" id="night-status" aria-live="polite"></p><p class="field-note night-model-note">Lighting follows the selected date and local time, fading in at dusk. Window locations and activity are illustrative. Brightness is a visual comparison, not a lux calculation. Lighting does not change the geometric screening percentages.</p>
           </div></details>
@@ -111,6 +112,6 @@
   <div id="toast" class="toast" role="status"></div>
   <dialog id="about"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.18.0"></script>
+  <script type="module" src="./src/app.js?v=1.19.0"></script>
 </body>
 </html>

@@ -26,6 +26,8 @@
 .night-switches{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .night-switches .switch-row{margin:13px 0 18px}
 .night-switches .switch-row small{font-size:9px;max-width:280px}
+.night-pendant-switches{border-top:1px solid var(--line);padding-top:1px}
+.night-pendant-switches .switch-row{margin:12px 0 18px}
 .night-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .night-fields .field{margin-bottom:0}
 .night-fields .field-top{align-items:flex-start}
@@ -33,6 +35,7 @@
 .night-fields .value-input input{width:32px}
 .night-fields .range-labels{font-size:8px}
 .night-field-disabled{opacity:.48}
+.night-switches .night-field-disabled{cursor:default}
 .night-body .field-note{font-size:9px;margin-top:12px}
 .night-body .night-model-note{max-width:1000px;color:#8e9584;margin-top:5px}
 @media(max-width:1050px){#night-summary{flex-basis:100%;margin-left:31px}.night-fields{gap:12px}.night-switches{gap:16px}}

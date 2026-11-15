@@ -1,0 +1,10 @@
+{
+  "version": "1.19.0",
+  "source_commit": "1da9885bb89bfcbb481e872067608b18c5a9cb4e",
+  "tested_head": "f7297f9b228c97d721be58dd39be5074d14230c4",
+  "pull_request": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/18",
+  "ci_run": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43740752388",
+  "automated_tests": 437,
+  "browser_checks": 20,
+  "static_assets": 56
+}
