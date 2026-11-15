@@ -1,10 +1,11 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.18.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.18.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.18.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.18.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.18.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.18.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.18.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.19.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.19.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.19.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.19.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.19.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.19.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.19.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.19.0';
 
 export const STATE_VERSION = 19;
 
@@ -72,7 +73,9 @@ const BASE_FIELDS = Object.freeze({
   lookYaw: {label:'Look direction',min:-180,max:180,step:1,value:0,group:'look',unit:'°'},
   lookPitch: {label:'Look up / down',min:-60,max:60,step:1,value:0,group:'look',unit:'°'},
   sunMinutes: {label:'Time of day in Warsaw',min:0,max:1439,step:1,value:SOLAR_DEFAULTS.sunMinutes,group:'solar'},
-  nightGardenIntensity: {label:'Garden light brightness',min:0,max:100,step:1,value:75,group:'night',unit:'%'},
+  nightGardenIntensity: {label:'Landscape accent brightness',min:0,max:100,step:1,value:NIGHT_DEFAULTS.nightGardenIntensity,group:'night',unit:'%'},
+  nightPendantIntensity: {label:'Garden pendant brightness',min:0,max:100,step:1,value:NIGHT_DEFAULTS.nightPendantIntensity,group:'night',unit:'%'},
+  nightHedgeIntensity: {label:'Thuja lantern brightness',min:0,max:100,step:1,value:NIGHT_DEFAULTS.nightHedgeIntensity,group:'night',unit:'%'},
   nightWindowActivity: {label:'Neighbour window activity',min:0,max:100,step:1,value:35,group:'night',unit:'%'},
   nightWindowIntensity: {label:'Neighbour window brightness',min:0,max:100,step:1,value:60,group:'night',unit:'%'},
   ...COST_FIELDS,
@@ -94,10 +97,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   for(const [key,override] of Object.entries(profile.fieldOverrides||{}))if(fields[key])fields[key]={...fields[key],...override};
   for(const [key,value] of Object.entries(profile.defaults||{}))if(fields[key])fields[key]={...fields[key],value};
   const FIELDS=Object.freeze(Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,Object.freeze(value)])));
-  const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
+  const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...NIGHT_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
-    nightGardenLights:true,nightWindowLights:true,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
   const V17_DEFAULTS=Object.freeze({...DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
     costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,

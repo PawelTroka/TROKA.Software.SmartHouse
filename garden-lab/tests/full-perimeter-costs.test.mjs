@@ -28,7 +28,7 @@ test('full mapped perimeter orders 137 thujas with one shared delivery allowance
   near(cost.hedges.baseTotal.low-old.hedges.baseTotal.low,44*(300+75));
 });
 
-test('front-side extensions add only their declared drip allowance to garden finishes',()=>{
+test('front-side extensions add their declared drip allowance and fitted hedge lanterns to garden finishes',()=>{
   const cost=estimateCosts(full,data),old=estimateCosts(base,data);
   const extension=hedgeSegments(full,data).filter(s=>s.groundZone==='front'&&s.side!=='front')
     .reduce((sum,s)=>sum+Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]),0);
@@ -39,11 +39,13 @@ test('front-side extensions add only their declared drip allowance to garden fin
   near(irrigation(cost).cost.high-irrigation(old).cost.high,extension*65);
   assert.match(irrigation(cost).basis,/front-side hedge strips/);
   assert.match(irrigation(cost).scope,/1 m planted-strip width/);
-  for(const row of cost.garden.rows.filter(row=>row.key!=='costGardenIrrigation')){
+  for(const row of cost.garden.rows.filter(row=>!['costGardenIrrigation','costGardenLighting'].includes(row.key))){
     assert.deepEqual(row.cost,old.garden.rows.find(previous=>previous.key===row.key).cost,row.key);
   }
-  near(cost.total.low-old.total.low,16500+extension*35);
-  near(cost.total.high-old.total.high,(16500+extension*65)*1.2);
+  const extraLanterns=cost.garden.quantities.hedgePendantCount-old.garden.quantities.hedgePendantCount;
+  assert.ok(extraLanterns>0);
+  near(cost.total.low-old.total.low,16500+extension*35+extraLanterns*700);
+  near(cost.total.high-old.total.high,(16500+extension*65+extraLanterns*1500)*1.2);
 });
 
 test('front-side planting creates no front fill or raised-bed volume, including after cache toggles',()=>{

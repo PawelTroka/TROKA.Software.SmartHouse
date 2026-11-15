@@ -1,4 +1,4 @@
-import {getTreeType} from './tree-catalog.js?v=1.18.0';
+import {getTreeType} from './tree-catalog.js?v=1.19.0';
 
 /** Compare nursery stock at the same positions. A quote for the old specimen
  * cannot price a different species, so dimensions and plant price reset together. */

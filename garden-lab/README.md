@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.18.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.18.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.18.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.19.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.19.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.19.0)**
+
+## Garden pendants and inner-hedge lanterns · 1.19.0
+
+Three staggered woven-style pendants hang above the outdoor dining area. Smaller warm lanterns follow the inner sides of the actual planted thuja spans, with slim independent posts and short arms. Gate openings remain clear; fittings avoid mapped buildings, pool coping, spa structures, steps, parcel edges and specimen trunks. Short or low hedge spans can omit a lantern. The three current defaults contain **3 garden pendants** each, plus **24 / 7 / 24 hedge lanterns** for Sternicza / Korzeniowskiego / Nadmorska.
+
+Open **Garden after dark → Preview night → Lighting & neighbouring windows**. Garden pendants start at **65%** and Thuja-side lanterns at **55%**, each with its own switch and dimmer. The **Garden lights** switch controls all garden channels; **Landscape accent brightness** controls the existing path, tree, step and water lighting independently. Neighbouring windows keep their separate controls. All lighting fades with solar elevation, and shade/support models remain visible when unlit.
+
+Saved designs and shared links retain the new controls in schema 19. Opening an older design adds the optional light defaults without moving its trees, pool, terrace or observer. Pendant and hedge fixtures use a shared placement module for rendering and budget quantities; turning a light off does not remove its installation cost. The budget applies the existing generic fitting allowance to the added counts and explicitly requests a complete shade/support installation quote. These are illustrative lighting scenarios, not supplier-specific photometry or structural designs.
+
+Real surface lighting remains bounded to at most 19 local lights: the existing maximum 12, three dining pendants and four hedge lights. Every hanging fitting has a visible core and halo. The lightweight SVG fallback keeps the same fixtures and switches; it does not simulate surface lighting. See [release validation](docs/release-1.19.0-validation.md).
 
 ## Nadmorska 17, Jelitkowo · 1.18.0
 

@@ -115,7 +115,7 @@ test('proposed garden fixtures keep finite positions and a bounded GPU light cou
     const lighting=createGardenNightLighting(model.DEFAULTS,siteData);
     try{
       const lights=[];lighting.group.traverse(object=>{if(object.isLight)lights.push(object);});
-      assert.ok(lights.length>0&&lights.length<=12,'The default design must not add an unbounded light per facade pane');
+      assert.ok(lights.length>0&&lights.length<=19,'The scene caps landscape lights at 12, dining pendants at 3 and hedge illumination at 4');
       assert.equal(lighting.lightCount,lights.length);
       assert.ok(lights.filter(light=>light.castShadow).length<=3,'Only the limited tree uplights acquire local shadow maps');
       for(const fixture of lighting.fixtures)for(const key of ['x','y','z'])assert.ok(Number.isFinite(fixture[key]),fixture.kind+'.'+key);

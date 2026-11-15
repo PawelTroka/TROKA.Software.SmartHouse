@@ -3,11 +3,12 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.18.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.18.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.18.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.18.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.18.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.19.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.19.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.19.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.19.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.19.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.19.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -290,6 +291,9 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
   const frontIrrigationArea=quantities.lengths.front;
   const frontSideIrrigationArea=positive(quantities.frontSideHedgeLength);
   const irrigatedArea=landscapeArea+quantities.bedArea+frontIrrigationArea+frontSideIrrigationArea,loungers=furniture.loungers.length;
+  const hangingLights=pendantLightingLayout(settings,data);
+  const gardenPendantCount=hangingLights.garden.length,hedgePendantCount=hangingLights.hedge.length;
+  const lightingFittings=12+gardenPendantCount+hedgePendantCount;
   const garageArea=settings.removeGarage!==false&&data.site.garage?.footprint?polygonArea(data.site.garage.footprint):0;
   const canopy=canopyBounds(settings,data),canopyArea=settings.canopyEnabled?positive(canopy.x1-canopy.x0)*positive(canopy.y1-canopy.y0):0;
   const rows=[
@@ -307,8 +311,8 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
       'Lawn finish and fine grading on prepared soil. No additional bulk fill or topsoil charged here.'),
     installedLine(c,'costGardenIrrigation',scaledRange(RATES.irrigationPerM2,irrigatedArea),`${quantityText(irrigatedArea,'m² irrigation basis')} × 35–65 PLN/m²${frontIrrigationArea>EPS?` · includes ${quantityText(frontIrrigationArea,'m² front-hedge strip')}`:''}${frontSideIrrigationArea>EPS?` + ${quantityText(frontSideIrrigationArea,'m² front-side hedge strips')}`:''}`,
       `Permanent distribution, controls and installation for beds, hedges and lawn. ${frontSideIrrigationArea>EPS?'Street and front-side hedges use':'Front hedge uses'} a provisional 1 m planted-strip width for drip irrigation only; no front lawn or fill. Specimen establishment visits / temporary root-ball watering are separate.`),
-    installedLine(c,'costGardenLighting',scaledRange(RATES.lightFixture,12),'12 assumed fittings × 700–1,500 PLN installed',
-      'Landscape fittings and local low-voltage wiring. Spa built-in lights belong to their object lines; the main supply is in shared utilities.'),
+    installedLine(c,'costGardenLighting',scaledRange(RATES.lightFixture,lightingFittings),`${lightingFittings} fittings: 12 baseline + ${gardenPendantCount} garden pendants + ${hedgePendantCount} hedge lanterns · generic 700–1,500 PLN each installed`,
+      'Existing generic lighting allowance applied to the illustrated fittings, local wiring and simple mounts; no pendant product or support-frame quotation has been received. Replace with a complete installed quote covering the selected shades, posts, foundations and controls. Switching a light off does not remove its installation cost. Spa built-in lights belong to their object lines; the main supply is in shared utilities.'),
     installedLine(c,'costGardenUtilities',scaledRange(RATES.utilities),'1 shared garden supply / distribution allowance',
       'Shared garden electric and water feeds, distribution and drain connections only. Object-level hookups and garden-fill drainage are excluded here to avoid duplication.'),
     installedLine(c,'costGardenDesign',scaledRange(RATES.design),'1 garden design / technical coordination package',
@@ -318,7 +322,7 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
     'Allowance for removal of the detached garage and its waste transport/disposal. Final demolition method and quantities require a site quote. No separate duplicate general-waste charge.'));
   if(canopyArea>EPS)rows.push(installedLine(c,'costGardenCanopy',scaledRange(RATES.canopyPerM2,canopyArea),`${quantityText(canopyArea,'m² canopy')} × 1,700–3,000 PLN/m²`,
     'Selected terrace canopy, supports and installation; not charged when the canopy is disabled.'));
-  return installationGroup(true,rows,c,{quantities:{terraceGross,terraceNet,pavingArea,pathLength,additionalHardscape,ornamentalArea,lawnArea,irrigatedArea,frontIrrigationArea,frontSideIrrigationArea,garageArea,canopyArea,loungers}});
+  return installationGroup(true,rows,c,{quantities:{terraceGross,terraceNet,pavingArea,pathLength,additionalHardscape,ornamentalArea,lawnArea,irrigatedArea,frontIrrigationArea,frontSideIrrigationArea,garageArea,canopyArea,loungers,lightingFittings,gardenPendantCount,hedgePendantCount}});
 }
 
 export function thujaUnitPrice(height, customPrice = 0, factor = 100) {

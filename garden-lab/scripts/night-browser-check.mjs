@@ -77,6 +77,7 @@ async function selectPreset(preset){
 async function lightState(){
   return await page.locator('#viewport').evaluate(node=>({
     activation:Number(node.dataset.nightActivation),garden:Number(node.dataset.nightGarden),
+    pendants:Number(node.dataset.nightPendants),hedge:Number(node.dataset.nightHedge),
     windows:Number(node.dataset.nightWindows),mode:node.dataset.mode,
   }));
 }
@@ -130,6 +131,28 @@ async function waterGlowDifference(unlit,lit){
     return {width:on.width,height:on.height,aquaPixels,brighterAquaPixels,brightnessGain};
   },{before:unlit.toString('base64'),after:lit.toString('base64')});
 }
+/** The compared scene has fixed geometry, camera and window activity. Count
+ * actual warm pixels brightened by a single pendant channel, not UI changes. */
+async function warmLightDifference(unlit,lit){
+  return await page.evaluate(async({before,after})=>{
+    const decode=async source=>{
+      const picture=new Image();picture.src='data:image/png;base64,'+source;await picture.decode();
+      const canvas=new OffscreenCanvas(picture.width,picture.height),context=canvas.getContext('2d');
+      context.drawImage(picture,0,0);
+      return {width:picture.width,height:picture.height,pixels:context.getImageData(0,0,picture.width,picture.height).data};
+    };
+    const off=await decode(before),on=await decode(after);
+    if(off.width!==on.width||off.height!==on.height)throw new Error('Pendant comparison changed screenshot dimensions');
+    let changedPixels=0,warmBrightenedPixels=0,brightnessGain=0;
+    for(let i=0;i<on.pixels.length;i+=4){
+      const [r,g,b]=on.pixels.subarray(i,i+3),[r0,g0,b0]=off.pixels.subarray(i,i+3);
+      if(Math.max(Math.abs(r-r0),Math.abs(g-g0),Math.abs(b-b0))>3)changedPixels++;
+      const gain=(r+g+b-r0-g0-b0)/3;
+      if(r>30&&g>15&&r>g*1.08&&g>b*1.08&&gain>2){warmBrightenedPixels++;brightnessGain+=gain;}
+    }
+    return {width:on.width,height:on.height,changedPixels,warmBrightenedPixels,brightnessGain};
+  },{before:unlit.toString('base64'),after:lit.toString('base64')});
+}
 async function pngScreenshot(name){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
@@ -146,6 +169,97 @@ async function chooseProperty(id){
   await waitReady();
   assert.equal(await page.locator('#site-select').inputValue(),id);
   assert.equal(await page.locator('html').getAttribute('data-site'),id);
+}
+async function verifyPendantLighting(){
+  await details('#night-adjustments',true);
+  const original={
+    garden:Number(await page.locator('#nightGardenIntensity-value').inputValue()),
+    pendants:Number(await page.locator('#nightPendantIntensity-value').inputValue()),
+    hedge:Number(await page.locator('#nightHedgeIntensity-value').inputValue()),
+  };
+  assert.equal(await page.locator('#nightPendantLights').isChecked(),true);
+  assert.equal(await page.locator('#nightHedgeLights').isChecked(),true);
+  assert.equal(original.pendants,65);assert.equal(original.hedge,55);
+  await page.locator('#share').click();
+  const designWithoutLighting=()=>Object.fromEntries([...new URLSearchParams(new URL(page.url()).hash.slice(1))]
+    .filter(([key])=>!key.startsWith('night')).sort(([a],[b])=>a.localeCompare(b)));
+  const originalDesign=designWithoutLighting();
+
+  await setNumber('nightGardenIntensity-value',0);
+  await waitLight('nightGarden','zero');
+  await page.locator('#nightPendantLights').uncheck();
+  await page.locator('#nightHedgeLights').uncheck();
+  await waitLight('nightPendants','zero');await waitLight('nightHedge','zero');
+  await frames();
+  const noPendants=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+
+  await page.locator('#nightPendantLights').check();
+  await waitLight('nightPendants','positive');
+  await frames();
+  const gardenOnly=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  const pendantPixels=await warmLightDifference(noPendants,gardenOnly);
+  assert.ok(pendantPixels.changedPixels>30&&pendantPixels.warmBrightenedPixels>12,
+    'Garden pendants must visibly brighten warm scene pixels: '+JSON.stringify(pendantPixels));
+  let lights=await lightState();
+  assert.equal(lights.garden,0);assert.equal(lights.hedge,0);assert.ok(lights.windows>0);
+
+  await page.locator('#nightPendantLights').uncheck();
+  await waitLight('nightPendants','zero');
+  await page.locator('#nightHedgeLights').check();
+  await waitLight('nightHedge','positive');
+  await frames();
+  const hedgeOnly=await page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  const hedgePixels=await warmLightDifference(noPendants,hedgeOnly);
+  assert.ok(hedgePixels.changedPixels>30&&hedgePixels.warmBrightenedPixels>12,
+    'Thuja-side lanterns must visibly brighten warm scene pixels: '+JSON.stringify(hedgePixels));
+  lights=await lightState();
+  assert.equal(lights.garden,0);assert.equal(lights.pendants,0);assert.ok(lights.windows>0);
+  check('Garden pendants and thuja lanterns each brighten the actual WebGL scene independently of landscape accents');
+
+  await page.locator('#nightPendantLights').check();
+  await page.locator('#nightGardenLights').uncheck();
+  for(const key of ['nightGarden','nightPendants','nightHedge'])await waitLight(key,'zero');
+  assert.ok((await lightState()).windows>0,'Garden master must leave neighbouring windows independent');
+  assert.equal(await page.locator('#nightPendantIntensity-value').isDisabled(),true);
+  assert.equal(await page.locator('#nightHedgeIntensity-value').isDisabled(),true);
+  await page.locator('#nightGardenLights').check();
+  await waitLight('nightPendants','positive');await waitLight('nightHedge','positive');
+  assert.equal((await lightState()).garden,0,'Restoring the master retains the zero accent dimmer');
+  check('Garden master switches both hanging-light channels off while retaining their settings and neighbouring windows');
+
+  await setNumber('nightPendantIntensity-value',27);
+  await setNumber('nightHedgeIntensity-value',43);
+  lights=await lightState();
+  assert.ok(Math.abs(lights.pendants-.27)<.002&&Math.abs(lights.hedge-.43)<.002,JSON.stringify(lights));
+  await page.locator('#nightHedgeLights').uncheck();
+  await waitLight('nightHedge','zero');
+  await page.locator('#share').click();
+  const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
+  assert.equal(shared.get('nightPendantIntensity'),'27');
+  assert.equal(shared.get('nightHedgeIntensity'),'43');
+  assert.equal(shared.get('nightHedgeLights'),'false');
+  assert.deepEqual(designWithoutLighting(),originalDesign,'Lighting edits must preserve every non-lighting design setting, including specimen positions');
+  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+  await waitReady();
+  await waitLight('nightPendants','positive');await waitLight('nightHedge','zero');
+  assert.equal(await page.locator('#nightPendantLights').isChecked(),true);
+  assert.equal(await page.locator('#nightHedgeLights').isChecked(),false);
+  assert.equal(await page.locator('#nightGardenLights').isChecked(),true);
+  assert.equal(Number(await page.locator('#nightGardenIntensity-value').inputValue()),0);
+  assert.equal(Number(await page.locator('#nightPendantIntensity-value').inputValue()),27);
+  assert.equal(Number(await page.locator('#nightHedgeIntensity-value').inputValue()),43);
+  assert.equal(await page.locator('#sun-time').inputValue(),'23:30');
+  assert.deepEqual(designWithoutLighting(),originalDesign);
+  check('Pendant switches and dimmers survive Share and reload without changing the property or garden layout');
+
+  await details('#night-adjustments',true);
+  await page.locator('#nightHedgeLights').check();
+  await setNumber('nightGardenIntensity-value',original.garden);
+  await setNumber('nightPendantIntensity-value',original.pendants);
+  await setNumber('nightHedgeIntensity-value',original.hedge);
+  await waitLight('nightGarden','positive');await waitLight('nightPendants','positive');await waitLight('nightHedge','positive');
+  report.nadmorska.pendantLighting={gardenPixels:pendantPixels,hedgePixels,restored:await lightState(),sharedReloadPassed:true};
+  await pngScreenshot('nadmorska-pendants-night');
 }
 async function verifyNadmorska(){
   await page.setViewportSize({width:1430,height:1040});
@@ -232,6 +346,9 @@ async function verifyNadmorska(){
   await page.locator('#preview-night').click();
   await waitLight('nightGarden','positive');
   await details('#night-adjustments',true);
+  // Keep the existing blue-green water test isolated from new warm pendants.
+  await page.locator('#nightPendantLights').uncheck();
+  await page.locator('#nightHedgeLights').uncheck();
   await page.locator('#nightGardenLights').uncheck();
   await waitLight('nightGarden','zero');
   assert.ok((await lightState()).windows>0,'Garden lights must not disable neighbouring windows');
@@ -244,12 +361,17 @@ async function verifyNadmorska(){
   report.nadmorska.waterGlow=await waterGlowDifference(unlitWater,litWater);
   assert.ok(report.nadmorska.waterGlow.brighterAquaPixels>20,'The WebGL water glow must brighten visible blue-green pixels: '+JSON.stringify(report.nadmorska.waterGlow));
   assert.equal(await page.locator('#sun-time').inputValue(),'23:30');
+  await page.locator('#nightPendantLights').check();
+  await page.locator('#nightHedgeLights').check();
   await pngScreenshot('nadmorska-night');
   report.nadmorska.night=await lightState();
   check('Nadmorska window activity, independent light switches and visible WebGL water glow work after dark');
 
+  await verifyPendantLighting();
+
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
+  await waitLight('nightPendants','zero');await waitLight('nightHedge','zero');
   await page.locator('#showDimensions').check();
   await page.locator('[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
