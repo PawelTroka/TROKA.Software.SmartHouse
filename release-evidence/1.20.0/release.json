@@ -1,0 +1,24 @@
+{
+  "version": "1.20.0",
+  "source_commit": "f75a47aa4c023c4c99b90ee539d29b87b0ff4170",
+  "tested_head": "6478e1e6b4a4beb94573a4fd62e10ffa9b3d201d",
+  "pull_request": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/19",
+  "ci_run": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/43742723600",
+  "automated_tests": 448,
+  "browser_checks": 21,
+  "static_assets": 56,
+  "defaults": {
+    "nightWindowActivity": 70,
+    "nightPendantIntensity": 80,
+    "nightHedgeIntensity": 85
+  },
+  "window_comparison": {
+    "from": 35,
+    "to": 70,
+    "width": 1004,
+    "height": 542,
+    "changedPixels": 7194,
+    "warmBrightenedPixels": 4545,
+    "brightnessGain": 675976.0000000088
+  }
+}

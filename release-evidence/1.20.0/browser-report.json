@@ -1,0 +1,167 @@
+{
+  "version": "1.20.0",
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "All eight upper-floor presets enter eye mode with correct direction, posture and readout",
+    "Editable first and attic floor heights update the actual observer readout",
+    "Night preview and both independent lighting switches work",
+    "All three dimmers respond, including an actual rendered change from 0% to 100% active windows",
+    "Daylight restores the sun clock and turns simulated artificial lights off",
+    "Upper-floor preset, eye mode and night time survive a normal page reload",
+    "The visible Share view action creates a reloadable upper-floor night view",
+    "Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow",
+    "The property selector exposes all three independently named properties",
+    "Switching to Korzeniowskiego preserves its own floor height and upstairs view",
+    "Nadmorska WebGL load uses its own plot, floor and final LiDAR roof evidence",
+    "Nadmorska first-floor street control points +90 degrees and shares that exact direction",
+    "The busier 70% evening visibly lights more neighbouring windows than 35% in the same WebGL street view",
+    "Nadmorska window activity, independent light switches and visible WebGL water glow work after dark",
+    "Garden pendants and thuja lanterns each brighten the actual WebGL scene independently of landscape accents",
+    "Garden master switches both hanging-light channels off while retaining their settings and neighbouring windows",
+    "Pendant switches and dimmers survive Share and reload without changing the property or garden layout",
+    "Nadmorska whole-plot plan shows 709.29 square metres, pool sizes and both side access openings",
+    "Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [
+    {
+      "id": "first-garden-seated",
+      "eye": "Eye 5.40 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "first-garden-standing",
+      "eye": "Eye 5.85 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "first-street-seated",
+      "eye": "Eye 5.40 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "first-street-standing",
+      "eye": "Eye 5.85 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-garden-seated",
+      "eye": "Eye 8.40 m above original garden reference · 1.20 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-garden-standing",
+      "eye": "Eye 8.85 m above original garden reference · 1.65 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-street-seated",
+      "eye": "Eye 8.40 m above original garden reference · 1.20 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-street-standing",
+      "eye": "Eye 8.85 m above original garden reference · 1.65 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    }
+  ],
+  "screenshots": [
+    "first-floor-garden-night.jpg",
+    "attic-street-night.jpg",
+    "nadmorska-street-busy-evening.png",
+    "nadmorska-day.png",
+    "nadmorska-night.png",
+    "nadmorska-pendants-night.png",
+    "nadmorska-plan.png",
+    "nadmorska-mobile-plan.png"
+  ],
+  "night": {
+    "activation": 1,
+    "garden": 0.75,
+    "pendants": 0.8,
+    "hedge": 0.85,
+    "windows": 0.6,
+    "mode": "eye"
+  },
+  "daylight": {
+    "activation": 0,
+    "garden": 0,
+    "pendants": 0,
+    "hedge": 0,
+    "windows": 0,
+    "mode": "eye"
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390,
+    "overflowing": []
+  },
+  "nadmorska": {
+    "roofPoints": 3182,
+    "surroundingBuildings": 52,
+    "roofTopZ": 14.29,
+    "street": {
+      "id": "first-street-standing",
+      "eye": "Eye 6.15 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    "windowActivityComparison": {
+      "from": 35,
+      "to": 70,
+      "width": 1004,
+      "height": 542,
+      "changedPixels": 7194,
+      "warmBrightenedPixels": 4545,
+      "brightnessGain": 675976.0000000088
+    },
+    "windowActivityVisible": true,
+    "waterGlow": {
+      "width": 1004,
+      "height": 542,
+      "aquaPixels": 299949,
+      "brighterAquaPixels": 8036,
+      "brightnessGain": 215562
+    },
+    "night": {
+      "activation": 1,
+      "garden": 0.75,
+      "pendants": 0.8,
+      "hedge": 0.85,
+      "windows": 0.6,
+      "mode": "orbit"
+    },
+    "pendantLighting": {
+      "gardenPixels": {
+        "width": 1004,
+        "height": 542,
+        "changedPixels": 13961,
+        "warmBrightenedPixels": 3308,
+        "brightnessGain": 400029.33333333244
+      },
+      "hedgePixels": {
+        "width": 1004,
+        "height": 542,
+        "changedPixels": 27118,
+        "warmBrightenedPixels": 5303,
+        "brightnessGain": 244215.33333333323
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "restoredWindowActivity": 70,
+      "sharedReloadPassed": true
+    },
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390
+    }
+  },
+  "status": "passed",
+  "pageErrors": [],
+  "consoleErrors": []
+}
