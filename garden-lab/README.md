@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.19.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.19.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.19.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.20.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.20.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.20.0)**
+
+## Brighter pendants and a busier evening · 1.20.0
+
+The night scene starts with **70% neighbouring-window activity**, **80% dining-pendant brightness** and **85% thuja-lantern brightness**, up from 35%, 65% and 55%. All three properties retain independent switches and dimmers under **Garden after dark → Lighting & neighbouring windows**.
+
+Every woven shade now has a gentle warm inner glow, including the hedge lanterns without individual surface lights. Hedge halos are slightly broader and stronger. The glow follows its own dimmer and turns off with daylight or its group/master switch. The number of GPU lights remains bounded; furniture, planting, fixture positions and cost quantities are unchanged.
+
+[Open the brighter Nadmorska night view](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.20.0#v=20&site=nadmorska-17&sunMinutes=1410&showDimensions=false&nightWindowActivity=70&nightPendantIntensity=80&nightHedgeIntensity=85).
+
+Schema 20 preserves historical lighting in older saved designs and links, including explicit zero/off choices. Use the sliders to brighten an existing custom layout without resetting it. See [release validation](docs/release-1.20.0-validation.md) for the 448 automated checks and the WebGL comparison of neighbouring windows.
 
 ## Garden pendants and inner-hedge lanterns · 1.19.0
 

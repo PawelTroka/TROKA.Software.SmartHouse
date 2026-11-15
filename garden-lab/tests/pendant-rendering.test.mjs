@@ -54,6 +54,38 @@ test('SVG keeps the same hanging fixture layout and switches without adding unsu
   }finally{lighting.dispose();}
 });
 
+test('every hanging shade glows with its own channel, including lanterns without real lights, and goes dark in daylight',()=>{
+  for(const {data,settings} of properties)for(const svgMode of [false,true]){
+    const lighting=createGardenNightLighting(settings,data,{svgMode});
+    try{
+      const hanging=lighting.fixtures.filter(f=>f.channel==='pendant'||f.channel==='hedge');
+      const emitted=fixture=>{
+        const {material}=lighting.group.getObjectByName(`${fixture.id}-woven-shade`);
+        const components=[material.emissive.r,material.emissive.g,material.emissive.b,material.emissiveIntensity];
+        assert.ok(components.every(value=>Number.isFinite(value)&&value>=0),fixture.id+' has finite emission');
+        return (material.emissive.r+material.emissive.g+material.emissive.b)*(svgMode?1:material.emissiveIntensity);
+      };
+      const withoutPointLights=hanging.filter(f=>f.channel==='hedge'&&!lighting.group.getObjectByName(`${f.id}-light`));
+      assert.ok(withoutPointLights.length>0,'Exercise hedge fixtures outside the real-light budget');
+      for(const channel of ['pendant','hedge']){
+        lighting.apply({gardenStrength:0,pendantStrength:channel==='pendant'?.8:0,hedgeStrength:channel==='hedge'?.85:0});
+        for(const fixture of hanging)assert.equal(emitted(fixture)>0,fixture.channel===channel,fixture.id+' follows only its own channel');
+      }
+      const bright=withoutPointLights.map(emitted);
+      lighting.apply({gardenStrength:0,pendantStrength:0,hedgeStrength:.2});
+      withoutPointLights.forEach((fixture,i)=>assert.ok(emitted(fixture)>0&&emitted(fixture)<bright[i],fixture.id+' dims without a point light'));
+      for(const [solar,state] of [
+        [{enabled:true,elevation:20},settings],
+        [{enabled:true,elevation:-15},{...settings,nightGardenLights:false}],
+      ]){
+        lighting.apply(nightLightingState(solar,state));
+        for(const fixture of hanging)assert.equal(emitted(fixture),0,fixture.id+' extinguishes in daylight and under the garden master');
+      }
+      assert.ok(lighting.lightCount<=19,'Brighter shades do not add real lights');
+    }finally{lighting.dispose();}
+  }
+});
+
 test('lighting budget counts installed pendants once, retains them when unlit and accepts a complete quote',()=>{
   for(const {data,settings} of properties){
     const state={...settings,costUsePlanningAllowances:true},layout=pendantLightingLayout(state,data);

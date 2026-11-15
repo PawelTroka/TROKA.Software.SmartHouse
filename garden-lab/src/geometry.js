@@ -3,10 +3,10 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.19.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.19.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.19.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.19.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.20.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.20.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.20.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.20.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
