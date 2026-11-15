@@ -1,0 +1,51 @@
+name: Garden Lab CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'garden-lab/**'
+      - '.github/workflows/garden-lab-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: garden-lab-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  garden-lab:
+    name: Geometry, build and WebGL browser checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Geometry and state tests
+        run: npm test
+      - name: Build the static site
+        run: npm run build
+      - name: Install ephemeral browser test dependency
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - name: Install Chromium and system dependencies
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Browser regression and screenshots
+        timeout-minutes: 8
+        run: node scripts/night-browser-check.mjs
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: garden-lab-browser-evidence
+          path: garden-lab/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

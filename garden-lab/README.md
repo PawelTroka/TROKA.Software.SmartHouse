@@ -2,7 +2,21 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40, Gdańsk Brzeźno**. Explore each property's mapped plot and neighbouring buildings, change the proposed hedge, ground and terrace geometry, place specimen screening trees, compare editable hedge, tree and earthwork budgets, and see how seasonal sun changes the shade.
 
-**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.16.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.16.0#v=18&site=sternicza-11&mode=plan)**
+**[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.17.0)** · **[Open the latest Sternicza 11 design](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.17.0#v=19&site=sternicza-11&mode=plan)**
+
+## Garden after dark and upper-floor views · 1.17.0
+
+A new **Garden after dark** panel offers **Preview night** (23:30 on the selected date), Daylight, separate garden/window switches, two brightness controls and a neighbouring-window activity control. Lights follow calculated solar elevation, fading in between +1° and −6°.
+
+The proposed garden scheme includes warm tree uplights, low path lights, a terrace-step strip, underwater pool/spa light, sauna light and a restrained ember glow. Nearby and across-street buildings have a stable illustrative selection of lit panes. Building 4h's two recorded blank garden elevations remain blank. Brightness is a visual scenario, not a photometric or electrical specification; window activity does not represent actual residents. Geometric screening counts remain independent of lighting.
+
+Eight added viewpoints cover first-floor bedroom/office and second-floor **strych** outlooks to the garden and street, each seated and standing. First-floor and strych levels initially sit **3.00 m** and **6.00 m above the living floor**, editable under **Calibrate upstairs floor heights**. Seated eyes use 1.20 m and standing eyes 1.65 m above their supporting floor. Concept window views start 0.25 m outside the mapped façade; actual room/window positions and roof openings are not surveyed. The camera and screening calculations use the same observer coordinates.
+
+Schema **19** retains existing layouts, trees, quotes and solar settings when opening v18 saves or links. New floor/light controls and viewpoint IDs travel with saved designs, comparisons, exports and shared views. The 9 m Excelsa default and pictured planting positions from v1.16 are unchanged.
+
+**Verification:** all **395 automated tests pass**, and the 53-asset static build succeeds. Tests cover the eight observer positions, floor calibration, saved-state migration, twilight behaviour, independent lighting controls, stable neighbouring-window selection, blank 4h elevations and finite fixture/light budgets on both properties. The new HTML hosts are present with no duplicate IDs.
+
+**Visual review remains pending.** Local Chromium could not start because the execution environment denied its process socket; the connected Browser route timed out. The hosted Chromium workflow and Pages publication were still queued at the release handover. No successful WebGL screenshot or browser interaction result is claimed. See [the release record](docs/release-1.17.0-validation.md) and [PR #16](https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/16) for status.
 
 ## Priced tree alternatives and the 9 m Excelsa default · 1.16.0
 
