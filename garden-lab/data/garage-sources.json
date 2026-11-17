@@ -43,7 +43,11 @@
     "slabAllowanceM": 0.25,
     "insideContinuationM": 2,
     "rampClearWidthM": 3.2,
-    "additionalClearanceReserveMm": 30
+    "additionalClearanceReserveMm": 30,
+    "insideCurvedTransitionM": 1.6,
+    "bottomFlatApronM": 0.4,
+    "assumedDoorClearHeightM": 2.1,
+    "assumedDoorClearWidthM": 3.2
   },
   "modelAssumptions": [
     "Quasi-static straight-line traversal, excluding suspension dynamics, braking pitch, crossfall, steering sweep and traction.",
@@ -52,7 +56,9 @@
     "Interior ramp continuation consumes real basement length and reduces entrance headroom beneath the fixed slab.",
     "Door and convertible-roof opening envelopes remain unverified.",
     "Drainage is illustrated flush. Any real raised threshold, kerb or gate track needs inclusion in a measured detailed profile.",
-    "Waterproofing, structural alterations, groundwater, drainage capacity and street access remain project-design matters."
+    "Waterproofing, structural alterations, groundwater, drainage capacity and street access remain project-design matters.",
+    "The candidate's 2.00 m inside continuation consists of 1.60 m of curved lower transition and a 0.40 m flat apron. The remaining flat bay includes that apron.",
+    "Closed-car overhead passage uses an assumed 3.20 m wide by 2.10 m high clear door opening, separate from the 2.30 m floor-to-slab height. Door hardware and opening envelopes are not verified."
   ],
   "legalBenchmark": {
     "status": "Former WT benchmark; transitional applicability to confirm",

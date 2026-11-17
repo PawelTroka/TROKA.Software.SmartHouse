@@ -4,7 +4,7 @@ Reviewed **17 November 2026**. This study accompanies the optional basement gara
 
 ## The useful concept
 
-The candidate is a partly buried garage beneath the raised living floor. It uses the full approximately 9.1 m front-yard approach, then continues the gentle lower transition **2.0 m inside the house** before the flat parking area. That continuation consumes basement length and reduces headroom near the entrance; it is not hidden outside the plotted dimensions.
+The candidate is a partly buried garage beneath the raised living floor. It uses the full approximately 9.1 m front-yard approach, then continues the ramp layout **2.0 m inside the house**: 1.60 m of curved lower transition followed by a 0.40 m flat apron. That continuation consumes basement length and reduces headroom near the entrance; it is not hidden outside the plotted dimensions.
 
 Two comparisons expose the constraint: **Front yard only** finishes the entire descent before the facade; **0.6 m deeper** retains the approach while lowering the floor. A positive static gap below the selected clearance reserve remains an insufficient-margin result.
 
@@ -21,13 +21,26 @@ The [source record](../data/garage-sources.json) contains the full provenance an
 | Living floor, +1.20 m above garden reference | Existing adjustable assumption, not measured |
 | Basement floor to slab underside, 2.30 m | Candidate design assumption |
 | Living-floor/slab allowance, 0.25 m | Candidate assumption; actual floor build-up and structure unknown |
-| Indoor continuation, 2.00 m | Proposed lower transition consuming real basement length |
+| Indoor continuation, 2.00 m | 1.60 m curved lower transition plus 0.40 m flat apron, consuming real basement length |
+| Clear door opening, 3.20 × 2.10 m | Assumed opening for the closed-car check; header and door hardware unverified |
 | Ramp clear width, 3.20 m | Proposed width between retaining walls |
 | Extra underside reserve, 30 mm | Editable planning allowance, not an MG requirement |
 
 The basement floor is the living-floor elevation minus slab allowance and clear height, minus any extra lowering. Changing the living-floor assumption therefore changes the descent. Rear-garden fill does not move the garage floor or street entry.
 
 The ramp is aligned with a new opening in the front facade. The proposed vehicle opening in the front hedge moves into line with it, while pedestrian access stays clear. Neither gate nor structural opening is an existing surveyed feature. Internal walls, foundation configuration and availability of the illustrated basement bay remain unverified.
+
+## Default comparison results
+
+These figures use the mapped perpendicular approach of **9.1269 m**, the +1.20 m living-floor assumption and the manufacturer laden clearance of 105.6 mm. The 30 mm reserve is compared against the lower of the two complete driving-direction results after deducting the 1 mm numerical allowance.
+
+| Comparison | Floor below street entry | Inside continuation | Raw minimum gap | After numerical allowance | Result against 30 mm reserve |
+|---|---:|---:|---:|---:|---|
+| Raised basement candidate | 1.4002 m | 2.00 m | 42.19 mm | 41.19 mm | Conditional reserve met; 11.19 mm beyond reserve |
+| Front yard only | 1.4002 m | 0 m | 4.71 mm | 3.71 mm | Reserve shortfall |
+| Floor another 0.60 m lower | 2.0002 m | 2.00 m | −6.28 mm | −7.28 mm | Modelled underside contact |
+
+The candidate reaches a peak gradient of 25%. Its minimum covered structural headroom is 2.2530 m and the flat bay is 6.9937 m long, including the 0.40 m apron. The separately assumed door opening is 3.20 m wide × 2.10 m high. These results do not verify an existing basement or the street/drain/threshold details described below.
 
 ## Manufacturer vehicle data
 
