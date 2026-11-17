@@ -548,7 +548,7 @@ async function verifyBasementGarage(){
   await details('#basement-garage-controls',true);
   await page.locator('#basementGarageEnabled').uncheck();
   await details('#basement-garage-controls',false);
-  await page.locator('[data-mode="orbit"]').click();await page.locator('#reset-camera').click();
+  await page.locator('button[data-mode="orbit"]').click();await page.locator('#reset-camera').click();
   await frames();
   report.garage={candidate,forecourt,deeper,excavationPixels,posePixels,reversePixels,mobile,
     renderer:'WebGL',scenarioSaved:true,normalReloadPassed:true,shareReloadPassed:true,siteIsolationPassed:true,restoredEnabled:false};
@@ -615,7 +615,7 @@ async function verifyPrivacyScreening(){
 
   const combined=await select('layered');
   assert.ok(combined.after>=Math.max(spa.after,pergola.after),'Combined screening retains the protection of each option');
-  await page.locator('[data-mode="plan"]').click();
+  await page.locator('button[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
   await page.locator('#plan-host [data-privacy-plan="true"]').waitFor({state:'visible'});
   assert.equal(await page.locator('#plan-host [data-privacy-footprint="privacy-pergola"]').count(),1);
@@ -624,7 +624,7 @@ async function verifyPrivacyScreening(){
   assert.ok(await page.locator('#plan-host [data-privacy-part="lattice"]').count()>0);
   check('Combined Plan displays the finite pergola, two planted sides and both spa screen panels');
 
-  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#reset-camera').click();
   await page.locator('#scene-host canvas').waitFor({state:'visible'});
   assert.equal(await page.locator('#scene-host canvas').count(),1,'Privacy structures must retain real WebGL');
@@ -755,7 +755,7 @@ async function verifyNadmorska(){
   // A fixed overview includes both water bodies. The scene renders on demand,
   // so switching garden lights must change the pixels, not an animated clock.
   await details('#night-adjustments',false);
-  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
   await pngScreenshot('nadmorska-day');
@@ -790,7 +790,7 @@ async function verifyNadmorska(){
   await waitLight('nightActivation','zero');
   await waitLight('nightPendants','zero');await waitLight('nightHedge','zero');
   await page.locator('#showDimensions').check();
-  await page.locator('[data-mode="plan"]').click();
+  await page.locator('button[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
   await page.locator('#plan-host [data-map-scope="garden"]').click();
   await page.waitForFunction(()=>document.querySelector('#plan-host [data-map-scope="garden"]')?.getAttribute('aria-pressed')==='true'
@@ -825,7 +825,7 @@ async function verifyNadmorska(){
 
   // Exercise the larger set of active real lights at the mobile viewport too.
   // This is a rendering/correctness gate, not a hardware performance benchmark.
-  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#showDimensions').uncheck();
   await page.locator('#preview-night').click();
   await waitLight('nightHedge','positive');
@@ -845,7 +845,7 @@ async function verifyNadmorska(){
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
   await page.locator('#showDimensions').check();
-  await page.locator('[data-mode="plan"]').click();
+  await page.locator('button[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
 }
 
