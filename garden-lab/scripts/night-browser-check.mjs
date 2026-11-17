@@ -528,10 +528,11 @@ async function verifyBasementGarage(){
   assert.ok(mobile.svg.width>200&&mobile.svg.height>30,JSON.stringify(mobile));
   assert.ok(mobile.svg.left>=-2&&mobile.svg.right<=mobile.width+2,JSON.stringify(mobile));
   assert.equal(await page.locator('#garage-result').isVisible(),true);
-  await page.locator('#garage-profile-card').screenshot({
+  const mobileGarageImage=await page.locator('#garage-profile-card').screenshot({
     path:path.join(resultsRoot,'sternicza-basement-garage-mobile.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
   });
   report.screenshots.push('sternicza-basement-garage-mobile.jpg');
+  console.log('GARDEN_SCREENSHOT_B64 sternicza-basement-garage-mobile image/jpeg '+mobileGarageImage.toString('base64'));
   check('The garage profile and clearance results remain readable at 390px without horizontal overflow');
 
   await page.setViewportSize({width:1430,height:1040});await frames();
