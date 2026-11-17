@@ -1,23 +1,25 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels } from './geometry.js?v=1.20.1';
-import { sampledRoofFaces } from './shade.js?v=1.20.1';
-import { createSurfaceTextures } from './scene-materials.js?v=1.20.1';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.20.1';
-import { getSiteProfile } from './sites.js?v=1.20.1';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.20.1';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.20.1';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.20.1';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.20.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.20.1';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.20.1';
-import { gardenDimensions } from './dimensions.js?v=1.20.1';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.20.1';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.20.1';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.20.1';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.20.1';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.20.1';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, spaLevels, privacyStructures } from './geometry.js?v=1.21.0';
+import { sampledRoofFaces } from './shade.js?v=1.21.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.21.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.21.0';
+import { getSiteProfile } from './sites.js?v=1.21.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.21.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.21.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.21.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.21.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.21.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.21.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.21.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.21.0';
+import { gardenDimensions } from './dimensions.js?v=1.21.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.21.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.21.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.21.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.21.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.21.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -1027,6 +1029,7 @@ export function createScene(container, data, callbacks = {}) {
     addGarden(designGroup,settings);
     addHedges(designGroup,settings);
     addCanopy(designGroup,settings);
+    designGroup.add(createPrivacyStructureGroup(privacyStructures(settings,data),mat));
     for (const volume of screeningTreeVolumes(settings, data)) {
       if (volume.enabled === false) continue;
       designGroup.add(createScreeningTreeGroup(volume, {bark: mat.treeBark, pine: mat.treePine, spruce: mat.treeSpruce, deciduous: mat.treeDeciduous, ghost: mat.treeGhost}, svgMode));
@@ -1281,7 +1284,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
+    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);

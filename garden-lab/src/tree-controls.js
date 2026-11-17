@@ -1,9 +1,9 @@
-import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.20.1';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.20.1';
-import {screeningTreeUnitPrice} from './costs.js?v=1.20.1';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.20.1';
-import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.20.1';
-import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.20.1';
+import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.21.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.21.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.21.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.21.0';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.21.0';
+import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.21.0';
 
 const treeLabel = screeningTreeLabel;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;

@@ -3,11 +3,12 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces } from './geometry.js?v=1.20.1';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.20.1';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.20.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.20.1';
-import { terraceStairs } from './layout.js?v=1.20.1';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces, privacyStructures } from './geometry.js?v=1.21.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.21.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.21.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.21.0';
+import { terraceStairs } from './layout.js?v=1.21.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.21.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -286,6 +287,9 @@ function makeOccluders(settings,data) {
     for(const x of [c.x0+.08,c.x1-.18])add(prism('canopy-post','Canopy post',rectangle(x,c.y1-.18,x+.1,c.y1-.08),floor,Math.max(floor+.1,bottom)));
   }
   objects.push(...spaOccluders(settings,data));
+  for(const box of privacyStructures(settings,data).boxes){
+    if(box.opaque!==false)add(prism(box.id,box.label,rectangle(box.x0,box.y0,box.x1,box.y1),box.z0,box.z1));
+  }
   return objects;
 }
 
@@ -353,7 +357,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'];
+const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth',...PRIVACY_GEOMETRY_KEYS];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21']);
@@ -423,6 +427,6 @@ export function analyzeSunlight(settings,data,sun){
   for(const zone of Object.values(zones))zone.percent=daylight&&zone.total?zone.sunlit/zone.total*100:null;
   return {status,isDaylight:daylight,cells,zones,cellSize:geometry.cellSize,direction:sun?.direction||null,
     modelNote:'Direct sun on a 1 m outdoor sample grid; spa pool edge samples use the centre of each clipped water portion. Includes local terrain sampled every 0.5 m along each ray and finite dense proposed tree crowns. Deciduous auto foliage is May–October, an approximate comparison assumption. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
-    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees with seasonal crown geometry. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
+    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
     limitations:'No weather, diffuse/reflected light, glass transmission losses, existing tree crowns, decorative planting/movable furniture, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Roof interpolation, missing-roof fallbacks and foliage permeability remain simplified.'};
 }

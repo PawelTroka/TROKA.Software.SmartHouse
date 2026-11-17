@@ -14,7 +14,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
   const model=createStateModel(getSiteProfile(id,data));
 
   test(id+': fresh designs and current sparse links use the brighter, busier evening defaults',()=>{
-    assert.equal(STATE_VERSION,20);
+    assert.ok(STATE_VERSION>=20);
     for(const [key,value] of Object.entries(current)){
       assert.equal(NIGHT_DEFAULTS[key],value,key);
       assert.equal(model.FIELDS[key].value,value,key);
@@ -23,7 +23,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
     assert.equal(model.DEFAULTS.nightGardenIntensity,75);
     assert.equal(model.DEFAULTS.nightWindowIntensity,60);
     assert.deepEqual(model.sanitizeState(),model.DEFAULTS);
-    assert.deepEqual(model.decodeState(`v=20&site=${id}`),model.DEFAULTS);
+    assert.deepEqual(model.decodeState(`v=${STATE_VERSION}&site=${id}`),model.DEFAULTS);
     assert.deepEqual(model.decodeState(model.encodeState(model.DEFAULTS)),model.DEFAULTS);
   });
 
@@ -33,10 +33,10 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
       for(const restored of [model.decodeState(`v=${version}&site=${id}`),model.migrateSavedState({siteId:id},version)]){
         for(const [key,value] of Object.entries(previous))assert.equal(restored[key],value,`v${version} ${key}`);
         const shared=model.encodeState(restored),params=new URLSearchParams(shared);
-        assert.equal(params.get('v'),'20');
+        assert.equal(params.get('v'),String(STATE_VERSION));
         for(const [key,value] of Object.entries(previous))assert.equal(params.get(key),String(value),`v${version} explicitly retains ${key}`);
         assert.deepEqual(model.decodeState(shared),restored,`v${version} is stable after re-sharing`);
-        assert.deepEqual(model.migrateSavedState(restored,20),restored,`v${version} is stable after saving as v20`);
+        assert.deepEqual(model.migrateSavedState(restored,STATE_VERSION),restored,`v${version} is stable after saving as the current version`);
         if(version===19)assert.deepEqual(withoutChangedLights(restored),withoutChangedLights(model.DEFAULTS),
           'The new lighting defaults do not move the previously published garden, observer or quotes');
       }

@@ -2,7 +2,34 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.20.1)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.20.1)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.20.1)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.21.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.21.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.21.0)**
+
+## PCK3 screening structures · 1.21.0
+
+Sternicza now has three optional comparisons above the viewer and in **Privacy structures**: **Spa canopy + screens**, **Planted pergola**, and **Combine both**. The actions retain the current trees, garden layout, ground levels, observer, date and quotes. **Off / Without these structures** removes the pergola, local screens and terrace canopy for a consistent landscape-only comparison.
+
+The spa option combines an 8.5 m canopy extending 1 m past the current terrace depth (capped at 6 m), a 0.5 m fascia, and a 3.6 m screen with a 1.5 m return. Panels rise 2.2 m above the terrace. Their 0.65 m centreline gap leaves about 0.605 m to the nearest support face beyond the compact tub. Dimensions remain adjustable. The open pergola starts at 5 × 2 m and 5 m above its lowest proposed ground corner; its position and height (2.5–6 m) can be changed independently.
+
+Finite posts, beams and timber slats are shared between the visibility calculations, sunlight, WebGL, plan and sections. Empty trellis gaps stay open. **Dense established planting** adds an explicit ideal foliage envelope on the rear and east sides, with no solid roof. It is a coverage comparison, not a promise that new climbers fill the trellis within a year or stay opaque through winter. Layout warnings identify footprint conflicts, plot overhang and reduced spa service space.
+
+With the current default trees and levels, the percentage of sampled PCK3 rays blocked is:
+
+| Option | Living room seated | Terrace standing | Jacuzzi centre seated | Garden standing |
+|---|---:|---:|---:|---:|
+| Existing landscape | 8.3% | 10.2% | 14.6% | 39.0% |
+| Spa canopy + screens | 100% | 98.6% | 100% | 39.0% |
+| Planted 5 m pergola | 27.9% | 94.3% | 38.3% | 39.0% |
+| Combine both | 100% | 100% | 100% | 39.0% |
+
+Across the seven modeled spa seats, the spa option blocks 99.6–100% of sampled rays and the combined option blocks 100%. These percentages describe one eye position and unweighted facade/roof sample rays, not visible area or guaranteed complete real-world concealment. The garden position remains exposed beyond the finite structures. The new PCK3 card recomputes the before/after values for the actual selected design and viewpoint.
+
+### Planning and cost scope
+
+The [Gdańsk landscape resolution, §5(2)](https://download.cloudgdansk.pl/gzdiz-pl/d/2025046077/uchwala-krajobrazowa-gdanska.pdf) provides a 6 m ceiling for genuine small garden architecture; actual size, construction and function determine classification. It is not permission for a tall fence. Fences in single-family areas are generally limited to 2.2 m and at least 35% openness, subject to specified exceptions. A raised terrace does not automatically establish a new legal measurement datum. Canopy, foundations, local plan, heritage constraints and rights to the municipal rear strip need project-specific confirmation. See also the [Construction Law](https://eli.gov.pl/api/acts/DU/2026/524/text/U/D20260524Lj.pdf). The presets are design concepts, not approvals.
+
+Pergola/planting and spa screens have separate full installed quote fields. Zero stays **unquoted and excluded** even when generic planning allowances are enabled, so an active unquoted structure marks the total incomplete. The existing canopy line is counted once.
+
+Schema **21** saves every option, dimension and quote in local scenarios, A/B comparisons, shared links and JSON exports. Older designs open with the two new structures disabled. Other properties retain their own designs and hide these Sternicza-specific controls.
 
 ## Light from every inner-thuja lantern · 1.20.1
 

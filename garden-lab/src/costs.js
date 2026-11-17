@@ -3,12 +3,12 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.20.1';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.20.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.20.1';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.20.1';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.20.1';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.20.1';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference } from './geometry.js?v=1.21.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.21.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.21.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.21.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.21.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.21.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -42,6 +42,10 @@ export const COST_FIELDS = Object.freeze({
     ['costGardenDemolition','Detached garage removal'],['costGardenDesign','Garden design and coordination'],
     ['costGardenCanopy','Terrace canopy'],
   ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','Complete line quote override. 0 uses the itemised planning allowance when enabled, otherwise needs a quote for active work. Optional canopy / demolition apply only when selected.'),group:'cost-garden'}])),
+  ...Object.fromEntries([
+    ['costPrivacyPergolaQuote','Garden pergola · full installed price'],
+    ['costSpaScreenQuote','Spa side screens · full installed price'],
+  ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','Complete installed price for the selected structure, including applicable tax. 0 means unquoted and excluded from the known subtotal, even with planning allowances enabled. The terrace canopy is priced separately.'),group:'cost-privacy'}])),
   costAreaOverride: field('Fill area override', 0, 0, 1000, 1, 'm²', '0 uses mapped rear area minus pool, terrace and retained structures. A positive value changes cost quantities only.'),
   costBedWidth: field('Raised hedge bed width', 1, .3, 3, .1, 'm', 'Width centred on the hedge line and clipped to the property; overlapping corners count once.'),
   costTopsoilDepth: field('Topsoil within added depth', .15, 0, .5, .05, 'm', 'Topsoil replaces part of the fill; it is not added above the selected raise.'),
@@ -222,6 +226,20 @@ function installationGroup(enabled, rows, c, extra = {}) {
     total:unquoted.length ? null : knownSubtotal,
     status:!enabled ? 'none' : unquoted.length ? 'quote-required' : 'estimate',
     planningEnabled:c.costUsePlanningAllowances,...extra };
+}
+
+/** Custom privacy structures have no invented unit-rate or catalog allowance. */
+export function estimatePrivacyCosts(settings,data) {
+  const c=costSettings(settings),rows=[];
+  if((data.site.id||settings.siteId||'sternicza-11')==='sternicza-11'){
+    if(settings.privacyPergolaEnabled===true)rows.push(installedLine(c,'costPrivacyPergolaQuote',null,
+      'Selected internal garden pergola',
+      'Structure, foundations, anchoring, selected planting and installation. Excludes the separately priced terrace canopy. Reconfirm the quote after changing dimensions or planting.'));
+    if(settings.spaScreensEnabled===true)rows.push(installedLine(c,'costSpaScreenQuote',null,
+      'Selected local spa side screens',
+      'Screen panels, supports, mountings and installation. Excludes the separately priced terrace canopy and jacuzzi. Reconfirm the quote after changing dimensions.'));
+  }
+  return installationGroup(rows.length>0,rows,c,{planningEnabled:false,quoteOnly:true});
 }
 
 export function estimateSpaCosts(settings,data) {
@@ -498,6 +516,7 @@ export function estimateCosts(settings = {}, data) {
   const screeningTrees = estimateScreeningTreeCosts(settings);
   const spa=estimateSpaCosts(settings,data);
   const garden=estimateGardenCosts(settings,data,q);
+  const privacy=estimatePrivacyCosts(settings,data);
   if(spa.enabled)notes.push(spa.scopeId==='pool-and-jacuzzi'
     ?'Nadmorska spa scope includes the proposed pool and compact jacuzzi only. Installed ranges are existing planning benchmarks, not supplier quotations. Confirm the mapped ks200 sewer route before fixing pool siting; diversion work is not priced. Jacuzzi seating capacity and service access remain unverified.'
     :c.costUsePlanningAllowances
@@ -505,6 +524,8 @@ export function estimateCosts(settings = {}, data) {
       :'Spa structures use installed contractor allowances, not catalog estimates. Fill excludes sauna, sunken lounge and cold-plunge footprints. The fire lounge needs its own excavation, waterproofing and drainage design; pool and jacuzzi hydraulics, structural support and overflow collection are included only when quoted.');
   if(spa.unquoted.length)notes.push(`Spa items awaiting installed quotes: ${spa.unquoted.map(item=>item.label).join(', ')}. Zero is not a free installation.`);
   if(garden.unquoted.length)notes.push(`Garden works awaiting installed quotes: ${garden.unquoted.map(item=>item.label).join(', ')}. Turn on planning allowances for preliminary ranges or enter complete line quotes.`);
+  if(privacy.unquoted.length)notes.push(`Privacy structures awaiting installed quotes: ${privacy.unquoted.map(item=>item.label).join(', ')}. These custom structures have no planning allowance; zero means unquoted and excluded from the known subtotal.`);
+  if(privacy.enabled)notes.push('Privacy-structure quotes cover their own installed scope once. The existing terrace-canopy line remains separate; if a supplier offers a combined package, split it between canopy and side screens before entering amounts.');
   if(garden.enabled)notes.push(`Scope covers the ${q.fullPerimeter?'rear garden + full perimeter hedges':'rear garden and selected front hedge'}: terrace, spa programme, planting, site works and selected garage removal / canopy. Property purchase, house renovation, basement garage, front driveway, gates / fencing, operating bills and major utility-capacity upgrades are excluded.`);
   if(garden.enabled)notes.push(spa.scopeId==='pool-and-jacuzzi'
     ?'Hedge/specimen supply, bulk fill, spa foundations and pool coping are counted in their own lines. Terrace finish excludes the jacuzzi footprint. Ordinary paths and lawn receive finish only, with bulk fill accounted separately.'
@@ -517,9 +538,9 @@ export function estimateCosts(settings = {}, data) {
   if (screeningTrees.rows.some(row => row.taxBasis === 'net')) notes.push('Selected Markflor Thuja Brabant prices are NET, excluding VAT. The known subtotal retains those net plant amounts and is not a final tax-inclusive purchasing total; replace with a confirmed gross quote.');
   if (screeningTrees.rows.some(row => row.taxBasis === 'unspecified' && row.unit.source !== 'custom')) notes.push('Some selected specimen prices do not state their VAT basis. Enter final tax-inclusive supplier quotes before purchasing.');
   // Combine unadjusted branches first; apply uncertainty once to the upper sum.
-  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase,spa.knownBase,garden.knownBase]);
+  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase,spa.knownBase,garden.knownBase,privacy.knownBase]);
   const knownSubtotal = withContingency(knownBase, c.costContingency);
-  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required' || spa.status==='quote-required' || garden.status==='quote-required';
+  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required' || spa.status==='quote-required' || garden.status==='quote-required' || privacy.status==='quote-required';
   return {
     currency: 'PLN', basisDate: GARDEN_BUDGET_REVIEWED_AT, contingencyPercent: c.costContingency, planningEnabled:c.costUsePlanningAllowances,
     hedges: { sides, count, length, spacing: c.costSpacing, procurement: c.buyNewThujas,fullPerimeter:q.fullPerimeter,
@@ -531,8 +552,8 @@ export function estimateCosts(settings = {}, data) {
       looseVolume: looseFillVolume + looseTopsoilVolume, looseFactor: c.costLooseFactor,
       loads, fillLoads, topsoilLoads, truckCapacity: c.costTruckCapacity,
       lines: earthLines, baseTotal: earthBase, total: earthTotal, status: hasEarthwork ? 'estimate' : 'none' },
-    screeningTrees,spa,garden,
+    screeningTrees,spa,garden,privacy,
     total: unknown ? null : knownSubtotal, knownSubtotal,
-    status: unknown ? 'quote-required' : count > 0 || hasEarthwork || screeningTrees.count > 0 || spa.enabled || garden.enabled ? 'estimate' : 'none', notes,
+    status: unknown ? 'quote-required' : count > 0 || hasEarthwork || screeningTrees.count > 0 || spa.enabled || garden.enabled || privacy.enabled ? 'estimate' : 'none', notes,
   };
 }

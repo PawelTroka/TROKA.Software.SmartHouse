@@ -1,13 +1,14 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.20.1';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.20.1';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.20.1';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.20.1';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.20.1';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.20.1';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.20.1';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.20.1';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.21.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.21.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.21.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.21.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.21.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.21.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.21.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.21.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.21.0';
 
-export const STATE_VERSION = 20;
+export const STATE_VERSION = 21;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -78,13 +79,14 @@ const BASE_FIELDS = Object.freeze({
   nightHedgeIntensity: {label:'Thuja lantern brightness',min:0,max:100,step:1,value:NIGHT_DEFAULTS.nightHedgeIntensity,group:'night',unit:'%'},
   nightWindowActivity: {label:'Neighbour window activity',min:0,max:100,step:1,value:NIGHT_DEFAULTS.nightWindowActivity,group:'night',unit:'%'},
   nightWindowIntensity: {label:'Neighbour window brightness',min:0,max:100,step:1,value:NIGHT_DEFAULTS.nightWindowIntensity,group:'night',unit:'%'},
+  ...PRIVACY_FIELDS,
   ...COST_FIELDS,
   ...BUILDING_FIELDS,
 });
 export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom',...UPPER_FLOOR_PRESETS.map(p=>p.id)]);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]);
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -97,7 +99,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   for(const [key,override] of Object.entries(profile.fieldOverrides||{}))if(fields[key])fields[key]={...fields[key],...override};
   for(const [key,value] of Object.entries(profile.defaults||{}))if(fields[key])fields[key]={...fields[key],value};
   const FIELDS=Object.freeze(Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,Object.freeze(value)])));
-  const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...NIGHT_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
+  const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...NIGHT_DEFAULTS,...PRIVACY_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
@@ -153,7 +155,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
-    if(siteId!==DEFAULT_SITE_ID)out.gardenProgram='classic';
+    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.privacyPergolaEnabled=false;out.privacyPergolaFoliage=false;out.spaScreensEnabled=false;}
     if(!hasFrontHedge){out.hedgeFront=0;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
     if(!hasFullPerimeterHedges)out.hedgeFullPerimeter=false;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
@@ -176,6 +178,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       version===15&&['spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-aligned'}:
       version===16&&oldInput.gardenProgram==='spa-pool-grove'?{...oldInput,gardenProgram:'spa-corner'}:oldInput;
     const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:version<=19?V19_DEFAULTS:DEFAULTS);
+    // Historical designs did not contain these structures. Never add opaque
+    // screening to an older shared link, including one with unknown fields.
+    if(version<21){next.privacyPergolaEnabled=false;next.privacyPergolaFoliage=false;next.spaScreensEnabled=false;}
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
