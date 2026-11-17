@@ -21,6 +21,8 @@ import {gardenProgram, poolBounds} from './garden-program.js?v=1.21.0';
 import {terraceStairs} from './layout.js?v=1.21.0';
 import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.21.0';
 
+import {garagePlanFrame} from './garage-ramp.js?v=1.21.0';
+
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
   land: '#e3e9da', hedge: '#4b7151', hedgeDark: '#31513a', stone: '#e5dac6',
@@ -81,6 +83,23 @@ function footprintBounds(polygon) {
     minX: Math.min(...polygon.map(p => p[0])), maxX: Math.max(...polygon.map(p => p[0])),
     minY: Math.min(...polygon.map(p => p[1])), maxY: Math.max(...polygon.map(p => p[1])),
   };
+}
+
+/** Proposed basement outline is legible through the house in the site plan. */
+export function basementGaragePlanMarkup(frame,{X,Y,scale,labels=true}) {
+  if(!frame?.enabled)return '';
+  const points=ring=>ring.map(p=>`${X(p[0]).toFixed(2)},${Y(p[1]).toFixed(2)}`).join(' ');
+  const entry=[(frame.gate.a[0]+frame.gate.b[0])/2,(frame.gate.a[1]+frame.gate.b[1])/2];
+  const room=centroid(frame.roomFootprint),ramp=centroid(frame.clearFootprint);
+  return `<g data-basement-garage-plan="true" pointer-events="none">
+    <polygon points="${points(frame.outerFootprint)}" fill="#a69f90" stroke="#625f55" stroke-width="1"/>
+    <polygon points="${points(frame.clearFootprint)}" fill="#c7c9c0" stroke="#8c9387" stroke-width=".8"/>
+    <polygon data-basement-room="true" points="${points(frame.roomFootprint)}" fill="#d9dfd3" fill-opacity=".35" stroke="#e9eee3" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <path d="M${X(entry[0])} ${Y(entry[1]+.7)} L${X(ramp[0])} ${Y(ramp[1])}" fill="none" stroke="#36554b" stroke-width="1.4"/>
+    <path d="M${X(ramp[0]-.25)} ${Y(ramp[1]-.45)} L${X(ramp[0])} ${Y(ramp[1])} L${X(ramp[0]+.25)} ${Y(ramp[1]-.45)}" fill="none" stroke="#36554b" stroke-width="1.4"/>
+    ${labels?`<text x="${X(ramp[0])}" y="${Y(ramp[1]+.8)}" text-anchor="middle" font-size="8.5" fill="#30483d" font-weight="650" paint-order="stroke" stroke="#e7e9df" stroke-width="2">RAMP · ${fmt(frame.clearWidth,1)} m clear</text><text x="${X(room[0])}" y="${Y(room[1])}" text-anchor="middle" font-size="8" fill="#fffdf5" font-weight="650" paint-order="stroke" stroke="#5d6961" stroke-width="2">BASEMENT BAY</text>`:''}
+    <title>${fmt(frame.frontRun,2)} m outside approach; ${fmt(frame.insideRun,2)} m continuation inside the house. Proposed basement conversion.</title>
+  </g>`;
 }
 
 function criticalRay(data, analysis) {
@@ -147,6 +166,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const pool = poolBounds(settings,data);
   const program = gardenProgram(settings,data);
   const privacy = privacyStructures(settings,data);
+  const basement = garagePlanFrame(settings,data);
   const ray = criticalRay(data, analysis);
   const polys = points => points.map(p => `${X(p[0]).toFixed(2)},${Y(p[1]).toFixed(2)}`).join(' ');
   const rect = (x, y, w, h, attributes = '') => `<rect x="${X(x)}" y="${Y(y)}" width="${w * scale}" height="${h * scale}" ${attributes}/>`;
@@ -210,6 +230,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         <polygon points="${polys(site.boundary)}" fill="${C.land}" stroke="${C.muted}" stroke-width="1.4" stroke-dasharray="4 3"/>
         <polygon points="${polys(site.house.footprint)}" fill="${C.roof}" stroke="#696f69"/>
         ${roofDetail}
+        ${basementGaragePlanMarkup(basement,{X,Y,scale,labels:detail})}
         ${rect(terrace.x, rearY, terrace.width, terrace.depth, `fill="${C.stone}" stroke="#c9bda5" stroke-width="1.2"`)}
         ${program.active?Array.from({length:steps.count},(_,i)=>rect(steps.x,steps.y+i*.29,steps.width,.29,'fill="#d2c5ad" stroke="#b4a78e" stroke-width=".6"')).join(''):rect(terrace.x, rearY + terrace.depth, terrace.width, .42, 'fill="#d2c5ad"')}
         ${jacuzzi ? rect(jacuzziX, jacuzziY, jacuzzi.x1 - jacuzzi.x0, jacuzzi.y1 - jacuzzi.y0, `rx="2" fill="${C.waterLight}" stroke="#f8f4e9" stroke-width="${detail ? 2 : 1}"`) : ''}

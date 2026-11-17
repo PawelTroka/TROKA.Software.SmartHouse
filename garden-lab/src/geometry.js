@@ -9,6 +9,8 @@ import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.21.0';
 import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.21.0';
 import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.21.0';
 
+import {garagePlanFrame} from './garage-ramp.js?v=1.21.0';
+
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
   gardenRaise: 0, bedRaise: 0, raiseNewHedges: true,
@@ -368,6 +370,15 @@ export function frontHedgeLayout(settings={},data){
   const pedestrianCentre=clamp(projected,.6+EPS,length-5.2);
   const legacyGaps=[{id:'front-pedestrian-opening',label:'Pedestrian opening · proposed',start:pedestrianCentre-.6,end:pedestrianCentre+.6},
     {id:'front-vehicle-opening',label:'Vehicle opening · proposed',start:length-4,end:length}];
+  const basement=garagePlanFrame(settings,data);
+  if(basement.enabled){
+    // Align a new vehicle opening with the proposed basement, retaining the
+    // pedestrian opening. The existing side-passage location cannot serve it.
+    const centre=[(basement.gate.a[0]+basement.gate.b[0])/2,(basement.gate.a[1]+basement.gate.b[1])/2];
+    const width=Math.max(4,basement.gate.width),half=width/2;
+    const station=clamp(((centre[0]-a[0])*dx+(centre[1]-a[1])*dy)/length,half,length-half);
+    legacyGaps[1]={id:'front-vehicle-opening',label:'Basement ramp opening · proposed',start:station-half,end:station+half};
+  }
   const configured=data.site.frontAccessOpenings;
   const gaps=(Array.isArray(configured)?configured.map((g,i)=>({
     id:g.id||`front-${g.kind||i+1}-opening`,label:g.label||'Access opening · proposed',
@@ -378,7 +389,7 @@ export function frontHedgeLayout(settings={},data){
   if(cursor<length-EPS)spans.push([cursor,length]);
   return {segments:spans.filter(([start,end])=>end-start>EPS).map(([start,end],i)=>({id:`front-span-${i+1}`,a:point(start),b:point(end),length:end-start})),
     openings:gaps.map(g=>({id:g.id,label:g.label,a:point(g.start),b:point(g.end),width:g.end-g.start})),
-    length:spans.reduce((sum,[start,end])=>sum+end-start,0),assumption:data.site.frontAccessNote||'Proposed 1.20 m pedestrian and 4.00 m vehicle openings; gate positions are not surveyed. Openings receive no privacy-screen credit. Front planting stays at existing grade.'};
+    length:spans.reduce((sum,[start,end])=>sum+end-start,0),assumption:basement.enabled?'The proposed vehicle opening is relocated into line with the basement ramp; the pedestrian opening stays clear. This is a new gate proposal, not a surveyed existing access. Openings receive no privacy-screen credit. Street connection and gate operation need design.':data.site.frontAccessNote||'Proposed 1.20 m pedestrian and 4.00 m vehicle openings; gate positions are not surveyed. Openings receive no privacy-screen credit. Front planting stays at existing grade.'};
 }
 
 /** Explicit access on other boundary edges, including a corner property's
