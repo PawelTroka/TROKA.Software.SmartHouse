@@ -20,6 +20,8 @@ import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.21.0
 import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.21.0';
 import { createGardenNightLighting } from './scene-night-lights.js?v=1.21.0';
 import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.21.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.21.0';
+import { garageTerrainCutouts,subtractGarageOpenings,garageFacadePanels,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.21.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -33,11 +35,12 @@ const centroid = ring => {
   return r.reduce((s, p) => [s[0] + p[0] / r.length, s[1] + p[1] / r.length], [0, 0]);
 };
 
-/** Exact rectangular openings shared by both rendered terrain layers. */
+/** Exact openings shared by both rendered terrain layers. */
 export function designTerrainCutouts(settings,data){
   const tub=jacuzziBounds(settings,data),program=gardenProgram(settings,data),p=poolBounds(settings,data);
   const rect=r=>({x0:r.x,x1:r.x+r.width,y0:r.y,y1:r.y+r.length});
-  return[rect(p),{x0:tub.x0,x1:tub.x1,y0:tub.y0,y1:tub.y1},...(program.active?[rect(program.firepit),rect(program.coldPlunge)]:[])];
+  return[rect(p),{x0:tub.x0,x1:tub.x1,y0:tub.y0,y1:tub.y1},...(program.active?[rect(program.firepit),rect(program.coldPlunge)]:[]),
+    ...garageTerrainCutouts(garageLayout(settings,data,{terrainAt}))];
 }
 
 function contains(x, y, ring) {
@@ -343,6 +346,7 @@ export function createScene(container, data, callbacks = {}) {
   let shadowBoundsDirty=true,shadowCameraDirty=true,shadowReceiverPoints=[],shadowCasterPoints=[];
   let sunPathSignature='',previousSunPath=null;
   let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
+  let garageScene=null,currentGarageLayout=null;
 
   const box = (group, x, y, z, width, depth, height, material, cast = true, svgOrder = 0) => {
     if (width <= 0 || depth <= 0 || height <= 0) return null;
@@ -409,19 +413,23 @@ export function createScene(container, data, callbacks = {}) {
     };
     const xs=axis(x0,x1,cutouts.flatMap(c=>[c.x0,c.x1]));
     const ys=axis(y0,y1,cutouts.flatMap(c=>[c.y0,c.y1]));
-    for (let row=0;row<ys.length-1;row++) for (let col=0;col<xs.length-1;col++) {
+    const polygonCutouts=cutouts.filter(c=>c.polygon?.length>=3);
+    for(let row=0;row<ys.length-1;row++)for(let col=0;col<xs.length-1;col++){
       const x=xs[col],xx=xs[col+1],y=ys[row],yy=ys[row+1];
-      if(cutouts.some(c=>x>=c.x0-1e-8&&xx<=c.x1+1e-8&&y>=c.y0-1e-8&&yy<=c.y1+1e-8))continue;
-      for (const tri of [[[x, y], [xx, y], [xx, yy]], [[x, y], [xx, yy], [x, yy]]]) {
-        const c = centroid(tri);
-        if (ring && !contains(...c, ring)) continue;
-        // Reversing the winding keeps these terrain normals facing upward.
-        for (const p of [tri[0], tri[2], tri[1]]) {
-          positions.push(...toWorld(p[0], p[1], heightAt(...p)));
-          uv.push(p[0] / 2.5, p[1] / 2.5);
-          if (vertexColors) {
-            const variation = 0.92 + 0.08 * Math.sin(p[0] * 2.31 + p[1] * 1.27) * Math.cos(p[1] * 0.63);
-            colors.push(baseColor.r * variation, baseColor.g * variation, baseColor.b * variation);
+      if(cutouts.some(c=>!c.polygon&&x>=c.x0-1e-8&&xx<=c.x1+1e-8&&y>=c.y0-1e-8&&yy<=c.y1+1e-8))continue;
+      for(const tri of [[[x,y],[xx,y],[xx,yy]],[[x,y],[xx,yy],[x,yy]]]){
+        const pieces=polygonCutouts.length?subtractGarageOpenings(tri,polygonCutouts):[tri];
+        for(const piece of pieces){
+          const c=centroid(piece);
+          if(ring&&!contains(...c,ring))continue;
+          // Reversing the winding keeps these terrain normals facing upward.
+          for(let i=1;i<piece.length-1;i++)for(const p of [piece[0],piece[i+1],piece[i]]){
+            positions.push(...toWorld(p[0],p[1],heightAt(...p)));
+            uv.push(p[0]/2.5,p[1]/2.5);
+            if(vertexColors){
+              const variation=.92+.08*Math.sin(p[0]*2.31+p[1]*1.27)*Math.cos(p[1]*.63);
+              colors.push(baseColor.r*variation,baseColor.g*variation,baseColor.b*variation);
+            }
           }
         }
       }
@@ -685,8 +693,9 @@ export function createScene(container, data, callbacks = {}) {
     for (let i=0;i<ring.length;i++) {
       const a=ring[i],b=ring[(i+1)%ring.length];
       if ((a[1]+b[1])/2>rear-.15) continue;
-      const triangles=[localTriangle([...a,base],[...b,base],[...b,eaves]),localTriangle([...a,base],[...b,eaves],[...a,eaves])];
-      const mesh=new THREE.Mesh(geometryFromTriangles(triangles),mat.wall);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);
+      const triangles=garageFacadePanels(a,b,base,eaves,currentGarageLayout)
+        .flatMap(([p,q,r,s])=>[localTriangle(p,q,r),localTriangle(p,r,s)]);
+      const mesh=new THREE.Mesh(geometryFromTriangles(triangles),mat.wall);mesh.name='house-wall-'+i;mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);
     }
     box(group,x0,rear-.14,base,x1-x0,.28,Math.max(.08,floor-base),mat.plinth);
     const openingX=data.site.terrace.x,openingW=data.site.terrace.width,openingTop=floor+2.7;
@@ -982,6 +991,7 @@ export function createScene(container, data, callbacks = {}) {
 
   function rebuildDesign(settings) {
     terrainMeshes.length=0;
+    garageScene=null;currentGarageLayout=garageLayout(settings,data,{terrainAt});
     gardenNight?.dispose();gardenNight=null;
     removeGeometry(designGroup);
     syncContextTerrain(settings);
@@ -1022,9 +1032,14 @@ export function createScene(container, data, callbacks = {}) {
         box(designGroup,1.7,.4,frontZ+.01,1.2,1.3,.04,mat.stone,false,-80);
         box(designGroup,1.0,1.7,frontZ+.01,2.6,7.8,.04,mat.stone,false,-80);
       }else box(designGroup,1.0,.4,frontZ+.01,2.6,9.1,.04,mat.stone,false,-80);
-      box(designGroup,4.1,1.7,frontZ+.01,10.9,1.1,.04,mat.stone,false,-80);
+      if(currentGarageLayout.enabled){
+        designGroup.add(createGarageAwarePaving({x:4.1,y:1.7,width:10.9,length:1.1},frontZ+.01,.04,mat.stone,currentGarageLayout));
+      }else box(designGroup,4.1,1.7,frontZ+.01,10.9,1.1,.04,mat.stone,false,-80);
     }
     addHouse(designGroup,settings);
+    garageScene=createGarageGroup(currentGarageLayout,mat,{svgMode,groundAt:(x,y)=>terrainAt(x,y,data)});
+    designGroup.add(garageScene.group);terrainMeshes.push(...garageScene.terrainMeshes);
+    updateGaragePreview(settings);
     addGarden(designGroup,settings);
     addHedges(designGroup,settings);
     addCanopy(designGroup,settings);
@@ -1273,6 +1288,27 @@ export function createScene(container, data, callbacks = {}) {
     camera.updateProjectionMatrix();requestRender();
   }
 
+  /** Dedicated front view leaves the normal garden orbit and saved eye presets
+   * intact. The camera stays on the street side of the proposed entrance. */
+  function setGarageView(){
+    if(!currentGarageLayout?.enabled)return false;
+    setView('orbit');
+    const {axis,streetZ}=currentGarageLayout;
+    const at=(s,l,z)=>point(axis.start[0]+axis.direction[0]*s+axis.normal[0]*l,axis.start[1]+axis.direction[1]*s+axis.normal[1]*l,z);
+    camera.position.copy(at(-6,6,streetZ+11));controls.target.copy(at(axis.frontRun*.65,0,streetZ-.15));
+    camera.fov=45;camera.lookAt(controls.target);camera.updateProjectionMatrix();controls.update();requestRender();return true;
+  }
+
+  /** Scrubbing the car moves one rigid group, without rebuilding the garden or
+   * rerunning the full clearance sweep. The shared model supplies its pose. */
+  function updateGaragePreview(settings=currentSettings){
+    currentSettings={...currentSettings,garageProgress:settings.garageProgress,garageReverse:settings.garageReverse};
+    if(!currentGarageLayout?.enabled||!garageScene)return;
+    const progress=Math.max(0,Math.min(1,num(settings.garageProgress,40)/100));
+    garageScene.setVehiclePose(garageVehiclePose(currentGarageLayout,progress,settings.garageReverse===true));
+    shadowBoundsDirty=true;requestRender();
+  }
+
   function update(settings,observer,analysis,activeData=data) {
     if(activeData!==data){
       data=activeData;
@@ -1283,8 +1319,10 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
+    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
+      'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
+    else updateGaragePreview(settings);
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
     // Includes static streets/buildings, instanced foliage, water and any new
@@ -1379,5 +1417,5 @@ export function createScene(container, data, callbacks = {}) {
     gardenNight?.dispose();textures?.dispose();sun.shadow.dispose();
     renderer.dispose?.();renderer.domElement.remove();labelLayer.remove();
   }
-  return {available:true,rendererType,update,updateSun,setView,resize,dispose,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
+  return {available:true,rendererType,update,updateSun,setView,setGarageView,updateGaragePreview,resize,dispose,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
 }
