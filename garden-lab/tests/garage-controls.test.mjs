@@ -5,7 +5,7 @@ import {createStateModel} from '../src/state.js';
 import {getSiteProfile} from '../src/sites.js';
 import {garagePresetState} from '../src/garage-options.js';
 import {garageLayout,garageVehiclePose} from '../src/garage-ramp.js';
-import {garageProfileSVG,garageClearanceResult} from '../src/garage-controls.js';
+import {garageProfileSVG,garageClearanceResult,garageConfigurationWarnings} from '../src/garage-controls.js';
 import {terrainAt} from '../src/geometry.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
@@ -64,4 +64,19 @@ test('the profile card exposes required controls, result text and primary assump
   assert.match(html,/data\/garage-sources\.json/);
   assert.match(html,/MG Cyberster/);
   assert.match(html,/door-opening envelopes remain unverified/);
+});
+
+test('visible warnings identify configuration failures while generic assumptions remain expandable',()=>{
+  const settings=garagePresetState('raised',model.DEFAULTS),raised=garageLayout(settings,data,{terrainAt});
+  assert.deepEqual(garageConfigurationWarnings(raised),[]);
+  for(const id of ['forecourt','deeper']){
+    const warnings=garageConfigurationWarnings(garageLayout(garagePresetState(id,model.DEFAULTS),data,{terrainAt}));
+    assert.ok(warnings.length>0,id);
+    assert.ok(warnings.every(note=>!/Concept only|Quasi-static|tyre radii are nominal|not surveyed|bottom curve continues/i.test(note)));
+  }
+  assert.ok(garageConfigurationWarnings({...raised,clearWidth:2.8,assessment:{...raised.assessment,widthBenchmarkPass:false}}).some(note=>/width/.test(note)));
+  assert.ok(garageConfigurationWarnings({...raised,assessment:{...raised.assessment,minCoveredHeadroom:2.1}}).some(note=>/headroom/.test(note)));
+  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+  assert.match(html,/id="garage-model-assumptions"/);
+  assert.match(html,/Entry detail unresolved/);
 });

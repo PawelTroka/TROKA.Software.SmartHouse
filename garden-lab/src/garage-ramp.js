@@ -171,13 +171,17 @@ function travelRange(layout,reverse){
   return reverse?[-v.rearOverhang-.3,layout.roomRearS-v.rearOverhang-.3]
     :[-v.wheelbase-v.frontOverhang-.3,layout.roomRearS-v.wheelbase-v.frontOverhang-.3];
 }
-function overheadClearance(layout,pose){
+function overheadClearances(layout,pose){
   const v=layout.vehicle,A=pose.at(-v.rearOverhang,v.height-v.rearRadius),B=pose.at(v.wheelbase+v.frontOverhang,v.height-v.rearRadius);
   const lo=Math.max(Math.min(A.s,B.s),layout.frontRun),hi=Math.min(Math.max(A.s,B.s),layout.roomRearS);
-  if(lo>hi)return Infinity;
   const z=x=>A.z+(B.z-A.z)*(x-A.s)/(B.s-A.s);
-  return layout.ceilingZ-Math.max(z(lo),z(hi));
+  const soffit=lo>hi?Infinity:layout.ceilingZ-Math.max(z(lo),z(hi));
+  const crossesDoor=Math.min(A.s,B.s)<=layout.frontRun&&Math.max(A.s,B.s)>=layout.frontRun;
+  const doorTop=Math.min(layout.ceilingZ,road(layout.design,layout.frontRun).z+2.10);
+  const portal=crossesDoor?doorTop-z(layout.frontRun):Infinity;
+  return {minimum:Math.min(soffit,portal),soffit,portal};
 }
+function overheadClearance(layout,pose){return overheadClearances(layout,pose).minimum;}
 function goldenMinimum(fn,lo,hi,iterations=22){
   const ratio=(Math.sqrt(5)-1)/2;let x1=hi-ratio*(hi-lo),x2=lo+ratio*(hi-lo),y1=fn(x1),y2=fn(x2);
   for(let i=0;i<iterations;i++)if(y1<y2){hi=x2;x2=x1;y2=y1;x1=hi-ratio*(hi-lo);y1=fn(x1);}else{lo=x1;x1=x2;y1=y2;x2=lo+ratio*(hi-lo);y2=fn(x2);}
@@ -185,10 +189,14 @@ function goldenMinimum(fn,lo,hi,iterations=22){
 }
 function sweep(layout,reverse,{step=.035,exact=true,refine=true}={}){
   const [start,end]=travelRange(layout,reverse),count=Math.max(1,Math.ceil((end-start)/step)),samples=[];
-  let minimumClearance=Infinity,minimumVerticalClearance=Infinity,minimumOverheadClearance=Infinity,best=null,posesChecked=0;
+  let minimumClearance=Infinity,minimumVerticalClearance=Infinity,minimumOverheadClearance=Infinity,minimumPortalClearance=Infinity,minimumSoffitClearance=Infinity,best=null,posesChecked=0,portalPosesChecked=0,coveredPosesChecked=0;
   const evaluate=rearS=>{
     const pose=axlePose(layout.design,layout.vehicle,rearS,reverse),clear=undersideClearance(layout.design,layout.vehicle,pose,exact);
-    posesChecked++;minimumVerticalClearance=Math.min(minimumVerticalClearance,clear.vertical);minimumOverheadClearance=Math.min(minimumOverheadClearance,overheadClearance(layout,pose));
+    const overhead=overheadClearances(layout,pose);
+    posesChecked++;minimumVerticalClearance=Math.min(minimumVerticalClearance,clear.vertical);
+    minimumOverheadClearance=Math.min(minimumOverheadClearance,overhead.minimum);
+    minimumPortalClearance=Math.min(minimumPortalClearance,overhead.portal);minimumSoffitClearance=Math.min(minimumSoffitClearance,overhead.soffit);
+    if(Number.isFinite(overhead.portal))portalPosesChecked++;if(Number.isFinite(overhead.soffit))coveredPosesChecked++;
     if(clear.clearance<minimumClearance){minimumClearance=clear.clearance;best={rearS,clear,pose};}
     return clear.clearance;
   };
@@ -197,7 +205,7 @@ function sweep(layout,reverse,{step=.035,exact=true,refine=true}={}){
     &&(samples[i].value<samples[i-1].value-1e-8||samples[i].value<samples[i+1].value-1e-8)
     &&samples[i].value<minimumClearance+.004){const x=goldenMinimum(evaluate,samples[i-1].x,samples[i+1].x);evaluate(x);}
   const u=best.clear.bodyU,limitingPart=u<0?'rear-overhang':u>layout.vehicle.wheelbase?'front-overhang':'underbody';
-  return {minimumClearance,minimumVerticalClearance,minimumOverheadClearance,criticalRearS:best.rearS,
+  return {minimumClearance,minimumVerticalClearance,minimumOverheadClearance,minimumPortalClearance,minimumSoffitClearance,portalPosesChecked,coveredPosesChecked,criticalRearS:best.rearS,
     criticalProgress:(best.rearS-start)/(end-start),limitingPart,limitingStation:best.clear.limitingS,posesChecked,step,reverse};
 }
 function optimizeDesign(base,settings){
@@ -233,7 +241,13 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   const streetZ=terrainAt(...frame.axis.start,data),livingFloorZ=data.site.floorReference.z+finite(settings.floorHeight,1.2);
   const ceilingZ=livingFloorZ-s.garageSlabThickness,floorZ=ceilingZ-s.garageClearHeight-s.garageExtraDepth,drop=streetZ-floorZ;
   const key=garageGeometryKey(s)+'|'+[streetZ,livingFloorZ,frame.frontRun].join('|');
-  let entries=cache.get(data);if(!entries){entries=new Map();cache.set(data,entries);}if(entries.has(key))return entries.get(key);
+  // Building overrides wrap the same immutable site/terrain in a fresh data
+  // object. Reuse the expensive sweep while those geometry inputs stay stable.
+  let bucket=cache.get(data.site);
+  if(!bucket||bucket.terrain!==data.terrain||bucket.coordinates!==data.coordinates||bucket.terrainAt!==terrainAt){
+    bucket={terrain:data.terrain,coordinates:data.coordinates,terrainAt,entries:new Map()};cache.set(data.site,bucket);
+  }
+  const entries=bucket.entries;if(entries.has(key))return entries.get(key);
   const layout={...frame,vehicle,car:vehicle,settings:s,streetZ,livingFloorZ,ceilingZ,floorZ,drop};
   layout.design=optimizeDesign(layout,s);
   const at=station=>{const xy=frame.at(station),p=road(layout.design,station);return {s:station,x:xy[0],y:xy[1],z:p.z,grade:p.grade,groundZ:terrainAt(...xy,data)};};
@@ -243,26 +257,32 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   layout.sideProfile=[at(-vehicle.length-.5),...layout.profile,at(frame.roomRearS)];
   const portalBottom=road(layout.design,frame.frontRun).z;
   layout.portal={center:frame.axis.end,a:frame.at(frame.frontRun,-frame.clearWidth/2),b:frame.at(frame.frontRun,frame.clearWidth/2),
-    width:frame.clearWidth,bottomZ:portalBottom,topZ:ceilingZ,ceilingZ,availableHeight:ceilingZ-portalBottom};
+    width:frame.clearWidth,bottomZ:portalBottom,topZ:Math.min(ceilingZ,portalBottom+2.10),ceilingZ,
+    availableHeight:ceilingZ-portalBottom,clearHeight:Math.min(ceilingZ-portalBottom,2.10),assumedDoorClearHeight:2.10};
   const forward=sweep(layout,false),reverse=sweep(layout,true),minimumClearance=Math.min(forward.minimumClearance,reverse.minimumClearance);
   const requiredMargin=s.garageReserveMm/1000,numericalAllowance=.001,conservativeClearance=minimumClearance-numericalAllowance;
   const parkingFlatLength=frame.roomRearS-Math.max(frame.frontRun,layout.design.curvedRun),minCoveredHeadroom=ceilingZ-portalBottom;
   const minimumOverheadClearance=Math.min(forward.minimumOverheadClearance,reverse.minimumOverheadClearance);
   const gradeWithinLimit=layout.design.peakGrade<=s.garageMaxGrade/100+1e-8,parkingFits=parkingFlatLength>=vehicle.length+.6,structuralHeadroomPass=minCoveredHeadroom>=2.2-1e-6;
+  const widthBenchmarkPass=frame.clearWidth>=3-1e-8,doorBenchmarkPass=layout.portal.clearHeight>=2-1e-8;
   const warnings=['Concept only: original basement, slab, foundations, drainage and vehicle bumper geometry are not surveyed.',
     'The entire underside is conservatively flat at the selected level-road clearance, including both overhangs; tyre radii are nominal size geometry.',
     'Quasi-static rigid-body geometry excludes braking, suspension travel, tyre deflection, snow, ruts and construction tolerances.',
     'The road approach and crossing are assumed flush and level. The required drainage/containment threshold detail is unresolved; a 30 mm edge is not included.',
-    'The 25% gradient and 2.20 m structural headroom figures are transitional design benchmarks; project applicability needs confirmation.'];
+    'The 25% gradient, 3 m access width and 2.20 m structural headroom figures are transitional design benchmarks; project applicability needs confirmation.',
+    'The 2.10 m door opening is an assumption without surveyed lintel or door-gear geometry; overhead checks use a conservative full-height closed-car envelope.'];
   if(frame.insideRun>0)warnings.push('The bottom curve continues inside the existing house and requires structural and basement-layout design.');
   if(!structuralHeadroomPass)warnings.push('The raised indoor ramp locally leaves less than the 2.20 m structural headroom benchmark.');
   if(layout.design.peakGrade>.25+1e-6)warnings.push('The peak gradient exceeds the 25% individual-garage benchmark.');
   if(!parkingFits)warnings.push('The remaining covered flat bay does not fit the car with 0.30 m allowance at each end.');
+  if(!widthBenchmarkPass)warnings.push('The selected clear width is below the 3 m access-roadway benchmark.');
+  if(!doorBenchmarkPass)warnings.push('Available portal height is below the 2 m garage-door benchmark.');
   if(drop<=0)warnings.push('The proposed floor is at or above the street; this is not a descending basement ramp.');
-  const clearancePass=conservativeClearance>=requiredMargin,geometryPass=gradeWithinLimit&&parkingFits&&structuralHeadroomPass&&drop>0&&minimumOverheadClearance>=requiredMargin+numericalAllowance;
+  const clearancePass=conservativeClearance>=requiredMargin,geometryPass=gradeWithinLimit&&parkingFits&&structuralHeadroomPass&&widthBenchmarkPass&&doorBenchmarkPass&&drop>0&&minimumOverheadClearance>=requiredMargin+numericalAllowance;
   layout.assessment={forward,reverse,minimumClearance,minimumVerticalClearance:Math.min(forward.minimumVerticalClearance,reverse.minimumVerticalClearance),
     requiredMargin,numericalAllowance,conservativeClearance,reserveRemaining:minimumClearance-requiredMargin,passes:clearancePass&&geometryPass,
-    clearancePass,geometryPass,gradeWithinLimit,parkingFits,structuralHeadroomPass,parkingFlatLength,minCoveredHeadroom,minimumOverheadClearance,
+    clearancePass,geometryPass,gradeWithinLimit,parkingFits,structuralHeadroomPass,widthBenchmarkPass,doorBenchmarkPass,parkingFlatLength,minCoveredHeadroom,minimumOverheadClearance,
+    posesChecked:forward.posesChecked+reverse.posesChecked,portalPosesChecked:forward.portalPosesChecked+reverse.portalPosesChecked,coveredPosesChecked:forward.coveredPosesChecked+reverse.coveredPosesChecked,
     limitingDirection:forward.minimumClearance<=reverse.minimumClearance?'forward':'reverse',
     status:minimumClearance<0?'contact':!geometryPass?'geometry-limit':!clearancePass?'reserve-shortfall':'conditional-clearance',
     thresholdResolved:false,roadApproachSurveyed:false,warnings};

@@ -30,12 +30,12 @@ export function garageProfileSVG(layout,pose){
   const wallX=x(layout.frontRun),rightX=x(maxS),slabTop=y(layout.livingFloorZ),slabBottom=y(layout.ceilingZ);
   const dimensionY=height-26,frontStart=x(0),frontEnd=x(layout.frontRun);
   const contact=Number.isFinite(pose?.minimumClearance)&&pose.minimumClearance<0;
-  const car=body.length?`<polygon points="${body.map(pair).join(' ')}" fill="#4f8a76" stroke="#2c5848" stroke-width="1.5"/>`:'';
+  const car=body.length?`<polygon points="${body.map(pair).join(' ')}" fill="#4f8a76" fill-opacity=".24" stroke="#2c5848" stroke-width="1.5" stroke-dasharray="5 3"/>`:'';
   const tyres=wheels.map(wheel=>`<circle cx="${fmt(x(wheel.s),2)}" cy="${fmt(y(wheel.z),2)}" r="${fmt(wheel.radius*scale,2)}" fill="#343a35" stroke="#fffef9" stroke-width="1.6"/><circle cx="${fmt(x(wheel.s),2)}" cy="${fmt(y(wheel.z),2)}" r="${fmt(wheel.radius*scale*.48,2)}" fill="#cbd4ca"/>`).join('');
   const envelope=underside.length?`<polyline points="${underside.map(pair).join(' ')}" fill="none" stroke="${contact?'#bd543c':'#d29542'}" stroke-width="2.1" stroke-dasharray="4 3"/>`:'';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${fmt(height,2)}" role="img" aria-labelledby="garage-profile-title garage-profile-description" data-scale="equal" data-front-run="${fmt(layout.frontRun,3)}">
-    <title id="garage-profile-title">Basement ramp side profile and MG Cyberster</title>
-    <desc id="garage-profile-description">Equal-scale side section. The full front approach is ${fmt(layout.frontRun,2)} metres, with ${fmt(layout.drop,2)} metres descent from street to basement. The orange dashed line is the conservative car underside. The car position is a preview; the results check both complete drives.</desc>
+    <title id="garage-profile-title">Basement ramp side profile and MG Cyberster clearance envelope</title>
+    <desc id="garage-profile-description">Equal-scale side section. The full front approach is ${fmt(layout.frontRun,2)} metres, with ${fmt(layout.drop,2)} metres descent from street to basement. The green box is the conservative car envelope; the orange dashed line is its underside. The car position is a preview; the results check both complete drives.</desc>
     <rect width="${width}" height="${fmt(height,2)}" fill="#fffef9"/>
     <polygon points="${ground}" fill="#e7e2d4"/>
     <line x1="${frontStart}" y1="${y(layout.streetZ)}" x2="${frontEnd}" y2="${y(layout.streetZ)}" stroke="#b9c8b7" stroke-dasharray="5 4"/>
@@ -52,7 +52,7 @@ export function garageProfileSVG(layout,pose){
     <line x1="${frontStart}" y1="${dimensionY}" x2="${frontEnd}" y2="${dimensionY}" stroke="#627d68"/>
     <path d="M${frontStart+5},${dimensionY-4}L${frontStart},${dimensionY}L${frontStart+5},${dimensionY+4}M${frontEnd-5},${dimensionY-4}L${frontEnd},${dimensionY}L${frontEnd-5},${dimensionY+4}" fill="none" stroke="#627d68"/>
     <text x="${(frontStart+frontEnd)/2}" y="${dimensionY-8}" text-anchor="middle" class="profile-dimension">${fmt(layout.frontRun,2)} m · full front yard</text>
-    <text x="${padding}" y="${height-8}" class="profile-small">Side section · equal scales · proposed levels</text>
+    <text x="${padding}" y="${height-8}" class="profile-small">Equal scales · green box = conservative car envelope</text>
   </svg>`;
 }
 export function garageClearanceResult(layout){
@@ -65,6 +65,24 @@ export function garageClearanceResult(layout){
   if(a.status==='reserve-shortfall'||conservative<a.requiredMargin)return {status:'reserve-shortfall',label:'Below the modelled clearance reserve'};
   return {status:'reserve-met',label:'Modelled car-clearance reserve met'};
 }
+export function garageConfigurationWarnings(layout){
+  const a=layout?.assessment;if(!a)return [];
+  const warnings=[],clearance=Number.isFinite(a.conservativeClearance)?a.conservativeClearance:a.minimumClearance;
+  if(a.minimumClearance<0)warnings.push('The conservative car underside intersects the ramp. Reduce the descent or provide more transition length.');
+  else if(clearance<a.requiredMargin)warnings.push('The selected underside reserve is not achieved. Compare more transition length, a shallower floor or measured vehicle geometry.');
+  if(a.minCoveredHeadroom<2.2)warnings.push(`Covered entrance headroom is ${fmt(a.minCoveredHeadroom,2)} m, below the former 2.2 m garage benchmark. Adjust the slab, floor or indoor ramp.`);
+  if(a.widthBenchmarkPass===false||(Number.isFinite(layout.clearWidth)&&layout.clearWidth<3))warnings.push(`Ramp clear width is ${fmt(layout.clearWidth,2)} m, below the former 3 m access benchmark.`);
+  if(a.doorBenchmarkPass===false||(Number.isFinite(layout.portal?.clearHeight)&&layout.portal.clearHeight<2))warnings.push(`The modelled doorway is only ${fmt(layout.portal?.clearHeight,2)} m high, below the former 2 m opening benchmark.`);
+  if(a.gradeWithinLimit===false)warnings.push(`Peak gradient ${fmt(layout.design?.peakGrade*100,1)}% exceeds the selected ${fmt(layout.settings?.garageMaxGrade,0)}% limit. Add run or reduce the floor drop.`);
+  else if(layout.design?.peakGrade>.25+1e-6)warnings.push(`Peak gradient ${fmt(layout.design.peakGrade*100,1)}% exceeds the former 25% individual-garage benchmark.`);
+  if(a.parkingFits===false)warnings.push(`Only ${fmt(a.parkingFlatLength,2)} m of flat covered parking remains; the model needs the car length plus 0.30 m at each end.`);
+  if(layout.drop<=0)warnings.push('The proposed floor is at or above street level. Adjust the floor/slab assumptions to model a descending basement ramp.');
+  const overhead=a.minimumOverheadClearance-(a.numericalAllowance||0);
+  if(overhead<0)warnings.push('The closed-car roof envelope meets the doorway or slab. Increase the opening/headroom or change the ramp profile.');
+  else if(overhead<a.requiredMargin)warnings.push('The roof clearance at the doorway or slab is below the selected model reserve.');
+  return warnings;
+}
+
 /** Card and sidebar share saved state. Preview changes do not run a garden sweep. */
 export function createGarageControls({getSettings,getData,onChange,onPreview,onView,notify}){
   const getLayout=createGarageLayoutCache(garageLayout),options={terrainAt};
@@ -94,6 +112,7 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     $('basementGarageEnabled').checked=enabled;
     $('garage-dimension-settings').hidden=!enabled;$('garage-profile-body').hidden=!enabled;$('garage-off-note').hidden=enabled;
     $('garage-view').disabled=!enabled;
+    $('garage-model-assumption-details').hidden=!enabled;
     $('garage-profile-card').dataset.enabled=String(enabled);
     for(const button of document.querySelectorAll('[data-garage-preset]'))button.setAttribute('aria-pressed',String(matchesGaragePreset(button.dataset.garagePreset,settings)));
     for(const button of document.querySelectorAll('[data-garage-reverse]'))button.setAttribute('aria-pressed',String((button.dataset.garageReverse==='true')===settings.garageReverse));
@@ -128,10 +147,11 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     $('garage-level-summary').textContent=`Living floor ${fmt(current.livingFloorZ-current.streetZ,2)} m above street entry. Basement floor ${fmt(current.drop,2)} m below street entry, after ${fmt(settings.garageSlabThickness,2)} m slab + ${fmt(settings.garageClearHeight,2)} m base clear height${settings.garageExtraDepth>0?` + ${fmt(settings.garageExtraDepth,2)} m extra lowering`:''}. Levels remain unmeasured assumptions.`;
     const direction=settings.garageReverse?'Reverse entry':'Forward entry';
     $('garage-current-pose').textContent=`${direction} preview · ${mm(pose?.minimumClearance)} underside clearance here · pitch ${fmt(pose?.pitchDegrees??pose?.pitchRadians*180/Math.PI,1)}°. The minimum over the whole drive is shown below.`;
-    const warnings=[...(a.warnings||[])];
-    if(a.minCoveredHeadroom<2.2&&!warnings.some(text=>/headroom/i.test(text)))warnings.push(`Covered entrance headroom is ${fmt(a.minCoveredHeadroom,2)} m, below the former 2.2 m garage benchmark.`);
+    const warnings=garageConfigurationWarnings(current);
     $('garage-layout-warning').hidden=!warnings.length;
     $('garage-layout-warning').textContent=warnings.join(' ');
+    const assumptions=$('garage-model-assumptions');assumptions.replaceChildren();
+    for(const note of a.warnings||[]){const item=document.createElement('li');item.textContent=note;assumptions.append(item);}
   }
   function exportSummary(){
     const settings=getSettings();
