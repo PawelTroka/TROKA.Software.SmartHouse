@@ -3,7 +3,7 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces, privacyStructures } from './geometry.js?v=1.21.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces, privacyStructures } from './geometry.js?v=1.21.0';
 import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.21.0';
 import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.21.0';
 import { gardenProgram, poolBounds } from './garden-program.js?v=1.21.0';
@@ -284,7 +284,7 @@ function makeOccluders(settings,data) {
     add(prism('canopy-front','Canopy front fascia',rectangle(c.x0,c.y1-.075,c.x1,c.y1+.075),bottom,c.z));
     add(prism('canopy-right','Canopy right fascia',rectangle(c.x0,c.y0,c.x0+.13,c.y1),bottom,c.z));
     add(prism('canopy-left','Canopy left fascia',rectangle(c.x1-.13,c.y0,c.x1,c.y1),bottom,c.z));
-    for(const x of [c.x0+.08,c.x1-.18])add(prism('canopy-post','Canopy post',rectangle(x,c.y1-.18,x+.1,c.y1-.08),floor,Math.max(floor+.1,bottom)));
+    for(const p of canopySupportBounds(settings,data))add(prism('canopy-post','Canopy post',rectangle(p.x0,p.y0,p.x1,p.y1),p.z0,p.z1));
   }
   objects.push(...spaOccluders(settings,data));
   for(const box of privacyStructures(settings,data).boxes){
