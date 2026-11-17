@@ -124,6 +124,7 @@ try{
   await page.locator('[data-preset="pool"]').click();
   await page.waitForFunction(()=>document.querySelector('#observer-readout')?.textContent.includes('0.15 m above pool water'));
   assert.equal(await page.locator('#viewport').getAttribute('data-mode'),'eye');assert.equal(await page.locator('#eyeHeight-value').isDisabled(),true);
+  await details('details:has(> #assumption-controls)',true);
   const lowPool=await sceneFrame();await number('poolEyeAboveWater-value',.25);
   await page.waitForFunction(()=>document.querySelector('#observer-readout')?.textContent.includes('0.25 m above pool water'));
   const highPool=await sceneFrame();report.poolPixelDifference=await changedPixels(lowPool,highPool);assert.ok(report.poolPixelDifference>30);
