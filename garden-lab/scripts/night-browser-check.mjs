@@ -429,7 +429,14 @@ async function verifyBasementGarage(){
   assert.ok(parseFloat(candidate.frontRun)>9&&parseFloat(candidate.frontRun)<9.2,'The full mapped front yard is used');
   assert.ok(parseFloat(candidate.headroom)>=2.2,'Candidate must preserve the selected covered-headroom benchmark');
   assert.match(candidate.door,/2\.10 m$/,'The separate assumed 2.10 m door remains visible');
-  assert.match(await page.locator('#garage-layout-warning').innerText(),/survey|unmeasured/i);
+  assert.equal(await page.locator('#garage-layout-warning').isVisible(),false,'Candidate has no configuration-specific warning');
+  assert.equal(await page.locator('.garage-entry-conditions').isVisible(),true,'The unresolved entrance detail stays beside the result');
+  assert.match(await page.locator('.garage-entry-conditions').innerText(),/threshold[\s\S]*not yet modelled/i);
+  await details('#garage-profile-card .garage-source-details',true);
+  assert.equal(await page.locator('#garage-model-assumption-details').isVisible(),true);
+  assert.match(await page.locator('#garage-model-assumptions').innerText(),/survey|unmeasured/i,'Current model assumptions retain the survey caveat');
+  assert.match(await page.locator('#garage-model-assumptions').innerText(),/underside[\s\S]*flat|flat[\s\S]*underside/i,'The conservative vehicle envelope remains explicit');
+  await details('#garage-profile-card .garage-source-details',false);
   await page.locator('#garage-view').click();
   assert.equal(await page.locator('#scene-host canvas').count(),1);
   assert.equal(await page.locator('#viewport').getAttribute('data-mode'),'orbit');
@@ -447,6 +454,8 @@ async function verifyBasementGarage(){
 
   const forecourt=await preset('forecourt','reserve-shortfall');
   assert.ok(forecourt.minimum<forecourt.reserve,'Front-yard-only comparison must expose its reserve shortfall');
+  assert.equal(await page.locator('#garage-layout-warning').isVisible(),true);
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/reserve is not achieved/i,'A real reserve shortfall remains visible beside its result');
   assert.equal(Number(await page.locator('#garageInsideRun-value').inputValue()),0);
   const deeper=await preset('deeper',['contact','geometry-limit']);
   assert.ok(deeper.minimum<deeper.reserve,'Deeper floor cannot be presented as the passing candidate');
