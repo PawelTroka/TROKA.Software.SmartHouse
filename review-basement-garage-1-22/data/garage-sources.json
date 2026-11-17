@@ -1,0 +1,136 @@
+{
+  "reviewedAt": "2026-11-17",
+  "scope": "Sternicza 11 optional basement garage and MG Cyberster AWD clearance",
+  "vehicle": {
+    "model": "MG Cyberster 77 kWh AWD, Polish specification for production years 2024–2025",
+    "lengthM": 4.535,
+    "wheelbaseM": 2.69,
+    "frontOverhangM": 0.955,
+    "rearOverhangM": 0.89,
+    "bodyWidthM": 1.913,
+    "widthWithMirrorsM": 2.11,
+    "closedHeightM": 1.329,
+    "groundClearanceLadenMm": 105.6,
+    "groundClearanceUnladenMm": 115.5,
+    "frontTyre": "245/40 R20",
+    "rearTyre": "275/35 R20",
+    "calculatedNominalFrontRadiusM": 0.352,
+    "calculatedNominalRearRadiusM": 0.35025,
+    "notes": [
+      "The Polish laden clearance is the baseline. Precise lowest-point location and measurement load distribution are not published.",
+      "Overhangs are corroborated by the Finnish manufacturer diagram and the 77 kWh 4 WD manufacturer manual for another market; verify the actual vehicle.",
+      "The Finnish diagram gives a 2691 mm wheelbase, 1 mm different from Poland. The model uses 2690 mm;955+2690+890=4535 mm.",
+      "The other-market manual's 106.7 mm minimum AWD clearance has no explicit load condition and does not replace Poland's 105.6 mm laden value.",
+      "Nominal tyre radii are calculated from size markings, not measured loaded rolling radii.",
+      "MG Poland says AWD operates only in forward travel. Geometric fit does not assess traction or reversing uphill."
+    ]
+  },
+  "siteEvidence": {
+    "dataset": "data/site-data.json",
+    "minimumMappedFrontSetbackM": 9.095885034420263,
+    "livingFloorAboveGardenReferenceM": 1.2,
+    "livingFloorStatus": "Existing adjustable model assumption, not a measured level",
+    "basementSurveyAvailable": false,
+    "notes": [
+      "The straight alignment uses the full mapped street-boundary-to-facade distance, which differs slightly from the minimum setback.",
+      "Street-entry elevation is interpolated from the existing terrain grid, not a kerb or footway survey.",
+      "Basement clear height, slab/floor build-up, openings, internal walls and foundations are unmeasured.",
+      "When enabled, a proposed vehicle gate relocates into line with the basement; it is not an existing-access survey."
+    ]
+  },
+  "candidateAssumptions": {
+    "basementClearHeightM": 2.3,
+    "slabAllowanceM": 0.25,
+    "insideContinuationM": 2,
+    "rampClearWidthM": 3.2,
+    "additionalClearanceReserveMm": 30
+  },
+  "modelAssumptions": [
+    "Quasi-static straight-line traversal, excluding suspension dynamics, braking pitch, crossfall, steering sweep and traction.",
+    "Conservative flat underside at the chosen ground clearance over the complete car length, including unmeasured bumpers.",
+    "30mm additional reserve is an editable planning allowance, not an MG requirement.",
+    "Interior ramp continuation consumes real basement length and reduces entrance headroom beneath the fixed slab.",
+    "Door and convertible-roof opening envelopes remain unverified.",
+    "Drainage is illustrated flush. Any real raised threshold, kerb or gate track needs inclusion in a measured detailed profile.",
+    "Waterproofing, structural alterations, groundwater, drainage capacity and street access remain project-design matters."
+  ],
+  "legalBenchmark": {
+    "status": "Former WT benchmark; transitional applicability to confirm",
+    "individualGarageMaximumGradientPercent": 25,
+    "accessRoadMinimumWidthM": 3,
+    "garageStructureClearHeightM": 2.2,
+    "garageServicesClearHeightM": 2,
+    "garageOpeningMinimumWidthM": 2.3,
+    "garageOpeningMinimumHeightM": 2,
+    "containmentEdgeHeightMm": 30,
+    "notes": [
+      "ELI records repeal of the former 2002 Technical Conditions regulation on 2026-09-21.",
+      "Act 31 July 2026, Dz.U.2026/1161 introduced Building LawArticle 102 a, an 18-month transitional route from 2026-09-20 for specified submissions after an investor declaration.",
+      "Former§70 explicitly gives 25% for individual garages. This is not a vehicle approach/breakover approval.",
+      "Former§14(1) gives 3 m access width. The 2.7 m ramp provision in§103(2) expressly addresses garages above 25 cars per level.",
+      "Former§102 provides garage/door dimensions and drainage before underground entry;§107 describes floor drainage and a 30 mm containment edge.",
+      "The 2023 amendment to§12(6)(1) includes a 1.5 m boundary setback for ramps with specified exceptions; a road plot has a separate exception.",
+      "WR-D-33 v 01.5 is voluntary ministry guidance for the public-road connection. Confirm road reserve/footway levels; do not automatically subtract a universal 5 m landing from the private forecourt.",
+      "No parcel-specific MPZP permission, structural feasibility or construction approval is established."
+    ]
+  },
+  "sources": [
+    {
+      "id": "mg-pl-2026",
+      "title": "MG Poland Cyberster specification, effective 1 April 2026, production 2024–2025",
+      "url": "https://cdn.mgmotor.eu/files/Cennik_Cyberster_R25_02_04_2026_2026-04-20-111244_gwfd.pdf",
+      "locator": "PDFpage 2 dimensions, clearance and AWD note; tyre table"
+    },
+    {
+      "id": "mg-fi-2024",
+      "title": "MG Finland diagram marked 1 November 2024",
+      "url": "https://cdn.mgmotor.eu/files/Nro6a_Cyberster_HinnastoTeknisetTiedot_2025-01-01_2025-01-22-123214_oxlg.pdf",
+      "locator": "PDFpage 6 of 7"
+    },
+    {
+      "id": "mg-manual",
+      "title": "MG Cyberster manufacturer owner manual, other-market corroboration",
+      "url": "https://mgmotor.scene7.com/is/content/mgmotor/mgselect/en/global/documents/mg-cyberster-manual.pdf",
+      "locator": "Printed 5-34/PDF 171 dimensions; printed 5-37/PDF 174 tyres; printed 4-15–4-19 doors/roof"
+    },
+    {
+      "id": "wt-status",
+      "title": "ELI status of former Technical Conditions, Dz.U.2002/690",
+      "url": "https://eli.gov.pl/eli/DU/2002/690/ogl"
+    },
+    {
+      "id": "wt-text",
+      "title": "Former Technical Conditions consolidated text, Dz.U.2022/1225",
+      "url": "https://eli.gov.pl/api/acts/DU/2022/1225/text.html",
+      "locator": "§§12, 14, 70, 102, 103, 107"
+    },
+    {
+      "id": "wt-amendment",
+      "title": "2023 amendment to former Technical Conditions",
+      "url": "https://eli.gov.pl/api/acts/DU/2023/2442/text.html",
+      "locator": "§12(6)(1)"
+    },
+    {
+      "id": "transition-2026",
+      "title": "31 July 2026 Act, Dz.U.2026/1161",
+      "url": "https://eli.gov.pl/api/acts/DU/2026/1161/text/T/D20261161L.pdf",
+      "locator": "Article 2(4), Building LawArticles 102 a–102 c"
+    },
+    {
+      "id": "wr-d-33",
+      "title": "Ministry WR-D-33 v 01.5, 31 March 2026",
+      "url": "https://www.gov.pl/attachment/4878ff2d-ab22-4adc-b22d-6e149fd0810c",
+      "locator": "§8.3, PDFpage 39"
+    },
+    {
+      "id": "geotechnical",
+      "title": "Geotechnical conditions regulation, Dz.U.2012/463",
+      "url": "https://eli.gov.pl/api/acts/DU/2012/463/text.html"
+    },
+    {
+      "id": "local-plan",
+      "title": "Gdańsk official local-plan finder",
+      "url": "https://www.brg.gda.pl/planowanie-przestrzenne/miejscowe-plany"
+    }
+  ]
+}

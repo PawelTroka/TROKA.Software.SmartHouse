@@ -1,0 +1,239 @@
+import * as THREE from '../vendor/three.module.js';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.22.0';
+import {CYBERSTER_AWD,garageProfileAt} from './garage-ramp.js?v=1.22.0';
+
+const EPS=1e-9;
+const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring||[];
+const area=ring=>ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0)/2;
+const bounds=ring=>({x0:Math.min(...ring.map(p=>p[0])),x1:Math.max(...ring.map(p=>p[0])),y0:Math.min(...ring.map(p=>p[1])),y1:Math.max(...ring.map(p=>p[1]))});
+const active=layout=>layout?.supported&&layout.enabled;
+
+/** A convex excavation is subtracted geometrically, not by triangle centres.
+ * Each returned polygon remains convex and can be triangulated as a fan. */
+export function subtractConvexOpening(polygon,opening){
+  let remaining=openRing(polygon),clip=openRing(opening);
+  if(remaining.length<3||clip.length<3)return [remaining];
+  if(area(clip)<0)clip=[...clip].reverse();
+  const a=bounds(remaining),b=bounds(clip);
+  if(a.x1<=b.x0+EPS||a.x0>=b.x1-EPS||a.y1<=b.y0+EPS||a.y0>=b.y1-EPS)return [remaining];
+  const result=[];
+  for(let i=0;i<clip.length&&remaining.length>=3;i++){
+    const a=clip[i],b=clip[(i+1)%clip.length],distance=p=>(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);
+    const inside=[],outside=[];
+    for(let j=0;j<remaining.length;j++){
+      const p=remaining[j],q=remaining[(j+1)%remaining.length],dp=distance(p),dq=distance(q);
+      (dp>=0?inside:outside).push(p);
+      if((dp>EPS&&dq<-EPS)||(dp<-EPS&&dq>EPS)){
+        const t=dp/(dp-dq),hit=[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t];
+        inside.push(hit);outside.push(hit);
+      }else if(Math.abs(dp)<=EPS){
+        if(dq<0)outside.push(p);
+      }else if(Math.abs(dq)<=EPS){
+        if(dp<0)outside.push(q);
+      }
+    }
+    const clean=ring=>ring.filter((p,j)=>!j||Math.hypot(p[0]-ring[j-1][0],p[1]-ring[j-1][1])>EPS);
+    const piece=clean(outside);
+    if(piece.length>=3&&Math.abs(area(piece))>EPS)result.push(piece);
+    remaining=clean(inside);
+  }
+  return result;
+}
+
+export function subtractGarageOpenings(polygon,cutouts=[]){
+  let pieces=[polygon];
+  for(const cutout of cutouts){
+    const ring=cutout.polygon||cutout;
+    pieces=pieces.flatMap(piece=>subtractConvexOpening(piece,ring));
+  }
+  return pieces;
+}
+
+/** Cut the ramp AND the ground beneath the proposed basement bay. Otherwise
+ * the original context terrain would seal the opening just behind the portal. */
+export function garageTerrainCutouts(layout){
+  if(!active(layout))return [];
+  return [layout.outerFootprint,layout.roomFootprint].filter(r=>r?.length>=3)
+    .map((ring,i)=>({id:i?'basement-room-opening':'basement-ramp-opening',...bounds(ring),polygon:openRing(ring)}));
+}
+
+/** Finite panels of an existing wall after cutting the proposed entrance.
+ * All inputs/outputs are site x,y,elevation, including a slightly skew facade. */
+export function garageFacadePanels(a,b,base,top,layout){
+  const panel=(u0,u1,z0,z1)=>[[a[0]+(b[0]-a[0])*u0,a[1]+(b[1]-a[1])*u0,z0],
+    [a[0]+(b[0]-a[0])*u1,a[1]+(b[1]-a[1])*u1,z0],
+    [a[0]+(b[0]-a[0])*u1,a[1]+(b[1]-a[1])*u1,z1],
+    [a[0]+(b[0]-a[0])*u0,a[1]+(b[1]-a[1])*u0,z1]];
+  if(!active(layout))return [panel(0,1,base,top)];
+  const [cx,cy]=layout.portal.center,dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+  const u=((cx-a[0])*dx+(cy-a[1])*dy)/(length*length);
+  const offset=Math.abs((cx-a[0])*dy-(cy-a[1])*dx)/length;
+  if(offset>.03||u<0||u>1||layout.portal.topZ<=base||layout.portal.bottomZ>=top)return [panel(0,1,base,top)];
+  const lo=Math.max(0,u-layout.portal.width/(2*length)),hi=Math.min(1,u+layout.portal.width/(2*length));
+  return [[0,lo,base,top],[hi,1,base,top],[lo,hi,base,Math.min(top,layout.portal.bottomZ)],
+    [lo,hi,Math.max(base,layout.portal.topZ),top]].filter(([u0,u1,z0,z1])=>u1-u0>EPS&&z1-z0>EPS)
+    .map(values=>panel(...values));
+}
+
+function geometry(triangles){
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(triangles.flat(2),3));
+  const uv=[];for(const tri of triangles)for(const p of tri)uv.push(p[0]/2,p[2]/2);
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();return g;
+}
+const quad=(a,b,c,d)=>[toWorldTriangle(a,b,c),toWorldTriangle(a,c,d)];
+function mesh(group,name,triangles,material,shadow=true){
+  if(!triangles.length)return null;
+  const object=new THREE.Mesh(geometry(triangles),material);object.name=name;
+  object.castShadow=shadow;object.receiveShadow=true;group.add(object);return object;
+}
+function slab(group,name,ring,bottom,top,material){
+  ring=openRing(ring);const triangles=[];
+  for(let i=0;i<ring.length;i++){
+    const a=ring[i],b=ring[(i+1)%ring.length];
+    triangles.push(...quad([...a,bottom],[...b,bottom],[...b,top],[...a,top]));
+  }
+  for(let i=1;i<ring.length-1;i++)triangles.push(toWorldRoofTriangle([...ring[0],top],[...ring[i],top],[...ring[i+1],top]),
+    toWorldRoofTriangle([...ring[0],bottom],[...ring[i],bottom],[...ring[i+1],bottom]).reverse());
+  return mesh(group,name,triangles,material);
+}
+
+export function createGarageAwarePaving(rect,z,height,material,layout){
+  const group=new THREE.Group();group.name='front-paving-around-garage';
+  const ring=[[rect.x,rect.y],[rect.x+rect.width,rect.y],[rect.x+rect.width,rect.y+rect.length],[rect.x,rect.y+rect.length]];
+  subtractGarageOpenings(ring,garageTerrainCutouts(layout)).forEach((piece,i)=>slab(group,`front-paving-piece-${i}`,piece,z,z+height,material));
+  return group;
+}
+
+function transient(color,options={}){
+  const material=new THREE.MeshStandardMaterial({color,roughness:.8,side:THREE.DoubleSide,...options});
+  material.userData.transient=true;return material;
+}
+function localBox(group,name,x,y,z,width,height,length,material){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(width,height,length),material);
+  m.name=name;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;
+}
+
+/** A dimensioned concept shell, not a manufacturer CAD body. Its flat lower
+ * face matches the shared conservative underside; roof/mirrors keep their
+ * published envelope. Wheels use the same axle spacing and radii as the model. */
+function createVehicle(vehicle,svgMode){
+  const group=new THREE.Group();group.name='garage-cyberster';group.matrixAutoUpdate=false;
+  const v={...CYBERSTER_AWD,...vehicle},clearance=v.clearance??.1056,r=v.rearRadius;
+  const paint=transient('#a31e24',{roughness:.3,metalness:.48}),dark=transient('#18201f',{roughness:.72}),
+    tyre=transient('#1b1d1c',{roughness:.96}),rim=transient('#a9b3ae',{metalness:.8,roughness:.3}),
+    glass=transient('#344d55',{roughness:.18,metalness:.2}),caliper=transient('#c13425'),
+    light=transient('#ece8d8',{emissive:'#d9ddcc',emissiveIntensity:.12}),tailLight=transient('#bb191d',{emissive:'#9d1319',emissiveIntensity:.2});
+  const tail=-v.rearOverhang,nose=v.wheelbase+v.frontOverhang,bottom=clearance-r;
+  const sections=[{u:tail,w:.72,h:.59},{u:tail+.25,w:.89,h:.75},{u:0,w:v.width/2,h:.87},
+    {u:.65,w:.91,h:.82},{u:1.7,w:.88,h:.76},{u:v.wheelbase,w:v.width/2,h:.75},{u:nose-.24,w:.88,h:.57},{u:nose,w:.69,h:.40}];
+  const vertices=s=>[[-s.w,bottom,s.u],[s.w,bottom,s.u],[s.w*.96,s.h-r,s.u],[-s.w*.96,s.h-r,s.u]];
+  const triangles=[];
+  for(let i=0;i<sections.length-1;i++){
+    const a=vertices(sections[i]),b=vertices(sections[i+1]);
+    for(let k=0;k<4;k++){const n=(k+1)%4;triangles.push([a[k],b[k],b[n]],[a[k],b[n],a[n]]);}
+  }
+  for(const i of [0,sections.length-1]){const a=vertices(sections[i]);triangles.push([a[0],a[1],a[2]],[a[0],a[2],a[3]]);}
+  const body=new THREE.Mesh(geometry(triangles),paint);body.name='garage-cyberster-body';body.castShadow=true;body.receiveShadow=true;group.add(body);
+  // Roof-up silhouette makes the closed-car height check visually meaningful.
+  const cabin=[[-.72,.77-r,.15],[.72,.77-r,.15],[.65,v.height-r,.49],[-.65,v.height-r,.49],
+    [-.70,.77-r,1.9],[.70,.77-r,1.9],[.64,v.height-r,1.28],[-.64,v.height-r,1.28]];
+  const face=(name,indices,material)=>{
+    const [a,b,c,d]=indices.map(i=>cabin[i]);const m=new THREE.Mesh(geometry([[a,b,c],[a,c,d]]),material);
+    m.name=name;m.castShadow=true;m.receiveShadow=true;group.add(m);
+  };
+  face('garage-cyberster-soft-roof',[3,2,6,7],dark);
+  face('garage-cyberster-windscreen',[7,6,5,4],glass);
+  face('garage-cyberster-rear-glass',[0,1,2,3],glass);
+  face('garage-cyberster-side-window-left',[0,3,7,4],glass);
+  face('garage-cyberster-side-window-right',[1,5,6,2],glass);
+  for(const side of [-1,1]){
+    localBox(group,`garage-cyberster-mirror-${side}`,side*(v.mirrorWidth/2-.055),.91-r,1.58,.11,.065,.18,paint);
+    localBox(group,`garage-cyberster-headlamp-${side}`,side*.57,.47-r,nose-.18,.38,.035,.065,light);
+    localBox(group,`garage-cyberster-tail-lamp-${side}`,side*.55,.56-r,tail+.035,.32,.045,.035,tailLight);
+    for(const [axle,u,radius,track,width] of [['rear',0,v.rearRadius,v.rearTrack,.275],['front',v.wheelbase,v.frontRadius,v.frontTrack,.245]]){
+      const wheel=new THREE.Group();wheel.name=`garage-cyberster-wheel-${axle}-${side}`;
+      wheel.position.set(side*track/2,radius-r,u);group.add(wheel);
+      const rubber=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,width,svgMode?12:28),tyre);
+      rubber.rotation.z=Math.PI/2;rubber.castShadow=true;rubber.receiveShadow=true;wheel.add(rubber);
+      const hub=new THREE.Mesh(new THREE.CylinderGeometry(.228,.228,width+.002,svgMode?10:20),dark);
+      hub.rotation.z=Math.PI/2;wheel.add(hub);
+      for(let spoke=0;spoke<5;spoke++){
+        const angle=spoke*Math.PI*2/5,sp=new THREE.Mesh(new THREE.BoxGeometry(.018,.38,.027),rim);
+        sp.position.x=side*(width/2+.003);sp.rotation.x=angle;wheel.add(sp);
+      }
+      localBox(wheel,'brake-caliper',side*(width/2-.03),.04,.13,.025,.15,.08,caliper);
+    }
+  }
+  localBox(group,'garage-cyberster-lower-sill',0,bottom+.018,(tail+nose)/2,v.width*.92,.036,v.length-.18,dark);
+  group.userData.vehicle={...v,conceptShell:true};return group;
+}
+
+export function createGarageGroup(layout,materials,{svgMode=false,groundAt=()=>layout?.streetZ??0}={}){
+  const group=new THREE.Group();group.name='basement-garage';
+  if(!active(layout))return {group,terrainMeshes:[],setVehiclePose(){}};
+  const concrete=transient('#b6b6a9',{map:materials.stone?.map,roughness:.93}),
+    paving=transient('#747c78',{map:materials.stone?.map,roughness:.94}),
+    interior=transient('#777e77',{roughness:.88}),metal=materials.metal||transient('#35403c');
+  const {axis,clearWidth:width,wallThickness:thickness,profile,portal}=layout;
+  const station=(s,lateral,z)=>[axis.start[0]+axis.direction[0]*s+axis.normal[0]*lateral,
+    axis.start[1]+axis.direction[1]*s+axis.normal[1]*lateral,z];
+  const profileZ=s=>garageProfileAt(layout,s).z;
+  const rampTriangles=[],leftWall=[],rightWall=[],curbTop=[];
+  for(let i=0;i<profile.length-1;i++){
+    const a=profile[i],b=profile[i+1];
+    rampTriangles.push(...quad(station(a.s,-width/2,a.z),station(b.s,-width/2,b.z),station(b.s,width/2,b.z),station(a.s,width/2,a.z)));
+    if(a.s>=axis.frontRun-EPS)continue;
+    const s1=Math.min(axis.frontRun,b.s),z1=profileZ(s1);
+    for(const [side,faces] of [[-1,leftWall],[1,rightWall]]){
+      const li=side*width/2,lo=side*(width/2+thickness);
+      const ao=station(a.s,lo,0),bo=station(s1,lo,0);
+      const za=Math.max(a.z+.12,groundAt(ao[0],ao[1])+.12),zb=Math.max(z1+.12,groundAt(bo[0],bo[1])+.12);
+      const ai0=station(a.s,li,a.z-.15),bi0=station(s1,li,z1-.15),ai1=station(a.s,li,za),bi1=station(s1,li,zb);
+      const ao0=station(a.s,lo,a.z-.15),bo0=station(s1,lo,z1-.15),ao1=station(a.s,lo,za),bo1=station(s1,lo,zb);
+      faces.push(...quad(ai0,bi0,bi1,ai1),...quad(bo0,ao0,ao1,bo1));
+      curbTop.push(...quad(ai1,bi1,bo1,ao1));
+      if(i===0)faces.push(...quad(ao0,ai0,ai1,ao1));
+      if(s1===axis.frontRun)faces.push(...quad(bi0,bo0,bo1,bi1));
+    }
+  }
+  const floor=mesh(group,'garage-ramp-surface',rampTriangles,paving,false);
+  mesh(group,'garage-retaining-wall-left',leftWall,concrete);
+  mesh(group,'garage-retaining-wall-right',rightWall,concrete);
+  mesh(group,'garage-retaining-wall-caps',curbTop,concrete);
+  const rearS=layout.roomRearS,inner=width/2,outer=inner+thickness;
+  const roomStart=axis.frontRun;
+  for(const side of [-1,1])slab(group,`garage-basement-wall-${side}`,
+    [station(roomStart,side*inner,0),station(rearS,side*inner,0),station(rearS,side*outer,0),station(roomStart,side*outer,0)].map(p=>p.slice(0,2)),
+    layout.floorZ-.16,portal.ceilingZ,interior);
+  slab(group,'garage-basement-back-wall',[station(rearS,-outer,0),station(rearS+.18,-outer,0),station(rearS+.18,outer,0),station(rearS,outer,0)].map(p=>p.slice(0,2)),layout.floorZ-.16,portal.ceilingZ,interior);
+  const flatStart=Math.min(rearS,axis.totalRun);
+  const flat=slab(group,'garage-basement-parking-floor',[station(flatStart,-inner,0),station(rearS,-inner,0),station(rearS,inner,0),station(flatStart,inner,0)].map(p=>p.slice(0,2)),layout.floorZ-.16,layout.floorZ,paving);
+  // A true opaque ceiling; viewing the open entrance does not rely on a black
+  // facade decal or a transparent house. It follows the proposed slab underside.
+  slab(group,'garage-basement-ceiling',layout.roomFootprint,portal.ceilingZ,layout.livingFloorZ,concrete);
+  for(const side of [-1,1])slab(group,`garage-portal-jamb-${side}`,
+    [station(roomStart-.12,side*inner,0),station(roomStart+.08,side*inner,0),station(roomStart+.08,side*outer,0),station(roomStart-.12,side*outer,0)].map(p=>p.slice(0,2)),
+    portal.bottomZ-.10,portal.topZ,concrete);
+  slab(group,'garage-portal-lintel',[station(roomStart-.12,-outer,0),station(roomStart+.08,-outer,0),station(roomStart+.08,outer,0),station(roomStart-.12,outer,0)].map(p=>p.slice(0,2)),portal.topZ,layout.livingFloorZ,concrete);
+  // The trench drains are drawn flush with the analytic surface, never speed
+  // bumps. Positions and construction are an illustrative drainage proposal.
+  const drainMaterial=metal.clone();drainMaterial.userData={...drainMaterial.userData,transient:true};
+  drainMaterial.polygonOffset=true;drainMaterial.polygonOffsetFactor=-2;drainMaterial.polygonOffsetUnits=-2;
+  for(const [name,s] of [['entry',Math.max(.1,axis.frontRun-.25)],['lower',Math.max(.1,axis.totalRun-.20)]]){
+    const a=s-.055,b=s+.055;
+    mesh(group,`garage-${name}-drain`,quad(station(a,-inner,profileZ(a)),station(b,-inner,profileZ(b)),
+      station(b,inner,profileZ(b)),station(a,inner,profileZ(a))),drainMaterial,false);
+  }
+  const car=createVehicle(layout.vehicle,svgMode);group.add(car);
+  const setVehiclePose=pose=>{
+    if(!pose?.localToWorld){car.visible=false;return;}
+    car.visible=true;
+    const origin=new THREE.Vector3(...toWorld(...pose.localToWorld(0,0,0)));
+    const v=(u,l,h)=>new THREE.Vector3(...toWorld(...pose.localToWorld(u,l,h))).sub(origin);
+    car.matrix.makeBasis(v(0,1,0),v(0,0,1),v(1,0,0));car.matrix.setPosition(origin);car.matrixWorldNeedsUpdate=true;
+    car.userData.minimumClearance=pose.minimumClearance;car.userData.flags=pose.flags;
+  };
+  group.userData.garage={enabled:true,proposed:true,portal:{...portal},floorZ:layout.floorZ};
+  return {group,terrainMeshes:[floor,flat].filter(Boolean),setVehiclePose};
+}
