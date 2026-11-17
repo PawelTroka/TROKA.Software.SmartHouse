@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
-import {privacyStructures} from '../src/geometry.js';
+import {privacyStructures,canopySupportBounds,canopyIntersection,floorElevation,gardenGroundAt} from '../src/geometry.js';
 import {createPrivacyStructureGroup} from '../src/scene-privacy-structures.js';
 import {privacyPlanMarkup,privacySectionCuts,privacySectionMarkup} from '../src/diagrams.js';
+import {prepareSunGeometry,firstSunBlocker} from '../src/shade.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const materials=Object.fromEntries(['wood','metal','linen','hedge'].map(name=>[name,new THREE.MeshBasicMaterial()]));
@@ -52,4 +53,27 @@ test('disabled privacy options leave all diagram and model renderers empty',()=>
   assert.equal(createPrivacyStructureGroup(structures,materials).children.length,0);
   assert.equal(privacyPlanMarkup(structures,{X:v=>v,Y:v=>v,scale:1}),'');
   assert.deepEqual(privacySectionCuts(structures,[0,0],[1,0]),[]);
+});
+
+test('extended canopy supports reach garden ground while on-deck posts retain the terrace datum',()=>{
+  const base={...settings,canopyEnabled:true,canopyWidth:8.5,canopyHeight:2.7,fasciaDepth:.5};
+  const floor=floorElevation(base,data);
+  for(const canopyDepth of [base.terraceDepth,base.terraceDepth+1]){
+    const s={...base,canopyDepth},supports=canopySupportBounds(s,data);
+    const shadePosts=prepareSunGeometry(s,data).occluders.filter(body=>body.id==='canopy-post');
+    assert.equal(supports.length,2);assert.equal(shadePosts.length,2);
+    for(const [i,p]of supports.entries()){
+      const x=(p.x0+p.x1)/2,y=(p.y0+p.y1)/2;
+      const expectedBase=canopyDepth===base.terraceDepth?floor:gardenGroundAt(x,y,s,data);
+      near(p.z0,expectedBase);near(shadePosts[i].base,expectedBase);near(shadePosts[i].top,p.z1);
+      near(shadePosts[i].bounds.min[0],p.x0);near(shadePosts[i].bounds.max[0],p.x1);
+      near(shadePosts[i].bounds.min[1],p.y0);near(shadePosts[i].bounds.max[1],p.y1);
+      if(canopyDepth>base.terraceDepth){
+        assert.ok(p.z0<floor-.1,'The overhanging roof requires longer supports below deck level');
+        const eye=[x,p.y0-.2,(p.z0+floor)/2];
+        assert.equal(firstSunBlocker(eye,[0,1,0],shadePosts)?.id,'canopy-post','Sunlight must see the grounded lower support');
+        assert.equal(canopyIntersection(eye,[x,p.y1+.2,eye[2]],s,data),null,'Grounding supports must not add opaque privacy walls');
+      }
+    }
+  }
 });

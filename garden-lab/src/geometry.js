@@ -467,6 +467,20 @@ export function canopyBounds(settings = {}, data) {
     fasciaBottomZ: z - Math.max(0, number(s.fasciaDepth, 0.3)) };
 }
 
+/** Actual support extents for the scene and sunlight model. Privacy rays retain
+ * the existing roof/fascia approximation and do not credit these narrow posts. */
+export function canopySupportBounds(settings = {}, data) {
+  if(!settings.canopyEnabled)return [];
+  const s=settingsWithDefaults(settings),c=canopyBounds(s,data),terrace=data.site.terrace;
+  const floor=floorElevation(s,data),deckEnd=c.y0+Math.max(0,number(s.terraceDepth,terrace.depth));
+  return [c.x0+.08,c.x1-.18].map(x0=>{
+    const x1=x0+.1,y0=c.y1-.18,y1=c.y1-.08;
+    const onTerrace=x0>=terrace.x-EPS&&x1<=terrace.x+terrace.width+EPS&&y0>=c.y0-EPS&&y1<=deckEnd+EPS;
+    const z0=onTerrace?floor:gardenGroundAt((x0+x1)/2,(y0+y1)/2,s,data);
+    return {x0,x1,y0,y1,z0,z1:Math.max(z0+.1,c.fasciaBottomZ)};
+  });
+}
+
 /** Identical finite members feed the scene, sections, privacy and sunlight. */
 export function privacyStructures(settings={},data){
   const result=privacyStructureLayout(settings,data,{
@@ -488,7 +502,8 @@ export function privacyStructures(settings={},data){
   return result;
 }
 
-/** Finite roof plane and front/side fascia; no imaginary infinite canopy. */
+/** Finite roof plane and front/side fascia; narrow supports get no privacy
+ * credit in this approximation, although the scene and sunlight include them. */
 export function canopyIntersection(observer, target, settings, data) {
   if (!settings.canopyEnabled) return null;
   const e = point3(observer), t = point3(target), c = canopyBounds(settings, data), hits = [];
