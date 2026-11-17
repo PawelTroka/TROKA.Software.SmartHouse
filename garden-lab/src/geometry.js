@@ -3,13 +3,15 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.22.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.22.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.22.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.22.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.22.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.23.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.23.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.23.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.23.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.23.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.22.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.23.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.23.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.23.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -251,7 +253,7 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const s = settingsWithDefaults(settings), [mx, rearY] = data.site.rearMidpoint;
   const upper = upperFloorPreset(preset,data);
   if (upper) {
-    const position = upperFloorWindowPosition(upper.facing, data);
+    const position = houseWindowAnchor(upper.facing,data,s,upper.level)||upperFloorWindowPosition(upper.facing, data);
     const floorRise = upper.level === 'first' ? number(s.firstFloorRise, 3) : number(s.atticRise, 6);
     const eyeHeight = number(settings.eyeHeight, upper.eyeHeight);
     const groundZ = floorElevation(s, data) + floorRise;
@@ -264,6 +266,19 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
   const tub = jacuzziBounds(s, data);
   const sofa = data.site.observers?.sofa || [mx, rearY - 2.5];
   const program=gardenProgram(s,data),levels=program.active?spaLevels(s,data):null;
+  if(preset==='pool'){
+    const pool=poolBounds(s,data),water=levels?.pool||spaLevels(s,data).pool;
+    if(pool&&water){
+      const eyeHeight=clamp(number(s.poolEyeAboveWater,.15),.05,.4);
+      return {x:pool.x+pool.width/2,y:pool.y+Math.min(1.1,pool.length/3),z:water.waterZ+eyeHeight,
+        groundZ:water.waterZ,waterZ:water.waterZ,preset,label:'Pool · swimming eye level',surface:'pool-water',eyeHeight,
+        defaultLookYaw:0,defaultLookPitch:0};
+    }
+  }
+  if(preset==='balcony'){
+    const viewpoint=terraceCoverViewpoint(terraceCover(s,data),number(settings.eyeHeight,1.65));
+    if(viewpoint)return viewpoint;
+  }
   const garden = program.active?[11.8,32.1]:(data.site.observers?.garden || [mx, 30]);
   const terraceCentre = data.site.terrace.x + width / 2;
   const values = {
@@ -352,7 +367,7 @@ export function hedgeTopAt(x, y, side, settings, data,groundZone) {
 /**
  * Proposed street planting, with explicit access gaps. The mapped source has
  * no gate survey: pedestrian access follows the existing illustrated west
- * approach centred at x=2.30m; the
+ * approach aligned with the photo-informed house entrance; the
  * vehicle opening meets the east-side passage beside the house. No gate leaf
  * receives opaque-screen credit. Other properties supply their own openings
  * as distances along the street edge; Sternicza retains its original layout.
@@ -366,14 +381,15 @@ export function frontHedgeLayout(settings={},data){
   const a=boundary[index],b=boundary[index+1],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
   if(length<8)return empty;
   const point=d=>[a[0]+dx*d/length,a[1]+dy*d/length];
-  const projected=((2.3-a[0])*dx-a[1]*dy)/length;
+  const basement=garagePlanFrame(settings,data);
+  const pedestrianX=basement.enabled?(basement.entryAccess?.pedestrianGateCenter?.[0]??9.16):9.16;
+  const projected=((pedestrianX-a[0])*dx-a[1]*dy)/length;
   const pedestrianCentre=clamp(projected,.6+EPS,length-5.2);
   const legacyGaps=[{id:'front-pedestrian-opening',label:'Pedestrian opening · proposed',start:pedestrianCentre-.6,end:pedestrianCentre+.6},
     {id:'front-vehicle-opening',label:'Vehicle opening · proposed',start:length-4,end:length}];
-  const basement=garagePlanFrame(settings,data);
   if(basement.enabled){
     // Align a new vehicle opening with the proposed basement, retaining the
-    // pedestrian opening. The existing side-passage location cannot serve it.
+    // separate pedestrian opening at the foot of the proposed side-return stair.
     const centre=[(basement.gate.a[0]+basement.gate.b[0])/2,(basement.gate.a[1]+basement.gate.b[1])/2];
     const width=Math.max(4,basement.gate.width),half=width/2;
     const station=clamp(((centre[0]-a[0])*dx+(centre[1]-a[1])*dy)/length,half,length-half);
@@ -389,7 +405,7 @@ export function frontHedgeLayout(settings={},data){
   if(cursor<length-EPS)spans.push([cursor,length]);
   return {segments:spans.filter(([start,end])=>end-start>EPS).map(([start,end],i)=>({id:`front-span-${i+1}`,a:point(start),b:point(end),length:end-start})),
     openings:gaps.map(g=>({id:g.id,label:g.label,a:point(g.start),b:point(g.end),width:g.end-g.start})),
-    length:spans.reduce((sum,[start,end])=>sum+end-start,0),assumption:basement.enabled?'The proposed vehicle opening is relocated into line with the basement ramp; the pedestrian opening stays clear. This is a new gate proposal, not a surveyed existing access. Openings receive no privacy-screen credit. Street connection and gate operation need design.':data.site.frontAccessNote||'Proposed 1.20 m pedestrian and 4.00 m vehicle openings; gate positions are not surveyed. Openings receive no privacy-screen credit. Front planting stays at existing grade.'};
+    length:spans.reduce((sum,[start,end])=>sum+end-start,0),assumption:basement.enabled?'The two separate openings align with the basement ramp and proposed side-return entrance stair. Planting closes the rest of the frontage, including between the gates. Gate positions and street connection remain proposals. Openings receive no privacy-screen credit.':data.site.frontAccessNote||'Proposed 1.20 m pedestrian opening aligned with the entrance and 4.00 m vehicle opening; gate positions are not surveyed. Only these access gaps interrupt the front hedge. Front planting stays at existing grade.'};
 }
 
 /** Explicit access on other boundary edges, including a corner property's
@@ -469,6 +485,7 @@ export function hedgeSegments(settings = {}, data) {
 }
 
 export function canopyBounds(settings = {}, data) {
+  if(settings.terraceCoverType==='balcony')return terraceCover(settings,data).bounds;
   const s = settingsWithDefaults(settings), y0 = data.site.rearMidpoint[1];
   const mx = data.site.terrace.x + data.site.terrace.width / 2;
   const width = Math.max(0, number(s.canopyWidth, 8.5));
@@ -482,6 +499,7 @@ export function canopyBounds(settings = {}, data) {
  * the existing roof/fascia approximation and do not credit these narrow posts. */
 export function canopySupportBounds(settings = {}, data) {
   if(!settings.canopyEnabled)return [];
+  if(settings.terraceCoverType==='balcony')return terraceCover(settings,data).supports;
   const s=settingsWithDefaults(settings),c=canopyBounds(s,data),terrace=data.site.terrace;
   const floor=floorElevation(s,data),deckEnd=c.y0+Math.max(0,number(s.terraceDepth,terrace.depth));
   return [c.x0+.08,c.x1-.18].map(x0=>{
@@ -490,6 +508,12 @@ export function canopySupportBounds(settings = {}, data) {
     const z0=onTerrace?floor:gardenGroundAt((x0+x1)/2,(y0+y1)/2,s,data);
     return {x0,x1,y0,y1,z0,z1:Math.max(z0+.1,c.fasciaBottomZ)};
   });
+}
+
+/** Shared cover geometry: the balcony floor follows the first-floor datum. */
+export function terraceCover(settings={},data){
+  const s=settingsWithDefaults(settings);
+  return terraceCoverLayout(s,data,{floorZ:floorElevation(s,data),groundAt:(x,y)=>gardenGroundAt(x,y,s,data),jacuzzi:jacuzziBounds(s,data)});
 }
 
 /** Identical finite members feed the scene, sections, privacy and sunlight. */
@@ -517,6 +541,7 @@ export function privacyStructures(settings={},data){
  * credit in this approximation, although the scene and sunlight include them. */
 export function canopyIntersection(observer, target, settings, data) {
   if (!settings.canopyEnabled) return null;
+  if(settings.terraceCoverType==='balcony')return terraceCoverIntersection(observer,target,terraceCover(settings,data));
   const e = point3(observer), t = point3(target), c = canopyBounds(settings, data), hits = [];
   if (c.x1 - c.x0 <= EPS || c.y1 - c.y0 <= EPS) return null;
   const dz = t[2] - e[2];

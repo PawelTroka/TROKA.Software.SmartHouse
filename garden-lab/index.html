@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.22.0">
+  <meta name="application-version" content="1.23.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
   <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
   <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.22.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.22.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.22.0">
-  <link rel="stylesheet" href="./src/privacy.css?v=1.22.0">
-  <link rel="stylesheet" href="./src/garage.css?v=1.22.0">
+  <link rel="stylesheet" href="./style.css?v=1.23.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.23.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.23.0">
+  <link rel="stylesheet" href="./src/privacy.css?v=1.23.0">
+  <link rel="stylesheet" href="./src/garage.css?v=1.23.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
@@ -27,7 +27,7 @@
       <div class="control-intro"><span class="eyebrow">EXPLORE THE POSSIBILITIES</span><h2>Design the view.</h2><p>Adjust the landscape. See what changes from the places you actually use.</p><p id="site-evidence-note" class="field-note" hidden></p></div>
       <div class="mobile-comparison"><button id="save-a-mobile" class="button subtle">Save A</button><button id="compare-mobile" class="button subtle" disabled>Compare A/B</button></div>
       <section class="control-section viewpoint-section"><div class="section-heading"><h3><span>01</span> Where are you looking from?</h3></div><div class="viewpoints" id="viewpoints">
-        <button data-preset="sofa" aria-pressed="true"><span>◧</span>Living room<small>Seated</small></button><button data-preset="standing" aria-pressed="false"><span>♙</span>Living room<small>Standing</small></button><button data-preset="terrace" aria-pressed="false"><span>▱</span>Terrace<small>Standing</small></button><button data-preset="jacuzzi" aria-pressed="false"><span>≈</span>Jacuzzi<small>Seated</small></button><button data-preset="garden" aria-pressed="false"><span>♧</span>Garden<small>Standing</small></button><button data-preset="sauna" data-spa-preset hidden aria-pressed="false"><span>♨</span>Corner sauna<small>Seated · 6 places</small></button><button data-preset="firepit" data-spa-preset hidden aria-pressed="false"><span>♨</span>Sunken lounge<small>Seated</small></button><button data-preset="front" hidden aria-pressed="false"><span>♧</span>Front garden<small>Street view</small></button><button data-preset="custom" aria-pressed="false"><span>⌖</span>Choose a spot<small>Tap the plan</small></button>
+        <button data-preset="sofa" aria-pressed="true"><span>◧</span>Living room<small>Seated</small></button><button data-preset="standing" aria-pressed="false"><span>♙</span>Living room<small>Standing</small></button><button data-preset="terrace" aria-pressed="false"><span>▱</span>Terrace<small>Standing</small></button><button data-preset="jacuzzi" aria-pressed="false"><span>≈</span>Jacuzzi<small>Seated</small></button><button data-preset="pool" aria-pressed="false"><span>≈</span>Pool<small>Swimming eye level</small></button><button data-preset="balcony" hidden aria-pressed="false"><span>▱</span>Balcony<small>First floor · standing</small></button><button data-preset="garden" aria-pressed="false"><span>♧</span>Garden<small>Standing</small></button><button data-preset="sauna" data-spa-preset hidden aria-pressed="false"><span>♨</span>Corner sauna<small>Seated · 6 places</small></button><button data-preset="firepit" data-spa-preset hidden aria-pressed="false"><span>♨</span>Sunken lounge<small>Seated</small></button><button data-preset="front" hidden aria-pressed="false"><span>♧</span>Front garden<small>Street view</small></button><button data-preset="custom" aria-pressed="false"><span>⌖</span>Choose a spot<small>Tap the plan</small></button>
       </div>
         <div class="upper-floor-viewpoints" id="upper-floor-viewpoints" aria-label="Upper-floor viewpoints"></div>
         <div class="observer-readout" id="observer-readout">Loading site geometry…</div>
@@ -96,10 +96,10 @@
         </details>
       </details>
       <section class="control-section"><div class="section-heading"><h3><span>05</span> Ground & planting levels</h3></div><div id="terrain-controls"></div><label class="switch-row"><span>New hedges follow the raised ground<small>Switch off to keep existing hedge tops fixed.</small></span><input id="raiseNewHedges" type="checkbox" role="switch" checked></label><div class="insight" id="fill-insight">Raising planting beds lifts the hedge without lifting your viewpoint.</div></section>
-      <section class="control-section"><div class="section-heading"><h3><span>06</span> Living terrace</h3></div><p class="field-note top-note" id="terrace-proposal">Proposed living terrace with a built-in jacuzzi.</p><div id="terrace-controls"></div><div id="jacuzzi-design-options" hidden><label class="switch-row"><span>Custom overflow / infinity concept<small>Separate bespoke design and budget; the seven-seat factory spa is sealed.</small></span><input id="jacuzziOverflow" type="checkbox" role="switch"></label><p class="field-note" id="jacuzzi-capacity-note"></p></div><label class="switch-row"><span>Add a terrace canopy<small>Roof and fascia can screen higher views.</small></span><input id="canopyEnabled" type="checkbox" role="switch"></label><div id="canopy-controls" hidden></div><label class="switch-row"><span>Remove the detached garage<small>Opens up the garden and some sightlines.</small></span><input id="removeGarage" type="checkbox" role="switch" checked></label></section>
+      <section class="control-section"><div class="section-heading"><h3><span>06</span> Living terrace</h3></div><p class="field-note top-note" id="terrace-proposal">Proposed living terrace with a built-in jacuzzi.</p><div id="terrace-controls"></div><div id="jacuzzi-design-options" hidden><label class="switch-row"><span>Custom overflow / infinity concept<small>Separate bespoke design and budget; the seven-seat factory spa is sealed.</small></span><input id="jacuzziOverflow" type="checkbox" role="switch"></label><p class="field-note" id="jacuzzi-capacity-note"></p></div><label class="switch-row"><span>Cover the terrace<small>Choose a canopy or a usable first-floor balcony.</small></span><input id="canopyEnabled" type="checkbox" role="switch"></label><div id="terrace-cover-settings" hidden><label class="select-label" for="terraceCoverType">Terrace cover</label><select id="terraceCoverType"><option value="canopy">Canopy · roof above terrace</option><option value="balcony">Balcony · usable first-floor deck</option></select></div><div id="canopy-controls" hidden></div><p id="terrace-cover-summary" class="field-note" aria-live="polite" hidden></p><p id="terrace-cover-warning" class="layout-warning" role="status" hidden></p><label class="switch-row"><span>Remove the detached garage<small>Opens up the garden and some sightlines.</small></span><input id="removeGarage" type="checkbox" role="switch" checked></label></section>
       <details class="control-section advanced garage-controls" id="basement-garage-controls" hidden>
         <summary><span>06B</span> Optional basement garage</summary>
-        <p class="field-note top-note">Sternicza 11 · use the full front-yard approach and compare a low MG Cyberster.</p>
+        <p class="field-note top-note">Sternicza 11 · a two-car proposal using the full front-yard approach, checked with MG Cyberster dimensions.</p>
         <label class="switch-row"><span>Add a basement garage<small>A separate excavation and house-conversion concept.</small></span><input id="basementGarageEnabled" type="checkbox" role="switch"></label>
         <div class="garage-presets" role="group" aria-label="Basement garage comparisons"><button type="button" data-garage-preset="raised" aria-pressed="false">Raised basement</button><button type="button" data-garage-preset="forecourt" aria-pressed="false">Front yard only</button><button type="button" data-garage-preset="deeper" aria-pressed="false">0.6 m deeper</button><button type="button" data-garage-preset="none" aria-pressed="true">Off</button></div>
         <p class="field-note" id="garage-preset-note"></p>
@@ -152,8 +152,8 @@
         <div id="garage-profile-body" hidden>
           <div id="garage-result" class="garage-result" role="status" aria-live="polite"><strong id="garage-result-status"></strong><span id="garage-result-note"></span></div>
           <p class="garage-entry-conditions"><strong>Entry detail unresolved:</strong> the road connection is assumed flush. Drainage and any containment threshold are not yet modelled; a raised edge could use up the remaining clearance.</p>
-          <div class="garage-metrics"><div><span>Full front approach</span><strong id="garage-front-run">—</strong></div><div><span>Street to basement</span><strong id="garage-floor-drop">—</strong></div><div><span>Peak ramp gradient</span><strong id="garage-peak-grade">—</strong></div><div><span>Lowest covered headroom</span><strong id="garage-headroom">—</strong></div><div><span>Assumed clear door opening</span><strong id="garage-door-opening">—</strong></div><div><span>Remaining flat parking bay</span><strong id="garage-parking-length">—</strong></div></div>
-          <div id="garage-profile" class="garage-profile"></div>
+          <div class="garage-metrics"><div><span>Full front approach</span><strong id="garage-front-run">—</strong></div><div><span>Street to basement</span><strong id="garage-floor-drop">—</strong></div><div><span>Peak ramp gradient</span><strong id="garage-peak-grade">—</strong></div><div><span>Lowest covered headroom</span><strong id="garage-headroom">—</strong></div><div><span>Assumed clear door opening</span><strong id="garage-door-opening">—</strong></div><div><span>Remaining flat parking bay</span><strong id="garage-parking-length">—</strong></div><div><span>Parking capacity</span><strong id="garage-parking-capacity">—</strong></div><div><span>Mirror clearance</span><strong id="garage-lateral-clearance">—</strong></div></div>
+          <p id="garage-parking-note" class="field-note"></p><div id="garage-parking-plan" class="garage-profile garage-parking-plan"></div><div id="garage-profile" class="garage-profile"></div>
           <div class="garage-preview-controls"><div class="garage-position"><div><label for="garageProgress">Move the car</label><output id="garage-progress-label" for="garageProgress">40%</output></div><input id="garageProgress" type="range" min="0" max="100" step="1" value="40"><div class="garage-range-labels"><span>Street approach</span><span>Inside garage</span></div></div><div class="garage-direction" role="group" aria-label="Car orientation"><button type="button" data-garage-reverse="false" aria-pressed="true">Forward entry</button><button type="button" data-garage-reverse="true" aria-pressed="false">Reverse entry</button></div></div>
           <p id="garage-current-pose" class="field-note"></p>
           <div class="garage-clearance-results" aria-label="Worst clearance over each complete drive"><div><span>Forward · lowest underside clearance</span><strong id="garage-forward-clearance">—</strong></div><div><span>Reverse · lowest underside clearance</span><strong id="garage-reverse-clearance">—</strong></div><div><span>Required model reserve</span><strong id="garage-clearance-reserve">—</strong></div></div>
@@ -190,6 +190,6 @@
   <div id="toast" class="toast" role="status"></div>
   <dialog id="about"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.22.0"></script>
+  <script type="module" src="./src/app.js?v=1.23.0"></script>
 </body>
 </html>

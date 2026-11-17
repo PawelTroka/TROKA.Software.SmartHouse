@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {analyzeSunlight,prepareSunGeometry,firstSunBlocker,sunPrism,sunlightAtPoint,sampledRoofFaces} from '../src/shade.js';
 import {applyBuildingOverrides} from '../src/buildings.js';
+import {sterniczaRoofEnvelope} from '../src/house-roof.js';
 import {jacuzziBounds,gardenGroundAt} from '../src/geometry.js';
 
 const settings={hedgeRear:0,hedgeLeft:0,hedgeRight:0,hedgeInset:0,gardenRaise:0,bedRaise:0,raiseNewHedges:true,floorHeight:1.2,removeGarage:true,terraceDepth:4,canopyEnabled:false,canopyDepth:4,canopyHeight:2.7,canopyWidth:8,fasciaDepth:.3,sunEnabled:true};
@@ -109,14 +110,17 @@ test('sampled roof triangulation retains elevations above the body and outdoor c
   assert.ok(!result.cells.some(c=>c.zone==='terrace'&&c.z!==realData.site.floorReference.z+settings.floorHeight));
 });
 
-test('house and retained garage use fixed measured roofs when the proposed floor changes',()=>{
+test('photo-informed house and mapped garage roofs stay fixed when the proposed floor changes',()=>{
   const before=prepareSunGeometry({...settings,removeGarage:false,floorHeight:0},realData);
   const after=prepareSunGeometry({...settings,removeGarage:false,floorHeight:2.5},realData);
   const existing=geometry=>geometry.occluders.filter(o=>/^house(?:-|$)|^garage(?:-|$)/.test(o.id));
-  assert.deepEqual(existing(before),existing(after),'Changing an interior floor cannot move surveyed exterior roof geometry');
-  assert.ok(before.occluders.find(o=>o.id==='house-roof').triangles.length>50,'Measured house roof is not a schematic two-plane gable');
+  assert.deepEqual(existing(before),existing(after),'Changing an interior floor cannot move source-elevation roof geometry');
+  const roof=before.occluders.find(o=>o.id==='house-roof');
+  const rendered=sterniczaRoofEnvelope(realData.site.house).roofFaces;
+  const rounded=faces=>faces.flat(2).map(v=>Math.round(v*1e8)/1e8);
+  assert.deepEqual(rounded(roof.triangles.map(t=>[t.a,t.a.map((v,i)=>v+t.e1[i]),t.a.map((v,i)=>v+t.e2[i])])),rounded(rendered),'Photo-adjusted gable and chimneys must cast the same roof shadow as their rendered geometry');
   assert.ok(before.occluders.find(o=>o.id==='garage-roof').triangles.length>20,'Measured garage roof is shared with the renderer');
-  assert.ok(!before.occluders.some(o=>o.id==='house-chimney'||o.id==='house-front-gable'),'Unverified decorative roof structures must not cast numerical shadows');
+  assert.ok(!before.occluders.some(o=>o.id==='house-chimney'||o.id==='house-front-gable'),'Roof details are included once through the shared roof mesh');
 });
 
 test('pool surface and ray origin match the rendered water at every garden level',()=>{

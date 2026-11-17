@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.22.0';
-import {CYBERSTER_AWD,garageProfileAt} from './garage-ramp.js?v=1.22.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.23.0';
+import {CYBERSTER_AWD,garageProfileAt,garageVehiclePose} from './garage-ramp.js?v=1.23.0';
 
 const EPS=1e-9;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring||[];
@@ -117,10 +117,10 @@ function localBox(group,name,x,y,z,width,height,length,material){
 /** A dimensioned concept shell, not a manufacturer CAD body. Its flat lower
  * face matches the shared conservative underside; roof/mirrors keep their
  * published envelope. Wheels use the same axle spacing and radii as the model. */
-function createVehicle(vehicle,svgMode){
-  const group=new THREE.Group();group.name='garage-cyberster';group.matrixAutoUpdate=false;
+function createVehicle(vehicle,svgMode,prefix='garage-cyberster',paintColor='#a31e24'){
+  const group=new THREE.Group();group.name=prefix;group.matrixAutoUpdate=false;
   const v={...CYBERSTER_AWD,...vehicle},clearance=v.clearance??.1056,r=v.rearRadius;
-  const paint=transient('#a31e24',{roughness:.3,metalness:.48}),dark=transient('#18201f',{roughness:.72}),
+  const paint=transient(paintColor,{roughness:.3,metalness:.48}),dark=transient('#18201f',{roughness:.72}),
     tyre=transient('#1b1d1c',{roughness:.96}),rim=transient('#a9b3ae',{metalness:.8,roughness:.3}),
     glass=transient('#344d55',{roughness:.18,metalness:.2}),caliper=transient('#c13425'),
     light=transient('#ece8d8',{emissive:'#d9ddcc',emissiveIntensity:.12}),tailLight=transient('#bb191d',{emissive:'#9d1319',emissiveIntensity:.2});
@@ -134,7 +134,7 @@ function createVehicle(vehicle,svgMode){
     for(let k=0;k<4;k++){const n=(k+1)%4;triangles.push([a[k],b[k],b[n]],[a[k],b[n],a[n]]);}
   }
   for(const i of [0,sections.length-1]){const a=vertices(sections[i]);triangles.push([a[0],a[1],a[2]],[a[0],a[2],a[3]]);}
-  const body=new THREE.Mesh(geometry(triangles),paint);body.name='garage-cyberster-body';body.castShadow=true;body.receiveShadow=true;group.add(body);
+  const body=new THREE.Mesh(geometry(triangles),paint);body.name=`${prefix}-body`;body.castShadow=true;body.receiveShadow=true;group.add(body);
   // Roof-up silhouette makes the closed-car height check visually meaningful.
   const cabin=[[-.72,.77-r,.15],[.72,.77-r,.15],[.65,v.height-r,.49],[-.65,v.height-r,.49],
     [-.70,.77-r,1.9],[.70,.77-r,1.9],[.64,v.height-r,1.28],[-.64,v.height-r,1.28]];
@@ -142,17 +142,17 @@ function createVehicle(vehicle,svgMode){
     const [a,b,c,d]=indices.map(i=>cabin[i]);const m=new THREE.Mesh(geometry([[a,b,c],[a,c,d]]),material);
     m.name=name;m.castShadow=true;m.receiveShadow=true;group.add(m);
   };
-  face('garage-cyberster-soft-roof',[3,2,6,7],dark);
-  face('garage-cyberster-windscreen',[7,6,5,4],glass);
-  face('garage-cyberster-rear-glass',[0,1,2,3],glass);
-  face('garage-cyberster-side-window-left',[0,3,7,4],glass);
-  face('garage-cyberster-side-window-right',[1,5,6,2],glass);
+  face(`${prefix}-soft-roof`,[3,2,6,7],dark);
+  face(`${prefix}-windscreen`,[7,6,5,4],glass);
+  face(`${prefix}-rear-glass`,[0,1,2,3],glass);
+  face(`${prefix}-side-window-left`,[0,3,7,4],glass);
+  face(`${prefix}-side-window-right`,[1,5,6,2],glass);
   for(const side of [-1,1]){
-    localBox(group,`garage-cyberster-mirror-${side}`,side*(v.mirrorWidth/2-.055),.91-r,1.58,.11,.065,.18,paint);
-    localBox(group,`garage-cyberster-headlamp-${side}`,side*.57,.47-r,nose-.18,.38,.035,.065,light);
-    localBox(group,`garage-cyberster-tail-lamp-${side}`,side*.55,.56-r,tail+.035,.32,.045,.035,tailLight);
+    localBox(group,`${prefix}-mirror-${side}`,side*(v.mirrorWidth/2-.055),.91-r,1.58,.11,.065,.18,paint);
+    localBox(group,`${prefix}-headlamp-${side}`,side*.57,.47-r,nose-.18,.38,.035,.065,light);
+    localBox(group,`${prefix}-tail-lamp-${side}`,side*.55,.56-r,tail+.035,.32,.045,.035,tailLight);
     for(const [axle,u,radius,track,width] of [['rear',0,v.rearRadius,v.rearTrack,.275],['front',v.wheelbase,v.frontRadius,v.frontTrack,.245]]){
-      const wheel=new THREE.Group();wheel.name=`garage-cyberster-wheel-${axle}-${side}`;
+      const wheel=new THREE.Group();wheel.name=`${prefix}-wheel-${axle}-${side}`;
       wheel.position.set(side*track/2,radius-r,u);group.add(wheel);
       const rubber=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,width,svgMode?12:28),tyre);
       rubber.rotation.z=Math.PI/2;rubber.castShadow=true;rubber.receiveShadow=true;wheel.add(rubber);
@@ -165,7 +165,7 @@ function createVehicle(vehicle,svgMode){
       localBox(wheel,'brake-caliper',side*(width/2-.03),.04,.13,.025,.15,.08,caliper);
     }
   }
-  localBox(group,'garage-cyberster-lower-sill',0,bottom+.018,(tail+nose)/2,v.width*.92,.036,v.length-.18,dark);
+  localBox(group,`${prefix}-lower-sill`,0,bottom+.018,(tail+nose)/2,v.width*.92,.036,v.length-.18,dark);
   group.userData.vehicle={...v,conceptShell:true};return group;
 }
 
@@ -225,15 +225,25 @@ export function createGarageGroup(layout,materials,{svgMode=false,groundAt=()=>l
     mesh(group,`garage-${name}-drain`,quad(station(a,-inner,profileZ(a)),station(b,-inner,profileZ(b)),
       station(b,inner,profileZ(b)),station(a,inner,profileZ(a))),drainMaterial,false);
   }
+  if(layout.parking?.spaces===2){
+    const stripe=transient('#deded0',{roughness:.95});
+    mesh(group,'garage-bay-divider',quad(station(flatStart+.12,-.025,layout.floorZ+.006),station(rearS-.15,-.025,layout.floorZ+.006),
+      station(rearS-.15,.025,layout.floorZ+.006),station(flatStart+.12,.025,layout.floorZ+.006)),stripe,false);
+  }
   const car=createVehicle(layout.vehicle,svgMode);group.add(car);
-  const setVehiclePose=pose=>{
-    if(!pose?.localToWorld){car.visible=false;return;}
-    car.visible=true;
+  const placeVehicle=(vehicle,pose)=>{
+    if(!pose?.localToWorld){vehicle.visible=false;return;}
+    vehicle.visible=true;
     const origin=new THREE.Vector3(...toWorld(...pose.localToWorld(0,0,0)));
     const v=(u,l,h)=>new THREE.Vector3(...toWorld(...pose.localToWorld(u,l,h))).sub(origin);
-    car.matrix.makeBasis(v(0,1,0),v(0,0,1),v(1,0,0));car.matrix.setPosition(origin);car.matrixWorldNeedsUpdate=true;
-    car.userData.minimumClearance=pose.minimumClearance;car.userData.flags=pose.flags;
+    vehicle.matrix.makeBasis(v(0,1,0),v(0,0,1),v(1,0,0));vehicle.matrix.setPosition(origin);vehicle.matrixWorldNeedsUpdate=true;
+    vehicle.userData.minimumClearance=pose.minimumClearance;vehicle.userData.flags=pose.flags;vehicle.userData.laneOffset=pose.laneOffset;
   };
-  group.userData.garage={enabled:true,proposed:true,portal:{...portal},floorZ:layout.floorZ};
+  const setVehiclePose=pose=>placeVehicle(car,pose);
+  if(layout.parking?.spaces===2){
+    const parked=createVehicle(layout.vehicle,svgMode,'garage-second-car','#a8b5ad');parked.userData.parked=true;group.add(parked);
+    placeVehicle(parked,garageVehiclePose(layout,1,false,layout.parking.parkedLaneOffset));
+  }
+  group.userData.garage={enabled:true,proposed:true,portal:{...portal},floorZ:layout.floorZ,parking:{...layout.parking}};
   return {group,terrainMeshes:[floor,flat].filter(Boolean),setVehiclePose};
 }

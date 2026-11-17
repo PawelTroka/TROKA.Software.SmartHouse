@@ -14,8 +14,11 @@ const values={...NIGHT_DEFAULTS,sunEnabled:true};
 for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40','korzeniowskiego-40.json'],['nadmorska-17','nadmorska-17.json']]){
   const data=JSON.parse(readFileSync(new URL('../data/'+file,import.meta.url)));
   const model=createStateModel(getSiteProfile(id,data));
+  const publishedDefaults=Object.freeze({...model.DEFAULTS,garageRampWidth:3.2,garageSpaces:1,
+    ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
+    terraceCoverType:'canopy',nightWindowActivity:35,...previousPendantDefaults});
   test(id+': existing version-19 saved and shared designs retain their published pendant defaults without moving the design',()=>{
-    const original=model.sanitizeState({...model.DEFAULTS,hedgeRear:5.1,hedgeLeft:3.7,gardenRaise:.35,
+    const original=model.sanitizeState({...publishedDefaults,hedgeRear:5.1,hedgeLeft:3.7,gardenRaise:.35,
       terraceDepth:4.5,floorHeight:1.9,preset:'first-street-standing',lookYaw:90,nightGardenLights:false,
       nightGardenIntensity:28,nightWindowIntensity:42,nightWindowActivity:35});
     const previousSaved=withoutAdditions(original);
@@ -28,7 +31,8 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
       assert.equal(nightLightingState(night,upgraded).pendantStrength,0,'An existing off master stays off');
       assert.equal(nightLightingState(night,upgraded).hedgeStrength,0);
     }
-    assert.equal(STATE_VERSION,22,'Changed defaults use a new schema while old share identifiers remain readable');
+    assert.equal(new URLSearchParams(model.encodeState(original)).get('v'),String(STATE_VERSION),
+      'Re-sharing uses the current schema while the v19 design stays readable');
   });
   test(id+': pendant switches and dimmers survive saving, sharing and hedge scenarios independently',()=>{
     for(const changes of [

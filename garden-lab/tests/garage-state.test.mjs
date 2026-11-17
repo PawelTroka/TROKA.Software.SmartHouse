@@ -13,8 +13,8 @@ const models=SITE_OPTIONS.map(site=>{
   return {site,data,model:createStateModel(getSiteProfile(site.id,data))};
 });
 
-test('schema 22 keeps the basement off in every fresh property and resolves its share identity',()=>{
-  assert.equal(STATE_VERSION,22);
+test('schema 23 keeps the basement off in every fresh property and resolves its share identity',()=>{
+  assert.equal(STATE_VERSION,23);
   for(const {site,model} of models){
     assert.equal(model.DEFAULTS.basementGarageEnabled,false,site.id);
     assert.equal(model.sanitizeState().basementGarageEnabled,false,site.id);
@@ -22,7 +22,7 @@ test('schema 22 keeps the basement off in every fresh property and resolves its 
     assert.equal(resolveSiteId('?site=sternicza-11',`#v=22&site=${site.id}`),site.id);
   }
 });
-test('v22 shares and saves retain garage dimensions, preview, explicit zeros and quote independently',()=>{
+test('current shares and saves retain garage dimensions, preview, explicit zeros and quote independently',()=>{
   const {model}=models[0];
   const dimensions=Object.fromEntries(Object.entries(GARAGE_FIELDS).map(([key,field])=>
     [key,Math.round((field.min+(field.max-field.min)*.37)*100)/100]));
@@ -33,7 +33,7 @@ test('v22 shares and saves retain garage dimensions, preview, explicit zeros and
     const state=model.sanitizeState({...model.DEFAULTS,...patch,floorHeight:1.55,gardenRaise:.35,
       privacyPergolaEnabled:true,spaScreensEnabled:true,nightHedgeIntensity:92,nightWindowActivity:79,sunMinutes:1410});
     assert.equal(state.costBasementGarageQuote,patch.costBasementGarageQuote);
-    for(const restored of [model.decodeState(model.encodeState(state)),model.migrateSavedState(clone(state),22)]){
+    for(const restored of [model.decodeState(model.encodeState(state)),model.migrateSavedState(clone(state),STATE_VERSION)]){
       assert.deepEqual(restored,state);
       assert.deepEqual(model.decodeState(model.encodeState(restored)),state,'Repeated share stays stable');
     }
@@ -52,7 +52,7 @@ test('every v1–21 design keeps the basement absent despite unknown garage sett
         garageExtraDepth:.9,garageInsideRun:2.9,garageReserveMm:1,garageProgress:99,garageReverse:true};
       const shared=new URLSearchParams({v:String(version),site:site.id,...Object.fromEntries(Object.entries(injected).filter(([key])=>key!=='siteId').map(([key,value])=>[key,String(value)]))});
       for(const restored of [model.migrateSavedState(injected,version),model.decodeState(shared.toString())]){
-        for(const [key,value] of Object.entries(GARAGE_DEFAULTS))assert.equal(restored[key],value,`${site.id} v${version} ${key}`);
+        for(const [key,value] of Object.entries({...GARAGE_DEFAULTS,garageSpaces:1,garageRampWidth:3.2}))assert.equal(restored[key],value,`${site.id} v${version} ${key}`);
         assert.deepEqual(withoutGarage(restored),withoutGarage(baseline),`${site.id} v${version} retains the old design`);
       }
     }

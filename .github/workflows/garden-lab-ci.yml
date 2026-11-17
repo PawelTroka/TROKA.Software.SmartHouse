@@ -20,7 +20,7 @@ jobs:
     # Playwright 1.56.1 has browser dependencies for Ubuntu 24.04. Keep its
     # runner stable when ubuntu-latest advances to a newer distribution.
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: garden-lab
@@ -41,8 +41,11 @@ jobs:
       - name: Install Chromium and system dependencies
         run: npx --no-install playwright install --with-deps chromium
       - name: Browser regression and screenshots
-        timeout-minutes: 8
+        timeout-minutes: 10
         run: node scripts/night-browser-check.mjs
+      - name: Terrace, balcony and two-car browser checks
+        timeout-minutes: 5
+        run: node scripts/refinements-browser-check.mjs
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v5

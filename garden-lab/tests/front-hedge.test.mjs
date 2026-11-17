@@ -17,7 +17,7 @@ test('front thujas preserve explicit pedestrian and vehicle openings and charge 
   near(front.length,14.11584721979941);
   near(front.segments.reduce((sum,s)=>sum+s.length,0),front.length);
   near(front.openings[0].width,1.2);near(front.openings[1].width,4);
-  near(mid(front.openings[0].a,front.openings[0].b)[0],2.3);
+  near(mid(front.openings[0].a,front.openings[0].b)[0],9.16);
   assert.equal(front.segments.reduce((sum,s)=>sum+Math.ceil(s.length/.8),0),19);
   assert.match(front.assumption,/not surveyed/);
   for(const s of segments){near(s.a[1],.5);near(s.b[1],.5);near(s.topA-s.baseA,4);near(s.topB-s.baseB,4);}
@@ -67,8 +67,8 @@ test('front shade geometry uses the same gaps and invalidates the cache when hei
 test('whole-plot dimensions show exact front spans and proposed access widths, outside the rear detail',()=>{
   const records=gardenDimensions(settings,data),byId=new Map(records.map(r=>[r.id,r]));
   near(byId.get('hedge-front-height').value,4);
-  near(byId.get('front-hedge-span-1').value,1.1952583027689543);
-  near(byId.get('front-hedge-span-2').value,12.920588917030454);
+  near(byId.get('front-hedge-span-1').value,8.055258302768955);
+  near(byId.get('front-hedge-span-2').value,6.060588917030455);
   near(byId.get('front-pedestrian-opening').value,1.2);near(byId.get('front-vehicle-opening').value,4);
   for(const id of ['hedge-front-height','front-hedge-span-1','front-hedge-span-2','front-pedestrian-opening','front-vehicle-opening']){
     assert.ok(dimensionsForScope(records,'garden').some(r=>r.id===id));

@@ -5,7 +5,7 @@ import {createStateModel} from '../src/state.js';
 import {getSiteProfile} from '../src/sites.js';
 import {garagePresetState} from '../src/garage-options.js';
 import {garageLayout,garageVehiclePose} from '../src/garage-ramp.js';
-import {garageProfileSVG,garageClearanceResult,garageConfigurationWarnings} from '../src/garage-controls.js';
+import {garageProfileSVG,garageParkingPlanSVG,garageClearanceResult,garageConfigurationWarnings} from '../src/garage-controls.js';
 import {terrainAt} from '../src/geometry.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
@@ -79,4 +79,21 @@ test('visible warnings identify configuration failures while generic assumptions
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
   assert.match(html,/id="garage-model-assumptions"/);
   assert.match(html,/Entry detail unresolved/);
+});
+
+test('the dimensioned parking plan and width warning use both actual vehicle envelopes',()=>{
+  const settings=garagePresetState('raised',model.DEFAULTS),layout=garageLayout(settings,data,{terrainAt}),svg=garageParkingPlanSVG(layout);
+  assert.match(svg,/data-spaces="2"/);assert.match(svg,/data-width-pass="true"/);
+  assert.equal([...svg.matchAll(/data-car="[12]"/g)].length,2);
+  assert.equal([...svg.matchAll(/data-length="4.535"/g)].length,2);
+  assert.equal([...svg.matchAll(/data-mirror-width="2.11"/g)].length,2);
+  assert.match(svg,/5.80 m clear/);assert.match(svg,/doors closed/);
+  assert.doesNotMatch(svg,/NaN|Infinity|undefined/);
+  const narrow=garageLayout({...settings,garageRampWidth:3.2},data,{terrainAt});
+  assert.equal(garageClearanceResult(narrow).status,'geometry-limit');
+  assert.match(garageClearanceResult(narrow).label,/too narrow for 2 cars/);
+  assert.ok(garageConfigurationWarnings(narrow).some(note=>/5.42 m clear width/.test(note)));
+  assert.match(garageParkingPlanSVG(narrow),/data-width-pass="false"/);
+  const old=garageLayout({...settings,garageSpaces:1,garageRampWidth:3.2},data,{terrainAt});
+  assert.equal([...garageParkingPlanSVG(old).matchAll(/data-car="/g)].length,1);
 });

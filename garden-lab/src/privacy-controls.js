@@ -1,5 +1,5 @@
-import {PRIVACY_PRESETS,privacyPresetState,matchesPrivacyPreset} from './privacy-options.js?v=1.22.0';
-import {analyzeVisibility,privacyStructures} from './geometry.js?v=1.22.0';
+import {PRIVACY_PRESETS,privacyPresetState,matchesPrivacyPreset} from './privacy-options.js?v=1.23.0';
+import {analyzeVisibility,privacyStructures} from './geometry.js?v=1.23.0';
 
 const $=id=>document.getElementById(id);
 const fmt=(value,digits=1)=>Number.isFinite(value)?value.toFixed(digits):'—';
@@ -54,11 +54,11 @@ export function createPrivacyControls({getSettings,getData,getObserver,getAnalys
     $('privacy-before').textContent=`${fmt(before)}%`;$('privacy-after').textContent=`${fmt(after)}%`;
     $('privacy-gain').textContent=Number.isFinite(delta)?`${delta>=0?'+':''}${fmt(delta)} percentage points`:'No target samples';
     $('privacy-observer').textContent=`PCK3 · ${eye.label}`;
-    $('privacy-comparison-note').textContent='Sampled building points blocked from this eye position. The baseline removes the pergola, spa screens and canopy, keeping the rest of your design. Check other viewpoints and Sun & shade.';
+    $('privacy-comparison-note').textContent='Sampled building points blocked from this eye position. The baseline removes the pergola, spa screens and selected terrace cover, keeping the rest of your design. Check other viewpoints and Sun & shade.';
     const layout=privacyStructures(s,data),dimensions=[];
     if(s.privacyPergolaEnabled)dimensions.push(`Pergola ${fmt(s.privacyPergolaWidth)} × ${fmt(s.privacyPergolaDepth)} m · ${fmt(s.privacyPergolaHeight)} m above its lowest ground corner`);
     if(s.spaScreensEnabled)dimensions.push(`Spa screen ${fmt(s.spaScreenWidth)} m + ${fmt(s.spaScreenReturn)} m return · ${fmt(s.spaScreenHeight)} m above the terrace · ${fmt(s.spaScreenGap,2)} m beyond the tub`);
-    if(s.canopyEnabled)dimensions.push(`Canopy ${fmt(s.canopyWidth)} × ${fmt(s.canopyDepth)} m · ${fmt(s.canopyHeight)} m above the terrace`);
+    if(s.canopyEnabled)dimensions.push(s.terraceCoverType==='balcony'?`Balcony ${fmt(s.canopyWidth)} × ${fmt(s.canopyDepth)} m · deck ${fmt(s.firstFloorRise)} m above the terrace`:`Canopy ${fmt(s.canopyWidth)} × ${fmt(s.canopyDepth)} m · ${fmt(s.canopyHeight)} m above the terrace`);
     $('privacy-size-summary').textContent=dimensions.join('. ')+(dimensions.length?'.':'No added privacy structures.');
     $('privacy-layout-warning').hidden=!layout.warnings.length;
     $('privacy-layout-warning').textContent=layout.warnings.join(' ');
