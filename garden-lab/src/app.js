@@ -1,21 +1,22 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.21.0';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.21.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.21.0';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.21.0';
-import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.21.0';
-import {createTreeControls} from './tree-controls.js?v=1.21.0';
-import {createPrivacyControls} from './privacy-controls.js?v=1.21.0';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures} from './geometry.js?v=1.21.0';
-import {renderPlan,renderSection} from './diagrams.js?v=1.21.0';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.21.0';
-import {analyzeSunlight} from './shade.js?v=1.21.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.21.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.21.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.21.0';
-import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.21.0';
-import {gardenDimensions} from './dimensions.js?v=1.21.0';
-import {UPPER_FLOOR_PRESETS,upperFloorPreset} from './viewpoints.js?v=1.21.0';
-import {renderNightReadouts} from './night-view.js?v=1.21.0';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.22.0';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.22.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.22.0';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.22.0';
+import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.22.0';
+import {createTreeControls} from './tree-controls.js?v=1.22.0';
+import {createPrivacyControls} from './privacy-controls.js?v=1.22.0';
+import {createGarageControls} from './garage-controls.js?v=1.22.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures} from './geometry.js?v=1.22.0';
+import {renderPlan,renderSection} from './diagrams.js?v=1.22.0';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.22.0';
+import {analyzeSunlight} from './shade.js?v=1.22.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.22.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.22.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.22.0';
+import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.22.0';
+import {gardenDimensions} from './dimensions.js?v=1.22.0';
+import {UPPER_FLOOR_PRESETS,upperFloorPreset} from './viewpoints.js?v=1.22.0';
+import {renderNightReadouts} from './night-view.js?v=1.22.0';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -78,7 +79,8 @@ const openedSharedDesign=hasSharedDesign(location.hash);
 let settings=openedSharedDesign?decodeState(location.hash):readSaved();
 if(openedSharedDesign)openedDesign='Opened linked design';
 if(!profile.hasGarage)settings.removeGarage=true;
-let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls,privacyControls;
+let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls,privacyControls,garageControls;
+let garageViewActive=false;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
@@ -167,7 +169,7 @@ function renderSiteDetails(){
 function buildFields(){
   const costHeadings={costSpacing:'Thujas & planting',costAreaOverride:'Soil quantities',costFillRate:'Materials & transport',costRetainingAllowance:'Site allowances'};
   for(const [key,f] of Object.entries(FIELDS)){
-    if(f.group==='look'||f.group==='solar')continue;
+    if(f.group==='look'||f.group==='solar'||f.group==='garage-preview')continue;
     const host=$(`${f.group}-controls`),field=document.createElement('div');
     const isCost=f.group.startsWith('cost');
     field.className=isCost?'field cost-field':'field';field.dataset.field=key;
@@ -329,6 +331,7 @@ function syncControls(){
   syncBuildingControls();
   treeControls?.sync();
   privacyControls?.sync();
+  garageControls?.sync();
   $('compare').disabled=!comparisonA;
   $('compare-mobile').disabled=!comparisonA;
   $('compare').textContent=showingA?'Return to B':'Compare A/B';
@@ -357,9 +360,19 @@ function moveObserver({x,y}){
   showingA=false;syncControls();update();
 }
 
+function syncViewBadge(){
+  if(observer)$('view-badge-text').textContent=garageViewActive&&settings.mode==='orbit'?'Basement garage · ramp overview':observer.label;
+}
+
+function focusGarageCamera(){
+  garageViewActive=scene?.setGarageView?.()===true;
+  syncViewBadge();
+}
+
 function showMode(reset=false){
   if(!data)return;
   const mode=settings.mode;
+  if(garageViewActive&&(reset||mode!=='orbit'||!settings.basementGarageEnabled)){garageViewActive=false;lastSceneMode=null;}
   const diagram=['plan','section','sun'].includes(mode);
   $('viewport').dataset.mode=mode;
   syncLookDirections();
@@ -374,7 +387,8 @@ function showMode(reset=false){
   if(mode==='plan')renderPlan($('plan-host'),data,settings,observer,analysis,moveObserver,treeControls?.planOptions());
   else if(mode==='section')renderSection($('section-host'),data,settings,observer,analysis);
   else if(mode==='sun'){if(sun&&shade)renderSunMap($('sun-host'),data,settings,sun,shade);}
-  else if(scene){if(reset||lastSceneMode!==mode){scene.setView(mode,observer,settings);lastSceneMode=mode;}scene.resize();}
+  else if(scene){if(reset||lastSceneMode!==mode){garageViewActive=false;scene.setView(mode,observer,settings);lastSceneMode=mode;}scene.resize();}
+  syncViewBadge();
 }
 
 function updateSun(refreshMap=true){
@@ -414,9 +428,10 @@ function update(){
   costEstimate=estimateCosts(settings,data);
   renderBudget(costEstimate,settings,data);
   privacyControls?.render();
+  garageControls?.render();
   updateSun(false);
   showMode();
-  $('view-badge-text').textContent=observer.label;
+  syncViewBadge();
   const upper=upperFloorPreset(settings.preset,baseData),support=upper?(upper.level==='first'?'first-floor level':profile.id==='nadmorska-17'?'tower concept level':'strych floor'):({floor:'floor',sauna:'sauna floor',firepit:'sunken lounge floor'})[observer.surface]||'local ground';
   $('observer-readout').textContent=`Eye ${fmt(observer.z-data.site.floorReference.z,2)} m above original garden reference · ${fmt(observer.eyeHeight,2)} m above ${support}`;
   $('upper-view-note').hidden=!upper;
@@ -474,6 +489,28 @@ privacyControls=createPrivacyControls({
     showingA=false;comparisonB=null;syncControls();update();
   },
 });
+
+function showGarageView(){
+  settings.mode=scene?.available===false?'plan':'orbit';
+  syncControls();showMode();
+  if(settings.mode==='orbit')focusGarageCamera();
+  else toast('The garage ramp is shown in Plan; 3D is unavailable in this browser.');
+  persist();
+}
+garageControls=createGarageControls({
+  getSettings:()=>settings,getData:()=>baseData,notify:toast,onView:showGarageView,
+  onChange:(patch,{focus=false}={})=>{
+    stopSunPlayback();clearTimeout(updateTimer);
+    settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+    syncControls();update();if(focus&&settings.basementGarageEnabled)showGarageView();
+  },
+  onPreview:patch=>{
+    settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+    syncControls();garageControls?.render();scene?.updateGaragePreview?.(settings);
+    if(settings.mode==='plan')showMode();
+    persist();
+  },
+});
 ready=true;
 if(window.matchMedia('(max-width:760px)').matches)$('building-details').open=false;
 syncControls();
@@ -503,6 +540,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSunPlay
 $('save-a-mobile').addEventListener('click',()=>$('save-a').click());
 $('compare-mobile').addEventListener('click',()=>$('compare').click());
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{
+  if(garageViewActive){garageViewActive=false;lastSceneMode=null;}
   settings.preset=b.dataset.preset;
   const initial=observerForPreset(settings.preset,{...settings,eyeHeight:undefined},data||baseData);
   settings.eyeHeight=initial.eyeHeight;
@@ -550,8 +588,8 @@ $('garden-program').addEventListener('change',e=>{
   showingA=false;comparisonB=null;treeControls?.cancelPlacement();syncControls();update();
   toast(settings.gardenProgram==='spa-pool-grove'?(planting?'Tree comparison, longer pool and full-perimeter hedges selected.':'Longer pool selected; your custom trees are retained. Use Apply 9 m Excelsa to restore the latest planting.'):settings.gardenProgram==='spa-corner'?'Previous rear-left corner grove selected.':settings.gardenProgram==='spa-aligned'?'PCK3-aligned pines and full-perimeter hedges selected.':settings.gardenProgram==='spa-grove'?'Close pine grove and front street hedge selected.':settings.gardenProgram==='spa-screened'?'Previous spaced pine screen selected.':settings.gardenProgram==='spa-compact'?'Previous compact spa and rear-left grove selected.':settings.gardenProgram==='spa-edge'?'Previous large-sauna layout restored.':settings.gardenProgram==='spa'?'Previous spa courtyard restored.':'Original garden layout restored.');
 });
-$('reset').addEventListener('click',()=>{stopSunPlayback();settings=sanitizeState(DEFAULTS);openedDesign='Latest defaults';showingA=false;comparisonB=null;treeControls?.cancelPlacement();$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
-$('reset-camera').addEventListener('click',()=>{const initial=observerForPreset(settings.preset,settings,data);settings.lookYaw=initial.defaultLookYaw??0;settings.lookPitch=initial.defaultLookPitch??0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);toast('View reset');});
+$('reset').addEventListener('click',()=>{stopSunPlayback();garageViewActive=false;settings=sanitizeState(DEFAULTS);openedDesign='Latest defaults';showingA=false;comparisonB=null;treeControls?.cancelPlacement();$('scenario').value='default';history.replaceState(null,'',location.pathname+location.search);syncControls();update();scene?.setView(settings.mode,observer,settings);toast('Default site and design settings restored');});
+$('reset-camera').addEventListener('click',()=>{garageViewActive=false;const initial=observerForPreset(settings.preset,settings,data);settings.lookYaw=initial.defaultLookYaw??0;settings.lookPitch=initial.defaultLookPitch??0;scene?.setView('orbit',observer,settings);scene?.setView(settings.mode,observer,settings);syncViewBadge();toast('View reset');});
 $('save-a').addEventListener('click',()=>{stopSunPlayback();comparisonA=sanitizeState(settings);comparisonB=null;showingA=false;try{localStorage.setItem(`${storageKey}-A`,JSON.stringify(comparisonA));}catch{}syncControls();toast('Scenario A saved. Change a setting, then compare.');});
 $('compare').addEventListener('click',()=>{stopSunPlayback();if(!comparisonA)return;if(!showingA){comparisonB=sanitizeState(settings);settings=sanitizeState({...comparisonA,mode:settings.mode});showingA=true;}else{settings=sanitizeState({...comparisonB,mode:settings.mode});showingA=false;}treeControls?.cancelPlacement();syncControls();update();toast(showingA?'Showing saved scenario A':'Back to scenario B');});
 $('share').addEventListener('click',async()=>{
@@ -565,7 +603,7 @@ $('export').addEventListener('click',()=>{
   // A range input can still have a scheduled geometry/budget update. Export one
   // coherent snapshot of the latest settings and their derived calculations.
   clearTimeout(updateTimer);update();
-  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,dimensions:gardenDimensions({...settings,showDimensions:true},baseData),privacyStructures:(()=>{const layout=privacyStructures(settings,data);return {footprints:layout.footprints,warnings:layout.warnings,foliageAssumption:settings.privacyPergolaEnabled&&settings.privacyPergolaFoliage?'Ideal dense established planting on two pergola sides':'No opaque pergola foliage'};})(),costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
+  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,dimensions:gardenDimensions({...settings,showDimensions:true},baseData),privacyStructures:(()=>{const layout=privacyStructures(settings,data);return {footprints:layout.footprints,warnings:layout.warnings,foliageAssumption:settings.privacyPergolaEnabled&&settings.privacyPergolaFoliage?'Ideal dense established planting on two pergola sides':'No opaque pergola foliage'};})(),basementGarage:garageControls?.exportSummary()??null,costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
   const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`${profile.id}-scenario.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
 });
 $('about-open').addEventListener('click',()=>$('about').showModal());
@@ -585,12 +623,13 @@ try{
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   fetch(new URL('../data/garden-budget-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Garden price sources unavailable');return r.json();}).then(renderGardenPriceSources).catch(()=>{$('garden-price-date').textContent='Garden supplier references and estimate assumptions are documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.21.0');
+    const {createScene}=await import('./scene.js?v=1.22.0');
     scene=createScene($('scene-host'),data,{onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;syncLookDirections();}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Night surface lighting and cast shadows need WebGL; simplified glowing windows and fixture markers remain available. Open Sun & shade for calculated shadows.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}
   }catch(error){console.error('3D view unavailable',error);settings.mode='plan';toast('3D could not start. Plan and sightline views remain available.');}
   $('loading').hidden=true;syncControls();update();
+  if(settings.basementGarageEnabled&&settings.mode==='orbit')focusGarageCamera();
 }catch(error){
   console.error(error);$('loading').replaceChildren();const heading=document.createElement('strong');heading.textContent='The site model could not load.';const note=document.createElement('span');note.textContent='Refresh the page to retry. If running locally, serve the folder over HTTP.';$('loading').append(heading,note);
 }

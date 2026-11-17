@@ -1,5 +1,5 @@
 /**
- * Browser regression for Garden Lab night, upper-floor and privacy controls.
+ * Browser regression for Garden Lab night, upper-floor, privacy and garage controls.
  * Runs against the build with real Chromium WebGL. All scenario changes use
  * visible controls; DOM readouts are the assertions, not private app state.
  */
@@ -386,6 +386,175 @@ async function verifyHedgeSurfaceLighting(){
   check('Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels');
   check('At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged');
 }
+
+/** Drive the optional garage through the same visible controls used by a
+ * person. Model readouts are public UI, and pose comparisons use canvas pixels. */
+async function verifyBasementGarage(){
+  await page.setViewportSize({width:1430,height:1040});
+  await details('#sun-controls',false);
+  await details('#night-adjustments',false);
+  await details('#basement-garage-controls',true);
+  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),false,'Garage excavation starts off');
+  assert.equal(await page.locator('#garage-profile-card').getAttribute('data-enabled'),'false');
+  assert.equal(await page.locator('#garage-view').isDisabled(),true);
+
+  const result=async()=>await page.locator('#garage-result').evaluate(node=>({
+    status:node.dataset.status,minimum:Number(node.dataset.minimumClearance),reserve:Number(node.dataset.requiredMargin),
+    frontRun:document.querySelector('#garage-front-run').textContent,
+    drop:document.querySelector('#garage-floor-drop').textContent,
+    grade:document.querySelector('#garage-peak-grade').textContent,
+    headroom:document.querySelector('#garage-headroom').textContent,
+    door:document.querySelector('#garage-door-opening').textContent,
+    parking:document.querySelector('#garage-parking-length').textContent,
+    forward:document.querySelector('#garage-forward-clearance').textContent,
+    reverse:document.querySelector('#garage-reverse-clearance').textContent,
+  }));
+  const preset=async(id,status)=>{
+    await page.locator('#basement-garage-controls [data-garage-preset="'+id+'"]').click();
+    await page.waitForFunction(allowed=>allowed.includes(document.querySelector('#garage-result')?.dataset.status),
+      Array.isArray(status)?status:[status]);
+    await frames();
+    assert.equal(await page.locator('#basement-garage-controls [data-garage-preset="'+id+'"]').getAttribute('aria-pressed'),'true');
+    return result();
+  };
+  const frame=async()=>{await page.locator('#scene-host').scrollIntoViewIfNeeded();await frames();return page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});};
+  const slider=async(value)=>{
+    const input=page.locator('#garageProgress');await input.focus();await input.press(value>50?'End':'Home');
+    for(let n=0;n<(value>50?100-value:value);n++)await input.press(value>50?'ArrowLeft':'ArrowRight');
+    await frames();assert.equal(Number(await input.inputValue()),value);
+  };
+
+  const candidate=await preset('raised','reserve-met');
+  assert.ok(candidate.minimum>=candidate.reserve,JSON.stringify(candidate));
+  assert.ok(parseFloat(candidate.frontRun)>9&&parseFloat(candidate.frontRun)<9.2,'The full mapped front yard is used');
+  assert.ok(parseFloat(candidate.headroom)>=2.2,'Candidate must preserve the selected covered-headroom benchmark');
+  assert.match(candidate.door,/2\.10 m$/,'The separate assumed 2.10 m door remains visible');
+  assert.equal(await page.locator('#garage-layout-warning').isVisible(),false,'Candidate has no configuration-specific warning');
+  assert.equal(await page.locator('.garage-entry-conditions').isVisible(),true,'The unresolved entrance detail stays beside the result');
+  assert.match(await page.locator('.garage-entry-conditions').innerText(),/threshold[\s\S]*not yet modelled/i);
+  await details('#garage-profile-card .garage-source-details',true);
+  assert.equal(await page.locator('#garage-model-assumption-details').isVisible(),true);
+  assert.match(await page.locator('#garage-model-assumptions').innerText(),/survey|unmeasured/i,'Current model assumptions retain the survey caveat');
+  assert.match(await page.locator('#garage-model-assumptions').innerText(),/underside[\s\S]*flat|flat[\s\S]*underside/i,'The conservative vehicle envelope remains explicit');
+  await details('#garage-profile-card .garage-source-details',false);
+  await page.locator('#garage-view').click();
+  assert.equal(await page.locator('#scene-host canvas').count(),1);
+  assert.equal(await page.locator('#viewport').getAttribute('data-mode'),'orbit');
+  const enabledFrame=await frame();
+  await page.locator('#basementGarageEnabled').uncheck();
+  assert.equal(await page.locator('#garage-profile-card').getAttribute('data-enabled'),'false');
+  assert.equal(await page.locator('#garage-profile-body').isVisible(),false);
+  const disabledFrame=await frame();
+  const excavationPixels=await warmLightDifference(disabledFrame,enabledFrame);
+  assert.ok(excavationPixels.changedPixels>200,'Enabling the garage must visibly change the real WebGL scene: '+JSON.stringify(excavationPixels));
+  await page.locator('#basementGarageEnabled').check();
+  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
+  assert.deepEqual(await result(),candidate);
+  check('Optional basement garage starts off and creates a visibly different WebGL excavation and open entrance when enabled');
+
+  const forecourt=await preset('forecourt','reserve-shortfall');
+  assert.ok(forecourt.minimum<forecourt.reserve,'Front-yard-only comparison must expose its reserve shortfall');
+  assert.equal(await page.locator('#garage-layout-warning').isVisible(),true);
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/reserve is not achieved/i,'A real reserve shortfall remains visible beside its result');
+  assert.equal(Number(await page.locator('#garageInsideRun-value').inputValue()),0);
+  const deeper=await preset('deeper',['contact','geometry-limit']);
+  assert.ok(deeper.minimum<deeper.reserve,'Deeper floor cannot be presented as the passing candidate');
+  assert.ok(deeper.minimum<candidate.minimum);
+  assert.equal(Number(await page.locator('#garageExtraDepth-value').inputValue()),.6);
+  await preset('raised','reserve-met');
+  assert.deepEqual(await result(),candidate);
+  check('Full front-yard-only, raised-basement and deeper-floor options show distinct conservative clearance results');
+
+  await slider(0);
+  const entryFrame=await frame(),entryProfile=await page.locator('#garage-profile svg').getAttribute('viewBox');
+  const entryMarkup=await page.locator('#garage-profile').innerHTML();
+  await slider(40);
+  const midwayFrame=await frame(),posePixels=await warmLightDifference(entryFrame,midwayFrame);
+  assert.ok(posePixels.changedPixels>50,'Scrubbing must move the rendered car: '+JSON.stringify(posePixels));
+  assert.notEqual(await page.locator('#garage-profile').innerHTML(),entryMarkup,'The equal-scale profile car must move too');
+  assert.equal(await page.locator('#garage-profile svg').getAttribute('data-scale'),'equal');
+  assert.ok(entryProfile,'The side profile has a finite viewBox');
+  assert.deepEqual(await result(),candidate,'Preview position cannot replace the full-drive assessment');
+  await page.locator('[data-garage-reverse="true"]').click();
+  const reverseFrame=await frame(),reversePixels=await warmLightDifference(midwayFrame,reverseFrame);
+  assert.ok(reversePixels.changedPixels>50,'Reverse entry must visibly change the car pose: '+JSON.stringify(reversePixels));
+  assert.match(await page.locator('#garage-current-pose').innerText(),/^Reverse entry preview/);
+  assert.deepEqual(await result(),candidate,'Reversing the preview retains the minima from both complete drives');
+  await page.locator('[data-garage-reverse="false"]').click();
+  await page.locator('#garage-view').click();
+  await screenshot('sternicza-basement-garage-entry');
+  await page.locator('#garage-profile-card').scrollIntoViewIfNeeded();await frames();
+  const profileImage=await page.locator('#garage-profile-card').screenshot({
+    path:path.join(resultsRoot,'sternicza-basement-garage-profile.jpg'),type:'jpeg',quality:70,animations:'disabled',scale:'css',
+  });
+  report.screenshots.push('sternicza-basement-garage-profile.jpg');
+  console.log('GARDEN_SCREENSHOT_B64 sternicza-basement-garage-profile image/jpeg '+profileImage.toString('base64'));
+  check('Car position and reverse preview change actual WebGL and the equal-scale profile without changing full-drive minima');
+
+  await page.locator('[data-garage-reverse="true"]').click();
+  await page.locator('#save-a').click();
+  await preset('forecourt','reserve-shortfall');
+  await page.locator('#compare').click();
+  assert.equal(await page.locator('#comparison-status').innerText(),'Viewing saved A');
+  assert.deepEqual(await result(),candidate,'Scenario A restores the saved garage dimensions');
+  assert.equal(await page.locator('[data-garage-reverse="true"]').getAttribute('aria-pressed'),'true');
+  await page.locator('#compare').click();
+  assert.deepEqual(await result(),forecourt,'Comparison B restores the alternative ramp');
+  await preset('raised','reserve-met');
+  await page.reload({waitUntil:'domcontentloaded',timeout:60000});await waitReady();
+  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true);
+  assert.equal(Number(await page.locator('#garageProgress').inputValue()),40);
+  assert.equal(await page.locator('[data-garage-reverse="true"]').getAttribute('aria-pressed'),'true');
+  assert.deepEqual(await result(),candidate,'Normal reload restores the garage from saved site state');
+  await page.locator('#share').click();
+  const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
+  assert.equal(shared.get('basementGarageEnabled'),'true');
+  assert.equal(shared.get('garageReverse'),'true');
+  await page.reload({waitUntil:'domcontentloaded',timeout:60000});await waitReady();
+  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true);
+  assert.equal(await page.locator('[data-garage-reverse="true"]').getAttribute('aria-pressed'),'true');
+  assert.deepEqual(await result(),candidate,'Share reload retains the same conservative assessment');
+  check('Garage dimensions and preview direction survive scenario A/B, normal reload and Share reload');
+
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('#garage-profile-card').scrollIntoViewIfNeeded();await frames();
+  const mobile=await page.evaluate(()=>{
+    const card=document.querySelector('#garage-profile-card').getBoundingClientRect();
+    const svg=document.querySelector('#garage-profile svg').getBoundingClientRect();
+    return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
+      card:{left:card.left,right:card.right,width:card.width},svg:{left:svg.left,right:svg.right,width:svg.width,height:svg.height}};
+  });
+  assert.ok(mobile.scrollWidth<=mobile.width+2,JSON.stringify(mobile));
+  assert.ok(mobile.svg.width>200&&mobile.svg.height>30,JSON.stringify(mobile));
+  assert.ok(mobile.svg.left>=-2&&mobile.svg.right<=mobile.width+2,JSON.stringify(mobile));
+  assert.equal(await page.locator('#garage-result').isVisible(),true);
+  const mobileGarageImage=await page.locator('#garage-profile-card').screenshot({
+    path:path.join(resultsRoot,'sternicza-basement-garage-mobile.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
+  });
+  report.screenshots.push('sternicza-basement-garage-mobile.jpg');
+  console.log('GARDEN_SCREENSHOT_B64 sternicza-basement-garage-mobile image/jpeg '+mobileGarageImage.toString('base64'));
+  check('The garage profile and clearance results remain readable at 390px without horizontal overflow');
+
+  await page.setViewportSize({width:1430,height:1040});await frames();
+  for(const site of ['korzeniowskiego-40','nadmorska-17']){
+    await chooseProperty(site);
+    assert.equal(await page.locator('#basement-garage-controls').isVisible(),false,'Garage controls are specific to Sternicza');
+    assert.equal(await page.locator('#garage-profile-card').isVisible(),false);
+  }
+  await chooseProperty('sternicza-11');
+  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true,'Returning to Sternicza restores its own choice');
+  assert.deepEqual(await result(),candidate);
+  await page.locator('[data-garage-reverse="false"]').click();
+  await details('#basement-garage-controls',true);
+  await page.locator('#basementGarageEnabled').uncheck();
+  await details('#basement-garage-controls',false);
+  await page.locator('button[data-mode="orbit"]').click();await page.locator('#reset-camera').click();
+  await frames();
+  report.garage={candidate,forecourt,deeper,excavationPixels,posePixels,reversePixels,mobile,
+    renderer:'WebGL',scenarioSaved:true,normalReloadPassed:true,shareReloadPassed:true,siteIsolationPassed:true,restoredEnabled:false};
+  check('Garage state stays isolated to Sternicza and the browser check restores the original garage-off design');
+}
+
 async function verifyPrivacyScreening(){
   await page.setViewportSize({width:1430,height:1040});
   await details('#sun-controls',false);
@@ -446,7 +615,7 @@ async function verifyPrivacyScreening(){
 
   const combined=await select('layered');
   assert.ok(combined.after>=Math.max(spa.after,pergola.after),'Combined screening retains the protection of each option');
-  await page.locator('[data-mode="plan"]').click();
+  await page.locator('button[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
   await page.locator('#plan-host [data-privacy-plan="true"]').waitFor({state:'visible'});
   assert.equal(await page.locator('#plan-host [data-privacy-footprint="privacy-pergola"]').count(),1);
@@ -455,7 +624,7 @@ async function verifyPrivacyScreening(){
   assert.ok(await page.locator('#plan-host [data-privacy-part="lattice"]').count()>0);
   check('Combined Plan displays the finite pergola, two planted sides and both spa screen panels');
 
-  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#reset-camera').click();
   await page.locator('#scene-host canvas').waitFor({state:'visible'});
   assert.equal(await page.locator('#scene-host canvas').count(),1,'Privacy structures must retain real WebGL');
@@ -586,7 +755,7 @@ async function verifyNadmorska(){
   // A fixed overview includes both water bodies. The scene renders on demand,
   // so switching garden lights must change the pixels, not an animated clock.
   await details('#night-adjustments',false);
-  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
   await pngScreenshot('nadmorska-day');
@@ -621,7 +790,7 @@ async function verifyNadmorska(){
   await waitLight('nightActivation','zero');
   await waitLight('nightPendants','zero');await waitLight('nightHedge','zero');
   await page.locator('#showDimensions').check();
-  await page.locator('[data-mode="plan"]').click();
+  await page.locator('button[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
   await page.locator('#plan-host [data-map-scope="garden"]').click();
   await page.waitForFunction(()=>document.querySelector('#plan-host [data-map-scope="garden"]')?.getAttribute('aria-pressed')==='true'
@@ -656,7 +825,7 @@ async function verifyNadmorska(){
 
   // Exercise the larger set of active real lights at the mobile viewport too.
   // This is a rendering/correctness gate, not a hardware performance benchmark.
-  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#showDimensions').uncheck();
   await page.locator('#preview-night').click();
   await waitLight('nightHedge','positive');
@@ -676,7 +845,7 @@ async function verifyNadmorska(){
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
   await page.locator('#showDimensions').check();
-  await page.locator('[data-mode="plan"]').click();
+  await page.locator('button[data-mode="plan"]').click();
   await page.locator('#plan-host').waitFor({state:'visible'});
 }
 
@@ -699,6 +868,8 @@ try {
   check('Built application loads with a real WebGL canvas');
   await page.locator('#showDimensions').uncheck();
   await details('#sun-controls',false);
+
+  await verifyBasementGarage();
 
   assert.equal(UPPER_FLOOR_PRESETS.length,8);
   for(const preset of UPPER_FLOOR_PRESETS)report.presets.push(await selectPreset(preset));

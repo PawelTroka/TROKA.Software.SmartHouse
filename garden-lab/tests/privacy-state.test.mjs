@@ -26,8 +26,8 @@ const custom=model.sanitizeState({...model.DEFAULTS,...dimensions,
   screeningTrees:model.DEFAULTS.screeningTrees.map((tree,index)=>({...tree,id:`kept-${index}`,
     x:tree.x-.1,y:tree.y-.2,rotation:17+index,unitPrice:61500+index*100,enabled:index!==1}))});
 
-test('v21 shares and JSON save/reload retain every privacy dimension, switch and quote',()=>{
-  assert.equal(STATE_VERSION,21);
+test('current shares and JSON save/reload retain every privacy dimension, switch and quote',()=>{
+  assert.equal(STATE_VERSION,22);
   for(const changes of [
     {privacyPergolaEnabled:true,privacyPergolaFoliage:true,spaScreensEnabled:true},
     {privacyPergolaEnabled:true,privacyPergolaFoliage:false,spaScreensEnabled:false},
@@ -35,7 +35,7 @@ test('v21 shares and JSON save/reload retain every privacy dimension, switch and
     {privacyPergolaEnabled:false,privacyPergolaFoliage:false,spaScreensEnabled:false},
   ]){
     const state={...custom,...changes},shared=model.encodeState(state),params=new URLSearchParams(shared);
-    assert.equal(params.get('v'),'21');
+    assert.equal(params.get('v'),String(STATE_VERSION));
     for(const key of [...Object.keys(PRIVACY_FIELDS),...quoteKeys]){
       assert.equal(Number(params.get(key)),state[key],key+' is present in the share');
     }
