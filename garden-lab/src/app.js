@@ -5,6 +5,7 @@ import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverr
 import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.21.0';
 import {createTreeControls} from './tree-controls.js?v=1.21.0';
 import {createPrivacyControls} from './privacy-controls.js?v=1.21.0';
+import {createGarageControls} from './garage-controls.js?v=1.21.0';
 import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures} from './geometry.js?v=1.21.0';
 import {renderPlan,renderSection} from './diagrams.js?v=1.21.0';
 import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.21.0';
@@ -78,7 +79,7 @@ const openedSharedDesign=hasSharedDesign(location.hash);
 let settings=openedSharedDesign?decodeState(location.hash):readSaved();
 if(openedSharedDesign)openedDesign='Opened linked design';
 if(!profile.hasGarage)settings.removeGarage=true;
-let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls,privacyControls;
+let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls,privacyControls,garageControls;
 let comparisonA=readSaved('-A'),comparisonB=null,showingA=false;
 if(comparisonA)comparisonA=sanitizeState(comparisonA);
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
@@ -167,7 +168,7 @@ function renderSiteDetails(){
 function buildFields(){
   const costHeadings={costSpacing:'Thujas & planting',costAreaOverride:'Soil quantities',costFillRate:'Materials & transport',costRetainingAllowance:'Site allowances'};
   for(const [key,f] of Object.entries(FIELDS)){
-    if(f.group==='look'||f.group==='solar')continue;
+    if(f.group==='look'||f.group==='solar'||f.group==='garage-preview')continue;
     const host=$(`${f.group}-controls`),field=document.createElement('div');
     const isCost=f.group.startsWith('cost');
     field.className=isCost?'field cost-field':'field';field.dataset.field=key;
@@ -329,6 +330,7 @@ function syncControls(){
   syncBuildingControls();
   treeControls?.sync();
   privacyControls?.sync();
+  garageControls?.sync();
   $('compare').disabled=!comparisonA;
   $('compare-mobile').disabled=!comparisonA;
   $('compare').textContent=showingA?'Return to B':'Compare A/B';
@@ -414,6 +416,7 @@ function update(){
   costEstimate=estimateCosts(settings,data);
   renderBudget(costEstimate,settings,data);
   privacyControls?.render();
+  garageControls?.render();
   updateSun(false);
   showMode();
   $('view-badge-text').textContent=observer.label;
@@ -472,6 +475,28 @@ privacyControls=createPrivacyControls({
     const initial=observerForPreset(preset,{...settings,eyeHeight:undefined},data||baseData);
     settings=sanitizeState({...settings,preset,eyeHeight:initial.eyeHeight,lookYaw:initial.defaultLookYaw??0,lookPitch:initial.defaultLookPitch??0,mode:'eye'});
     showingA=false;comparisonB=null;syncControls();update();
+  },
+});
+
+function showGarageView(){
+  settings.mode=scene?.available===false?'plan':'orbit';
+  syncControls();showMode();
+  if(settings.mode==='orbit')scene?.setGarageView?.();
+  else toast('The garage ramp is shown in Plan; 3D is unavailable in this browser.');
+  persist();
+}
+garageControls=createGarageControls({
+  getSettings:()=>settings,getData:()=>baseData,notify:toast,onView:showGarageView,
+  onChange:(patch,{focus=false}={})=>{
+    stopSunPlayback();clearTimeout(updateTimer);
+    settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+    syncControls();update();if(focus&&settings.basementGarageEnabled)showGarageView();
+  },
+  onPreview:patch=>{
+    settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+    syncControls();garageControls?.render();scene?.updateGaragePreview?.(settings);
+    if(settings.mode==='plan')showMode();
+    persist();
   },
 });
 ready=true;
@@ -565,7 +590,7 @@ $('export').addEventListener('click',()=>{
   // A range input can still have a scheduled geometry/budget update. Export one
   // coherent snapshot of the latest settings and their derived calculations.
   clearTimeout(updateTimer);update();
-  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,dimensions:gardenDimensions({...settings,showDimensions:true},baseData),privacyStructures:(()=>{const layout=privacyStructures(settings,data);return {footprints:layout.footprints,warnings:layout.warnings,foliageAssumption:settings.privacyPergolaEnabled&&settings.privacyPergolaFoliage?'Ideal dense established planting on two pergola sides':'No opaque pergola foliage'};})(),costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
+  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,dimensions:gardenDimensions({...settings,showDimensions:true},baseData),privacyStructures:(()=>{const layout=privacyStructures(settings,data);return {footprints:layout.footprints,warnings:layout.warnings,foliageAssumption:settings.privacyPergolaEnabled&&settings.privacyPergolaFoliage?'Ideal dense established planting on two pergola sides':'No opaque pergola foliage'};})(),basementGarage:garageControls?.exportSummary()??null,costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
   const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`${profile.id}-scenario.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
 });
 $('about-open').addEventListener('click',()=>$('about').showModal());
@@ -591,6 +616,7 @@ try{
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}
   }catch(error){console.error('3D view unavailable',error);settings.mode='plan';toast('3D could not start. Plan and sightline views remain available.');}
   $('loading').hidden=true;syncControls();update();
+  if(settings.basementGarageEnabled&&settings.mode==='orbit')scene?.setGarageView?.();
 }catch(error){
   console.error(error);$('loading').replaceChildren();const heading=document.createElement('strong');heading.textContent='The site model could not load.';const note=document.createElement('span');note.textContent='Refresh the page to retry. If running locally, serve the folder over HTTP.';$('loading').append(heading,note);
 }

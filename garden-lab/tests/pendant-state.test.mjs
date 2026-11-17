@@ -28,7 +28,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
       assert.equal(nightLightingState(night,upgraded).pendantStrength,0,'An existing off master stays off');
       assert.equal(nightLightingState(night,upgraded).hedgeStrength,0);
     }
-    assert.equal(STATE_VERSION,21,'Changed defaults use a new schema while old share identifiers remain readable');
+    assert.equal(STATE_VERSION,22,'Changed defaults use a new schema while old share identifiers remain readable');
   });
   test(id+': pendant switches and dimmers survive saving, sharing and hedge scenarios independently',()=>{
     for(const changes of [
