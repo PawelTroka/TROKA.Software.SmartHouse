@@ -134,9 +134,14 @@ try{
 
   await page.locator('#share').click();await page.waitForFunction(()=>location.hash.includes('terraceCoverType=balcony'));
   const sharedURL=page.url(),hash=new URLSearchParams(new URL(sharedURL).hash.slice(1));
-  assert.equal(hash.get('garageSpaces'),'2');assert.equal(hash.get('garageRampWidth'),'5.8');assert.equal(hash.get('preset'),'pool');
+  assert.equal(hash.get('preset'),'pool');
+  // Default parking dimensions are omitted from sparse share links. The
+  // reloaded public controls and dimensioned plan must recover them exactly.
   await page.reload({waitUntil:'domcontentloaded'});await ready();
   assert.equal(await page.locator('#terraceCoverType').inputValue(),'balcony');assert.equal(await page.locator('#garage-parking-plan [data-car]').count(),2);
+  assert.equal(await page.locator('#canopyEnabled').isChecked(),true);assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true);
+  assert.equal(Number(await page.locator('#garageSpaces-value').inputValue()),2);assert.equal(Number(await page.locator('#garageRampWidth-value').inputValue()),5.8);
+  assert.equal(Number(await page.locator('#terraceDepth-value').inputValue()),4);assert.equal(await page.locator('#jacuzziOverflow').isChecked(),true);
   assert.match(await page.locator('#observer-readout').innerText(),/0\.15 m above pool water/);
   check('Balcony, pool viewpoint and two-car dimensions survive sharing and reload');
 
