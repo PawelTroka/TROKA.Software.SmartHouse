@@ -1,11 +1,11 @@
 /** Dense wall-only check, separate from the mapped roof/facade sample metric. */
-import {analyzeVisibility} from './geometry.js?v=1.20.1';
-import {applyBuildingOverrides} from './buildings.js?v=1.20.1';
+import {analyzeVisibility} from './geometry.js?v=1.21.0';
+import {applyBuildingOverrides} from './buildings.js?v=1.21.0';
 
 const DEFAULT_SPACING=.25,MIN_SPACING=.25,MAX_SPACING=2,MAX_POINTS=200000;
 const normalizedSpacing=value=>typeof value==='number'&&Number.isFinite(value)&&value>0
   ?Math.min(MAX_SPACING,Math.max(MIN_SPACING,value)):DEFAULT_SPACING;
-const method=spacing=>`Dense facade grid at ${spacing.toFixed(2)} m vertical spacing and at most ${spacing.toFixed(2)} m horizontally, from building base to modeled wall top. Back-facing and self-hidden wall points are excluded. Uses the same hedge, terrain-based planting, crown, canopy, sauna and mapped-building intersections as the main view. Roof points remain a separate check. Sample counts are not visible area or a guarantee of continuous real foliage.`;
+const method=spacing=>`Dense facade grid at ${spacing.toFixed(2)} m vertical spacing and at most ${spacing.toFixed(2)} m horizontally, from building base to modeled wall top. Back-facing and self-hidden wall points are excluded. Uses the same hedge, terrain-based planting, crown, canopy, finite pergola and spa-screen members, sauna and mapped-building intersections as the main view. Roof points remain a separate check. Sample counts are not visible area or a guarantee of continuous real foliage.`;
 
 /**
  * Sample mid-cells along every finite wall edge. The vertical origin matches

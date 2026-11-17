@@ -9,16 +9,17 @@ import {
   jacuzziBounds,
   spaLevels,
   saunaOpaqueFaces,
-} from './geometry.js?v=1.20.1';
-import {neighborhoodBounds} from './neighborhood.js?v=1.20.1';
-import {gazeDirection} from './orientation.js?v=1.20.1';
-import {localSunDirection} from './solar.js?v=1.20.1';
-import {getSiteProfile} from './sites.js?v=1.20.1';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.20.1';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.20.1';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.20.1';
-import {terraceStairs} from './layout.js?v=1.20.1';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.20.1';
+  privacyStructures,
+} from './geometry.js?v=1.21.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.21.0';
+import {gazeDirection} from './orientation.js?v=1.21.0';
+import {localSunDirection} from './solar.js?v=1.21.0';
+import {getSiteProfile} from './sites.js?v=1.21.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.21.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.21.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.21.0';
+import {terraceStairs} from './layout.js?v=1.21.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.21.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -60,6 +61,19 @@ export function spaPlanMarkup(program,{X,Y,scale,labels=true,subtle=false}) {
   const pit=f?`<g data-spa-object="firepit">${rect(f,`rx="${.12*scale}" fill="#c9ba9e" fill-opacity="${subtle ? .15 : .8}" stroke="#968267" stroke-width="1.4"`)}${(f.seats||[]).map(b=>rect(b,'fill="#a99272" stroke="#7f705c" stroke-width=".6"')).join('')}${(f.steps||[]).map(step=>rect(step,'fill="none" stroke="#7f705c" stroke-width=".7"')).join('')}<circle cx="${X(f.x+f.width/2)}" cy="${Y(f.y+f.length*.58)}" r="${.45*scale}" fill="#8c5940" stroke="#d3a36d" stroke-width="1.4"/>${labels?text(`FIREPIT −${fmt(f.depth,2)} m`,f.x+f.width/2,f.y+f.length+.65,C.ink,8.5):''}</g>`:'';
   const plunge=c?`<g data-spa-object="cold-plunge">${(c.steps||[]).map(step=>rect(step,'data-spa-object="plunge-step" fill="#c9b391" stroke="#9c8769" stroke-width=".7"')).join('')}${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text('COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
   return subtle?`<g pointer-events="none">${sauna+pit+plunge}</g>`:sauna+pit+plunge;
+}
+
+/** Top-down projections of actual opaque members, shared by both plan maps. */
+export function privacyPlanMarkup(structures,{X,Y,scale,labels=true,subtle=false}) {
+  if(!structures?.boxes?.length)return '';
+  const palette={post:'#34453d',beam:'#937251',lattice:'#ab8964',foliage:'#4b7151',screen:'#c8b894'};
+  const members=[...structures.boxes].sort((a,b)=>a.z1-b.z1).map(b=>
+    `<rect data-privacy-part="${esc(b.part)}" x="${X(b.x0)}" y="${Y(b.y0)}" width="${(b.x1-b.x0)*scale}" height="${(b.y1-b.y0)*scale}" fill="${palette[b.part]||palette.beam}" fill-opacity="${subtle?.55:.92}"><title>${esc(b.label||b.id)}</title></rect>`
+  ).join('');
+  const outlines=(structures.footprints||[]).map(f=>
+    `<rect data-privacy-footprint="${esc(f.id)}" x="${X(f.x)}" y="${Y(f.y)}" width="${f.width*scale}" height="${f.length*scale}" fill="none" stroke="#7d694e" stroke-width="1" stroke-dasharray="3 3"/>${labels?`<text x="${X(f.x+f.width/2)}" y="${Y(f.y+f.length/2)}" text-anchor="middle" fill="${C.ink}" font-size="9" font-weight="650" paint-order="stroke" stroke="${C.paper}" stroke-width="2.5">${esc(f.label)}</text>`:''}`
+  ).join('');
+  return `<g data-privacy-plan="true" pointer-events="none">${members}${outlines}</g>`;
 }
 
 function footprintBounds(polygon) {
@@ -132,6 +146,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const terrace = {...site.terrace, depth: number(settings.terraceDepth, site.terrace.depth)};
   const pool = poolBounds(settings,data);
   const program = gardenProgram(settings,data);
+  const privacy = privacyStructures(settings,data);
   const ray = criticalRay(data, analysis);
   const polys = points => points.map(p => `${X(p[0]).toFixed(2)},${Y(p[1]).toFixed(2)}`).join(' ');
   const rect = (x, y, w, h, attributes = '') => `<rect x="${X(x)}" y="${Y(y)}" width="${w * scale}" height="${h * scale}" ${attributes}/>`;
@@ -208,6 +223,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${hedges}
         ${frontOpenings}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
+        ${privacyPlanMarkup(privacy,{X,Y,scale,labels:detail&&!measured})}
         <polygon points="${polys(cone)}" fill="${C.observer}" opacity=".18"/>
         ${rays}
         ${trees}
@@ -326,6 +342,22 @@ function linePolygonInterval(origin,direction,polygon){
 }
 const sectionRect=(origin,direction,r)=>rayRectangleInterval(origin,direction,{x0:r.x,x1:r.x+r.width,y0:r.y,y1:r.y+r.length});
 
+/** Exact vertical slices through shared finite timber, foliage and spa panels. */
+export function privacySectionCuts(structures,origin,direction) {
+  return (structures?.boxes||[]).map(b=>({...b,interval:rayRectangleInterval(origin,direction,b)}))
+    .filter(b=>b.interval&&Number.isFinite(b.interval[0])&&Number.isFinite(b.interval[1])&&b.interval[1]-b.interval[0]>1e-8);
+}
+
+export function privacySectionMarkup(cuts,{X,Y,scale,minS=-Infinity,maxS=Infinity}) {
+  const palette={post:'#34453d',beam:'#937251',lattice:'#ab8964',foliage:'#4b7151',screen:'#c8b894'};
+  const visible=cuts.filter(c=>c.interval[1]>minS&&c.interval[0]<maxS);
+  if(!visible.length)return '';
+  return `<g data-privacy-section="true">${visible.map(c=>{
+    const a=Math.max(minS,c.interval[0]),b=Math.min(maxS,c.interval[1]);
+    return `<rect data-privacy-part="${esc(c.part)}" x="${X(a)}" y="${Y(c.z1)}" width="${(b-a)*scale}" height="${(c.z1-c.z0)*scale}" fill="${palette[c.part]||palette.beam}"><title>${esc(c.label||c.id)}</title></rect>`;
+  }).join('')}</g>`;
+}
+
 /** Only objects intersected by this vertical section are shown, at shared levels. */
 export function spaSectionCuts(settings,data,origin,direction){
   const program=gardenProgram(settings,data);
@@ -373,6 +405,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const minS = -2.5, maxS = D + 3.2;
   const program=gardenProgram(settings,data),levels=spaLevels(settings,data);
   const spaCuts=spaSectionCuts(settings,data,origin,direction).filter(c=>c.interval[1]>minS&&c.interval[0]<maxS);
+  const privacyCuts=privacySectionCuts(privacyStructures(settings,data),origin,direction).filter(c=>c.interval[1]>minS&&c.interval[0]<maxS);
   const sampleCount = Math.max(50, Math.ceil((maxS - minS) * 2));
   const positions=Array.from({length:sampleCount+1},(_,i)=>minS+i/sampleCount*(maxS-minS));
   const stepCuts=program.active?levels.firepit.steps.map(step=>({step,interval:sectionRect(origin,direction,step)})).filter(c=>c.interval):[];
@@ -385,7 +418,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   });
   const roof = settings.canopyEnabled ? canopyBounds(settings, data) : null;
   const minimumZ = Math.min(...samples.map(p => Math.min(p.existing, p.proposed)), screen?.groundZ ?? Infinity) - 1;
-  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...spaCuts.map(c=>c.roofZ??c.rimZ??c.waterZ??c.floorZ), ...treeVolumes.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
+  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...spaCuts.map(c=>c.roofZ??c.rimZ??c.waterZ??c.floorZ), ...privacyCuts.map(c=>c.z1), ...treeVolumes.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
   // Use the flex panel's actual pixel frame, not the world's aspect ratio, for
   // the viewBox. A second layout pass below measures it after the short header
   // and readouts are laid out. World metres still use one scale in both axes,
@@ -406,9 +439,10 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const existingPath = profilePath('existing');
   const block = data.buildings.find(b => b.id === ray.blockId);
   const sampleType = ray.kind === 'high-feature' ? 'high-feature return' : 'roof point';
-  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? 'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
+  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? 'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
   const outcome = `This sampled ${sampleType} is ${ray.visible ? 'exposed' : `hidden by the ${blockerLabel}`}`;
   const treesSvg = treeSectionMarkup(treeVolumes, {origin, direction, minS, maxS, X, Y, scale});
+  const privacySvg = privacySectionMarkup(privacyCuts,{X,Y,scale,minS,maxS});
   const clipped=interval=>[Math.max(minS,interval[0]),Math.min(maxS,interval[1])];
   const spaSvg=spaCuts.map(c=>{
     const [a,b]=clipped(c.interval),middle=(a+b)/2;
@@ -538,7 +572,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
           <path d="${existingPath}" fill="none" stroke="${C.existing}" stroke-width="1.2" stroke-dasharray="3 4"/>
           ${screen && screen.groundZ > gardenGroundAt(screen.x, screen.y, settings, data) + .01 ? `<rect x="${X(screen.distance) - .48 * scale}" y="${Y(screen.groundZ)}" width="${.96 * scale}" height="${(screen.groundZ - gardenGroundAt(screen.x, screen.y, settings, data)) * scale}" fill="${C.soil}"/>` : ''}
           ${houseFloor}${terraceFloor}${spaSvg}${entryStairsSvg}
-          ${canopySvg}
+          ${canopySvg}${privacySvg}
           ${treesSvg}
           ${screenSvg}
           ${buildingMark}
@@ -554,7 +588,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
       <div>Hedge-only target<strong style="display:block;color:${C.ink};font-size:${compact ? 17 : 20}px;margin-top:3px">${need !== null ? fmt(need, 2) + ' m' : '—'}</strong></div>
       <div>Eye to sample<strong style="display:block;color:${C.ink};font-size:${compact ? 17 : 20}px;margin-top:3px">${fmt(D, 2)} m</strong></div>
     </div>
-    <p style="flex:0 0 auto;margin:7px 0 0;font-size:10.5px;color:${C.muted};line-height:1.35">Solid/dotted ground: proposed/existing. Crown${program.active?' and spa':''} shapes are cuts through this section.${program.active?' Blue dotted sauna edges are transparent glass; pool, plunge and lounge excavation uses the shared design levels.':''} The hedge-only target excludes other screening and applies to this ray.</p>`;
+    <p style="flex:0 0 auto;margin:7px 0 0;font-size:10.5px;color:${C.muted};line-height:1.35">Solid/dotted ground: proposed/existing. Crown${program.active?' and spa':''} shapes are cuts through this section.${privacyCuts.length?' Timber, dense planting and spa screens appear only where this section cuts their actual geometry.':''}${program.active?' Blue dotted sauna edges are transparent glass; pool, plunge and lounge excavation uses the shared design levels.':''} The hedge-only target excludes other screening and applies to this ray.</p>`;
   const frame = container.querySelector('[data-section-frame]');
   if (!measuredFrame && frame?.clientWidth > 0 && frame?.clientHeight > 0) {
     return renderSection(container, data, settings, observer, analysis, {

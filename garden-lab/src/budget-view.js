@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.20.1';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.20.1';
+import {getSiteProfile} from './sites.js?v=1.21.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.21.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -31,7 +31,11 @@ export function budgetSideLabels(data){
 
 export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks,t=cost.screeningTrees;
-  const spa=cost.spa,garden=cost.garden;
+  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy;
+  if($('privacy-cost-summary'))$('privacy-cost-summary').textContent=privacy?.enabled
+    ?privacy.unquoted.length?`${privacy.unquoted.length} privacy ${privacy.unquoted.length===1?'structure needs an installed quote':'structures need installed quotes'}. Known privacy costs: ${amount(privacy.knownBase)}. Unquoted work is excluded from the known budget; planning allowances do not price these structures.`
+      :`Privacy structures: ${amount(privacy.knownBase)} in installed quotes, before the shared uncertainty allowance. Terrace canopy priced separately.`
+    :'Quotes apply only while the corresponding structure is selected. Terrace canopy priced separately.';
   if($('spa-cost'))$('spa-cost').textContent=spa?.status==='quote-required'?(spa.knownBase.low>0?`${amount(spa.knownSubtotal,true)} + quotes`:'Quote needed'):amount(spa?.total);
   if($('spa-quantity'))$('spa-quantity').textContent=spa?.enabled?spa.planningEnabled
     ?`${spa.rows.length} installed items · ${spa.rows.filter(row=>row.quoted).length} quote overrides`
@@ -53,7 +57,9 @@ export function renderBudget(cost,settings,data){
     ?`${t.count} enabled ${t.count===1?'tree':'trees'} · ${amount(t.plantsKnown)} known plant supply${t.plantQuoteCount?` · ${t.plantQuoteCount} specimen ${t.plantQuoteCount===1?'quote':'quotes'} needed`:''}`
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
-    ?`Some plants, services or garden installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices and installed quotes, or enable planning allowances.`
+    ?privacy?.unquoted.length
+      ?`Selected privacy structures need installed quotes. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price these custom structures. Review the unquoted items in the expanded budget.`
+      :`Some plants, services or garden installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices and installed quotes, or enable planning allowances.`
     :`PLN ${garden?.enabled?(h.fullPerimeter?'rear garden + full perimeter hedges':h.sides.some(side=>side.side==='front')?'rear garden + front hedge':'rear-garden'):'planning'} budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance once. ${cost.planningEnabled?'Installed ranges are planning assumptions, not received supplier quotes.':'Site allowances and rates are editable.'}`;
   $('cost-status').classList.toggle('needs-quote',cost.status==='quote-required');
   const panel=document.querySelector('.cost-panel');
@@ -61,6 +67,7 @@ export function renderBudget(cost,settings,data){
   panel.dataset.earthworkLow=e.total.low;panel.dataset.compactedVolume=e.compactedVolume;
   panel.dataset.screeningTreeCount=t?.count||0;panel.dataset.screeningTreeKnownLow=t?.knownSubtotal.low||0;
   panel.dataset.gardenKnownLow=garden?.knownBase.low||0;panel.dataset.planningEnabled=cost.planningEnabled?'true':'false';
+  panel.dataset.privacyKnownLow=privacy?.knownBase.low||0;panel.dataset.privacyUnquotedCount=privacy?.unquoted.length||0;
   const sideLabel={front:'Front / street',...budgetSideLabels(data)};
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
@@ -79,6 +86,8 @@ export function renderBudget(cost,settings,data){
   $('cost-detail-content').innerHTML=table('Thujas by side · supply and installation',plants)+quantities+
     `<p class="field-note">Gross rear area ${n(e.rearGrossArea)} m²; ${n(e.excludedArea)} m² excluded for the pool, terrace${spa?.enabled&&spa.scopeId!=='pool-and-jacuzzi'?', sauna, sunken lounge, cold plunge':''} and retained structures. Topsoil is included within the selected raise. Loose material uses your ${n(e.looseFactor,2)}× delivery multiplier.</p>`+
     table('Rear-garden earthworks',earth)+
+    (privacy?.enabled?table('Privacy structures · installed quotes',installedRows(privacy.rows))+
+      '<p class="field-note">Custom structures are quote-only. Unquoted work is excluded from the known subtotal, even with planning allowances on. The terrace canopy is counted separately in garden finishes.</p>':'')+
     `<p class="field-note">Line items exclude the ${cost.contingencyPercent}% upper-budget uncertainty allowance. Published plant bands are price references, not a guaranteed current offer. Enter supplier-confirmed final amounts, including applicable tax, for a purchasing budget.</p>`+
     `<ul class="budget-notes">${cost.notes.map(note=>`<li>${escape(note)}</li>`).join('')}</ul>`;
   if($('screening-tree-detail')){

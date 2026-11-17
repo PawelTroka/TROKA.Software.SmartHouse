@@ -1,5 +1,5 @@
 /**
- * Browser regression for the Garden Lab night scene and upper-floor outlooks.
+ * Browser regression for Garden Lab night, upper-floor and privacy controls.
  * Runs against the build with real Chromium WebGL. All scenario changes use
  * visible controls; DOM readouts are the assertions, not private app state.
  */
@@ -386,6 +386,104 @@ async function verifyHedgeSurfaceLighting(){
   check('Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels');
   check('At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged');
 }
+async function verifyPrivacyScreening(){
+  await page.setViewportSize({width:1430,height:1040});
+  await details('#sun-controls',false);
+  await details('#night-adjustments',false);
+  await details('.upper-floor-assumptions',false);
+  await details('#privacy-structures',true);
+  assert.equal(await page.locator('#privacy-shortcuts').isVisible(),true);
+  const result=async()=>{
+    await page.waitForFunction(()=>{
+      const values=document.querySelector('#privacy-result')?.dataset;
+      return values&&values.before!==''&&values.after!==''&&
+        Number.isFinite(Number(values.before))&&Number.isFinite(Number(values.after));
+    });
+    const values=await page.locator('#privacy-result').evaluate(node=>({before:Number(node.dataset.before),after:Number(node.dataset.after)}));
+    for(const value of Object.values(values))assert.ok(value>=0&&value<=100,JSON.stringify(values));
+    assert.match(await page.locator('#privacy-observer').innerText(),/^PCK3 · /);
+    return values;
+  };
+  const select=async id=>{
+    const button=page.locator('#privacy-shortcuts [data-privacy-preset="'+id+'"]');
+    await button.click();
+    await page.waitForFunction(id=>document.querySelector('#privacy-shortcuts [data-privacy-preset="'+id+'"]')?.getAttribute('aria-pressed')==='true',id);
+    await frames();
+    return result();
+  };
+
+  await select('none');
+  await page.locator('[data-privacy-view="terrace"]').click();
+  await page.locator('#preview-day').click();
+  await waitLight('nightActivation','zero');
+  const baseline=await result();
+  assert.equal(baseline.before,baseline.after,'Off must compare the unchanged design with itself');
+  const spa=await select('spa');
+  assert.equal(spa.before,baseline.before,'The comparison baseline must retain the same garden and viewpoint');
+  assert.ok(spa.after>spa.before,'Spa canopy and screens must improve sampled terrace coverage: '+JSON.stringify(spa));
+  assert.equal(await page.locator('#spaScreensEnabled').isChecked(),true);
+  assert.equal(await page.locator('#canopyEnabled').isChecked(),true);
+  assert.equal(await page.locator('#privacy-layout-warning').isVisible(),false);
+  await details('#privacy-screen-settings details',true);
+  await setNumber('spaScreenGap-value',.2);
+  await page.locator('#privacy-layout-warning').waitFor({state:'visible'});
+  assert.match(await page.locator('#privacy-layout-warning').innerText(),/0\.6 m service zone/);
+  await setNumber('spaScreenGap-value',.65);
+  await page.locator('#privacy-layout-warning').waitFor({state:'hidden'});
+  check('Spa screening improves the visible PCK3 result and a reduced service gap shows a layout warning');
+
+  const pergola=await select('pergola');
+  assert.equal(pergola.before,baseline.before);
+  assert.ok(pergola.after>pergola.before,'Established pergola planting must improve terrace coverage');
+  assert.equal(await page.locator('#privacyPergolaFoliage').isChecked(),true);
+  await page.locator('#privacyPergolaFoliage').uncheck();
+  await page.waitForFunction(planted=>Number(document.querySelector('#privacy-result')?.dataset.after)<planted,pergola.after);
+  const bare=await result();
+  assert.equal(bare.before,baseline.before);
+  assert.ok(bare.after<pergola.after&&bare.after>=bare.before,'Bare lattice must lose foliage coverage without erasing other obstructions');
+  assert.match(await page.locator('#privacy-foliage-note').innerText(),/Open gaps remain open/);
+  check('Switching established pergola foliage off reduces the actual terrace screening result');
+
+  const combined=await select('layered');
+  assert.ok(combined.after>=Math.max(spa.after,pergola.after),'Combined screening retains the protection of each option');
+  await page.locator('[data-mode="plan"]').click();
+  await page.locator('#plan-host').waitFor({state:'visible'});
+  await page.locator('#plan-host [data-privacy-plan="true"]').waitFor({state:'visible'});
+  assert.equal(await page.locator('#plan-host [data-privacy-footprint="privacy-pergola"]').count(),1);
+  assert.equal(await page.locator('#plan-host [data-privacy-part="screen"]').count(),2);
+  assert.equal(await page.locator('#plan-host [data-privacy-part="foliage"]').count(),2);
+  assert.ok(await page.locator('#plan-host [data-privacy-part="lattice"]').count()>0);
+  check('Combined Plan displays the finite pergola, two planted sides and both spa screen panels');
+
+  await page.locator('[data-mode="orbit"]').click();
+  await page.locator('#reset-camera').click();
+  await page.locator('#scene-host canvas').waitFor({state:'visible'});
+  assert.equal(await page.locator('#scene-host canvas').count(),1,'Privacy structures must retain real WebGL');
+  await page.locator('#share').click();
+  const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
+  for(const key of ['privacyPergolaEnabled','privacyPergolaFoliage','spaScreensEnabled','canopyEnabled'])
+    assert.equal(shared.get(key),'true','Combined share must retain '+key);
+  assert.equal(shared.get('site'),'sternicza-11');
+  assert.equal(shared.get('preset'),'terrace');
+  // Default dimensions and orbit mode are omitted from sparse shares. Check
+  // their restored controls below instead of requiring redundant URL fields.
+  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+  await waitReady();
+  assert.equal(await page.locator('#privacy-shortcuts [data-privacy-preset="layered"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('#viewport').getAttribute('data-mode'),'orbit');
+  for(const key of ['privacyPergolaEnabled','privacyPergolaFoliage','spaScreensEnabled','canopyEnabled'])
+    assert.equal(await page.locator('#'+key).isChecked(),true);
+  await details('#privacy-structures',true);
+  await details('#privacy-pergola-settings details',true);
+  await details('#privacy-screen-settings details',true);
+  assert.equal(Number(await page.locator('#privacyPergolaHeight-value').inputValue()),5);
+  assert.equal(Number(await page.locator('#spaScreenWidth-value').inputValue()),3.6);
+  assert.equal(Number(await page.locator('#spaScreenGap-value').inputValue()),.65);
+  assert.deepEqual(await result(),combined,'Shared combined design must restore the same PCK3 result');
+  await screenshot('sternicza-privacy-combined-orbit');
+  report.privacy={baseline,spa,pergola,bare,combined,sharedReloadPassed:true,renderer:'WebGL'};
+  check('Combined screening survives Share and reload in the actual WebGL orbit scene');
+}
 async function verifyNadmorska(){
   await page.setViewportSize({width:1430,height:1040});
   await frames();
@@ -396,6 +494,8 @@ async function verifyNadmorska(){
   // Exercise the real selector, including clearing the prior Sternicza share
   // hash, before testing the third property. This also protects the older site.
   await chooseProperty('korzeniowskiego-40');
+  for(const id of ['privacy-structures','privacy-shortcuts','privacy-budget-assumptions'])
+    assert.equal(await page.locator('#'+id).isVisible(),false,'Sternicza screening controls must stay hidden at Korzeniowskiego');
   assert.equal(Number(await page.locator('#floorHeight-value').inputValue()),1.7);
   assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
   await selectPreset(UPPER_FLOOR_PRESETS.find(p=>p.id==='first-garden-standing'));
@@ -403,6 +503,9 @@ async function verifyNadmorska(){
   check('Switching to Korzeniowskiego preserves its own floor height and upstairs view');
 
   await chooseProperty('nadmorska-17');
+  for(const id of ['privacy-structures','privacy-shortcuts','privacy-budget-assumptions'])
+    assert.equal(await page.locator('#'+id).isVisible(),false,'Sternicza screening controls must stay hidden at Nadmorska');
+  check('Sternicza privacy comparisons and quotes stay hidden on the other two properties');
   assert.equal(await page.locator('#property-name').innerText(),'NADMORSKA 17');
   assert.equal(Number(await page.locator('#floorHeight-value').inputValue()),1.5);
   assert.equal(Number(await page.locator('#gardenRaise-value').inputValue()),0);
@@ -723,6 +826,7 @@ try {
   });
   check('Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow');
 
+  await verifyPrivacyScreening();
   await verifyNadmorska();
 
   assert.deepEqual(pageErrors,[],'Unhandled JavaScript errors');

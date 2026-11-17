@@ -3,10 +3,11 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.20.1';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.20.1';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.20.1';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.20.1';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.21.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.21.0';
+import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.21.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.21.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.21.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -16,6 +17,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   canopyWidth: 8.5, fasciaDepth: 0.3, terraceDepth: 4.2,
   includeHighFeatures: false,
   screeningTrees: Object.freeze([]), treeLeafMode: 'auto',
+  ...PRIVACY_DEFAULTS,
 });
 
 const EPS = 1e-8;
@@ -465,7 +467,43 @@ export function canopyBounds(settings = {}, data) {
     fasciaBottomZ: z - Math.max(0, number(s.fasciaDepth, 0.3)) };
 }
 
-/** Finite roof plane and front/side fascia; no imaginary infinite canopy. */
+/** Actual support extents for the scene and sunlight model. Privacy rays retain
+ * the existing roof/fascia approximation and do not credit these narrow posts. */
+export function canopySupportBounds(settings = {}, data) {
+  if(!settings.canopyEnabled)return [];
+  const s=settingsWithDefaults(settings),c=canopyBounds(s,data),terrace=data.site.terrace;
+  const floor=floorElevation(s,data),deckEnd=c.y0+Math.max(0,number(s.terraceDepth,terrace.depth));
+  return [c.x0+.08,c.x1-.18].map(x0=>{
+    const x1=x0+.1,y0=c.y1-.18,y1=c.y1-.08;
+    const onTerrace=x0>=terrace.x-EPS&&x1<=terrace.x+terrace.width+EPS&&y0>=c.y0-EPS&&y1<=deckEnd+EPS;
+    const z0=onTerrace?floor:gardenGroundAt((x0+x1)/2,(y0+y1)/2,s,data);
+    return {x0,x1,y0,y1,z0,z1:Math.max(z0+.1,c.fasciaBottomZ)};
+  });
+}
+
+/** Identical finite members feed the scene, sections, privacy and sunlight. */
+export function privacyStructures(settings={},data){
+  const result=privacyStructureLayout(settings,data,{
+    floorZ:floorElevation(settings,data),groundAt:(x,y)=>gardenGroundAt(x,y,settings,data),jacuzzi:jacuzziBounds(settings,data),
+  });
+  if(!result.enabled)return result;
+  const corners=box=>[[box.x0,box.y0],[box.x1,box.y0],[box.x1,box.y1],[box.x0,box.y1]];
+  if(result.boxes.some(box=>corners(box).some(p=>!pointInPolygon(p,data.site.boundary))))result.warnings.push('A privacy structure extends beyond the mapped plot. Adjust its position or dimensions.');
+  const program=gardenProgram(settings,data),pool=poolBounds(settings,data),obstacles=[];
+  if(pool)obstacles.push(['pool and coping',{x:pool.x-pool.coping,y:pool.y-pool.coping,width:pool.width+2*pool.coping,length:pool.length+2*pool.coping}]);
+  if(program.active)obstacles.push(['sauna',program.sauna],['sunken lounge',program.firepit],['cold plunge',program.coldPlunge]);
+  for(const footprint of result.footprints){
+    const overlaps=obstacles.filter(([,obstacle])=>rectanglesOverlap(footprint,obstacle)).map(([label])=>label);
+    if(overlaps.length)result.warnings.push(`${footprint.label} footprint overlaps the ${overlaps.join(', ')}. Check the layout and supports.`);
+  }
+  const physicalBoxes=result.boxes.filter(box=>box.part==='post'||box.part==='screen'||box.part==='foliage');
+  if(data.site.house?.footprint&&physicalBoxes.some(box=>corners(box).some(p=>pointInPolygon(p,data.site.house.footprint))))result.warnings.push('A privacy support or panel overlaps the house footprint. Check its position.');
+  if(settings.removeGarage===false&&data.site.garage?.footprint&&physicalBoxes.some(box=>corners(box).some(p=>pointInPolygon(p,data.site.garage.footprint))))result.warnings.push('A privacy support or panel overlaps the retained garage. Check its position.');
+  return result;
+}
+
+/** Finite roof plane and front/side fascia; narrow supports get no privacy
+ * credit in this approximation, although the scene and sunlight include them. */
 export function canopyIntersection(observer, target, settings, data) {
   if (!settings.canopyEnabled) return null;
   const e = point3(observer), t = point3(target), c = canopyBounds(settings, data), hits = [];
@@ -586,6 +624,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
   const segments = hedgeSegments(s, data), rays = [], byBlock = [];
   const trees = screeningTreeVolumes(s, data);
   const saunaFaces=saunaOpaqueFaces(s,data);
+  const privacyBoxes=privacyStructures(s,data).boxes;
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
   // From an outdoor viewpoint, the user's house also screens views across it.
@@ -611,6 +650,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       const canopy = canopyIntersection(origin, target, s, data);
       const tree = firstTreeIntersection(origin, target, trees);
       const sauna=saunaIntersection(origin,target,s,data,saunaFaces);
+      const privacyStructure=firstPrivacyIntersection(origin,target,privacyBoxes);
       let buildingHit = null;
       for (const other of blockers) {
         if (other.id === block.id) continue;
@@ -623,11 +663,12 @@ export function analyzeVisibility(observer, settings = {}, data) {
       if (buildingHit) possible.push({ t: buildingHit.t, type: 'building', hit: buildingHit });
       if (tree) possible.push({ t: tree.t, type: 'screening-tree', hit: tree });
       if (sauna) possible.push({t:sauna.t,type:'sauna',hit:sauna});
+      if (privacyStructure) possible.push({t:privacyStructure.t,type:'privacy-structure',hit:privacyStructure});
       const first = possible.sort((a, b) => a.t - b.t)[0];
       const ray = { origin, target, blockId: block.id, blockLabel: block.label,
         kind: i < block.roofSampleCount ? 'roof' : i >= block.samples.length ? 'high-feature' : 'facade',
         visible: !first, blockedBy: first?.type || null, obstruction: first?.hit || null,
-        screen, canopy, tree, sauna, distance };
+        screen, canopy, tree, sauna, privacyStructure, distance };
       blockRays.push(ray); rays.push(ray);
       if (screen && !buildingHit) {
         worstRequiredHedge[screen.side] = Math.max(worstRequiredHedge[screen.side], screen.requiredHeight);
@@ -636,7 +677,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
         }
         // Keep the hedge-alone benchmark above unchanged. This second value
         // only describes the rays still needing a hedge after canopy/trees.
-        if (!canopy && !tree && !sauna) {
+        if (!canopy && !tree && !sauna && !privacyStructure) {
           remainingRequiredHedge[screen.side] = Math.max(remainingRequiredHedge[screen.side], screen.requiredHeight);
           remainingRequiredHedge.overall = Math.max(remainingRequiredHedge.overall, screen.requiredHeight);
         }
@@ -652,5 +693,5 @@ export function analyzeVisibility(observer, settings = {}, data) {
   for (const ray of rays) if (ray.blockedBy) reasons[ray.blockedBy] = (reasons[ray.blockedBy] || 0) + 1;
   return { observer, total, visible, blocked, blockedPercent: total ? 100 * blocked / total : 0,
     byBlock, worstRequiredHedge, remainingRequiredHedge, rays, criticalRay, reasons,
-    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens and finite dense proposed crowns. Hedge-alone requirements ignore added trees/canopy. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
+    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens, finite proposed crowns and modeled pergola/spa-screen members. Dense pergola foliage is an explicit established-planting assumption. Hedge-alone requirements ignore added trees/canopy/privacy structures. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
 }

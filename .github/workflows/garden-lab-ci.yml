@@ -17,7 +17,9 @@ concurrency:
 jobs:
   garden-lab:
     name: Geometry, build and WebGL browser checks
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 has browser dependencies for Ubuntu 24.04. Keep its
+    # runner stable when ubuntu-latest advances to a newer distribution.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
