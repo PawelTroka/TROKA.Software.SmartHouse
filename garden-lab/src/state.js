@@ -1,13 +1,13 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.21.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.21.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.21.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.21.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.21.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.21.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.21.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.21.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.21.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS} from './garage-options.js?v=1.21.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.22.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.22.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.22.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.22.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.22.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.22.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.22.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.22.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.22.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS} from './garage-options.js?v=1.22.0';
 
 export const STATE_VERSION = 22;
 

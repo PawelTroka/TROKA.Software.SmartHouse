@@ -2,7 +2,19 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.21.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.21.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.21.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.22.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.22.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.22.0)**
+
+## Basement garage and Cyberster clearance · 1.22.0
+
+Sternicza has an optional basement conversion under the raised house. **Try raised basement** uses the full approximately 9.13 m mapped approach and a clearly shown 2.0 m lower transition inside the house. Controls adjust basement height, slab allowance, extra lowering, ramp width, indoor run, gradient ceiling and car clearance/reserve. A profile shows the dimensioned car in forward or reverse entry while the complete-drive result stays independent of its preview position.
+
+The baseline uses the published Polish **105.6 mm laden** Cyberster ground clearance,2.690 m wheelbase and both overhangs. It assumes a conservative flat underside. With 2.30 m basement clear height and 0.25 m slab allowance, the floor is about 1.40 m below the modeled street entry. The candidate's minimum static gap is about 42 mm; after a 1 mm numerical allowance, about 41 mm remains against a 30 mm planning reserve. The same floor with no indoor continuation leaves only about 5 mm; another 0.60 m lowering produces modeled contact.
+
+These are conditional geometry results. The street connection, actual basement levels/structure, containment threshold, drainage and scissor-door/roof envelopes need measured design. The model has a true terrain cut, retaining walls, proposed front opening and basement bay; the front vehicle hedge gap moves into line. Closed-car overhead passage, structural headroom and remaining flat bay are separate checks.
+
+The conversion has a quote-only budget line; zero is unquoted and keeps the total incomplete. Schema 22 saves and shares all settings, keeps older links off, and isolates this option from the other properties.
+
+[Open the basement concept](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.22.0#v=22&site=sternicza-11&basementGarageEnabled=true&showDimensions=false) · [Engineering assumptions and sources](docs/basement-garage-cyberster-study.md)
 
 ## PCK3 screening structures · 1.21.0
 

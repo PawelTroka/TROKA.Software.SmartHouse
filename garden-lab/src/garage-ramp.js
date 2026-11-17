@@ -2,7 +2,7 @@
  * geometry is implied. The conservative underside is flat over the full car.
  * Site coordinates are [x,y,elevation]; longitudinal profile s runs inward.
  */
-import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey} from './garage-options.js?v=1.21.0';
+import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey} from './garage-options.js?v=1.22.0';
 
 export const CYBERSTER_AWD=Object.freeze({length:4.535,width:1.913,mirrorWidth:2.110,height:1.329,
   wheelbase:2.690,frontOverhang:.955,rearOverhang:.890,frontRadius:.352,rearRadius:.35025,

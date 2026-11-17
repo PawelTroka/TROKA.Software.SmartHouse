@@ -1,27 +1,27 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, spaLevels, privacyStructures } from './geometry.js?v=1.21.0';
-import { sampledRoofFaces } from './shade.js?v=1.21.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.21.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.21.0';
-import { getSiteProfile } from './sites.js?v=1.21.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.21.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.21.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.21.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.21.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.21.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.21.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.21.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.21.0';
-import { gardenDimensions } from './dimensions.js?v=1.21.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.21.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.21.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.21.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.21.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.21.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.21.0';
-import { garageTerrainCutouts,subtractGarageOpenings,garageFacadePanels,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.21.0';
+import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, spaLevels, privacyStructures } from './geometry.js?v=1.22.0';
+import { sampledRoofFaces } from './shade.js?v=1.22.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.22.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.22.0';
+import { getSiteProfile } from './sites.js?v=1.22.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.22.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.22.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.22.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.22.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.22.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.22.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.22.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.22.0';
+import { gardenDimensions } from './dimensions.js?v=1.22.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.22.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.22.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.22.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.22.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.22.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.22.0';
+import { garageTerrainCutouts,subtractGarageOpenings,garageFacadePanels,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.22.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
