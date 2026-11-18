@@ -3,9 +3,10 @@ export const GARAGE_FIELDS=Object.freeze({
   garageClearHeight:{label:'Base clear height under slab',min:2,max:3,step:.05,value:2.3,group:'garage-level'},
   garageSlabThickness:{label:'Living-floor slab allowance',min:.1,max:.5,step:.01,value:.25,group:'garage-level'},
   garageExtraDepth:{label:'Extra basement lowering',min:0,max:1,step:.05,value:0,group:'garage-level'},
-  garageSpaces:{label:'Parking spaces',min:1,max:2,step:1,value:2,group:'garage-ramp',unit:'cars'},
+  garageSpaces:{label:'Required parking spaces',min:2,max:2,step:1,value:2,group:'garage-ramp',unit:'cars',
+    help:'The basement needs two cars side by side. Adjust the clear width below to check the fit.'},
   garageRampWidth:{label:'Ramp and garage clear width',min:2.8,max:6.4,step:.1,value:5.8,group:'garage-ramp'},
-  garageInsideRun:{label:'Ramp continuation inside house',min:0,max:3,step:.1,value:2,group:'garage-ramp',unit:'cars'},
+  garageInsideRun:{label:'Ramp continuation inside house',min:0,max:3,step:.1,value:2,group:'garage-ramp',unit:'m'},
   garageBottomApron:{label:'Flat apron at ramp foot',min:.2,max:1.5,step:.1,value:.4,group:'garage-ramp'},
   garageMaxGrade:{label:'Peak gradient limit to compare',min:10,max:30,step:1,value:25,group:'garage-ramp',unit:'%'},
   garageClearanceMm:{label:'Lowest car underside above level road',min:70,max:160,step:.1,value:105.6,group:'garage-car',unit:'mm'},
@@ -16,6 +17,14 @@ export const GARAGE_DEFAULTS=Object.freeze({
   ...Object.fromEntries(Object.entries(GARAGE_FIELDS).map(([key,field])=>[key,field.value])),
   basementGarageEnabled:false,garageReverse:false,
 });
+// Read capacity before clamping so an explicitly narrow two-car study keeps
+// its actual width and still fails the same clearance check.
+export function upgradeSingleCarGarage(settings){
+  if(settings.garageSpaces!==1)return settings;
+  const width=Number.isFinite(settings.garageRampWidth)?settings.garageRampWidth:GARAGE_DEFAULTS.garageRampWidth;
+  return {...settings,garageSpaces:GARAGE_DEFAULTS.garageSpaces,
+    garageRampWidth:Math.max(width,GARAGE_DEFAULTS.garageRampWidth),costBasementGarageQuote:0};
+}
 // Presets retain measured floor levels, vehicle assumptions, garden and quotes.
 const design=Object.fromEntries(Object.entries(GARAGE_FIELDS)
   .filter(([,field])=>['garage-level','garage-ramp'].includes(field.group)).map(([key,field])=>[key,field.value]));
@@ -26,6 +35,7 @@ export const GARAGE_PRESETS=Object.freeze([
 ]);
 export function garagePresetState(id,current){
   if(current.siteId!=='sternicza-11')return {...current};
+  current=upgradeSingleCarGarage(current);
   if(id==='none')return {...current,basementGarageEnabled:false};
   const preset=GARAGE_PRESETS.find(item=>item.id===id);
   return preset?{...current,...preset.patch,basementGarageEnabled:true}:{...current};

@@ -6,8 +6,8 @@ import {garagePlanFrame} from '../src/garage-ramp.js';
 import {basementGaragePlanMarkup} from '../src/diagrams.js';
 import {gardenQuantities} from '../src/costs.js';
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
-const base={siteId:'sternicza-11',hedgeFront:4,hedgeInset:.5,hedgeFullPerimeter:true,garageRampWidth:3.2,garageSpaces:1};
-test('basement option aligns the proposed gate and leaves pedestrian access clear',()=>{
+const base={siteId:'sternicza-11',hedgeFront:4,hedgeInset:.5,hedgeFullPerimeter:true,garageRampWidth:3.2,garageSpaces:2};
+test('a narrow two-car study aligns the proposed gate and leaves pedestrian access clear',()=>{
  const off=frontHedgeLayout(base,data),settings={...base,basementGarageEnabled:true};
  const on=frontHedgeLayout(settings,data),frame=garagePlanFrame(settings,data);
  const gate=on.openings.find(g=>g.id==='front-vehicle-opening'),old=off.openings.find(g=>g.id==='front-vehicle-opening');

@@ -189,5 +189,5 @@ test('both rendered cars occupy separate lanes inside the widened bay and one re
     }
   }
   const old=garageLayout({...settings,garageSpaces:1,garageRampWidth:3.2},data,{terrainAt});
-  assert.equal(createGarageGroup(old,materials).group.getObjectByName('garage-second-car'),undefined);
+  assert.ok(createGarageGroup(old,materials).group.getObjectByName('garage-second-car'));
 });

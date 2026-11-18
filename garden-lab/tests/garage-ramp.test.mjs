@@ -181,13 +181,13 @@ test('two-car lanes retain real mirror and body separation and reject a single-c
   assert.equal(narrow.assessment.status,'geometry-limit');assert.ok(narrow.parking.betweenMirrors<0);
 });
 
-test('the legacy single-car alignment and full-drive result remain reproducible',()=>{
-  const old=getLayout({garageSpaces:1,garageRampWidth:3.2});
-  assert.equal(old.parking.spaces,1);near(old.centerX,12);near(old.parking.movingLaneOffset,0);
-  assert.equal(old.entryAccess,null,'the previous narrow ramp does not need relocated entry stairs');
-  near(old.assessment.conservativeClearance,.041191357491469405,1e-8);
-  near(old.streetZ,terrainAt(...old.axis.start,data));
-  assert.notEqual(old.streetZ,candidate.streetZ,'widening samples the terrain at the actual relocated street entry');
+test('legacy single-car settings restore both lanes and the widened entry for the full-drive check',()=>{
+  const restored=getLayout({garageSpaces:1,garageRampWidth:3.2});
+  assert.deepEqual(restored.parking,candidate.parking);
+  assert.deepEqual(restored.gate,candidate.gate);
+  assert.deepEqual(restored.entryAccess,candidate.entryAccess);
+  assert.deepEqual(restored.assessment,candidate.assessment);
+  near(restored.streetZ,terrainAt(...restored.axis.start,data));
 });
 
 test('the proposed front-door landing is included throughout both roof sweeps',()=>{

@@ -14,12 +14,12 @@ const models=SITE_OPTIONS.map(site=>{
 });
 
 test('all style recipes, house scope and quality survive shared links on all three properties',()=>{
-  assert.equal(STATE_VERSION,24);
+  assert.equal(STATE_VERSION,25);
   for(const {model} of models)for(const style of DESIGN_STYLES){
     const original=model.sanitizeState({...model.DEFAULTS,designStyle:style.id,styleHouseFinish:true,
       renderQuality:'eco',sceneMotion:true,costStyleUpgradeQuote:24900,poolFreeboard:.12});
     assert.deepEqual(model.decodeState(model.encodeState(original)),original);
-    assert.deepEqual(model.migrateSavedState(original,24),original);
+    assert.deepEqual(model.migrateSavedState(original,25),original);
   }
 });
 
@@ -38,15 +38,36 @@ test('old links keep their design and adopt neutral presentation without a renov
   }
 });
 
-test('a finish quote is invalidated when its style or house scope changes, and undo restores it',()=>{
-  const original={...models[0].model.DEFAULTS,designStyle:'organic-modern',costStyleUpgradeQuote:20000};
-  for(const patch of [{designStyle:'hidden-bali'},{styleHouseFinish:true},{designStyle:'current'}]){
+test('a renovation quote is invalidated when its style or house scope changes, and undo restores it',()=>{
+  const original={...models[0].model.DEFAULTS,designStyle:'organic-modern',styleHouseFinish:true,costStyleUpgradeQuote:20000};
+  for(const patch of [{designStyle:'hidden-bali'},{styleHouseFinish:false},{designStyle:'current'}]){
     const history=createDesignHistory(original),changed=changePresentationSettings(original,patch);
     assert.equal(changed.costStyleUpgradeQuote,0);history.record(changed);
     assert.equal(history.undo(changed).costStyleUpgradeQuote,20000);
   }
   for(const patch of [{designStyle:'organic-modern'},{renderQuality:'eco'},{sceneMotion:true}])
     assert.equal(changePresentationSettings(original,patch).costStyleUpgradeQuote,20000);
+});
+
+test('choosing a style includes the house while Current restores the original exterior',()=>{
+  for(const {model} of models){
+    const original={...model.DEFAULTS,costStyleUpgradeQuote:24000};
+    for(const style of DESIGN_STYLES.filter(style=>style.id!=='current')){
+      const selected=changePresentationSettings(original,{designStyle:style.id});
+      assert.equal(selected.styleHouseFinish,true,style.id);
+      assert.equal(selected.costStyleUpgradeQuote,0);
+      for(const key of ['garageSpaces','garageRampWidth','basementGarageEnabled','terraceDepth','canopyEnabled','terraceCoverType','screeningTrees'])assert.deepEqual(selected[key],original[key]);
+      const gardenOnly=changePresentationSettings(selected,{styleHouseFinish:false});
+      assert.equal(gardenOnly.styleHouseFinish,false);
+      assert.equal(changePresentationSettings(gardenOnly,{renderQuality:'eco'}).styleHouseFinish,false);
+      const neutral=changePresentationSettings(selected,{designStyle:'current',styleHouseFinish:true});
+      assert.equal(neutral.styleHouseFinish,false);
+      assert.equal(neutral.designStyle,'current');
+    }
+    const optedOut={...original,designStyle:'hidden-bali',styleHouseFinish:false};
+    assert.equal(changePresentationSettings(optedOut,{designStyle:'japandi'}).styleHouseFinish,true);
+    assert.equal(changePresentationSettings(optedOut,{designStyle:'japandi',styleHouseFinish:false}).styleHouseFinish,false);
+  }
 });
 
 test('undo stores independent designs while preserving current camera, local time and quality',()=>{

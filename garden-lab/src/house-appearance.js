@@ -7,7 +7,7 @@
  * are explicitly proposed alterations. Keep this file free of Three / DOM so
  * window viewpoints can use the same aperture coordinates as the renderer.
  */
-import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.24.0';
+import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.25.0';
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const xyz=p=>Array.isArray(p)?p:[p.x,p.y,p.z];
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring||[];
@@ -88,7 +88,15 @@ export function houseAppearanceLayout(data,settings={},options={}){
     for(let i=windows.length-1;i>=0;i--){const w=windows[i];if(w.edgeIndex===front.index&&w.lo<portal.hi+EPS&&w.hi>portal.lo-EPS&&w.z<portal.z+portal.height+EPS&&w.z+w.height>portal.z-EPS)windows.splice(i,1);}
   }
   const entryAccess=activeGarage&&garage.entryAccess?.proposed?garage.entryAccess:null;
-  return {supported:true,ring,edges,front,rear,windows,door,rearBays,balconyDoor,portal,entryAccess,
+  // Keep the side-gable glass and its bounding rectangle on the same roof peak.
+  const side=edges.find(e=>e!==front&&e!==rear&&e.outward[0]>0);
+  let atticWindow=null;
+  if(side){
+    const peak=side.roofEdge.points.reduce((a,b)=>a[2]>=b[2]?a:b);
+    const centre=(peak[0]-side.a[0])*side.direction[0]+(peak[1]-side.a[1])*side.direction[1];
+    atticWindow={id:'side-attic-triangle',edgeIndex:side.index,centre,lo:centre-.42,hi:centre+.42,z:peak[2]-1.18,height:.78};
+  }
+  return {supported:true,ring,edges,front,rear,windows,door,rearBays,balconyDoor,portal,entryAccess,atticWindow,
     baseZ,floorZ,firstFloorZ,plinthTopZ:floorZ-.045,
     roof:{samples,eavesZ,ridgeZ:roofEnvelope.ridgeZ,source:house.source,shape:'source-fitted-main-and-inferred-cross-gable',envelope:roofEnvelope},
     notes:HOUSE_APPEARANCE_NOTES};

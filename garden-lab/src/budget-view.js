@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.24.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.24.0';
+import {getSiteProfile} from './sites.js?v=1.25.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.25.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -62,7 +62,7 @@ export function renderBudget(cost,settings,data){
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
     ?style?.unquoted.length
-      ?`The selected design style needs an additional upgrade quote. Known base costs: ${amount(cost.knownSubtotal,true)}; style-specific finishes${style.houseFinishPreview?' and house exterior finishes':''} are unquoted. Review all unquoted work in the expanded budget.`
+      ?`The selected design style needs an additional upgrade quote. Known base costs: ${amount(cost.knownSubtotal,true)}; style-specific finishes${style.houseFinishPreview?' and house renovation':''} are unquoted. Review all unquoted work in the expanded budget.`
       :basementGarage?.unquoted.length
       ?`The basement garage and ramp need a complete project quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Garden allowances do not cover basement conversion.${balconyMissing}`
       :privacy?.unquoted.length

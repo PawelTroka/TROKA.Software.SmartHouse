@@ -3,13 +3,14 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover } from './geometry.js?v=1.24.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.24.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.24.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.24.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.24.0';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.24.0';
-import { getDesignStyle } from './design-styles.js?v=1.24.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover } from './geometry.js?v=1.25.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.25.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.25.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.25.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.25.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.25.0';
+import { getDesignStyle } from './design-styles.js?v=1.25.0';
+import { upgradeSingleCarGarage } from './garage-options.js?v=1.25.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -44,7 +45,7 @@ export const COST_FIELDS = Object.freeze({
     ['costGardenCanopy','Terrace canopy'],
   ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','Complete line quote override. 0 uses the itemised planning allowance when enabled, otherwise needs a quote for active work. Optional canopy / demolition apply only when selected.'),group:'cost-garden'}])),
   costBalconyQuote: {...field('First-floor balcony · full installed quote',0,0,5000000,1000,'PLN','Complete balcony project quote including survey, design, structure, foundations, supports, deck finish, waterproofing, drainage, guards and proposed first-floor access door. 0 is unquoted and excluded, even with planning allowances enabled. Replaces the canopy price while balcony mode is selected.'),group:'cost-garden'},
-  costStyleUpgradeQuote: {...field('Selected style · additional upgrade quote',0,0,5000000,1000,'PLN','Additional installed cost ABOVE the existing base finish, furniture and lighting lines. Do not enter a whole package twice. Include proposed house finishes if their preview is on. 0 leaves this style-specific upgrade unquoted; no style premium is invented. Reconfirm when changing styles or house finish scope.'),group:'cost-garden'},
+  costStyleUpgradeQuote: {...field('Selected style · additional upgrade quote',0,0,5000000,1000,'PLN','Additional installed cost ABOVE the existing base finish, furniture and lighting lines. Do not enter a whole package twice. Include the proposed house cladding, trim and finish work when house renovation is on. 0 leaves this style-specific upgrade unquoted; no style premium is invented. Reconfirm when changing styles or house renovation scope.'),group:'cost-garden'},
   ...Object.fromEntries([
     ['costPrivacyPergolaQuote','Garden pergola · full installed price'],
     ['costSpaScreenQuote','Spa side screens · full installed price'],
@@ -237,9 +238,9 @@ function installationGroup(enabled, rows, c, extra = {}) {
 export function estimateStyleCosts(settings) {
   const c=costSettings(settings),style=getDesignStyle(settings.designStyle),enabled=style.id!=='current',rows=[];
   if(enabled)rows.push(installedLine(c,'costStyleUpgradeQuote',null,
-    `${style.label}${settings.styleHouseFinish?' · garden and house exterior finish preview':' · garden finish preview'}`,
-    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include house exterior finishes only if previewed. Reconfirm scope and applicable tax after changing the style; zero is unquoted.'));
-  return installationGroup(enabled,rows,c,{planningEnabled:false,quoteOnly:true,styleId:style.id,houseFinishPreview:enabled&&settings.styleHouseFinish===true});
+    `${style.label}${settings.styleHouseFinish?' · garden and house renovation':' · garden finishes'}`,
+    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include the house cladding, window trim and finish work only when house renovation is enabled. Reconfirm scope and applicable tax after changing the style; zero is unquoted.'));
+  return installationGroup(enabled,rows,c,{planningEnabled:false,quoteOnly:true,styleId:style.id,houseFinishPreview:enabled&&settings.styleHouseFinish===true,houseRenovationIncluded:enabled&&settings.styleHouseFinish===true});
 }
 
 /** Custom privacy structures have no invented unit-rate or catalog allowance. */
@@ -258,10 +259,10 @@ export function estimatePrivacyCosts(settings,data) {
 
 /** Conversion of the existing house is separate from garden allowances. */
 export function estimateBasementGarageCosts(settings,data) {
-  const c=costSettings(settings),rows=[];
+  const c=costSettings(upgradeSingleCarGarage(settings)),rows=[];
   const enabled=(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11'&&settings.basementGarageEnabled===true;
   if(enabled)rows.push(installedLine(c,'costBasementGarageQuote',null,
-    'Selected basement conversion and full front-yard approach',
+    'Two-car basement conversion and full front-yard approach',
     'Survey, design, structural opening and alterations, excavation/disposal, retaining walls, waterproofing, drainage/pumping, garage door, services, ramp finish and proposed gate relocation. Confirm the entire scope and applicable tax; the garden budget does not price these works.'));
   return installationGroup(enabled,rows,c,{planningEnabled:false,quoteOnly:true});
 }

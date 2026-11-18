@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.24.0';
+import {toWorld} from './orientation.js?v=1.25.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.

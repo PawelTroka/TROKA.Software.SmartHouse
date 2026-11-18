@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createStateModel,STATE_VERSION,DEFAULTS,FIELDS,MODES,sanitizeState,encodeState,decodeState,scenarioState,migrateLegacyState,migrateSavedState,changeHedgeHeight} from '../src/state.js';
+
 import {COST_FIELDS} from '../src/costs.js';
 import {BUILDING_FIELDS} from '../src/buildings.js';
 import {getSiteProfile} from '../src/sites.js';
@@ -121,7 +122,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,24);
+ assert.equal(STATE_VERSION,25);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -212,7 +213,7 @@ test('sparse legacy side values migrate after resolving the version-specific omi
 test('v5 physical side labels and state retain left/east and right/west without migration',()=>{
  assert.equal(FIELDS.hedgeLeft.label,'Left hedge · east');
  assert.equal(FIELDS.hedgeRight.label,'Right hedge · west');
- const current={...DEFAULTS,poolFreeboard:.02,garageSpaces:1,garageRampWidth:3.2,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
+ const current={...DEFAULTS,poolFreeboard:.02,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
  assert.deepEqual(decodeState(encodeState(current)),current);
  assert.deepEqual(migrateSavedState(current,5),current);
  assert.equal(decodeState('#v=5&hedgeLeft=3').hedgeRight,4);
@@ -418,4 +419,25 @@ test('explicit v17 empty and custom planting preserves quotes and changes throug
   const params=new URLSearchParams({v:'17',site:'sternicza-11',screeningTrees:bad});
   assert.deepEqual(decodeState(params.toString()).screeningTrees,[]);
  }
+});
+
+test('v24 styles adopt the renovated house and discard the old scope quote, while v25 preserves opt-outs',()=>{
+ const site=DEFAULTS.siteId;
+ for(const styleHouseFinish of [undefined,true,false]){
+  const original={siteId:site,designStyle:'japandi',costStyleUpgradeQuote:22500,canopyHeight:2.8};
+  if(styleHouseFinish!==undefined)original.styleHouseFinish=styleHouseFinish;
+  const shared=new URLSearchParams({v:24,site,...original});
+  for(const old of [migrateSavedState(original,24),decodeState(shared.toString())]){
+   assert.equal(old.styleHouseFinish,true);
+   assert.equal(old.costStyleUpgradeQuote,0);
+   assert.equal(old.canopyHeight,2.8);
+  }
+  shared.set('v','25');
+  for(const current of [sanitizeState(original),migrateSavedState(original,25),decodeState(shared.toString())]){
+   assert.equal(current.styleHouseFinish,styleHouseFinish!==false);
+   assert.equal(current.costStyleUpgradeQuote,22500);
+   assert.deepEqual(decodeState(encodeState(current)),current);
+  }
+ }
+ assert.equal(decodeState(`v=25&site=${site}&designStyle=current&styleHouseFinish=true`).styleHouseFinish,false);
 });

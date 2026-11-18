@@ -95,5 +95,6 @@ test('the dimensioned parking plan and width warning use both actual vehicle env
   assert.ok(garageConfigurationWarnings(narrow).some(note=>/5.42 m clear width/.test(note)));
   assert.match(garageParkingPlanSVG(narrow),/data-width-pass="false"/);
   const old=garageLayout({...settings,garageSpaces:1,garageRampWidth:3.2},data,{terrainAt});
-  assert.equal([...garageParkingPlanSVG(old).matchAll(/data-car="/g)].length,1);
+  assert.equal([...garageParkingPlanSVG(old).matchAll(/data-car="/g)].length,2);
+  assert.match(garageParkingPlanSVG(old),/5.80 m clear/);
 });
