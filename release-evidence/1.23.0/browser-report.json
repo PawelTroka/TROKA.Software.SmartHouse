@@ -1,0 +1,549 @@
+{
+  "version": "1.23.0",
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "Optional basement garage starts off and creates a visibly different WebGL excavation and open entrance when enabled",
+    "Full front-yard-only, raised-basement and deeper-floor options show distinct conservative clearance results",
+    "Car position and reverse preview change actual WebGL and the equal-scale profile without changing full-drive minima",
+    "Garage dimensions and preview direction survive scenario A/B, normal reload and Share reload",
+    "The garage profile and clearance results remain readable at 390px without horizontal overflow",
+    "Garage state stays isolated to Sternicza and the browser check restores the original garage-off design",
+    "All eight upper-floor presets enter eye mode with correct direction, posture and readout",
+    "Editable first and attic floor heights update the actual observer readout",
+    "Night preview and both independent lighting switches work",
+    "All three dimmers respond, including an actual rendered change from 0% to 100% active windows",
+    "Daylight restores the sun clock and turns simulated artificial lights off",
+    "Upper-floor preset, eye mode and night time survive a normal page reload",
+    "The visible Share view action creates a reloadable upper-floor night view",
+    "Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow",
+    "Spa screening improves the visible PCK3 result and a reduced service gap shows a layout warning",
+    "Switching established pergola foliage off reduces the actual terrace screening result",
+    "Combined Plan displays the finite pergola, two planted sides and both spa screen panels",
+    "Combined screening survives Share and reload in the actual WebGL orbit scene",
+    "The property selector exposes all three independently named properties",
+    "Switching to Korzeniowskiego preserves its own floor height and upstairs view",
+    "Sternicza privacy comparisons and quotes stay hidden on the other two properties",
+    "Nadmorska WebGL load uses its own plot, floor and final LiDAR roof evidence",
+    "Nadmorska first-floor street control points +90 degrees and shares that exact direction",
+    "The busier 70% evening visibly lights more neighbouring windows than 35% in the same WebGL street view",
+    "Nadmorska window activity, independent light switches and visible WebGL water glow work after dark",
+    "Garden pendants and thuja lanterns each brighten the actual WebGL scene independently of landscape accents",
+    "Garden master switches both hanging-light channels off while retaining their settings and neighbouring windows",
+    "Pendant switches and dimmers survive Share and reload without changing the property or garden layout",
+    "Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels",
+    "At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged",
+    "Nadmorska whole-plot plan shows 709.29 square metres, pool sizes and both side access openings",
+    "Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page",
+    "The 390px mobile night scene renders all active hedge lighting and visibly responds to its switch in WebGL",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [
+    {
+      "id": "first-garden-seated",
+      "eye": "Eye 5.40 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the garden façade at the rendered window position, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "first-garden-standing",
+      "eye": "Eye 5.85 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the garden façade at the rendered window position, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "first-street-seated",
+      "eye": "Eye 5.40 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade at the rendered window position, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "first-street-standing",
+      "eye": "Eye 5.85 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade at the rendered window position, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-garden-seated",
+      "eye": "Eye 8.40 m above original garden reference · 1.20 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-garden-standing",
+      "eye": "Eye 8.85 m above original garden reference · 1.65 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-street-seated",
+      "eye": "Eye 8.40 m above original garden reference · 1.20 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    {
+      "id": "attic-street-standing",
+      "eye": "Eye 8.85 m above original garden reference · 1.65 m above strych floor",
+      "note": "Assumed strych floor: +6.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    }
+  ],
+  "screenshots": [
+    "sternicza-basement-garage-entry.jpg",
+    "sternicza-basement-garage-profile.jpg",
+    "sternicza-basement-garage-mobile.jpg",
+    "first-floor-garden-night.jpg",
+    "attic-street-night.jpg",
+    "sternicza-privacy-combined-orbit.jpg",
+    "nadmorska-street-busy-evening.png",
+    "nadmorska-day.png",
+    "nadmorska-night.png",
+    "nadmorska-pendants-night.png",
+    "nadmorska-hedge-isolated-off.png",
+    "nadmorska-hedge-isolated-low.png",
+    "nadmorska-hedge-isolated-on.png",
+    "nadmorska-plan.png",
+    "nadmorska-mobile-plan.png",
+    "nadmorska-mobile-hedge-off.png",
+    "nadmorska-mobile-night.png"
+  ],
+  "garage": {
+    "candidate": {
+      "status": "reserve-met",
+      "minimum": 0.04124621381551241,
+      "reserve": 0.03,
+      "frontRun": "9.13 m",
+      "drop": "1.40 m",
+      "grade": "25.0%",
+      "headroom": "2.25 m",
+      "door": "5.80 × 2.10 m",
+      "parking": "6.99 m",
+      "forward": "41.2 mm",
+      "reverse": "41.4 mm"
+    },
+    "forecourt": {
+      "status": "reserve-shortfall",
+      "minimum": 0.0038023339974465713,
+      "reserve": 0.03,
+      "frontRun": "9.13 m",
+      "drop": "1.40 m",
+      "grade": "25.0%",
+      "headroom": "2.30 m",
+      "door": "5.80 × 2.10 m",
+      "parking": "8.59 m",
+      "forward": "3.8 mm",
+      "reverse": "3.8 mm"
+    },
+    "deeper": {
+      "status": "contact",
+      "minimum": -0.007106644719977265,
+      "reserve": 0.03,
+      "frontRun": "9.13 m",
+      "drop": "2.00 m",
+      "grade": "25.0%",
+      "headroom": "2.75 m",
+      "door": "5.80 × 2.10 m",
+      "parking": "6.99 m",
+      "forward": "-7.1 mm",
+      "reverse": "-6.8 mm"
+    },
+    "excavationPixels": {
+      "width": 1004,
+      "height": 542,
+      "changedPixels": 529020,
+      "warmBrightenedPixels": 1044,
+      "brightnessGain": 28445.99999999999
+    },
+    "posePixels": {
+      "width": 1004,
+      "height": 542,
+      "changedPixels": 21092,
+      "warmBrightenedPixels": 326,
+      "brightnessGain": 2248
+    },
+    "reversePixels": {
+      "width": 1004,
+      "height": 542,
+      "changedPixels": 7324,
+      "warmBrightenedPixels": 334,
+      "brightnessGain": 6861.000000000006
+    },
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390,
+      "card": {
+        "left": 14,
+        "right": 376,
+        "width": 362
+      },
+      "svg": {
+        "left": 32,
+        "right": 358,
+        "width": 326,
+        "height": 84.578125
+      }
+    },
+    "renderer": "WebGL",
+    "scenarioSaved": true,
+    "normalReloadPassed": true,
+    "shareReloadPassed": true,
+    "siteIsolationPassed": true,
+    "restoredEnabled": false
+  },
+  "night": {
+    "activation": 1,
+    "garden": 0.75,
+    "pendants": 0.8,
+    "hedge": 0.85,
+    "windows": 0.6,
+    "mode": "eye"
+  },
+  "daylight": {
+    "activation": 0,
+    "garden": 0,
+    "pendants": 0,
+    "hedge": 0,
+    "windows": 0,
+    "mode": "eye"
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390,
+    "overflowing": []
+  },
+  "privacy": {
+    "baseline": {
+      "before": 10,
+      "after": 10
+    },
+    "spa": {
+      "before": 10,
+      "after": 98.6
+    },
+    "pergola": {
+      "before": 10,
+      "after": 91
+    },
+    "bare": {
+      "before": 10,
+      "after": 48.8
+    },
+    "combined": {
+      "before": 10,
+      "after": 100
+    },
+    "sharedReloadPassed": true,
+    "renderer": "WebGL"
+  },
+  "nadmorska": {
+    "roofPoints": 3182,
+    "surroundingBuildings": 52,
+    "roofTopZ": 14.29,
+    "street": {
+      "id": "first-street-standing",
+      "eye": "Eye 6.15 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    "windowActivityComparison": {
+      "from": 35,
+      "to": 70,
+      "width": 1004,
+      "height": 542,
+      "changedPixels": 7194,
+      "warmBrightenedPixels": 4545,
+      "brightnessGain": 675976.0000000088
+    },
+    "windowActivityVisible": true,
+    "waterGlow": {
+      "width": 1004,
+      "height": 542,
+      "aquaPixels": 304236,
+      "brighterAquaPixels": 6922,
+      "brightnessGain": 212057.5
+    },
+    "night": {
+      "activation": 1,
+      "garden": 0.75,
+      "pendants": 0.8,
+      "hedge": 0.85,
+      "windows": 0.6,
+      "mode": "orbit"
+    },
+    "pendantLighting": {
+      "gardenPixels": {
+        "width": 1004,
+        "height": 542,
+        "changedPixels": 13961,
+        "warmBrightenedPixels": 3308,
+        "brightnessGain": 400029.33333333244
+      },
+      "hedgePixels": {
+        "width": 1004,
+        "height": 542,
+        "changedPixels": 118206,
+        "warmBrightenedPixels": 36855,
+        "brightnessGain": 3216302.000000006
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "restoredWindowActivity": 70,
+      "sharedReloadPassed": true
+    },
+    "hedgeSurfaceLighting": {
+      "lowPercent": 25,
+      "highPercent": 85,
+      "lowSurface": {
+        "width": 1004,
+        "height": 542,
+        "patches": [
+          {
+            "id": "rear-lantern-8-foliage",
+            "pixels": 560,
+            "brightenedPixels": 362,
+            "brightnessGain": 6024.000000000006
+          },
+          {
+            "id": "rear-lantern-9-foliage",
+            "pixels": 660,
+            "brightenedPixels": 409,
+            "brightnessGain": 7441.333333333327
+          },
+          {
+            "id": "rear-lantern-10-foliage",
+            "pixels": 651,
+            "brightenedPixels": 388,
+            "brightnessGain": 7565.333333333335
+          },
+          {
+            "id": "side-lantern-2-ground",
+            "pixels": 704,
+            "brightenedPixels": 704,
+            "brightnessGain": 51213.00000000006
+          },
+          {
+            "id": "side-lantern-3-ground",
+            "pixels": 756,
+            "brightenedPixels": 754,
+            "brightnessGain": 47607.33333333323
+          }
+        ],
+        "outsidePatches": [
+          {
+            "id": "outside-rear-west-ground",
+            "bounds": [
+              0.28,
+              0.74,
+              0.3,
+              0.775
+            ],
+            "pixelBounds": [
+              281,
+              401,
+              301,
+              420
+            ],
+            "pixels": 380,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-rear-middle-ground",
+            "bounds": [
+              0.405,
+              0.88,
+              0.43,
+              0.92
+            ],
+            "pixelBounds": [
+              407,
+              477,
+              432,
+              499
+            ],
+            "pixels": 550,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-side-lane-ground",
+            "bounds": [
+              0.921,
+              0.526,
+              0.944,
+              0.57
+            ],
+            "pixelBounds": [
+              925,
+              285,
+              948,
+              309
+            ],
+            "pixels": 552,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          }
+        ]
+      },
+      "surface": {
+        "width": 1004,
+        "height": 542,
+        "patches": [
+          {
+            "id": "rear-lantern-8-foliage",
+            "pixels": 560,
+            "brightenedPixels": 399,
+            "brightnessGain": 15735.333333333336
+          },
+          {
+            "id": "rear-lantern-9-foliage",
+            "pixels": 660,
+            "brightenedPixels": 480,
+            "brightnessGain": 18729.666666666657
+          },
+          {
+            "id": "rear-lantern-10-foliage",
+            "pixels": 651,
+            "brightenedPixels": 445,
+            "brightnessGain": 18932.33333333335
+          },
+          {
+            "id": "side-lantern-2-ground",
+            "pixels": 704,
+            "brightenedPixels": 704,
+            "brightnessGain": 102940.99999999988
+          },
+          {
+            "id": "side-lantern-3-ground",
+            "pixels": 756,
+            "brightenedPixels": 755,
+            "brightnessGain": 100441.00000000006
+          }
+        ],
+        "outsidePatches": [
+          {
+            "id": "outside-rear-west-ground",
+            "bounds": [
+              0.28,
+              0.74,
+              0.3,
+              0.775
+            ],
+            "pixelBounds": [
+              281,
+              401,
+              301,
+              420
+            ],
+            "pixels": 380,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-rear-middle-ground",
+            "bounds": [
+              0.405,
+              0.88,
+              0.43,
+              0.92
+            ],
+            "pixelBounds": [
+              407,
+              477,
+              432,
+              499
+            ],
+            "pixels": 550,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-side-lane-ground",
+            "bounds": [
+              0.921,
+              0.526,
+              0.944,
+              0.57
+            ],
+            "pixelBounds": [
+              925,
+              285,
+              948,
+              309
+            ],
+            "pixels": 552,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          }
+        ]
+      },
+      "outsideLimits": {
+        "meanPositiveLumaGain": 0.5,
+        "brightenedPixelFraction": 0.01,
+        "lumaPixelThreshold": 3
+      },
+      "isolated": {
+        "activation": 1,
+        "garden": 0,
+        "pendants": 0,
+        "hedge": 0.85,
+        "windows": 0,
+        "mode": "orbit"
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "allOtherLightsOff": true
+    },
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    "mobileNight": {
+      "renderer": "WebGL",
+      "lights": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "hedgePixels": {
+        "width": 360,
+        "height": 271,
+        "changedPixels": 27578,
+        "warmBrightenedPixels": 6763,
+        "brightnessGain": 467439.3333333343
+      }
+    }
+  },
+  "status": "passed",
+  "pageErrors": [],
+  "consoleErrors": []
+}

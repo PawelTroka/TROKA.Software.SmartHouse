@@ -1,0 +1,37 @@
+{
+  "version": "1.23.0",
+  "date": "2026-11-18",
+  "sourceCommit": "ef4ab13dd2ab0ebb25e83bbd4ca8868e8a2cf227",
+  "mergeCommit": "5a9d334bb2f4fa3c78ad2e168358459b6c14c57f",
+  "buildTree": "33a157dead1ccc96fd7f986df3ab3dfcd4a121a9",
+  "ci": {
+    "runId": 44202903063,
+    "status": "success",
+    "automatedTests": 559,
+    "fullBrowserGroups": 35,
+    "focusedBrowserGroups": 8,
+    "totalBrowserGroups": 43,
+    "pageErrors": [],
+    "consoleErrors": [],
+    "artifactId": 14383595827,
+    "artifactSha256": "f1c53337aee6177a6b34fb0f0e906eca4e370d52eadbd471ad537236462a88b7"
+  },
+  "hostedVisualReview": {
+    "renderer": "WebGL in connected Brave",
+    "previewSourceCommit": "6dc3c1e48ce4fcb3764063962abeefffda7cd548",
+    "runtimeUnchangedByLaterTestFixes": true,
+    "checks": [
+      "Fresh requested defaults",
+      "Balcony geometry and first-floor standing view",
+      "Pool eye at 0.15 m above actual water",
+      "Two-car entrance and pedestrian landing",
+      "Exactly two front hedge access openings",
+      "Photo-informed front cross-gable, windows and finishes",
+      "No captured browser console errors"
+    ],
+    "screenshots": [
+      "balcony-garden-1.23.0.jpg",
+      "two-car-frontage-1.23.0.jpg"
+    ]
+  }
+}

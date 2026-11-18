@@ -1,15 +1,15 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.22.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.22.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.22.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.22.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.22.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.22.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.22.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.22.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.22.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS} from './garage-options.js?v=1.22.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.23.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.23.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.23.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.23.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.23.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.23.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.23.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.23.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.23.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS} from './garage-options.js?v=1.23.0';
 
-export const STATE_VERSION = 22;
+export const STATE_VERSION = 23;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -69,6 +69,7 @@ const BASE_FIELDS = Object.freeze({
   firstFloorRise: {label:'First floor above living floor',min:2,max:4.5,step:0.05,value:3,group:'upperfloor'},
   atticRise: {label:'Strych floor above living floor',min:4.5,max:9,step:0.05,value:6,group:'upperfloor'},
   eyeHeight: {label:'Eye above supporting floor / ground',min:0.4,max:2,step:0.05,value:1.2,group:'assumption'},
+  poolEyeAboveWater: {label:'Swimming eye above pool water',min:0.05,max:0.4,step:0.01,value:0.15,group:'assumption'},
   hedgeInset: {label:'Hedge screen inset from boundary',min:0,max:1.5,step:0.05,value:0.5,group:'assumption'},
   observerX: {label:'Observer across the plot (x)',min:0.5,max:19.8,step:0.1,value:9.6091676564,group:'assumption'},
   observerY: {label:'Observer from front boundary (y)',min:0.5,max:37,step:0.1,value:30,group:'assumption'},
@@ -85,10 +86,11 @@ const BASE_FIELDS = Object.freeze({
   ...COST_FIELDS,
   ...BUILDING_FIELDS,
 });
-export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','garden','front','sauna','firepit','custom',...UPPER_FLOOR_PRESETS.map(p=>p.id)]);
+export const PRESETS = Object.freeze(['sofa','standing','terrace','jacuzzi','pool','balcony','garden','front','sauna','firepit','custom',...UPPER_FLOOR_PRESETS.map(p=>p.id)]);
 export const MODES = Object.freeze(['orbit','eye','plan','section','sun']);
 const isStateRecord=input=>Boolean(input&&typeof input==='object'&&!Array.isArray(input));
-const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]);
+const SUPPORTED_VERSIONS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]);
+const LEGACY_GARAGE_DEFAULTS=Object.freeze({...GARAGE_DEFAULTS,garageRampWidth:3.2,garageSpaces:1});
 
 /** A property's fields, defaults and saved designs share one explicit site identity. */
 export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
@@ -104,10 +106,15 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const DEFAULTS=Object.freeze({...COST_DEFAULTS,...SOLAR_DEFAULTS,...NIGHT_DEFAULTS,...PRIVACY_DEFAULTS,...GARAGE_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
-    screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',...profile.defaults,siteId});
+    screeningTrees:Object.freeze([]),treeLeafMode:'auto',gardenProgram:'classic',terraceCoverType:'canopy',...profile.defaults,siteId});
+  // A sparse v22 link keeps its published terrace, cover and single-car ramp.
+  // Freeze these before deriving older versions from the new fresh defaults.
+  const V22_DEFAULTS=Object.freeze({...DEFAULTS,...LEGACY_GARAGE_DEFAULTS,
+    ...(siteId===DEFAULT_SITE_ID?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
+    terraceCoverType:'canopy'});
   // Sparse historical links omitted these published lighting values. Keep
   // their evening settings while new designs use the brighter v20 defaults.
-  const V19_DEFAULTS=Object.freeze({...DEFAULTS,nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55});
+  const V19_DEFAULTS=Object.freeze({...V22_DEFAULTS,nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55});
   const V17_DEFAULTS=Object.freeze({...V19_DEFAULTS,hedgeFullPerimeter:siteId===DEFAULT_SITE_ID,hedgeFront:siteId===DEFAULT_SITE_ID?4:0,showDimensions:true,
     costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     gardenProgram:siteId===DEFAULT_SITE_ID?'spa-pool-grove':'classic',
@@ -152,12 +159,15 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       if(typeof input[key]==='number'&&Number.isFinite(input[key]))out[key]=Math.max(f.min,Math.min(f.max,input[key]));
     }
     out.sunMinutes=Math.round(out.sunMinutes);
+    out.garageSpaces=Math.round(out.garageSpaces);
     out.atticRise=Math.max(out.atticRise,out.firstFloorRise+.5);
     out.sunDate=sanitizeSolarDate(input.sunDate,defaults.sunDate);
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
+    if(['canopy','balcony'].includes(input.terraceCoverType))out.terraceCoverType=input.terraceCoverType;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
-    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.privacyPergolaEnabled=false;out.privacyPergolaFoliage=false;out.spaScreensEnabled=false;out.basementGarageEnabled=false;}
+    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.privacyPergolaEnabled=false;out.privacyPergolaFoliage=false;out.spaScreensEnabled=false;out.basementGarageEnabled=false;out.terraceCoverType='canopy';}
+    if(out.preset==='balcony'&&(!out.canopyEnabled||out.terraceCoverType!=='balcony')){out.preset='terrace';out.eyeHeight=1.65;}
     if(!hasFrontHedge){out.hedgeFront=0;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
     if(!hasFullPerimeterHedges)out.hedgeFullPerimeter=false;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa'].includes(out.gardenProgram))out.removeGarage=true;
@@ -179,12 +189,13 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       version===14&&['spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-grove'}:
       version===15&&['spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-aligned'}:
       version===16&&oldInput.gardenProgram==='spa-pool-grove'?{...oldInput,gardenProgram:'spa-corner'}:oldInput;
-    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:version<=19?V19_DEFAULTS:DEFAULTS);
+    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:version<=19?V19_DEFAULTS:version<=22?V22_DEFAULTS:DEFAULTS);
     // Historical designs did not contain these structures. Never add opaque
     // screening to an older shared link, including one with unknown fields.
     if(version<21){next.privacyPergolaEnabled=false;next.privacyPergolaFoliage=false;next.spaScreensEnabled=false;}
     // Old designs cannot opt into excavation through unrecognised fields.
-    if(version<22)Object.assign(next,GARAGE_DEFAULTS);
+    if(version<22)Object.assign(next,LEGACY_GARAGE_DEFAULTS);
+    if(version<23){next.garageSpaces=1;next.terraceCoverType='canopy';if(['pool','balcony'].includes(next.preset))next.preset='terrace';}
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
@@ -215,7 +226,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const [key,val] of p){
       if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}
       else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}
-      else if(key==='preset'||key==='mode'||key==='sunDate'||key==='treeLeafMode'||key==='gardenProgram')s[key]=val;
+      else if(key==='preset'||key==='mode'||key==='sunDate'||key==='treeLeafMode'||key==='gardenProgram'||key==='terraceCoverType')s[key]=val;
       else if(key==='screeningTrees'&&version>=7){
         s[key]=[];
         if(val.length<=20000)try{s[key]=JSON.parse(val);}catch{ /* Malformed trees never add default screens. */ }
@@ -231,7 +242,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(name==='default')Object.assign(s,{hedgeRear:DEFAULTS.hedgeRear,hedgeLeft:DEFAULTS.hedgeLeft,hedgeRight:DEFAULTS.hedgeRight,hedgeFront:DEFAULTS.hedgeFront,gardenRaise:DEFAULTS.gardenRaise});
     if(name==='raised')Object.assign(s,{hedgeRear:4,hedgeLeft:4,hedgeRight:4,hedgeFront:frontEnabled?4:0,bedRaise:.5});
     if(name==='tall'||name==='canopy')Object.assign(s,{hedgeRear:6,hedgeLeft:6,hedgeRight:6,hedgeFront:frontEnabled?6:0});
-    if(name==='canopy')Object.assign(s,{canopyEnabled:true,canopyHeight:DEFAULTS.canopyHeight,canopyDepth:DEFAULTS.canopyDepth,canopyWidth:DEFAULTS.canopyWidth,fasciaDepth:DEFAULTS.fasciaDepth});
+    if(name==='canopy')Object.assign(s,{canopyEnabled:true,terraceCoverType:'canopy',canopyHeight:DEFAULTS.canopyHeight,canopyDepth:DEFAULTS.canopyDepth,canopyWidth:DEFAULTS.canopyWidth,fasciaDepth:DEFAULTS.fasciaDepth});
     return s;
   }
   function matchesScenario(name,current) {
@@ -240,7 +251,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     const candidate=scenarioState(name,state);
     const keys=layout?Object.keys(layout.settings):['hedgeRear','hedgeLeft','hedgeRight','hedgeFront','gardenRaise','bedRaise','canopyEnabled','raiseNewHedges'];
     if(!keys.every(key=>candidate[key]===state[key]))return false;
-    if(state.canopyEnabled&&!['canopyDepth','canopyHeight','canopyWidth','fasciaDepth'].every(key=>candidate[key]===state[key]))return false;
+    if(state.canopyEnabled&&!['terraceCoverType','canopyDepth','canopyHeight','canopyWidth','fasciaDepth'].every(key=>candidate[key]===state[key]))return false;
     if(layout){
       const geometry=trees=>JSON.stringify(trees.map(tree=>[tree.typeId,tree.x,tree.y,tree.height,tree.crownBase,tree.crownWidth,tree.crownDepth,tree.rotation,tree.enabled].map(value=>typeof value==='number'?Math.round(value*10000)/10000:value)).map(row=>JSON.stringify(row)).sort());
       return geometry(candidate.screeningTrees)===geometry(state.screeningTrees);

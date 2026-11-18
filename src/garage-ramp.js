@@ -2,7 +2,7 @@
  * geometry is implied. The conservative underside is flat over the full car.
  * Site coordinates are [x,y,elevation]; longitudinal profile s runs inward.
  */
-import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey} from './garage-options.js?v=1.22.0';
+import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey} from './garage-options.js?v=1.23.0';
 
 export const CYBERSTER_AWD=Object.freeze({length:4.535,width:1.913,mirrorWidth:2.110,height:1.329,
   wheelbase:2.690,frontOverhang:.955,rearOverhang:.890,frontRadius:.352,rearRadius:.35025,
@@ -15,6 +15,7 @@ const ring=points=>points.length>1&&Math.hypot(...sub(points[0],points.at(-1)))<
 function options(settings={}){
   const out={...GARAGE_DEFAULTS,...settings};
   for(const [key,field] of Object.entries(GARAGE_FIELDS))out[key]=clamp(finite(out[key],field.value),field.min,field.max);
+  out.garageSpaces=Math.round(out.garageSpaces);
   return out;
 }
 function lineIntersection(p,d,a,b){
@@ -54,11 +55,32 @@ export function garagePlanFrame(settings={},data){
     clipStreet?entrance(width/2):at(from,width/2),
   ]);
   const outerFootprint=footprint(0,totalRun,outerWidth,true),clearFootprint=footprint(0,totalRun,clearWidth,true);
+  const spaces=s.garageSpaces,laneWidth=clearWidth/spaces,mirrorWidth=CYBERSTER_AWD.mirrorWidth,bodyWidth=CYBERSTER_AWD.width;
+  // Equal-width, straight driving lanes. A parked second car never shares the
+  // moving car's lane. These are closed-car envelopes, not door-opening areas.
+  const laneOffsets=Array.from({length:spaces},(_,i)=>(i-(spaces-1)/2)*laneWidth);
+  const parking={spaces,laneWidth,laneOffsets,movingLaneOffset:laneOffsets.at(-1),parkedLaneOffset:spaces===2?laneOffsets[0]:null,
+    mirrorWallClearance:(laneWidth-mirrorWidth)/2,bodyWallClearance:(laneWidth-bodyWidth)/2,
+    betweenMirrors:spaces===2?laneWidth-mirrorWidth:null,betweenBodies:spaces===2?laneWidth-bodyWidth:null,
+    wallAllowance:.3,betweenAllowance:spaces===2?.6:0,minimumWidth:spaces*(mirrorWidth+.6)};
+  parking.widthPass=parking.mirrorWallClearance>=parking.wallAllowance-1e-8&&
+    (spaces===1||parking.betweenMirrors>=parking.betweenAllowance-1e-8);
+  const frontY=x=>a[1]+(x-a[0])*edge[1]/edge[0],doorCenter=[9.16,frontY(9.16)];
+  const westOuter=at(frontRun,outerWidth/2),requiresSideEntry=westOuter[0]<doorCenter[0]+1;
+  let entryAccess=null;
+  if(requiresSideEntry){
+    const west=[7.40,frontY(7.40)],east=[9.84,frontY(9.84)],projection=1;
+    const landingFootprint=closed([west,east,east.map((v,i)=>v-direction[i]*projection),west.map((v,i)=>v-direction[i]*projection)]);
+    const lateral=point=>(point[0]-portalPoint[0])*normal[0]+(point[1]-portalPoint[1])*normal[1];
+    entryAccess={proposed:true,doorCenter,landing:{footprint:landingFootprint,projection,thickness:.18,
+      fromS:frontRun-projection,toS:frontRun,innerLateral:Math.min(lateral(west),lateral(east)),outerLateral:Math.max(lateral(west),lateral(east))},
+      stairs:{landingX:7.40,tread:.32,maxRiser:.18,width:1,heading:'east'},pedestrianGateCenter:[5,streetA[1]]};
+  }
   const gateWidth=outerWidth+.4,gate={a:entrance(-gateWidth/2),b:entrance(gateWidth/2),width:gateWidth};
   const cutout={x0:Math.min(...outerFootprint.map(p=>p[0])),y0:Math.min(...outerFootprint.map(p=>p[1])),
     x1:Math.max(...outerFootprint.map(p=>p[0])),y1:Math.max(...outerFootprint.map(p=>p[1]))};
   return {supported:true,enabled:s.basementGarageEnabled===true,centerX:portalPoint[0],frontRun,facadeStation:frontRun,
-    insideRun,totalRun,houseDepth,clearWidth,wallThickness,outerWidth,gate,cutout,outerFootprint,clearFootprint,
+    insideRun,totalRun,houseDepth,clearWidth,wallThickness,outerWidth,parking,entryAccess,gate,cutout,outerFootprint,clearFootprint,
     roomFootprint:footprint(frontRun,roomRearS,outerWidth),roomFloorFootprint:footprint(frontRun,roomRearS,clearWidth),roomRearS,
     entrancePoints:[entrance(-outerWidth/2),entrance(outerWidth/2)],
     axis:{start,end:portalPoint,direction,normal,frontRun,insideRun,totalRun},at};
@@ -171,7 +193,7 @@ function travelRange(layout,reverse){
   return reverse?[-v.rearOverhang-.3,layout.roomRearS-v.rearOverhang-.3]
     :[-v.wheelbase-v.frontOverhang-.3,layout.roomRearS-v.wheelbase-v.frontOverhang-.3];
 }
-function overheadClearances(layout,pose){
+function overheadClearances(layout,pose,laneOffset){
   const v=layout.vehicle,A=pose.at(-v.rearOverhang,v.height-v.rearRadius),B=pose.at(v.wheelbase+v.frontOverhang,v.height-v.rearRadius);
   const lo=Math.max(Math.min(A.s,B.s),layout.frontRun),hi=Math.min(Math.max(A.s,B.s),layout.roomRearS);
   const z=x=>A.z+(B.z-A.z)*(x-A.s)/(B.s-A.s);
@@ -179,9 +201,20 @@ function overheadClearances(layout,pose){
   const crossesDoor=Math.min(A.s,B.s)<=layout.frontRun&&Math.max(A.s,B.s)>=layout.frontRun;
   const doorTop=Math.min(layout.ceilingZ,road(layout.design,layout.frontRun).z+2.10);
   const portal=crossesDoor?doorTop-z(layout.frontRun):Infinity;
-  return {minimum:Math.min(soffit,portal),soffit,portal};
+  const landing=layout.entryAccess?.landing;
+  const lanes=Number.isFinite(laneOffset)?[laneOffset]:layout.parking?.laneOffsets||[0];
+  let entryLanding=Infinity,entryLandingStation=null;
+  if(landing&&lanes.some(offset=>offset+v.mirrorWidth/2>landing.innerLateral&&offset-v.mirrorWidth/2<landing.outerLateral)){
+    const landingLo=Math.max(Math.min(A.s,B.s),landing.fromS),landingHi=Math.min(Math.max(A.s,B.s),landing.toS);
+    if(landingLo<=landingHi){entryLandingStation=z(landingLo)>=z(landingHi)?landingLo:landingHi;entryLanding=landing.soffitZ-z(entryLandingStation);}
+  }
+  const candidates=[{element:'garage ceiling',clearance:soffit,station:lo<=hi?(z(lo)>=z(hi)?lo:hi):null},
+    {element:'garage doorway',clearance:portal,station:crossesDoor?layout.frontRun:null},
+    {element:'entry landing',clearance:entryLanding,station:entryLandingStation}];
+  const limiting=candidates.reduce((a,b)=>a.clearance<=b.clearance?a:b);
+  return {minimum:limiting.clearance,soffit,portal,entryLanding,entryLandingStation,limiting};
 }
-function overheadClearance(layout,pose){return overheadClearances(layout,pose).minimum;}
+function overheadClearance(layout,pose,laneOffset){return overheadClearances(layout,pose,laneOffset).minimum;}
 function goldenMinimum(fn,lo,hi,iterations=22){
   const ratio=(Math.sqrt(5)-1)/2;let x1=hi-ratio*(hi-lo),x2=lo+ratio*(hi-lo),y1=fn(x1),y2=fn(x2);
   for(let i=0;i<iterations;i++)if(y1<y2){hi=x2;x2=x1;y2=y1;x1=hi-ratio*(hi-lo);y1=fn(x1);}else{lo=x1;x1=x2;y1=y2;x2=lo+ratio*(hi-lo);y2=fn(x2);}
@@ -189,14 +222,16 @@ function goldenMinimum(fn,lo,hi,iterations=22){
 }
 function sweep(layout,reverse,{step=.035,exact=true,refine=true}={}){
   const [start,end]=travelRange(layout,reverse),count=Math.max(1,Math.ceil((end-start)/step)),samples=[];
-  let minimumClearance=Infinity,minimumVerticalClearance=Infinity,minimumOverheadClearance=Infinity,minimumPortalClearance=Infinity,minimumSoffitClearance=Infinity,best=null,posesChecked=0,portalPosesChecked=0,coveredPosesChecked=0;
+  let minimumClearance=Infinity,minimumVerticalClearance=Infinity,minimumOverheadClearance=Infinity,minimumPortalClearance=Infinity,minimumSoffitClearance=Infinity,minimumEntryLandingClearance=Infinity,best=null,criticalOverhead=null,criticalEntryLanding=null,posesChecked=0,portalPosesChecked=0,coveredPosesChecked=0,entryLandingPosesChecked=0;
   const evaluate=rearS=>{
     const pose=axlePose(layout.design,layout.vehicle,rearS,reverse),clear=undersideClearance(layout.design,layout.vehicle,pose,exact);
     const overhead=overheadClearances(layout,pose);
     posesChecked++;minimumVerticalClearance=Math.min(minimumVerticalClearance,clear.vertical);
-    minimumOverheadClearance=Math.min(minimumOverheadClearance,overhead.minimum);
+    if(overhead.minimum<minimumOverheadClearance){minimumOverheadClearance=overhead.minimum;criticalOverhead={rearS,station:overhead.limiting.station,element:overhead.limiting.element,reverse};}
     minimumPortalClearance=Math.min(minimumPortalClearance,overhead.portal);minimumSoffitClearance=Math.min(minimumSoffitClearance,overhead.soffit);
+    if(overhead.entryLanding<minimumEntryLandingClearance){minimumEntryLandingClearance=overhead.entryLanding;criticalEntryLanding={rearS,station:overhead.entryLandingStation,reverse};}
     if(Number.isFinite(overhead.portal))portalPosesChecked++;if(Number.isFinite(overhead.soffit))coveredPosesChecked++;
+    if(Number.isFinite(overhead.entryLanding))entryLandingPosesChecked++;
     if(clear.clearance<minimumClearance){minimumClearance=clear.clearance;best={rearS,clear,pose};}
     return clear.clearance;
   };
@@ -205,7 +240,7 @@ function sweep(layout,reverse,{step=.035,exact=true,refine=true}={}){
     &&(samples[i].value<samples[i-1].value-1e-8||samples[i].value<samples[i+1].value-1e-8)
     &&samples[i].value<minimumClearance+.004){const x=goldenMinimum(evaluate,samples[i-1].x,samples[i+1].x);evaluate(x);}
   const u=best.clear.bodyU,limitingPart=u<0?'rear-overhang':u>layout.vehicle.wheelbase?'front-overhang':'underbody';
-  return {minimumClearance,minimumVerticalClearance,minimumOverheadClearance,minimumPortalClearance,minimumSoffitClearance,portalPosesChecked,coveredPosesChecked,criticalRearS:best.rearS,
+  return {minimumClearance,minimumVerticalClearance,minimumOverheadClearance,minimumPortalClearance,minimumSoffitClearance,minimumEntryLandingClearance,criticalOverhead,criticalEntryLanding,portalPosesChecked,coveredPosesChecked,entryLandingPosesChecked,criticalRearS:best.rearS,
     criticalProgress:(best.rearS-start)/(end-start),limitingPart,limitingStation:best.clear.limitingS,posesChecked,step,reverse};
 }
 function optimizeDesign(base,settings){
@@ -249,6 +284,8 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   }
   const entries=bucket.entries;if(entries.has(key))return entries.get(key);
   const layout={...frame,vehicle,car:vehicle,settings:s,streetZ,livingFloorZ,ceilingZ,floorZ,drop};
+  if(frame.entryAccess)layout.entryAccess={...frame.entryAccess,landing:{...frame.entryAccess.landing,
+    topZ:livingFloorZ,soffitZ:livingFloorZ-frame.entryAccess.landing.thickness}};
   layout.design=optimizeDesign(layout,s);
   const at=station=>{const xy=frame.at(station),p=road(layout.design,station);return {s:station,x:xy[0],y:xy[1],z:p.z,grade:p.grade,groundZ:terrainAt(...xy,data)};};
   const stations=[0,frame.frontRun,frame.totalRun,...layout.design.breaks];
@@ -261,28 +298,39 @@ export function garageLayout(settings={},data,{terrainAt}={}){
     availableHeight:ceilingZ-portalBottom,clearHeight:Math.min(ceilingZ-portalBottom,2.10),assumedDoorClearHeight:2.10};
   const forward=sweep(layout,false),reverse=sweep(layout,true),minimumClearance=Math.min(forward.minimumClearance,reverse.minimumClearance);
   const requiredMargin=s.garageReserveMm/1000,numericalAllowance=.001,conservativeClearance=minimumClearance-numericalAllowance;
-  const parkingFlatLength=frame.roomRearS-Math.max(frame.frontRun,layout.design.curvedRun),minCoveredHeadroom=ceilingZ-portalBottom;
+  const parkingFlatLength=frame.roomRearS-Math.max(frame.frontRun,layout.design.curvedRun);
+  const entryLandingHeadroom=layout.entryAccess?layout.entryAccess.landing.soffitZ-Math.max(
+    road(layout.design,layout.entryAccess.landing.fromS).z,road(layout.design,layout.entryAccess.landing.toS).z):Infinity;
+  const minCoveredHeadroom=Math.min(ceilingZ-portalBottom,entryLandingHeadroom);
   const minimumOverheadClearance=Math.min(forward.minimumOverheadClearance,reverse.minimumOverheadClearance);
   const gradeWithinLimit=layout.design.peakGrade<=s.garageMaxGrade/100+1e-8,parkingFits=parkingFlatLength>=vehicle.length+.6,structuralHeadroomPass=minCoveredHeadroom>=2.2-1e-6;
-  const widthBenchmarkPass=frame.clearWidth>=3-1e-8,doorBenchmarkPass=layout.portal.clearHeight>=2-1e-8;
+  const widthBenchmarkPass=frame.clearWidth>=3-1e-8,doorBenchmarkPass=layout.portal.clearHeight>=2-1e-8,parkingWidthPass=frame.parking.widthPass;
   const warnings=['Concept only: original basement, slab, foundations, drainage and vehicle bumper geometry are not surveyed.',
     'The entire underside is conservatively flat at the selected level-road clearance, including both overhangs; tyre radii are nominal size geometry.',
     'Quasi-static rigid-body geometry excludes braking, suspension travel, tyre deflection, snow, ruts and construction tolerances.',
     'The road approach and crossing are assumed flush and level. The required drainage/containment threshold detail is unresolved; a 30 mm edge is not included.',
     'The 25% gradient, 3 m access width and 2.20 m structural headroom figures are transitional design benchmarks; project applicability needs confirmation.',
-    'The 2.10 m door opening is an assumption without surveyed lintel or door-gear geometry; overhead checks use a conservative full-height closed-car envelope.'];
+    'The 2.10 m door opening is an assumption without surveyed lintel or door-gear geometry; overhead checks use a conservative full-height closed-car envelope.',
+    `The ${frame.parking.spaces}-car plan uses ${frame.parking.spaces===2?'two identical':'one'} Cyberster envelope${frame.parking.spaces===2?'s':''}: 4.535 m long, 1.913 m body width and 2.110 m across mirrors. Doors remain closed; their opening space and street turning manoeuvres are not modelled.`,
+    'Parking width is compared with a chosen 0.30 m mirror-to-wall allowance and, for two cars, 0.60 m between mirror envelopes. These are planning allowances, not a surveyed door-opening or accessibility assessment.'];
+  if(layout.entryAccess)warnings.push('The wider ramp requires proposed side-return entry stairs and a 1.0 m cantilevered landing at the existing front door. Its 0.18 m slab underside is included in both driving sweeps; its structure has not been designed.');
   if(frame.insideRun>0)warnings.push('The bottom curve continues inside the existing house and requires structural and basement-layout design.');
   if(!structuralHeadroomPass)warnings.push('The raised indoor ramp locally leaves less than the 2.20 m structural headroom benchmark.');
   if(layout.design.peakGrade>.25+1e-6)warnings.push('The peak gradient exceeds the 25% individual-garage benchmark.');
   if(!parkingFits)warnings.push('The remaining covered flat bay does not fit the car with 0.30 m allowance at each end.');
   if(!widthBenchmarkPass)warnings.push('The selected clear width is below the 3 m access-roadway benchmark.');
+  if(!parkingWidthPass)warnings.push(`The selected width does not leave the chosen lateral allowances for ${frame.parking.spaces} closed-car envelope${frame.parking.spaces===2?'s':''}.`);
   if(!doorBenchmarkPass)warnings.push('Available portal height is below the 2 m garage-door benchmark.');
   if(drop<=0)warnings.push('The proposed floor is at or above the street; this is not a descending basement ramp.');
-  const clearancePass=conservativeClearance>=requiredMargin,geometryPass=gradeWithinLimit&&parkingFits&&structuralHeadroomPass&&widthBenchmarkPass&&doorBenchmarkPass&&drop>0&&minimumOverheadClearance>=requiredMargin+numericalAllowance;
+  const clearancePass=conservativeClearance>=requiredMargin,geometryPass=gradeWithinLimit&&parkingFits&&structuralHeadroomPass&&widthBenchmarkPass&&parkingWidthPass&&doorBenchmarkPass&&drop>0&&minimumOverheadClearance>=requiredMargin+numericalAllowance;
   layout.assessment={forward,reverse,minimumClearance,minimumVerticalClearance:Math.min(forward.minimumVerticalClearance,reverse.minimumVerticalClearance),
     requiredMargin,numericalAllowance,conservativeClearance,reserveRemaining:minimumClearance-requiredMargin,passes:clearancePass&&geometryPass,
-    clearancePass,geometryPass,gradeWithinLimit,parkingFits,structuralHeadroomPass,widthBenchmarkPass,doorBenchmarkPass,parkingFlatLength,minCoveredHeadroom,minimumOverheadClearance,
+    clearancePass,geometryPass,gradeWithinLimit,parkingFits,parkingWidthPass,structuralHeadroomPass,widthBenchmarkPass,doorBenchmarkPass,parkingFlatLength,minCoveredHeadroom,entryLandingHeadroom,minimumOverheadClearance,
+    minimumEntryLandingClearance:Math.min(forward.minimumEntryLandingClearance,reverse.minimumEntryLandingClearance),
+    criticalOverhead:forward.minimumOverheadClearance<=reverse.minimumOverheadClearance?forward.criticalOverhead:reverse.criticalOverhead,
+    criticalEntryLanding:forward.minimumEntryLandingClearance<=reverse.minimumEntryLandingClearance?forward.criticalEntryLanding:reverse.criticalEntryLanding,
     posesChecked:forward.posesChecked+reverse.posesChecked,portalPosesChecked:forward.portalPosesChecked+reverse.portalPosesChecked,coveredPosesChecked:forward.coveredPosesChecked+reverse.coveredPosesChecked,
+    entryLandingPosesChecked:forward.entryLandingPosesChecked+reverse.entryLandingPosesChecked,
     limitingDirection:forward.minimumClearance<=reverse.minimumClearance?'forward':'reverse',
     status:minimumClearance<0?'contact':!geometryPass?'geometry-limit':!clearancePass?'reserve-shortfall':'conditional-clearance',
     thresholdResolved:false,roadApproachSurveyed:false,warnings};
@@ -290,12 +338,13 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   entries.set(key,layout);if(entries.size>12)entries.delete(entries.keys().next().value);return layout;
 }
 
-export function garageVehiclePose(layout,progress=.4,reverse=false){
+export function garageVehiclePose(layout,progress=.4,reverse=false,laneOffset=layout?.parking?.movingLaneOffset??0){
   if(!layout?.enabled||!layout.design)return null;
   const range=travelRange(layout,reverse),p=clamp(finite(progress,.4),0,1),rearS=range[0]+p*(range[1]-range[0]);
   const pose=axlePose(layout.design,layout.vehicle,rearS,reverse),v=layout.vehicle,axis=layout.axis.direction,n=layout.axis.normal;
   const cos=Math.cos(pose.theta),sin=Math.sin(pose.theta),direction=pose.direction;
-  const point=(station,z)=>{const xy=layout.at(station);return {s:station,x:xy[0],y:xy[1],z};};
+  const lateralOffset=finite(laneOffset,layout.parking?.movingLaneOffset??0);
+  const point=(station,z)=>{const xy=layout.at(station,lateralOffset);return {s:station,x:xy[0],y:xy[1],z};};
   const rearAxle=point(rearS,pose.rear.z),frontAxle=point(pose.frontS,pose.front.z),origin=[rearAxle.x,rearAxle.y,rearAxle.z];
   const basis={forward:[axis[0]*direction*cos,axis[1]*direction*cos,sin],up:[-axis[0]*direction*sin,-axis[1]*direction*sin,cos],lateral:[n[0]*direction,n[1]*direction,0]};
   const localToWorld=(u,lateral,h)=>origin.map((value,i)=>value+basis.forward[i]*u+basis.lateral[i]*lateral+basis.up[i]*h);
@@ -307,8 +356,8 @@ export function garageVehiclePose(layout,progress=.4,reverse=false){
     center:localToWorld(front?v.wheelbase:0,side*(front?v.frontTrack:v.rearTrack)/2,front?v.frontRadius-v.rearRadius:0),
     radius:front?v.frontRadius:v.rearRadius,width:front?v.frontTyreWidth:v.rearTyreWidth});}
   const clear=undersideClearance(layout.design,v,pose,true);
-  return {progress:p,reverse,rearS,frontS:pose.frontS,rearAxle,frontAxle,axles:{rear:rearAxle,front:frontAxle},origin,basis,heading:basis.forward,
+  return {progress:p,reverse,laneOffset:lateralOffset,rearS,frontS:pose.frontS,rearAxle,frontAxle,axles:{rear:rearAxle,front:frontAxle},origin,basis,heading:basis.forward,
     localToWorld,bodyPolygon,underbody,roof,wheels,sideWheels:[{s:rearS,z:pose.rear.z,radius:v.rearRadius},{s:pose.frontS,z:pose.front.z,radius:v.frontRadius}],
     pitchRadians:pose.theta,pitchDegrees:pose.theta*180/Math.PI,minimumClearance:clear.clearance,minimumVerticalClearance:clear.vertical,
-    minimumOverheadClearance:overheadClearance(layout,pose),contact:clear.clearance<0,reserveSatisfied:clear.clearance>=layout.assessment.requiredMargin+layout.assessment.numericalAllowance};
+    minimumOverheadClearance:overheadClearance(layout,pose,lateralOffset),contact:clear.clearance<0,reserveSatisfied:clear.clearance>=layout.assessment.requiredMargin+layout.assessment.numericalAllowance};
 }

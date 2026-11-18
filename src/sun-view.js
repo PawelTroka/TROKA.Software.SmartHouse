@@ -1,11 +1,11 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures} from './geometry.js?v=1.22.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.22.0';
-import {getSiteProfile} from './sites.js?v=1.22.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.22.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.22.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.22.0';
-import {spaPlanMarkup,privacyPlanMarkup} from './diagrams.js?v=1.22.0';
-import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.22.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.23.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.23.0';
+import {getSiteProfile} from './sites.js?v=1.23.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.23.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.23.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.23.0';
+import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.23.0';
+import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.23.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -42,7 +42,7 @@ export function renderSunReadouts(sun,shade,settings){
     $(`sunlit-${zone}-bar`).style.width=Number.isFinite(value)?`${value}%`:'0%';
     $(`sunlit-${zone}-count`).textContent=shade.status==='night'?'Sun below horizon':shade.status==='disabled'?'Simulation off':result?.total?`${result.sunlit} / ${result.total} points in direct sun`:'No outdoor sample points';
   }
-  $('sun-analysis-note').textContent=shade.status==='night'?'The sun is below the horizon. There is no direct sunlight; this is different from shade cast by a building or hedge.':shade.status==='disabled'?'Enable real sunlight to calculate shade for the selected date and time.':`Direct sun at outdoor sample points, spaced 1 m apart. Includes mapped buildings and roofs, opaque hedges, canopy, local terrain and added screening trees.${settings.privacyPergolaEnabled||settings.spaScreensEnabled?' Pergola members, selected dense planting and deployed spa screens also cast shade; open gaps remain open.':''}${shade.zones.firepit?' Sauna walls and roof cast shade; its glass stays transparent. Sunken-lounge samples follow the lowered floor and entry treads.':''} Leafy tree crowns are dense-volume approximations; existing unmapped trees and decorative plants are excluded.`;
+  $('sun-analysis-note').textContent=shade.status==='night'?'The sun is below the horizon. There is no direct sunlight; this is different from shade cast by a building or hedge.':shade.status==='disabled'?'Enable real sunlight to calculate shade for the selected date and time.':`Direct sun at outdoor sample points, spaced 1 m apart. Includes mapped buildings and roofs, opaque hedges, ${settings.terraceCoverType==='balcony'?'balcony deck and supports (clear guards transmit light)':'canopy'}, local terrain and added screening trees.${settings.privacyPergolaEnabled||settings.spaScreensEnabled?' Pergola members, selected dense planting and deployed spa screens also cast shade; open gaps remain open.':''}${shade.zones.firepit?' Sauna walls and roof cast shade; its glass stays transparent. Sunken-lounge samples follow the lowered floor and entry treads.':''} Leafy tree crowns are dense-volume approximations; existing unmapped trees and decorative plants are excluded.`;
   $('sun-results').dataset.status=shade.status;
   const W=600,H=102,left=25,right=12,top=9,bottom=21;
   const X=m=>left+(W-left-right)*m/1440,Y=e=>top+(70-e)/85*(H-top-bottom);
@@ -92,7 +92,7 @@ export function renderSunMap(container,data,settings,sun,shade,measuredFrame=nul
   const compass=`<g><circle cx="${cx}" cy="${cy}" r="${R}" fill="#fffef9" fill-opacity=".95" stroke="#d9dfd2"/><line x1="${cx}" y1="${cy}" x2="${cx+north[0]*22}" y2="${cy+north[1]*22}" stroke="#365744" stroke-width="2"/><text x="${cx+north[0]*35}" y="${cy+north[1]*35+3}" text-anchor="middle" fill="#365744" font-size="11" font-weight="700">N</text><line x1="${cx}" y1="${cy}" x2="${sx}" y2="${sy}" stroke="#be8c27" stroke-width="2"/><circle cx="${sx}" cy="${sy}" r="5" fill="${sun.isDaylight?'#e5b347':'#778593'}" stroke="#fffef9" stroke-width="1.5"/><text x="${cx}" y="${cy+R+18}" text-anchor="middle" fill="#6d796c" font-size="10">${sun.isDaylight?'Toward sun':'Sun below horizon'}</text></g>`;
   const houseC=centre(site.house.footprint);
   const detail=scope!=='context';
-  const canopy=c?rect(c.x0,c.y0,c.x1-c.x0,c.y1-c.y0,'fill="none" stroke="#6c5740" stroke-width="2" stroke-dasharray="5 3"'):'';
+  const canopy=settings.terraceCoverType==='balcony'?terraceCoverPlanMarkup(terraceCover(settings,data),{X,Y,scale,labels:!measured,subtle:true}):c?rect(c.x0,c.y0,c.x1-c.x0,c.y1-c.y0,'fill="none" stroke="#6c5740" stroke-width="2" stroke-dasharray="5 3"'):'';
   const jacuzzi=j?rect(j.x0,j.y0,j.x1-j.x0,j.y1-j.y0,'fill="#76a8a7" fill-opacity=".4" stroke="#4b7775" stroke-width="1"'):'';
   const sideY=scope==='detail'?site.rearMidpoint[1]-.65:site.rearMidpoint[1]+Math.max(1.5,(plot.maxY-site.rearMidpoint[1])*.3);
   const poolFill=p?rect(p.x,p.y,p.width,p.length,'fill="#aed2ce"'):'';

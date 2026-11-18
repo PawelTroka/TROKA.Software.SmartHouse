@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.22.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.22.0';
+import {getSiteProfile} from './sites.js?v=1.23.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.23.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -31,7 +31,11 @@ export function budgetSideLabels(data){
 
 export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks,t=cost.screeningTrees;
-  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy,basementGarage=cost.basementGarage;
+  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy,basementGarage=cost.basementGarage,balcony=cost.balcony;
+  const balconyMissing=balcony?.unquoted.length?' The first-floor balcony also needs a complete installed quote; its unquoted scope is excluded.':'';
+  if($('balcony-cost-summary'))$('balcony-cost-summary').textContent=balcony?.enabled
+    ?balcony.unquoted.length?'First-floor balcony: quote required. Its structure, foundations, deck, guards and access door are excluded from the known subtotal, even with planning allowances on.':`First-floor balcony: ${amount(balcony.knownBase)} installed quote, before the shared uncertainty allowance. Replaces the canopy cost.`
+    :'The balcony quote applies only while balcony mode is selected and the terrace cover is enabled.';
   if($('privacy-cost-summary'))$('privacy-cost-summary').textContent=privacy?.enabled
     ?privacy.unquoted.length?`${privacy.unquoted.length} privacy ${privacy.unquoted.length===1?'structure needs an installed quote':'structures need installed quotes'}. Known privacy costs: ${amount(privacy.knownBase)}. Unquoted work is excluded from the known budget; planning allowances do not price these structures.`
       :`Privacy structures: ${amount(privacy.knownBase)} in installed quotes, before the shared uncertainty allowance. Terrace canopy priced separately.`
@@ -58,9 +62,11 @@ export function renderBudget(cost,settings,data){
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
     ?basementGarage?.unquoted.length
-      ?`The basement garage and ramp need a complete project quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Garden allowances do not cover basement conversion.`
+      ?`The basement garage and ramp need a complete project quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Garden allowances do not cover basement conversion.${balconyMissing}`
       :privacy?.unquoted.length
-      ?`Selected privacy structures need installed quotes. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price these custom structures. Review the unquoted items in the expanded budget.`
+      ?`Selected privacy structures need installed quotes. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price these custom structures. Review the unquoted items in the expanded budget.${balconyMissing}`
+      :balcony?.unquoted.length
+      ?`The first-floor balcony needs a complete installed project quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price its structure, foundations, guards or access door.`
       :`Some plants, services or garden installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices and installed quotes, or enable planning allowances.`
     :`PLN ${garden?.enabled?(h.fullPerimeter?'rear garden + full perimeter hedges':h.sides.some(side=>side.side==='front')?'rear garden + front hedge':'rear-garden'):'planning'} budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance once. ${cost.planningEnabled?'Installed ranges are planning assumptions, not received supplier quotes.':'Site allowances and rates are editable.'}`;
   $('cost-status').classList.toggle('needs-quote',cost.status==='quote-required');
@@ -71,6 +77,7 @@ export function renderBudget(cost,settings,data){
   panel.dataset.gardenKnownLow=garden?.knownBase.low||0;panel.dataset.planningEnabled=cost.planningEnabled?'true':'false';
   panel.dataset.privacyKnownLow=privacy?.knownBase.low||0;panel.dataset.privacyUnquotedCount=privacy?.unquoted.length||0;
   panel.dataset.basementGarageKnownLow=basementGarage?.knownBase.low||0;panel.dataset.basementGarageUnquotedCount=basementGarage?.unquoted.length||0;
+  panel.dataset.balconyKnownLow=balcony?.knownBase.low||0;panel.dataset.balconyUnquotedCount=balcony?.unquoted.length||0;
   const sideLabel={front:'Front / street',...budgetSideLabels(data)};
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
@@ -93,6 +100,8 @@ export function renderBudget(cost,settings,data){
       '<p class="field-note">Custom structures are quote-only. Unquoted work is excluded from the known subtotal, even with planning allowances on. The terrace canopy is counted separately in garden finishes.</p>':'')+
     (basementGarage?.enabled?table('Basement garage and ramp · separate project quote',installedRows(basementGarage.rows))+
       '<p class="field-note">The clearance model does not establish structural feasibility or an installed price. A zero quote remains unpriced; garden earthworks, drainage and retaining allowances do not cover this conversion.</p>':'')+
+    (balcony?.enabled?table('First-floor balcony · separate installed project quote',installedRows(balcony.rows))+
+      '<p class="field-note">The balcony replaces the canopy, so no canopy rate is added. A zero quote means unpriced work excluded from the known subtotal, even with planning allowances on. The quote must cover the structural proposal, foundations, waterproofing, guards and first-floor access. Ground-floor terrace finishes remain a separate scope.</p>':'')+
     `<p class="field-note">Line items exclude the ${cost.contingencyPercent}% upper-budget uncertainty allowance. Published plant bands are price references, not a guaranteed current offer. Enter supplier-confirmed final amounts, including applicable tax, for a purchasing budget.</p>`+
     `<ul class="budget-notes">${cost.notes.map(note=>`<li>${escape(note)}</li>`).join('')}</ul>`;
   if($('screening-tree-detail')){

@@ -1,6 +1,6 @@
-import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.22.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.22.0';
-import {terrainAt} from './geometry.js?v=1.22.0';
+import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.23.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.23.0';
+import {terrainAt} from './geometry.js?v=1.23.0';
 
 const $=id=>document.getElementById(id);
 const fmt=(value,digits=1)=>Number.isFinite(value)?value.toFixed(digits):'—';
@@ -30,6 +30,8 @@ export function garageProfileSVG(layout,pose){
   const wallX=x(layout.frontRun),rightX=x(maxS),slabTop=y(layout.livingFloorZ),slabBottom=y(layout.ceilingZ);
   const dimensionY=height-26,frontStart=x(0),frontEnd=x(layout.frontRun);
   const contact=Number.isFinite(pose?.minimumClearance)&&pose.minimumClearance<0;
+  const landing=layout.entryAccess?.landing;
+  const landingSlab=landing?`<rect x="${x(landing.fromS)}" y="${y(landing.topZ)}" width="${x(landing.toS)-x(landing.fromS)}" height="${y(landing.soffitZ)-y(landing.topZ)}" fill="#b9c8b7" stroke="#627d68"/><text x="${x(landing.fromS)-7}" y="${y(landing.topZ)-12}" text-anchor="end" class="profile-small">Proposed entry landing</text>`:'';
   const car=body.length?`<polygon points="${body.map(pair).join(' ')}" fill="#4f8a76" fill-opacity=".24" stroke="#2c5848" stroke-width="1.5" stroke-dasharray="5 3"/>`:'';
   const tyres=wheels.map(wheel=>`<circle cx="${fmt(x(wheel.s),2)}" cy="${fmt(y(wheel.z),2)}" r="${fmt(wheel.radius*scale,2)}" fill="#343a35" stroke="#fffef9" stroke-width="1.6"/><circle cx="${fmt(x(wheel.s),2)}" cy="${fmt(y(wheel.z),2)}" r="${fmt(wheel.radius*scale*.48,2)}" fill="#cbd4ca"/>`).join('');
   const envelope=underside.length?`<polyline points="${underside.map(pair).join(' ')}" fill="none" stroke="${contact?'#bd543c':'#d29542'}" stroke-width="2.1" stroke-dasharray="4 3"/>`:'';
@@ -40,6 +42,7 @@ export function garageProfileSVG(layout,pose){
     <polygon points="${ground}" fill="#e7e2d4"/>
     <line x1="${frontStart}" y1="${y(layout.streetZ)}" x2="${frontEnd}" y2="${y(layout.streetZ)}" stroke="#b9c8b7" stroke-dasharray="5 4"/>
     <rect x="${wallX}" y="${slabTop}" width="${rightX-wallX}" height="${Math.max(1,slabBottom-slabTop)}" fill="#d3d3c6" stroke="#a4ad9c"/>
+    ${landingSlab}
     <line x1="${wallX}" y1="${y(maxZ-.15)}" x2="${wallX}" y2="${y(layout.portal?.topZ??layout.ceilingZ)}" stroke="#82957f" stroke-width="4"/>
     <polyline points="${surface}" fill="none" stroke="#657b65" stroke-width="3" stroke-linejoin="round"/>
     <line x1="${frontStart}" y1="${y(layout.streetZ)-12}" x2="${frontStart}" y2="${dimensionY-9}" stroke="#afbcaa" stroke-dasharray="3 4"/>
@@ -55,12 +58,47 @@ export function garageProfileSVG(layout,pose){
     <text x="${padding}" y="${height-8}" class="profile-small">Equal scales · green box = conservative car envelope</text>
   </svg>`;
 }
+/** A dimensioned plan complements the side profile: both cars occupy separate
+ * lanes and every width shown is the same width used by the scene and checks. */
+export function garageParkingPlanSVG(layout){
+  const parking=layout?.parking,v=layout?.vehicle;
+  if(!layout?.enabled||!parking||!v||!Number.isFinite(layout.parkingFlatLength))return '';
+  const length=layout.parkingFlatLength,clearWidth=layout.clearWidth,scale=Math.min(450/Math.max(length,1),330/clearWidth),left=70,top=48;
+  const right=left+length*scale,bottom=top+clearWidth*scale,height=bottom+65;
+  const y=lateral=>top+(lateral+clearWidth/2)*scale,carX=right-(v.length+.3)*scale;
+  const cars=parking.laneOffsets.map((offset,i)=>{
+    const centre=y(offset),bodyY=centre-v.width*scale/2,mirrorY=centre-v.mirrorWidth*scale/2;
+    return `<g data-car="${i+1}" data-length="${v.length}" data-body-width="${v.width}" data-mirror-width="${v.mirrorWidth}">
+      <rect x="${carX}" y="${mirrorY}" width="${v.length*scale}" height="${v.mirrorWidth*scale}" rx="8" fill="none" stroke="#718d7c" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <rect x="${carX}" y="${bodyY}" width="${v.length*scale}" height="${v.width*scale}" rx="13" fill="${i===parking.spaces-1?'#ead3cc':'#dce3dd'}" stroke="${i===parking.spaces-1?'#935342':'#60786b'}" stroke-width="1.5"/>
+      <line x1="${right-.55*scale}" y1="${bodyY+9}" x2="${right-.55*scale}" y2="${bodyY+v.width*scale-9}" stroke="#60786b"/>
+      <text x="${carX+v.length*scale/2}" y="${centre-15}" text-anchor="middle" class="profile-label">Car ${i+1} · Cyberster envelope</text>
+      <text x="${carX+v.length*scale/2}" y="${centre+7}" text-anchor="middle" class="profile-small">4.535 × 1.913 m body</text>
+      <text x="${carX+v.length*scale/2}" y="${centre+27}" text-anchor="middle" class="profile-small">2.110 m across mirrors</text></g>`;
+  }).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="garage-parking-svg" viewBox="0 0 600 ${height}" role="img" aria-labelledby="garage-parking-title garage-parking-description" data-spaces="${parking.spaces}" data-width-pass="${parking.widthPass}">
+    <title id="garage-parking-title">${parking.spaces}-car basement plan with closed-door vehicle dimensions</title>
+    <desc id="garage-parking-description">The garage is ${fmt(clearWidth,2)} metres clear across, with ${fmt(length,2)} metres of flat covered parking. Each Cyberster envelope is 4.535 metres long, 1.913 metres wide, or 2.110 metres across its mirrors. The side mirror-to-wall gap is ${fmt(parking.mirrorWallClearance,3)} metres${parking.spaces===2?`, with ${fmt(parking.betweenMirrors,3)} metres between mirror envelopes`:''}. Door opening and turning are not simulated.</desc>
+    <rect width="600" height="${height}" fill="#fffef9"/>
+    <text x="${left}" y="25" class="profile-label">${parking.spaces===2?'Two cars side by side':'Single-car comparison'} · doors closed</text>
+    <rect x="${left}" y="${top}" width="${length*scale}" height="${clearWidth*scale}" fill="#edf0e7" stroke="#627d68" stroke-width="2"/>
+    ${parking.spaces===2?`<line x1="${left}" y1="${y(0)}" x2="${right}" y2="${y(0)}" stroke="#8a9d8b" stroke-dasharray="5 5"/>`:''}
+    ${cars}
+    <line x1="${left-20}" y1="${top}" x2="${left-20}" y2="${bottom}" stroke="#627d68"/>
+    <path d="M${left-25},${top}h10M${left-25},${bottom}h10" stroke="#627d68"/>
+    <text x="${left-32}" y="${(top+bottom)/2}" text-anchor="middle" transform="rotate(-90 ${left-32} ${(top+bottom)/2})" class="profile-dimension">${fmt(clearWidth,2)} m clear</text>
+    <line x1="${left}" y1="${bottom+24}" x2="${right}" y2="${bottom+24}" stroke="#627d68"/>
+    <path d="M${left},${bottom+19}v10M${right},${bottom+19}v10" stroke="#627d68"/>
+    <text x="${(left+right)/2}" y="${bottom+46}" text-anchor="middle" class="profile-dimension">${fmt(length,2)} m flat covered bay</text>
+  </svg>`;
+}
 export function garageClearanceResult(layout){
   const a=layout?.assessment;
   if(!a||!Number.isFinite(a.minimumClearance))return {status:'unavailable',label:'Clearance result unavailable'};
   if(a.minimumClearance<0)return {status:'contact',label:'Modelled underside contact'};
   const conservative=Number.isFinite(a.conservativeClearance)?a.conservativeClearance:a.minimumClearance;
   if(conservative>=a.requiredMargin&&Number.isFinite(a.minCoveredHeadroom)&&a.minCoveredHeadroom<2.2)return {status:'headroom-shortfall',label:'Car reserve met · covered headroom below 2.2 m'};
+  if(a.parkingWidthPass===false)return {status:'geometry-limit',label:`Garage too narrow for ${layout.parking?.spaces??2} cars with the selected allowances`};
   if(a.status==='geometry-limit')return {status:'geometry-limit',label:'Ramp geometry needs adjustment'};
   if(a.status==='reserve-shortfall'||conservative<a.requiredMargin)return {status:'reserve-shortfall',label:'Below the modelled clearance reserve'};
   return {status:'reserve-met',label:'Modelled car-clearance reserve met'};
@@ -76,6 +114,7 @@ export function garageConfigurationWarnings(layout){
   if(a.gradeWithinLimit===false)warnings.push(`Peak gradient ${fmt(layout.design?.peakGrade*100,1)}% exceeds the selected ${fmt(layout.settings?.garageMaxGrade,0)}% limit. Add run or reduce the floor drop.`);
   else if(layout.design?.peakGrade>.25+1e-6)warnings.push(`Peak gradient ${fmt(layout.design.peakGrade*100,1)}% exceeds the former 25% individual-garage benchmark.`);
   if(a.parkingFits===false)warnings.push(`Only ${fmt(a.parkingFlatLength,2)} m of flat covered parking remains; the model needs the car length plus 0.30 m at each end.`);
+  if(a.parkingWidthPass===false)warnings.push(`${layout.parking?.spaces??2} cars need ${fmt(layout.parking?.minimumWidth,2)} m clear width for the chosen mirror allowances; this layout has ${fmt(layout.clearWidth,2)} m. The car doors remain closed in this check.`);
   if(layout.drop<=0)warnings.push('The proposed floor is at or above street level. Adjust the floor/slab assumptions to model a descending basement ramp.');
   const overhead=a.minimumOverheadClearance-(a.numericalAllowance||0);
   if(overhead<0)warnings.push('The closed-car roof envelope meets the doorway or slab. Increase the opening/headroom or change the ramp profile.');
@@ -128,6 +167,7 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     const a=current.assessment,result=garageClearanceResult(current);
     const pose=garageVehiclePose(current,settings.garageProgress/100,settings.garageReverse);
     $('garage-profile').innerHTML=garageProfileSVG(current,pose);
+    const parkingPlan=$('garage-parking-plan');if(parkingPlan)parkingPlan.innerHTML=garageParkingPlanSVG(current);
     $('garage-result').dataset.status=result.status;
     const allowance=a.numericalAllowance||0,conservative=Number.isFinite(a.conservativeClearance)?a.conservativeClearance:a.minimumClearance-allowance;
     $('garage-result').dataset.minimumClearance=String(conservative);
@@ -141,12 +181,15 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     $('garage-headroom').textContent=Number.isFinite(a.minCoveredHeadroom)?`${fmt(a.minCoveredHeadroom,2)} m`:'—';
     $('garage-door-opening').textContent=`${fmt(current.portal?.width,2)} × ${fmt(current.portal?.clearHeight,2)} m`;
     $('garage-parking-length').textContent=`${fmt(a.parkingFlatLength,2)} m`;
+    const capacity=$('garage-parking-capacity');if(capacity)capacity.textContent=`${current.parking.spaces} × ${fmt(current.parking.laneWidth,2)} m lanes`;
+    const lateral=$('garage-lateral-clearance');if(lateral)lateral.textContent=`${fmt(current.parking.mirrorWallClearance*1000,0)} mm to walls${current.parking.spaces===2?` · ${fmt(current.parking.betweenMirrors*1000,0)} mm between`:''}`;
+    const parkingNote=$('garage-parking-note');if(parkingNote)parkingNote.textContent=`${current.parking.spaces===2?'Both cars use':'The car uses'} the dimensioned Cyberster envelope with mirrors extended and doors closed. Body-to-wall gap: ${fmt(current.parking.bodyWallClearance*1000,0)} mm${current.parking.spaces===2?`; between bodies: ${fmt(current.parking.betweenBodies*1000,0)} mm`:''}. Door movement and the turn from the street remain unmodelled.${current.entryAccess?` A proposed side stair keeps the front door in place; minimum closed-car roof clearance beneath its landing is ${mm(a.minimumEntryLandingClearance-allowance)} after the numerical allowance.`:''}`;
     $('garage-forward-clearance').textContent=mm(a.forward?.minimumClearance-allowance);
     $('garage-reverse-clearance').textContent=mm(a.reverse?.minimumClearance-allowance);
     $('garage-clearance-reserve').textContent=mm(a.requiredMargin);
     $('garage-level-summary').textContent=`Living floor ${fmt(current.livingFloorZ-current.streetZ,2)} m above street entry. Basement floor ${fmt(current.drop,2)} m below street entry, after ${fmt(settings.garageSlabThickness,2)} m slab + ${fmt(settings.garageClearHeight,2)} m base clear height${settings.garageExtraDepth>0?` + ${fmt(settings.garageExtraDepth,2)} m extra lowering`:''}. Levels remain unmeasured assumptions.`;
     const direction=settings.garageReverse?'Reverse entry':'Forward entry';
-    $('garage-current-pose').textContent=`${direction} preview · ${mm(pose?.minimumClearance)} underside clearance here · pitch ${fmt(pose?.pitchDegrees??pose?.pitchRadians*180/Math.PI,1)}°. The minimum over the whole drive is shown below.`;
+    $('garage-current-pose').textContent=`${direction} preview${current.parking.spaces===2?' in its own lane; the second car stays parked':''} · ${mm(pose?.minimumClearance)} underside clearance here · pitch ${fmt(pose?.pitchDegrees??pose?.pitchRadians*180/Math.PI,1)}°. The minimum over the whole drive is shown below.`;
     const warnings=garageConfigurationWarnings(current);
     $('garage-layout-warning').hidden=!warnings.length;
     $('garage-layout-warning').textContent=warnings.join(' ');
@@ -160,7 +203,7 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     const current=layout();
     return {enabled:true,streetZ:current.streetZ,livingFloorZ:current.livingFloorZ,ceilingZ:current.ceilingZ,
       floorZ:current.floorZ,drop:current.drop,frontRun:current.frontRun,totalRun:current.totalRun,
-      design:current.design,assessment:current.assessment,profile:current.profile,vehicle:current.vehicle,portal:current.portal,
+      design:current.design,assessment:current.assessment,profile:current.profile,vehicle:current.vehicle,portal:current.portal,parking:current.parking,entryAccess:current.entryAccess,
       preview:{progress:settings.garageProgress/100,reverse:settings.garageReverse},sources:sourceRecord,
       note:'Conditional geometric comparison using an assumed flat underside and design reserve. Survey, structure, drainage, traction, local rules, headroom and door-opening envelopes remain separate checks.'};
   }

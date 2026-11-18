@@ -42,12 +42,17 @@
     "basementClearHeightM": 2.3,
     "slabAllowanceM": 0.25,
     "insideContinuationM": 2,
-    "rampClearWidthM": 3.2,
+    "rampClearWidthM": 5.8,
     "additionalClearanceReserveMm": 30,
     "insideCurvedTransitionM": 1.6,
     "bottomFlatApronM": 0.4,
     "assumedDoorClearHeightM": 2.1,
-    "assumedDoorClearWidthM": 3.2
+    "assumedDoorClearWidthM": 5.8,
+    "parkingSpaces": 2,
+    "vehicleGateOpeningM": 6.6,
+    "laneWidthM": 2.9,
+    "proposedEntryLandingThicknessM": 0.18,
+    "proposedEntryLandingProjectionM": 1.0
   },
   "modelAssumptions": [
     "Quasi-static straight-line traversal, excluding suspension dynamics, braking pitch, crossfall, steering sweep and traction.",
@@ -58,7 +63,10 @@
     "Drainage is illustrated flush. Any real raised threshold, kerb or gate track needs inclusion in a measured detailed profile.",
     "Waterproofing, structural alterations, groundwater, drainage capacity and street access remain project-design matters.",
     "The candidate's 2.00 m inside continuation consists of 1.60 m of curved lower transition and a 0.40 m flat apron. The remaining flat bay includes that apron.",
-    "Closed-car overhead passage uses an assumed 3.20 m wide by 2.10 m high clear door opening, separate from the 2.30 m floor-to-slab height. Door hardware and opening envelopes are not verified."
+    "Closed-car overhead passage uses an assumed 5.80 m wide by 2.10 m high clear door opening, separate from the 2.30 m floor-to-slab height. Door hardware and opening envelopes are not verified.",
+    "Two equal lanes show two closed Cyberster-sized vehicles; 395 mm mirror-to-wall and 790 mm between mirrors are the default parked clearances. Scissor-door opening and steering/road turning sweeps remain unverified.",
+    "The widened ramp requires a proposed side-return staircase and a 0.18 m thick landing at the photo-informed entrance. The landing underside is included in complete forward/reverse overhead checks. Its cantilever and foundations need structural design.",
+    "Pre-v23 saved designs retain their 3.20 m single-car default and explicitly stored widths. New designs offer two spaces with 5.80 m clear width."
   ],
   "legalBenchmark": {
     "status": "Former WT benchmark; transitional applicability to confirm",
@@ -138,5 +146,18 @@
       "title": "Gdańsk official local-plan finder",
       "url": "https://www.brg.gda.pl/planowanie-przestrzenne/miejscowe-plany"
     }
-  ]
+  ],
+  "modelUpdatedAt": "2026-11-18",
+  "previousCandidateAssumptions": {
+    "version": "1.22.0",
+    "basementClearHeightM": 2.3,
+    "slabAllowanceM": 0.25,
+    "insideContinuationM": 2,
+    "rampClearWidthM": 3.2,
+    "additionalClearanceReserveMm": 30,
+    "insideCurvedTransitionM": 1.6,
+    "bottomFlatApronM": 0.4,
+    "assumedDoorClearHeightM": 2.1,
+    "assumedDoorClearWidthM": 3.2
+  }
 }

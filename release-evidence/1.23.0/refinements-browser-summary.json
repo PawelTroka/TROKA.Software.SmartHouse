@@ -1,0 +1,59 @@
+{
+  "version": "1.23.0",
+  "checks": [
+    "Fresh defaults use a 4 m terrace, infinity jacuzzi and 3 m high / 4 m deep canopy; basement remains optional",
+    "Two-car entrance, separated vehicle envelopes and the over-ramp landing appear in real WebGL and exported clearance checks",
+    "A narrow two-car setting is explicitly rejected rather than shown as a valid fit",
+    "Balcony replaces the canopy in the rendered scene and exposes a first-floor viewpoint and proposed guarded deck",
+    "Swimming view uses the actual pool water level and its editable eye offset visibly moves the camera",
+    "Balcony, pool viewpoint and two-car dimensions survive sharing and reload",
+    "A v22 shared design retains its single-car garage and old terrace/cover defaults",
+    "The double-garage plan, result and cover controls fit a 390 px viewport without page overflow"
+  ],
+  "screenshots": [
+    "sternicza-two-car-front.png",
+    "sternicza-balcony-garden.png",
+    "sternicza-pool-eye.png",
+    "sternicza-mobile-garage.png",
+    "sternicza-mobile-cover-controls.png"
+  ],
+  "garagePixelDifference": 489950,
+  "balconyPixelDifference": 3865,
+  "balcony": {
+    "observer": {
+      "x": 9.609167656420745,
+      "y": 21.36508303692856,
+      "groundZ": 6.63755850309423,
+      "z": 8.28755850309423,
+      "eyeHeight": 1.65,
+      "preset": "balcony",
+      "surface": "balcony",
+      "label": "Balcony \u00b7 standing",
+      "defaultLookYaw": 0,
+      "defaultLookPitch": -8
+    },
+    "summary": "8.5 \u00d7 4.0 m \u00b7 34.0 m\u00b2 proposed first-floor balcony. Finished deck +3.00 m above the terrace; 2.75 m below the slab and 2.51 m below the front beam. 1.10 m clear-glass guard; a new rear access door is proposed. Floor height follows the first-floor assumption. Structure, foundations, waterproofing and drainage require project design and a separate quote."
+  },
+  "poolPixelDifference": 91972,
+  "pool": {
+    "x": 16.27,
+    "y": 27.400000000000002,
+    "z": 3.6734969119567165,
+    "groundZ": 3.5234969119567165,
+    "waterZ": 3.5234969119567165,
+    "preset": "pool",
+    "label": "Pool \u00b7 swimming eye level",
+    "surface": "pool-water",
+    "eyeHeight": 0.15,
+    "defaultLookYaw": 0,
+    "defaultLookPitch": 0
+  },
+  "mobile": {
+    "viewport": 390,
+    "page": 390,
+    "plan": 326,
+    "card": 362
+  },
+  "status": "passed",
+  "pageErrors": []
+}

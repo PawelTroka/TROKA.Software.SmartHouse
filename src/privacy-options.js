@@ -18,11 +18,11 @@ export const PRIVACY_DEFAULTS=Object.freeze({
 
 export const PRIVACY_PRESETS=Object.freeze([
   {id:'spa',label:'Spa canopy + screens',description:'Opaque roof and an L-shaped screen near the jacuzzi.',
-    patch:{privacyPergolaEnabled:false,privacyPergolaFoliage:false,spaScreensEnabled:true,spaScreenHeight:2.2,spaScreenWidth:3.6,spaScreenReturn:1.5,spaScreenGap:.65,canopyEnabled:true,canopyHeight:2.7,canopyWidth:8.5,fasciaDepth:.5}},
+    patch:{privacyPergolaEnabled:false,privacyPergolaFoliage:false,spaScreensEnabled:true,spaScreenHeight:2.2,spaScreenWidth:3.6,spaScreenReturn:1.5,spaScreenGap:.65,canopyEnabled:true,terraceCoverType:'canopy',canopyHeight:2.7,canopyWidth:8.5,fasciaDepth:.5}},
   {id:'pergola',label:'Planted pergola',description:'A 5 m internal pergola with ideal dense established planting.',
     patch:{...PRIVACY_DEFAULTS,privacyPergolaEnabled:true,privacyPergolaFoliage:true,canopyEnabled:false}},
   {id:'layered',label:'Combine both',description:'Planted pergola plus roof and local spa screens.',
-    patch:{...PRIVACY_DEFAULTS,privacyPergolaEnabled:true,privacyPergolaFoliage:true,spaScreensEnabled:true,canopyEnabled:true,canopyHeight:2.7,canopyWidth:8.5,fasciaDepth:.5}},
+    patch:{...PRIVACY_DEFAULTS,privacyPergolaEnabled:true,privacyPergolaFoliage:true,spaScreensEnabled:true,canopyEnabled:true,terraceCoverType:'canopy',canopyHeight:2.7,canopyWidth:8.5,fasciaDepth:.5}},
 ]);
 
 /** Keep the user's garden, trees, eye position, levels, prices and date intact. */
