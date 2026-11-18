@@ -93,9 +93,52 @@ async function pixelChange(a,b){
 const expectMotion=active=>page.waitForFunction(value=>document.querySelector('#render-diagnostics').dataset.motionActive===String(value),active);
 const cameraTime=()=>page.evaluate(()=>({
   mode:document.querySelector('#viewport').dataset.mode,preset:document.querySelector('#viewpoints [aria-pressed="true"]')?.dataset.preset,
+  yaw:document.querySelector('[data-look-yaw][aria-pressed="true"]')?.dataset.lookYaw,
   date:document.querySelector('#sun-date').value,time:document.querySelector('#sun-time').value,
   observer:document.querySelector('#observer-readout').textContent,
 }));
+async function houseScope(active){
+  await sceneVisible();
+  assert.equal(await el('#styleHouseFinish').isChecked(),active);
+  assert.equal(await el('#studio-house-scope').getAttribute('data-renovated'),String(active));
+  const info=await stats();
+  if(active){
+    assert.ok(info.houseRenovationParts>0,'The rendered house has no renovation parts');
+    assert.ok(info.houseRenovationProjection>0&&info.houseRenovationProjection<=.14,'Facade projection: '+info.houseRenovationProjection);
+  }else{
+    assert.equal(info.houseRenovationParts,0);
+    assert.equal(info.houseRenovationProjection,0);
+  }
+  return info;
+}
+// Keep the garden style, viewpoint and solar time identical in both frames.
+// Only the house changes, so paving, furniture and lighting cannot explain the difference.
+async function compareHouse(site,id){
+  await details();
+  await el('[data-preset="garden"]').click();
+  await el('[data-look-yaw="180"]').click();
+  const view=await cameraTime();
+  assert.equal(view.mode,'eye');assert.equal(view.preset,'garden');assert.equal(view.yaw,'180');
+  async function renderHouse(active){
+    const previousFrame=(await stats()).frames;
+    await el('#styleHouseFinish').setChecked(active);
+    await sceneVisible();
+    await page.waitForFunction(({active,previousFrame})=>{
+      const data=document.querySelector('#render-diagnostics').dataset;
+      return Number(data.frames)>previousFrame&&(Number(data.houseRenovationParts)>0)===active;
+    },{active,previousFrame});
+    assert.equal(await el('#designStyle').inputValue(),id);assert.deepEqual(await cameraTime(),view);
+    return houseScope(active);
+  }
+  const off=await renderHouse(false);
+  const original=await shot(site+'-'+id+'-house-original','#scene-host canvas');
+  const on=await renderHouse(true);
+  const renovated=await shot(site+'-'+id+'-house-renovated','#scene-host canvas');
+  const diff=await pixelChange(original,renovated);
+  assert.ok(diff.pixels>100,site+' house-only comparison changed '+diff.pixels+' pixels');
+  assert.ok(on.triangles>off.triangles,site+' facade has no extra visible geometry: '+JSON.stringify({on,off}));
+  (report.houseComparisons??=[]).push({site,id,view,diff,on,off});
+}
 async function settledInfo(){
   // Re-entering the viewport refreshes its public counters without changing
   // geometry. This also waits for the GPU to draw a complete frame on SwiftShader.
@@ -134,34 +177,45 @@ try{
   const before=await exportDesign();
   await sceneVisible();
   const original=await shot('sternicza-current','#scene-host canvas');
-  const reference=await stats(),selectedShots=new Map();
+  const reference=await houseScope(false),selectedShots=new Map();
+  assert.equal(await el('#styleHouseFinish').isDisabled(),true);
   for(const id of options.filter(id=>id!=='current')){
     await style(id);
+    const info=await houseScope(true);
     if(['hidden-bali','space-age','mediterranean-villa'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
       const diff=await pixelChange(original,frame);
       assert.ok(diff.pixels>100,id+' changed only '+diff.pixels+' canvas pixels');
-      selectedShots.set(id,frame);report.styles.push({id,diff,stats:await stats()});
-    }else report.styles.push({id,stats:await stats()});
+      selectedShots.set(id,frame);report.styles.push({id,diff,stats:info});
+    }else report.styles.push({id,stats:info});
   }
   for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age']]){
     assert.ok((await pixelChange(selectedShots.get(a),selectedShots.get(b))).pixels>100,a+' and '+b+' look identical');
   }
-  await style('current');const reset=await settledInfo();report.returnedResources={reference,reset};
+  await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
+  assert.equal(await el('#styleHouseFinish').isDisabled(),true);
+  const restored=await shot('sternicza-current-restored','#scene-host canvas');
+  report.currentRestoration=await pixelChange(original,restored);
+  assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check('All 20 styles render on Sternicza, fixed-camera daylight scenes differ, resources return near baseline');
+  check('All 20 styles automatically add facade geometry. Current restores the original WebGL image and resource counts return near baseline');
 
   await el('#style-open').click();await el('#style-search').fill('Bali');await el('[data-style-id="hidden-bali"]').focus();
   await page.keyboard.press('Enter');await el('#style-dialog').waitFor({state:'hidden'});
   assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
-  assert.equal(await el('#styleHouseFinish').isChecked(),false);
+  const baliHouse=await houseScope(true);
   const originalScope=await exportDesign();
-  assert.equal(originalScope.designPresentation.id,'hidden-bali');assert.equal(originalScope.designPresentation.houseFinishPreview,false);
+  assert.equal(originalScope.designPresentation.id,'hidden-bali');assert.equal(originalScope.designPresentation.houseFinishPreview,true);
+  assert.equal(originalScope.designPresentation.houseRenovation.partCount,baliHouse.houseRenovationParts);
+  assert.equal(originalScope.designPresentation.houseRenovation.maxProjectionM,baliHouse.houseRenovationProjection);
+  assert.equal(originalScope.costEstimate.style.houseRenovationIncluded,true);
   assert.deepEqual(originalScope.summary.observer,before.summary.observer);assert.deepEqual(originalScope.dimensions,before.dimensions);
   assert.equal(originalScope.costEstimate.style.unquoted.length,1);
   assert.equal(originalScope.costEstimate.style.knownBase.low,0);assert.equal(originalScope.costEstimate.style.knownBase.high,0);
   assert.deepEqual(originalScope.designChecks,before.designChecks);assert.ok(originalScope.designChecks.checks.length>0);
-  await el('#styleHouseFinish').check();
+  await compareHouse('sternicza-11','hidden-bali');
+  await el('#styleHouseFinish').uncheck();
+  await el('button[data-mode="orbit"]').click();
   await el('[data-preset="terrace"]').click();
   // The terrace preset selects the observer but preserves the active view.
   // Choose eye level explicitly to exercise camera preservation through history.
@@ -174,33 +228,41 @@ try{
   const goldenMinutes=Math.round(Math.max(0,Math.min(1439,sunsetMinutes-45)));
   const expectedTime=[Math.floor(goldenMinutes/60),goldenMinutes%60].map(n=>String(n).padStart(2,'0')).join(':');
   assert.equal(viewpoint.time,expectedTime);
-  await el('#studio-undo').click();assert.equal(await el('#styleHouseFinish').isChecked(),false);assert.deepEqual(await cameraTime(),viewpoint);
-  await el('#studio-redo').click();assert.equal(await el('#styleHouseFinish').isChecked(),true);assert.deepEqual(await cameraTime(),viewpoint);
+  await el('#studio-undo').click();await houseScope(true);assert.deepEqual(await cameraTime(),viewpoint);
   await shot('sternicza-hidden-bali-terrace-golden-hour','#scene-host canvas');
+  await el('#studio-redo').click();await houseScope(false);assert.deepEqual(await cameraTime(),viewpoint);
   report.goldenHourView=viewpoint;
-  check('Keyboard selection, explicit house finish scope, incremental unquoted costs and undo/redo preserve the view and solar time');
+  check('Keyboard selection includes house renovation. Undo and Redo of the house-only opt-out preserve the selected camera and golden-hour time');
   await el('#share').click();await page.waitForFunction(()=>location.hash.includes('designStyle=hidden-bali'));
   const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
   assert.equal(shared.get('renderQuality'),'eco');assert.equal(shared.get('site'),'sternicza-11');
   await page.reload({waitUntil:'domcontentloaded'});await ready();await details();
   assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
-  assert.equal(await el('#renderQuality').inputValue(),'eco');assert.equal(await el('#styleHouseFinish').isChecked(),true);assert.deepEqual(await cameraTime(),viewpoint);
-  const after=await exportDesign();assert.equal(after.designPresentation.houseFinishPreview,true);
-  assert.equal(after.settings.designStyle,'hidden-bali');assert.equal(after.costEstimate.style.houseFinishPreview,true);
-  check('Share link, reload and JSON export recover the site, lighting time, house finish scope and quality');
+  assert.equal(await el('#renderQuality').inputValue(),'eco');await houseScope(false);assert.deepEqual(await cameraTime(),viewpoint);
+  const after=await exportDesign();assert.equal(after.designPresentation.houseFinishPreview,false);
+  assert.equal(after.designPresentation.houseRenovation.partCount,0);assert.equal(after.designPresentation.houseRenovation.active,false);
+  assert.equal(after.settings.designStyle,'hidden-bali');assert.equal(after.costEstimate.style.houseFinishPreview,false);
+  // Reopen through local storage as well. A shared URL always takes precedence.
+  await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));
+  await page.reload({waitUntil:'domcontentloaded'});await ready();await details();
+  assert.equal(await el('#designStyle').inputValue(),'hidden-bali');await houseScope(false);
+  check('A house opt-out survives the share link, a saved-design reload and JSON export');
 
   const assumptions=el('#budget-assumptions');
   if(await assumptions.getAttribute('open')===null)await assumptions.locator(':scope > summary').click();
   const quote=el('#costStyleUpgradeQuote');
   await quote.fill('20000');await quote.press('Tab');
   await page.waitForFunction(()=>document.querySelector('.cost-panel')?.dataset.styleKnownLow==='20000');
+  await el('#styleHouseFinish').check();assert.equal(Number(await quote.inputValue()),0);
+  await el('#studio-undo').click();assert.equal(Number(await quote.inputValue()),20000);await houseScope(false);
   await style('space-age');
+  await houseScope(true);
   assert.equal(Number(await quote.inputValue()),0);
   await el('#studio-undo').click();
   assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
   assert.equal(Number(await quote.inputValue()),20000);
   await page.waitForFunction(()=>document.querySelector('.cost-panel')?.dataset.styleKnownLow==='20000');
-  check('A 20,000 PLN incremental finish quote clears on a change of scheme and Undo restores its original scope');
+  check('A 20,000 PLN incremental quote clears independently on renovation and style changes, and Undo restores its original scope');
 
   await el('#save-a').click();
   // A third, intermediate design distinguishes undoing the B edit from
@@ -276,10 +338,16 @@ try{
     await style(id);const frame=await shot(site+'-'+id,'#scene-host canvas');
     const diff=await pixelChange(ref,frame);assert.ok(diff.pixels>100,site+' pixels '+diff.pixels);
     const saved=await exportDesign();assert.equal(saved.siteId,site);assert.equal(saved.designPresentation.id,id);assert.ok(saved.designChecks.checks.length>0);
+    assert.equal(saved.designPresentation.houseFinishPreview,true);
+    assert.equal(saved.designPresentation.houseRenovation.partCount,(await stats()).houseRenovationParts);
     report.styles.push({site,id,diff,stats:await stats()});
+    await compareHouse(site,id);
   }
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await shot('desktop-editor');
-  check('Both additional properties visibly apply their own physical layout, selected concept and exported checks');
+  check('Each mapped property renders a visible house-only renovation from its own garden viewpoint');
+  await page.goto(base+'/?site=sternicza-11#v=24&site=sternicza-11&designStyle=japandi',{waitUntil:'domcontentloaded'});await ready();
+  assert.equal(await el('#designStyle').inputValue(),'japandi');await houseScope(true);
+  check('An existing v24 styled link opens with its house renovation included');
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;

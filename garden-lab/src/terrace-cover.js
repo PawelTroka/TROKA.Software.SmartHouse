@@ -1,4 +1,4 @@
-import {footprintFit} from './footprint-fit.js?v=1.24.0';
+import {footprintFit} from './footprint-fit.js?v=1.25.0';
 /**
  * One finite terrace-cover model for drawing, shade and sightlines. Dimensions
  * are proposals, in local metres; z is absolute elevation. A balcony replaces

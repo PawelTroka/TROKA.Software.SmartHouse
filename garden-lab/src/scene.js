@@ -1,36 +1,38 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.24.0';
-import { createPhotoHouseGroup } from './scene-house.js?v=1.24.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.24.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.24.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.24.0';
-import { sampledRoofFaces } from './shade.js?v=1.24.0';
-import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.24.0';
-import { renderBudget } from './render-quality.js?v=1.24.0';
-import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.24.0';
-import { getDesignStyle } from './design-styles.js?v=1.24.0';
-import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim } from './scene-style-details.js?v=1.24.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.24.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.24.0';
-import { getSiteProfile } from './sites.js?v=1.24.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.24.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.24.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.24.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.24.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.24.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.24.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.24.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.24.0';
-import { gardenDimensions } from './dimensions.js?v=1.24.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.24.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.24.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.24.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.24.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.24.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.24.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.24.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.25.0';
+import { createPhotoHouseGroup } from './scene-house.js?v=1.25.0';
+import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.25.0';
+import { addHouseRenovation } from './scene-house-renovation.js?v=1.25.0';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.25.0';
+import { entranceAccessLayout } from './entrance-access.js?v=1.25.0';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.25.0';
+import { sampledRoofFaces } from './shade.js?v=1.25.0';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.25.0';
+import { renderBudget } from './render-quality.js?v=1.25.0';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.25.0';
+import { getDesignStyle } from './design-styles.js?v=1.25.0';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim } from './scene-style-details.js?v=1.25.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.25.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.25.0';
+import { getSiteProfile } from './sites.js?v=1.25.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.25.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.25.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.25.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.25.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.25.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.25.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.25.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.25.0';
+import { gardenDimensions } from './dimensions.js?v=1.25.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.25.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.25.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.25.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.25.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.25.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.25.0';
+import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.25.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -639,25 +641,14 @@ export function createScene(container, data, callbacks = {}) {
 
   /** Fit proposed glazing and finishes to each mapped property's wall edges.
    * The mapped footprint and sampled roof remain the existing envelope. */
-  function addMappedHouse(group,settings,mat) {
+  function addMappedHouse(group,settings,mat,style) {
     const h=data.site.house,envelope=localRoofEnvelope(h),{ring,samples,base}=envelope;
-    const floor=data.site.floorReference.z+num(settings.floorHeight,1.7);
-    const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
-    const rearEdge=h.rearEdge||data.site.rearEdge;
-    const edgeIndex=rearEdge?ring.reduce((best,a,i)=>{
-      const b=ring[(i+1)%ring.length],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
-      const d=Math.hypot(mx-(rearEdge[0][0]+rearEdge[1][0])/2,my-(rearEdge[0][1]+rearEdge[1][1])/2);
-      return d<best.distance?{index:i,distance:d}:best;
-    },{index:0,distance:Infinity}).index:ring.reduce((best,a,i)=>{
-      const y=(a[1]+ring[(i+1)%ring.length][1])/2;return y>best.y?{index:i,y}:best;
-    },{index:0,y:-Infinity}).index;
-    for(let i=0;i<ring.length;i++){
-      const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);
+    const layout=mappedHouseFacadeLayout(data,settings,envelope),floor=layout.floorZ;
+    for(const wall of layout.edges){
+      const {index:i,length:len,roofEdge:edge,a,b,outward}=wall;
       if(len<.0001)continue;
-      const edge=envelope.edges[i],eaves=u=>roofEdgeHeight(edge,u);
-      const minEaves=Math.min(...edge.points.map(p=>p[2])),maxEaves=Math.max(...edge.points.map(p=>p[2]));
-      const nx=winding*dy/len,ny=-winding*dx/len;
-      const p=(u,z,offset=0)=>[a[0]+dx*u+nx*offset,a[1]+dy*u+ny*offset,z];
+      const eaves=u=>roofEdgeHeight(edge,u);
+      const p=(u,z,offset=0)=>[a[0]+(b[0]-a[0])*u+outward[0]*offset,a[1]+(b[1]-a[1])*u+outward[1]*offset,z];
       const panel=(u0,u1,z0,z1,material,offset=0,shadow=true)=>{
         if(u1-u0<.001)return;
         const top=typeof z1==='function'?z1:()=>z1,triangles=[];
@@ -671,27 +662,19 @@ export function createScene(container, data, callbacks = {}) {
         const mesh=new THREE.Mesh(geometryFromTriangles(triangles),material);
         mesh.castShadow=shadow;mesh.receiveShadow=true;group.add(mesh);
       };
-      if(i===edgeIndex){
-        const t=data.site.terrace,project=x=>Math.abs(dx)>.01?(x-a[0])/dx:.5;
-        const uA=project(t.x+.08),uB=project(t.x+t.width-.08),lo=Math.max(.05,Math.min(uA,uB)),hi=Math.min(.95,Math.max(uA,uB));
-        const top=Math.min(floor+2.65,minEaves-.25);
+      const windows=layout.windows.filter(w=>w.edgeIndex===i);
+      const glazing=windows.find(w=>w.kind==='hst');
+      if(glazing){
+        const lo=glazing.lo/len,hi=glazing.hi/len,top=glazing.z+glazing.height;
         panel(0,1,base,floor,mat.plinth);panel(0,lo,floor,top,mat.wall);panel(hi,1,floor,top,mat.wall);panel(0,1,top,eaves,mat.wall);
         panel(lo,hi,floor+.04,top-.04,mat.glass,.018,false);
         for(const u of [lo,lo+(hi-lo)/3,lo+2*(hi-lo)/3,hi])panel(u-.023/len,u+.023/len,floor,top,mat.metal,.035,false);
         panel(lo,hi,floor,floor+.045,mat.metal,.04,false);panel(lo,hi,top-.045,top,mat.metal,.04,false);
       }else if(data.site.id==='nadmorska-17'){panel(0,1,base,floor,mat.plinth);panel(0,1,floor,eaves,mat.wall);}
       else panel(0,1,base,eaves,mat.wall);
-      // Repeated openings are a restrained renovation proposal, never surveyed windows.
-      const count=Math.max(1,Math.floor(len/3.1));
-      for(let z=floor+(i===edgeIndex?3.35:.5);len>=1.5&&z+1.5<maxEaves-.25;z+=3.0){
-        for(let j=0;j<count;j++){
-          const u=(j+.5)/count,half=Math.min(.72/len,.35/count);
-          const lo=u-half-.06/len,hi=u+half+.06/len;
-          const localHeights=[eaves(lo),eaves(hi),...edge.points.filter((_,k)=>k/(edge.points.length-1)>lo&&k/(edge.points.length-1)<hi).map(p=>p[2])];
-          if(z+1.56>=Math.min(...localHeights)-.1)continue;
-          panel(u-half-.06/len,u+half+.06/len,z-.06,z+1.56,mat.metal,.03,false);
-          panel(u-half,u+half,z,z+1.5,mat.contextWindow,.05,false);
-        }
+      for(const w of windows.filter(w=>w.kind==='window')){
+        panel(w.lo/len,w.hi/len,w.z,w.z+w.height,mat.metal,.03,false);
+        panel((w.lo+.06)/len,(w.hi-.06)/len,w.z+.06,w.z+w.height-.06,mat.contextWindow,.05,false);
       }
       line(group,edge.points.map((q,j)=>p(j/(edge.points.length-1),q[2]-.06,.04)),'#4e5751',.9);
     }
@@ -702,11 +685,13 @@ export function createScene(container, data, callbacks = {}) {
     const sofa=data.site.observers?.sofa||data.site.rearMidpoint;
     box(group,sofa[0]-1.4,sofa[1]-.6,floor,2.8,.8,.4,mat.linen,false);
     box(group,sofa[0]-1.4,sofa[1]-.6,floor+.4,2.8,.18,.38,mat.linen,false);
+    addHouseRenovation(group,layout,style,{svgMode});
   }
 
   function addHouse(group, settings, exterior, style) {
-    if(data.site.id&&data.site.id!=='sternicza-11'){addMappedHouse(group,settings,exterior);return;}
-    group.add(createPhotoHouseGroup(data,settings,{garageLayout:currentGarageLayout,terrainAt,materials:mat,svgMode,exterior:settings.styleHouseFinish===true&&style.id!=='current'?style.palette:null}));
+    const activeStyle=settings.styleHouseFinish===true&&style.id!=='current'?style:null;
+    if(data.site.id&&data.site.id!=='sternicza-11'){addMappedHouse(group,settings,exterior,activeStyle);return;}
+    group.add(createPhotoHouseGroup(data,settings,{garageLayout:currentGarageLayout,terrainAt,materials:mat,svgMode,style:activeStyle}));
   }
 
   function addHedges(group,settings) {
@@ -1268,11 +1253,14 @@ export function createScene(container, data, callbacks = {}) {
   }
   function getPerformanceInfo(){
     const render=renderer.info?.render, memory=renderer.info?.memory;
+    const renovation=houseGroup.getObjectByName('house-renovation')?.userData;
     return {rendererType,quality,pixelRatio:svgMode?1:lastPixelRatio,
       bufferWidth:svgMode?lastWidth:renderer.domElement.width,
       bufferHeight:svgMode?lastHeight:renderer.domElement.height,
       shadowSize:svgMode?0:sun.shadow.mapSize.x,frames:frameCount,shadowUpdates,
       calls:render?.calls??null,triangles:render?.triangles??null,
+      houseRenovationParts:renovation?.partCount??0,
+      houseRenovationProjection:renovation?.maxProjectionM??0,
       geometries:memory?.geometries??null,textures:memory?.textures??null,motionActive:motionActive()};
   }
   function renderNow(now) {

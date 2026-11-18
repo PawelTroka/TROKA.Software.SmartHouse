@@ -13,7 +13,7 @@ const model=createStateModel(getSiteProfile('sternicza-11',data)),fresh=model.DE
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
 
 test('fresh Sternicza defaults match the requested terrace, infinity spa, canopy and two-car option',()=>{
-  assert.equal(STATE_VERSION,24);
+  assert.equal(STATE_VERSION,25);
   for(const [key,value]of Object.entries({terraceDepth:4,jacuzziOverflow:true,canopyEnabled:true,
     canopyHeight:3,canopyDepth:4,terraceCoverType:'canopy',garageSpaces:2,garageRampWidth:5.8,basementGarageEnabled:false})){
     assert.equal(fresh[key],value,key);
@@ -24,14 +24,14 @@ test('fresh Sternicza defaults match the requested terrace, infinity spa, canopy
   assert.equal(resolveSiteId('?site=nadmorska-17','#v=23&site=sternicza-11'),'sternicza-11');
 });
 
-test('sparse v20–22 designs retain their published terrace and single-car geometry',()=>{
+test('sparse v20–22 designs retain their terrace and restore the two-car garage requirement',()=>{
   for(const version of [20,21,22])for(const restored of [model.decodeState(`v=${version}&site=sternicza-11`),model.migrateSavedState({siteId:'sternicza-11'},version)]){
     for(const [key,value]of Object.entries({terraceDepth:4.2,jacuzziOverflow:false,canopyEnabled:false,
-      canopyHeight:2.7,canopyDepth:4.2,terraceCoverType:'canopy',garageSpaces:1,garageRampWidth:3.2}))assert.equal(restored[key],value,`v${version} ${key}`);
+      canopyHeight:2.7,canopyDepth:4.2,terraceCoverType:'canopy',garageSpaces:2,garageRampWidth:5.8}))assert.equal(restored[key],value,`v${version} ${key}`);
     assert.deepEqual(model.decodeState(model.encodeState(restored)),restored);
   }
   const old=model.decodeState('v=22&site=sternicza-11&basementGarageEnabled=true&garageRampWidth=3.6&canopyEnabled=true&canopyHeight=2.9&terraceDepth=4.8&jacuzziOverflow=true');
-  assert.equal(old.basementGarageEnabled,true);assert.equal(old.garageSpaces,1);assert.equal(old.garageRampWidth,3.6);
+  assert.equal(old.basementGarageEnabled,true);assert.equal(old.garageSpaces,2);assert.equal(old.garageRampWidth,5.8);
   assert.equal(old.canopyHeight,2.9);assert.equal(old.terraceDepth,4.8);assert.equal(old.jacuzziOverflow,true);
 });
 

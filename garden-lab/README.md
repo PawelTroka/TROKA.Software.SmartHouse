@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.24.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.24.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.24.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.25.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.25.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.25.0)**
+
+## House renovation styles and required two-car garage · 1.25.0
+
+Selecting any of the 20 proposed styles now includes a coordinated **house renovation**, with actual façade detail as well as finishes. Treatments range from timber battens and weatherboards to stone or clinker accents, restrained shutters, window caps and slender façade bands. They fit the existing building envelope and openings on all three properties. **Current design** adds no house renovation and restores the original exterior; the separate **Include house renovation** switch allows a garden-only comparison. Independent balcony, glazing and basement-garage proposals retain their own controls.
+
+The Sternicza basement is a **required two-car layout**. Older single-car links, saved designs and saved comparison A are upgraded to two spaces and at least **5.8 m clear width**, preserving wider settings. The garage stays enabled or disabled as saved. Explicitly narrow two-car experiments still show their width failure instead of being silently widened. An inherited single-car installation quote is cleared when its physical scope is upgraded.
+
+Schema **25** saves the new house scope. Version 24 style selections now include the house renovation, and their former paint-only upgrade quotes must be reconfirmed; an explicit house opt-out saved with version 25 remains off. **Current design** always keeps the original exterior.
+
+[Open the two-car garage](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.25.0#v=25&site=sternicza-11&basementGarageEnabled=true&mode=orbit&preset=front&showDimensions=false) · [Try the Bali renovation](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.25.0#v=25&site=sternicza-11&designStyle=hidden-bali&showDimensions=false) · [Release scope and verification](docs/house-renovation-two-car-1.25.md)
 
 ## Design Studio, physical review and rendering · 1.24.0
 
@@ -30,7 +40,7 @@ The supplied street photo informs the house finishes, pitched/cross-gable roof f
 
 The front hedge now has exactly two separate openings, for pedestrians and vehicles, with planting elsewhere. The pedestrian route follows the selected entrance-stair arrangement.
 
-**Schema 23 preserves older saved designs:** sparse v20–22 links keep their former 4.2 m terrace, canopy-off, overflow-off and 3.2 m single-car defaults. The other properties keep their existing defaults. Reset or a v23 link loads the revised Sternicza design.
+**Historical schema 23 behavior:** sparse v20–22 links kept their former 4.2 m terrace, canopy-off, overflow-off and 3.2 m single-car defaults. Version 25 supersedes the single-car migration with the required two-car layout; the unrelated historic terrace settings remain preserved. The other properties keep their existing defaults. Reset or a v23 link loads the revised Sternicza design.
 
 [Open fresh Sternicza defaults](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.23.0#v=23&site=sternicza-11) · [Try the balcony and two-car garage](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.23.0#v=23&site=sternicza-11&terraceCoverType=balcony&basementGarageEnabled=true&showDimensions=false) · [Reproducible dimensions and clearance results](data/sternicza-refinements-1.23.0.json)
 

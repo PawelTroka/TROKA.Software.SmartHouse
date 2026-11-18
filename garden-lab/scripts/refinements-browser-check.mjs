@@ -1,4 +1,4 @@
-/** Focused 1.23 browser coverage: public controls, exports and real WebGL.
+/** Terrace, balcony and two-car garage coverage in the public WebGL editor.
  * BASE_URL uses an existing server; otherwise serve the built public directory.
  */
 import assert from 'node:assert/strict';
@@ -84,6 +84,7 @@ try{
   await page.locator('#basement-garage-controls [data-garage-preset="raised"]').click();
   await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
   assert.equal(Number(await page.locator('#garageSpaces-value').inputValue()),2);
+  assert.equal(await page.locator('#garageSpaces-value').isEditable(),false);
   assert.equal(Number(await page.locator('#garageRampWidth-value').inputValue()),5.8);
   assert.match(await page.locator('#garage-door-opening').innerText(),/^5\.80 × 2\.10 m$/);
   assert.equal(await page.locator('#garage-parking-plan [data-car]').count(),2);
@@ -91,7 +92,9 @@ try{
   assert.match(await page.locator('#garage-parking-note').innerText(),/side stair[\s\S]*landing/);
   report.garage=await exported();
   const garage=report.garage.basementGarage;
-  assert.equal(garage.parking.spaces,2);assert.ok(garage.assessment.conservativeClearance>=.03);
+  assert.equal(report.garage.settings.garageSpaces,2);assert.equal(garage.parking.spaces,2);
+  assert.equal(garage.parking.laneOffsets.length,2);assert.ok(garage.parking.laneOffsets[0]<garage.parking.laneOffsets[1]);
+  assert.ok(garage.assessment.conservativeClearance>=.03);
   assert.ok(garage.assessment.minCoveredHeadroom>=2.2);assert.ok(garage.assessment.minimumEntryLandingClearance>.85);
   assert.ok(garage.assessment.entryLandingPosesChecked>200);
   await page.locator('#garage-view').click();
@@ -99,6 +102,7 @@ try{
   report.garagePixelDifference=await changedPixels(enabled,disabled);assert.ok(report.garagePixelDifference>200);
   await page.locator('#basementGarageEnabled').check();await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
   await page.locator('#garage-view').click();await shot('sternicza-two-car-front');
+  await shot('sternicza-two-car-parking-plan','#garage-parking-plan');
   check('Two-car entrance, separated vehicle envelopes and the over-ramp landing appear in real WebGL and exported clearance checks');
 
   await number('garageRampWidth-value',3.2);
@@ -147,11 +151,11 @@ try{
   check('Balcony, pool viewpoint and two-car dimensions survive sharing and reload');
 
   await page.goto(baseURL+'/?site=sternicza-11#v=22&site=sternicza-11&basementGarageEnabled=true&garageRampWidth=3.2&mode=orbit',{waitUntil:'domcontentloaded'});await ready();
-  await page.waitForFunction(()=>Number(document.querySelector('#garageSpaces-value')?.value)===1);
-  assert.equal(Number(await page.locator('#garageSpaces-value').inputValue()),1);assert.equal(Number(await page.locator('#garageRampWidth-value').inputValue()),3.2);
-  assert.equal(await page.locator('#garage-parking-plan [data-car]').count(),1);assert.equal(Number(await page.locator('#terraceDepth-value').inputValue()),4.2);
+  await page.locator('#garage-parking-plan svg[data-spaces="2"]').waitFor({state:'attached'});
+  assert.equal(Number(await page.locator('#garageSpaces-value').inputValue()),2);assert.equal(Number(await page.locator('#garageRampWidth-value').inputValue()),5.8);
+  assert.equal(await page.locator('#garage-parking-plan [data-car]').count(),2);assert.equal(Number(await page.locator('#terraceDepth-value').inputValue()),4.2);
   assert.equal(await page.locator('#canopyEnabled').isChecked(),false);assert.equal(await page.locator('#jacuzziOverflow').isChecked(),false);
-  check('A v22 shared design retains its single-car garage and old terrace/cover defaults');
+  check('A v22 garage link opens with two parking bays and 5.8 m width, retaining its original terrace and cover settings');
 
   await page.goto(sharedURL,{waitUntil:'domcontentloaded'});await ready();await page.setViewportSize({width:390,height:844});await frames();
   await page.waitForFunction(()=>Number(document.querySelector('#garageSpaces-value')?.value)===2&&document.querySelector('#terraceCoverType')?.value==='balcony');

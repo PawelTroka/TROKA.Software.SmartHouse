@@ -13,13 +13,13 @@ const models=SITE_OPTIONS.map(site=>{
   return {site,data,model:createStateModel(getSiteProfile(site.id,data))};
 });
 
-test('schema 24 keeps the basement off in every fresh property and resolves its share identity',()=>{
-  assert.equal(STATE_VERSION,24);
+test('schema 25 keeps the basement off in every fresh property and resolves its share identity',()=>{
+  assert.equal(STATE_VERSION,25);
   for(const {site,model} of models){
     assert.equal(model.DEFAULTS.basementGarageEnabled,false,site.id);
     assert.equal(model.sanitizeState().basementGarageEnabled,false,site.id);
     assert.deepEqual(model.decodeState(model.encodeState(model.DEFAULTS)),model.DEFAULTS);
-    assert.equal(resolveSiteId('?site=sternicza-11',`#v=22&site=${site.id}`),site.id);
+    assert.equal(resolveSiteId('?site=sternicza-11',`#v=${STATE_VERSION}&site=${site.id}`),site.id);
   }
 });
 test('current shares and saves retain garage dimensions, preview, explicit zeros and quote independently',()=>{
@@ -52,7 +52,7 @@ test('every v1–21 design keeps the basement absent despite unknown garage sett
         garageExtraDepth:.9,garageInsideRun:2.9,garageReserveMm:1,garageProgress:99,garageReverse:true};
       const shared=new URLSearchParams({v:String(version),site:site.id,...Object.fromEntries(Object.entries(injected).filter(([key])=>key!=='siteId').map(([key,value])=>[key,String(value)]))});
       for(const restored of [model.migrateSavedState(injected,version),model.decodeState(shared.toString())]){
-        for(const [key,value] of Object.entries({...GARAGE_DEFAULTS,garageSpaces:1,garageRampWidth:3.2}))assert.equal(restored[key],value,`${site.id} v${version} ${key}`);
+        for(const [key,value] of Object.entries({...GARAGE_DEFAULTS,garageSpaces:model.DEFAULTS.garageSpaces,garageRampWidth:model.DEFAULTS.garageRampWidth}))assert.equal(restored[key],value,`${site.id} v${version} ${key}`);
         assert.deepEqual(withoutGarage(restored),withoutGarage(baseline),`${site.id} v${version} retains the old design`);
       }
     }
@@ -69,6 +69,51 @@ test('the basement cannot activate on Korzeniowskiego or Nadmorska through contr
       assert.equal(matchesGaragePreset(id,model.DEFAULTS),false);
     }
   }
+});
+test('single-car links and locally saved designs restore two spaces and retire only the garage quote',()=>{
+  const {model,site}=models[0];
+  for(const version of [22,23,24,25])for(const [width,expectedWidth] of [[3.2,5.8],[6.2,6.2]]){
+    for(const enabled of [true,false]){
+      const original={siteId:site.id,garageRampWidth:width,basementGarageEnabled:enabled,
+        costBasementGarageQuote:400000,costGardenLighting:4500,terraceDepth:4.7,nightWindowActivity:51};
+      // v22 implicitly had one space. Later encoders wrote a capacity override.
+      if(version>=23)original.garageSpaces=1;
+      const hash=new URLSearchParams({v:version,site:site.id,...original});
+      const saved=clone(original);
+      for(const restored of [model.migrateSavedState(saved,version),model.decodeState(hash.toString())]){
+        assert.equal(restored.garageSpaces,2);
+        assert.equal(restored.garageRampWidth,expectedWidth);
+        assert.equal(restored.costBasementGarageQuote,0);
+        assert.equal(restored.basementGarageEnabled,enabled);
+        for(const key of ['costGardenLighting','terraceDepth','nightWindowActivity'])assert.equal(restored[key],original[key]);
+        assert.deepEqual(model.decodeState(model.encodeState(restored)),restored);
+      }
+      assert.deepEqual(saved,original);
+    }
+  }
+  const raw={...model.DEFAULTS,garageSpaces:1,garageRampWidth:3.2,costBasementGarageQuote:400000};
+  for(const id of ['none','raised']){
+    const selected=garagePresetState(id,raw);
+    assert.equal(selected.garageSpaces,2);
+    assert.equal(selected.garageRampWidth,5.8);
+    assert.equal(selected.costBasementGarageQuote,0);
+    assert.equal(selected.basementGarageEnabled,id==='raised');
+  }
+});
+test('a deliberately narrow two-car design retains its width and quote in shares and saved copies',()=>{
+  const {model,site}=models[0];
+  for(const version of [23,24,25]){
+    const saved={siteId:site.id,basementGarageEnabled:true,garageSpaces:2,garageRampWidth:3.2,costBasementGarageQuote:351000};
+    const hash=new URLSearchParams({v:version,site:site.id,...saved});
+    for(const restored of [model.sanitizeState(saved),model.migrateSavedState(saved,version),model.decodeState(hash.toString())]){
+      for(const [key,value] of Object.entries(saved))assert.equal(restored[key],value);
+    }
+    hash.delete('garageSpaces'); // Two is already the sparse default in v23 and later.
+    assert.equal(model.decodeState(hash.toString()).garageRampWidth,3.2);
+  }
+  assert.equal(model.FIELDS.garageSpaces.min,2);
+  assert.equal(model.FIELDS.garageSpaces.max,2);
+  assert.equal(model.FIELDS.garageInsideRun.unit,'m');
 });
 test('garage presets retain floor level, vehicle allowances, garden, lighting, quotes and view',()=>{
   const {model}=models[0];

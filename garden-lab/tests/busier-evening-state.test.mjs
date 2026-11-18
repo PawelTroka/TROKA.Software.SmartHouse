@@ -14,7 +14,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
   const model=createStateModel(getSiteProfile(id,data));
   // A v19 fixture must retain its published non-lighting defaults even after
   // a later release changes the fresh terrace, cover and garage proposal.
-  const publishedDefaults=Object.freeze({...model.DEFAULTS,poolFreeboard:.02,garageRampWidth:3.2,garageSpaces:1,
+  const publishedDefaults=Object.freeze({...model.DEFAULTS,poolFreeboard:.02,
     ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
     terraceCoverType:'canopy',...previous});
 

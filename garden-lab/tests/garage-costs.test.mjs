@@ -25,6 +25,14 @@ test('a full basement quote is counted once and disappears when switched off',()
  assert.deepEqual(result.garden,before.garden);assert.deepEqual(result.earthworks,before.earthworks);
  assert.deepEqual(estimateCosts({...base,costBasementGarageQuote:300000},data).knownSubtotal,before.knownSubtotal);
 });
+test('direct cost calculation clears a single-car quote when capacity must be upgraded',()=>{
+ const settings={...base,basementGarageEnabled:true,garageSpaces:1,garageRampWidth:3.2,costBasementGarageQuote:300000};
+ const direct=estimateBasementGarageCosts(settings,data);
+ assert.equal(direct.status,'quote-required');assert.equal(direct.knownBase.low,0);
+ assert.equal(estimateCosts(settings,data).basementGarage.status,'quote-required');
+ assert.equal(settings.costBasementGarageQuote,300000,'The caller state remains immutable');
+ assert.equal(estimateBasementGarageCosts({...settings,garageSpaces:2},data).knownBase.low,300000);
+});
 test('other sites and invalid quote values cannot acquire a free basement conversion',()=>{
  for(const id of ['nadmorska-17','korzeniowskiego-40']){
   assert.equal(estimateBasementGarageCosts({...base,siteId:id,basementGarageEnabled:true},data).enabled,false);
