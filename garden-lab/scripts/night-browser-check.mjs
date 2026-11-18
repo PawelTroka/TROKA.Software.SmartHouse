@@ -429,7 +429,8 @@ async function verifyBasementGarage(){
   assert.ok(parseFloat(candidate.frontRun)>9&&parseFloat(candidate.frontRun)<9.2,'The full mapped front yard is used');
   assert.ok(parseFloat(candidate.headroom)>=2.2,'Candidate must preserve the selected covered-headroom benchmark');
   assert.match(candidate.door,/2\.10 m$/,'The separate assumed 2.10 m door remains visible');
-  assert.equal(await page.locator('#garage-layout-warning').isVisible(),false,'Candidate has no configuration-specific warning');
+  assert.equal(await page.locator('#garage-layout-warning').isVisible(),true,'The newly documented cellar structure blocks this otherwise clear ramp');
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/retained stair.*flue.*two-car approach/i);
   assert.equal(await page.locator('.garage-entry-conditions').isVisible(),true,'The unresolved entrance detail stays beside the result');
   assert.match(await page.locator('.garage-entry-conditions').innerText(),/threshold[\s\S]*not yet modelled/i);
   await details('#garage-profile-card .garage-source-details',true);

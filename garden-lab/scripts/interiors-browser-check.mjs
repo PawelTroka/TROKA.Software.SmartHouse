@@ -66,6 +66,7 @@ try{
   page=await ctx.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>report.errors.push(e.message));
   await page.goto(base+'/?site=sternicza-11#v=26&site=sternicza-11&mode=plan&interiorEnabled=true&interiorView=plan',{waitUntil:'domcontentloaded'});
   await ready();assert.equal(await q('meta[name="application-version"]').getAttribute('content'),version);
+  assert.equal(await q('#workspace').evaluate(node=>node.inert),true,'Hidden garden controls must not intercept keyboard navigation');
   assert.equal(await field('canvas').locator('canvas').count(),0);
   assert.equal(await page.evaluate(()=>performance.getEntriesByType('resource').some(e=>new URL(e.name).pathname.endsWith('/scene-interior.js'))),false);
   check('Opening a shared floor plan creates no interior WebGL context or renderer import');
@@ -146,6 +147,7 @@ try{
   check('Save A, return to B, shared links and local reload preserve independent interior settings');
   await field('apply-exterior').click();assert.equal(await field('apply-exterior').isDisabled(),true);
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assert.equal(await field('canvas').locator('canvas').count(),0);
+  assert.equal(await q('#workspace').evaluate(node=>node.inert),false,'Returning to the garden restores its controls');
   const exported=await exportDesign();
   for(const [key,value] of Object.entries({planExteriorApplied:true,firstFloorRise:3.05,terraceDepth:4,canopyDepth:4,terraceWidth:10.77,canopyWidth:10.77,interiorStyle:'japandi',interiorRoomId:'master'}))assert.equal(exported.settings[key],value,key);
   const doors=exported.interiors.selected.walls.flatMap(w=>w.openings).filter(o=>o.type==='balcony-door');assert.equal(doors.length,3);

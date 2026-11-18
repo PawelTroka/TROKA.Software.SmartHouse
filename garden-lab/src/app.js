@@ -530,6 +530,9 @@ function scheduleUpdate(){clearTimeout(updateTimer);updateTimer=setTimeout(()=>{
 async function syncInteriorWorkspace(){
   const enabled=profile.id===DEFAULT_SITE_ID&&settings.interiorEnabled;
   $('interior-host').hidden=!enabled;
+  $('workspace').inert=enabled;
+  document.querySelector('.context-bar').inert=enabled;
+  document.querySelector('.skip-link').setAttribute('href',enabled?'#interior-host':'#workspace');
   $('interior-open').setAttribute('aria-expanded',String(enabled));
   if(!enabled){interiorWorkspace?.setVisible(false);return;}
   if(!interiorWorkspace){
