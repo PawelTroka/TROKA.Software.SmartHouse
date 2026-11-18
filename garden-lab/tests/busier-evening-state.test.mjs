@@ -12,6 +12,11 @@ const withoutChangedLights=state=>Object.fromEntries(Object.entries(state).filte
 for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40','korzeniowskiego-40.json'],['nadmorska-17','nadmorska-17.json']]){
   const data=JSON.parse(readFileSync(new URL('../data/'+file,import.meta.url)));
   const model=createStateModel(getSiteProfile(id,data));
+  // A v19 fixture must retain its published non-lighting defaults even after
+  // a later release changes the fresh terrace, cover and garage proposal.
+  const publishedDefaults=Object.freeze({...model.DEFAULTS,garageRampWidth:3.2,garageSpaces:1,
+    ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
+    terraceCoverType:'canopy',...previous});
 
   test(id+': fresh designs and current sparse links use the brighter, busier evening defaults',()=>{
     assert.ok(STATE_VERSION>=20);
@@ -37,7 +42,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
         for(const [key,value] of Object.entries(previous))assert.equal(params.get(key),String(value),`v${version} explicitly retains ${key}`);
         assert.deepEqual(model.decodeState(shared),restored,`v${version} is stable after re-sharing`);
         assert.deepEqual(model.migrateSavedState(restored,STATE_VERSION),restored,`v${version} is stable after saving as the current version`);
-        if(version===19)assert.deepEqual(withoutChangedLights(restored),withoutChangedLights(model.DEFAULTS),
+        if(version===19)assert.deepEqual(withoutChangedLights(restored),withoutChangedLights(publishedDefaults),
           'The new lighting defaults do not move the previously published garden, observer or quotes');
       }
     }
@@ -52,7 +57,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
       {...current,nightGardenLights:false,nightWindowLights:true,nightPendantLights:true,nightHedgeLights:false},
     ];
     for(const changes of variants){
-      const saved=model.sanitizeState({...model.DEFAULTS,...changes,hedgeRear:5.1,hedgeLeft:3.7,hedgeRight:4.2,
+      const saved=model.sanitizeState({...publishedDefaults,...changes,hedgeRear:5.1,hedgeLeft:3.7,hedgeRight:4.2,
         gardenRaise:.35,terraceDepth:4.5,floorHeight:1.9,preset:'first-street-standing',lookYaw:90,
         mode:'eye',sunMinutes:1320,costGardenLighting:24600,screeningTrees:[]});
       const shared=new URLSearchParams(model.encodeState(saved));

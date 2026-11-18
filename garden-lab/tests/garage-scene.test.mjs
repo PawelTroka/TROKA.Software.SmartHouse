@@ -156,3 +156,38 @@ test('the concept car keeps the published envelope and shared conservative flat 
   near(lowest+r,v.clearance);
   assert.equal(car.userData.vehicle.conceptShell,true);
 });
+
+test('both rendered cars occupy separate lanes inside the widened bay and one remains parked',()=>{
+  const projectedBounds=object=>{
+    const out={l0:Infinity,l1:-Infinity,s0:Infinity,s1:-Infinity};
+    object.updateWorldMatrix(true,true);
+    object.traverse(child=>{
+      const attr=child.geometry?.getAttribute('position');if(!attr)return;
+      for(let i=0;i<attr.count;i++){
+        const world=new THREE.Vector3().fromBufferAttribute(attr,i).applyMatrix4(child.matrixWorld),p=fromWorld(world.x,world.y,world.z);
+        const dx=p[0]-layout.axis.start[0],dy=p[1]-layout.axis.start[1],l=dx*layout.axis.normal[0]+dy*layout.axis.normal[1],s=dx*layout.axis.direction[0]+dy*layout.axis.direction[1];
+        out.l0=Math.min(out.l0,l);out.l1=Math.max(out.l1,l);out.s0=Math.min(out.s0,s);out.s1=Math.max(out.s1,s);
+      }
+    });return out;
+  };
+  for(const svgMode of [false,true]){
+    const rendered=render(svgMode),primary=rendered.group.getObjectByName('garage-cyberster'),second=rendered.group.getObjectByName('garage-second-car');
+    assert.ok(primary&&second);assert.ok(rendered.group.getObjectByName('garage-bay-divider'));
+    const parkedMatrix=second.matrix.toArray(),parked=projectedBounds(second);
+    for(const reverse of [false,true])for(const progress of [0,.4,.8,1]){
+      rendered.setVehiclePose(garageVehiclePose(layout,progress,reverse));rendered.group.updateMatrixWorld(true);
+      const moving=projectedBounds(primary);
+      assert.deepEqual(second.matrix.toArray(),parkedMatrix,'preview movement must leave the second car parked');
+      near(moving.l0-parked.l1,layout.parking.betweenMirrors);
+      for(const car of [moving,parked]){
+        assert.ok(car.l0>=-layout.clearWidth/2+.3949);assert.ok(car.l1<=layout.clearWidth/2-.3949);
+      }
+      if(progress===1)for(const car of [moving,parked]){
+        assert.ok(car.s0>=layout.design.curvedRun+.299);
+        assert.ok(car.s1<=layout.roomRearS-.299);
+      }
+    }
+  }
+  const old=garageLayout({...settings,garageSpaces:1,garageRampWidth:3.2},data,{terrainAt});
+  assert.equal(createGarageGroup(old,materials).group.getObjectByName('garage-second-car'),undefined);
+});

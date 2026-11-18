@@ -3,12 +3,13 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces, privacyStructures } from './geometry.js?v=1.22.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.22.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.22.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.22.0';
-import { terraceStairs } from './layout.js?v=1.22.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.22.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.23.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.23.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.23.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.23.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.23.0';
+import { terraceStairs } from './layout.js?v=1.23.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.23.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -236,6 +237,12 @@ function makeOccluders(settings,data) {
   objects.push(...context);
   const addMeasuredBuilding=(building,id,label,axis)=>{
     if(!building?.footprint?.length)return;
+    if((!site.id||site.id==='sternicza-11')&&building===house){
+      const envelope=sterniczaRoofEnvelope(house);
+      add(mesh(id,label,envelope.wallFaces));
+      add(mesh(`${id}-roof`,`${label} roof`,envelope.roofFaces));
+      return;
+    }
     const ring=openRing(building.footprint),returns=(building.roofPoints||[]).map(point).filter(p=>p.length>=3&&p.every(Number.isFinite));
     if(site.id==='korzeniowskiego-40'&&building===house&&returns.length>6){
       const envelope=localRoofEnvelope(building);
@@ -277,7 +284,9 @@ function makeOccluders(settings,data) {
     }
     add(mesh(`hedge-${segment.side}`,`${segment.side[0].toUpperCase()+segment.side.slice(1)} hedge / bed`,faces));
   }
-  if(settings.canopyEnabled){
+  if(settings.canopyEnabled&&settings.terraceCoverType==='balcony'){
+    for(const box of terraceCover(settings,data).boxes)if(box.opaque!==false)add(prism(box.id,box.label,rectangle(box.x0,box.y0,box.x1,box.y1),box.z0,box.z1));
+  }else if(settings.canopyEnabled){
     const c=canopyBounds(settings,data);
     add(prism('canopy-roof','Terrace canopy',rectangle(c.x0,c.y0,c.x1,c.y1),c.z,c.z+.15));
     const bottom=Math.min(c.z-.04,c.fasciaBottomZ);
@@ -357,7 +366,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','canopyDepth','canopyHeight','canopyWidth','fasciaDepth',...PRIVACY_GEOMETRY_KEYS];
+const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21']);

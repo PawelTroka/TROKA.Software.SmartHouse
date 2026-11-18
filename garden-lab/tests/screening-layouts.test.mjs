@@ -49,7 +49,10 @@ test('v7 shared trees and saved A retain independent geometry, quotes and season
   for(const model of [sternicza,korz]){
     const custom=createScreeningTree('broad-hornbeam',{id:'my-old-tree',x:14,y:26});
     Object.assign(custom,{crownWidth:3.2,crownDepth:2.4,rotation:37,unitPrice:24149,enabled:false});
-    const saved={...model.DEFAULTS,hedgeFullPerimeter:false,hedgeFront:0,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
+    const publishedDefaults={...model.DEFAULTS,garageRampWidth:3.2,garageSpaces:1,terraceCoverType:'canopy',
+      ...(model.DEFAULTS.siteId==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
+      nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55};
+    const saved={...publishedDefaults,hedgeFullPerimeter:false,hedgeFront:0,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
       floorHeight:1.85,preset:'jacuzzi',sunDate:'2026-12-21',costScreeningPlanting:750};
     const migrated=model.migrateSavedState(saved,7);
     assert.deepEqual(migrated,saved);

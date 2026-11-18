@@ -121,7 +121,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,22);
+ assert.equal(STATE_VERSION,23);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -212,7 +212,7 @@ test('sparse legacy side values migrate after resolving the version-specific omi
 test('v5 physical side labels and state retain left/east and right/west without migration',()=>{
  assert.equal(FIELDS.hedgeLeft.label,'Left hedge · east');
  assert.equal(FIELDS.hedgeRight.label,'Right hedge · west');
- const current={...DEFAULTS,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
+ const current={...DEFAULTS,garageSpaces:1,garageRampWidth:3.2,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
  assert.deepEqual(decodeState(encodeState(current)),current);
  assert.deepEqual(migrateSavedState(current,5),current);
  assert.equal(decodeState('#v=5&hedgeLeft=3').hedgeRight,4);
@@ -362,7 +362,7 @@ test('sparse v11 designs keep the previous corner trees, large spa and quote-onl
 });
 
 test('current shares preserve whole-garden quotes and optional overflow independently without changing old baselines',()=>{
- assert.equal(DEFAULTS.costUsePlanningAllowances,true);assert.equal(DEFAULTS.jacuzziOverflow,false);
+ assert.equal(DEFAULTS.costUsePlanningAllowances,true);assert.equal(DEFAULTS.jacuzziOverflow,true);
  for(const costUsePlanningAllowances of [false,true])for(const jacuzziOverflow of [false,true]){
   const custom={...DEFAULTS,costUsePlanningAllowances,jacuzziOverflow,costGardenLighting:21700,costGardenTerrace:73800};
   assert.deepEqual(decodeState(encodeState(custom)),custom);
@@ -373,7 +373,7 @@ test('current shares preserve whole-garden quotes and optional overflow independ
  const korz=createStateModel(getSiteProfile('korzeniowskiego-40'));
  assert.equal(korz.DEFAULTS.costUsePlanningAllowances,false);
  assert.equal(korz.decodeState('v=12&site=korzeniowskiego-40&gardenProgram=spa-compact').gardenProgram,'classic');
- assert.equal(sanitizeState({jacuzziOverflow:'true'}).jacuzziOverflow,false);
+ assert.equal(sanitizeState({jacuzziOverflow:'false'}).jacuzziOverflow,true);
 });
 
 test('sparse v17 links and saved designs retain the exact pictured pines independently of fresh defaults',()=>{

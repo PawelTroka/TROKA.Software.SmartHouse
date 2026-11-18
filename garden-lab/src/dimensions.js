@@ -3,10 +3,10 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.22.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout} from './geometry.js?v=1.22.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.22.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.22.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.23.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.23.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.23.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.23.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -171,6 +171,26 @@ export function gardenDimensions(settings={},data){
     datum:'garden at terrace centreline, 0.60 m beyond deck',sceneText:`${formatDimension(ref.drop)} deck / garden`,
     planText:`deck ${ref.drop>=0?'+':'−'}${formatDimension(Math.abs(ref.drop))}`,planAnchor:[terrace.x+terrace.width*.7,terrace.y+terrace.length-.35],priority:1});
 
+  const cover=terraceCover(settings,data),balcony=cover.enabled&&cover.type==='balcony';
+  if(balcony){
+    const b=cover.bounds,r={x:b.x0,y:b.y0,width:cover.width,length:cover.depth};
+    addRect('balcony','Proposed first-floor balcony',r,cover.deckTopZ+.12,{widthSide:'rear',lengthSide:'left'});
+    const vertical=(id,kind,bottom,top,label,planY)=>addVertical(`balcony-${id}`,'balcony',kind,[b.x1-.3,b.y1-.3],bottom,top,{
+      description:`Proposed balcony ${label}`,datum:'concept geometry; first-floor datum and structure require project design',
+      planText:`${label} ${formatDimension(Math.abs(top-bottom))}`,planAnchor:[b.x1-.3,planY],sceneText:null,priority:3});
+    vertical('floor-level','floorLevel',floorZ,cover.deckTopZ,'deck above terrace',b.y0+.5);
+    vertical('clear-below','clearBelow',floorZ,cover.undersideZ,'clear below deck',b.y0+.9);
+    vertical('beam-clearance','headroom',floorZ,floorZ+cover.minimumCoveredHeight,'clear below beam',b.y0+1.3);
+    vertical('deck-thickness','thickness',cover.undersideZ,cover.deckTopZ,'deck thickness',b.y0+1.7);
+    vertical('guard-height','guardHeight',cover.deckTopZ,cover.deckTopZ+cover.guardHeight,'guard height',b.y0+2.1);
+    for(let i=1;i<cover.supports.length;i++){
+      const first=cover.supports[i-1],second=cover.supports[i];
+      addHorizontal(`balcony-support-span-${i}`,'balcony','span',[(first.x0+first.x1)/2,(first.y0+first.y1)/2],[(second.x0+second.x1)/2,(second.y0+second.y1)/2],first.z1,
+        {description:`Proposed balcony support span ${i} · column centres`,datum:'horizontal centre-to-centre support span; no structural capacity implied',
+          detailLabel:`support span ${i}`,offset:[0,.35],sceneText:null,priority:4});
+    }
+  }
+
   const tub=jacuzziBounds(settings,data);
   if(tub){
     const r={x:tub.x0,y:tub.y0,width:tub.width,length:tub.length};
@@ -310,6 +330,8 @@ export function gardenDimensions(settings={},data){
     result.push({id,feature,kind:'area',value,unit:'m²',a:p,b:p.slice(),lineA:p.slice(),lineB:p.slice(),anchor:p.slice(),planAnchor:xy,
       text,planText:text,sceneText:null,priority:5,...options});
   };
+  if(balcony)addArea('balcony-area','balcony',cover.deckArea,[(cover.bounds.x0+cover.bounds.x1)/2,(cover.bounds.y0+cover.bounds.y1)/2],cover.deckTopZ+.12,
+    {description:'Proposed balcony gross deck footprint area',datum:'gross structural deck footprint; guards and door landing reduce usable clear area'});
   addHorizontal('plot-width','plot','width',[minX,minY],[maxX,minY],plotZ,{offset:[0,-1.05],description:'Plot maximum width in local street-aligned coordinates',datum:'bounding span; individual parcel segments listed separately',sceneText:`plot ${formatDimension(maxX-minX)}`,scope:'site',priority:2});
   addHorizontal('plot-depth','plot','length',[minX,minY],[minX,maxY],plotZ,{offset:[-1.05,0],description:'Plot maximum depth in local street-aligned coordinates',datum:'bounding span; individual parcel segments listed separately',sceneText:`plot depth ${formatDimension(maxY-minY)}`,scope:'site',priority:2});
   addArea('plot-area','plot',polygonArea(plot),plotCentre,plotZ,{description:'Mapped parcel polygon area',datum:'shoelace area of the complete mapped boundary',scope:'site'});
@@ -354,7 +376,7 @@ export function gardenDimensions(settings={},data){
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const featureNames={terrace:['D','Terrace'],jacuzzi:['J','Jacuzzi · outer rim'],pool:['P','Pool · water footprint'],
+const featureNames={terrace:['D','Terrace'],balcony:['BK','First-floor balcony · proposal'],jacuzzi:['J','Jacuzzi · outer rim'],pool:['P','Pool · water footprint'],
   sauna:['S','Sauna'],firepit:['F','Lounge · incl. coping'],'cold-plunge':['C','Cold plunge · outer rim'],
   dining:['DN','Dining platform'],plot:['PL','Plot · maximum local-axis spans'],house:['H','House · footprint envelope'],
   'hedge-rear':['H1','Rear hedge'],'hedge-left':['H2','Left hedge'],'hedge-right':['H3','Right hedge'],'hedge-front':['H4','Front thuja · planted spans']};
@@ -392,7 +414,7 @@ export function dimensionScheduleMarkup(records){
     const width=g.records.find(r=>r.kind==='width'),length=g.records.find(r=>r.kind==='length');
     const footprint=width&&length?`<span class="dimension-footprint"><span data-dimension-record="${esc(width.id)}" title="${esc(width.description)}">${width.value.toFixed(2)}</span> × <span data-dimension-record="${esc(length.id)}" title="${esc(length.description)}">${length.value.toFixed(2)}</span> m</span>`:'';
     const details=g.records.filter(r=>!footprint||(r!==width&&r!==length)).map(r=>{
-      const prefix=r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':r.kind==='clearStem'?'clear stem ':r.kind==='area'?'area ':r.kind==='wall'?`wall ${r.id.split('-').at(-1)} `:r.kind==='plantedLength'?`span ${r.id.split('-').at(-1)} `:'';
+      const prefix=r.detailLabel?`${r.detailLabel} `:r.kind==='floorLevel'?'deck above terrace ':r.kind==='clearBelow'?'under deck ':r.kind==='headroom'?'under beam ':r.kind==='thickness'?'deck thickness ':r.kind==='guardHeight'?'guard ':r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':r.kind==='clearStem'?'clear stem ':r.kind==='area'?'area ':r.kind==='wall'?`wall ${r.id.split('-').at(-1)} `:r.kind==='plantedLength'?`span ${r.id.split('-').at(-1)} `:'';
       return `<span class="dimension-detail">${prefix}${value(r)}</span>`;
     }).join('<span class="dimension-separator"> · </span>');
     return `<li data-dimension-group="${esc(g.key)}"><span class="dimension-key ${g.type==='gap'?'dimension-key-gap':''}">${esc(g.key)}</span><div><div class="dimension-row-heading"><strong>${esc(g.label)}</strong>${footprint}</div>${details?`<div class="dimension-row-values">${details}</div>`:''}</div></li>`;

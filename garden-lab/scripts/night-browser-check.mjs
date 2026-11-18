@@ -630,12 +630,12 @@ async function verifyPrivacyScreening(){
   assert.equal(await page.locator('#scene-host canvas').count(),1,'Privacy structures must retain real WebGL');
   await page.locator('#share').click();
   const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
-  for(const key of ['privacyPergolaEnabled','privacyPergolaFoliage','spaScreensEnabled','canopyEnabled'])
+  for(const key of ['privacyPergolaEnabled','privacyPergolaFoliage','spaScreensEnabled'])
     assert.equal(shared.get(key),'true','Combined share must retain '+key);
   assert.equal(shared.get('site'),'sternicza-11');
   assert.equal(shared.get('preset'),'terrace');
-  // Default dimensions and orbit mode are omitted from sparse shares. Check
-  // their restored controls below instead of requiring redundant URL fields.
+  // Default dimensions, enabled canopy and orbit mode are omitted from sparse
+  // shares. Check their restored controls below, including canopyEnabled.
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
   await waitReady();
   assert.equal(await page.locator('#privacy-shortcuts [data-privacy-preset="layered"]').getAttribute('aria-pressed'),'true');

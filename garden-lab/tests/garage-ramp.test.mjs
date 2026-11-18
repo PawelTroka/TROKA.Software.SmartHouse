@@ -144,14 +144,16 @@ test('portal headroom, a real door allowance and the covered parking bay are che
   near(candidate.portal.topZ-candidate.portal.bottomZ,2.10);
   near(candidate.portal.assumedDoorClearHeight,2.10);
   assert.ok(candidate.portal.topZ<candidate.ceilingZ,'the model must leave an allowance below the soffit for the door');
-  assert.ok(a.minCoveredHeadroom>2.25&&a.minCoveredHeadroom<2.26);
+  assert.ok(candidate.portal.availableHeight>2.25&&candidate.portal.availableHeight<2.26);
+  assert.ok(a.minCoveredHeadroom>2.24&&a.minCoveredHeadroom<2.25,'the proposed entry landing is also included');
+  near(a.minCoveredHeadroom,Math.min(candidate.portal.availableHeight,a.entryLandingHeadroom));
   assert.ok(a.parkingFlatLength>6.9);
   assert.equal(a.structuralHeadroomPass,true);assert.equal(a.widthBenchmarkPass,true);assert.equal(a.doorBenchmarkPass,true);
   for(const direction of [a.forward,a.reverse]){
     assert.ok(direction.portalPosesChecked>100&&direction.coveredPosesChecked>200);
     assert.ok(direction.minimumPortalClearance>.70);
     assert.ok(direction.minimumPortalClearance<direction.minimumSoffitClearance);
-    near(direction.minimumOverheadClearance,Math.min(direction.minimumPortalClearance,direction.minimumSoffitClearance));
+    near(direction.minimumOverheadClearance,Math.min(direction.minimumPortalClearance,direction.minimumSoffitClearance,direction.minimumEntryLandingClearance));
   }
   assert.equal(a.portalPosesChecked,a.forward.portalPosesChecked+a.reverse.portalPosesChecked);
   const low=getLayout({garageClearHeight:2.2});
@@ -160,6 +162,51 @@ test('portal headroom, a real door allowance and the covered parking bay are che
   const narrow=getLayout({garageRampWidth:2.8});
   assert.equal(narrow.assessment.widthBenchmarkPass,false);
   assert.equal(narrow.assessment.geometryPass,false);
+});
+
+test('two-car lanes retain real mirror and body separation and reject a single-car width',()=>{
+  const p=candidate.parking,v=candidate.vehicle;
+  assert.equal(p.spaces,2);near(candidate.clearWidth,5.8);near(p.laneWidth,2.9);
+  near(p.mirrorWallClearance,.395);near(p.betweenMirrors,.790);
+  near(p.bodyWallClearance,.4935);near(p.betweenBodies,.987);
+  assert.equal(candidate.assessment.parkingWidthPass,true);
+  for(const reverse of [false,true])for(const progress of [0,.25,.5,.75,1]){
+    const moving=garageVehiclePose(candidate,progress,reverse),parked=garageVehiclePose(candidate,1,false,p.parkedLaneOffset);
+    near(moving.laneOffset,p.movingLaneOffset);
+    near(Math.abs(moving.laneOffset-parked.laneOffset)-v.mirrorWidth,p.betweenMirrors);
+    for(const pose of [moving,parked])assert.ok(Math.abs(pose.laneOffset)+v.mirrorWidth/2<candidate.clearWidth/2);
+  }
+  const narrow=getLayout({garageRampWidth:3.2});
+  assert.equal(narrow.assessment.parkingWidthPass,false);assert.equal(narrow.assessment.passes,false);
+  assert.equal(narrow.assessment.status,'geometry-limit');assert.ok(narrow.parking.betweenMirrors<0);
+});
+
+test('the legacy single-car alignment and full-drive result remain reproducible',()=>{
+  const old=getLayout({garageSpaces:1,garageRampWidth:3.2});
+  assert.equal(old.parking.spaces,1);near(old.centerX,12);near(old.parking.movingLaneOffset,0);
+  assert.equal(old.entryAccess,null,'the previous narrow ramp does not need relocated entry stairs');
+  near(old.assessment.conservativeClearance,.041191357491469405,1e-8);
+  near(old.streetZ,terrainAt(...old.axis.start,data));
+  assert.notEqual(old.streetZ,candidate.streetZ,'widening samples the terrain at the actual relocated street entry');
+});
+
+test('the proposed front-door landing is included throughout both roof sweeps',()=>{
+  const landing=candidate.entryAccess.landing,a=candidate.assessment;
+  near(landing.topZ,candidate.livingFloorZ);near(landing.topZ-landing.soffitZ,.18);
+  near(landing.toS-landing.fromS,1);assert.equal(candidate.entryAccess.proposed,true);
+  assert.ok(a.entryLandingPosesChecked>200);
+  assert.ok(a.minimumEntryLandingClearance>.85&&a.minimumEntryLandingClearance<.90);
+  assert.equal(a.criticalOverhead.element,'garage doorway');
+  assert.ok(a.criticalEntryLanding.station>=landing.fromS&&a.criticalEntryLanding.station<=landing.toS);
+  let dense=Infinity;
+  for(const reverse of [false,true])for(let i=0;i<=700;i++){
+    const pose=garageVehiclePose(candidate,i/700,reverse),[A,B]=pose.roof;
+    const lo=Math.max(Math.min(A.s,B.s),landing.fromS),hi=Math.min(Math.max(A.s,B.s),landing.toS);
+    if(lo>hi)continue;
+    const z=s=>A.z+(B.z-A.z)*(s-A.s)/(B.s-A.s);
+    dense=Math.min(dense,landing.soffitZ-Math.max(z(lo),z(hi)));
+  }
+  near(a.minimumEntryLandingClearance,dense,.002);
 });
 
 test('fixed-pose Euclidean minima agree with an independent dense road-to-segment distance calculation',()=>{

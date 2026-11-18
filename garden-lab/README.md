@@ -2,7 +2,23 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.22.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.22.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.22.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.23.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.23.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.23.0)**
+
+## Terrace, balcony, pool eye and two-car garage · 1.23.0
+
+Fresh Sternicza designs now start with a **4.0 m terrace**, the **custom infinity/overflow jacuzzi enabled**, and an **8.5 × 4.0 m canopy with its underside 3.0 m above the terrace**. The Living terrace selector can replace that canopy with a **34 m² first-floor balcony**. Its finished deck follows the editable first-floor level, with a proposed 0.25 m slab, front beam, three supports, clear guards and rear access door. The default clear heights are 2.75 m below the slab and 2.51 m below the beam. The balcony has its own quote-only budget; the canopy allowance is removed while a balcony is selected.
+
+**Pool · Swimming eye level** places the camera 0.15 m above the actual rendered water, adjustable from 0.05–0.40 m. A separate balcony viewpoint appears when the balcony is selected.
+
+The optional basement now starts with **two Cyberster-sized cars side by side**, a **5.8 m clear entrance**, and a **6.6 m vehicle gate**. The two 2.9 m lanes leave 395 mm from mirrors to outside walls and 790 mm between mirror envelopes. The wider opening requires proposed side-return entrance stairs and a short landing at the retained front door. The complete forward/reverse clearance sweeps include that landing. At the default assumptions, the minimum underside clearance after the 1 mm numerical allowance is 41.25 mm, against a 30 mm selected reserve. Structural headroom reaches a minimum of 2.246 m. Scissor doors, street turning, drainage thresholds and actual structure remain unverified.
+
+The supplied street photo informs the house finishes, pitched/cross-gable roof form, brick raised basement, entrance and white paired windows. First-floor cameras align with rendered apertures. Source geometry, photo inferences and proposed renovations are distinguished in the [house evidence record](data/house-appearance.json).
+
+The front hedge now has exactly two separate openings, for pedestrians and vehicles, with planting elsewhere. The pedestrian route follows the selected entrance-stair arrangement.
+
+**Schema 23 preserves older saved designs:** sparse v20–22 links keep their former 4.2 m terrace, canopy-off, overflow-off and 3.2 m single-car defaults. The other properties keep their existing defaults. Reset or a v23 link loads the revised Sternicza design.
+
+[Open fresh Sternicza defaults](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.23.0#v=23&site=sternicza-11) · [Try the balcony and two-car garage](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.23.0#v=23&site=sternicza-11&terraceCoverType=balcony&basementGarageEnabled=true&showDimensions=false) · [Reproducible dimensions and clearance results](data/sternicza-refinements-1.23.0.json)
 
 ## Basement garage and Cyberster clearance · 1.22.0
 
