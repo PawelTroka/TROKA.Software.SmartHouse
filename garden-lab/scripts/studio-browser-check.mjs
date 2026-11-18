@@ -1,0 +1,268 @@
+// Real WebGL regression checks for the public editor. Use BASE_URL to exercise an
+// existing deployment, otherwise serve the package's freshly built public tree.
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {chromium} from 'playwright';
+
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const evidence=path.join(root,'test-results','studio');
+await mkdir(evidence,{recursive:true});
+const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
+const report={version,checks:[],screenshots:[],styles:[],errors:[]};
+const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
+let page,server,browser,base=process.env.BASE_URL?.replace(/\/$/,'');
+if(!base){
+  const publicDir=path.join(root,'public');
+  const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg'};
+  server=createServer(async(req,res)=>{
+    try{
+      const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
+      const file=path.resolve(publicDir,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
+      if(!file.startsWith(publicDir+path.sep))throw Error('Invalid path');
+      const data=await readFile(file);
+      res.writeHead(200,{'Content-Type':mime[path.extname(file)]??'application/octet-stream','Cache-Control':'no-store'});res.end(data);
+    }catch{res.writeHead(404);res.end();}
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+  base='http://127.0.0.1:'+server.address().port;
+}
+const el=selector=>page.locator(selector);
+const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
+  [k,k==='renderer'?v:k==='motionActive'?v==='true':Number(v)])));
+const sceneVisible=async()=>{
+  await el('#scene-host').scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
+    Number(document.querySelector('#render-diagnostics').dataset.frames)>0);
+  await waitFrames();
+};
+async function ready(){
+  await el('#loading').waitFor({state:'hidden',timeout:90000});
+  await el('#scene-host canvas').waitFor({state:'visible',timeout:60000});
+  assert.equal(await el('meta[name="application-version"]').getAttribute('content'),version);
+  await sceneVisible();
+}
+async function style(id){
+  await el('#designStyle').selectOption(id);
+  await page.waitForFunction(value=>document.querySelector('#design-studio').dataset.style===value,id);
+  await sceneVisible();
+}
+async function details(){
+  const node=el('.studio-details');
+  if(await node.getAttribute('open')===null)await node.locator('summary').click();
+}
+async function shot(name,selector){
+  const filename=name+'.png',options={path:path.join(evidence,filename),animations:'disabled',scale:'css'};
+  const target=selector?el(selector):page;
+  if(selector)await target.scrollIntoViewIfNeeded();
+  await waitFrames();
+  const image=await target.screenshot(options);report.screenshots.push(filename);return image;
+}
+async function exportDesign(){
+  const result=page.waitForEvent('download');
+  await el('#export').click();
+  return JSON.parse(await readFile(await (await result).path(),'utf8'));
+}
+async function pixelChange(a,b){
+  return page.evaluate(async bytes=>{
+    const decode=async base64=>{
+      const image=new Image();image.src='data:image/png;base64,'+base64;await image.decode();
+      const canvas=new OffscreenCanvas(image.width,image.height),ctx=canvas.getContext('2d');
+      ctx.drawImage(image,0,0);return ctx.getImageData(0,0,canvas.width,canvas.height);
+    };
+    const [a,b]=await Promise.all(bytes.map(decode));
+    if(a.width!==b.width||a.height!==b.height)throw Error('Camera viewport resized');
+    let pixels=0;for(let i=0;i<a.data.length;i+=4){
+      if(Math.max(...[0,1,2].map(c=>Math.abs(a.data[i+c]-b.data[i+c])))>15)pixels++;
+    }
+    return {pixels,fraction:pixels/(a.width*a.height)};
+  },[a.toString('base64'),b.toString('base64')]);
+}
+const expectMotion=active=>page.waitForFunction(value=>document.querySelector('#render-diagnostics').dataset.motionActive===String(value),active);
+const cameraTime=()=>page.evaluate(()=>({
+  mode:document.querySelector('#viewport').dataset.mode,preset:document.querySelector('#viewpoints [aria-pressed="true"]')?.dataset.preset,
+  date:document.querySelector('#sun-date').value,time:document.querySelector('#sun-time').value,
+  observer:document.querySelector('#observer-readout').textContent,
+}));
+async function settledInfo(){
+  // Re-entering the viewport refreshes its public counters without changing
+  // geometry. This also waits for the GPU to draw a complete frame on SwiftShader.
+  await sceneVisible();
+  await el('#scene-host canvas').screenshot({animations:'disabled',scale:'css'});
+  return stats();
+}
+try{
+  browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,
+    args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--disable-dev-shm-usage']});
+  const ctx=await browser.newContext({viewport:{width:1280,height:900},deviceScaleFactor:1.5,reducedMotion:'reduce',acceptDownloads:true});
+  page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
+  await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
+  const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
+  assert.equal(new Set(options).size,21);assert.ok(options.includes('current'));
+  await el('#style-open').click();assert.equal(await el('#style-search').evaluate(e=>e===document.activeElement),true);
+  await el('#style-search').fill('Japandi');assert.equal(await el('#style-grid button:visible').count(),2);
+  await el('#style-family').selectOption('Statement');assert.equal(await el('#style-empty').isVisible(),true);
+  await el('#style-search').fill('');assert.equal(await el('#style-grid button:visible').count(),4);
+  await page.keyboard.press('Escape');await el('#style-dialog').waitFor({state:'hidden'});
+  assert.ok(await el('#style-open').evaluate(e=>e===document.activeElement));
+  check('All 21 choices are accessible through select, search, family filter and Escape focus return');
+
+  await el('button[data-mode="orbit"]').click();await details();
+  await el('#renderQuality').selectOption('eco');await sceneVisible();
+  const eco=await settledInfo();
+  assert.ok(eco.pixelRatio<=1.001&&eco.bufferWidth*eco.bufferHeight<=720000+4000&&eco.shadowSize<=1024&&eco.shadowSize>0,JSON.stringify(eco));
+  await el('#renderQuality').selectOption('auto');await sceneVisible();
+  const auto=await settledInfo();
+  assert.ok(auto.pixelRatio<=1.751&&auto.bufferWidth*auto.bufferHeight<=2100000+4000&&auto.shadowSize<=2048&&auto.shadowSize>0,JSON.stringify(auto));
+  report.quality={auto,eco};await el('#renderQuality').selectOption('eco');
+  check('Automatic and Eco bound resolution and shadow texture size');
+
+  if(await el('#showDimensions').isChecked())await el('#showDimensions').uncheck();
+  await style('current');
+  const before=await exportDesign();
+  await sceneVisible();
+  const original=await shot('sternicza-current','#scene-host canvas');
+  const reference=await stats(),selectedShots=new Map();
+  for(const id of options.filter(id=>id!=='current')){
+    await style(id);
+    if(['hidden-bali','space-age','mediterranean-villa'].includes(id)){
+      const frame=await shot('sternicza-'+id,'#scene-host canvas');
+      const diff=await pixelChange(original,frame);
+      assert.ok(diff.pixels>100,id+' changed only '+diff.pixels+' canvas pixels');
+      selectedShots.set(id,frame);report.styles.push({id,diff,stats:await stats()});
+    }else report.styles.push({id,stats:await stats()});
+  }
+  for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age']]){
+    assert.ok((await pixelChange(selectedShots.get(a),selectedShots.get(b))).pixels>100,a+' and '+b+' look identical');
+  }
+  await style('current');const reset=await settledInfo();report.returnedResources={reference,reset};
+  assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
+  check('All 20 styles render on Sternicza, fixed-camera daylight scenes differ, resources return near baseline');
+
+  await el('#style-open').click();await el('#style-search').fill('Bali');await el('[data-style-id="hidden-bali"]').focus();
+  await page.keyboard.press('Enter');await el('#style-dialog').waitFor({state:'hidden'});
+  assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
+  assert.equal(await el('#styleHouseFinish').isChecked(),false);
+  const originalScope=await exportDesign();
+  assert.equal(originalScope.designPresentation.id,'hidden-bali');assert.equal(originalScope.designPresentation.houseFinishPreview,false);
+  assert.deepEqual(originalScope.summary.observer,before.summary.observer);assert.deepEqual(originalScope.dimensions,before.dimensions);
+  assert.equal(originalScope.costEstimate.style.unquoted.length,1);
+  assert.equal(originalScope.costEstimate.style.knownBase.low,0);assert.equal(originalScope.costEstimate.style.knownBase.high,0);
+  assert.deepEqual(originalScope.designChecks,before.designChecks);assert.ok(originalScope.designChecks.checks.length>0);
+  await el('#styleHouseFinish').check();
+  await el('[data-preset="terrace"]').click();await el('[data-studio-moment="golden"]').click();
+  await page.waitForFunction(()=>document.querySelector('#viewport').dataset.mode==='eye');
+  const viewpoint=await cameraTime();
+  await el('#studio-undo').click();assert.equal(await el('#styleHouseFinish').isChecked(),false);assert.deepEqual(await cameraTime(),viewpoint);
+  await el('#studio-redo').click();assert.equal(await el('#styleHouseFinish').isChecked(),true);assert.deepEqual(await cameraTime(),viewpoint);
+  check('Keyboard selection, explicit house finish scope, incremental unquoted costs and undo/redo preserve the view and solar time');
+  await el('#share').click();await page.waitForFunction(()=>location.hash.includes('designStyle=hidden-bali'));
+  const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
+  assert.equal(shared.get('renderQuality'),'eco');assert.equal(shared.get('site'),'sternicza-11');
+  await page.reload({waitUntil:'domcontentloaded'});await ready();await details();
+  assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
+  assert.equal(await el('#renderQuality').inputValue(),'eco');assert.equal(await el('#styleHouseFinish').isChecked(),true);assert.deepEqual(await cameraTime(),viewpoint);
+  const after=await exportDesign();assert.equal(after.designPresentation.houseFinishPreview,true);
+  assert.equal(after.settings.designStyle,'hidden-bali');assert.equal(after.costEstimate.style.houseFinishPreview,true);
+  check('Share link, reload and JSON export recover the site, lighting time, house finish scope and quality');
+
+  const assumptions=el('#budget-assumptions');
+  if(await assumptions.getAttribute('open')===null)await assumptions.locator('summary').first().click();
+  const quote=el('#costStyleUpgradeQuote');
+  await quote.fill('20000');await quote.press('Tab');
+  await page.waitForFunction(()=>document.querySelector('[data-style-known-low]')?.dataset.styleKnownLow==='20000');
+  await style('space-age');
+  assert.equal(Number(await quote.inputValue()),0);
+  await el('#studio-undo').click();
+  assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
+  assert.equal(Number(await quote.inputValue()),20000);
+  await page.waitForFunction(()=>document.querySelector('[data-style-known-low]')?.dataset.styleKnownLow==='20000');
+  check('A 20,000 PLN incremental finish quote clears on a change of scheme and Undo restores its original scope');
+
+  await el('#save-a').click();
+  // A third, intermediate design distinguishes undoing the B edit from
+  // incorrectly recording the temporarily displayed A as the previous edit.
+  await style('space-age');await style('party-club');
+  await el('#compare').click();assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
+  await el('#compare').click();assert.equal(await el('#designStyle').inputValue(),'party-club');
+  await el('#studio-undo').click();assert.equal(await el('#designStyle').inputValue(),'space-age');
+  assert.equal(Number(await quote.inputValue()),0);
+  check('Save A and return to B preserve the intermediate real design as the Undo target');
+
+  await el('button[data-mode="orbit"]').click();await sceneVisible();
+  const shadowBefore=(await settledInfo()).shadowUpdates;
+  await page.evaluate(()=>{
+    document.querySelector('#sun-time').dispatchEvent(new Event('change',{bubbles:true}));
+    document.querySelector('button[data-mode="orbit"]').click();window.dispatchEvent(new Event('resize'));
+  });
+  await sceneVisible();assert.equal((await settledInfo()).shadowUpdates,shadowBefore);
+  check('Same solar time, orbit mode and viewport size do not refit the shadow camera');
+  await el('#sceneMotion').check();await sceneVisible();await expectMotion(false);
+  assert.equal(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),true);
+  await page.emulateMedia({reducedMotion:'no-preference'});await sceneVisible();await expectMotion(true);
+  await el('button[data-mode="plan"]').click();await expectMotion(false);
+  await el('button[data-mode="orbit"]').click();await sceneVisible();await expectMotion(true);
+  // Small viewport makes both ends of the workspace genuinely leave the scene.
+  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+  await expectMotion(false);await sceneVisible();await expectMotion(true);
+  // CDP executes the browser's page lifecycle, including visibilitychange.
+  const cdp=await ctx.newCDPSession(page);
+  await page.evaluate(()=>{
+    window.__studioVisibilitySamples=[];
+    document.addEventListener('visibilitychange',()=>window.__studioVisibilitySamples.push({hidden:document.hidden,motion:document.querySelector('#render-diagnostics').dataset.motionActive}));
+  });
+  await cdp.send('Page.setWebLifecycleState',{state:'frozen'});await cdp.send('Page.setWebLifecycleState',{state:'active'});
+  await page.bringToFront();
+  const lifecycle=await page.evaluate(()=>window.__studioVisibilitySamples);
+  // Chrome's headless shell can freeze a foreground target without a visible →
+  // hidden transition. Exercise the same DOM event deterministically in that case.
+  if(!lifecycle.some(sample=>sample.hidden)){
+    report.hiddenCheck='synthetic visibilitychange after headless foreground freeze';
+    await page.evaluate(()=>{
+      Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expectMotion(false);
+    await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
+  }else{report.hiddenCheck='native browser visibilitychange';assert.ok(lifecycle.some(sample=>sample.hidden&&sample.motion==='false'));}
+  await sceneVisible();await expectMotion(true);await el('#sceneMotion').uncheck();await expectMotion(false);
+  report.visibilitySamples=lifecycle;check('Reduced motion, diagram/offscreen pauses and '+report.hiddenCheck);
+
+  report.mobile=[];
+  for(const width of [390,320]){
+    await page.setViewportSize({width,height:844});await el('#style-open').click();
+    assert.equal(await el('#style-grid button:visible').count(),21);
+    const last=el('#style-grid button').last();await last.scrollIntoViewIfNeeded();
+    assert.ok(await last.evaluate(e=>{const box=e.getBoundingClientRect();return box.bottom<=innerHeight+2&&box.top>=0;}));
+    const measured=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,dialog:document.querySelector('#style-dialog').getBoundingClientRect().width,scroll:document.querySelector('#style-dialog').scrollWidth,client:document.querySelector('#style-dialog').clientWidth}));
+    report.mobile.push(measured);assert.ok(measured.page<=width+2&&measured.dialog<=width+1&&measured.scroll<=measured.client+1,JSON.stringify(measured));
+    await el('#style-search').scrollIntoViewIfNeeded();await shot('mobile-catalogue-'+width);
+    await page.keyboard.press('Escape');
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
+  }
+  check('390 px and 320 px editor and scrollable catalogue fit all 21 choices');
+  await page.setViewportSize({width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});
+  for(const [site,id] of [['korzeniowskiego-40','organic-japandi'],['nadmorska-17','party-club']]){
+    await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();
+    await el('button[data-mode="orbit"]').click();await style('current');
+    const ref=await el('#scene-host canvas').screenshot({scale:'css'});
+    await style(id);const frame=await shot(site+'-'+id,'#scene-host canvas');
+    const diff=await pixelChange(ref,frame);assert.ok(diff.pixels>100,site+' pixels '+diff.pixels);
+    const saved=await exportDesign();assert.equal(saved.siteId,site);assert.equal(saved.designPresentation.id,id);assert.ok(saved.designChecks.checks.length>0);
+    report.styles.push({site,id,diff,stats:await stats()});
+  }
+  await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await shot('desktop-editor');
+  check('Both additional properties visibly apply their own physical layout, selected concept and exported checks');
+  assert.deepEqual(report.errors,[]);report.status='passed';
+}catch(error){
+  report.status='failed';report.error=error.stack||String(error);process.exitCode=1;
+  if(page)try{await shot('failure');}catch{}
+  console.error(report.error);
+}finally{
+  await writeFile(path.join(evidence,'browser-report.json'),JSON.stringify(report,null,2));
+  await browser?.close();if(server)await new Promise(r=>server.close(r));
+  console.log('STUDIO_RESULT '+report.status+' ('+report.checks.length+' checks)');
+}

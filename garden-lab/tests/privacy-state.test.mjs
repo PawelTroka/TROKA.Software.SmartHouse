@@ -54,7 +54,7 @@ test('current shares and JSON save/reload retain every privacy dimension, switch
 test('v20 sparse and custom designs never acquire privacy structures, even with unknown true flags',()=>{
   // Custom canopy dimensions remain explicit edits; the pre-garage fixture
   // retains the frozen single-car baseline rather than future fresh defaults.
-  const historical={...custom,garageRampWidth:3.2,garageSpaces:1,jacuzziOverflow:false,terraceCoverType:'canopy'};
+  const historical={...custom,poolFreeboard:.02,garageRampWidth:3.2,garageSpaces:1,jacuzziOverflow:false,terraceCoverType:'canopy'};
   const previous=without(historical,privacyKeys),original=clone(previous);
   const shared=new URLSearchParams(model.encodeState(historical));
   shared.set('v','20');

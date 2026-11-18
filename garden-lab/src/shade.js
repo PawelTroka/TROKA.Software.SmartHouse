@@ -3,13 +3,13 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, pointInPolygon, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.23.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.23.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.23.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.23.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.23.0';
-import { terraceStairs } from './layout.js?v=1.23.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.23.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.24.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.24.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.24.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.24.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.24.0';
+import { terraceStairs } from './layout.js?v=1.24.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.24.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -167,16 +167,20 @@ const contextOccluderCache=new WeakMap();
 /** Permanent spa construction. Glazing and open water never become solid boxes. */
 function spaOccluders(settings,data) {
   const program=gardenProgram(settings,data);
-  if(!program.active)return [];
   const levels=spaLevels(settings,data),objects=[],add=o=>{if(o)objects.push(o);};
   const slab=(id,label,r,low,high)=>add(prism(id,label,rectangle(r.x,r.y,r.x+r.width,r.y+r.length),low,high));
-  const pool=program.pool,cp=pool.coping,pz=levels.pool;
-  for(const coping of [
-    {x:pool.x-cp,y:pool.y-cp,width:pool.width+2*cp,length:cp},
-    {x:pool.x-cp,y:pool.y+pool.length,width:pool.width+2*cp,length:cp},
-    {x:pool.x-cp,y:pool.y,width:cp,length:pool.length},
-    {x:pool.x+pool.width,y:pool.y,width:cp,length:pool.length},
-  ])slab('pool-coping','Raised pool coping',coping,pz.copingBaseZ,pz.copingTopZ);
+  const terrace=data.site.terrace;
+  if(terrace){
+    const drop=terraceGroundReference(settings,data).drop;
+    const stairs=terraceStairs(terrace,num(settings.terraceDepth,terrace.depth),drop,settings,data),floor=floorElevation(settings,data);
+    for(let i=0;i<stairs.count;i++)slab('terrace-step','Terrace access step',
+      {x:stairs.x,y:stairs.y+i*.29,width:stairs.width,length:.29},floor-stairs.drop,floor-stairs.drop*i/stairs.count);
+  }
+  if(!program.pool)return objects;
+  for(const box of poolEdgeBoxes(program.pool,levels.pool)){
+    add(prism('pool-'+box.part,box.label,rectangle(box.x0,box.y0,box.x1,box.y1),box.z0,box.z1));
+  }
+  if(!program.active)return objects;
   for(const face of saunaOpaqueFaces(settings,data))add(mesh(face.id,face.label,fanTriangles(face.vertices)));
   add(prism('sauna-base','Sauna floor base',program.sauna.footprint,levels.sauna.padBaseZ??levels.sauna.groundZ,levels.sauna.floorZ));
   for(const step of levels.sauna.entrySteps||[])add(prism('sauna-entry-step','Sauna entry step',step.footprint,step.baseZ,step.topZ));
@@ -212,10 +216,6 @@ function spaOccluders(settings,data) {
   }
   for(const step of cz.steps)slab('cold-plunge-step','Cold-plunge access step',step,step.baseZ??cz.groundZ,step.topZ);
 
-  const terrace=data.site.terrace,drop=terraceGroundReference(settings,data).drop;
-  const stairs=terraceStairs(terrace,num(settings.terraceDepth,terrace.depth),drop,settings,data),floor=floorElevation(settings,data);
-  for(let i=0;i<stairs.count;i++)slab('terrace-step','Terrace access step',
-    {x:stairs.x,y:stairs.y+i*.29,width:stairs.width,length:.29},floor-stairs.drop,floor-stairs.drop*i/stairs.count);
   return objects;
 }
 
@@ -284,16 +284,15 @@ function makeOccluders(settings,data) {
     }
     add(mesh(`hedge-${segment.side}`,`${segment.side[0].toUpperCase()+segment.side.slice(1)} hedge / bed`,faces));
   }
-  if(settings.canopyEnabled&&settings.terraceCoverType==='balcony'){
-    for(const box of terraceCover(settings,data).boxes)if(box.opaque!==false)add(prism(box.id,box.label,rectangle(box.x0,box.y0,box.x1,box.y1),box.z0,box.z1));
-  }else if(settings.canopyEnabled){
-    const c=canopyBounds(settings,data);
-    add(prism('canopy-roof','Terrace canopy',rectangle(c.x0,c.y0,c.x1,c.y1),c.z,c.z+.15));
-    const bottom=Math.min(c.z-.04,c.fasciaBottomZ);
-    add(prism('canopy-front','Canopy front fascia',rectangle(c.x0,c.y1-.075,c.x1,c.y1+.075),bottom,c.z));
-    add(prism('canopy-right','Canopy right fascia',rectangle(c.x0,c.y0,c.x0+.13,c.y1),bottom,c.z));
-    add(prism('canopy-left','Canopy left fascia',rectangle(c.x1-.13,c.y0,c.x1,c.y1),bottom,c.z));
-    for(const p of canopySupportBounds(settings,data))add(prism('canopy-post','Canopy post',rectangle(p.x0,p.y0,p.x1,p.y1),p.z0,p.z1));
+  if(settings.canopyEnabled){
+    const cover=terraceCover(settings,data);
+    const canopyIds={'cover-canopy-roof':'canopy-roof','cover-canopy-front-fascia':'canopy-front',
+      'cover-canopy-right-fascia':'canopy-right','cover-canopy-left-fascia':'canopy-left'};
+    for(const box of cover.boxes){
+      if(box.opaque===false)continue;
+      const id=cover.type==='canopy'&&box.part==='post'?'canopy-post':canopyIds[box.id]??box.id;
+      add(prism(id,box.label,rectangle(box.x0,box.y0,box.x1,box.y1),box.z0,box.z1));
+    }
   }
   objects.push(...spaOccluders(settings,data));
   for(const box of privacyStructures(settings,data).boxes){
@@ -326,7 +325,7 @@ function makeReceivers(settings,data,size=1){
   const sauna=program.sauna,firepit=program.firepit,cold=program.coldPlunge;
   const coldWater=cold?rectBounds(cold,cold.rim):null;
   const floor=floorElevation(settings,data),segments=hedgeSegments(settings,data),cells=[];
-  const stairs=program.active?terraceStairs(t,num(settings.terraceDepth,t.depth),terraceGroundReference(settings,data).drop,settings,data):null;
+  const stairs=t?terraceStairs(t,num(settings.terraceDepth,t.depth),terraceGroundReference(settings,data).drop,settings,data):null;
   for(let y=Math.floor(Math.min(...ys)/size)*size+size/2;y<Math.max(...ys);y+=size){
     for(let x=Math.floor(Math.min(...xs)/size)*size+size/2;x<Math.max(...xs);x+=size){
       if(!pointInPolygon([x,y],ring)||site.house?.footprint&&pointInPolygon([x,y],site.house.footprint))continue;
@@ -339,23 +338,23 @@ function makeReceivers(settings,data,size=1){
       if(inCold&&!rectContains(x,y,coldWater))continue; // coping is not water or garden
       const zone=tubWater&&roundedRectContains(x,y,tubWater,JACUZZI_WATER_CORNER_RADIUS)?'jacuzzi':terrace&&rectContains(x,y,terrace)?'terrace':pool&&rectContains(x,y,pool)?'pool':inCold?'coldPlunge':inPit?'firepit':y>=rear?'garden':'front';
       let z=zone==='jacuzzi'?tub.waterZ:zone==='terrace'?floor:zone==='pool'?poolZ:zone==='coldPlunge'?levels.coldPlunge.waterZ:zone==='firepit'?(pitStep?.topZ??levels.firepit.floorZ):bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
+      if(zone==='garden'&&p&&rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
       if(zone==='garden'&&program.active){
-        if(rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
         if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
         const step=levels.coldPlunge.steps.find(r=>rectContains(x,y,rectBounds(r)));
         if(step)z=step.topZ;
         const saunaStep=levels.sauna.entrySteps?.find(r=>pointInPolygon([x,y],r.footprint));
         if(saunaStep)z=saunaStep.topZ;
-        if(stairs.count&&rectContains(x,y,rectBounds(stairs))){
-          const i=Math.min(stairs.count-1,Math.floor((y-stairs.y)/.29));
-          z=floor-stairs.drop*i/stairs.count;
-        }
       }
-      // The moved pool has boundaries on half-metre grid centres. A ray from
+      if(zone==='garden'&&stairs?.count&&rectContains(x,y,rectBounds(stairs))){
+        const i=Math.min(stairs.count-1,Math.floor((y-stairs.y)/.29));
+        z=floor-stairs.drop*i/stairs.count;
+      }
+      // A pool can have boundaries on half-metre grid centres. A ray from
       // that exact zero-area edge hits its 2 cm coping lip and incorrectly
       // represents a whole square metre as shaded. Keep the display grid, but
       // sample the centre of the cell's actual clipped water portion instead.
-      const waterSample=program.active&&zone==='pool'?{
+      const waterSample=zone==='pool'?{
         sampleX:(Math.max(pool.x0,x-size/2)+Math.min(pool.x1,x+size/2))/2,
         sampleY:(Math.max(pool.y0,y-size/2)+Math.min(pool.y1,y+size/2))/2,
       }:{};
@@ -366,7 +365,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS];
+const geometryKeys=['poolFreeboard','gardenProgram','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21']);
@@ -435,7 +434,7 @@ export function analyzeSunlight(settings,data,sun){
   });
   for(const zone of Object.values(zones))zone.percent=daylight&&zone.total?zone.sunlit/zone.total*100:null;
   return {status,isDaylight:daylight,cells,zones,cellSize:geometry.cellSize,direction:sun?.direction||null,
-    modelNote:'Direct sun on a 1 m outdoor sample grid; spa pool edge samples use the centre of each clipped water portion. Includes local terrain sampled every 0.5 m along each ray and finite dense proposed tree crowns. Deciduous auto foliage is May–October, an approximate comparison assumption. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
+    modelNote:'Direct sun on a 1 m outdoor sample grid; pool edge samples use the centre of each clipped water portion. Includes local terrain sampled every 0.5 m along each ray and finite dense proposed tree crowns. Deciduous auto foliage is May–October, an approximate comparison assumption. Existing trees, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
     method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
     limitations:'No weather, diffuse/reflected light, glass transmission losses, existing tree crowns, decorative planting/movable furniture, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Roof interpolation, missing-roof fallbacks and foliage permeability remain simplified.'};
 }

@@ -3,12 +3,13 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover } from './geometry.js?v=1.23.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.23.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.23.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.23.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.23.0';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.23.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover } from './geometry.js?v=1.24.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.24.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.24.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.24.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.24.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.24.0';
+import { getDesignStyle } from './design-styles.js?v=1.24.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -43,6 +44,7 @@ export const COST_FIELDS = Object.freeze({
     ['costGardenCanopy','Terrace canopy'],
   ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','Complete line quote override. 0 uses the itemised planning allowance when enabled, otherwise needs a quote for active work. Optional canopy / demolition apply only when selected.'),group:'cost-garden'}])),
   costBalconyQuote: {...field('First-floor balcony · full installed quote',0,0,5000000,1000,'PLN','Complete balcony project quote including survey, design, structure, foundations, supports, deck finish, waterproofing, drainage, guards and proposed first-floor access door. 0 is unquoted and excluded, even with planning allowances enabled. Replaces the canopy price while balcony mode is selected.'),group:'cost-garden'},
+  costStyleUpgradeQuote: {...field('Selected style · additional upgrade quote',0,0,5000000,1000,'PLN','Additional installed cost ABOVE the existing base finish, furniture and lighting lines. Do not enter a whole package twice. Include proposed house finishes if their preview is on. 0 leaves this style-specific upgrade unquoted; no style premium is invented. Reconfirm when changing styles or house finish scope.'),group:'cost-garden'},
   ...Object.fromEntries([
     ['costPrivacyPergolaQuote','Garden pergola · full installed price'],
     ['costSpaScreenQuote','Spa side screens · full installed price'],
@@ -228,6 +230,16 @@ function installationGroup(enabled, rows, c, extra = {}) {
     total:unquoted.length ? null : knownSubtotal,
     status:!enabled ? 'none' : unquoted.length ? 'quote-required' : 'estimate',
     planningEnabled:c.costUsePlanningAllowances,...extra };
+}
+
+/** Design recipes have no invented premium. Only an incremental quote is added
+ * to existing base finish allowances; selecting a style cannot silently price it. */
+export function estimateStyleCosts(settings) {
+  const c=costSettings(settings),style=getDesignStyle(settings.designStyle),enabled=style.id!=='current',rows=[];
+  if(enabled)rows.push(installedLine(c,'costStyleUpgradeQuote',null,
+    `${style.label}${settings.styleHouseFinish?' · garden and house exterior finish preview':' · garden finish preview'}`,
+    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include house exterior finishes only if previewed. Reconfirm scope and applicable tax after changing the style; zero is unquoted.'));
+  return installationGroup(enabled,rows,c,{planningEnabled:false,quoteOnly:true,styleId:style.id,houseFinishPreview:enabled&&settings.styleHouseFinish===true});
 }
 
 /** Custom privacy structures have no invented unit-rate or catalog allowance. */
@@ -542,6 +554,10 @@ export function estimateCosts(settings = {}, data) {
   const privacy=estimatePrivacyCosts(settings,data);
   const basementGarage=estimateBasementGarageCosts(settings,data);
   const balcony=estimateBalconyCosts(settings,data);
+  const style=estimateStyleCosts(settings);
+  if(style.enabled)notes.push(style.unquoted.length
+    ?'The selected design style changes finish and furniture concepts, without a supplier specification or price premium. Style-specific upgrades are unquoted and excluded from the known subtotal. Existing base allowances remain visible.'
+    :'The selected style upgrade is counted once as an incremental quote above the existing base finish allowances. Reconcile it with supplier scope and reconfirm after changing the style or house finish preview.');
   if(spa.enabled)notes.push(spa.scopeId==='pool-and-jacuzzi'
     ?'Nadmorska spa scope includes the proposed pool and compact jacuzzi only. Installed ranges are existing planning benchmarks, not supplier quotations. Confirm the mapped ks200 sewer route before fixing pool siting; diversion work is not priced. Jacuzzi seating capacity and service access remain unverified.'
     :c.costUsePlanningAllowances
@@ -569,9 +585,9 @@ export function estimateCosts(settings = {}, data) {
   if (screeningTrees.rows.some(row => row.taxBasis === 'net')) notes.push('Selected Markflor Thuja Brabant prices are NET, excluding VAT. The known subtotal retains those net plant amounts and is not a final tax-inclusive purchasing total; replace with a confirmed gross quote.');
   if (screeningTrees.rows.some(row => row.taxBasis === 'unspecified' && row.unit.source !== 'custom')) notes.push('Some selected specimen prices do not state their VAT basis. Enter final tax-inclusive supplier quotes before purchasing.');
   // Combine unadjusted branches first; apply uncertainty once to the upper sum.
-  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase,spa.knownBase,garden.knownBase,privacy.knownBase,basementGarage.knownBase,balcony.knownBase]);
+  const knownBase = addRanges([hedgeKnownBase, earthBase, screeningTrees.knownBase,spa.knownBase,garden.knownBase,privacy.knownBase,basementGarage.knownBase,balcony.knownBase,style.knownBase]);
   const knownSubtotal = withContingency(knownBase, c.costContingency);
-  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required' || spa.status==='quote-required' || garden.status==='quote-required' || privacy.status==='quote-required' || basementGarage.status==='quote-required' || balcony.status==='quote-required';
+  const unknown = hedgeUnknown || screeningTrees.status === 'quote-required' || spa.status==='quote-required' || garden.status==='quote-required' || privacy.status==='quote-required' || basementGarage.status==='quote-required' || balcony.status==='quote-required' || style.status==='quote-required';
   return {
     currency: 'PLN', basisDate: GARDEN_BUDGET_REVIEWED_AT, contingencyPercent: c.costContingency, planningEnabled:c.costUsePlanningAllowances,
     hedges: { sides, count, length, spacing: c.costSpacing, procurement: c.buyNewThujas,fullPerimeter:q.fullPerimeter,
@@ -583,7 +599,7 @@ export function estimateCosts(settings = {}, data) {
       looseVolume: looseFillVolume + looseTopsoilVolume, looseFactor: c.costLooseFactor,
       loads, fillLoads, topsoilLoads, truckCapacity: c.costTruckCapacity,
       lines: earthLines, baseTotal: earthBase, total: earthTotal, status: hasEarthwork ? 'estimate' : 'none' },
-    screeningTrees,spa,garden,privacy,basementGarage,balcony,
+    screeningTrees,spa,garden,privacy,basementGarage,balcony,style,
     total: unknown ? null : knownSubtotal, knownSubtotal,
     status: unknown ? 'quote-required' : count > 0 || hasEarthwork || screeningTrees.count > 0 || spa.enabled || garden.enabled || privacy.enabled || basementGarage.enabled || balcony.enabled ? 'estimate' : 'none', notes,
   };

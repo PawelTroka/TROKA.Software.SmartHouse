@@ -2,7 +2,38 @@ import * as THREE from '../vendor/three.module.js';
 
 // Original procedural textures: no external images, network requests or asset licences.
 // These give proposed finishes visual scale; they are not photographs of the site.
-export function createSurfaceTextures() {
+// The periodic functions have identical values and slopes on opposite tile
+// boundaries. Numeric normal/height data stays linear irrespective of display.
+export function createDetailMaps(size = 128) {
+  const normal = new Uint8Array(size * size * 4);
+  const relief = new Uint8Array(size * size * 4), bark = new Uint8Array(size * size * 4);
+  const tau = Math.PI * 2;
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const u = tau * x / size, v = tau * y / size, i = (y * size + x) * 4;
+    // Three crossing wave trains on an approximately two-metre water tile.
+    const a = .09 * Math.cos(2*u+v), b = .035 * Math.cos(u-3*v), c = .017 * Math.cos(4*u+3*v);
+    const nx = -(2*a+b+4*c), ny = -(a-3*b+3*c), length = Math.hypot(nx,ny,1);
+    normal.set([nx,ny,1].map(n => Math.round(127.5 * (1+n/length))), i);
+    normal[i+3] = 255;
+    const pores = Math.sin(19*u+1.3*Math.sin(5*v)) * Math.sin(17*v+Math.cos(9*u));
+    const grit = Math.cos(23*u-13*v) * Math.sin(11*u+27*v);
+    const value = Math.round(128 + 65*pores + 38*grit);
+    relief.set([value,value,value,255],i);
+    const seam = .5 + .5*Math.cos(12*u + .9*Math.sin(2*v+Math.sin(3*u)));
+    const plate = Math.round(177 - 113*seam**6 + 10*grit);
+    bark.set([plate,plate,plate,255],i);
+  }
+  const create = data => {
+    const t = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter;
+    t.generateMipmaps = true; t.colorSpace = THREE.NoColorSpace; t.needsUpdate = true;
+    return t;
+  };
+  return {waterNormal:create(normal), microHeight:create(relief), barkHeight:create(bark)};
+}
+
+export function createSurfaceTextures(maxAnisotropy = 4) {
   let seed = 714301;
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const make = (base, draw, size = 512) => {
@@ -12,7 +43,7 @@ export function createSurfaceTextures() {
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 4;
+    texture.anisotropy = Math.min(4, maxAnisotropy);
     return texture;
   };
   const speckles = (ctx, size, count, colors, scale = 2) => {
@@ -127,30 +158,25 @@ export function createSurfaceTextures() {
     for (let y = 0; y < size; y += 32) { ctx.fillStyle = '#18232055'; ctx.fillRect(0, y, size, 2); }
     for (let x = 0; x < size; x += 64) { ctx.fillStyle = '#aab7ac33'; ctx.fillRect(x, 0, 1, size); }
   });
-  const water = make('#82bdb6', (ctx, size) => {
-    for (let j = 0; j < 21; j++) {
-      ctx.beginPath(); ctx.lineWidth = .5 + j % 3; ctx.strokeStyle = j % 2 ? '#d9f8e655' : '#3d8a8950';
-      for (let x = 0; x <= size; x += 3) {
-        const y = j * size / 20 + Math.sin(x / 33 + j) * 5 + Math.cos(x / 72 - j * .7) * 10;
-        if (!x) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
-  });
   const textiles = make('#e8e4d8', (ctx, size) => {
     ctx.fillStyle = '#9188781a';
     for (let p = 0; p < size; p += 3) { ctx.fillRect(p, 0, 1, size); ctx.fillRect(0, p, size, 1); }
   });
   // A soft, direction-neutral sky reflection. The actual sun direction still
   // comes from the ephemeris; this contains no painted sun or invented skyline.
-  const environment = make('#c8d7db', (ctx, size) => {
-    const sky = ctx.createLinearGradient(0, 0, 0, size);
-    sky.addColorStop(0, '#819fac'); sky.addColorStop(.30, '#a7c2cc');
-    sky.addColorStop(.49, '#e3e6de'); sky.addColorStop(.53, '#aaa992');
-    sky.addColorStop(.72, '#737c60'); sky.addColorStop(1, '#454d3d');
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, size, size);
-  }, 256);
-  environment.mapping = THREE.EquirectangularReflectionMapping;
-  return {stone, stucco, wood, grass, foliage, pineNeedles, bark, roof, water, textiles, environment,
-    dispose() { [stone, stucco, wood, grass, foliage, pineNeedles, bark, roof, water, textiles, environment].forEach(texture => texture.dispose()); }};
+  function skyReflection(stops) {
+    const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 128;
+    const ctx = canvas.getContext('2d'), gradient = ctx.createLinearGradient(0,0,0,128);
+    stops.forEach(([t,color]) => gradient.addColorStop(t,color));
+    ctx.fillStyle = gradient; ctx.fillRect(0,0,256,128);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace; texture.mapping = THREE.EquirectangularReflectionMapping;
+    return texture;
+  }
+  const environment = skyReflection([[0,'#819fac'],[.3,'#a7c2cc'],[.49,'#e3e6de'],
+    [.53,'#aaa992'],[.72,'#737c60'],[1,'#454d3d']]);
+  const {waterNormal,microHeight,barkHeight} = createDetailMaps();
+  const maps = {stone, stucco, wood, grass, foliage, pineNeedles, bark, roof, textiles,
+    environment, waterNormal, microHeight, barkHeight};
+  return {...maps, dispose() { Object.values(maps).forEach(texture => texture.dispose()); }};
 }

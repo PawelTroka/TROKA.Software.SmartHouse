@@ -100,7 +100,7 @@ test('corner placement reports real dense facade and separate roof exposure from
 
 test('corner-only crowns retain the measured selected-time sunlight result',()=>{
  for(const[minutes,poolSun,gardenSun]of[[720,14,166],[900,12,145]]){
-  const s={...settings,sunMinutes:minutes},sun=analyzeSunlight(s,data,sunForSettings(s,data));
+  const s={...settings,poolFreeboard:.02,sunMinutes:minutes},sun=analyzeSunlight(s,data,sunForSettings(s,data));
   assert.deepEqual([sun.zones.pool.sunlit,sun.zones.pool.total],[poolSun,21]);
   assert.deepEqual([sun.zones.terrace.sunlit,sun.zones.terrace.total],[32,32]);
   assert.deepEqual([sun.zones.jacuzzi.sunlit,sun.zones.jacuzzi.total],[4,4]);
