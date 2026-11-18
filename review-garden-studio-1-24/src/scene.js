@@ -1,13 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.24.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.24.0';
 import { createPhotoHouseGroup } from './scene-house.js?v=1.24.0';
 import { houseAppearanceLayout } from './house-appearance.js?v=1.24.0';
 import { entranceAccessLayout } from './entrance-access.js?v=1.24.0';
 import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.24.0';
 import { sampledRoofFaces } from './shade.js?v=1.24.0';
-import { terrainVertexBuffer } from './terrain-mesh.js?v=1.24.0';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.24.0';
 import { renderBudget } from './render-quality.js?v=1.24.0';
 import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.24.0';
 import { getDesignStyle } from './design-styles.js?v=1.24.0';
@@ -442,6 +442,7 @@ export function createScene(container, data, callbacks = {}) {
     };
     const xs=axis(x0,x1,cutouts.flatMap(c=>[c.x0,c.x1]));
     const ys=axis(y0,y1,cutouts.flatMap(c=>[c.y0,c.y1]));
+    const clipToParcel=ring===data.site.boundary?parcelTerrainClip(ring,pointInPolygon):null;
     const polygonCutouts=cutouts.filter(c=>c.polygon?.length>=3);
     for(let row=0;row<ys.length-1;row++)for(let col=0;col<xs.length-1;col++){
       const x=xs[col],xx=xs[col+1],y=ys[row],yy=ys[row+1];
@@ -449,11 +450,15 @@ export function createScene(container, data, callbacks = {}) {
       for(const tri of [[[x,y],[xx,y],[xx,yy]],[[x,y],[xx,yy],[x,yy]]]){
         const pieces=polygonCutouts.length?subtractGarageOpenings(tri,polygonCutouts):[tri];
         for(const piece of pieces){
-          const c=centroid(piece);
-          if(ring&&!contains(...c,ring))continue;
-          // Reversing the winding keeps these terrain normals facing upward.
-          for(let i=1;i<piece.length-1;i++) {
-            for(const p of [piece[0],piece[i+1],piece[i]]) vertices.add(...p);
+          if(ring&&!clipToParcel&&!contains(...centroid(piece),ring))continue;
+          for(const clipped of clipToParcel?clipToParcel(piece):[piece]){
+            // Drop collinear fan triangles at exact boundary/cell contacts.
+            const [a]=clipped;
+            for(let i=1;i<clipped.length-1;i++){
+              const b=clipped[i],c=clipped[i+1];
+              if(Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))<=1e-10)continue;
+              for(const p of [a,c,b])vertices.add(...p);
+            }
           }
         }
       }
@@ -912,10 +917,10 @@ export function createScene(container, data, callbacks = {}) {
     {
       const poolBottom=poolLevels.bottomZ;
       box(group,px,py,poolBottom-.08,pw,pl,.08,mat.basin,false);
-      box(group,px,py,poolBottom,.06,pl,poolLevels.copingTopZ-poolBottom,mat.basin,false);
-      box(group,px+pw-.06,py,poolBottom,.06,pl,poolLevels.copingTopZ-poolBottom,mat.basin,false);
-      box(group,px,py,poolBottom,pw,.06,poolLevels.copingTopZ-poolBottom,mat.basin,false);
-      box(group,px,py+pl-.06,poolBottom,pw,.06,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px-.06,py,poolBottom,.06,pl,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px+pw,py,poolBottom,.06,pl,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px,py-.06,poolBottom,pw,.06,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px,py+pl,poolBottom,pw,.06,poolLevels.copingTopZ-poolBottom,mat.basin,false);
       // Entry ledges stay inside the water footprint, away from the garden path.
       if(program.active)for(let i=0;i<3;i++)box(group,px+.10,py+.10+i*.32,waterTop-.28*(i+1),.95,.32,.12,mat.stoneLight,false);
     }
