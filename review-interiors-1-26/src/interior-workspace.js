@@ -36,6 +36,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   container.classList.add('iw-workspace');
   container.setAttribute('aria-label','Sternicza 11 interior studio');
   container.setAttribute('role','region');
+  container.tabIndex = -1;
   container.hidden = true;
   container.innerHTML = `
     <header class="iw-header">
@@ -171,7 +172,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     q('drawing').dataset.renderedView = renderedView;
     Object.assign(container.dataset,{floor:plan.floor,layout:plan.layout,style:style.id,room:room?.id || '',view:renderedView});
     q('legend').hidden = !(state.interiorChanges && plan.layout === 'renovation');
-    q('instructions').textContent = renderedView === 'plan' ? 'Select a numbered room to inspect its area.' : renderedView === 'room' ? 'Drag to look around. Use the arrows to move.' : 'Drag to orbit. Scroll or pinch to zoom. Select a room to inspect it.';
+    q('instructions').textContent = renderedView === 'plan' ? 'Select a numbered room to inspect its area.' : renderedView === 'room' ? 'Drag to look around. Use the arrows to move. Exterior scenery is illustrative.' : 'Drag to orbit. Scroll or pinch to zoom. Select a room to inspect it.';
     if (!actual3d) drawPlan();
     if (view === 'plan') {
       scene?.setVisible(false); lastSceneKey = '';
