@@ -14,7 +14,7 @@ const models=SITE_OPTIONS.map(site=>{
 });
 
 test('all style recipes, house scope and quality survive shared links on all three properties',()=>{
-  assert.equal(STATE_VERSION,25);
+  assert.equal(STATE_VERSION,26);
   for(const {model} of models)for(const style of DESIGN_STYLES){
     const original=model.sanitizeState({...model.DEFAULTS,designStyle:style.id,styleHouseFinish:true,
       renderQuality:'eco',sceneMotion:true,costStyleUpgradeQuote:24900,poolFreeboard:.12});

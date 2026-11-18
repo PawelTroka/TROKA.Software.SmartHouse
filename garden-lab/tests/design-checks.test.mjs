@@ -137,7 +137,7 @@ test('whole-drive clearance is conditional and becomes a conflict below its chos
   const {data,s}=sternicza;
   const state={...s,basementGarageEnabled:true};
   const review=evaluateDesignChecks(state,data).checks.find(c=>c.id==='garage-drive');
-  assert.equal(review.severity,'verify');assert.match(review.detail,/41 mm.*30 mm/);
+  assert.equal(review.severity,'verify');assert.match(review.detail,/39 mm.*30 mm/);
   const lowered=evaluateDesignChecks({...state,garageExtraDepth:.6},data).checks.find(c=>c.id==='garage-drive');
   assert.equal(lowered.severity,'conflict');
   assert.match(lowered.detail,/underbody reserve/);

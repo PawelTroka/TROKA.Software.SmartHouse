@@ -424,7 +424,7 @@ async function verifyBasementGarage(){
     await frames();assert.equal(Number(await input.inputValue()),value);
   };
 
-  const candidate=await preset('raised','reserve-met');
+  const candidate=await preset('raised','structure-conflict');
   assert.ok(candidate.minimum>=candidate.reserve,JSON.stringify(candidate));
   assert.ok(parseFloat(candidate.frontRun)>9&&parseFloat(candidate.frontRun)<9.2,'The full mapped front yard is used');
   assert.ok(parseFloat(candidate.headroom)>=2.2,'Candidate must preserve the selected covered-headroom benchmark');
@@ -448,7 +448,7 @@ async function verifyBasementGarage(){
   const excavationPixels=await warmLightDifference(disabledFrame,enabledFrame);
   assert.ok(excavationPixels.changedPixels>200,'Enabling the garage must visibly change the real WebGL scene: '+JSON.stringify(excavationPixels));
   await page.locator('#basementGarageEnabled').check();
-  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
+  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='structure-conflict');
   assert.deepEqual(await result(),candidate);
   check('Optional basement garage starts off and creates a visibly different WebGL excavation and open entrance when enabled');
 
@@ -461,7 +461,7 @@ async function verifyBasementGarage(){
   assert.ok(deeper.minimum<deeper.reserve,'Deeper floor cannot be presented as the passing candidate');
   assert.ok(deeper.minimum<candidate.minimum);
   assert.equal(Number(await page.locator('#garageExtraDepth-value').inputValue()),.6);
-  await preset('raised','reserve-met');
+  await preset('raised','structure-conflict');
   assert.deepEqual(await result(),candidate);
   check('Full front-yard-only, raised-basement and deeper-floor options show distinct conservative clearance results');
 
@@ -500,7 +500,7 @@ async function verifyBasementGarage(){
   assert.equal(await page.locator('[data-garage-reverse="true"]').getAttribute('aria-pressed'),'true');
   await page.locator('#compare').click();
   assert.deepEqual(await result(),forecourt,'Comparison B restores the alternative ramp');
-  await preset('raised','reserve-met');
+  await preset('raised','structure-conflict');
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});await waitReady();
   assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true);
   assert.equal(Number(await page.locator('#garageProgress').inputValue()),40);

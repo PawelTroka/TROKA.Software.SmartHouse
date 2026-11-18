@@ -4,6 +4,9 @@ import {readFileSync} from 'node:fs';
 import {COST_DEFAULTS,COST_FIELDS,estimateCosts,estimateGardenCosts,estimateBalconyCosts} from '../src/costs.js';
 import {renderBudget} from '../src/budget-view.js';
 import {terraceCover} from '../src/geometry.js';
+import {applyPlanExterior} from '../src/plan-exterior.js';
+import {houseAppearanceLayout} from '../src/house-appearance.js';
+import {terraceCoverLayout} from '../src/terrace-cover.js';
 import {gardenDimensions,dimensionScheduleMarkup} from '../src/dimensions.js';
 import {terraceCoverPlanMarkup,terraceCoverSectionCuts,terraceCoverSectionMarkup,renderPlan,renderSection} from '../src/diagrams.js';
 
@@ -122,4 +125,33 @@ test('full plan and sightline section label the selected balcony without drawing
   const section=diagramFrame();renderSection(section,data,base,observer,{criticalRay:ray,rays:[]});
   assert.match(section.innerHTML,/data-terrace-cover-section="balcony"/);assert.match(section.innerHTML,/hidden by the balcony/);
   assert.doesNotMatch(section.innerHTML,/canopy on this ray/);assert.doesNotMatch(plan.innerHTML+section.innerHTML,/NaN|undefined/);
+});
+
+test('linked garden plan shows each actual doorway and tracks missing balcony landings',()=>{
+  const s={siteId:'sternicza-11',planExteriorApplied:true,canopyEnabled:true,terraceCoverType:'balcony',
+    floorHeight:1.2,firstFloorRise:3.05,terraceWidth:10.77,canopyWidth:10.77,canopyDepth:4,terraceDepth:4};
+  const applied=applyPlanExterior(data,s),floorZ=data.site.floorReference.z+s.floorHeight;
+  const full=terraceCoverLayout(s,applied,{floorZ}),facade=houseAppearanceLayout(applied,s);
+  const doors=facade.windows.filter(w=>w.kind==='balcony-door');
+  assert.equal(full.accessFits,true);assert.equal(full.accesses.length,3);
+  assert.equal(full.access.id,doors[1].id);
+  for(const [i,a] of full.accesses.entries()){
+    assert.deepEqual([a.x,a.y,a.z],doors[i].position);
+    assert.equal(a.width,doors[i].width);assert.equal(a.height,doors[i].height);
+    assert.ok(a.fitsDeck);
+  }
+  const narrow=terraceCoverLayout({...s,canopyWidth:4},applied,{floorZ});
+  assert.equal(narrow.accessFits,false);
+  assert.deepEqual(narrow.accesses.map(d=>d.fitsDeck),[false,false,false]);
+  const partial=terraceCoverLayout({...s,canopyWidth:6},applied,{floorZ});
+  assert.deepEqual(partial.accesses.map(d=>d.fitsDeck),[true,true,false]);
+  assert.equal(partial.accessFits,false);
+  assert.ok(narrow.warnings.some(w=>w.includes('Master bedroom')&&w.includes('Guest bedroom I')));
+  const svg=terraceCoverPlanMarkup(narrow,{X:x=>x,Y:y=>y,scale:1});
+  assert.equal([...svg.matchAll(/data-terrace-cover-access="proposed"/g)].length,3);
+  for(const a of narrow.accesses)assert.ok(svg.includes('data-door="'+a.id+'"'));
+  assert.ok(!svg.includes('data-door="centre"'));
+  const tooHigh=terraceCoverLayout({...s,firstFloorRise:6},applied,{floorZ});
+  assert.equal(tooHigh.accessFits,false);assert.equal(tooHigh.accesses.length,0);assert.equal(tooHigh.access,null);
+  assert.ok(tooHigh.warnings.some(w=>w.includes('0 of the three')));
 });

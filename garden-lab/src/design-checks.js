@@ -1,9 +1,9 @@
-import {closestBoundary} from './dimensions.js?v=1.25.0';
-import {footprintFit, overlapArea} from './footprint-fit.js?v=1.25.0';
-import {gardenProgram} from './garden-program.js?v=1.25.0';
-import {garageLayout} from './garage-ramp.js?v=1.25.0';
-import {gardenGroundAt, jacuzziBounds, privacyStructures, spaLevels, terraceCover, terraceGroundReference, terrainAt} from './geometry.js?v=1.25.0';
-import {rectCorners, terraceStairs} from './layout.js?v=1.25.0';
+import {closestBoundary} from './dimensions.js?v=1.26.0';
+import {footprintFit, overlapArea} from './footprint-fit.js?v=1.26.0';
+import {gardenProgram} from './garden-program.js?v=1.26.0';
+import {garageLayout} from './garage-ramp.js?v=1.26.0';
+import {gardenGroundAt, jacuzziBounds, privacyStructures, spaLevels, terraceCover, terraceGroundReference, terrainAt} from './geometry.js?v=1.26.0';
+import {rectCorners, terraceStairs} from './layout.js?v=1.26.0';
 
 const boxRing = b => [[b.x0,b.y0],[b.x1,b.y0],[b.x1,b.y1],[b.x0,b.y1]];
 const areaLabel = v => v < .01 ? 'less than 0.01 m²' : `${v.toFixed(2)} m²`;
@@ -124,6 +124,13 @@ export function evaluateDesignChecks(settings,data) {
     if(bayFit.location!=='inside')add('garage-house','conflict','Basement bay extends beyond the mapped house',
       `${areaLabel(bayFit.outsideM2)} of the proposed room and retaining walls lies beyond the mapped house outline.`,
       'Recheck the bay width and depth against a measured basement plan.', 'Proposed garage envelope compared with the mapped above-ground footprint.');
+    const recorded=garage.documentedInterior;
+    if(recorded?.conflicts?.length)add('garage-existing-structure','conflict','Two-car approach crosses the documented existing structure',
+      'The basement drawing places retained stair / chimney elements in the straight route. Two parking spaces remain shown, but the approach is obstructed.',
+      'Compare the original and proposed basement in Interiors; resolve the structural route before relying on the car clearance result.', 'Historical basement plan IMG_8721.jpeg, approximately registered to the mapped house.');
+    if(recorded?.additionalLowering>0)add('garage-cellar-lowering','verify','Garage needs a lower floor than the documented cellar',
+      `The section shows 1.70 m clear height and a floor at −2.00 m. This proposal puts the floor another ${recorded.additionalLowering.toFixed(2)} m lower.`,
+      'Survey the foundations and slab before designing excavation, underpinning or drainage.', 'Historical section IMG_8724.jpeg; proposed garage dimensions.');
     const a=garage.assessment,mm=v=>Math.round(v*1000);
     const failures=[];
     if(!a.clearancePass)failures.push('underbody reserve');

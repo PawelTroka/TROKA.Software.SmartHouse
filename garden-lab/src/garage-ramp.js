@@ -2,11 +2,11 @@
  * geometry is implied. The conservative underside is flat over the full car.
  * Site coordinates are [x,y,elevation]; longitudinal profile s runs inward.
  */
-import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.25.0';
+import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.26.0';
 
-export const CYBERSTER_AWD=Object.freeze({length:4.535,width:1.913,mirrorWidth:2.110,height:1.329,
-  wheelbase:2.690,frontOverhang:.955,rearOverhang:.890,frontRadius:.352,rearRadius:.35025,
-  frontTrack:1.616,rearTrack:1.629,frontTyreWidth:.245,rearTyreWidth:.275,clearance:.1056});
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.26.0';
+import {getInteriorGarageConflicts} from './interior-plan.js?v=1.26.0';
+export {CYBERSTER_AWD};
 const cache=new WeakMap(),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,fallback)=>Number.isFinite(x)?x:fallback;
 const cross=(a,b)=>a[0]*b[1]-a[1]*b[0],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]];
@@ -283,6 +283,7 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   }
   const entries=bucket.entries;if(entries.has(key))return entries.get(key);
   const layout={...frame,vehicle,car:vehicle,settings:s,streetZ,livingFloorZ,ceilingZ,floorZ,drop};
+  layout.documentedInterior={source:'IMG_8721.jpeg + IMG_8724.jpeg',existingFloorRelative:-2,existingClearHeight:1.70,existingSlab:.30,proposedFloorRelative:floorZ-livingFloorZ,additionalLowering:Math.max(0,livingFloorZ-floorZ-2),conflicts:getInteriorGarageConflicts(s)};
   if(frame.entryAccess)layout.entryAccess={...frame.entryAccess,landing:{...frame.entryAccess.landing,
     topZ:livingFloorZ,soffitZ:livingFloorZ-frame.entryAccess.landing.thickness}};
   layout.design=optimizeDesign(layout,s);
@@ -304,7 +305,7 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   const minimumOverheadClearance=Math.min(forward.minimumOverheadClearance,reverse.minimumOverheadClearance);
   const gradeWithinLimit=layout.design.peakGrade<=s.garageMaxGrade/100+1e-8,parkingFits=parkingFlatLength>=vehicle.length+.6,structuralHeadroomPass=minCoveredHeadroom>=2.2-1e-6;
   const widthBenchmarkPass=frame.clearWidth>=3-1e-8,doorBenchmarkPass=layout.portal.clearHeight>=2-1e-8,parkingWidthPass=frame.parking.widthPass;
-  const warnings=['Concept only: original basement, slab, foundations, drainage and vehicle bumper geometry are not surveyed.',
+  const warnings=['The supplied historical section shows a cellar floor at −2.00 m, 0.30 m ground-floor structure and 1.70 m clear height. Present conditions, foundations, drainage and vehicle bumper geometry still need measurement.',
     'The entire underside is conservatively flat at the selected level-road clearance, including both overhangs; tyre radii are nominal size geometry.',
     'Quasi-static rigid-body geometry excludes braking, suspension travel, tyre deflection, snow, ruts and construction tolerances.',
     'The road approach and crossing are assumed flush and level. The required drainage/containment threshold detail is unresolved; a 30 mm edge is not included.',
@@ -313,6 +314,8 @@ export function garageLayout(settings={},data,{terrainAt}={}){
     `The two-car plan uses two Cyberster envelopes, each 4.535 m long, 1.913 m wide at the body and 2.110 m across its mirrors. The comparison assumes closed doors. Door opening and street turning manoeuvres remain unverified.`,
     'Parking width is compared with a chosen 0.30 m mirror-to-wall allowance and, for two cars, 0.60 m between mirror envelopes. These are planning allowances, not a surveyed door-opening or accessibility assessment.'];
   if(layout.entryAccess)warnings.push('The wider ramp requires proposed side-return entry stairs and a 1.0 m cantilevered landing at the existing front door. Its 0.18 m slab underside is included in both driving sweeps; its structure has not been designed.');
+  if(layout.documentedInterior.conflicts.length)warnings.push('The straight two-car approach conflicts with retained stairs / chimney structure in the supplied basement plan. The clearance sweep does not remove these obstructions or establish a viable conversion.');
+  if(layout.documentedInterior.additionalLowering>0)warnings.push(`The proposed floor is ${layout.documentedInterior.additionalLowering.toFixed(2)} m below the documented cellar floor; foundation and structural design are unresolved.`);
   if(frame.insideRun>0)warnings.push('The bottom curve continues inside the existing house and requires structural and basement-layout design.');
   if(!structuralHeadroomPass)warnings.push('The raised indoor ramp locally leaves less than the 2.20 m structural headroom benchmark.');
   if(layout.design.peakGrade>.25+1e-6)warnings.push('The peak gradient exceeds the 25% individual-garage benchmark.');
@@ -324,6 +327,7 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   const clearancePass=conservativeClearance>=requiredMargin,geometryPass=gradeWithinLimit&&parkingFits&&structuralHeadroomPass&&widthBenchmarkPass&&parkingWidthPass&&doorBenchmarkPass&&drop>0&&minimumOverheadClearance>=requiredMargin+numericalAllowance;
   layout.assessment={forward,reverse,minimumClearance,minimumVerticalClearance:Math.min(forward.minimumVerticalClearance,reverse.minimumVerticalClearance),
     requiredMargin,numericalAllowance,conservativeClearance,reserveRemaining:minimumClearance-requiredMargin,passes:clearancePass&&geometryPass,
+    assessmentScope:'Closed-car ramp geometry only; existing cellar structure is assessed separately.',structuralRouteClear:layout.documentedInterior.conflicts.length===0,conversionPass:clearancePass&&geometryPass&&layout.documentedInterior.conflicts.length===0,
     clearancePass,geometryPass,gradeWithinLimit,parkingFits,parkingWidthPass,structuralHeadroomPass,widthBenchmarkPass,doorBenchmarkPass,parkingFlatLength,minCoveredHeadroom,entryLandingHeadroom,minimumOverheadClearance,
     minimumEntryLandingClearance:Math.min(forward.minimumEntryLandingClearance,reverse.minimumEntryLandingClearance),
     criticalOverhead:forward.minimumOverheadClearance<=reverse.minimumOverheadClearance?forward.criticalOverhead:reverse.criticalOverhead,

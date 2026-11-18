@@ -83,3 +83,6 @@
 
 /* Nursery comparisons retain the pictured positions on every screen size. */
 .reference-tree-actions{display:flex;flex-wrap:wrap;gap:8px}.reference-tree-actions .button{flex:1 1 180px}.tree-stock .tree-stock-price{font-weight:700;color:var(--ink,#243e35);font-size:13px}.tree-replace-actions{margin-top:12px}
+
+/* Drawing-based interior workspace entry. */
+.interior-entry{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.25rem;background:#e9eee5;border-bottom:1px solid #d7dfd2}.interior-entry[hidden]{display:none}.interior-entry strong,.interior-entry span{display:block}.interior-entry strong{font-size:1rem;color:#243e35}.interior-entry span{font-size:.75rem;margin-top:.25rem;color:#63736a}@media(max-width:600px){.interior-entry{padding:.85rem;align-items:flex-start;gap:.5rem}.interior-entry strong{font-size:.86rem}.interior-entry span{font-size:.68rem}.interior-entry button{white-space:normal;font-size:.73rem;padding:.6rem}.header-actions #interior-open{font-size:.7rem;padding:.5rem}}

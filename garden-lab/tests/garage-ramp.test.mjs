@@ -22,9 +22,9 @@ const atRear=(layout,reverse,rearS)=>{
 
 test('the optional garage derives its level from the assumed raised living floor and slab',()=>{
   near(candidate.livingFloorZ,data.site.floorReference.z+1.2);
-  near(candidate.floorZ,candidate.livingFloorZ-.25-2.30);
+  near(candidate.floorZ,candidate.livingFloorZ-.30-2.30);
   near(candidate.drop,terrainAt(...candidate.axis.start,data)-candidate.floorZ);
-  assert.ok(candidate.drop>1.39&&candidate.drop<1.41);
+  assert.ok(candidate.drop>1.44&&candidate.drop<1.46);
   const lowered=getLayout({garageExtraDepth:.6});
   near(lowered.floorZ,candidate.floorZ-.6);
   near(lowered.drop,candidate.drop+.6);
@@ -115,8 +115,8 @@ test('the candidate clears the loaded flat underside with a guarded reserve in b
   near(candidate.vehicle.clearance,.1056);
   near(a.requiredMargin,.03);near(a.numericalAllowance,.001);
   near(a.conservativeClearance,a.minimumClearance-a.numericalAllowance);
-  assert.ok(a.conservativeClearance>.039&&a.conservativeClearance<.043);
-  assert.ok(a.forward.minimumClearance>.04&&a.reverse.minimumClearance>.04);
+  assert.ok(a.conservativeClearance>.038&&a.conservativeClearance<.040);
+  assert.ok(a.forward.minimumClearance>.039&&a.reverse.minimumClearance>.039);
   assert.equal(a.clearancePass,true);assert.equal(a.geometryPass,true);assert.equal(a.passes,true);
   assert.equal(a.status,'conditional-clearance');
   assert.equal(a.thresholdResolved,false);assert.equal(a.roadApproachSurveyed,false);
@@ -145,7 +145,7 @@ test('portal headroom, a real door allowance and the covered parking bay are che
   near(candidate.portal.assumedDoorClearHeight,2.10);
   assert.ok(candidate.portal.topZ<candidate.ceilingZ,'the model must leave an allowance below the soffit for the door');
   assert.ok(candidate.portal.availableHeight>2.25&&candidate.portal.availableHeight<2.26);
-  assert.ok(a.minCoveredHeadroom>2.24&&a.minCoveredHeadroom<2.25,'the proposed entry landing is also included');
+  assert.ok(a.minCoveredHeadroom>2.25&&a.minCoveredHeadroom<2.26,'the proposed entry landing is also included');
   near(a.minCoveredHeadroom,Math.min(candidate.portal.availableHeight,a.entryLandingHeadroom));
   assert.ok(a.parkingFlatLength>6.9);
   assert.equal(a.structuralHeadroomPass,true);assert.equal(a.widthBenchmarkPass,true);assert.equal(a.doorBenchmarkPass,true);
@@ -195,7 +195,7 @@ test('the proposed front-door landing is included throughout both roof sweeps',(
   near(landing.topZ,candidate.livingFloorZ);near(landing.topZ-landing.soffitZ,.18);
   near(landing.toS-landing.fromS,1);assert.equal(candidate.entryAccess.proposed,true);
   assert.ok(a.entryLandingPosesChecked>200);
-  assert.ok(a.minimumEntryLandingClearance>.85&&a.minimumEntryLandingClearance<.90);
+  assert.ok(a.minimumEntryLandingClearance>.91&&a.minimumEntryLandingClearance<.93);
   assert.equal(a.criticalOverhead.element,'garage doorway');
   assert.ok(a.criticalEntryLanding.station>=landing.fromS&&a.criticalEntryLanding.station<=landing.toS);
   let dense=Infinity;

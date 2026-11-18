@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.25.0';
-import {facadePoint} from './house-appearance.js?v=1.25.0';
-import {houseRenovationParts,summarizeHouseRenovation} from './house-renovation.js?v=1.25.0';
+import {toWorld} from './orientation.js?v=1.26.0';
+import {facadePoint} from './house-appearance.js?v=1.26.0';
+import {houseRenovationParts,summarizeHouseRenovation} from './house-renovation.js?v=1.26.0';
 
 const flatSvgDetails=new Set(['brick','stone','panels','soldier-lintel','shutter-louvre']);
 

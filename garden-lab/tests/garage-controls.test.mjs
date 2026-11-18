@@ -44,7 +44,7 @@ test('both contrasting garage presets report their own clearance result',()=>{
   const raised=garageLayout(garagePresetState('raised',model.DEFAULTS),data,{terrainAt});
   const front=garageLayout(garagePresetState('forecourt',model.DEFAULTS),data,{terrainAt});
   const deep=garageLayout(garagePresetState('deeper',model.DEFAULTS),data,{terrainAt});
-  assert.equal(garageClearanceResult(raised).status,'reserve-met');
+  assert.equal(garageClearanceResult(raised).status,'structure-conflict');
   assert.notEqual(garageClearanceResult(front).status,'reserve-met');
   assert.notEqual(garageClearanceResult(deep).status,'reserve-met');
   assert.ok(raised.assessment.minCoveredHeadroom>=2.2);
@@ -68,7 +68,7 @@ test('the profile card exposes required controls, result text and primary assump
 
 test('visible warnings identify configuration failures while generic assumptions remain expandable',()=>{
   const settings=garagePresetState('raised',model.DEFAULTS),raised=garageLayout(settings,data,{terrainAt});
-  assert.deepEqual(garageConfigurationWarnings(raised),[]);
+  assert.ok(garageConfigurationWarnings(raised).some(note=>/retained stair.*flue/i.test(note)), 'Documented structural obstructions remain visible even when the closed car clears the ramp');
   for(const id of ['forecourt','deeper']){
     const warnings=garageConfigurationWarnings(garageLayout(garagePresetState(id,model.DEFAULTS),data,{terrainAt}));
     assert.ok(warnings.length>0,id);
