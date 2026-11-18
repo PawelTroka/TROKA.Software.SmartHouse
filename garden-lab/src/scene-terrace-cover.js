@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.23.0';
+import {toWorld} from './orientation.js?v=1.24.0';
 
 /** The same finite boxes drive appearance, shade and privacy. Clear guard
  * glazing is translucent here and omitted from opaque analytical screens. */

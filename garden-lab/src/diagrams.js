@@ -11,18 +11,18 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.23.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.23.0';
-import {gazeDirection} from './orientation.js?v=1.23.0';
-import {localSunDirection} from './solar.js?v=1.23.0';
-import {getSiteProfile} from './sites.js?v=1.23.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.23.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.23.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.23.0';
-import {terraceStairs} from './layout.js?v=1.23.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.23.0';
+} from './geometry.js?v=1.24.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.24.0';
+import {gazeDirection} from './orientation.js?v=1.24.0';
+import {localSunDirection} from './solar.js?v=1.24.0';
+import {getSiteProfile} from './sites.js?v=1.24.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.24.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.24.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.24.0';
+import {terraceStairs} from './layout.js?v=1.24.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.24.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.23.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.24.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -81,8 +81,10 @@ export function privacyPlanMarkup(structures,{X,Y,scale,labels=true,subtle=false
 
 /** Balcony plan keeps the terrace below legible, with actual support positions. */
 export function terraceCoverPlanMarkup(cover,{X,Y,scale,labels=true,subtle=false}) {
-  if(!cover?.enabled||cover.type!=='balcony')return '';
-  const b=cover.bounds,rect=(box,attributes)=>`<rect data-terrace-cover-part="${esc(box.part)}" x="${X(box.x0)}" y="${Y(box.y0)}" width="${(box.x1-box.x0)*scale}" height="${(box.y1-box.y0)*scale}" ${attributes}><title>${esc(box.label)}</title></rect>`;
+  if(!cover?.enabled)return '';
+  const b=cover.bounds,rect=(box,attributes)=>`<rect data-cover-id="${esc(box.id)}" data-terrace-cover-part="${esc(box.part)}" x="${X(box.x0)}" y="${Y(box.y0)}" width="${(box.x1-box.x0)*scale}" height="${(box.y1-box.y0)*scale}" ${attributes}><title>${esc(box.label)}</title></rect>`;
+  if(cover.type==='canopy')return cover.boxes.filter(box=>box.part==='outrigger'||box.part==='post').map(box=>rect(box,
+    box.part==='post'?'fill="#3d4c42" stroke="#fffdf5" stroke-width=".4"':'fill="#876c4b" fill-opacity=".55"')).join('');
   const slab=cover.boxes.find(box=>box.part==='slab');
   const structure=cover.boxes.filter(box=>box.part==='beam'||box.part==='post').map(box=>rect(box,
     box.part==='post'?'fill="#3d4c42" stroke="#fffdf5" stroke-width=".5"':'fill="none" stroke="#8a7559" stroke-width=".8" stroke-dasharray="3 2"')).join('');
@@ -497,7 +499,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const existingPath = profilePath('existing');
   const block = data.buildings.find(b => b.id === ray.blockId);
   const sampleType = ray.kind === 'high-feature' ? 'high-feature return' : 'roof point';
-  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? cover.type==='balcony'?'balcony':'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
+  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? cover.type==='balcony'?'balcony':'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'pool-rim' ? 'pool coping or wall' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
   const outcome = `This sampled ${sampleType} is ${ray.visible ? 'exposed' : `hidden by the ${blockerLabel}`}`;
   const treesSvg = treeSectionMarkup(treeVolumes, {origin, direction, minS, maxS, X, Y, scale});
   const privacySvg = privacySectionMarkup(privacyCuts,{X,Y,scale,minS,maxS});

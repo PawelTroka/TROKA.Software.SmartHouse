@@ -2,7 +2,21 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.23.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.23.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.23.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.24.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.24.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.24.0)**
+
+## Design Studio, physical review and rendering · 1.24.0
+
+Choose **20 coordinated garden concepts** in Design Studio: Organic Modern, Luxury Hidden Bali Resort, Mediterranean Villa, Contemporary Modern Minimalism, Scandinavian, Japandi, Organic Scandinavian, Organic Japandi, Space Age, Luxury Contemporary Party Club and ten further directions. Each changes the paving, furniture, cover details and pendant forms. A separate switch previews house exterior colours. The site's mapped geometry, planting and selected dimensions remain the basis for comparison.
+
+The searchable catalogue has keyboard navigation and mobile layouts. Session Undo/Redo preserves the current viewpoint and daylight. Auto, Eco and High detail settings bound the rendering buffer; optional gentle water motion pauses in diagrams, offscreen and under reduced-motion preferences. Actual scene statistics are available under scene settings.
+
+**Design checks** brings finished-footprint intersections, spa service space, pool levels, stair-foot variation, mapped-area discrepancies and garage checks together. The physical audit corrects concave-boundary containment and outside-footprint distance reporting, puts all pool coping above the high side of its terrain footprint, and includes classic-pool coping and terrace stairs in shade calculations. A proposed short outboard canopy beam keeps its western support clear of the compact jacuzzi's service zone.
+
+Indexed terrain preserves the existing triangles while storing about **82% fewer terrain vertex entries**. Static detail batches, resource disposal, daylight invalidation, colour handling and surface materials are also revised. These metrics describe the model and renderer; they are not a device-independent FPS claim or a photorealistic survey.
+
+Style-specific work has a separate **incremental installed quote** above the existing base finish allowances. Zero remains unquoted. Schema **24** saves the recipe, house preview and rendering preferences, while older designs open with their earlier layout and neutral presentation.
+
+[Open Garden Studio](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.24.0#v=24&site=sternicza-11&showDimensions=false) · [Try Hidden Bali](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.24.0#v=24&site=sternicza-11&designStyle=hidden-bali&showDimensions=false) · [Release scope and review](docs/garden-studio-1.24.md) · [Design sources](docs/design-style-research.md) · [Physical audit](docs/design-checks-1.24.md)
 
 ## Terrace, balcony, pool eye and two-car garage · 1.23.0
 

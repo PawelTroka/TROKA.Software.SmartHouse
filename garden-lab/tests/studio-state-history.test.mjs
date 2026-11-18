@@ -1,0 +1,90 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createStateModel,STATE_VERSION} from '../src/state.js';
+import {SITE_OPTIONS,getSiteProfile} from '../src/sites.js';
+import {DESIGN_STYLES} from '../src/design-styles.js';
+import {createDesignHistory} from '../src/design-history.js';
+import {estimateStyleCosts,estimateCosts} from '../src/costs.js';
+import {changePresentationSettings} from '../src/studio-state.js';
+
+const models=SITE_OPTIONS.map(site=>{
+  const data=JSON.parse(readFileSync(new URL('../'+site.dataPath,import.meta.url)));
+  return {data,model:createStateModel(getSiteProfile(site.id,data))};
+});
+
+test('all style recipes, house scope and quality survive shared links on all three properties',()=>{
+  assert.equal(STATE_VERSION,24);
+  for(const {model} of models)for(const style of DESIGN_STYLES){
+    const original=model.sanitizeState({...model.DEFAULTS,designStyle:style.id,styleHouseFinish:true,
+      renderQuality:'eco',sceneMotion:true,costStyleUpgradeQuote:24900,poolFreeboard:.12});
+    assert.deepEqual(model.decodeState(model.encodeState(original)),original);
+    assert.deepEqual(model.migrateSavedState(original,24),original);
+  }
+});
+
+test('old links keep their design and adopt neutral presentation without a renovation premium',()=>{
+  for(const {model} of models){
+    const old=model.decodeState(`v=23&site=${model.DEFAULTS.siteId}&terraceDepth=3.8&hedgeRear=3&designStyle=party-club&sceneMotion=true&renderQuality=high`);
+    assert.equal(old.terraceDepth,3.8);assert.equal(old.hedgeRear,3);
+    assert.equal(old.designStyle,'current');assert.equal(old.styleHouseFinish,false);
+    assert.equal(old.renderQuality,'auto');assert.equal(old.sceneMotion,false);
+    assert.equal(old.costStyleUpgradeQuote,0);
+    assert.equal(old.poolFreeboard,.02);assert.equal(model.DEFAULTS.poolFreeboard,.10);
+    assert.equal(model.migrateSavedState({...model.DEFAULTS},23).poolFreeboard,.02);
+    assert.equal(model.decodeState(`v=24&site=${model.DEFAULTS.siteId}`).poolFreeboard,.10);
+    const corrupt=model.decodeState(`v=24&site=${model.DEFAULTS.siteId}&designStyle=%3Cscript%3E&renderQuality=unlimited&sceneMotion=yes`);
+    assert.equal(corrupt.designStyle,'current');assert.equal(corrupt.renderQuality,'auto');assert.equal(corrupt.sceneMotion,false);
+  }
+});
+
+test('a finish quote is invalidated when its style or house scope changes, and undo restores it',()=>{
+  const original={...models[0].model.DEFAULTS,designStyle:'organic-modern',costStyleUpgradeQuote:20000};
+  for(const patch of [{designStyle:'hidden-bali'},{styleHouseFinish:true},{designStyle:'current'}]){
+    const history=createDesignHistory(original),changed=changePresentationSettings(original,patch);
+    assert.equal(changed.costStyleUpgradeQuote,0);history.record(changed);
+    assert.equal(history.undo(changed).costStyleUpgradeQuote,20000);
+  }
+  for(const patch of [{designStyle:'organic-modern'},{renderQuality:'eco'},{sceneMotion:true}])
+    assert.equal(changePresentationSettings(original,patch).costStyleUpgradeQuote,20000);
+});
+
+test('undo stores independent designs while preserving current camera, local time and quality',()=>{
+  const initial={...models[0].model.DEFAULTS},history=createDesignHistory(initial);
+  const changed={...initial,designStyle:'hidden-bali',hedgeRear:5,screeningTrees:structuredClone(initial.screeningTrees)};
+  history.record(changed);changed.screeningTrees[0].height=500;
+  const live={...changed,preset:'pool',mode:'eye',lookYaw:34,sunMinutes:900,renderQuality:'eco'};
+  const restored=history.undo(live);
+  assert.equal(restored.designStyle,'current');assert.equal(restored.hedgeRear,initial.hedgeRear);
+  for(const key of ['preset','mode','lookYaw','sunMinutes','renderQuality'])assert.equal(restored[key],live[key]);
+  restored.screeningTrees[0].height=100;
+  const redone=history.redo(live);
+  assert.equal(redone.designStyle,'hidden-bali');assert.notEqual(redone.screeningTrees[0].height,500);
+  assert.notEqual(history.undo(live).screeningTrees[0].height,100);
+});
+
+test('view changes do not erase redo; a new design branches and history has a hard bound',()=>{
+  const initial={siteId:'sternicza-11',depth:4,mode:'orbit'},history=createDesignHistory(initial,{limit:3});
+  for(let depth=5;depth<=10;depth++)history.record({...initial,depth});
+  assert.equal(history.length,4);
+  const undone=history.undo(initial);assert.equal(undone.depth,9);
+  assert.equal(history.record({...undone,mode:'plan',sunMinutes:900}),false);assert.equal(history.canRedo,true);
+  history.record({...undone,depth:8.5});assert.equal(history.canRedo,false);assert.equal(history.length,4);
+  assert.throws(()=>history.record({...initial,siteId:'nadmorska-17'}),/cross properties/);
+});
+
+test('styles never invent an installed premium or double-count base finishes',()=>{
+  for(const {data,model} of models){
+    const base=model.sanitizeState({...model.DEFAULTS,costUsePlanningAllowances:true});
+    const plain=estimateCosts(base,data);
+    const themed=estimateCosts({...base,designStyle:'hidden-bali'},data);
+    assert.equal(themed.style.status,'quote-required');assert.equal(themed.total,null);
+    assert.deepEqual(themed.knownSubtotal,plain.knownSubtotal);
+    const quoted=estimateCosts({...base,designStyle:'hidden-bali',costStyleUpgradeQuote:25000},data);
+    assert.equal(quoted.style.knownBase.low,25000);
+    assert.ok(Math.abs(quoted.knownSubtotal.low-plain.knownSubtotal.low-25000)<1e-7);
+    assert.ok(Math.abs(quoted.knownSubtotal.high-plain.knownSubtotal.high-25000*(1+base.costContingency/100))<1e-7);
+    assert.equal(estimateStyleCosts({...base,designStyle:'current',costStyleUpgradeQuote:25000}).knownBase.low,0);
+    assert.equal(estimateStyleCosts({...base,designStyle:'japandi',styleHouseFinish:true}).houseFinishPreview,true);
+  }
+});

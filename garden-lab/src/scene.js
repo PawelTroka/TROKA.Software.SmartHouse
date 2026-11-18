@@ -1,31 +1,36 @@
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, canopyBounds, canopySupportBounds, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.23.0';
-import { createPhotoHouseGroup } from './scene-house.js?v=1.23.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.23.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.23.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.23.0';
-import { sampledRoofFaces } from './shade.js?v=1.23.0';
-import { createSurfaceTextures } from './scene-materials.js?v=1.23.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.23.0';
-import { getSiteProfile } from './sites.js?v=1.23.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.23.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.23.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.23.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.23.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.23.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.23.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.23.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.23.0';
-import { gardenDimensions } from './dimensions.js?v=1.23.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.23.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.23.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.23.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.23.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.23.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.23.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.23.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.24.0';
+import { createPhotoHouseGroup } from './scene-house.js?v=1.24.0';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.24.0';
+import { entranceAccessLayout } from './entrance-access.js?v=1.24.0';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.24.0';
+import { sampledRoofFaces } from './shade.js?v=1.24.0';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.24.0';
+import { renderBudget } from './render-quality.js?v=1.24.0';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.24.0';
+import { getDesignStyle } from './design-styles.js?v=1.24.0';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim } from './scene-style-details.js?v=1.24.0';
+import { createSurfaceTextures } from './scene-materials.js?v=1.24.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.24.0';
+import { getSiteProfile } from './sites.js?v=1.24.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.24.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.24.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.24.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.24.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.24.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.24.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.24.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.24.0';
+import { gardenDimensions } from './dimensions.js?v=1.24.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.24.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.24.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.24.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.24.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.24.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.24.0';
+import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.24.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -184,12 +189,16 @@ export function fitSunShadowCamera(light,receiverPoints,casterPoints,margin=2.5)
 }
 
 function removeGeometry(group) {
-  group.traverse(child => {
-    child.geometry?.dispose();
-    if (child.isInstancedMesh) child.dispose?.();
-    if (child.material?.userData?.transient) child.material.dispose();
+  const geometries=new Set(), materials=new Set();
+  group.traverse(child=>{
+    if(child.geometry)geometries.add(child.geometry);
+    if(child.isInstancedMesh)child.dispose();
+    for(const m of Array.isArray(child.material)?child.material:[child.material]){
+      if(m?.userData.transient)materials.add(m);
+    }
   });
   group.clear();
+  geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
 }
 
 function fallback(container, error) {
@@ -228,7 +237,7 @@ export function createScene(container, data, callbacks = {}) {
   }
   const svgMode=rendererType==='svg';
   const gardenLightBoundary=svgMode?null:createGardenLightBoundary(data.site.boundary);
-  renderer.setPixelRatio?.(Math.min(window.devicePixelRatio || 1, 1.75));
+
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.16;
@@ -261,6 +270,7 @@ export function createScene(container, data, callbacks = {}) {
   sun.target.position.copy(point(10, 24, 3));
   sun.castShadow = !svgMode;
   sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.autoUpdate=false;
   Object.assign(sun.shadow.camera, { left: -45, right: 45, top: 45, bottom: -45, near: .1, far: 550 });
   sun.shadow.normalBias = 0.035;
   sun.shadow.bias = -0.00004;
@@ -272,27 +282,33 @@ export function createScene(container, data, callbacks = {}) {
   if (!svgMode) {
     sky = new THREE.Mesh(new THREE.SphereGeometry(sceneFar*.78, 24, 12), new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false,
-      uniforms: { sunDirection: { value: new THREE.Vector3(0, 1, 0) }, daylight: { value: 1 }, warmth: { value: 0 } },
-      vertexShader: 'varying vec3 vDirection; void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+      uniforms: { horizonColor:{value:scene.background}, sunDirection: { value: new THREE.Vector3(0, 1, 0) }, daylight: { value: 1 }, warmth: { value: 0 } },
+      vertexShader: 'varying vec3 vDirection; void main(){vDirection=position;vec4 clip=projectionMatrix*modelViewMatrix*vec4(position,1.0);gl_Position=clip.xyww;}',
       fragmentShader: `varying vec3 vDirection; uniform vec3 sunDirection; uniform float daylight; uniform float warmth;
-        void main(){vec3 d=normalize(vDirection);float h=pow(max(d.y,0.0),0.5);
-        vec3 horizon=mix(vec3(.71,.80,.84),vec3(.91,.64,.40),warmth*.55);
-        vec3 day=mix(horizon,vec3(.30,.51,.68),h);
-        vec3 night=mix(vec3(.07,.10,.15),vec3(.012,.025,.055),h);
-        vec3 color=mix(night,day,daylight);
-        float s=max(dot(d,normalize(sunDirection)),0.0);
-        color+=vec3(1.0,.80,.48)*(pow(s,700.0)*.12+pow(s,24000.0)*1.4)*daylight;
-        gl_FragColor=vec4(color,1.0);}`
+        uniform vec3 horizonColor;
+        void main(){
+          vec3 d=normalize(vDirection);
+          float h=pow(max(d.y,0.0),0.45);
+          vec3 zenith=mix(vec3(.002,.005,.014),vec3(.16,.34,.52),daylight);
+          vec3 radiance=mix(horizonColor,zenith,h);
+          float s=max(dot(d,normalize(sunDirection)),0.0);
+          float aboveHorizon=smoothstep(-.002,.004,d.y);
+          vec3 sunColor=mix(vec3(1.0,.92,.76),vec3(1.0,.52,.22),warmth);
+          radiance+=sunColor*(.18*pow(s,160.0)+4.0*smoothstep(.999980,.999995,s))*daylight*aboveHorizon;
+          gl_FragColor=vec4(radiance,1.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }`
     }));
-    sky.frustumCulled = false; sky.renderOrder = -1000; scene.add(sky);
+    sky.frustumCulled = false; sky.renderOrder = 999; scene.add(sky);
   }
 
   const mat = {};
-  const textures = svgMode ? null : createSurfaceTextures();
+  const textures = svgMode ? null : createSurfaceTextures(renderer.capabilities.getMaxAnisotropy());
   if(textures)scene.environment=textures.environment;
   const standard = (name, color, options = {}) => mat[name] = new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, side: THREE.DoubleSide, ...Object.fromEntries(Object.entries(options).filter(([,value])=>value!==undefined)) });
-  standard('stone', textures ? '#fff7e8' : '#d7c9b3', { map: textures?.stone });
-  standard('stoneLight', textures ? '#fffdf5' : '#e8dfcd', { map: textures?.stone });
+  standard('stone', textures ? '#fff7e8' : '#d7c9b3', { map: textures?.stone, bumpMap:textures?.microHeight, bumpScale:.0018 });
+  standard('stoneLight', textures ? '#fffdf5' : '#e8dfcd', { map: textures?.stone, bumpMap:textures?.microHeight, bumpScale:.0018 });
   standard('wall', '#f2f0e8', { map: textures?.stucco });
   standard('plinth', data.site.id==='nadmorska-17'?'#9b5e4c':'#b5ae9e');
   standard('roof', data.site.id==='nadmorska-17'?'#bd7960':textures?'#b7b9b0':'#3a4544', { roughness: 0.78, map: textures?.roof });
@@ -300,16 +316,17 @@ export function createScene(container, data, callbacks = {}) {
   standard('woodLight', textures ? '#f0ddba' : '#b5926b', { map: textures?.wood });
   standard('metal', '#343f3b', { roughness: 0.6, metalness: 0.3 });
   standard('glass', '#94c6c3', { transparent: true, opacity: 0.13, roughness: 0.15, depthWrite: false });
-  const waterOptions={roughness:.14,metalness:0,clearcoat:1,clearcoatRoughness:.10,ior:1.333,
+  const waterOptions={roughness:.14,metalness:0,ior:1.333,
     transparent:!svgMode,depthWrite:svgMode,side:THREE.DoubleSide,envMapIntensity:1.1,
-    ...(textures?{map:textures.water,bumpMap:textures.water,bumpScale:.022}:{}),};
-  mat.water=new THREE.MeshPhysicalMaterial({color:'#579a91',opacity:svgMode?1:.76,...waterOptions});
-  mat.waterLight=new THREE.MeshPhysicalMaterial({color:'#9acfc0',opacity:svgMode?.9:.62,...waterOptions});
+    ...(textures?{normalMap:textures.waterNormal,normalScale:new THREE.Vector2(.72,.72)}:{}),
+    forceSinglePass:true,};
+  mat.water=new THREE.MeshPhysicalMaterial({color:'#579a91',opacity:svgMode?1:.62,...waterOptions});
+  mat.waterLight=new THREE.MeshPhysicalMaterial({color:'#9acfc0',opacity:svgMode?.9:.56,...waterOptions});
   standard('basin', '#81a7a0', { roughness: .45 });
-  standard('hedge', '#849671', { map: textures?.foliage, bumpMap:textures?.foliage,bumpScale:.025 });
-  standard('thuja', '#a5b68b', { map: textures?.foliage, bumpMap:textures?.foliage,bumpScale:.018, roughness: .95 });
+  standard('hedge', '#849671', { map: textures?.foliage, bumpMap:textures?.microHeight,bumpScale:.004 });
+  standard('thuja', '#a5b68b', { map: textures?.foliage, bumpMap:textures?.microHeight,bumpScale:.003, roughness: .95 });
   standard('hedgeTop', '#476b4c');
-  standard('leaf', '#99ae7e', {map:textures?.foliage,bumpMap:textures?.foliage,bumpScale:.012,roughness:1});
+  standard('leaf', '#99ae7e', {map:textures?.foliage,roughness:1});
   standard('grass', '#94a575', { map: textures?.grass });
   standard('context', '#d3d6d0', { map: textures?.stucco });
   standard('target', '#d5d4c7', { map: textures?.stucco });
@@ -320,8 +337,8 @@ export function createScene(container, data, callbacks = {}) {
   standard('walkway', '#d4d1c2');
   standard('linen', '#fffaf0', { map: textures?.textiles });
   standard('gold', '#d7a74a', { roughness: 0.55, metalness: 0.15 });
-  standard('treeBark', textures?'#b3a38c':'#766049', { map: textures?.bark,bumpMap:textures?.bark,bumpScale:.025,roughness:1 });
-  standard('treePine', '#5c7850', { map: textures?.pineNeedles,bumpMap:textures?.pineNeedles,bumpScale:.008, vertexColors: true,roughness:.95 });
+  standard('treeBark', textures?'#b3a38c':'#766049', { map: textures?.bark,bumpMap:textures?.barkHeight,bumpScale:.012,roughness:1 });
+  standard('treePine', '#5c7850', { map: textures?.pineNeedles, vertexColors: true,roughness:.95 });
   standard('treeSpruce', '#4d6a53', { map: textures?.foliage, vertexColors: true });
   standard('treeDeciduous', '#718b53', { map: textures?.foliage, vertexColors: true });
   standard('treeGhost', '#a89178', { transparent: true, opacity: .22, depthWrite: false, vertexColors: true });
@@ -333,6 +350,7 @@ export function createScene(container, data, callbacks = {}) {
   mat.nightWindow=new THREE.MeshBasicMaterial({color:svgMode?'#ffe1a4':'#ffffff',side:THREE.DoubleSide,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
+  const houseGroup = new THREE.Group(), finishesGroup = new THREE.Group();
   scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
   const sunMarker=new THREE.Mesh(new THREE.SphereGeometry(.52,svgMode?8:16,svgMode?6:12),new THREE.MeshBasicMaterial({color:'#fff0ad',transparent:true,opacity:.95,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
   sunGuideGroup.renderOrder=1000;sunPathGroup.renderOrder=1000;sunMarker.renderOrder=1002;
@@ -346,7 +364,15 @@ export function createScene(container, data, callbacks = {}) {
   const dimensionOverlay=createDimensionOverlay(container,scene,()=>[staticGroup,buildingGroup,designGroup]);
   let disposed = false, renderPending = false, mode = 'orbit', currentSettings = {}, currentObserver = null, currentAnalysis = null;
   let designSignature = '', observerSignature = '', eyeYaw = 0, eyePitch = 0, eyeFov=65, storedYaw = null, storedPitch = null;
-  let lastWidth = 1, lastHeight = 1;
+  let lastWidth = 0, lastHeight = 0, lastPixelRatio = 0;
+  let quality = 'auto', motion = false, presentationVisible = true, intersecting = true;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let interacting = false, interactionTimer = 0, motionTimer = 0, frameHandle = 0;
+  let frameCount = 0, shadowUpdates = 0, motionFps = 24, lastMotionTime = 0, waveTime = 0;
+  let lastInfoTime = -Infinity, statusChanged = true, lastSunPose = '', lastVehiclePose = '';
+  let designMaterials = mat, dimensionsVisible, solarSignature='', guidePath=null;
+  let finishSignature='', houseFinishSignature='';
+  let reflectiveMaterials=[], skyRadiance=1;
   let shadowBoundsDirty=true,shadowCameraDirty=true,shadowReceiverPoints=[],shadowCasterPoints=[];
   let sunPathSignature='',previousSunPath=null;
   let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
@@ -405,8 +431,7 @@ export function createScene(container, data, callbacks = {}) {
   };
 
   function makeTerrain(group, bounds, step, heightAt, material, ring = null, vertexColors = false, cutouts = []) {
-    const [x0, y0, x1, y1] = bounds, positions = [], colors = [], uv = [];
-    const baseColor = new THREE.Color('#91a36c');
+    const [x0, y0, x1, y1] = bounds, vertices = terrainVertexBuffer(heightAt, vertexColors);
     // Split exactly at each rectangular opening before removing cells. Merely
     // dropping triangles by centroid would leave coarse grass wedges in a pool.
     const axis = (start, end, edges) => {
@@ -417,6 +442,7 @@ export function createScene(container, data, callbacks = {}) {
     };
     const xs=axis(x0,x1,cutouts.flatMap(c=>[c.x0,c.x1]));
     const ys=axis(y0,y1,cutouts.flatMap(c=>[c.y0,c.y1]));
+    const clipToParcel=ring===data.site.boundary?parcelTerrainClip(ring,pointInPolygon):null;
     const polygonCutouts=cutouts.filter(c=>c.polygon?.length>=3);
     for(let row=0;row<ys.length-1;row++)for(let col=0;col<xs.length-1;col++){
       const x=xs[col],xx=xs[col+1],y=ys[row],yy=ys[row+1];
@@ -424,25 +450,20 @@ export function createScene(container, data, callbacks = {}) {
       for(const tri of [[[x,y],[xx,y],[xx,yy]],[[x,y],[xx,yy],[x,yy]]]){
         const pieces=polygonCutouts.length?subtractGarageOpenings(tri,polygonCutouts):[tri];
         for(const piece of pieces){
-          const c=centroid(piece);
-          if(ring&&!contains(...c,ring))continue;
-          // Reversing the winding keeps these terrain normals facing upward.
-          for(let i=1;i<piece.length-1;i++)for(const p of [piece[0],piece[i+1],piece[i]]){
-            positions.push(...toWorld(p[0],p[1],heightAt(...p)));
-            uv.push(p[0]/2.5,p[1]/2.5);
-            if(vertexColors){
-              const variation=.92+.08*Math.sin(p[0]*2.31+p[1]*1.27)*Math.cos(p[1]*.63);
-              colors.push(baseColor.r*variation,baseColor.g*variation,baseColor.b*variation);
+          if(ring&&!clipToParcel&&!contains(...centroid(piece),ring))continue;
+          for(const clipped of clipToParcel?clipToParcel(piece):[piece]){
+            // Drop collinear fan triangles at exact boundary/cell contacts.
+            const [a]=clipped;
+            for(let i=1;i<clipped.length-1;i++){
+              const b=clipped[i],c=clipped[i+1];
+              if(Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))<=1e-10)continue;
+              for(const p of [a,c,b])vertices.add(...p);
             }
           }
         }
       }
     }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
-    if (vertexColors) geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    geometry.computeVertexNormals();
+    const geometry = vertices.finish();
     let m = material;
     if (vertexColors) {
       m = material.clone();
@@ -618,7 +639,7 @@ export function createScene(container, data, callbacks = {}) {
 
   /** Fit proposed glazing and finishes to each mapped property's wall edges.
    * The mapped footprint and sampled roof remain the existing envelope. */
-  function addMappedHouse(group,settings) {
+  function addMappedHouse(group,settings,mat) {
     const h=data.site.house,envelope=localRoofEnvelope(h),{ring,samples,base}=envelope;
     const floor=data.site.floorReference.z+num(settings.floorHeight,1.7);
     const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
@@ -683,9 +704,9 @@ export function createScene(container, data, callbacks = {}) {
     box(group,sofa[0]-1.4,sofa[1]-.6,floor+.4,2.8,.18,.38,mat.linen,false);
   }
 
-  function addHouse(group, settings) {
-    if(data.site.id&&data.site.id!=='sternicza-11'){addMappedHouse(group,settings);return;}
-    group.add(createPhotoHouseGroup(data,settings,{garageLayout:currentGarageLayout,terrainAt,materials:mat,svgMode}));
+  function addHouse(group, settings, exterior, style) {
+    if(data.site.id&&data.site.id!=='sternicza-11'){addMappedHouse(group,settings,exterior);return;}
+    group.add(createPhotoHouseGroup(data,settings,{garageLayout:currentGarageLayout,terrainAt,materials:mat,svgMode,exterior:settings.styleHouseFinish===true&&style.id!=='current'?style.palette:null}));
   }
 
   function addHedges(group,settings) {
@@ -791,7 +812,8 @@ export function createScene(container, data, callbacks = {}) {
     instance.castShadow=false;instance.receiveShadow=true;group.add(instance);
   }
 
-  function addGarden(group,settings) {
+  function addGarden(group,settings,mat,style) {
+    const styled = style.id !== 'current';
     const program=gardenProgram(settings,data);
     const rear=data.site.rearMidpoint[1],floor=data.site.floorReference.z+num(settings.floorHeight,1.2),terrace=data.site.terrace;
     const depth=num(settings.terraceDepth,terrace.depth),x=terrace.x,width=terrace.width;
@@ -802,21 +824,28 @@ export function createScene(container, data, callbacks = {}) {
     // A proposed threshold overlaps the existing floor to bridge the actual
     // stepped/angled facade. It shares its dimensions with the shade engine.
     const threshold=num(terrace.thresholdDepth);
-    if(threshold>0)box(group,x,rear-threshold,deckBase,width,threshold,deckHeight,mat.stone);
-    // Four deck slabs leave an actual opening for the integrated tub. The water
-    // and seats sit below deck level instead of a blue plate over a solid terrace.
-    box(group,x,rear,deckBase,jx-x,depth,deckHeight,mat.stone);
-    box(group,jacuzzi.x1,rear,deckBase,x+width-jacuzzi.x1,depth,deckHeight,mat.stone);
-    box(group,jx,rear,deckBase,jacuzzi.width,jy-rear,deckHeight,mat.stone);
-    box(group,jx,jacuzzi.y1,deckBase,jacuzzi.width,rear+depth-jacuzzi.y1,deckHeight,mat.stone);
+    const deckSlab=(sx,sy,w,l)=>{
+      const mesh=box(group,sx,sy,deckBase,w,l,deckHeight,mat.stone,true,styled?-77:0);
+      if(styled)finishDeckBox(mesh,mat.deck,style,x,rear);
+    };
+    if(threshold>0)deckSlab(x,rear-threshold,width,threshold);
+    // Each slab terminates at a real side of the tub opening.
+    deckSlab(x,rear,jx-x,depth);
+    deckSlab(jacuzzi.x1,rear,x+width-jacuzzi.x1,depth);
+    deckSlab(jx,rear,jacuzzi.width,jy-rear);
+    deckSlab(jx,jacuzzi.y1,jacuzzi.width,rear+depth-jacuzzi.y1);
     // Tile joints and a shadow reveal provide scale on the larger terrace.
-    for(let tx=x+1.2;tx<x+width;tx+=1.2){
-      if(tx>jx&&tx<jacuzzi.x1){line(group,[[tx,rear,floor+.006],[tx,jy,floor+.006]],'#8c816c',.32);line(group,[[tx,jacuzzi.y1,floor+.006],[tx,rear+depth,floor+.006]],'#8c816c',.32);}
-      else line(group,[[tx,rear,floor+.006],[tx,rear+depth,floor+.006]],'#8c816c',.32);
-    }
-    for(let ty=rear+1.2;ty<rear+depth;ty+=1.2){
-      if(ty>jy&&ty<jacuzzi.y1){line(group,[[x,ty,floor+.006],[jx,ty,floor+.006]],'#8c816c',.32);line(group,[[jacuzzi.x1,ty,floor+.006],[x+width,ty,floor+.006]],'#8c816c',.32);}
-      else line(group,[[x,ty,floor+.006],[x+width,ty,floor+.006]],'#8c816c',.32);
+    if(styled){
+      group.add(createStyledDeck(style,{x,y:rear,width,length:depth,z:floor+.006,hole:jacuzzi},{svgMode}));
+    }else{
+      for(let tx=x+1.2;tx<x+width;tx+=1.2){
+        if(tx>jx&&tx<jacuzzi.x1){line(group,[[tx,rear,floor+.006],[tx,jy,floor+.006]],'#8c816c',.32);line(group,[[tx,jacuzzi.y1,floor+.006],[tx,rear+depth,floor+.006]],'#8c816c',.32);}
+        else line(group,[[tx,rear,floor+.006],[tx,rear+depth,floor+.006]],'#8c816c',.32);
+      }
+      for(let ty=rear+1.2;ty<rear+depth;ty+=1.2){
+        if(ty>jy&&ty<jacuzzi.y1){line(group,[[x,ty,floor+.006],[jx,ty,floor+.006]],'#8c816c',.32);line(group,[[jacuzzi.x1,ty,floor+.006],[x+width,ty,floor+.006]],'#8c816c',.32);}
+        else line(group,[[x,ty,floor+.006],[x+width,ty,floor+.006]],'#8c816c',.32);
+      }
     }
     let tubWater;
     if(jacuzzi.infinity){
@@ -868,37 +897,45 @@ export function createScene(container, data, callbacks = {}) {
     }
     // Low daybed at the terrace's quiet end.
     // The tub occupies physical right (low site x); this seating stays at left.
-    box(group,x+width-1.15,rear+.7,floor,.7,2.1,.26,mat.wood,false);
-    roundedSlab(group,x+width-1.18,rear+.72,floor+.26,.76,2.0,.12,.07,mat.linen);
-    roundedSlab(group,x+width-1.12,rear+.78,floor+.39,.64,.38,.10,.07,mat.linen);
-    roundedSlab(group,x+width-2.10,rear+1.2,floor,.65,.65,.34,.20,mat.woodLight);
-    const p=poolBounds(settings,data),px=p.x,py=p.y,pw=p.width,pl=p.length,poolLevels=spaLevels(settings,data).pool,pz=poolLevels.groundZ+.015;
+    if(styled){
+      group.add(createStyledLounger(style,mat,{x:x+width-1.18,y:rear+.70,z:floor,width:.76,length:2.1},{svgMode}));
+      group.add(createStyledSideTable(style,mat,{x:x+width-2.10,y:rear+1.2,z:floor,width:.65,length:.65},{svgMode}));
+    }else{
+      box(group,x+width-1.15,rear+.7,floor,.7,2.1,.26,mat.wood,false);
+      roundedSlab(group,x+width-1.18,rear+.72,floor+.26,.76,2.0,.12,.07,mat.linen);
+      roundedSlab(group,x+width-1.12,rear+.78,floor+.39,.64,.38,.10,.07,mat.linen);
+      roundedSlab(group,x+width-2.10,rear+1.2,floor,.65,.65,.34,.20,mat.woodLight);
+    }
+    const p=poolBounds(settings,data),px=p.x,py=p.y,pw=p.width,pl=p.length,poolLevels=spaLevels(settings,data).pool;
     const copingBase=poolLevels.copingBaseZ,copingHeight=poolLevels.copingTopZ-copingBase;
     for(const [cx,cy,cw,cl] of [[px-.28,py-.28,pw+.56,.28],[px-.28,py+pl,pw+.56,.28],[px-.28,py,.28,pl],[px+pw,py,.28,pl]]){
       const coping=box(group,cx,cy,copingBase,cw,cl,copingHeight,mat.stoneLight,false,-70);
       coping.name=program.active?'pool-coping-and-skirt':'pool-coping';
     }
-    // The spa rim clears the highest sampled grade and its continuous skirt
-    // reaches below the lowest. Classic retains its existing centre datum.
+    // The rim and skirt follow the grade range across the entire coping.
     const waterTop=poolLevels.waterZ;
-    if(program.active){
-      const poolBottom=waterTop-num(p.waterDepth,1.4);
+    {
+      const poolBottom=poolLevels.bottomZ;
       box(group,px,py,poolBottom-.08,pw,pl,.08,mat.basin,false);
-      box(group,px,py,poolBottom,.06,pl,waterTop-poolBottom,mat.basin,false);
-      box(group,px+pw-.06,py,poolBottom,.06,pl,waterTop-poolBottom,mat.basin,false);
-      box(group,px,py,poolBottom,pw,.06,waterTop-poolBottom,mat.basin,false);
-      box(group,px,py+pl-.06,poolBottom,pw,.06,waterTop-poolBottom,mat.basin,false);
+      box(group,px-.06,py,poolBottom,.06,pl,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px+pw,py,poolBottom,.06,pl,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px,py-.06,poolBottom,pw,.06,poolLevels.copingTopZ-poolBottom,mat.basin,false);
+      box(group,px,py+pl,poolBottom,pw,.06,poolLevels.copingTopZ-poolBottom,mat.basin,false);
       // Entry ledges stay inside the water footprint, away from the garden path.
-      for(let i=0;i<3;i++)box(group,px+.10,py+.10+i*.32,waterTop-.28*(i+1),.95,.32,.12,mat.stoneLight,false);
+      if(program.active)for(let i=0;i<3;i++)box(group,px+.10,py+.10+i*.32,waterTop-.28*(i+1),.95,.32,.12,mat.stoneLight,false);
     }
     const poolWater=box(group,px,py,waterTop-.025,pw,pl,.025,mat.water,false,-69);
     poolWater.name='pool-water';
-    for(let ty=py+.8;ty<py+pl;ty+=.8){line(group,[[px-.28,ty,pz+.067],[px,ty,pz+.067]],'#b1a994',.45);line(group,[[px+pw,ty,pz+.067],[px+pw+.28,ty,pz+.067]],'#b1a994',.45);}
+    for(let ty=py+.8;ty<py+pl;ty+=.8){line(group,[[px-.28,ty,poolLevels.copingTopZ+.002],[px,ty,poolLevels.copingTopZ+.002]],'#b1a994',.45);line(group,[[px+pw,ty,poolLevels.copingTopZ+.002],[px+pw+.28,ty,poolLevels.copingTopZ+.002]],'#b1a994',.45);}
     const furniture=gardenFurniture(data,settings);
     for(const [lx,y] of furniture.loungers){
       const lounger={x:lx,y,width:.78,length:2};
       if(rectanglesOverlap(lounger,{x,y:rear,width,length:depth},.15)||(stairs.count&&rectanglesOverlap(lounger,stairs,.15)))continue;
       const lz=gardenGroundAt(lx,y,settings,data);
+      if(styled){
+        group.add(createStyledLounger(style,mat,{...lounger,z:lz},{svgMode}));
+        continue;
+      }
       for(const railX of [lx,lx+.725])box(group,railX,y,lz+.16,.055,2,.08,mat.wood,false);
       for(const crossY of [y+.04,y+1.90])box(group,lx,crossY,lz+.16,.78,.055,.08,mat.wood,false);
       for(const footX of [lx+.06,lx+.665])for(const footY of [y+.12,y+1.77])box(group,footX,footY,lz,.05,.05,.19,mat.metal,false);
@@ -910,39 +947,46 @@ export function createScene(container, data, callbacks = {}) {
     if(!data.site.garage||settings.removeGarage!==false){
       const dining=furniture.dining,dx=dining.x+(dining.width-1.55)/2,dy=dining.y+(dining.length-.8)/2,dz=gardenGroundAt(dx,dy,settings,data);
       box(group,dining.x,dining.y,dz-.015,dining.width,dining.length,.035,mat.stone,false,-80);
-      box(group,dx,dy,dz+.65,1.55,.8,.09,mat.woodLight,false);
-      [dx+.1,dx+1.3].forEach(tx=>box(group,tx,dy+.1,dz,.12,.6,.65,mat.wood,false));
-      for(const cy of [dy-.55,dy+1.0])for(const cx of [dx+.08,dx+.92]){
-        box(group,cx,cy,dz+.38,.55,.5,.06,mat.wood,false);
-        roundedSlab(group,cx+.015,cy+.015,dz+.44,.52,.47,.06,.04,mat.linen);
-        for(const legX of [cx+.045,cx+.455])for(const legY of [cy+.04,cy+.41])box(group,legX,legY,dz,.045,.045,.4,mat.wood,false);
-        const backY=cy+(cy<dy?0:.43);
-        for(const postX of [cx,cx+.50])box(group,postX,backY,dz+.45,.05,.07,.4,mat.wood,false);
-        for(const backZ of [dz+.60,dz+.78])box(group,cx,backY,backZ,.55,.07,.065,mat.wood,false);
+      if(styled){
+        group.add(createStyledDining(style,mat,{...dining,z:dz},{svgMode}));
+      }else{
+        box(group,dx,dy,dz+.65,1.55,.8,.09,mat.woodLight,false);
+        [dx+.1,dx+1.3].forEach(tx=>box(group,tx,dy+.1,dz,.12,.6,.65,mat.wood,false));
+        for(const cy of [dy-.55,dy+1.0])for(const cx of [dx+.08,dx+.92]){
+          box(group,cx,cy,dz+.38,.55,.5,.06,mat.wood,false);
+          roundedSlab(group,cx+.015,cy+.015,dz+.44,.52,.47,.06,.04,mat.linen);
+          for(const legX of [cx+.045,cx+.455])for(const legY of [cy+.04,cy+.41])box(group,legX,legY,dz,.045,.045,.4,mat.wood,false);
+          const backY=cy+(cy<dy?0:.43);
+          for(const postX of [cx,cx+.50])box(group,postX,backY,dz+.45,.05,.07,.4,mat.wood,false);
+          for(const backZ of [dz+.60,dz+.78])box(group,cx,backY,backZ,.55,.07,.065,mat.wood,false);
+        }
       }
     }
     if(program.active)group.add(createSpaAmenityGroup(program,spaLevels(settings,data),mat,svgMode));
     addShrubs(group,settings);
   }
 
-  function addCanopy(group,settings) {
+  function addCanopy(group,settings,mat,style) {
     if(!settings.canopyEnabled)return;
-    if(settings.terraceCoverType==='balcony'){group.add(createTerraceCoverGroup(terraceCover(settings,data),mat,svgMode));return;}
-    const b=canopyBounds(settings,data);if(!b)return;
-    box(group,b.x0,b.y0,b.z,b.x1-b.x0,b.y1-b.y0,.15,mat.stoneLight);
-    const bottom=num(b.fasciaBottomZ,b.z-num(settings.fasciaDepth,.3)),height=Math.max(.04,b.z-bottom);
-    box(group,b.x0,b.y1-.075,bottom,b.x1-b.x0,.15,height,mat.wood);
-    box(group,b.x0,b.y0,bottom,.13,b.y1-b.y0,height,mat.wood);
-    box(group,b.x1-.13,b.y0,bottom,.13,b.y1-b.y0,height,mat.wood);
-    for(const p of canopySupportBounds(settings,data))box(group,p.x0,p.y0,p.z0,p.x1-p.x0,p.y1-p.y0,p.z1-p.z0,mat.metal);
+    const cover=terraceCover(settings,data),b=cover.bounds;
+    if(!cover.enabled||!b)return;
+    if(cover.type==='balcony'){group.add(createTerraceCoverGroup(cover,mat,svgMode));return;}
+    for(const member of cover.boxes){
+      const finish=member.part==='roof'?mat.stoneLight:member.part==='post'?mat.metal:mat.wood;
+      const m=box(group,member.x0,member.y0,member.z0,member.x1-member.x0,
+        member.y1-member.y0,member.z1-member.z0,finish);
+      m.name=member.id;
+    }
+    if(style.id!=='current'){group.add(createStyledCanopyTrim(style,mat,b));return;}
     for(let x=b.x0+.35;x<b.x1;x+=.52)box(group,x,b.y0,b.z-.04,.07,b.y1-b.y0,.04,mat.wood,false);
   }
 
   function rebuildDesign(settings) {
     terrainMeshes.length=0;
     garageScene=null;currentGarageLayout=garageLayout(settings,data,{terrainAt});
-    gardenNight?.dispose();gardenNight=null;
+    designGroup.remove(houseGroup,finishesGroup);
     removeGeometry(designGroup);
+    lastVehiclePose='';
     syncContextTerrain(settings);
     const boundary=data.site.boundary;
     const ground=makeTerrain(designGroup,[plot.minX-.1,plot.minY-.1,plot.maxX+.1,plot.maxY+.1],svgMode?2:.65,(x,y)=>gardenGroundAt(x,y,settings,data)+.008,mat.grass,boundary,!svgMode,waterCutouts(settings));
@@ -984,14 +1028,10 @@ export function createScene(container, data, callbacks = {}) {
         else box(designGroup,pad.x,pad.y,pad.z,pad.width,pad.length,pad.thickness,mat.stone,false,-80);
       }
     }
-    addHouse(designGroup,settings);
     garageScene=createGarageGroup(currentGarageLayout,mat,{svgMode,groundAt:(x,y)=>terrainAt(x,y,data)});
     designGroup.add(garageScene.group);terrainMeshes.push(...garageScene.terrainMeshes);
     updateGaragePreview(settings);
-    addGarden(designGroup,settings);
     addHedges(designGroup,settings);
-    addCanopy(designGroup,settings);
-    designGroup.add(createPrivacyStructureGroup(privacyStructures(settings,data),mat));
     for (const volume of screeningTreeVolumes(settings, data)) {
       if (volume.enabled === false) continue;
       designGroup.add(createScreeningTreeGroup(volume, {bark: mat.treeBark, pine: mat.treePine, spruce: mat.treeSpruce, deciduous: mat.treeDeciduous, ghost: mat.treeGhost}, svgMode));
@@ -1012,9 +1052,27 @@ export function createScene(container, data, callbacks = {}) {
       if(roofGeometry){const roofMesh=new THREE.Mesh(roofGeometry,mat.roof);roofMesh.castShadow=true;roofMesh.receiveShadow=true;designGroup.add(roofMesh);}
       else designGroup.add(polygonPrism(g.footprint,eaves,num(g.roofTopZ,eaves),mat.roof));
     }
-    gardenNight=createGardenNightLighting(settings,data,{svgMode});designGroup.add(gardenNight.group);
+    designGroup.add(houseGroup,finishesGroup);
+    shadowBoundsDirty=true;
+  }
+
+  function rebuildFinishes(settings,style,rebuildHouse) {
+    gardenNight?.dispose();
+    removeGeometry(finishesGroup);
+    if(rebuildHouse)removeGeometry(houseGroup);
+    disposeProposedMaterials(designMaterials,mat);
+    designMaterials=proposedMaterials(mat,style);
+    if(rebuildHouse)addHouse(houseGroup,settings,settings.styleHouseFinish===true?designMaterials:mat,style);
+    addGarden(finishesGroup,settings,designMaterials,style);
+    addCanopy(finishesGroup,settings,designMaterials,style);
+    finishesGroup.add(createPrivacyStructureGroup(privacyStructures(settings,data),designMaterials));
+    if(!svgMode){
+      projectWaterUVs(finishesGroup,mat.water,mat.waterLight);
+      batchGardenBoxes(finishesGroup);
+    }
+    gardenNight=createGardenNightLighting(settings,data,{svgMode,style});
+    finishesGroup.add(gardenNight.group);
     applyNightLighting(lastSolar,settings);
-    dimensionOverlay.update(gardenDimensions(settings,data));
     shadowBoundsDirty=true;
   }
 
@@ -1115,6 +1173,12 @@ export function createScene(container, data, callbacks = {}) {
     lastSolar={...solar,enabled};
     const daylight=enabled&&solar.isDaylight===true&&direction[2]>0;
     const c=centroid(data.site.boundary),centre=[c[0],c[1],gardenGroundAt(c[0],c[1],settings,data)+.1];
+    const path=settings.sunPathVisible&&enabled?solar.path:null;
+    const signature=[enabled,daylight,solar?.elevation,solar?.date,settings.sunPathVisible,
+      ...(Array.isArray(direction)?direction:[]),...centre,...Object.values(nightLightingState(lastSolar,settings))].join(',');
+    if(signature===solarSignature&&guidePath===path)return {enabled,isDaylight:daylight,rendererType};
+    solarSignature=signature;guidePath=path;
+    const twilight=enabled?THREE.MathUtils.smoothstep(num(solar.elevation),-6,6):1;
     if(!enabled){
       ambient.color.set('#f9f4e8');ambient.groundColor.set('#7e8a7c');ambient.intensity=2.25;
       if(svgAmbient){svgAmbient.color.set('#ffffff');svgAmbient.intensity=.88;}
@@ -1127,36 +1191,38 @@ export function createScene(container, data, callbacks = {}) {
       const towardSun=point(...direction).normalize();
       sun.target.position.copy(point(...centre));sun.position.copy(sun.target.position).addScaledVector(towardSun,lightDistance);
       sun.castShadow=daylight&&!svgMode;
-      if(daylight){
-        const strength=Math.pow(Math.max(0,direction[2]),.4),warmth=THREE.MathUtils.clamp(num(solar.elevation)/35,0,1);
-        sun.color.set('#ffc18a').lerp(new THREE.Color('#fff3db'),warmth);
-        sun.intensity=(svgMode?.8:3.3)*strength;
-        ambient.color.set('#f1f2ec');ambient.groundColor.set('#778575');ambient.intensity=1.25+.8*strength;
-        if(svgAmbient){svgAmbient.color.set('#edf1ee').multiplyScalar(.78);svgAmbient.intensity=.78;}
-        scene.background.set('#e7d6c0').lerp(new THREE.Color('#dce8eb'),warmth);renderer.toneMappingExposure=1.12;
-      }else{
-        // Keep the model readable at night without inventing direct sunlight or
-        // letting the previous daytime shadow map suggest a sun above the horizon.
-        sun.intensity=0;
-        ambient.color.set('#8fa5c0');ambient.groundColor.set('#48585d');ambient.intensity=.52;
-        // SVGRenderer reads the ambient color directly (ignoring its intensity).
-        if(svgAmbient){svgAmbient.color.set('#91a9c5').multiplyScalar(.32);svgAmbient.intensity=.32;}
-        scene.background.set('#182833');renderer.toneMappingExposure=1.02;
+      const strength=Math.pow(Math.max(0,direction[2]),.4);
+      const warmth=THREE.MathUtils.clamp(num(solar.elevation)/35,0,1);
+      sun.color.set('#ffc18a').lerp(new THREE.Color('#fff3db'),warmth);
+      sun.intensity=daylight?(svgMode?.8:3.3)*strength:0;
+      ambient.color.set('#8fa5c0').lerp(new THREE.Color('#f1f2ec'),twilight);
+      ambient.groundColor.set('#48585d').lerp(new THREE.Color('#778575'),twilight);
+      ambient.intensity=THREE.MathUtils.lerp(.52,1.25+.8*strength,twilight);
+      if(svgAmbient){
+        // r160 SVGRenderer reads the ambient colour directly.
+        svgAmbient.intensity=THREE.MathUtils.lerp(.32,.78,twilight);
+        svgAmbient.color.set('#91a9c5').lerp(new THREE.Color('#edf1ee'),twilight).multiplyScalar(svgAmbient.intensity);
       }
+      const dayHorizon=new THREE.Color('#e7d6c0').lerp(new THREE.Color('#dce8eb'),warmth);
+      scene.background.set('#182833').lerp(dayHorizon,twilight);
+      renderer.toneMappingExposure=THREE.MathUtils.lerp(1.02,1.12,twilight);
     }
     if(sky){
       sky.material.uniforms.sunDirection.value.copy(sun.position).sub(sun.target.position).normalize();
-      sky.material.uniforms.daylight.value=enabled?THREE.MathUtils.smoothstep(num(solar.elevation),-8,5):1;
+      sky.material.uniforms.daylight.value=twilight;
       sky.material.uniforms.warmth.value=enabled?1-THREE.MathUtils.smoothstep(num(solar.elevation),0,22):0;
     }
     scene.fog.color.copy(scene.background);
-    scene.environment=textures&&(!enabled||daylight)?textures.environment:null;
-    const reflectionStrength=!enabled||daylight?1:.06;
-    mat.water.envMapIntensity=1.1*reflectionStrength;mat.waterLight.envMapIntensity=1.1*reflectionStrength;
-    mat.contextWindow.envMapIntensity=.7*reflectionStrength;
+    // The r160 environment intensity lives on each standard material. Scale the
+    // one prefiltered sky continuously through twilight, including wet surfaces
+    // and new style materials. Replacing the environment would switch shaders.
+    skyRadiance=THREE.MathUtils.lerp(.025,1,twilight);
+    for(const material of reflectiveMaterials)material.envMapIntensity=material.userData.nominalEnvIntensity*skyRadiance;
     applyNightLighting(lastSolar,settings);
     updateSunGuide(solar,settings,enabled,daylight,centre,18);
-    shadowCameraDirty=true;requestRender();
+    const sunPose=[sun.castShadow,...sun.position.toArray(),...sun.target.position.toArray()].join(',');
+    if(sunPose!==lastSunPose){shadowCameraDirty=true;lastSunPose=sunPose;}
+    requestRender();
     return {enabled,isDaylight:daylight,rendererType};
   }
 
@@ -1194,19 +1260,82 @@ export function createScene(container, data, callbacks = {}) {
     }
   }
 
-  function renderNow() {
-    renderPending=false;if(disposed)return;
-    if(shadowBoundsDirty)refreshShadowBounds();
+  function canDraw() {
+    return !disposed && presentationVisible && intersecting && !document.hidden;
+  }
+  function motionActive() {
+    return Boolean(motion && !svgMode && !reducedMotion.matches && mode!=='plan' && canDraw());
+  }
+  function getPerformanceInfo(){
+    const render=renderer.info?.render, memory=renderer.info?.memory;
+    return {rendererType,quality,pixelRatio:svgMode?1:lastPixelRatio,
+      bufferWidth:svgMode?lastWidth:renderer.domElement.width,
+      bufferHeight:svgMode?lastHeight:renderer.domElement.height,
+      shadowSize:svgMode?0:sun.shadow.mapSize.x,frames:frameCount,shadowUpdates,
+      calls:render?.calls??null,triangles:render?.triangles??null,
+      geometries:memory?.geometries??null,textures:memory?.textures??null,motionActive:motionActive()};
+  }
+  function renderNow(now) {
+    renderPending=false;frameHandle=0;if(!canDraw())return;
+    if(!svgMode&&shadowBoundsDirty){
+      refreshShadowBounds();renderer.shadowMap.needsUpdate=true;
+    }
     if(sun.castShadow&&shadowCameraDirty){
       fitSunShadowCamera(sun,shadowReceiverPoints,shadowCasterPoints);
       if(renderer.shadowMap)renderer.shadowMap.needsUpdate=true;
-      shadowCameraDirty=false;
+      shadowCameraDirty=false;shadowUpdates++;
     }
+    const animate=motionActive();
+    if(animate){
+      if(lastMotionTime)waveTime+=Math.min(.12,(now-lastMotionTime)/1000);
+      lastMotionTime=now;
+      textures.waterNormal.offset.set((waveTime*.033)%1,(waveTime*.017)%1);
+    }else lastMotionTime=0;
     if(sky)sky.position.copy(camera.position);
-    renderer.render(scene,camera);renderLabels();dimensionOverlay.render(camera,lastWidth,lastHeight,mode);
+    renderer.render(scene,camera);frameCount++;
+    renderLabels();dimensionOverlay.render(camera,lastWidth,lastHeight,mode);
+    if(statusChanged||now-lastInfoTime>=1000){
+      lastInfoTime=now;statusChanged=false;callbacks.onPerformanceInfo?.(getPerformanceInfo());
+    }
+    if(animate&&!motionTimer)motionTimer=setTimeout(()=>{
+      motionTimer=0;if(motionActive())requestRender();
+    },1000/motionFps);
   }
-  function requestRender() {if(!renderPending&&!disposed){renderPending=true;requestAnimationFrame(renderNow);}}
+  function requestRender() {
+    if(!renderPending&&canDraw()){renderPending=true;frameHandle=requestAnimationFrame(renderNow);}
+  }
+  function visibilityChanged(){
+    clearTimeout(motionTimer);motionTimer=0;lastMotionTime=0;statusChanged=true;
+    if(canDraw())requestRender();
+    else {
+      cancelAnimationFrame(frameHandle);frameHandle=0;renderPending=false;
+      callbacks.onPerformanceInfo?.(getPerformanceInfo());
+    }
+  }
+  function setPresentationVisible(visible){
+    if(presentationVisible===Boolean(visible))return;
+    presentationVisible=Boolean(visible);visibilityChanged();
+    if(presentationVisible)resize();
+  }
+  function setPresentation(options={}){
+    const nextQuality=['auto','high','eco'].includes(options.quality)?options.quality:quality;
+    const nextMotion=options.motion===undefined?motion:options.motion===true;
+    if(nextQuality===quality&&nextMotion===motion)return;
+    quality=nextQuality;motion=nextMotion;
+    if(!motion){waveTime=0;textures?.waterNormal.offset.set(0,0);}
+    resize();visibilityChanged();
+  }
+  function cameraInteraction(){
+    if(quality==='auto'&&!svgMode&&canDraw()){
+      if(!interacting){interacting=true;resize();}
+      clearTimeout(interactionTimer);
+      interactionTimer=setTimeout(()=>{interacting=false;resize();},180);
+    }
+    requestRender();
+  }
   controls.addEventListener('change',requestRender);
+  controls.addEventListener('start',cameraInteraction);
+  controls.addEventListener('end',cameraInteraction);
 
   function orientEye() {
     if(!currentObserver)return;
@@ -1253,6 +1382,9 @@ export function createScene(container, data, callbacks = {}) {
     currentSettings={...currentSettings,garageProgress:settings.garageProgress,garageReverse:settings.garageReverse};
     if(!currentGarageLayout?.enabled||!garageScene)return;
     const progress=Math.max(0,Math.min(1,num(settings.garageProgress,40)/100));
+    const nextPose=progress+':'+(settings.garageReverse===true);
+    if(nextPose===lastVehiclePose)return;
+    lastVehiclePose=nextPose;
     garageScene.setVehiclePose(garageVehiclePose(currentGarageLayout,progress,settings.garageReverse===true));
     shadowBoundsDirty=true;requestRender();
   }
@@ -1267,15 +1399,43 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','showDimensions','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
+    const signature=JSON.stringify([...['gardenProgram','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
       'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageSpaces','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
-    if(signature!==designSignature){designSignature=signature;rebuildDesign(settings);}
+    const rebuilt=signature!==designSignature;
+    if(rebuilt){designSignature=signature;rebuildDesign(settings);}
     else updateGaragePreview(settings);
+    const style=getDesignStyle(settings.designStyle);
+    const nextHouseFinish=settings.styleHouseFinish===true?style.id:'current';
+    const houseChanged=rebuilt||houseFinishSignature!==nextHouseFinish;
+    const finishesChanged=rebuilt||finishSignature!==style.id||houseChanged;
+    if(finishesChanged){
+      statusChanged=true;
+      rebuildFinishes(settings,style,houseChanged);
+      finishSignature=style.id;houseFinishSignature=nextHouseFinish;
+    }
+    if(finishesChanged||dimensionsVisible!==settings.showDimensions){
+      dimensionsVisible=settings.showDimensions;
+      dimensionOverlay.update(gardenDimensions(settings,data));
+    }
     const nextObserverSignature=observer?`${observer.x}:${observer.y}:${observer.z}`:'';
     rebuildObserver(observer,analysis,settings);
     // Includes static streets/buildings, instanced foliage, water and any new
     // transient materials introduced by this design or observer rebuild.
-    gardenLightBoundary?.install(scene);
+    if(!finishesChanged)gardenLightBoundary?.install(markerGroup);
+    if(finishesChanged&&!svgMode){
+      gardenLightBoundary.install(scene);
+      const found=new Set();
+      scene.traverse(object=>{
+        for(const m of Array.isArray(object.material)?object.material:[object.material]){
+          if(m?.isMeshStandardMaterial){
+            m.userData.nominalEnvIntensity??=m.envMapIntensity;
+            found.add(m);
+          }
+        }
+      });
+      reflectiveMaterials=[...found];
+      for(const material of reflectiveMaterials)material.envMapIntensity=material.userData.nominalEnvIntensity*skyRadiance;
+    }
     if(mode==='eye'){
       if(settings.lookYaw!==storedYaw||settings.lookPitch!==storedPitch||nextObserverSignature!==observerSignature){eyeYaw=num(settings.lookYaw);eyePitch=num(settings.lookPitch);}
       storedYaw=settings.lookYaw;storedPitch=settings.lookPitch;
@@ -1292,8 +1452,25 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   function resize() {
-    const bounds=container.getBoundingClientRect();lastWidth=Math.max(1,bounds.width);lastHeight=Math.max(1,bounds.height);
-    renderer.setSize(lastWidth,lastHeight,false);camera.aspect=lastWidth/lastHeight;camera.updateProjectionMatrix();requestRender();
+    if(disposed||!presentationVisible)return;
+    const bounds=container.getBoundingClientRect();
+    if(bounds.width<1||bounds.height<1)return;
+    const width=Math.round(bounds.width),height=Math.round(bounds.height);
+    const budget=renderBudget(quality,width,height,window.devicePixelRatio,{
+      memoryGB:globalThis.navigator?.deviceMemory,maxTextureSize:renderer.capabilities?.maxTextureSize,interacting
+    });
+    motionFps=budget.motionFps;
+    if(!svgMode&&sun.shadow.mapSize.x!==budget.shadowSize){
+      // r160 only allocates a new shadow target when the old one is null.
+      sun.shadow.map?.dispose();sun.shadow.map=null;
+      sun.shadow.mapSize.set(budget.shadowSize,budget.shadowSize);shadowCameraDirty=true;
+    }
+    const ratio=svgMode?1:budget.pixelRatio;
+    if(width===lastWidth&&height===lastHeight&&ratio===lastPixelRatio)return;
+    lastWidth=width;lastHeight=height;lastPixelRatio=ratio;statusChanged=true;
+    if(svgMode)renderer.setSize(width,height);
+    else renderer.setDrawingBufferSize(width,height,ratio);
+    camera.aspect=width/height;camera.updateProjectionMatrix();requestRender();
   }
 
   let pointerStart=null,pointerLast=null,dragged=false,pinchDistance=0,pinchFov=65;
@@ -1308,6 +1485,7 @@ export function createScene(container, data, callbacks = {}) {
     pointerStart={x:event.clientX,y:event.clientY,id:event.pointerId};pointerLast={x:event.clientX,y:event.clientY};dragged=false;
   }
   function pointerMove(event){
+    if(pointerStart||eyePointers.size)cameraInteraction();
     if(mode==='eye'&&eyePointers.has(event.pointerId)){
       eyePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
       if(eyePointers.size>=2){
@@ -1346,7 +1524,7 @@ export function createScene(container, data, callbacks = {}) {
   }
   function wheel(event){
     if(mode!=='eye')return;
-    event.preventDefault();eyeFov=Math.max(35,Math.min(95,eyeFov+event.deltaY*.02));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();
+    event.preventDefault();cameraInteraction();eyeFov=Math.max(35,Math.min(95,eyeFov+event.deltaY*.02));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();
   }
   renderer.domElement.addEventListener('pointerdown',pointerDown);
   renderer.domElement.addEventListener('pointermove',pointerMove);
@@ -1354,16 +1532,31 @@ export function createScene(container, data, callbacks = {}) {
   renderer.domElement.addEventListener('pointercancel',pointerUp);
   renderer.domElement.addEventListener('keydown',keyDown);
   renderer.domElement.addEventListener('wheel',wheel,{passive:false});
+  document.addEventListener('visibilitychange',visibilityChanged);
+  reducedMotion.addEventListener('change',visibilityChanged);
+  const visibilityObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(([entry])=>{
+    if(intersecting!==entry.isIntersecting){intersecting=entry.isIntersecting;visibilityChanged();}
+  }):null;
+  visibilityObserver?.observe(container);
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(container);
   setView('orbit');resize();
 
   function dispose(){
-    if(disposed)return;disposed=true;resizeObserver.disconnect();controls.dispose();
+    if(disposed)return;disposed=true;resizeObserver.disconnect();visibilityObserver?.disconnect();controls.dispose();
+    cancelAnimationFrame(frameHandle);clearTimeout(motionTimer);clearTimeout(interactionTimer);
+    document.removeEventListener('visibilitychange',visibilityChanged);
+    reducedMotion.removeEventListener('change',visibilityChanged);
     dimensionOverlay.dispose();
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
-    const materials=new Set();scene.traverse(o=>{o.geometry?.dispose();if(o.isInstancedMesh)o.dispose?.();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));});materials.forEach(m=>m.dispose());
+    const geometries=new Set(),materials=new Set([...Object.values(mat),...Object.values(designMaterials)]);
+    scene.traverse(o=>{
+      if(o.geometry)geometries.add(o.geometry);
+      if(o.isInstancedMesh)o.dispose();
+      if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);
+    });
+    geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
     gardenNight?.dispose();textures?.dispose();sun.shadow.dispose();
     renderer.dispose?.();renderer.domElement.remove();labelLayer.remove();
   }
-  return {available:true,rendererType,update,updateSun,setView,setGarageView,updateGaragePreview,resize,dispose,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
+  return {available:true,rendererType,update,updateSun,setView,setGarageView,updateGaragePreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
 }

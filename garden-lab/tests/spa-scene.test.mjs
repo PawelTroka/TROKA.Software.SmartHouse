@@ -60,9 +60,9 @@ test('spa terrain opens the pool, edge tub, firepit and plunge while classic sta
   assert.equal(createSpaAmenityGroup(gardenProgram({...settings,gardenProgram:'classic'},data),{},materials).children.length,0);
 });
 
-test('moved pool coping clears the uneven terrain and its skirt reaches grade without moving classic water',()=>{
+test('moved pool coping clears the uneven terrain and its skirt reaches grade in both the spa and classic designs',()=>{
   const p=program.pool,z=levels.pool;
-  near(z.copingTopZ-z.waterZ,.02);
+  near(z.copingTopZ-z.waterZ,.10);
   // An independent, denser check includes the mid-edge terrain high point
   // missed by the original centre/four-corner pool reference.
   const x0=p.x-p.coping,y0=p.y-p.coping,w=p.width+2*p.coping,l=p.length+2*p.coping;
@@ -72,6 +72,7 @@ test('moved pool coping clears the uneven terrain and its skirt reaches grade wi
     assert.ok(z.copingBaseZ<ground-.05,'Coping skirt must extend below downhill grade');
   }
   const classic={...settings,gardenProgram:'classic'},oldPool=poolBounds(classic,data),old=spaLevels(classic,data).pool;
-  near(old.waterZ,gardenGroundAt(oldPool.x+oldPool.width/2,oldPool.y+oldPool.length/2,classic,data)+.055);
+  near(old.waterZ,old.gradeHighZ+.075-.10);
+  assert.ok(old.waterZ>gardenGroundAt(oldPool.x+oldPool.width/2,oldPool.y+oldPool.length/2,classic,data)+.075-.10);
   for(const [x,y] of program.furniture.path)assert.equal(rectanglesOverlap({x,y,width:1.15,length:.9},program.firepit,.08),false,'A stepping stone must not bridge the excavated lounge or coping');
 });

@@ -64,7 +64,9 @@ test('extended canopy supports reach garden ground while on-deck posts retain th
     assert.equal(supports.length,2);assert.equal(shadePosts.length,2);
     for(const [i,p]of supports.entries()){
       const x=(p.x0+p.x1)/2,y=(p.y0+p.y1)/2;
-      const expectedBase=canopyDepth===base.terraceDepth?floor:gardenGroundAt(x,y,s,data);
+      const deck=data.site.terrace;
+      const overDeck=p.x0>=deck.x&&p.x1<=deck.x+deck.width&&p.y0>=deck.y&&p.y1<=deck.y+s.terraceDepth;
+      const expectedBase=overDeck?floor:gardenGroundAt(x,y,s,data);
       near(p.z0,expectedBase);near(shadePosts[i].base,expectedBase);near(shadePosts[i].top,p.z1);
       near(shadePosts[i].bounds.min[0],p.x0);near(shadePosts[i].bounds.max[0],p.x1);
       near(shadePosts[i].bounds.min[1],p.y0);near(shadePosts[i].bounds.max[1],p.y1);
@@ -72,7 +74,9 @@ test('extended canopy supports reach garden ground while on-deck posts retain th
         assert.ok(p.z0<floor-.1,'The overhanging roof requires longer supports below deck level');
         const eye=[x,p.y0-.2,(p.z0+floor)/2];
         assert.equal(firstSunBlocker(eye,[0,1,0],shadePosts)?.id,'canopy-post','Sunlight must see the grounded lower support');
-        assert.equal(canopyIntersection(eye,[x,p.y1+.2,eye[2]],s,data),null,'Grounding supports must not add opaque privacy walls');
+        assert.equal(canopyIntersection(eye,[x,p.y1+.2,eye[2]],s,data)?.id,p.id,'The real post intersects the sightline at the same elevation');
+        const beside=[p.x1+.01,eye[1],eye[2]];
+        assert.equal(canopyIntersection(beside,[beside[0],p.y1+.2,beside[2]],s,data),null,'Space beside the post stays open');
       }
     }
   }

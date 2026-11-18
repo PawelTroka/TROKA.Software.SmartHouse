@@ -70,7 +70,7 @@ test('receiver levels follow garden and pool fill while the terrace stays at its
     const before=base.cells.find(c=>c.zone===zone),after=raised.cells.find(c=>c.x===before.x&&c.y===before.y);
     assert.ok(Math.abs(after.z-before.z-(['garden','pool'].includes(zone)?.5:0))<1e-10,zone);
   }
-  assert.equal(raised.cells.find(c=>c.zone==='pool').z,.555);
+  assert.equal(raised.cells.find(c=>c.zone==='pool').z,.475);
   assert.equal(raised.cells.find(c=>c.zone==='terrace').z,1.2);
   assert.equal(raised.cells.find(c=>c.zone==='jacuzzi').z,1.085);
 });
@@ -127,10 +127,10 @@ test('pool surface and ray origin match the rendered water at every garden level
   const data=fixture();
   for(const gardenRaise of [0,.5,1]){
     const s={...settings,gardenRaise},g=prepareSunGeometry(s,data),cell=g.cells.find(c=>c.zone==='pool');
-    assert.ok(Math.abs(cell.z-gardenGroundAt(7,23,s,data)-.055)<1e-10);
+    assert.ok(Math.abs(cell.z-gardenGroundAt(7,23,s,data)+.025)<1e-10);
     const overhead=sunPrism('height-check',[[cell.x-.1,cell.y-.1],[cell.x+.1,cell.y-.1],[cell.x+.1,cell.y+.1],[cell.x-.1,cell.y+.1]],gardenRaise+1,gardenRaise+2);
     const result=sunlightAtPoint(cell,s,data,daytime([0,0,1]),{...g,occluders:[overhead]});
-    assert.ok(Math.abs(result.blocker.distance-.94)<1e-10,'Actual ray starts at centre ground +0.060 m');
+    assert.ok(Math.abs(result.blocker.distance-1.02)<1e-10,'Water is 25 mm below the level site grade, with a 5 mm ray offset');
   }
 });
 
@@ -163,7 +163,7 @@ test('excavated pool terrain cannot self-shadow water but the same retained hill
   // completely inside the proposed pool excavation [5,9] × [20,26].
   data.terrain={originEN:[0,0],cellSize:.25,columns:81,rows:161,elevations:Array.from({length:81*161},(_,i)=>{
     const x=(i%81)*.25,y=Math.floor(i/81)*.25;
-    return x>=7.5&&x<=8.5&&y>=20&&y<=26?.8:0;
+    return x>=7.5&&x<=8.5&&y>=21&&y<=25?.8:0;
   })};
   const receiver=[7,23,.055],sun=daytime([1,0,.1]);
   assert.equal(sunlightAtPoint(receiver,settings,data,sun).sunlit,true);

@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.23.0';
-import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.23.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.23.0';
-import {entranceAccessLayout} from './entrance-access.js?v=1.23.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.24.0';
+import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.24.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.24.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.24.0';
 
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const quad=(a,b,c,d)=>[toWorldTriangle(a,b,c),toWorldTriangle(a,c,d)];
@@ -199,6 +199,11 @@ export function createPhotoHouseGroup(data,settings={},options={}){
     rail:material('#303834',null,{roughness:.55,metalness:.35}),floor:material('#c9c2b0',shared.stone),
     linen:material('#e8dfcd',shared.linen),timber:material('#b58a60',shared.woodLight),
   };
+  if(options.exterior){
+    const {houseWall,houseRoof,houseFrame}=options.exterior;
+    palette.plaster.color.set(houseWall);palette.roof.color.set(houseRoof);
+    for(const key of ['frame','hstFrame','fascia','rail'])palette[key].color.set(houseFrame);
+  }
   for(const edge of layout.edges)facade(group,edge,layout,palette);
   for(const w of layout.windows)window(group,layout.edges[w.edgeIndex],w,palette);
   const groundAt=options.groundAt||((x,y)=>options.terrainAt?options.terrainAt(x,y,data):layout.baseZ);

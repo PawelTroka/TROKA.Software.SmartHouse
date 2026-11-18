@@ -3,15 +3,16 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.23.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.23.0';
-import {terraceStairs,rectanglesOverlap} from './layout.js?v=1.23.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.23.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.23.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.24.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.24.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.24.0';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.24.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.24.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.24.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.23.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.23.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.23.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.24.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.24.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.24.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -102,20 +103,24 @@ function entryStepLevels(steps,finishZ,settings,data){
 /** Flat proposed pads use explicit references; they do not flatten the garden. */
 export function spaLevels(settings={},data){
   const program=gardenProgram(settings,data),p=poolBounds(settings,data);
-  let poolGround=p?gardenGroundAt(p.x+p.width/2,p.y+p.length/2,settings,data):null,poolLow=poolGround;
-  if(program.active&&p){
-    // The moved pool crosses sloping, locally uneven ground. Sample the whole
-    // outer coping footprint, including its edges; a centre or four-corner
-    // reference can bury its uphill edge in the measured terrain. The level
-    // rim and its stone skirt do not flatten or raise the rest of the garden.
-    const margin=p.coping,x0=p.x-margin,y0=p.y-margin,w=p.width+2*margin,l=p.length+2*margin;
-    const nx=Math.ceil(w/.25),ny=Math.ceil(l/.25),grades=[];
-    for(let ix=0;ix<=nx;ix++)for(let iy=0;iy<=ny;iy++)grades.push(gardenGroundAt(x0+w*ix/nx,y0+l*iy/ny,settings,data));
-    poolGround=Math.max(...grades);poolLow=Math.min(...grades);
+  let pool=null;
+  if(p){
+    // A horizontal waterline and coping span uneven ground. Use the outer
+    // coping bands: the ground inside the water opening will be excavated.
+    const cp=p.coping,lowX=p.x-cp,lowY=p.y-cp,w=p.width+2*cp,l=p.length+2*cp;
+    const nx=Math.ceil(w/.25),ny=Math.ceil(l/.25);
+    let low=Infinity,high=-Infinity;
+    for(let ix=0;ix<=nx;ix++)for(let iy=0;iy<=ny;iy++){
+      const x=lowX+w*ix/nx,y=lowY+l*iy/ny;
+      if(x>p.x&&x<p.x+p.width&&y>p.y&&y<p.y+p.length)continue;
+      const z=gardenGroundAt(x,y,settings,data);
+      low=Math.min(low,z);high=Math.max(high,z);
+    }
+    const copingTopZ=high+p.copingRise,waterZ=copingTopZ-p.freeboard;
+    pool={groundZ:high,waterZ,bottomZ:waterZ-p.waterDepth,freeboard:p.freeboard,
+      copingTopZ,copingBaseZ:low-.08,gradeLowZ:low,gradeHighZ:high};
   }
-  const result={active:program.active,pool:p?{groundZ:poolGround,waterZ:poolGround+p.waterOffset,
-    bottomZ:poolGround+p.waterOffset-p.waterDepth,copingTopZ:poolGround+.075,
-    copingBaseZ:program.active?poolLow-.08:poolGround-.045}:null,sauna:null,firepit:null,coldPlunge:null};
+  const result={active:program.active,pool,sauna:null,firepit:null,coldPlunge:null};
   if(!program.active)return result;
   const edge=['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
   const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
@@ -136,6 +141,26 @@ export function spaLevels(settings={},data){
   if(edge){
     const entry=entryStepLevels(c.steps,result.coldPlunge.rimZ,settings,data);
     Object.assign(result.coldPlunge,{padBaseZ:cr.low-.08,steps:entry.steps,entryGroundZ:entry.approachZ,entryRiser:entry.riser});
+  }
+  return result;
+}
+
+/** The water opening remains entirely clear. Coping and inner basin wall have
+ * distinct thicknesses and together form the lip visible to a low swimmer. */
+export function poolEdgeBoxes(pool,level){
+  if(!pool||!level)return [];
+  const {x,y,width,length,coping}=pool,right=x+width,far=y+length;
+  const result=[];
+  for(const [part,thickness,z0,z1] of [
+    ['coping',coping,level.copingBaseZ,level.copingTopZ],
+    ['wall',.06,level.bottomZ,Math.min(level.copingBaseZ,level.copingTopZ)]
+  ]){
+    if(z1<=z0)continue;
+    for(const [side,x0,y0,x1,y1] of [
+      ['near',x-thickness,y-thickness,right+thickness,y],
+      ['far',x-thickness,far,right+thickness,far+thickness],
+      ['left',x-thickness,y,x,far],['right',right,y,right+thickness,far]
+    ])result.push({id:'pool-'+part+'-'+side,part,label:part==='coping'?'Pool coping':'Pool basin wall',x0,y0,x1,y1,z0,z1});
   }
   return result;
 }
@@ -198,7 +223,7 @@ export function spaLayoutWarnings(settings={},data){
   }
   const stairs=terraceStairs(data.site.terrace,number(settings.terraceDepth,4.2),terraceGroundReference(settings,data).drop,settings,data);
   if(stairs.count&&rectanglesOverlap(stairs,program.firepit,.25))warnings.push('The terrace stair run reaches the sunken lounge. Reduce the terrace depth or floor height, or redesign the steps before building.');
-  if(settings.removeGarage===false&&data.site.garage)warnings.push('This pool position occupies part of the existing garage site. The spa layout requires removal of the detached garage.');
+  if(settings.removeGarage===false&&data.site.garage&&overlapArea(rectCorners(program.pool,program.pool.coping),data.site.garage.footprint)>1e-8)warnings.push('This pool position occupies part of the existing garage site. The spa layout requires removal of the detached garage.');
   return warnings;
 }
 
@@ -495,19 +520,10 @@ export function canopyBounds(settings = {}, data) {
     fasciaBottomZ: z - Math.max(0, number(s.fasciaDepth, 0.3)) };
 }
 
-/** Actual support extents for the scene and sunlight model. Privacy rays retain
- * the existing roof/fascia approximation and do not credit these narrow posts. */
+/** Finished support extents shared with the roof, shade and sightline models. */
 export function canopySupportBounds(settings = {}, data) {
   if(!settings.canopyEnabled)return [];
-  if(settings.terraceCoverType==='balcony')return terraceCover(settings,data).supports;
-  const s=settingsWithDefaults(settings),c=canopyBounds(s,data),terrace=data.site.terrace;
-  const floor=floorElevation(s,data),deckEnd=c.y0+Math.max(0,number(s.terraceDepth,terrace.depth));
-  return [c.x0+.08,c.x1-.18].map(x0=>{
-    const x1=x0+.1,y0=c.y1-.18,y1=c.y1-.08;
-    const onTerrace=x0>=terrace.x-EPS&&x1<=terrace.x+terrace.width+EPS&&y0>=c.y0-EPS&&y1<=deckEnd+EPS;
-    const z0=onTerrace?floor:gardenGroundAt((x0+x1)/2,(y0+y1)/2,s,data);
-    return {x0,x1,y0,y1,z0,z1:Math.max(z0+.1,c.fasciaBottomZ)};
-  });
+  return terraceCover(settings,data).supports;
 }
 
 /** Shared cover geometry: the balcony floor follows the first-floor datum. */
@@ -523,7 +539,7 @@ export function privacyStructures(settings={},data){
   });
   if(!result.enabled)return result;
   const corners=box=>[[box.x0,box.y0],[box.x1,box.y0],[box.x1,box.y1],[box.x0,box.y1]];
-  if(result.boxes.some(box=>corners(box).some(p=>!pointInPolygon(p,data.site.boundary))))result.warnings.push('A privacy structure extends beyond the mapped plot. Adjust its position or dimensions.');
+  if(result.boxes.some(box=>footprintFit(corners(box),data.site.boundary).location!=='inside'))result.warnings.push('A privacy structure extends beyond the mapped plot. Adjust its position or dimensions.');
   const program=gardenProgram(settings,data),pool=poolBounds(settings,data),obstacles=[];
   if(pool)obstacles.push(['pool and coping',{x:pool.x-pool.coping,y:pool.y-pool.coping,width:pool.width+2*pool.coping,length:pool.length+2*pool.coping}]);
   if(program.active)obstacles.push(['sauna',program.sauna],['sunken lounge',program.firepit],['cold plunge',program.coldPlunge]);
@@ -532,36 +548,18 @@ export function privacyStructures(settings={},data){
     if(overlaps.length)result.warnings.push(`${footprint.label} footprint overlaps the ${overlaps.join(', ')}. Check the layout and supports.`);
   }
   const physicalBoxes=result.boxes.filter(box=>box.part==='post'||box.part==='screen'||box.part==='foliage');
-  if(data.site.house?.footprint&&physicalBoxes.some(box=>corners(box).some(p=>pointInPolygon(p,data.site.house.footprint))))result.warnings.push('A privacy support or panel overlaps the house footprint. Check its position.');
-  if(settings.removeGarage===false&&data.site.garage?.footprint&&physicalBoxes.some(box=>corners(box).some(p=>pointInPolygon(p,data.site.garage.footprint))))result.warnings.push('A privacy support or panel overlaps the retained garage. Check its position.');
+  if(data.site.house?.footprint&&physicalBoxes.some(box=>overlapArea(corners(box),data.site.house.footprint)>1e-8))result.warnings.push('A privacy support or panel overlaps the house footprint. Check its position.');
+  if(settings.removeGarage===false&&data.site.garage?.footprint&&physicalBoxes.some(box=>overlapArea(corners(box),data.site.garage.footprint)>1e-8))result.warnings.push('A privacy support or panel overlaps the retained garage. Check its position.');
   return result;
 }
 
-/** Finite roof plane and front/side fascia; narrow supports get no privacy
- * credit in this approximation, although the scene and sunlight include them. */
-export function canopyIntersection(observer, target, settings, data) {
-  if (!settings.canopyEnabled) return null;
-  if(settings.terraceCoverType==='balcony')return terraceCoverIntersection(observer,target,terraceCover(settings,data));
-  const e = point3(observer), t = point3(target), c = canopyBounds(settings, data), hits = [];
-  if (c.x1 - c.x0 <= EPS || c.y1 - c.y0 <= EPS) return null;
-  const dz = t[2] - e[2];
-  if (Math.abs(dz) > EPS) {
-    const r = (c.z - e[2]) / dz;
-    const x = e[0] + r * (t[0] - e[0]), y = e[1] + r * (t[1] - e[1]);
-    if (r > EPS && r < 1 - EPS && x >= c.x0 - EPS && x <= c.x1 + EPS && y >= c.y0 - EPS && y <= c.y1 + EPS) {
-      hits.push({ x, y, z: c.z, t: r, part: 'roof' });
-    }
-  }
-  const edges = [[[c.x0, c.y0], [c.x0, c.y1], 'right-fascia'],
-    [[c.x1, c.y0], [c.x1, c.y1], 'left-fascia'],
-    [[c.x0, c.y1], [c.x1, c.y1], 'front-fascia']];
-  for (const [a, b, part] of edges) {
-    const hit = segmentIntersection(e, t, a, b);
-    if (!hit || hit.t <= EPS || hit.t >= 1 - EPS) continue;
-    const z = e[2] + hit.t * dz;
-    if (z >= c.fasciaBottomZ - EPS && z <= c.z + EPS) hits.push({ ...hit, z, part });
-  }
-  return hits.sort((a, b) => a.t - b.t)[0] || null;
+/** Closed finite cover members. Clear balcony guard panels pass every ray. */
+export function canopyIntersection(observer,target,settings,data,layout){
+  if(!settings.canopyEnabled)return null;
+  const hit=terraceCoverIntersection(observer,target,layout??terraceCover(settings,data));
+  // Preserve the caller-facing directional name of a canopy fascia hit.
+  if(hit?.type==='canopy'&&hit.part==='fascia')return {...hit,part:hit.id.replace('cover-canopy-','')};
+  return hit;
 }
 
 /** Exact required screen height on one ray, independent of whether it is built. */
@@ -661,6 +659,9 @@ export function analyzeVisibility(observer, settings = {}, data) {
   const trees = screeningTreeVolumes(s, data);
   const saunaFaces=saunaOpaqueFaces(s,data);
   const privacyBoxes=privacyStructures(s,data).boxes;
+  const cover=s.canopyEnabled?terraceCover(s,data):null;
+  const pool=poolBounds(s,data),poolLevel=pool?spaLevels(s,data).pool:null;
+  const poolEdges=poolEdgeBoxes(pool,poolLevel);
   const targetBuildings = data.buildings.filter(b => b.kind === 'target');
   const blockers = data.buildings.filter(b => b.kind !== 'house');
   // From an outdoor viewpoint, the user's house also screens views across it.
@@ -683,7 +684,9 @@ export function analyzeVisibility(observer, settings = {}, data) {
       const distance = Math.hypot(target[0] - origin[0], target[1] - origin[1]);
       if (distance < EPS) continue;
       const screen = screenOnRay(origin, target, s, data, segments);
-      const canopy = canopyIntersection(origin, target, s, data);
+      const canopy = canopyIntersection(origin, target, s, data, cover);
+      const poolRim=poolLevel&&Math.min(origin[2],target[2])<poolLevel.copingTopZ
+        ?firstPrivacyIntersection(origin,target,poolEdges):null;
       const tree = firstTreeIntersection(origin, target, trees);
       const sauna=saunaIntersection(origin,target,s,data,saunaFaces);
       const privacyStructure=firstPrivacyIntersection(origin,target,privacyBoxes);
@@ -697,6 +700,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       if (screen?.blocked) possible.push({ t: screen.t, type: `hedge-${screen.side}`, hit: screen });
       if (canopy) possible.push({ t: canopy.t, type: 'canopy', hit: canopy });
       if (buildingHit) possible.push({ t: buildingHit.t, type: 'building', hit: buildingHit });
+      if (poolRim) possible.push({t:poolRim.t,type:'pool-rim',hit:poolRim});
       if (tree) possible.push({ t: tree.t, type: 'screening-tree', hit: tree });
       if (sauna) possible.push({t:sauna.t,type:'sauna',hit:sauna});
       if (privacyStructure) possible.push({t:privacyStructure.t,type:'privacy-structure',hit:privacyStructure});
@@ -704,7 +708,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       const ray = { origin, target, blockId: block.id, blockLabel: block.label,
         kind: i < block.roofSampleCount ? 'roof' : i >= block.samples.length ? 'high-feature' : 'facade',
         visible: !first, blockedBy: first?.type || null, obstruction: first?.hit || null,
-        screen, canopy, tree, sauna, privacyStructure, distance };
+        screen, canopy, tree, sauna, privacyStructure, poolRim, distance };
       blockRays.push(ray); rays.push(ray);
       if (screen && !buildingHit) {
         worstRequiredHedge[screen.side] = Math.max(worstRequiredHedge[screen.side], screen.requiredHeight);
@@ -713,7 +717,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
         }
         // Keep the hedge-alone benchmark above unchanged. This second value
         // only describes the rays still needing a hedge after canopy/trees.
-        if (!canopy && !tree && !sauna && !privacyStructure) {
+        if (!canopy && !tree && !sauna && !privacyStructure && !poolRim) {
           remainingRequiredHedge[screen.side] = Math.max(remainingRequiredHedge[screen.side], screen.requiredHeight);
           remainingRequiredHedge.overall = Math.max(remainingRequiredHedge.overall, screen.requiredHeight);
         }

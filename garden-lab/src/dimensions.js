@@ -3,10 +3,11 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.23.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.23.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.23.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.23.0';
+import {footprintFit} from './footprint-fit.js?v=1.24.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.24.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.24.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.24.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.24.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -155,6 +156,19 @@ export function gardenDimensions(settings={},data){
     const z=Math.max(...Array.from({length:9},(_,i)=>ground(gap.a[0]+(gap.b[0]-gap.a[0])*i/8,gap.a[1]+(gap.b[1]-gap.a[1])*i/8)))+.13;
     addHorizontal(id,feature,'clearance',gap.a,gap.b,z,{description:label,datum:'horizontal finished-edge gap',...options});
   };
+  const addProposalGap=(id,feature,ring,side,description)=>{
+    const fit=footprintFit(ring,data.site.boundary);
+    if(fit.location==='inside'){
+      addGap(id,feature,closestBoundary(ring,data,side),description);
+      return;
+    }
+    // A wholly exterior footprint still has a positive distance to the parcel.
+    // Preserve its actual endpoints and distinguish that distance from clearance.
+    const gap=closestBoundary(ring,data);
+    const text=fit.location==='outside'?`${formatDimension(gap.distance)} outside parcel`:'Crosses parcel edge';
+    addGap(id,feature,gap,description,{text,sceneText:text,planText:text,placementStatus:fit.location,
+      datum:`Finished footprint ${fit.location==='outside'?'lies outside':'crosses'} the mapped parcel. Nearest-edge separation shown.`});
+  };
   const addRect=(id,label,r,z,{widthSide='front',lengthSide='right'}={})=>{
     const y=widthSide==='rear'?r.y+r.length:r.y;
     const x=lengthSide==='left'?r.x:r.x+r.width;
@@ -213,7 +227,7 @@ export function gardenDimensions(settings={},data){
     addRect('pool','Pool water footprint',pool,levels.pool.copingTopZ+.12,{lengthSide:'left'});
     addVertical('pool-water-depth','pool','waterDepth',[pool.x+pool.width*.65,pool.y+pool.length*.7],levels.pool.bottomZ,levels.pool.waterZ,{description:'Pool water depth',datum:'water surface to pool floor',
       anchor:[pool.x+pool.width*.65,pool.y+pool.length*.7,levels.pool.waterZ+.15],planText:`water ${formatDimension(pool.waterDepth)}`,sceneText:`water ${formatDimension(pool.waterDepth)}`,priority:3});
-    addGap('pool-boundary','pool',closestBoundary(rect(pool,pool.coping),data,program.active?'left':null),'Pool outer coping to mapped parcel boundary');
+    addProposalGap('pool-boundary','pool',rect(pool,pool.coping),program.active?'left':null,'Pool outer coping to mapped parcel boundary');
     if(['spa-corner','spa-pool-grove','spa-aligned','spa-grove','spa-screened'].includes(program.id))addGap('pool-house','circulation',closestFootprints(rect(pool,pool.coping),data.site.house.footprint),'Pool outer coping to house wall',{
       datum:'shortest horizontal outer coping to mapped house wall; conceptual clearance',priority:1,sceneText:null});
   }
@@ -229,8 +243,8 @@ export function gardenDimensions(settings={},data){
       addVertical('sauna-entry-rise','sauna','rise',entry,levels.sauna.entryGroundZ,levels.sauna.floorZ,{description:'Sauna entry total rise',datum:'outer stair approach to sauna floor',
         planText:`entry +${formatDimension(rise)}`,sceneText:`entry +${formatDimension(rise)}`,planAnchor:[entry[0]+.6,entry[1]-.6],priority:3});
     }
-    addGap('sauna-right-boundary','sauna',closestBoundary(s.footprint,data,'right'),'Sauna wall to mapped right parcel boundary');
-    addGap('sauna-rear-boundary','sauna',closestBoundary(s.footprint,data,'rear'),'Sauna wall to mapped rear parcel boundary');
+    addProposalGap('sauna-right-boundary','sauna',s.footprint,'right','Sauna wall to mapped right parcel boundary');
+    addProposalGap('sauna-rear-boundary','sauna',s.footprint,'rear','Sauna wall to mapped rear parcel boundary');
 
     const loungeEnvelope=f.outerFootprint||f.footprint,loungeBounds=f.outerBounds||f;
     addRect('firepit','Sunken lounge including outer coping',loungeBounds,levels.firepit.rimZ+.12,{widthSide:'front',lengthSide:'right'});
@@ -248,7 +262,7 @@ export function gardenDimensions(settings={},data){
     addVertical('cold-plunge-water-depth','cold-plunge','waterDepth',[c.x+c.width*.7,c.y+c.length*.6],levels.coldPlunge.bottomZ,levels.coldPlunge.waterZ,{description:'Cold plunge water depth',datum:'water surface to plunge floor',
       anchor:[c.x+c.width*.7,c.y+c.length*.6,levels.coldPlunge.rimZ+.15],planText:`water ${formatDimension(c.waterDepth)}`,sceneText:null,
       planAnchor:[c.x+c.width/2,c.y+c.length/2],priority:3});
-    addGap('cold-plunge-boundary','cold-plunge',closestBoundary(rect(c,finite(c.pad,.18)),data,'rear'),'Cold plunge outer pad to mapped rear parcel boundary');
+    addProposalGap('cold-plunge-boundary','cold-plunge',rect(c,finite(c.pad,.18)),'rear','Cold plunge outer pad to mapped rear parcel boundary');
     if(Number.isFinite(levels.coldPlunge.entryGroundZ)){
       const first=levels.coldPlunge.steps[0],rise=levels.coldPlunge.rimZ-levels.coldPlunge.entryGroundZ;
       addVertical('cold-plunge-entry-rise','cold-plunge','rise',[first.x-.15,first.y],levels.coldPlunge.entryGroundZ,levels.coldPlunge.rimZ,{description:'Cold plunge approach total rise',datum:'outer stair approach to plunge rim',
@@ -409,7 +423,7 @@ export function dimensionScheduleGroups(records){
 export function dimensionScheduleMarkup(records){
   if(!records.length)return '';
   const groups=dimensionScheduleGroups(records);
-  const value=r=>`<span data-dimension-record="${esc(r.id)}" title="${esc(r.description||r.id)}${r.datum?` · ${esc(r.datum)}`:''}">${esc(r.unit==='m²'?`${r.value.toFixed(2)} m²`:formatDimension(r.value,{approximate:r.kind==='clearance'}))}</span>`;
+  const value=r=>`<span data-dimension-record="${esc(r.id)}" title="${esc(r.description||r.id)}${r.datum?` · ${esc(r.datum)}`:''}">${esc(r.placementStatus?r.text:r.unit==='m²'?`${r.value.toFixed(2)} m²`:formatDimension(r.value,{approximate:r.kind==='clearance'}))}</span>`;
   const rows=type=>groups.filter(g=>type==='objects'?g.type==='feature':type==='planting'?g.type==='tree'||g.type==='hedge':g.type===type).map(g=>{
     const width=g.records.find(r=>r.kind==='width'),length=g.records.find(r=>r.kind==='length');
     const footprint=width&&length?`<span class="dimension-footprint"><span data-dimension-record="${esc(width.id)}" title="${esc(width.description)}">${width.value.toFixed(2)}</span> × <span data-dimension-record="${esc(length.id)}" title="${esc(length.description)}">${length.value.toFixed(2)}</span> m</span>`:'';

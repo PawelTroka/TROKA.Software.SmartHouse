@@ -16,8 +16,10 @@ export function poolBounds(settings={},data){
   const pool=spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
     y:poolGrove?26.30:aligned||screened?19.5:24.5,width:3.5,length:poolGrove?8:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;
-  return {...pool,
-    waterDepth:1.4,waterOffset:.055,coping:.28};
+  const copingRise=.075;
+  const freeboard=Number.isFinite(settings.poolFreeboard)?Math.max(.02,Math.min(.25,settings.poolFreeboard)):.10;
+  return {...pool,waterDepth:1.4,waterOffset:copingRise-freeboard,freeboard,copingRise,coping:.28};
+
 }
 
 /** A full proposal is explicit; older states retain their previous geometry. */

@@ -54,3 +54,31 @@ jobs:
           path: garden-lab/test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  studio:
+    name: Design studio, rendering and mobile checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: npx --no-install playwright install --with-deps chromium
+      - run: node scripts/studio-browser-check.mjs
+      - name: Upload design studio evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: studio-evidence
+          path: garden-lab/test-results/studio/
+          if-no-files-found: ignore
+          retention-days: 7
