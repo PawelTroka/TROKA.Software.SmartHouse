@@ -1,0 +1,53 @@
+{
+  "version": "1.24.0",
+  "dateEuropeWarsaw": "18 November 2026",
+  "testedCodeCommit": "717424b745b443777bd8571e65cc56b592b22fb6",
+  "mainCommit": "1eb75de46c560e012218f876c7a99674c62bce84",
+  "workflowRun": 44321009099,
+  "unitTestsPassed": 585,
+  "browserWorkflowChecks": {
+    "Design studio, rendering and mobile": 11,
+    "Lighting, privacy and property workflows": 35,
+    "Terrace, balcony, pool eye and two-car garage": 8
+  },
+  "browserStatus": "passed",
+  "hiddenDocumentCheck": "synthetic visibilitychange after headless foreground freeze",
+  "renderer": "Actual Chromium WebGL via SwiftShader in GitHub Actions",
+  "originalCaptureSHA256": {
+    "legacy/nadmorska-night.png": "38a52f35b0687255f331653406e107e15026287acc3b51e680644de40a52b8ac",
+    "legacy/refinements/sternicza-two-car-front.png": "b9949286304264a48649cc78cce64b190d80dc4ef032c1c7933b6544e4c50874",
+    "studio/sternicza-hidden-bali.png": "184157fe7b6b63ea01ac48a49b04e4b4da8120979a3ce91501f0a1ec3e8f372f",
+    "studio/sternicza-mediterranean-villa.png": "30882cbb199980de1939bab11e6ca7c9b169a2feb1407fd887631df03ef5c6c8",
+    "studio/sternicza-space-age.png": "dbd6ef31c8114082a00938b60d5089da366d0b28724eb5f2c3c14341a17531ad",
+    "studio/sternicza-hidden-bali-terrace-golden-hour.png": "6d32c920cd5a4bc7601c129af19aa948ccee2edcf0e98529171d258401e15531",
+    "studio/korzeniowskiego-40-organic-japandi.png": "79aa8fc462eee9c0de5f287fd93c6d4eac9d32c418e10c6aa73a8163409c1364",
+    "studio/nadmorska-17-party-club.png": "91bd3043a4b21d9f49e8baf215f73d48f07489f77002a6f88d949426b62ca197",
+    "studio/mobile-catalogue-390.png": "e378d952d67893f07e111f8c6c6233b40da8e343c3822331991d3d068b128d27",
+    "studio/desktop-editor.png": "b881eae31bc53c3c06dca8b4fba9f77fba23ec4987a798f04abc46ee4d06a752"
+  },
+  "galleryEncoding": "JPEG copies of the original browser PNG captures; no geometry, composition or colour edits.",
+  "localInterfaceReview": "Cloud browser used SVG fallback; treated as interface review, not WebGL evidence",
+  "measurements": {
+    "terrain": [
+      {
+        "site": "sternicza-11",
+        "previousVertices": 118893,
+        "vertices": 21012,
+        "triangles": 40042
+      },
+      {
+        "site": "korzeniowskiego-40",
+        "previousVertices": 31848,
+        "vertices": 5949,
+        "triangles": 10924
+      },
+      {
+        "site": "nadmorska-17",
+        "previousVertices": 67524,
+        "vertices": 12116,
+        "triangles": 22961
+      }
+    ],
+    "note": "Scene structure and resource counts, not a hardware FPS benchmark."
+  }
+}

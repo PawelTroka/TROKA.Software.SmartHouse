@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.23.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.23.0';
+import {getSiteProfile} from './sites.js?v=1.24.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.24.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -31,7 +31,7 @@ export function budgetSideLabels(data){
 
 export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks,t=cost.screeningTrees;
-  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy,basementGarage=cost.basementGarage,balcony=cost.balcony;
+  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy,basementGarage=cost.basementGarage,balcony=cost.balcony,style=cost.style;
   const balconyMissing=balcony?.unquoted.length?' The first-floor balcony also needs a complete installed quote; its unquoted scope is excluded.':'';
   if($('balcony-cost-summary'))$('balcony-cost-summary').textContent=balcony?.enabled
     ?balcony.unquoted.length?'First-floor balcony: quote required. Its structure, foundations, deck, guards and access door are excluded from the known subtotal, even with planning allowances on.':`First-floor balcony: ${amount(balcony.knownBase)} installed quote, before the shared uncertainty allowance. Replaces the canopy cost.`
@@ -61,7 +61,9 @@ export function renderBudget(cost,settings,data){
     ?`${t.count} enabled ${t.count===1?'tree':'trees'} · ${amount(t.plantsKnown)} known plant supply${t.plantQuoteCount?` · ${t.plantQuoteCount} specimen ${t.plantQuoteCount===1?'quote':'quotes'} needed`:''}`
     :'No screening trees selected';
   $('cost-status').textContent=cost.status==='quote-required'
-    ?basementGarage?.unquoted.length
+    ?style?.unquoted.length
+      ?`The selected design style needs an additional upgrade quote. Known base costs: ${amount(cost.knownSubtotal,true)}; style-specific finishes${style.houseFinishPreview?' and house exterior finishes':''} are unquoted. Review all unquoted work in the expanded budget.`
+      :basementGarage?.unquoted.length
       ?`The basement garage and ramp need a complete project quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Garden allowances do not cover basement conversion.${balconyMissing}`
       :privacy?.unquoted.length
       ?`Selected privacy structures need installed quotes. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price these custom structures. Review the unquoted items in the expanded budget.${balconyMissing}`
@@ -78,6 +80,7 @@ export function renderBudget(cost,settings,data){
   panel.dataset.privacyKnownLow=privacy?.knownBase.low||0;panel.dataset.privacyUnquotedCount=privacy?.unquoted.length||0;
   panel.dataset.basementGarageKnownLow=basementGarage?.knownBase.low||0;panel.dataset.basementGarageUnquotedCount=basementGarage?.unquoted.length||0;
   panel.dataset.balconyKnownLow=balcony?.knownBase.low||0;panel.dataset.balconyUnquotedCount=balcony?.unquoted.length||0;
+  panel.dataset.styleKnownLow=style?.knownBase.low||0;panel.dataset.styleUnquotedCount=style?.unquoted.length||0;
   const sideLabel={front:'Front / street',...budgetSideLabels(data)};
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
@@ -96,6 +99,8 @@ export function renderBudget(cost,settings,data){
   $('cost-detail-content').innerHTML=table('Thujas by side · supply and installation',plants)+quantities+
     `<p class="field-note">Gross rear area ${n(e.rearGrossArea)} m²; ${n(e.excludedArea)} m² excluded for the pool, terrace${spa?.enabled&&spa.scopeId!=='pool-and-jacuzzi'?', sauna, sunken lounge, cold plunge':''} and retained structures. Topsoil is included within the selected raise. Loose material uses your ${n(e.looseFactor,2)}× delivery multiplier.</p>`+
     table('Rear-garden earthworks',earth)+
+    (style?.enabled?table('Selected design style · incremental upgrade',installedRows(style.rows))+
+      '<p class="field-note">Base finish, furniture and lighting lines remain included. This line covers only the additional installed upgrade after reconciling that base scope. No supplier specification or style premium is inferred from the visual. Zero is unquoted and excluded.</p>':'')+
     (privacy?.enabled?table('Privacy structures · installed quotes',installedRows(privacy.rows))+
       '<p class="field-note">Custom structures are quote-only. Unquoted work is excluded from the known subtotal, even with planning allowances on. The terrace canopy is counted separately in garden finishes.</p>':'')+
     (basementGarage?.enabled?table('Basement garage and ramp · separate project quote',installedRows(basementGarage.rows))+

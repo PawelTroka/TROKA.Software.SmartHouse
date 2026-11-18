@@ -1,0 +1,514 @@
+{
+  "version": "1.24.0",
+  "checks": [
+    "All 21 choices are accessible through select, search, family filter and Escape focus return",
+    "Automatic and Eco bound resolution and shadow texture size",
+    "All 20 styles render on Sternicza, fixed-camera daylight scenes differ, resources return near baseline",
+    "Keyboard selection, explicit house finish scope, incremental unquoted costs and undo/redo preserve the view and solar time",
+    "Share link, reload and JSON export recover the site, lighting time, house finish scope and quality",
+    "A 20,000 PLN incremental finish quote clears on a change of scheme and Undo restores its original scope",
+    "Save A and return to B preserve the intermediate real design as the Undo target",
+    "Same solar time, orbit mode and viewport size do not refit the shadow camera",
+    "Reduced motion, diagram/offscreen pauses and synthetic visibilitychange after headless foreground freeze",
+    "390 px and 320 px editor and scrollable catalogue fit all 21 choices",
+    "Both additional properties visibly apply their own physical layout, selected concept and exported checks"
+  ],
+  "screenshots": [
+    "sternicza-current.png",
+    "sternicza-hidden-bali.png",
+    "sternicza-mediterranean-villa.png",
+    "sternicza-space-age.png",
+    "sternicza-hidden-bali-terrace-golden-hour.png",
+    "mobile-catalogue-390.png",
+    "mobile-catalogue-320.png",
+    "korzeniowskiego-40-organic-japandi.png",
+    "nadmorska-17-party-club.png",
+    "desktop-editor.png"
+  ],
+  "styles": [
+    {
+      "id": "organic-modern",
+      "stats": {
+        "frames": 9,
+        "shadowUpdates": 5,
+        "calls": 846,
+        "triangles": 370118,
+        "geometries": 796,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "hidden-bali",
+      "diff": {
+        "pixels": 16156,
+        "fraction": 0.03914973635235732
+      },
+      "stats": {
+        "frames": 10,
+        "shadowUpdates": 6,
+        "calls": 858,
+        "triangles": 411622,
+        "geometries": 805,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "mediterranean-villa",
+      "diff": {
+        "pixels": 16020,
+        "fraction": 0.03882017679900744
+      },
+      "stats": {
+        "frames": 11,
+        "shadowUpdates": 7,
+        "calls": 847,
+        "triangles": 367094,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "modern-minimal",
+      "stats": {
+        "frames": 12,
+        "shadowUpdates": 8,
+        "calls": 847,
+        "triangles": 367858,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "scandinavian",
+      "stats": {
+        "frames": 13,
+        "shadowUpdates": 9,
+        "calls": 853,
+        "triangles": 369742,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "japandi",
+      "stats": {
+        "frames": 14,
+        "shadowUpdates": 10,
+        "calls": 849,
+        "triangles": 364894,
+        "geometries": 799,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "organic-scandinavian",
+      "stats": {
+        "frames": 15,
+        "shadowUpdates": 11,
+        "calls": 850,
+        "triangles": 369506,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "organic-japandi",
+      "stats": {
+        "frames": 16,
+        "shadowUpdates": 12,
+        "calls": 849,
+        "triangles": 370466,
+        "geometries": 799,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "space-age",
+      "diff": {
+        "pixels": 8598,
+        "fraction": 0.02083494882133995
+      },
+      "stats": {
+        "frames": 17,
+        "shadowUpdates": 13,
+        "calls": 853,
+        "triangles": 373326,
+        "geometries": 803,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "party-club",
+      "stats": {
+        "frames": 18,
+        "shadowUpdates": 14,
+        "calls": 846,
+        "triangles": 378170,
+        "geometries": 796,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "baltic-dune",
+      "stats": {
+        "frames": 19,
+        "shadowUpdates": 15,
+        "calls": 853,
+        "triangles": 369286,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "gdansk-brick",
+      "stats": {
+        "frames": 20,
+        "shadowUpdates": 16,
+        "calls": 850,
+        "triangles": 367442,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "danish-midcentury",
+      "stats": {
+        "frames": 21,
+        "shadowUpdates": 17,
+        "calls": 846,
+        "triangles": 368698,
+        "geometries": 796,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "finnish-sauna",
+      "stats": {
+        "frames": 22,
+        "shadowUpdates": 18,
+        "calls": 853,
+        "triangles": 369250,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "riviera-deco",
+      "stats": {
+        "frames": 23,
+        "shadowUpdates": 19,
+        "calls": 850,
+        "triangles": 380754,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "arts-and-crafts",
+      "stats": {
+        "frames": 24,
+        "shadowUpdates": 20,
+        "calls": 850,
+        "triangles": 367442,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "palm-springs",
+      "stats": {
+        "frames": 25,
+        "shadowUpdates": 21,
+        "calls": 849,
+        "triangles": 370270,
+        "geometries": 799,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "desert-modern",
+      "stats": {
+        "frames": 26,
+        "shadowUpdates": 22,
+        "calls": 846,
+        "triangles": 369566,
+        "geometries": 796,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "alpine-lodge",
+      "stats": {
+        "frames": 27,
+        "shadowUpdates": 23,
+        "calls": 851,
+        "triangles": 367730,
+        "geometries": 798,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "industrial-loft",
+      "stats": {
+        "frames": 28,
+        "shadowUpdates": 24,
+        "calls": 848,
+        "triangles": 371474,
+        "geometries": 798,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "korzeniowskiego-40",
+      "id": "organic-japandi",
+      "diff": {
+        "pixels": 12012,
+        "fraction": 0.029107862903225805
+      },
+      "stats": {
+        "frames": 5,
+        "shadowUpdates": 2,
+        "calls": 341,
+        "triangles": 130186,
+        "geometries": 337,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "nadmorska-17",
+      "id": "party-club",
+      "diff": {
+        "pixels": 27177,
+        "fraction": 0.0658561763337469
+      },
+      "stats": {
+        "frames": 5,
+        "shadowUpdates": 2,
+        "calls": 472,
+        "triangles": 261107,
+        "geometries": 434,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    }
+  ],
+  "errors": [],
+  "sceneEvidence": "Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.",
+  "quality": {
+    "auto": {
+      "frames": 4,
+      "shadowUpdates": 3,
+      "calls": 1000,
+      "triangles": 407506,
+      "geometries": 950,
+      "textures": 16,
+      "pixelRatio": 1.5,
+      "bufferWidth": 1248,
+      "bufferHeight": 742,
+      "shadowSize": 2048,
+      "renderer": "webgl",
+      "motionActive": false
+    },
+    "eco": {
+      "frames": 3,
+      "shadowUpdates": 2,
+      "calls": 1000,
+      "triangles": 407506,
+      "geometries": 950,
+      "textures": 16,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "renderer": "webgl",
+      "motionActive": false
+    }
+  },
+  "returnedResources": {
+    "reference": {
+      "frames": 8,
+      "shadowUpdates": 4,
+      "calls": 866,
+      "triangles": 407506,
+      "geometries": 816,
+      "textures": 16,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "renderer": "webgl",
+      "motionActive": false
+    },
+    "reset": {
+      "frames": 29,
+      "shadowUpdates": 25,
+      "calls": 866,
+      "triangles": 407506,
+      "geometries": 816,
+      "textures": 16,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "renderer": "webgl",
+      "motionActive": false
+    }
+  },
+  "goldenHourView": {
+    "mode": "eye",
+    "preset": "terrace",
+    "date": "2026-06-21",
+    "time": "20:39",
+    "observer": "Eye 2.85 m above original garden reference · 1.65 m above floor"
+  },
+  "hiddenCheck": "synthetic visibilitychange after headless foreground freeze",
+  "visibilitySamples": [],
+  "mobile": [
+    {
+      "width": 390,
+      "page": 390,
+      "dialog": 370,
+      "scroll": 368,
+      "client": 368
+    },
+    {
+      "width": 320,
+      "page": 320,
+      "dialog": 300,
+      "scroll": 298,
+      "client": 298
+    }
+  ],
+  "status": "passed"
+}

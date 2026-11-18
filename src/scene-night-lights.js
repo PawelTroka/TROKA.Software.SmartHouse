@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.23.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.23.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.23.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.23.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.23.0';
+import {toWorld} from './orientation.js?v=1.24.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.24.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.24.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.24.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.24.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -11,17 +11,19 @@ const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&
 /** A small, bounded collection of proposed fixtures. The shared landscape
  * geometry supplies every position and level; the lights do not move trees,
  * change mapped buildings, or receive geometric screening credit. */
-export function createGardenNightLighting(settings,data,{svgMode=false}={}){
+export function createGardenNightLighting(settings,data,{svgMode=false,style=null}={}){
   const group=new THREE.Group();group.name='proposed-garden-night-lighting';
   const fixtures=[],lights=[],emitters=[],haloMaterials=[];
   const materials=new Set(),geometries=new Set();
-  const warm='#ffce86',water='#73d6d0';
+  const palette=style && style.id!=='current' ? style.palette : null;
+  const fixtureForm=palette ? style.recipe.fixture : 'woven';
+  const warm=palette?.light??'#ffce86',water='#73d6d0';
   const makeMaterial=(params)=>{const m=new THREE.MeshStandardMaterial(params);m.userData.transient=true;materials.add(m);return m;};
-  const body=makeMaterial({color:'#343d38',roughness:.72,metalness:.3});
+  const body=makeMaterial({color:palette?.frame??'#343d38',roughness:.72,metalness:.3});
   const warmGlow=new THREE.MeshBasicMaterial({color:warm,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
   const waterGlow=new THREE.MeshBasicMaterial({color:water,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
-  const pendantGlow=new THREE.MeshBasicMaterial({color:'#ffdb9b',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
-  const hedgeGlow=new THREE.MeshBasicMaterial({color:'#ffcd87',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
+  const pendantGlow=new THREE.MeshBasicMaterial({color:palette?.light??'#ffdb9b',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
+  const hedgeGlow=new THREE.MeshBasicMaterial({color:palette?.light??'#ffcd87',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
   const glowChannels=[[warmGlow,'garden'],[waterGlow,'garden'],[pendantGlow,'pendant'],[hedgeGlow,'hedge']];
   for(const [m] of glowChannels){m.userData.transient=true;materials.add(m);}
   const mesh=(geometry,material,name,x,y,z)=>{
@@ -126,10 +128,11 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   // Merge each shade's ribs into one mesh rather than multiplying draw calls.
   // Every shade also shows warm transmitted light. Separate materials retain
   // independent dimmers, including in the simplified SVG renderer.
-  const shadeEmission=new THREE.Color('#ffc781');
+  const shadeEmission=new THREE.Color(palette?.light??'#ffc781');
+  const shadeColor=fixtureForm==='orb' ? palette.fabric : palette?.accent??'#b59969';
   const shadeMaterials=Object.fromEntries(['pendant','hedge'].map(channel=>[channel,
-    makeMaterial({color:'#b59969',roughness:.92,metalness:0,side:THREE.DoubleSide,emissiveIntensity:0})]));
-  const cordMaterial=makeMaterial({color:'#3d4034',roughness:.9,metalness:.1});
+    makeMaterial({color:shadeColor,roughness:palette ? .86 : .92,metalness:0,side:THREE.DoubleSide,emissiveIntensity:0})]));
+  const cordMaterial=makeMaterial({color:palette?.frame??'#3d4034',roughness:.9,metalness:.1});
   const join=(a,b,radius,material,name)=>{
     const start=point(...a),end=point(...b),length=start.distanceTo(end);
     if(length<.002)return;
@@ -164,6 +167,18 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
     geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
     return geometry;
   };
+  // All fittings share the existing mount, drop limits and electrical channels.
+  // Cache per group so equal hedge lights share a finished geometry, including
+  // the more detailed open weave. No fixture dimensions leak across properties.
+  const shadeCache=new Map();
+  const shadeGeometry=(radius,height)=>{
+    const key=radius+'/'+height;
+    if(shadeCache.has(key))return shadeCache.get(key);
+    const geometry=fixtureForm==='woven' ? wovenShade(radius,height)
+      : createFormedShade(fixtureForm,radius,height,svgMode);
+    shadeCache.set(key,geometry);
+    return geometry;
+  };
   const pendantLayout=pendantLightingLayout(settings,data);
   for(const support of pendantLayout.supports){
     join([support.x,support.y,support.baseZ],[support.x,support.y,support.topZ],support.zone==='garden'?.026:.018,body,`${support.id}-post`);
@@ -176,11 +191,12 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   // just its own lens. Layout caps the hedge at 24 fixtures: with three dining
   // and at most twelve landscape lights, the scene remains bounded at 39.
   // These short-range hedge sources do not add shadow maps.
-  for(const [channel,lanterns,glow,color] of [['pendant',pendantLayout.garden,pendantGlow,'#ffda9b'],['hedge',pendantLayout.hedge,hedgeGlow,'#ffcb84']]){
+  for(const [channel,lanterns,glow,color] of [['pendant',pendantLayout.garden,pendantGlow,palette?.light??'#ffda9b'],['hedge',pendantLayout.hedge,hedgeGlow,palette?.light??'#ffcb84']]){
     for(const fixture of lanterns){
       const {x,y,z,radius,height,hangZ}=fixture;
       join([x,y,hangZ],[x,y,z+height*.5],.006,cordMaterial,`${fixture.id}-drop`);
-      mesh(wovenShade(radius,height),shadeMaterials[channel],`${fixture.id}-woven-shade`,x,y,z);
+      const shade=mesh(shadeGeometry(radius,height),shadeMaterials[channel],`${fixture.id}-${fixtureForm}-shade`,x,y,z);
+      shade.userData.fixtureForm=fixtureForm;
       mesh(new THREE.CylinderGeometry(.035,.045,.055,8),body,`${fixture.id}-socket`,x,y,z+height*.35);
       const diffuser=emitter(x,y,z-height*.1,radius*.61,glow,channel);
       diffuser.name=`${fixture.id}-glowing-core`;diffuser.scale.y=height/(radius*1.8);
@@ -216,4 +232,58 @@ export function createGardenNightLighting(settings,data,{svgMode=false}={}){
   // also calls it, so shadow targets and procedural textures never accumulate.
   const dispose=()=>{for(const l of lights)l.shadow?.dispose();haloTexture?.dispose();};
   return {group,apply,dispose,fixtures,lightCount:lights.length};
+}
+
+
+// Radial profile coordinates are fractions of each existing lantern's radius
+// and height. Open lower rims expose the original dimmable lens. The angular
+// lantern uses four sides; the other fittings read as spun or moulded forms.
+function createFormedShade(form,radius,height,svgMode){
+  const profiles={
+    saucer:[[.15,.49],[.32,.27],[1,.08],[.97,.01],[.34,.08]],
+    tube:[[.22,.49],[.44,.43],[.44,-.29],[.40,-.33]],
+    lantern:[[.10,.49],[.88,.30],[.87,.21],[.72,-.33],[.54,-.45]],
+    oval:[[.13,.49],[.50,.42],[.82,.21],[.91,0],[.80,-.22],[.49,-.41],[.30,-.44]],
+    orb:[[.18,.49],[.57,.40],[.86,.23],[.96,0],[.83,-.25],[.53,-.42],[.27,-.48]],
+    bell:[[.15,.49],[.39,.40],[.60,.21],[.73,-.06],[.91,-.22],[.97,-.24]],
+    tiered:[[.12,.49],[.43,.37],[.49,.32],[.30,.28],[.68,.18],[.69,.13],[.40,.10],[.92,-.04],[.95,-.10]],
+  };
+  const profile=(profiles[form]??profiles.bell).map(([r,z])=>new THREE.Vector2(r*radius,z*height));
+  const radialSegments=form==='lantern'?4:svgMode?12:24;
+  const shape=new THREE.LatheGeometry(profile,radialSegments);
+  if(form!=='lantern'&&form!=='oval')return shape;
+  // Leave the lantern panels and alternate oval flutes open. The remaining
+  // ribs and closed top/bottom bands can transmit the independently dimmed core.
+  const original=shape.index.array,indices=[];
+  for(let side=0;side<radialSegments;side++)for(let row=0;row<profile.length-1;row++){
+    if(row===0||row===profile.length-2||form==='oval'&&side%2===0){
+      const i=(side*(profile.length-1)+row)*6;
+      for(let k=0;k<6;k++)indices.push(original[i+k]);
+    }
+  }
+  if(form==='lantern'){
+    // Keep four slender corner stiles linking cap and lower rim.
+    const lo=profile[profile.length-2],hi=profile[2];
+    const positions=[],normals=[];
+    shape.setIndex(indices);
+    const bands=shape.toNonIndexed();shape.dispose();
+    positions.push(...bands.attributes.position.array);normals.push(...bands.attributes.normal.array);bands.dispose();
+    for(let i=0;i<4;i++){
+      const a=i*Math.PI/2,lower=new THREE.Vector3(Math.sin(a)*lo.x,lo.y,Math.cos(a)*lo.x);
+      const upper=new THREE.Vector3(Math.sin(a)*hi.x,hi.y,Math.cos(a)*hi.x);
+      const direction=upper.clone().sub(lower),length=direction.length();
+      const rail=new THREE.CylinderGeometry(.009,.009,length,4);
+      rail.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),direction.normalize()));
+      const midpoint=lower.add(upper).multiplyScalar(.5);
+      rail.translate(midpoint.x,midpoint.y,midpoint.z);
+      const flat=rail.toNonIndexed();rail.dispose();
+      positions.push(...flat.attributes.position.array);normals.push(...flat.attributes.normal.array);flat.dispose();
+    }
+    const frame=new THREE.BufferGeometry();
+    frame.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+    frame.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
+    return frame;
+  }
+  shape.setIndex(indices);
+  return shape;
 }

@@ -1,11 +1,11 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.23.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.23.0';
-import {getSiteProfile} from './sites.js?v=1.23.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.23.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.23.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.23.0';
-import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.23.0';
-import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.23.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.24.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.24.0';
+import {getSiteProfile} from './sites.js?v=1.24.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.24.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.24.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.24.0';
+import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.24.0';
+import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.24.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -92,7 +92,9 @@ export function renderSunMap(container,data,settings,sun,shade,measuredFrame=nul
   const compass=`<g><circle cx="${cx}" cy="${cy}" r="${R}" fill="#fffef9" fill-opacity=".95" stroke="#d9dfd2"/><line x1="${cx}" y1="${cy}" x2="${cx+north[0]*22}" y2="${cy+north[1]*22}" stroke="#365744" stroke-width="2"/><text x="${cx+north[0]*35}" y="${cy+north[1]*35+3}" text-anchor="middle" fill="#365744" font-size="11" font-weight="700">N</text><line x1="${cx}" y1="${cy}" x2="${sx}" y2="${sy}" stroke="#be8c27" stroke-width="2"/><circle cx="${sx}" cy="${sy}" r="5" fill="${sun.isDaylight?'#e5b347':'#778593'}" stroke="#fffef9" stroke-width="1.5"/><text x="${cx}" y="${cy+R+18}" text-anchor="middle" fill="#6d796c" font-size="10">${sun.isDaylight?'Toward sun':'Sun below horizon'}</text></g>`;
   const houseC=centre(site.house.footprint);
   const detail=scope!=='context';
-  const canopy=settings.terraceCoverType==='balcony'?terraceCoverPlanMarkup(terraceCover(settings,data),{X,Y,scale,labels:!measured,subtle:true}):c?rect(c.x0,c.y0,c.x1-c.x0,c.y1-c.y0,'fill="none" stroke="#6c5740" stroke-width="2" stroke-dasharray="5 3"'):'';
+  const cover=terraceCover(settings,data);
+  const canopyOutline=c&&cover.type==='canopy'?rect(c.x0,c.y0,c.x1-c.x0,c.y1-c.y0,'fill="none" stroke="#6c5740" stroke-width="2" stroke-dasharray="5 3"'):'';
+  const canopy=canopyOutline+terraceCoverPlanMarkup(cover,{X,Y,scale,labels:!measured,subtle:true});
   const jacuzzi=j?rect(j.x0,j.y0,j.x1-j.x0,j.y1-j.y0,'fill="#76a8a7" fill-opacity=".4" stroke="#4b7775" stroke-width="1"'):'';
   const sideY=scope==='detail'?site.rearMidpoint[1]-.65:site.rearMidpoint[1]+Math.max(1.5,(plot.maxY-site.rearMidpoint[1])*.3);
   const poolFill=p?rect(p.x,p.y,p.width,p.length,'fill="#aed2ce"'):'';

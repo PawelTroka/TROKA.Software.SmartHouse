@@ -1,3 +1,4 @@
+import {footprintFit} from './footprint-fit.js?v=1.24.0';
 /**
  * One finite terrace-cover model for drawing, shade and sightlines. Dimensions
  * are proposals, in local metres; z is absolute elevation. A balcony replaces
@@ -14,18 +15,6 @@ const number=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fall
 const point=value=>Array.isArray(value)?value:[value.x,value.y,value.z];
 const corners=box=>[[box.x0,box.y0],[box.x1,box.y0],[box.x1,box.y1],[box.x0,box.y1]];
 const overlaps=(a,b)=>a.x0<b.x1-EPS&&a.x1>b.x0+EPS&&a.y0<b.y1-EPS&&a.y1>b.y0+EPS;
-
-function inside(p,ring){
-  if(!ring?.length)return true;
-  let result=false;
-  for(let i=0,j=ring.length-1;i<ring.length;j=i++){
-    const a=ring[j],b=ring[i],dx=b[0]-a[0],dy=b[1]-a[1],px=p[0]-a[0],py=p[1]-a[1];
-    if(dx*dx+dy*dy<EPS*EPS)continue;
-    if(Math.abs(dx*py-dy*px)<EPS&&px*dx+py*dy>=-EPS&&px*dx+py*dy<=dx*dx+dy*dy+EPS)return true;
-    if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])result=!result;
-  }
-  return result;
-}
 
 export function terraceCoverType(settings={},data){
   const siteId=data?.site?.id||settings.siteId||'sternicza-11';
@@ -74,8 +63,32 @@ export function terraceCoverLayout(settings={},data,context={}){
       add('right-fascia','fascia','Canopy right fascia',x0,y0,x0+.13,y1,topZ-fascia,topZ);
       add('left-fascia','fascia','Canopy left fascia',x1-.13,y0,x1,y1,topZ-fascia,topZ);
     }
-    support('post-0',x0+.08,y1-.18,x0+.18,y1-.08,topZ-fascia);
-    support('post-1',x1-.18,y1-.18,x1-.08,y1-.08,topZ-fascia);
+    const service=context.jacuzzi?.serviceAccess;
+    for(const [index,nominalX] of [x0+.08,x1-.18].entries()){
+      const postY=y1-.18,front={x0:nominalX,x1:nominalX+.10,y0:postY,y1:postY+.10};
+      let postX=nominalX,postTop=topZ-fascia;
+      if(service&&overlaps(front,service)){
+        // Slide on the front support line. An outboard post needs an explicit
+        // bearing beam from the roof edge and a foundation at the local grade.
+        const shifted=index===0?service.x0-.05-.10:service.x1+.05;
+        const proposed={...front,x0:shifted,x1:shifted+.10};
+        const outside=index===0?Math.max(0,x0-shifted):Math.max(0,shifted+.10-x1);
+        const bx0=index===0?shifted:x1-.25,bx1=index===0?x0+.25:shifted+.10;
+        const beamPlan={x0:bx0,x1:bx1,y0:y1-.24,y1:y1-.02};
+        const fits=box=>!data.site.boundary?.length||footprintFit(corners(box),data.site.boundary).location==='inside';
+        if(fits(proposed)&&(outside<=EPS||fits(beamPlan))){
+          postX=shifted;
+          if(outside>EPS){
+            postTop=topZ-.24;
+            add('front-outrigger-'+index,'outrigger','Proposed canopy beam extension',
+              bx0,beamPlan.y0,bx1,beamPlan.y1,postTop,topZ);
+          }
+          result.assumptions.push('A canopy post moves sideways along the front edge to clear the jacuzzi service band. The beam extension, connection and footing are proposed.');
+          result.relocatedSupport={id:'cover-canopy-post-'+index,extensionM:outside};
+        }
+      }
+      support('post-'+index,postX,postY,postX+.10,postY+.10,postTop);
+    }
     result.assumptions.push('The canopy is a roof proposal, without an occupiable floor or guardrail. Its height is measured above the living terrace.');
   }else{
     const a=BALCONY_ASSUMPTIONS,deckBottom=topZ-a.deckThickness,beamBottom=deckBottom-a.beamDepth;
@@ -133,7 +146,7 @@ export function terraceCoverLayout(settings={},data,context={}){
   }
   result.footprints.push({id:`terrace-${type}`,group:'terrace-cover',type,label:type==='balcony'?'First-floor balcony':'Terrace canopy',
     x:x0,y:y0,width,length:depth,baseZ:result.undersideZ,topZ,area:width*depth});
-  if(result.boxes.filter(box=>box.opaque).some(box=>corners(box).some(p=>!inside(p,data.site.boundary))))
+  if(data.site.boundary?.length&&result.boxes.some(box=>footprintFit(corners(box),data.site.boundary).location!=='inside'))
     result.warnings.push('A terrace-cover deck, beam or support extends outside the mapped plot. Reduce its dimensions or revise the support positions.');
   const tub=context.jacuzzi;
   if(tub&&result.supports.some(box=>overlaps(box,tub)))result.warnings.push('A terrace-cover support overlaps the jacuzzi. Revise the support positions or cover dimensions.');
