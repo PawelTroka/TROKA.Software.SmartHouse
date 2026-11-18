@@ -52,7 +52,7 @@ async function style(id){
 }
 async function details(){
   const node=el('.studio-details');
-  if(await node.getAttribute('open')===null)await node.locator('summary').click();
+  if(await node.getAttribute('open')===null)await node.locator(':scope > summary').click();
 }
 async function shot(name,selector){
   const filename=name+'.png',options={path:path.join(evidence,filename),animations:'disabled',scale:'css'};
