@@ -4,13 +4,13 @@ The study used the vendored Three.js **r160** and the three shipped property dat
 
 ## Measured scene structure
 
-The baseline is commit `5a9d334bb2f4fa3c78ad2e168358459b6c14c57f`. Both snapshots used the default design, a 960 × 540 orbit viewport, one initial update and an immediate repeat of the same solar calculation and viewport size. An instrumented rendering backend traversed the actual Three.js objects, leaving the geometry builders, transforms, materials, shadows and disposal code in operation. The terrain measurements include the two context layers and the parcel terrain. Indexed terrain uses one height sample for each distinct XY coordinate within a mesh. Every retained triangle follows the original winding and positions. Shared vertices also produce continuous normals at cell boundaries.
+The baseline is commit `5a9d334bb2f4fa3c78ad2e168358459b6c14c57f`. Both snapshots used the default design, a 960 × 540 orbit viewport, one initial update and an immediate repeat of the same solar calculation and viewport size. An instrumented rendering backend traversed the actual Three.js objects, leaving the geometry builders, transforms, materials, shadows and disposal code in operation. The terrain measurements include the two context layers and the parcel terrain. Indexed terrain uses one height sample for each distinct XY coordinate within a mesh. Interior triangles retain their positions and winding. Along the cadastral outline, clipped triangles meet the measured edge instead of following a staircase of full grid cells. This also keeps the raised lawn from sampling an outside, lower elevation at protruding vertices. Shared vertices produce continuous normals at adjoining cells.
 
-| Property | Terrain vertices, before → after | Reduction | Terrain triangles in both | Visible renderable objects, before → after |
+| Property | Terrain vertices, before → after | Reduction | Terrain triangles, before → after | Visible renderable objects, before → after |
 | --- | ---: | ---: | ---: | ---: |
-| Sternicza 11 | 118,893 → 20,448 | 82.8% | 39,631 | 1,238 → 1,161 |
-| Korzeniowskiego 40 | 31,848 → 5,668 | 82.2% | 10,616 | 464 → 405 |
-| Nadmorska 17 | 67,524 → 11,720 | 82.6% | 22,508 | 616 → 556 |
+| Sternicza 11 | 118,893 → 21,012 | 82.3% | 39,631 → 40,042 | 1,238 → 1,161 |
+| Korzeniowskiego 40 | 31,848 → 5,949 | 81.3% | 10,616 → 10,924 | 464 → 405 |
+| Nadmorska 17 | 67,524 → 12,116 | 82.1% | 22,508 → 22,961 | 616 → 557 |
 
 On every site the repeated input increased both frame and sun-shadow fit counts from 1 to 2 in 1.23.0. Both counters stayed at 1 in 1.24. Small spatial batches combine compatible fixed, opaque garden parts while retaining their triangles, UVs, normals, shadow flags and ray intersections. Named geometry, animated vehicles, transparent layers and fixtures keep individual identities. The object column counts visible scene-graph entries before camera culling. The WebGL renderer reports submitted draw calls separately.
 
@@ -20,9 +20,9 @@ Two complete cycles through the 20 non-default finishes and back to Current reta
 | --- | ---: | ---: | ---: |
 | Sternicza 11 | 1,146 / 273 | 1,146 / 273 | 0 / 0 |
 | Korzeniowskiego 40 | 407 / 134 | 407 / 134 | 0 / 0 |
-| Nadmorska 17 | 543 / 165 | 543 / 165 | 0 / 0 |
+| Nadmorska 17 | 544 / 165 | 544 / 165 | 0 / 0 |
 
-Geometry and material counts describe application-owned objects. GPU frame time requires a browser, driver, device, view, pixel density and lighting scenario. The local Chromium executable could not create its Unix-domain singleton socket in this executor, so this study provides no local GPU timing, FPS or photorealism score. The release browser checks and the live Render diagnostics provide separate WebGL evidence. The image remains a planning illustration with procedural finishes and proposed furniture.
+Geometry and material counts describe application-owned objects. GPU frame time requires a browser, driver, device, view, pixel density and lighting scenario. The local Chromium executable could not create its Unix-domain singleton socket in this executor, so this study provides no local GPU timing, FPS or photorealism score. A Chromium/SwiftShader capture of the first 1.24 release candidate showed correct finish changes and exposed the raised-lawn edge defect. Its 20 Sternicza finish renders reported 846–858 draws, 364,483–411,211 triangles and 16 textures at 832 × 495 in Eco. These measurements preceded the boundary correction. The automated terrain coverage test checks all three parcels, including the concave Nadmorska return. The image remains a planning illustration with procedural finishes and proposed furniture.
 
 ## Quality and lighting
 

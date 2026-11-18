@@ -103,3 +103,29 @@ test('board recipes bind grain to the metric joint module and release only their
   disposeProposedMaterials(proposal,base);assert.ok(tracked.has(proposal.deck));assert.ok(!tracked.has(base.wood));
   g.dispose();Object.values(base).forEach(m=>m.dispose());
 });
+
+test('clipped surface covers each cadastral boundary up to its actual edge, including concave returns',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const {parcelTerrainClip}=await import('../src/terrain-mesh.js');
+  const {pointInPolygon}=await import('../src/geometry.js');
+  const {footprintArea,overlapArea}=await import('../src/footprint-fit.js');
+  for(const filename of ['site-data.json','korzeniowskiego-40.json','nadmorska-17.json']){
+    const {site}=JSON.parse(await readFile(new URL('../data/'+filename,import.meta.url)));
+    const ring=site.boundary,clip=parcelTerrainClip(ring,pointInPolygon);
+    const xmin=Math.floor(Math.min(...ring.map(p=>p[0])))-1,xmax=Math.ceil(Math.max(...ring.map(p=>p[0])))+1;
+    const ymin=Math.floor(Math.min(...ring.map(p=>p[1])))-1,ymax=Math.ceil(Math.max(...ring.map(p=>p[1])))+1;
+    let area=0,unchanged=0;
+    for(let x=xmin;x<xmax;x+=2)for(let y=ymin;y<ymax;y+=2){
+      for(const tri of [[[x,y],[x+2,y],[x+2,y+2]],[[x,y],[x+2,y+2],[x,y+2]]]){
+        for(const poly of clip(tri)){
+          const surface=footprintArea(poly);area+=surface;
+          assert.ok(poly.every(p=>pointInPolygon(p,ring)),filename+' outside vertex');
+          if(poly===tri)unchanged++;
+          else assert.ok(Math.abs(overlapArea(poly,ring)-surface)<1e-7,filename+' crosses a re-entrant edge');
+        }
+      }
+    }
+    assert.ok(Math.abs(area-footprintArea(ring))<1e-6,filename+' continuous coverage');
+    assert.ok(unchanged>0,filename+' preserves interior triangles');
+  }
+});

@@ -11,7 +11,8 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const evidence=path.join(root,'test-results','studio');
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
-const report={version,checks:[],screenshots:[],styles:[],errors:[]};
+const report={version,checks:[],screenshots:[],styles:[],errors:[],
+  sceneEvidence:'Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.'};
 const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
 let page,server,browser,base=process.env.BASE_URL?.replace(/\/$/,'');
 if(!base){
@@ -58,6 +59,14 @@ async function shot(name,selector){
   const filename=name+'.png',options={path:path.join(evidence,filename),animations:'disabled',scale:'css'};
   const target=selector?el(selector):page;
   if(selector)await target.scrollIntoViewIfNeeded();
+  if(selector==='#scene-host canvas')assert.equal((await stats()).renderer,'webgl',name);
+  // Playwright captures overlays above the canvas, including a toast triggered
+  // by the preceding download. Wait for both its class and opacity transition
+  // so fixed-camera pixel differences measure the garden itself.
+  if(name!=='failure')await page.waitForFunction(()=>{
+    const toast=document.getElementById('toast');
+    return !toast.classList.contains('visible') && Number(getComputedStyle(toast).opacity)===0;
+  });
   await waitFrames();
   const image=await target.screenshot(options);report.screenshots.push(filename);return image;
 }
@@ -153,11 +162,22 @@ try{
   assert.equal(originalScope.costEstimate.style.knownBase.low,0);assert.equal(originalScope.costEstimate.style.knownBase.high,0);
   assert.deepEqual(originalScope.designChecks,before.designChecks);assert.ok(originalScope.designChecks.checks.length>0);
   await el('#styleHouseFinish').check();
-  await el('[data-preset="terrace"]').click();await el('[data-studio-moment="golden"]').click();
-  await page.waitForFunction(()=>document.querySelector('#viewport').dataset.mode==='eye');
+  await el('[data-preset="terrace"]').click();
+  // The terrace preset selects the observer but preserves the active view.
+  // Choose eye level explicitly to exercise camera preservation through history.
+  assert.equal(await el('#viewport').getAttribute('data-mode'),'orbit');
+  await el('button[data-mode="eye"]').click();
+  await el('[data-studio-moment="golden"]').click();
   const viewpoint=await cameraTime();
+  assert.equal(viewpoint.mode,'eye');assert.equal(viewpoint.preset,'terrace');
+  const sunsetMinutes=originalScope.solar.sunsetMinutes;
+  const goldenMinutes=Math.round(Math.max(0,Math.min(1439,sunsetMinutes-45)));
+  const expectedTime=[Math.floor(goldenMinutes/60),goldenMinutes%60].map(n=>String(n).padStart(2,'0')).join(':');
+  assert.equal(viewpoint.time,expectedTime);
   await el('#studio-undo').click();assert.equal(await el('#styleHouseFinish').isChecked(),false);assert.deepEqual(await cameraTime(),viewpoint);
   await el('#studio-redo').click();assert.equal(await el('#styleHouseFinish').isChecked(),true);assert.deepEqual(await cameraTime(),viewpoint);
+  await shot('sternicza-hidden-bali-terrace-golden-hour','#scene-host canvas');
+  report.goldenHourView=viewpoint;
   check('Keyboard selection, explicit house finish scope, incremental unquoted costs and undo/redo preserve the view and solar time');
   await el('#share').click();await page.waitForFunction(()=>location.hash.includes('designStyle=hidden-bali'));
   const shared=new URLSearchParams(new URL(page.url()).hash.slice(1));
@@ -170,16 +190,16 @@ try{
   check('Share link, reload and JSON export recover the site, lighting time, house finish scope and quality');
 
   const assumptions=el('#budget-assumptions');
-  if(await assumptions.getAttribute('open')===null)await assumptions.locator('summary').first().click();
+  if(await assumptions.getAttribute('open')===null)await assumptions.locator(':scope > summary').click();
   const quote=el('#costStyleUpgradeQuote');
   await quote.fill('20000');await quote.press('Tab');
-  await page.waitForFunction(()=>document.querySelector('[data-style-known-low]')?.dataset.styleKnownLow==='20000');
+  await page.waitForFunction(()=>document.querySelector('.cost-panel')?.dataset.styleKnownLow==='20000');
   await style('space-age');
   assert.equal(Number(await quote.inputValue()),0);
   await el('#studio-undo').click();
   assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
   assert.equal(Number(await quote.inputValue()),20000);
-  await page.waitForFunction(()=>document.querySelector('[data-style-known-low]')?.dataset.styleKnownLow==='20000');
+  await page.waitForFunction(()=>document.querySelector('.cost-panel')?.dataset.styleKnownLow==='20000');
   check('A 20,000 PLN incremental finish quote clears on a change of scheme and Undo restores its original scope');
 
   await el('#save-a').click();
@@ -207,6 +227,10 @@ try{
   await el('button[data-mode="orbit"]').click();await sceneVisible();await expectMotion(true);
   // Small viewport makes both ends of the workspace genuinely leave the scene.
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+  await page.waitForFunction(()=>{
+    const rect=document.querySelector('#scene-host').getBoundingClientRect();
+    return rect.bottom<=0||rect.top>=innerHeight;
+  });
   await expectMotion(false);await sceneVisible();await expectMotion(true);
   // CDP executes the browser's page lifecycle, including visibilitychange.
   const cdp=await ctx.newCDPSession(page);

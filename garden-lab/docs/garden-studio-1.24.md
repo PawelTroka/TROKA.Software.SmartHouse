@@ -48,13 +48,13 @@ See [the physical audit](design-checks-1.24.md) for calculations, measurements, 
 
 ## Rendering and resource use
 
-The rendering audit keeps the pinned Three.js version and improves its existing material, geometry and lifecycle paths. Indexed terrain reuses vertices on the existing tessellation. This changes storage and adjoining surface normals while preserving the original triangle coordinates and mapped terrain shape.
+The rendering audit keeps the pinned Three.js version and improves its existing material, geometry and lifecycle paths. Indexed terrain reuses adjacent vertices and preserves the original interior tessellation. At the parcel edge the renderer now clips triangles to the cadastral outline, closing gaps and removing the sawtooth fringe visible along angled raised lawns.
 
-| Site | Previous terrain vertex entries | Indexed entries | Terrain triangles retained |
+| Site | Previous terrain vertex entries | Indexed entries | Terrain triangles, before → after |
 |---|---:|---:|---:|
-| Sternicza 11 | 118,893 | 20,448 | 39,631 |
-| Korzeniowskiego 40 | 31,848 | 5,668 | 10,616 |
-| Nadmorska 17 | 67,524 | 11,720 | 22,508 |
+| Sternicza 11 | 118,893 | 21,012 | 39,631 → 40,042 |
+| Korzeniowskiego 40 | 31,848 | 5,949 | 10,616 → 10,924 |
+| Nadmorska 17 | 67,524 | 12,116 | 22,508 → 22,961 |
 
 These are structural scene measurements, not an FPS benchmark. They represent roughly 82% fewer terrain vertex entries across the three generated layers. Static detail batching, explicit texture disposal, unchanged-size resize checks and solar-shadow invalidation are reviewed separately in the [rendering study](rendering-1.24.md).
 
