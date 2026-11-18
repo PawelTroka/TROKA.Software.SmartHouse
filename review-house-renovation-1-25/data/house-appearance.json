@@ -1,0 +1,56 @@
+{
+  "property": "Sternicza 11",
+  "updated": "2026-11-18",
+  "reference": "User-provided street photograph. The original photograph is not republished with this simulator.",
+  "observed": [
+    "Off-white plaster, red-brown roof tiles and brown eaves / rainwater pipes.",
+    "Raised basement with red-brown brick finish.",
+    "White paired window frames, a darker recessed front door and metal stair railings.",
+    "Pitched main roof with a secondary gable on the right side of the street-facing door elevation, two brick chimneys and a small triangular attic window in the visible left side gable."
+  ],
+  "mapped": {
+    "footprint": "The original GUGiK / LoD1 house footprint is retained exactly.",
+    "roofMain": "Two reference planes follow the 2024 LiDAR roof returns. Reference-plane fit RMS is 0.0372 m on the front slope and 0.0222 m on the rear slope, excluding chimney clusters. The photo-informed front gable locally overrides the first plane; those fit errors do not describe the altered front roof.",
+    "roofMainFrontPlane": [
+      0.00929205,
+      0.55661563,
+      5.85086242
+    ],
+    "roofMainRearPlane": [
+      -0.0114799946,
+      -0.576041893,
+      20.0356836
+    ],
+    "planeConvention": "z = a*x + b*y + c, in the simulator's local site coordinates and source absolute elevation datum.",
+    "mainRidgeMaximumZ": 12.817853,
+    "chimneyCapZ": [
+      13.34,
+      13.13
+    ],
+    "shadowModel": "The same roof and wall-edge faces drive both the visible house and the direct-sun model. Decorative frames, gutter pipes and thin tile joints are not separate analytical occluders."
+  },
+  "photographicRoofOverride": {
+    "reason": "The door and house number establish the street-facing elevation in the photograph. Its viewer-right gable is visually clear, but conflicts with a portion of the earlier LiDAR front plane. The simulator prioritises that observed architectural form and reports the discrepancy instead of claiming a source fit in the overridden area.",
+    "location": "Street-front, viewer-right; lower site x because a street viewer facing the house looks along positive site y.",
+    "centreX": 6.7,
+    "secondaryRidgeZ": 12.62,
+    "affectedFrontReturns": 6,
+    "frontFitSampleCount": 33,
+    "maximumLiftAboveFittedPlaneAtSourcePointM": 1.193529,
+    "renderedFrontSampleRmsM": 0.299693,
+    "renderedRearSampleRmsM": 0.02222,
+    "limits": "The exact mapped footprint, main ridge and measured chimney height limits stay unchanged. The secondary ridge joins the main roof and does not add a rear cross-gable. No surveyed cross-gable dimensions or date explaining the source discrepancy were supplied."
+  },
+  "inferred": [
+    "Window widths, heights and positions are estimated from the photograph and mapped footprint; no measured elevation or interior survey was supplied.",
+    "The secondary gable's street-facing orientation follows the photograph; its width, 12.62 m ridge and slopes are estimated. The affected roof area deliberately departs from conflicting LiDAR evidence, as quantified above.",
+    "The concealed side repeats the visible side's approximate window rhythm; rear upper windows are assumptions.",
+    "The first-floor street and garden viewpoints now align with rendered openings. Attic garden / street viewpoints remain concept positions because the photograph only establishes a side-facing attic aperture.",
+    "Colours and small construction details are visual approximations; material weathering and lighting in the source photograph are not measured properties."
+  ],
+  "proposedAlterations": [
+    "Full-height rear living-room HST glazing remains a renovation proposal, not a claim about the unseen rear facade.",
+    "Selecting the balcony adds a proposed 1.60 m wide first-floor garden access door, with its threshold at the selected first-floor level.",
+    "The two-car basement entrance requires a proposed side-return front stair and a short cantilevered entrance landing. The front door remains at the same modelled position. The landing has no posts within the ramp and its soffit is included in the garage clearance assessment."
+  ]
+}
