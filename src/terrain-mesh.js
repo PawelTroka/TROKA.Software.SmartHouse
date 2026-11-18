@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import { toWorld } from './orientation.js?v=1.24.0';
+import { toWorld } from './orientation.js?v=1.25.0';
 
 // Terrain is a continuous surface. Share exactly equal plan coordinates whilst
 // preserving clipped intersections, triangle winding, physical UVs and heights.

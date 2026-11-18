@@ -1,6 +1,6 @@
-import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.24.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.24.0';
-import {terrainAt} from './geometry.js?v=1.24.0';
+import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.25.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.25.0';
+import {terrainAt} from './geometry.js?v=1.25.0';
 
 const $=id=>document.getElementById(id);
 const fmt=(value,digits=1)=>Number.isFinite(value)?value.toFixed(digits):'—';
@@ -78,11 +78,11 @@ export function garageParkingPlanSVG(layout){
   }).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" class="garage-parking-svg" viewBox="0 0 600 ${height}" role="img" aria-labelledby="garage-parking-title garage-parking-description" data-spaces="${parking.spaces}" data-width-pass="${parking.widthPass}">
     <title id="garage-parking-title">${parking.spaces}-car basement plan with closed-door vehicle dimensions</title>
-    <desc id="garage-parking-description">The garage is ${fmt(clearWidth,2)} metres clear across, with ${fmt(length,2)} metres of flat covered parking. Each Cyberster envelope is 4.535 metres long, 1.913 metres wide, or 2.110 metres across its mirrors. The side mirror-to-wall gap is ${fmt(parking.mirrorWallClearance,3)} metres${parking.spaces===2?`, with ${fmt(parking.betweenMirrors,3)} metres between mirror envelopes`:''}. Door opening and turning are not simulated.</desc>
+    <desc id="garage-parking-description">The garage is ${fmt(clearWidth,2)} metres clear across, with ${fmt(length,2)} metres of flat covered parking. Each Cyberster envelope is 4.535 metres long, 1.913 metres wide, or 2.110 metres across its mirrors. The side mirror-to-wall gap is ${fmt(parking.mirrorWallClearance,3)} metres, with ${fmt(parking.betweenMirrors,3)} metres between mirror envelopes. Door opening and turning are not simulated.</desc>
     <rect width="600" height="${height}" fill="#fffef9"/>
-    <text x="${left}" y="25" class="profile-label">${parking.spaces===2?'Two cars side by side':'Single-car comparison'} · doors closed</text>
+    <text x="${left}" y="25" class="profile-label">Two cars side by side · doors closed</text>
     <rect x="${left}" y="${top}" width="${length*scale}" height="${clearWidth*scale}" fill="#edf0e7" stroke="#627d68" stroke-width="2"/>
-    ${parking.spaces===2?`<line x1="${left}" y1="${y(0)}" x2="${right}" y2="${y(0)}" stroke="#8a9d8b" stroke-dasharray="5 5"/>`:''}
+    <line x1="${left}" y1="${y(0)}" x2="${right}" y2="${y(0)}" stroke="#8a9d8b" stroke-dasharray="5 5"/>
     ${cars}
     <line x1="${left-20}" y1="${top}" x2="${left-20}" y2="${bottom}" stroke="#627d68"/>
     <path d="M${left-25},${top}h10M${left-25},${bottom}h10" stroke="#627d68"/>
@@ -182,14 +182,14 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     $('garage-door-opening').textContent=`${fmt(current.portal?.width,2)} × ${fmt(current.portal?.clearHeight,2)} m`;
     $('garage-parking-length').textContent=`${fmt(a.parkingFlatLength,2)} m`;
     const capacity=$('garage-parking-capacity');if(capacity)capacity.textContent=`${current.parking.spaces} × ${fmt(current.parking.laneWidth,2)} m lanes`;
-    const lateral=$('garage-lateral-clearance');if(lateral)lateral.textContent=`${fmt(current.parking.mirrorWallClearance*1000,0)} mm to walls${current.parking.spaces===2?` · ${fmt(current.parking.betweenMirrors*1000,0)} mm between`:''}`;
-    const parkingNote=$('garage-parking-note');if(parkingNote)parkingNote.textContent=`${current.parking.spaces===2?'Both cars use':'The car uses'} the dimensioned Cyberster envelope with mirrors extended and doors closed. Body-to-wall gap: ${fmt(current.parking.bodyWallClearance*1000,0)} mm${current.parking.spaces===2?`; between bodies: ${fmt(current.parking.betweenBodies*1000,0)} mm`:''}. Door movement and the turn from the street remain unmodelled.${current.entryAccess?` A proposed side stair keeps the front door in place; minimum closed-car roof clearance beneath its landing is ${mm(a.minimumEntryLandingClearance-allowance)} after the numerical allowance.`:''}`;
+    const lateral=$('garage-lateral-clearance');if(lateral)lateral.textContent=`${fmt(current.parking.mirrorWallClearance*1000,0)} mm to walls · ${fmt(current.parking.betweenMirrors*1000,0)} mm between`;
+    const parkingNote=$('garage-parking-note');if(parkingNote)parkingNote.textContent=`Both cars use the dimensioned Cyberster envelope with mirrors extended and doors closed. The body clears the wall by ${fmt(current.parking.bodyWallClearance*1000,0)} mm, with ${fmt(current.parking.betweenBodies*1000,0)} mm between bodies. Door movement and the turn from the street remain unmodelled.${current.entryAccess?` A proposed side stair keeps the front door in place; minimum closed-car roof clearance beneath its landing is ${mm(a.minimumEntryLandingClearance-allowance)} after the numerical allowance.`:''}`;
     $('garage-forward-clearance').textContent=mm(a.forward?.minimumClearance-allowance);
     $('garage-reverse-clearance').textContent=mm(a.reverse?.minimumClearance-allowance);
     $('garage-clearance-reserve').textContent=mm(a.requiredMargin);
     $('garage-level-summary').textContent=`Living floor ${fmt(current.livingFloorZ-current.streetZ,2)} m above street entry. Basement floor ${fmt(current.drop,2)} m below street entry, after ${fmt(settings.garageSlabThickness,2)} m slab + ${fmt(settings.garageClearHeight,2)} m base clear height${settings.garageExtraDepth>0?` + ${fmt(settings.garageExtraDepth,2)} m extra lowering`:''}. Levels remain unmeasured assumptions.`;
     const direction=settings.garageReverse?'Reverse entry':'Forward entry';
-    $('garage-current-pose').textContent=`${direction} preview${current.parking.spaces===2?' in its own lane; the second car stays parked':''} · ${mm(pose?.minimumClearance)} underside clearance here · pitch ${fmt(pose?.pitchDegrees??pose?.pitchRadians*180/Math.PI,1)}°. The minimum over the whole drive is shown below.`;
+    $('garage-current-pose').textContent=`${direction} preview in its own lane, beside the parked second car · ${mm(pose?.minimumClearance)} underside clearance here · pitch ${fmt(pose?.pitchDegrees??pose?.pitchRadians*180/Math.PI,1)}°. The minimum over the whole drive is shown below.`;
     const warnings=garageConfigurationWarnings(current);
     $('garage-layout-warning').hidden=!warnings.length;
     $('garage-layout-warning').textContent=warnings.join(' ');

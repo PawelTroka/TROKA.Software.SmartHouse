@@ -2,7 +2,7 @@
  * geometry is implied. The conservative underside is flat over the full car.
  * Site coordinates are [x,y,elevation]; longitudinal profile s runs inward.
  */
-import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey} from './garage-options.js?v=1.24.0';
+import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.25.0';
 
 export const CYBERSTER_AWD=Object.freeze({length:4.535,width:1.913,mirrorWidth:2.110,height:1.329,
   wheelbase:2.690,frontOverhang:.955,rearOverhang:.890,frontRadius:.352,rearRadius:.35025,
@@ -13,9 +13,8 @@ const cross=(a,b)=>a[0]*b[1]-a[1]*b[0],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]];
 const closed=points=>[...points,points[0]];
 const ring=points=>points.length>1&&Math.hypot(...sub(points[0],points.at(-1)))<1e-7?points.slice(0,-1):points;
 function options(settings={}){
-  const out={...GARAGE_DEFAULTS,...settings};
+  const out={...GARAGE_DEFAULTS,...upgradeSingleCarGarage(settings)};
   for(const [key,field] of Object.entries(GARAGE_FIELDS))out[key]=clamp(finite(out[key],field.value),field.min,field.max);
-  out.garageSpaces=Math.round(out.garageSpaces);
   return out;
 }
 function lineIntersection(p,d,a,b){
@@ -59,12 +58,12 @@ export function garagePlanFrame(settings={},data){
   // Equal-width, straight driving lanes. A parked second car never shares the
   // moving car's lane. These are closed-car envelopes, not door-opening areas.
   const laneOffsets=Array.from({length:spaces},(_,i)=>(i-(spaces-1)/2)*laneWidth);
-  const parking={spaces,laneWidth,laneOffsets,movingLaneOffset:laneOffsets.at(-1),parkedLaneOffset:spaces===2?laneOffsets[0]:null,
+  const parking={spaces,laneWidth,laneOffsets,movingLaneOffset:laneOffsets.at(-1),parkedLaneOffset:laneOffsets[0],
     mirrorWallClearance:(laneWidth-mirrorWidth)/2,bodyWallClearance:(laneWidth-bodyWidth)/2,
-    betweenMirrors:spaces===2?laneWidth-mirrorWidth:null,betweenBodies:spaces===2?laneWidth-bodyWidth:null,
-    wallAllowance:.3,betweenAllowance:spaces===2?.6:0,minimumWidth:spaces*(mirrorWidth+.6)};
+    betweenMirrors:laneWidth-mirrorWidth,betweenBodies:laneWidth-bodyWidth,
+    wallAllowance:.3,betweenAllowance:.6,minimumWidth:spaces*(mirrorWidth+.6)};
   parking.widthPass=parking.mirrorWallClearance>=parking.wallAllowance-1e-8&&
-    (spaces===1||parking.betweenMirrors>=parking.betweenAllowance-1e-8);
+    parking.betweenMirrors>=parking.betweenAllowance-1e-8;
   const frontY=x=>a[1]+(x-a[0])*edge[1]/edge[0],doorCenter=[9.16,frontY(9.16)];
   const westOuter=at(frontRun,outerWidth/2),requiresSideEntry=westOuter[0]<doorCenter[0]+1;
   let entryAccess=null;
@@ -311,7 +310,7 @@ export function garageLayout(settings={},data,{terrainAt}={}){
     'The road approach and crossing are assumed flush and level. The required drainage/containment threshold detail is unresolved; a 30 mm edge is not included.',
     'The 25% gradient, 3 m access width and 2.20 m structural headroom figures are transitional design benchmarks; project applicability needs confirmation.',
     'The 2.10 m door opening is an assumption without surveyed lintel or door-gear geometry; overhead checks use a conservative full-height closed-car envelope.',
-    `The ${frame.parking.spaces}-car plan uses ${frame.parking.spaces===2?'two identical':'one'} Cyberster envelope${frame.parking.spaces===2?'s':''}: 4.535 m long, 1.913 m body width and 2.110 m across mirrors. Doors remain closed; their opening space and street turning manoeuvres are not modelled.`,
+    `The two-car plan uses two Cyberster envelopes, each 4.535 m long, 1.913 m wide at the body and 2.110 m across its mirrors. The comparison assumes closed doors. Door opening and street turning manoeuvres remain unverified.`,
     'Parking width is compared with a chosen 0.30 m mirror-to-wall allowance and, for two cars, 0.60 m between mirror envelopes. These are planning allowances, not a surveyed door-opening or accessibility assessment.'];
   if(layout.entryAccess)warnings.push('The wider ramp requires proposed side-return entry stairs and a 1.0 m cantilevered landing at the existing front door. Its 0.18 m slab underside is included in both driving sweeps; its structure has not been designed.');
   if(frame.insideRun>0)warnings.push('The bottom curve continues inside the existing house and requires structural and basement-layout design.');
@@ -319,7 +318,7 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   if(layout.design.peakGrade>.25+1e-6)warnings.push('The peak gradient exceeds the 25% individual-garage benchmark.');
   if(!parkingFits)warnings.push('The remaining covered flat bay does not fit the car with 0.30 m allowance at each end.');
   if(!widthBenchmarkPass)warnings.push('The selected clear width is below the 3 m access-roadway benchmark.');
-  if(!parkingWidthPass)warnings.push(`The selected width does not leave the chosen lateral allowances for ${frame.parking.spaces} closed-car envelope${frame.parking.spaces===2?'s':''}.`);
+  if(!parkingWidthPass)warnings.push(`The selected width does not leave the chosen lateral allowances for both closed-car envelopes.`);
   if(!doorBenchmarkPass)warnings.push('Available portal height is below the 2 m garage-door benchmark.');
   if(drop<=0)warnings.push('The proposed floor is at or above the street; this is not a descending basement ramp.');
   const clearancePass=conservativeClearance>=requiredMargin,geometryPass=gradeWithinLimit&&parkingFits&&structuralHeadroomPass&&widthBenchmarkPass&&parkingWidthPass&&doorBenchmarkPass&&drop>0&&minimumOverheadClearance>=requiredMargin+numericalAllowance;

@@ -1,8 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.24.0';
-import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.24.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.24.0';
-import {entranceAccessLayout} from './entrance-access.js?v=1.24.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.25.0';
+import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.25.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.25.0';
+import {addHouseRenovation} from './scene-house-renovation.js?v=1.25.0';
+import {getDesignStyle} from './design-styles.js?v=1.25.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.25.0';
 
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const quad=(a,b,c,d)=>[toWorldTriangle(a,b,c),toWorldTriangle(a,c,d)];
@@ -174,9 +176,8 @@ function roofDetails(group,layout,palette,svgMode){
   }
   // The photograph shows a triangular attic aperture in a side gable. Its
   // approximate detail stays below the unchanged measured roof envelope.
-  const side=edges.find(e=>e.index!==layout.front.index&&e.index!==layout.rear.index&&e.outward[0]>0);
-  if(side){
-    const peak=side.roofEdge.points.reduce((a,b)=>a[2]>=b[2]?a:b),centre=(peak[0]-side.a[0])*side.direction[0]+(peak[1]-side.a[1])*side.direction[1],z=peak[2]-1.18;
+  if(layout.atticWindow){
+    const {edgeIndex,centre,z}=layout.atticWindow,side=edges[edgeIndex];
     const frame=[facadePoint(side,centre-.42,z,.026),facadePoint(side,centre+.42,z,.026),facadePoint(side,centre,z+.78,.026)];
     mesh(group,'house-side-attic-white-frame',[toWorldTriangle(...frame)],palette.frame,false);
     const glass=[facadePoint(side,centre-.31,z+.07,.036),facadePoint(side,centre+.31,z+.07,.036),facadePoint(side,centre,z+.65,.036)];
@@ -199,8 +200,9 @@ export function createPhotoHouseGroup(data,settings={},options={}){
     rail:material('#303834',null,{roughness:.55,metalness:.35}),floor:material('#c9c2b0',shared.stone),
     linen:material('#e8dfcd',shared.linen),timber:material('#b58a60',shared.woodLight),
   };
-  if(options.exterior){
-    const {houseWall,houseRoof,houseFrame}=options.exterior;
+  const style=Object.hasOwn(options,'style')?options.style:(settings.styleHouseFinish?getDesignStyle(settings.designStyle):null);
+  if(style?.renovation){
+    const {houseWall,houseRoof,houseFrame}=style.palette;
     palette.plaster.color.set(houseWall);palette.roof.color.set(houseRoof);
     for(const key of ['frame','hstFrame','fascia','rail'])palette[key].color.set(houseFrame);
   }
@@ -215,5 +217,6 @@ export function createPhotoHouseGroup(data,settings={},options={}){
   box(group,'house-living-sofa-base',6.2,13.5,layout.floorZ,3.1,1,.4,palette.linen,false);
   box(group,'house-living-sofa-back',6.2,13.5,layout.floorZ+.4,3.1,.27,.42,palette.linen,false);
   box(group,'house-living-table',7,15,layout.floorZ,.95,.65,.32,palette.timber,false);
+  addHouseRenovation(group,layout,style,{svgMode:options.svgMode});
   return group;
 }

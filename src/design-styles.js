@@ -2,8 +2,7 @@
 // ornamental modules have no authority over site measurements, planting or prices.
 export const DEFAULT_DESIGN_STYLE = 'current';
 
-// Optional cosmetic study of the owner’s house. The original surveyed model
-// stays in its source finishes unless the separate exterior-preview switch is on.
+// House finishes are applied to the owner's facade only.
 const exterior = {
   current: ['#f2f0e8', '#555d58', '#454c47'],
   'organic-modern': ['#d7cbb6', '#73685c', '#65543e'],
@@ -28,12 +27,39 @@ const exterior = {
   'industrial-loft': ['#a6a49c', '#5e6562', '#495352'],
 };
 
+// Field dimensions and pitches are visual design choices in metres.
+function renovation(field, pitch, trim, belt, description) {
+  return Object.freeze({field, pitch, trim, belt, description});
+}
+const houseRenovations = {
+  'organic-modern': renovation('stone', .31, 'cap', 0, 'Warm ashlar accent bays and projecting stone window caps.'),
+  'hidden-bali': renovation('battens', .12, 'timber', 0, 'Close vertical timber screens on solid wall bays and deep brown window casings.'),
+  'mediterranean-villa': renovation('brick', .22, 'shutters', 0, 'Terracotta accent panels, olive louvred shutters and pale stone sills.'),
+  'modern-minimal': renovation('panels', .86, 'fine', 1, 'Large flush-jointed panels, fine graphite window surrounds and one slim horizontal band.'),
+  'scandinavian': renovation('boards', .17, 'timber', 0, 'Pale vertical weatherboards with timber window casings.'),
+  'japandi': renovation('paired', .24, 'fine', 0, 'Paired timber battens and slim dark window surrounds.'),
+  'organic-scandinavian': renovation('lap', .19, 'timber', 0, 'Blond horizontal timber cladding and simple window casings.'),
+  'organic-japandi': renovation('paired', .32, 'cap', 0, 'Widely spaced pairs of walnut-toned battens with quiet stone window caps.'),
+  'space-age': renovation('flutes', .15, 'stepped', 1, 'Fluted metal accent panels and stepped silver window heads above narrow surrounds.'),
+  'party-club': renovation('flutes', .11, 'fine', 2, 'Graphite fluting on solid wall bays with twin plum-coloured facade bands.'),
+  'baltic-dune': renovation('lap', .14, 'cap', 0, 'Narrow weathered horizontal boards paired with pale stone caps and sills.'),
+  'gdansk-brick': renovation('brick', .12, 'soldier', 0, 'Red clinker accent bays and soldier-course lintels above existing windows.'),
+  'danish-midcentury': renovation('battens', .18, 'timber', 1, 'Honey-toned timber fins and window casings with a single horizontal band.'),
+  'finnish-sauna': renovation('boards', .105, 'fine', 0, 'Fine vertical sauna boards and narrow charcoal window surrounds.'),
+  'riviera-deco': renovation('panels', .59, 'stepped', 3, 'Chalk panel bays, stepped window heads and three sea-green facade bands.'),
+  'arts-and-crafts': renovation('boards', .28, 'crosshead', 0, 'Broad oak-toned boards and projecting timber crossheads over the window casings.'),
+  'palm-springs': renovation('flutes', .25, 'cap', 1, 'Broad pale fluted panels, ledged window caps and a coral horizontal band.'),
+  'desert-modern': renovation('stone', .43, 'fine', 1, 'Wide ochre stone courses with narrow bronze-toned surrounds and a horizontal band.'),
+  'alpine-lodge': renovation('lap', .26, 'crosshead', 0, 'Wide horizontal timber boards and projecting crossheads around the windows.'),
+  'industrial-loft': renovation('panels', 1.12, 'steel', 0, 'Large concrete-look panel bays with steel channel-style window lintels.'),
+};
+
 function concept(id, label, family, description, colors, recipe, finishes, bespoke = '') {
   const [surface, edge, wood, frame, fabric, accent, light] = colors.split(' ');
   const [houseWall, houseRoof, houseFrame] = exterior[id];
   const [paving, width, depth, furniture, canopy, fixture] = recipe;
   return Object.freeze({
-    id, label, family, description, bespoke,
+    id, label, family, description, bespoke, renovation: houseRenovations[id] || null,
     palette: Object.freeze({surface, edge, wood, frame, fabric, accent, light, houseWall, houseRoof, houseFrame}),
     swatches: Object.freeze([surface, wood, fabric, accent]),
     recipe: Object.freeze({paving, module: Object.freeze([width, depth]), furniture, canopy, fixture}),

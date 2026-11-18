@@ -1,0 +1,725 @@
+{
+  "version": "1.25.0",
+  "checks": [
+    "All 21 choices are accessible through select, search, family filter and Escape focus return",
+    "Automatic and Eco bound resolution and shadow texture size",
+    "All 20 styles automatically add facade geometry. Current restores the original WebGL image and resource counts return near baseline",
+    "Keyboard selection includes house renovation. Undo and Redo of the house-only opt-out preserve the selected camera and golden-hour time",
+    "A house opt-out survives the share link, a saved-design reload and JSON export",
+    "A 20,000 PLN incremental quote clears independently on renovation and style changes, and Undo restores its original scope",
+    "Save A and return to B preserve the intermediate real design as the Undo target",
+    "Same solar time, orbit mode and viewport size do not refit the shadow camera",
+    "Reduced motion, diagram/offscreen pauses and synthetic visibilitychange after headless foreground freeze",
+    "390 px and 320 px editor and scrollable catalogue fit all 21 choices",
+    "Each mapped property renders a visible house-only renovation from its own garden viewpoint",
+    "An existing v24 styled link opens with its house renovation included"
+  ],
+  "screenshots": [
+    "sternicza-current.png",
+    "sternicza-hidden-bali.png",
+    "sternicza-mediterranean-villa.png",
+    "sternicza-space-age.png",
+    "sternicza-current-restored.png",
+    "sternicza-11-hidden-bali-house-original.png",
+    "sternicza-11-hidden-bali-house-renovated.png",
+    "sternicza-hidden-bali-terrace-golden-hour.png",
+    "mobile-catalogue-390.png",
+    "mobile-catalogue-320.png",
+    "korzeniowskiego-40-organic-japandi.png",
+    "korzeniowskiego-40-organic-japandi-house-original.png",
+    "korzeniowskiego-40-organic-japandi-house-renovated.png",
+    "nadmorska-17-party-club.png",
+    "nadmorska-17-party-club-house-original.png",
+    "nadmorska-17-party-club-house-renovated.png",
+    "desktop-editor.png"
+  ],
+  "styles": [
+    {
+      "id": "organic-modern",
+      "stats": {
+        "frames": 9,
+        "shadowUpdates": 5,
+        "calls": 847,
+        "triangles": 371268,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 115,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "hidden-bali",
+      "diff": {
+        "pixels": 34512,
+        "fraction": 0.08363058312655088
+      },
+      "stats": {
+        "frames": 10,
+        "shadowUpdates": 6,
+        "calls": 859,
+        "triangles": 412852,
+        "geometries": 806,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 123,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "mediterranean-villa",
+      "diff": {
+        "pixels": 33831,
+        "fraction": 0.08198036212779157
+      },
+      "stats": {
+        "frames": 11,
+        "shadowUpdates": 7,
+        "calls": 848,
+        "triangles": 370144,
+        "geometries": 798,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 305,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "modern-minimal",
+      "stats": {
+        "frames": 12,
+        "shadowUpdates": 8,
+        "calls": 848,
+        "triangles": 368708,
+        "geometries": 798,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 85,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "scandinavian",
+      "stats": {
+        "frames": 13,
+        "shadowUpdates": 9,
+        "calls": 854,
+        "triangles": 370792,
+        "geometries": 801,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 105,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "japandi",
+      "stats": {
+        "frames": 14,
+        "shadowUpdates": 10,
+        "calls": 850,
+        "triangles": 366124,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 123,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "organic-scandinavian",
+      "stats": {
+        "frames": 15,
+        "shadowUpdates": 11,
+        "calls": 851,
+        "triangles": 370916,
+        "geometries": 798,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 141,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "organic-japandi",
+      "stats": {
+        "frames": 16,
+        "shadowUpdates": 12,
+        "calls": 850,
+        "triangles": 371256,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 79,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "space-age",
+      "diff": {
+        "pixels": 22744,
+        "fraction": 0.0551139888337469
+      },
+      "stats": {
+        "frames": 17,
+        "shadowUpdates": 13,
+        "calls": 854,
+        "triangles": 374606,
+        "geometries": 804,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 128,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "party-club",
+      "stats": {
+        "frames": 18,
+        "shadowUpdates": 14,
+        "calls": 847,
+        "triangles": 379540,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 137,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "baltic-dune",
+      "stats": {
+        "frames": 19,
+        "shadowUpdates": 15,
+        "calls": 854,
+        "triangles": 370676,
+        "geometries": 801,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 139,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "gdansk-brick",
+      "stats": {
+        "frames": 20,
+        "shadowUpdates": 16,
+        "calls": 851,
+        "triangles": 375462,
+        "geometries": 801,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 802,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "danish-midcentury",
+      "stats": {
+        "frames": 21,
+        "shadowUpdates": 17,
+        "calls": 847,
+        "triangles": 369788,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 109,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "finnish-sauna",
+      "stats": {
+        "frames": 22,
+        "shadowUpdates": 18,
+        "calls": 854,
+        "triangles": 370570,
+        "geometries": 801,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 132,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "riviera-deco",
+      "stats": {
+        "frames": 23,
+        "shadowUpdates": 19,
+        "calls": 851,
+        "triangles": 382004,
+        "geometries": 801,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 125,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "arts-and-crafts",
+      "stats": {
+        "frames": 24,
+        "shadowUpdates": 20,
+        "calls": 851,
+        "triangles": 368322,
+        "geometries": 801,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 88,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "palm-springs",
+      "stats": {
+        "frames": 25,
+        "shadowUpdates": 21,
+        "calls": 850,
+        "triangles": 370920,
+        "geometries": 800,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 65,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "desert-modern",
+      "stats": {
+        "frames": 26,
+        "shadowUpdates": 22,
+        "calls": 847,
+        "triangles": 370776,
+        "geometries": 797,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 121,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "alpine-lodge",
+      "stats": {
+        "frames": 27,
+        "shadowUpdates": 23,
+        "calls": 852,
+        "triangles": 368960,
+        "geometries": 799,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 123,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "id": "industrial-loft",
+      "stats": {
+        "frames": 28,
+        "shadowUpdates": 24,
+        "calls": 849,
+        "triangles": 372364,
+        "geometries": 799,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 89,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "korzeniowskiego-40",
+      "id": "organic-japandi",
+      "diff": {
+        "pixels": 44312,
+        "fraction": 0.10737825682382134
+      },
+      "stats": {
+        "frames": 5,
+        "shadowUpdates": 2,
+        "calls": 342,
+        "triangles": 130806,
+        "geometries": 338,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 62,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "nadmorska-17",
+      "id": "party-club",
+      "diff": {
+        "pixels": 83900,
+        "fraction": 0.20330916563275434
+      },
+      "stats": {
+        "frames": 5,
+        "shadowUpdates": 2,
+        "calls": 473,
+        "triangles": 262297,
+        "geometries": 435,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 119,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    }
+  ],
+  "errors": [],
+  "sceneEvidence": "Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.",
+  "quality": {
+    "auto": {
+      "frames": 4,
+      "shadowUpdates": 3,
+      "calls": 1000,
+      "triangles": 407506,
+      "geometries": 950,
+      "textures": 16,
+      "pixelRatio": 1.5,
+      "bufferWidth": 1248,
+      "bufferHeight": 742,
+      "shadowSize": 2048,
+      "houseRenovationParts": 0,
+      "houseRenovationProjection": 0,
+      "renderer": "webgl",
+      "motionActive": false
+    },
+    "eco": {
+      "frames": 3,
+      "shadowUpdates": 2,
+      "calls": 1000,
+      "triangles": 407506,
+      "geometries": 950,
+      "textures": 16,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "houseRenovationParts": 0,
+      "houseRenovationProjection": 0,
+      "renderer": "webgl",
+      "motionActive": false
+    }
+  },
+  "returnedResources": {
+    "reference": {
+      "frames": 5,
+      "shadowUpdates": 4,
+      "calls": 1000,
+      "triangles": 407506,
+      "geometries": 950,
+      "textures": 16,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "houseRenovationParts": 0,
+      "houseRenovationProjection": 0,
+      "renderer": "webgl",
+      "motionActive": false
+    },
+    "reset": {
+      "frames": 29,
+      "shadowUpdates": 25,
+      "calls": 866,
+      "triangles": 407506,
+      "geometries": 816,
+      "textures": 16,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "houseRenovationParts": 0,
+      "houseRenovationProjection": 0,
+      "renderer": "webgl",
+      "motionActive": false
+    }
+  },
+  "currentRestoration": {
+    "pixels": 0,
+    "fraction": 0
+  },
+  "houseComparisons": [
+    {
+      "site": "sternicza-11",
+      "id": "hidden-bali",
+      "view": {
+        "mode": "eye",
+        "preset": "garden",
+        "yaw": "180",
+        "date": "2026-06-21",
+        "time": "12:00",
+        "observer": "Eye 2.27 m above original garden reference · 1.65 m above local ground"
+      },
+      "diff": {
+        "pixels": 40070,
+        "fraction": 0.09709890663771713
+      },
+      "on": {
+        "frames": 37,
+        "shadowUpdates": 28,
+        "calls": 579,
+        "triangles": 344132,
+        "geometries": 601,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 123,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      },
+      "off": {
+        "frames": 35,
+        "shadowUpdates": 27,
+        "calls": 578,
+        "triangles": 342902,
+        "geometries": 600,
+        "textures": 16,
+        "pixelRatio": 1,
+        "bufferWidth": 832,
+        "bufferHeight": 495,
+        "shadowSize": 1024,
+        "houseRenovationParts": 0,
+        "houseRenovationProjection": 0,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "korzeniowskiego-40",
+      "id": "organic-japandi",
+      "view": {
+        "mode": "eye",
+        "preset": "garden",
+        "yaw": "180",
+        "date": "2026-06-21",
+        "time": "12:00",
+        "observer": "Eye 2.07 m above original garden reference · 1.65 m above local ground"
+      },
+      "diff": {
+        "pixels": 91233,
+        "fraction": 0.22107872596153846
+      },
+      "on": {
+        "frames": 10,
+        "shadowUpdates": 4,
+        "calls": 218,
+        "triangles": 122784,
+        "geometries": 235,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 62,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      },
+      "off": {
+        "frames": 8,
+        "shadowUpdates": 3,
+        "calls": 217,
+        "triangles": 122164,
+        "geometries": 234,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 0,
+        "houseRenovationProjection": 0,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "nadmorska-17",
+      "id": "party-club",
+      "view": {
+        "mode": "eye",
+        "preset": "garden",
+        "yaw": "180",
+        "date": "2026-06-21",
+        "time": "12:00",
+        "observer": "Eye 1.73 m above original garden reference · 1.65 m above local ground"
+      },
+      "diff": {
+        "pixels": 123520,
+        "fraction": 0.29931761786600497
+      },
+      "on": {
+        "frames": 10,
+        "shadowUpdates": 4,
+        "calls": 319,
+        "triangles": 242845,
+        "geometries": 324,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 119,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      },
+      "off": {
+        "frames": 8,
+        "shadowUpdates": 3,
+        "calls": 318,
+        "triangles": 241655,
+        "geometries": 323,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 0,
+        "houseRenovationProjection": 0,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    }
+  ],
+  "goldenHourView": {
+    "mode": "eye",
+    "preset": "terrace",
+    "yaw": "0",
+    "date": "2026-06-21",
+    "time": "20:39",
+    "observer": "Eye 2.85 m above original garden reference · 1.65 m above floor"
+  },
+  "hiddenCheck": "synthetic visibilitychange after headless foreground freeze",
+  "visibilitySamples": [],
+  "mobile": [
+    {
+      "width": 390,
+      "page": 390,
+      "dialog": 370,
+      "scroll": 368,
+      "client": 368
+    },
+    {
+      "width": 320,
+      "page": 320,
+      "dialog": 300,
+      "scroll": 298,
+      "client": 298
+    }
+  ],
+  "status": "passed"
+}

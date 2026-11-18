@@ -1,0 +1,26 @@
+{
+  "version": "1.25.0",
+  "date": "2026-11-18",
+  "sourceCommit": "a5028a36db02ff8cfe3c4b9387d85797da24a9dc",
+  "sourceTree": "34665b35023a980b0cae21e0b5419d910c82df2e",
+  "unitTests": 595,
+  "browserChecks": 55,
+  "ciRun": 44337758123,
+  "status": "passed",
+  "jobs": {
+    "night": {
+      "status": "passed",
+      "checks": 35
+    },
+    "refinements": {
+      "status": "passed",
+      "checks": 8
+    },
+    "studio": {
+      "status": "passed",
+      "checks": 12
+    }
+  },
+  "scope": "20 house renovation styles on three properties; required two-car Sternicza garage; existing features preserved.",
+  "mergedCommit": "8b7678d5cd4ef956eb39af81879eda84911d9304"
+}
