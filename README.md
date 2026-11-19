@@ -8,9 +8,10 @@
 
 ## Sternicza · Garden Lab
 
-Interactive garden and privacy simulator for Sternicza 11 in Gdańsk, with 3D and eye-level views, a clickable plan, sightline sections, adjustable hedges, garden levels, planting beds and terrace screening.
+Interactive garden, privacy and interior simulator for Sternicza 11 in Gdańsk, with furnished 3D and eye-level views, original and renovated floor plans, sightline sections, adjustable hedges, garden levels, planting beds and terrace screening.
 
-- **[Open the latest Garden Lab · PCK3 screening structures](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.21.0)**
+- **[Open the latest Garden Lab](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.26.0)**
+- **[Open the Sternicza interior studio](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.26.0#v=26&site=sternicza-11&mode=plan&interiorEnabled=true&interiorLayout=renovation&interiorView=dollhouse&interiorStyle=hidden-bali)** · [Drawing review](garden-lab/docs/interior-plan-review-1.26.0.md)
 - [Source, local setup, data sources and model assumptions](garden-lab/README.md)
 - The `gh-pages` branch contains the standalone static application. Pages publishing source: **gh-pages / (root)**.
 - No backend, credentials or npm installation is required. Run `npm test` and `npm run build` from `garden-lab/`.

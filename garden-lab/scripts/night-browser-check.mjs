@@ -453,10 +453,13 @@ async function verifyBasementGarage(){
   assert.deepEqual(await result(),candidate);
   check('Optional basement garage starts off and creates a visibly different WebGL excavation and open entrance when enabled');
 
-  const forecourt=await preset('forecourt','reserve-shortfall');
-  assert.ok(forecourt.minimum<forecourt.reserve,'Front-yard-only comparison must expose its reserve shortfall');
+  // The section-derived 0.30 m slab lowers this floor by 0.05 m compared with
+  // the old concept. With no ramp inside, the car now contacts the surface.
+  const forecourt=await preset('forecourt','contact');
+  assert.ok(forecourt.minimum<0,'Front-yard-only comparison must expose modelled underside contact');
   assert.equal(await page.locator('#garage-layout-warning').isVisible(),true);
-  assert.match(await page.locator('#garage-layout-warning').innerText(),/reserve is not achieved/i,'A real reserve shortfall remains visible beside its result');
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/underside intersects the ramp/i,'Contact remains visible beside its result');
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/retained stair.*flue.*two-car approach/i,'Contact cannot hide the independent structural obstruction');
   assert.equal(Number(await page.locator('#garageInsideRun-value').inputValue()),0);
   const deeper=await preset('deeper',['contact','geometry-limit']);
   assert.ok(deeper.minimum<deeper.reserve,'Deeper floor cannot be presented as the passing candidate');
@@ -494,7 +497,7 @@ async function verifyBasementGarage(){
 
   await page.locator('[data-garage-reverse="true"]').click();
   await page.locator('#save-a').click();
-  await preset('forecourt','reserve-shortfall');
+  await preset('forecourt','contact');
   await page.locator('#compare').click();
   assert.equal(await page.locator('#comparison-status').innerText(),'Viewing saved A');
   assert.deepEqual(await result(),candidate,'Scenario A restores the saved garage dimensions');

@@ -45,6 +45,26 @@ test('printed room areas are preserved independently from reconstructed polygons
   assert.equal(proposal('first').rooms.find(r=>r.id==='master').sourceArea,null);
   assert.throws(()=>getInteriorPlan({floor:'roof'}),RangeError);
 });
+test('upper bay preserves the printed 307 by 168 cm clear dimensions and accounts for the wardrobe partition',()=>{
+  for(const plan of [baseline('first'),proposal('first')]){
+    const left=plan.walls.find(w=>w.id==='bay-left'),right=plan.walls.find(w=>w.id==='bay-right');
+    const front=plan.walls.find(w=>w.id==='bay-front'),street=plan.walls.find(w=>w.id==='street-left');
+    const innerLeft=left.a[0]+left.thickness/2,innerRight=right.a[0]-right.thickness/2;
+    near(innerRight-innerLeft,3.07);
+    near(front.a[1]-front.thickness/2-(street.a[1]-street.thickness/2),1.68);
+    near(plan.envelope.bay.width,3.55+2*.10);
+    near(plan.envelope.bay.masonryThickness,.24);
+    near(plan.envelope.bay.x,3.51);
+  }
+  const plan=proposal('first'),wardrobe=plan.rooms.find(r=>r.id==='wardrobe');
+  const partition=plan.walls.find(w=>w.id==='wardrobe-front');
+  const [a,,b]=wardrobe.polygon;
+  near(b[0]-a[0],3.07);near(b[1]-a[1],1.59);
+  near(a[1],partition.a[1]+partition.thickness/2);
+  near(wardrobe.area,4.88);
+  assert.match(plan.issues.find(note=>note.includes('wardrobe partition')),/3\.07 × 1\.59/);
+  near(baseline('ground').envelope.bay.width,3.55);
+});
 test('all apertures fit their wall segment and level, including narrow garage experiments',()=>{
   const plans=INTERIOR_FLOORS.flatMap(floor=>INTERIOR_LAYOUTS.map(layout=>getInteriorPlan({floor,layout})));
   for(const width of [2.8,4.5,5.8,6.4])plans.push(getInteriorPlan({floor:'basement',garageVariant:'two-car',garageSettings:{garageRampWidth:width}}));

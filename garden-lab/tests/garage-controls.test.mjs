@@ -45,8 +45,13 @@ test('both contrasting garage presets report their own clearance result',()=>{
   const front=garageLayout(garagePresetState('forecourt',model.DEFAULTS),data,{terrainAt});
   const deep=garageLayout(garagePresetState('deeper',model.DEFAULTS),data,{terrainAt});
   assert.equal(garageClearanceResult(raised).status,'structure-conflict');
-  assert.notEqual(garageClearanceResult(front).status,'reserve-met');
-  assert.notEqual(garageClearanceResult(deep).status,'reserve-met');
+  for(const layout of [front,deep]){
+    assert.equal(garageClearanceResult(layout).status,'contact');
+    assert.ok(layout.assessment.minimumClearance<0,'The section-derived slab creates real modelled contact, not just a reserve shortfall');
+    const warnings=garageConfigurationWarnings(layout);
+    assert.ok(warnings.some(note=>/underside intersects the ramp/i.test(note)));
+    assert.ok(warnings.some(note=>/retained stair.*flue/i.test(note)),'Contact must not hide independent structural obstructions');
+  }
   assert.ok(raised.assessment.minCoveredHeadroom>=2.2);
   assert.ok(raised.assessment.conservativeClearance>=.03);
 });

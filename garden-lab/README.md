@@ -2,7 +2,19 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.25.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.25.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.25.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.26.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.26.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.26.0)**
+
+## Sternicza interior studio · 1.26.0
+
+**Interiors** opens a separate workspace for the basement, ground floor, first floor and attic. Compare **Original drawings** with **Your renovation**, inspect the measured **Floor plan**, orbit a furnished **Dollhouse**, or enter a selected room at **Eye level**. The room schedule keeps the printed drawing areas separate from reconstructed polygon areas. The wall-change overlay identifies removed and added partitions.
+
+The ground renovation combines the kitchen, dining and living spaces, joins the right-side bathroom and kitchen, and adds broad garden glazing. Upstairs it retains a master bedroom, office and rear guest room, divides the front room into two independently accessed guest rooms, adds the bay wardrobe, and models the marked sauna and spa fittings. The cellar comparison retains both car envelopes and exposes conflicts with the stair and flues. The attic retains the truss and headroom constraints.
+
+Choose the neutral interior or any of the 20 design styles independently of the wall layout, or follow the garden style. **Apply terrace & balcony** carries the two proposed **10.77 × 4.00 m** platforms, the **+3.05 m** upper level and all three balcony doors into the garden. Merely viewing an interior does not replace the outdoor design. Save A, Compare A/B, shared links and exports preserve the interior settings under schema **26**, including older garden designs.
+
+The historical section shows **1.70 m clear cellar height**, independent of the current garden level. The new front guest rooms are compact singles, the marked sauna corner is shallower than the reference two-person cabin, and filled baths, removed walls, glazing and balcony supports need structural design. The bay's printed clear width is **3.07 m**; the wardrobe schedule accounts for the new partition. Interior fit and furnishing are proposals; costs are outside the garden estimate.
+
+[Open the renovated interior in Hidden Bali](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.26.0#v=26&site=sternicza-11&mode=plan&interiorEnabled=true&interiorLayout=renovation&interiorView=dollhouse&interiorStyle=hidden-bali) · [Detailed drawing review](docs/interior-plan-review-1.26.0.md) · [Release evidence](https://paweltroka.github.io/TROKA.Software.SmartHouse/release-evidence/1.26.0/validation.html)
 
 ## House renovation styles and required two-car garage · 1.25.0
 

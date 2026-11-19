@@ -8,7 +8,7 @@ The historical sheets support a four-level reconstruction, with two habitable st
 | --- | --- |
 | IMG_8721.jpeg | Cellar plan. Overall depth 900 cm. Outer walls 40 cm, rear zone 440 cm, transverse wall 40 cm, front zone 340 cm. Five numbered spaces, four side lights, two flue groups, internal stair and a separate rear areaway. The areaway shows three 15 cm rises on 28 cm treads, an approximately 110 cm return and 25 cm retaining wall. The front stair foundation is marked 125 / 827 / 125 cm. |
 | IMG_8722.jpeg | Ground plan. Front width chain 361 / 355 / 361 cm. The 35 cm exterior walls enclose two rear rooms, kitchens on either side of an entrance and stair, a central hall and a small right bathroom. The front-left kitchen is marked 412 cm wide. On the front circulation chain the sheet shows 12 cm partitions, a 120 cm hall, a 101 cm stair and a 338 cm wet-room zone. A note requests straightening the lower timber stair flight. The flanking approaches each have eight 17.5 cm rises, 29 cm treads and about 203 cm horizontal run, with existing granite posts. The twin approaches converge on adjacent landings on either side of a divider. |
-| IMG_8723.jpeg | First-floor plan. Printed room widths at the back are 420, 342 and 240 cm. Several partitions are 7.5 cm. Other annotations include a 351.5 cm room depth, approximately 95 cm hall, 80 × 200 cm doors and 17 rises of approximately 17.9 cm with 20 cm treads and upper winders. The front-right wet-room width chain includes 190 / 10 / 142 cm. The original kitchen shows a glazed partition, hob and double bowl. The bath shows a basin, tub and WC. A fold-down attic ladder is drawn alongside the main stair. The projecting bay contains a 180 cm centre window, two 60 cm side lights and an approximately 168 cm internal projection. |
+| IMG_8723.jpeg | First-floor plan. Printed room widths at the back are 420, 342 and 240 cm. Several partitions are 7.5 cm. Other annotations include a 351.5 cm room depth, approximately 95 cm hall, 80 × 200 cm doors and 17 rises of approximately 17.9 cm with 20 cm treads and upper winders. The front-right wet-room width chain includes 190 / 10 / 142 cm. The original kitchen shows a glazed partition, hob and double bowl. The bath shows a basin, tub and WC. A fold-down attic ladder is drawn alongside the main stair. The projecting bay contains a 180 cm centre window, two 60 cm side lights and printed internal dimensions of 307 × 168 cm. Its 355 cm masonry width has separately dimensioned 10 cm insulation outside each 24 cm wall. |
 | IMG_8724.jpeg | Section I–I. Printed levels −2.50, −2.00, ±0.00, +3.05, +5.75, +7.25, +8.75 and +9.60 m. Timber stair, two 30 cm floor zones, triangular truss webs, stack and 30° roof. One window zone shows 80 cm sill, 150 cm opening and 40 cm to the ceiling. The −2.50 m level is at the drawn foundation line. |
 | IMG_8725.jpeg | Street elevation. Front gable and projection, twin stairs with sloping balustrades and end posts, central and flanking upper multipane windows, shuttered ground openings, projecting cornice, horizontal plinth and two stacks. Two panels appear on the face of the ground-level projection. Handwritten flank dimensions differ slightly from the printed ground-plan chain. |
 | IMG_8726.jpeg | Side elevation. Paired small cellar lights, paired multipane windows at both occupied storeys, shutters at ground level, circular gable vent, stack and narrow upper window in the front projection. |
@@ -21,7 +21,11 @@ The photographs are perspective views of folded sheets. The reconstruction uses 
 
 ## Registration and vertical section
 
-Drawing coordinates use metres. The garden wall lies at z = 0 and the street wall at z = 9. The x-axis runs from left to right on the paper. The 10.77 × 9.00 m rectangle occupies 96.93 m² before the front projection. The bay starts at x = 3.61 m and spans 3.55 m. The model uses an outer projection of 1.68 m for the centred bay and omits it from the cellar and main attic outlines. The 1.68 m label on the upper plan appears on an internal depth chain, so the precise face to measure from requires verification.
+Drawing coordinates use metres. The garden wall lies at z = 0 and the street wall at z = 9. The x-axis runs from left to right on the paper. The 10.77 × 9.00 m rectangle occupies 96.93 m² before the front projection. The ground-level bay starts at x = 3.61 m and spans 3.55 m. On the upper sheet that same 3.55 m chain is the masonry width; two 24 cm walls leave the explicitly printed **3.07 m clear width**. Adding the separately dimensioned 10 cm external insulation gives a 3.75 m finished width, centred at x = 5.385 m. The upper bay's outside edges are therefore x = 3.51 and 7.26 m, and its inside edges are x = 3.85 and 6.92 m.
+
+The upper bay's **1.68 m clear projection** runs from the inside of the main street wall at z = 8.66 m to the inner bay face at z = 10.34 m. Equal wall thickness at those faces also gives a 1.68 m exterior projection in this reconstruction. The new 10 cm wardrobe partition is centred at z = 8.70 m, leaving **3.07 × 1.59 m**, or approximately **4.88 m²**, inside the proposed wardrobe. Its inner face takes 9 cm from the original bay depth. Moving the partition toward the hall to preserve all 1.68 m would require checking its intersections with the guest room, stair-side wall and spa doorway; that movement has not been silently assumed. The bay is omitted from the cellar and main attic outlines.
+
+Some printed dimension chains still do not close exactly. The three upper rear widths, two 7.5 cm partitions and two 34 cm finished outer walls total 10.85 m, compared with the 10.77 m width on the ground/structure sheets. The model retains the 10.77 m main reference and records the resulting approximate rear-right room polygon separately from its printed 8.42 m² area. It does not stretch the house or alter a source measurement to hide that 8 cm discrepancy. A survey must reconcile external insulation faces, masonry faces and the sheets' dates.
 
 The mapped main rectangle is approximately 11.01 × 8.90 m. The drawing sits on the main centreline at its recorded scale. Increasing drawing x points toward decreasing site x. The projection extends beyond the mapped rectangle. The photo-informed present-day entry and the twin approach on the historical drawings differ. Camera, lawn and privacy studies continue to use the mapped outdoor reference frame.
 
@@ -34,7 +38,7 @@ The mapped main rectangle is approximately 11.01 × 8.90 m. The drawing sits on 
 | Attic chord or upper ceiling | +5.75 m | 3.00 m to ridge at +8.75 m |
 | Chimney reference | +9.60 m | 0.85 m above ridge |
 
-The section also annotates +7.25 m over a local projection. Grade varies around the house and was not derived from the foundation mark. At the nominal 30° pitch, bands above 1.40, 1.90 and 2.20 m gross envelope height span approximately 5.54, 3.81 and 2.77 m across the roof. Across the 10.09 m internal width these bands cover about 55.92, 38.45 and 27.96 m². Deck build-up, webs, flues, roof insulation and the hatch reduce the available space. No habitable attic floor area is established by these figures.
+The section also annotates +7.25 m over a local projection. The 170 cm cellar dimension runs from the cellar floor to the ground-floor slab underside: it is a clear room height, not a measurement of the portion above outside ground. Grade varies around the house and was not derived from the foundation mark. These historical dimensions do not establish the present-day cellar height. At the nominal 30° pitch, bands above 1.40, 1.90 and 2.20 m gross envelope height span approximately 5.54, 3.81 and 2.77 m across the roof. Across the 10.09 m internal width these bands cover about 55.92, 38.45 and 27.96 m². Deck build-up, webs, flues, roof insulation and the hatch reduce the available space. No habitable attic floor area is established by these figures.
 
 ## Historical room schedule
 
@@ -57,7 +61,7 @@ The source column transcribes the printed schedule. The model column gives the a
 | 2/2 · middle rear room | 12.00 | 12.03 | Floor panels |
 | 3/2 · rear-right room | 8.42 | 8.17 | Floor panels |
 | 4/2 · hall | 5.60 | 5.42 | Floor panels |
-| 5/2 · large front room and bay | 28.08 | 28.43 | Floor panels |
+| 5/2 · large front room and bay | 28.08 | 28.76 | Floor panels |
 | 6/2 · kitchen | 7.18 | 6.98 | Porcelain tile |
 | 7/2 · bathroom | 5.36 | 5.22 | Porcelain tile |
 
@@ -75,7 +79,7 @@ The HST drawing allowance is 9.97 × 2.35 m between 0.40 m end returns. Both out
 | Guest bedroom II | 7.39 | Front-left side window. A 2.00 × 0.90 m single bed runs across the width. |
 | Guest bedroom III | 6.36 | Street-facing window. A compact single leaves a passage to the independent corridor door. |
 | Hall and landing | 10.89 | Separate doorways to both front guest rooms, wardrobe and spa. Folding ladder deployment shares this circulation. |
-| Bay wardrobe | 4.56 | Opposed shallow storage banks leave the middle clear. |
+| Bay wardrobe | 4.88 | Printed bay: 3.07 × 1.68 m; proposed partition leaves 3.07 × 1.59 m. Opposed 0.59 m storage banks leave the middle clear. |
 | Spa bathroom | 12.31 | Compact whirlpool, soaking bath, glazed two-person shower, WC, vanity, mirror and heated towel rail. |
 | Sauna | 1.21 | About 1.28 × 0.94 m between interior faces, beside the rear guest room. Door swings toward hall. |
 

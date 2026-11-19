@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.26.0';
 import {buildArchitecture} from './interior-architecture.js?v=1.26.0';
 import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.26.0';
 import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.26.0';
