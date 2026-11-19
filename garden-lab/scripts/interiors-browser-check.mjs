@@ -21,8 +21,8 @@ async function chooseLayout(layout){await q(`#interior-host button[data-layout="
 async function chooseView(view){await q(`#interior-host button[data-view="${view}"]`).click();}
 async function rendered(style,view){
   await page.waitForFunction(({style,view})=>{
-    const d=document.querySelector('#interior-host')?.getInteriorDiagnostics?.(), s=d?.scene;
-    return s?.available&&s.visible&&s.styleId===style&&s.view===view&&s.frames>0&&!s.framePending&&s.triangles>0;
+    const host=document.querySelector('#interior-host'),d=host?.getInteriorDiagnostics?.(),s=d?.scene;
+    return s?.available&&s.visible&&s.styleId===style&&s.view===view&&s.floor===host.dataset.floor&&s.layout===host.dataset.layout&&s.frames>0&&!s.framePending&&s.triangles>0;
   },{style,view},{timeout:30000});
   return (await info()).scene;
 }
@@ -43,6 +43,15 @@ async function pixels(a,b){
   },[a.toString('base64'),b.toString('base64')]);
 }
 async function exportDesign(){const pending=page.waitForEvent('download');await q('#export').click();return JSON.parse(await readFile(await (await pending).path(),'utf8'));}
+function polygonArea(points){return Math.abs(points.reduce((sum,p,i)=>{const next=points[(i+1)%points.length];return sum+p[0]*next[1]-next[0]*p[1];},0))/2;}
+function assertBalconyShared(exported,depth){
+  const plan=exported.interiors.floors.first,deck=plan.outdoor.find(p=>p.kind==='balcony'),cover=exported.terraceCover;
+  assert.ok(deck,'The first-floor plan must contain the actual exterior balcony');assert.equal(deck.depth,depth);
+  assert.equal(cover.type,'balcony');assert.equal(cover.enabled,true);assert.equal(cover.accessFits,true);
+  assert.ok(Math.abs(polygonArea(deck.polygon)-cover.area)<1e-6,'Interior/exterior deck areas must agree');
+  assert.ok(Math.abs(cover.bounds.y1-cover.bounds.y0-depth)<1e-6);assert.ok(Math.abs(cover.bounds.x1-cover.bounds.x0-10.77)<1e-6);
+  const doors=plan.walls.flatMap(w=>w.openings).filter(o=>o.type==='balcony-door');assert.equal(doors.length,3);assert.equal(cover.accesses.length,3);
+}
 async function appState(){return q('#interior-host').evaluate(h=>{
   const get=id=>h.querySelector(`[data-iw="${id}"]`);
   return {floor:get('floor').value,layout:h.querySelector('button[data-layout][aria-pressed="true"]').dataset.layout,
@@ -64,7 +73,7 @@ try{
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--disable-dev-shm-usage']});
   const ctx=await browser.newContext({viewport:{width:1240,height:868},deviceScaleFactor:1,reducedMotion:'reduce',acceptDownloads:true});
   page=await ctx.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>report.errors.push(e.message));
-  await page.goto(base+'/?site=sternicza-11#v=26&site=sternicza-11&mode=plan&interiorEnabled=true&interiorView=plan',{waitUntil:'domcontentloaded'});
+  await page.goto(base+'/?site=sternicza-11#v=27&site=sternicza-11&mode=plan&interiorEnabled=true&interiorView=plan',{waitUntil:'domcontentloaded'});
   await ready();assert.equal(await q('meta[name="application-version"]').getAttribute('content'),version);
   assert.equal(await q('#workspace').evaluate(node=>node.inert),true,'Hidden garden controls must not intercept keyboard navigation');
   assert.equal(await field('canvas').locator('canvas').count(),0);
@@ -73,6 +82,7 @@ try{
 
   for(const layout of ['existing','renovation']){
     await chooseLayout(layout);
+    assert.equal((await appState()).style,layout==='existing'?'current':'hidden-bali');
     if(layout==='renovation')await field('changes').check();
     for(const floor of ['ground','first','basement','attic']){
       await field('floor').selectOption(floor);
@@ -88,14 +98,17 @@ try{
         await shot('first-floor-renovation-plan');
       }
       if(layout==='renovation'&&floor==='basement'){
+        assert.equal(await field('garage').isChecked(),false);assert.equal(await field('conflict').isVisible(),false);
+        await field('garage').check();
         assert.ok(await field('conflict').isVisible());assert.ok(await plan.locator('.iw-conflict').count()>=2);
         await shot('basement-conversion-conflicts');
+        await field('garage').uncheck();assert.equal(await field('conflict').isVisible(),false);
       }
       if(floor==='attic')assert.ok(await plan.locator('.iw-headroom').count()>=3);
       report.plans.push({layout,floor,zones});
     }
   }
-  check('Eight floor/layout combinations expose their room schedules, dimensions, openings, wall changes, attic headroom and retained garage conflicts');
+  check('Original and renovated plans expose schedules, openings and headroom; the explicit shared two-car switch reveals retained garage conflicts');
   await field('floor').selectOption('ground');
   await q('[data-iw-room="lounge"]').focus();await page.keyboard.press('Enter');assert.equal(await field('room').inputValue(),'lounge');
   await field('zoom-in').click();assert.equal(await field('drawing').getAttribute('data-zoomed'),'true');await field('zoom-fit').click();
@@ -106,33 +119,43 @@ try{
     await chooseLayout(layout);
     for(const floor of ['ground','first','basement','attic']){
       await field('floor').selectOption(floor);
-      const model=await rendered('current','dollhouse');
+      const model=await rendered(layout==='existing'?'current':'hidden-bali','dollhouse');
       assert.equal(model.layout,layout);assert.equal(model.floor,floor);
       assert.ok(model.wallCount>0&&model.meshes>0&&model.drawCalls>0);
+      assert.equal(model.contextSource,'shared-site-model');
       report.models.push({floor,layout,meshes:model.meshes,triangles:model.triangles});
     }
   }
-  check('Both layouts on all four floors render actual dollhouse geometry');
-  await field('floor').selectOption('ground');await field('room').selectOption('lounge');
-  const ref=await rendered('current','dollhouse'),refFrame=await cameraFrame();assert.ok(ref.drawCalls>0&&ref.furnitureCount>0);
+  check('Current renders the original dwelling and chosen styles render its renovation on all four floors using the actual shared site context');
+  await field('floor').selectOption('ground');await field('style').selectOption('current');
+  const original=await rendered('current','dollhouse'),originalFrame=await cameraFrame();assert.equal(original.layout,'existing');assert.deepEqual(original.renovationFeatures,[]);
+  await field('style').selectOption('hidden-bali');await field('room').selectOption('lounge');
+  const ref=await rendered('hidden-bali','dollhouse');assert.ok(ref.drawCalls>0&&ref.furnitureCount>0);assert.equal(ref.layout,'renovation');
+  assert.equal(await field('apply-exterior').isDisabled(),true,'The marked terrace/balcony must be linked automatically');
   const ids=await field('style').locator('option').evaluateAll(nodes=>nodes.map(n=>n.value).filter(v=>v!=='follow'));
   assert.equal(new Set(ids).size,21);
+  const geometryCounts=new Set(),featureSets=new Set();
   for(const id of ids.filter(id=>id!=='current')){
     await field('style').selectOption(id);const s=await rendered(id,'dollhouse');
     assert.equal(s.floor,ref.floor);assert.equal(s.layout,ref.layout);assert.equal(s.wallCount,ref.wallCount);assert.equal(s.furnitureCount,ref.furnitureCount);
-    const item={id,triangles:s.triangles};
+    assert.equal(s.renovationFeatures.length,3);assert.equal(s.contextSource,'shared-site-model');
+    geometryCounts.add(s.triangles);featureSets.add(JSON.stringify(s.renovationFeatures));
+    const item={id,meshes:s.meshes,triangles:s.triangles,features:s.renovationFeatures};
     if(['japandi','space-age','hidden-bali'].includes(id)){
-      item.difference=await pixels(refFrame,await cameraFrame());assert.ok(item.difference.changed>150,JSON.stringify(item));
+      item.difference=await pixels(originalFrame,await cameraFrame());assert.ok(item.difference.changed>150,JSON.stringify(item));
       if(id==='japandi')await shot('ground-japandi-dollhouse');
     }
     report.styles.push(item);
   }
+  assert.ok(geometryCounts.size>=10,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,20);
+  const major=report.styles.filter(s=>['hidden-bali','japandi','space-age'].includes(s.id));assert.equal(new Set(major.map(s=>s.triangles)).size,3);
   await field('style').selectOption('current');await rendered('current','dollhouse');
-  report.restoration=await pixels(refFrame,await cameraFrame());assert.ok(report.restoration.fraction<.004,JSON.stringify(report.restoration));
-  check('21 styles render with stable room structure. Three styled frames change pixels and the neutral finish restores the reference image');
+  report.restoration=await pixels(originalFrame,await cameraFrame());assert.ok(report.restoration.fraction<.004,JSON.stringify(report.restoration));
+  check('All20 renovations have physical feature descriptions and varied rendered geometry; Bali, Japandi and Space Age visibly differ and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
-  await field('floor').selectOption('first');await field('room').selectOption('master');await field('style').selectOption('japandi');
+  await field('style').selectOption('japandi');await field('floor').selectOption('first');await field('room').selectOption('master');
   await field('enter').click();const eye=await rendered('japandi','room');assert.equal(eye.roomId,'master');assert.ok(eye.eyeHeight>1.1&&eye.eyeHeight<2.1);
+  assert.equal(eye.contextSource,'shared-site-model');
   await shot('first-floor-master-eye-level');
   await field('room').selectOption('office');const office=await rendered('japandi','room');assert.equal(office.roomId,'office');assert.notDeepEqual(office.camera,eye.camera);
   const parked=office.frames,background=await q('#render-diagnostics').getAttribute('data-frames');
@@ -141,18 +164,31 @@ try{
   await field('changes').check();await field('room').selectOption('master');await field('furniture').uncheck();
   const saved=await appState();await q('#save-a').click();await chooseLayout('existing');await q('#compare').click();assert.deepEqual(await appState(),saved);
   await q('#compare').click();assert.equal((await appState()).layout,'existing');await q('#compare').click();assert.deepEqual(await appState(),saved);
-  await q('#share').click();await page.waitForFunction(()=>location.hash.includes('interiorRoomId=master')&&location.hash.includes('interiorStyle=japandi'));
+  await q('#share').click();await page.waitForFunction(()=>location.hash.includes('interiorRoomId=master')&&location.hash.includes('designStyle=japandi'));
   const shared=page.url();await page.reload({waitUntil:'domcontentloaded'});await ready();assert.deepEqual(await appState(),saved);
   await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));await page.reload({waitUntil:'domcontentloaded'});await ready();assert.deepEqual(await appState(),saved);
-  check('Save A, return to B, shared links and local reload preserve independent interior settings');
-  await field('apply-exterior').click();assert.equal(await field('apply-exterior').isDisabled(),true);
+  check('Save A, return to B, shared links and local reload preserve the whole-house style and interior navigation settings');
+  assert.equal(await field('apply-exterior').isDisabled(),true);
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assert.equal(await field('canvas').locator('canvas').count(),0);
   assert.equal(await q('#workspace').evaluate(node=>node.inert),false,'Returning to the garden restores its controls');
   const exported=await exportDesign();
-  for(const [key,value] of Object.entries({planExteriorApplied:true,firstFloorRise:3.05,terraceDepth:4,canopyDepth:4,terraceWidth:10.77,canopyWidth:10.77,interiorStyle:'japandi',interiorRoomId:'master'}))assert.equal(exported.settings[key],value,key);
-  const doors=exported.interiors.selected.walls.flatMap(w=>w.openings).filter(o=>o.type==='balcony-door');assert.equal(doors.length,3);
-  assert.equal(exported.terraceCover.type,'balcony');assert.equal(exported.terraceCover.accessFits,true);
-  check('Applying the marked garden connection exports the full-width terrace and balcony, the shared upper deck and its three access doors');
+  for(const [key,value] of Object.entries({planExteriorApplied:true,firstFloorRise:3.05,terraceDepth:4,canopyDepth:4,terraceWidth:10.77,canopyWidth:10.77,designStyle:'japandi',interiorStyle:'follow',interiorRoomId:'master'}))assert.equal(exported.settings[key],value,key);
+  assertBalconyShared(exported,4);
+  const ground=exported.interiors.floors.ground.fixtures,upper=exported.interiors.floors.first.fixtures,find=(items,kind)=>items.filter(f=>f.kind===kind);
+  assert.equal(find(ground,'tub').length,1);assert.equal(find(ground,'tub')[0].variant,'soaking');assert.equal(find(ground,'hotTub').length,0);
+  assert.equal(find(ground,'basin').length,1);assert.equal(find(ground,'basin')[0].basins,2);assert.equal(find(ground,'bidet').length,1);assert.equal(find(ground,'toilet').length,1);assert.equal(find(ground,'shower').length,1);
+  assert.equal(find(upper,'hotTub').length,1);assert.equal(find(upper,'tub').length,0);assert.equal(find(upper,'bidet').length,0);
+  const hotTub=find(upper,'hotTub')[0];for(const key of ['jets','lights','hydromassage'])assert.equal(hotTub[key],true);assert.equal(hotTub.width,2.05);assert.equal(hotTub.depth,1.80);
+  assert.equal(find(upper,'basin').length,1);assert.equal(find(upper,'basin')[0].basins,1);assert.equal(find(upper,'shower')[0].heads,2);assert.equal(find(upper,'toilet').length,1);
+  report.bathrooms={ground:ground.filter(f=>f.roomId==='bathroom').map(f=>f.kind),first:upper.filter(f=>f.roomId==='spa-bath').map(f=>f.kind)};
+  check('Exports contain the ground soaking tub/dual vanity/bidet and one upper hydro spa/single basin/two-person shower; both views share the 4 m balcony and all 3 doors');
+  await q('#canopyDepth-value').fill('3.2');await q('#canopyDepth-value').press('Tab');
+  const edited=await exportDesign();assertBalconyShared(edited,3.2);
+  await q('#interior-open').click();await ready();assert.equal(await field('apply-exterior').isDisabled(),false);
+  await chooseView('dollhouse');const changed=await rendered('japandi','dollhouse');assert.equal(changed.contextSource,'shared-site-model');
+  await field('apply-exterior').click();assert.equal(await field('apply-exterior').isDisabled(),true);
+  await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assertBalconyShared(await exportDesign(),4);
+  check('Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together');
 
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready();
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();

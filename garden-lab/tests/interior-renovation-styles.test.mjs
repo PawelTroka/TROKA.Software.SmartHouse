@@ -63,8 +63,11 @@ test('room feature panels are confined to solid wall segments and never cover ap
 
 test('whole-building view exposes full walls and ceilings with shared exterior skin and no duplicated access',()=>{
   const plan=getInteriorPlan({floor:'ground',layout:'renovation'}),tools=modelTools(),f=finishes('hidden-bali'),outside=new THREE.MeshStandardMaterial({color:'#bbbbbb'});f.exteriorWall=outside;
-  const model=buildArchitecture(plan,{showOutdoor:false,showExterior:false},tools,f);model.updateVisibility('building',{x:0,z:0});
+  const model=buildArchitecture(plan,{showOutdoor:false,showExterior:false,showStairs:false},tools,f);model.updateVisibility('building',{x:0,z:0});
   assert.equal(model.groups.ceiling.visible,true);for(const pair of model.groups.sides.values()){assert.equal(pair.full.visible,true);assert.equal(pair.cut.visible,false);}
+  assert.ok(model.groups.stairs.children.length>0);assert.equal(model.groups.stairs.visible,false,'Full-building context owns the canonical stairs');
+  model.updateVisibility('dollhouse',{x:0,z:0},{showStairs:true});assert.equal(model.groups.stairs.visible,true);
+  model.updateVisibility('building',{x:0,z:0});assert.equal(model.groups.stairs.visible,false,'An omitted option retains the constructor choice');
   let skin=0;model.root.traverse(n=>{if(n.material===outside)skin++;});assert.ok(skin>0);
   const box=new THREE.Box3().setFromObject(model.groups.base);assert.ok(box.min.y<=-(plan.slabThickness??.30)+.01);
   model.dispose();tools.dispose();f.dispose();outside.dispose();

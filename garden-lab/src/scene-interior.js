@@ -1,10 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js?v=1.26.0';
-import {buildArchitecture} from './interior-architecture.js?v=1.26.0';
-import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.26.0';
-import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.26.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.26.0';
-import {renderBudget} from './render-quality.js?v=1.26.0';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.27.0';
+import {buildArchitecture} from './interior-architecture.js?v=1.27.0';
+import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.27.0';
+import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.27.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.27.0';
+import {renderBudget} from './render-quality.js?v=1.27.0';
 
 const walkKeys=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
 const DEFAULTS={view:'dollhouse',styleId:'current',roomId:null,showChanges:false,showFurniture:true,showCeiling:true};
@@ -90,14 +90,27 @@ export function createInteriorScene(container,callbacks={}) {
   }
   function update(nextPlan,options={}){
     if(disposed)return;const old=state,changedPlan=plan!==nextPlan;plan=nextPlan;state={...DEFAULTS,...options};
-    const changedModel=changedPlan||old.styleId!==state.styleId||old.showChanges!==state.showChanges;
+    const sharedRoom=!!callbacks.getExteriorContext&&state.view==='room';
+    state.showStairs=!sharedRoom;
+    const changedModel=changedPlan||old.styleId!==state.styleId||old.showChanges!==state.showChanges||
+      (!!callbacks.getExteriorContext&&((old.view==='room')!==(state.view==='room')));
     if(changedModel){model?.dispose();if(!finishes||activeStyle!==state.styleId){finishes?.dispose();finishes=interiorMaterials(state.styleId);activeStyle=state.styleId;}
-      model=buildArchitecture(plan,{...state,showOutdoor:!callbacks.getExteriorContext,showExterior:!callbacks.getExteriorContext},tools,finishes);world.add(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
+      const localPlan=callbacks.getExteriorContext?{...plan,outdoor:plan.outdoor.filter(p=>p.kind==='landing'),fixtures:sharedRoom?plan.fixtures.filter(f=>f.kind!=='car'):plan.fixtures}:plan;
+      model=buildArchitecture(localPlan,{...state,showOutdoor:true,showExterior:true,showStairs:!sharedRoom},tools,finishes);world.add(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
       sun.target.position.set(plan.envelope.width/2,plan.elevation,3);sun.position.copy(sun.target.position).add(new THREE.Vector3(-7.5,12,-6.5));
       const lowest=Math.min(-.24,...(plan.stairs||[]).filter(s=>s.to===plan.floor).map(s=>-s.rise));shadow.position.set(plan.envelope.width/2,plan.elevation+lowest-.075,plan.envelope.depth/2);dirtyShadow=true;
     }
     const nextContextKey=[state.contextKey,plan.floor,state.view==='room'?'room':'dollhouse'].join('|');
     if(callbacks.getExteriorContext&&contextKey!==nextContextKey){context?.dispose();context=callbacks.getExteriorContext(plan.floor,state.view);contextKey=nextContextKey;if(context)world.add(context.root);dirtyShadow=true;}
+    if(sharedRoom&&plan.floor==='basement'&&context){
+      // The exterior garage owns the moving and parked vehicles. Collision
+      // bounds follow those same objects instead of a second pair of plan cars.
+      const cars=[];context.root.updateMatrixWorld(true);context.root.traverse(o=>{
+        if(!o.userData.vehicle||!o.visible)return;const b=new THREE.Box3().setFromObject(o);
+        if(!b.isEmpty())cars.push({id:o.name,kind:'car',x:(b.min.x+b.max.x)/2,z:(b.min.z+b.max.z)/2,width:b.max.x-b.min.x,depth:b.max.z-b.min.z});
+      });
+      clear=walkGeometry({...plan,fixtures:[...plan.fixtures.filter(f=>f.kind!=='car'),...cars]});
+    }
     if(context?.lighting){const l=context.lighting;sun.color.setHex(l.sunColor);sun.intensity=l.sunIntensity;sky.color.setHex(l.skyColor);sky.groundColor.setHex(l.groundColor);sky.intensity=l.ambientIntensity;
       sun.position.copy(sun.target.position).add(new THREE.Vector3(...l.sunDirection).multiplyScalar(20));}
     orbit.enabled=state.view!=='room';const room=!orbit.enabled;world.background=new THREE.Color(room&&context?.lighting?context.lighting.background:'#e5e6dc');world.backgroundBlurriness=0;shadow.visible=!room;pad.style.display=room?'grid':'none';

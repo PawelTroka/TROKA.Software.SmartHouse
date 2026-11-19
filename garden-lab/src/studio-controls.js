@@ -1,5 +1,5 @@
-import {DESIGN_STYLES,getDesignStyle} from './design-styles.js?v=1.26.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.26.0';
+import {DESIGN_STYLES,getDesignStyle} from './design-styles.js?v=1.27.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};

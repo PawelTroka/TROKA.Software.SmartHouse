@@ -4,8 +4,8 @@
  * Dense foliage is an explicit ideal established-planting comparison, never an
  * assumption that newly planted climbers provide an opaque wall immediately.
  */
-import {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.26.0';
-export {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.26.0';
+import {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.27.0';
+export {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.27.0';
 const EPS=1e-8;
 const number=(value,fallback)=>typeof value==='number'&&Number.isFinite(value)?value:fallback;
 const limit=(value,fallback,low,high)=>Math.max(low,Math.min(high,number(value,fallback)));

@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.26.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.26.0';
+import {toWorld} from './orientation.js?v=1.27.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.27.0';
 
 // Decorative infill stays within the guard envelope, with the original glass
 // and structural rail/post boxes retained. It does not earn opaque-screen or

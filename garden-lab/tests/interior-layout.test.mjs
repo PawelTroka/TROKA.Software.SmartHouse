@@ -23,7 +23,8 @@ const rectDistance=(x,z,left,top,right,bottom)=>Math.hypot(Math.max(left-x,0,x-r
 
 // A conservative physical walking check: a 0.60 m diameter disc must travel
 // around actual fixture footprints, stair voids, retained flues, wall jambs,
-// and open door leaves. It does not count a door's swing sector as floor space.
+// and fully open door leaves. This tests walking with the doors fully open;
+// the sweep test below separately keeps furniture out of their swing sectors.
 // Wall rectangles have square ends, matching the model's actual door jambs.
 function circulation(plan,start,radius=.30){
   const shapes=[],leaves=[];
@@ -106,6 +107,25 @@ test('physical furniture footprints do not intersect each other after the room r
     for(const [i,a] of items.entries())for(const b of items.slice(i+1)){
       const dx=(a.width+b.width)/2-Math.abs(a.x-b.x),dz=(a.depth+b.depth)/2-Math.abs(a.z-b.z);
       assert.ok(dx<=1e-7||dz<=1e-7,`${floor}: ${a.id} intersects ${b.id}`);
+    }
+  }
+});
+
+test('interior doors can open fully without their swept leaf intersecting furniture',()=>{
+  for(const floor of ['ground','first']){
+    const plan=proposal(floor);
+    for(const w of plan.walls)for(const o of w.openings.filter(o=>o.type==='door')){
+      const length=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]),ux=(w.b[0]-w.a[0])/length,uz=(w.b[1]-w.a[1])/length;
+      const end=o.hinge==='end',t=o.offset+(end?o.width:0),hx=w.a[0]+t*ux,hz=w.a[1]+t*uz;
+      const side=end?-1:1,swing=o.swing===-1?-1:1;
+      for(let i=0;i<=24;i++){
+        const a=i*Math.PI/48;
+        for(let j=1;j<=24;j++){
+          const r=(o.width-.10)*j/24,x=hx+ux*side*Math.cos(a)*r-uz*swing*Math.sin(a)*r,
+            z=hz+uz*side*Math.cos(a)*r+ux*swing*Math.sin(a)*r;
+          for(const f of solidFixtures(plan))assert.ok(rectDistance(x,z,f.x-f.width/2,f.z-f.depth/2,f.x+f.width/2,f.z+f.depth/2)>=.018,`${floor}: ${w.id} door strikes ${f.id}`);
+        }
+      }
     }
   }
 });
