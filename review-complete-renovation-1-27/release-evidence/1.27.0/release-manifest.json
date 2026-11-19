@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "release": "1.27.0",
+  "repository": "paweltroka/TROKA.Software.SmartHouse",
+  "preparedAt": "2026-11-19T17:05:40+00:00",
+  "status": "validation-pending",
+  "candidate": {
+    "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+    "ciRunId": "44572630110",
+    "ciUrl": "https://github.com/paweltroka/TROKA.Software.SmartHouse/actions/runs/44572630110",
+    "pullRequest": 27
+  },
+  "runtime": {
+    "appTree": "978516bfa182a2f0a363288f92c3d3fba81410f0",
+    "identicalToSourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+    "runtimeEntriesCompared": 6,
+    "changeScope": "Studio test assertion only; simulator runtime unchanged",
+    "verification": "Tree comparison reported by release maintainer"
+  },
+  "deployment": {
+    "status": "pending",
+    "sourceCommit": null,
+    "publishedCommit": null,
+    "url": null,
+    "checkedAt": null
+  },
+  "expectedCurrentRun": {
+    "unitTests": 654,
+    "browserCheckpoints": 67,
+    "browserSuites": {
+      "core": 35,
+      "refinements": 8,
+      "interiors": 9,
+      "studio": 15
+    },
+    "note": "Expected counts only; not evidence that the current CI run passed."
+  },
+  "currentRun": {
+    "status": "in_progress",
+    "unitTests": {
+      "status": "pending",
+      "passed": null
+    },
+    "browserCheckpoints": {
+      "status": "pending",
+      "passed": null
+    },
+    "browserSuites": {
+      "core": {
+        "status": "pending",
+        "passed": null
+      },
+      "refinements": {
+        "status": "pending",
+        "passed": null
+      },
+      "interiors": {
+        "status": "pending",
+        "passed": null
+      },
+      "studio": {
+        "status": "pending",
+        "passed": null
+      }
+    }
+  },
+  "observedLocalTests": {
+    "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+    "passed": 654,
+    "source": "Release maintainer local verification"
+  },
+  "observedEvidence": {
+    "core": {
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "jobId": "135723567307",
+      "artifactId": "14553228847",
+      "artifactZipSha256": "27da414dbc7800d8dffeb92a3bca29e19de8fdbaa3e59748cc64c5644a3377e2",
+      "reportPath": "core/browser-report.json",
+      "reportSha256": "cf2e98f78a4887daee3b3dc87df6b3a8016580831f6d3a2b0e32dade6fa4a220",
+      "status": "passed",
+      "completedCheckpoints": 35,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "isCurrentCandidateRun": false
+    },
+    "refinements": {
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "jobId": "135723567307",
+      "artifactId": "14553228847",
+      "artifactZipSha256": "27da414dbc7800d8dffeb92a3bca29e19de8fdbaa3e59748cc64c5644a3377e2",
+      "reportPath": "core/refinements/browser-report.json",
+      "reportSha256": "3d39d1a9c65acda3b9482971dd39f187ddb6f1a16758b88493aac32e80be0054",
+      "status": "passed",
+      "completedCheckpoints": 8,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "isCurrentCandidateRun": false
+    },
+    "interiors": {
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "jobId": "135723570517",
+      "artifactId": "14554443151",
+      "artifactZipSha256": "5e0e4efa27c30d0d4f331230dea1007f6bcc4ba6ac8e728dd721ae1e16cfc29a",
+      "reportPath": "interiors/browser-report.json",
+      "reportSha256": "f78c391bd5314f4f572a5daf6c1340f669b0a2279831686fbb54cce0b7821960",
+      "status": "passed",
+      "completedCheckpoints": 9,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "isCurrentCandidateRun": false,
+      "plans": 8,
+      "renderedModels": 8,
+      "styles": 20,
+      "distinctTriangleCounts": 20,
+      "triangleRange": [
+        37491,
+        96507
+      ],
+      "currentRestorationChangedPixels": 0,
+      "screenshotCount": 11
+    },
+    "studio": {
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "jobId": "135723569339",
+      "artifactId": "14553163805",
+      "artifactZipSha256": "b470e2b1282dc99f3210145eae7e3173ac1625304ed9c53466c024ed3eb1dd5c",
+      "reportPath": "studio/browser-report.json",
+      "reportSha256": "c8b7e64ce8a587735de7549f92897bd3632420bd9d496e4f0fcbef1a1852883e",
+      "status": "failed",
+      "completedCheckpoints": 13,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "isCurrentCandidateRun": false,
+      "failureSummary": "Legacy assertion required renovation total triangles to increase; visual change and actual renovation parts were present. The current candidate corrects only this test."
+    }
+  },
+  "referencedImages": [
+    {
+      "path": "core/refinements/sternicza-balcony-garden.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "a84bd2339c8d5f6d0a60be2c10c9b8721505a4812d91e4b9cbd83b3113865897",
+      "width": 982,
+      "height": 573
+    },
+    {
+      "path": "core/refinements/sternicza-two-car-front.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "223cb166d32d5d65ac242a2ba6e12680563dbc6999df769a8a8498a1c583e569",
+      "width": 982,
+      "height": 573
+    },
+    {
+      "path": "core/refinements/sternicza-two-car-parking-plan.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "47b60035b6f16c662c5b5c2d66e318d246b2d244931217659c91efa683ff8a33",
+      "width": 938,
+      "height": 694
+    },
+    {
+      "path": "interiors/basement-conversion-conflicts.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "84fb4ec5f34580e6f27e91f00679bcdfa40bf1937681df99807f9cd69cbb1e19",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/first-floor-hydro-spa-eye-level.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "dc87efc2a66c6e5b9135e784f874c1807808c7982c25c0388a5611ac742d6fd8",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/first-floor-japandi-dollhouse.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "1ada5df562537bfce9ab6aacc9af3bd62897f9e3cb5d7e0a6a6aab784e04ea2a",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/first-floor-master-eye-level.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "91ef8b172f7a26221ed3c51d5ef57b5495962957a041645a72ea7f8862107642",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/first-floor-renovation-plan.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "05684b5563536501761738647ce83d782dfbe1a0a0da4d9cea22ca08e8076e6f",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/ground-hidden-bali-dollhouse.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "8ecf3222f85a9606c4a0a7572068293091b6ba9480123ea82bf7af5537503962",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/ground-japandi-dollhouse.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "5cfbafcd0fdc89253f513d382da95cf107979820a690ba4376286ad5da0e99c9",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/ground-soaking-bath-eye-level.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "2f9f6a9e91b9c0319807daac8a80687d664c0d24a68bbcfd1375c009d1048190",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/ground-space-age-dollhouse.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "4bbf7c531ba3b138393a2ca6a97557b06e401ac126f71224ed3c6245ca1da71c",
+      "width": 1240,
+      "height": 868
+    },
+    {
+      "path": "interiors/mobile-dollhouse.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "647ed1e4b8492cdaaa3f5af4db1de0a2752e5d94fc7d4a19eeabc8a1a88826cf",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "interiors/mobile-floor-plan.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "812d3b6f2d596f11fe29599babbfe570b04c45442ed930fb2ced8a8a091b9d9c",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "studio/mobile-catalogue-320.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "3a9d9f2ba3f9cd03e992664a6dda4188f2f6eaf454017779c2b31d714c0ef30c",
+      "width": 320,
+      "height": 844
+    },
+    {
+      "path": "studio/mobile-catalogue-390.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "66566b9a4a1ba67ce1c3c4ce3f87bc822ecb06ab0bae95100cc8afc852835f5e",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "studio/sternicza-11-hidden-bali-house-original.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "22935d8d3ae6b4e83ff852fb589c35834fb32c947010c9409dae7f8545c47c76",
+      "width": 832,
+      "height": 496
+    },
+    {
+      "path": "studio/sternicza-11-hidden-bali-house-renovated.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "c67f1b5d91f4d30888c46a90dc984c5afd3509e277f3ffcd1ae6916422d31485",
+      "width": 832,
+      "height": 496
+    },
+    {
+      "path": "studio/sternicza-current.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "4687e6d2299dc0d8a4fe7651b7a5a2f4da51c85c624dc3fcf90db32abbc31aa7",
+      "width": 832,
+      "height": 496
+    },
+    {
+      "path": "studio/sternicza-hidden-bali.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "96be1ac69d935714f521983d6a38584e079ce8d195baccf7dea8ab1724a4daa5",
+      "width": 832,
+      "height": 496
+    },
+    {
+      "path": "studio/sternicza-mediterranean-villa.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "cb91efb4372a7f27172f48e13dff2b81602e5d7db0d6cbc7e2125801bb9ddda3",
+      "width": 832,
+      "height": 496
+    },
+    {
+      "path": "studio/sternicza-space-age.png",
+      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
+      "ciRunId": "44570407407",
+      "sha256": "1326de2334d7138a5132089dcde40f6231800bc34c64563b662d1671ef7ac939",
+      "width": 832,
+      "height": 496
+    }
+  ],
+  "evidencePage": {
+    "path": "validation.html",
+    "reviewState": "reviewed-images; HTML structure audited; browser page layout review pending",
+    "published": false
+  },
+  "notes": [
+    "Per-artifact source and run identify the files currently displayed. Replacement artifacts must update these records and hashes together.",
+    "Passing earlier evidence and identical runtime do not mark the new candidate CI or deployment as passed."
+  ]
+}
