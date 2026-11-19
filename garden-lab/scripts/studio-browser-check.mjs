@@ -152,7 +152,10 @@ async function compareHouse(site,id){
   const renovated=await shot(site+'-'+id+'-house-renovated','#scene-host canvas');
   const diff=await pixelChange(original,renovated);
   assert.ok(diff.pixels>100,site+' complete renovation comparison changed '+diff.pixels+' pixels');
-  assert.ok(on.triangles>off.triangles,site+' facade has no extra visible geometry: '+JSON.stringify({on,off}));
+  // A complete style replaces furniture as well as adding facade assemblies;
+  // simpler replacement forms can reduce the total visible triangle count.
+  assert.notEqual(on.triangles,off.triangles,site+' renovation did not change visible geometry: '+JSON.stringify({on,off}));
+  assert.ok(on.houseRenovationParts>0&&off.houseRenovationParts===0,site+' facade renovation geometry was not applied: '+JSON.stringify({on,off}));
   (report.houseComparisons??=[]).push({site,id,view,diff,on,off});
 }
 async function settledInfo(){
