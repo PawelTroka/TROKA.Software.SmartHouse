@@ -13,8 +13,8 @@ const models=SITE_OPTIONS.map(site=>{
   return {site,data,model:createStateModel(getSiteProfile(site.id,data))};
 });
 
-test('schema 25 keeps the basement off in every fresh property and resolves its share identity',()=>{
-  assert.equal(STATE_VERSION,25);
+test('schema 26 keeps the basement off in every fresh property and resolves its share identity',()=>{
+  assert.equal(STATE_VERSION,26);
   for(const {site,model} of models){
     assert.equal(model.DEFAULTS.basementGarageEnabled,false,site.id);
     assert.equal(model.sanitizeState().basementGarageEnabled,false,site.id);
@@ -52,7 +52,7 @@ test('every v1–21 design keeps the basement absent despite unknown garage sett
         garageExtraDepth:.9,garageInsideRun:2.9,garageReserveMm:1,garageProgress:99,garageReverse:true};
       const shared=new URLSearchParams({v:String(version),site:site.id,...Object.fromEntries(Object.entries(injected).filter(([key])=>key!=='siteId').map(([key,value])=>[key,String(value)]))});
       for(const restored of [model.migrateSavedState(injected,version),model.decodeState(shared.toString())]){
-        for(const [key,value] of Object.entries({...GARAGE_DEFAULTS,garageSpaces:model.DEFAULTS.garageSpaces,garageRampWidth:model.DEFAULTS.garageRampWidth}))assert.equal(restored[key],value,`${site.id} v${version} ${key}`);
+        for(const [key,value] of Object.entries({...GARAGE_DEFAULTS,garageSlabThickness:.25,garageSpaces:model.DEFAULTS.garageSpaces,garageRampWidth:model.DEFAULTS.garageRampWidth}))assert.equal(restored[key],value,`${site.id} v${version} ${key}`);
         assert.deepEqual(withoutGarage(restored),withoutGarage(baseline),`${site.id} v${version} retains the old design`);
       }
     }

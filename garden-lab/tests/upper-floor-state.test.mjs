@@ -27,7 +27,7 @@ test('all eight upper-room viewpoints and night settings survive shared links an
 });
 
 test('upper-storey defaults are editable assumptions above the living floor and preserve level order',()=>{
-  assert.equal(model.DEFAULTS.firstFloorRise,3);assert.equal(model.DEFAULTS.atticRise,6);
+  assert.equal(model.DEFAULTS.firstFloorRise,3.05);assert.equal(model.DEFAULTS.atticRise,5.75);
   const edited=model.sanitizeState({floorHeight:1.55,firstFloorRise:3.6,atticRise:7.1});
   assert.equal(edited.floorHeight,1.55);assert.equal(edited.firstFloorRise,3.6);assert.equal(edited.atticRise,7.1);
   const crossing=model.sanitizeState({firstFloorRise:4.5,atticRise:4.5});

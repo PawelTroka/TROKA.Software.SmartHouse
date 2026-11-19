@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.25.0">
+  <meta name="application-version" content="1.26.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
   <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
   <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.25.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.25.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.25.0">
-  <link rel="stylesheet" href="./src/privacy.css?v=1.25.0">
-  <link rel="stylesheet" href="./src/garage.css?v=1.25.0">
-  <link rel="stylesheet" href="./src/studio.css?v=1.25.0">
+  <link rel="stylesheet" href="./style.css?v=1.26.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.26.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.26.0">
+  <link rel="stylesheet" href="./src/privacy.css?v=1.26.0">
+  <link rel="stylesheet" href="./src/garage.css?v=1.26.0">
+  <link rel="stylesheet" href="./src/studio.css?v=1.26.0">
+  <link rel="stylesheet" href="./src/interior.css?v=1.26.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
   <header class="header">
     <div class="brand"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M3 15 16 4l13 11M7 12v16h18V12M12 28V18h8v10"/><path d="M3 28h26"/></svg><div><span class="eyebrow" id="property-name">GDAŃSK PROPERTIES</span><h1>Garden Lab<span class="brand-dot">.</span></h1></div></div>
     <div class="site-switcher"><label for="site-select">PROPERTY</label><select id="site-select" aria-label="Choose property"></select></div>
-    <div class="header-actions"><button id="save-a" class="button subtle" title="Keep this configuration as scenario A">Save A</button><button id="compare" class="button subtle" disabled>Compare A/B</button><button id="share" class="button primary"><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m8 12 4-4M7 7l-2 2a3 3 0 0 0 4 4l2-2M9 9l2-2a3 3 0 0 1 4 4l-2 2"/></svg>Share view</button></div>
+    <div class="header-actions"><button id="interior-open" class="button subtle" aria-controls="interior-host" hidden>Interiors <span aria-hidden="true">↗</span></button><button id="save-a" class="button subtle" title="Keep this configuration as scenario A">Save A</button><button id="compare" class="button subtle" disabled>Compare A/B</button><button id="share" class="button primary"><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m8 12 4-4M7 7l-2 2a3 3 0 0 0 4 4l2-2M9 9l2-2a3 3 0 0 1 4 4l-2 2"/></svg>Share view</button></div>
   </header>
   <div class="context-bar"><span><i class="status-dot"></i> <span id="location-label">Gdańsk</span></span><span id="plot-dimensions">Loading mapped plot…</span><span id="geometry-status">Mapped terrain + building data</span><button id="about-open">Model & sources <span aria-hidden="true">↗</span></button></div>
   <main class="workspace" id="workspace">
@@ -128,6 +129,7 @@
       </section>
       <nav class="workspace-jumps" aria-label="Workspace sections"><a href="#viewer">View</a><a href="#design-controls">Adjust design</a><a href="#design-checks">Design checks</a></nav>
       <div class="viewer-card" id="viewer">
+        <div class="interior-entry" id="interior-entry" hidden><div><strong>Step inside Sternicza 11</strong><span>Original drawings · your renovation · furnished rooms</span></div><button class="button primary" id="interior-enter" type="button">Explore interiors →</button></div>
         <div class="viewer-toolbar"><div class="mode-tabs" role="group" aria-label="View mode"><button data-mode="orbit" aria-pressed="true">3D model</button><button data-mode="eye" aria-pressed="false">Eye level</button><button data-mode="plan" aria-pressed="false">Plan</button><button data-mode="section" aria-pressed="false">Sightline</button><button data-mode="sun" aria-pressed="false">Sun &amp; shade</button></div><div class="viewer-toggles"><label class="ray-toggle"><input id="showDimensions" type="checkbox" checked> Dimensions</label><label class="ray-toggle"><input id="showRays" type="checkbox"> Show rays</label></div></div>
         <div class="look-directions" role="group" aria-label="Look around the property"><span>Look toward</span><button type="button" data-look-yaw="0" aria-pressed="false">Rear garden</button><button type="button" data-look-yaw="-90" aria-pressed="false">Left boundary</button><button type="button" data-look-yaw="90" aria-pressed="false">Right boundary</button><button type="button" data-look-yaw="180" aria-pressed="false">Street</button></div>
         <div class="viewport" id="viewport"><div class="scene-host" id="scene-host"></div><div class="diagram-host" id="plan-host" hidden></div><div class="diagram-host section-host" id="section-host" hidden></div><div class="diagram-host sun-map-host" id="sun-host" hidden></div><div class="loading" id="loading"><span class="loading-ring"></span><strong>Building your garden…</strong><span>Mapped terrain. Real sightlines.</span></div><div class="view-badge" id="view-badge"><span class="badge-dot"></span><span id="view-badge-text">Living room · seated</span></div><div class="view-instructions" id="view-instructions">Drag to orbit · scroll or pinch to zoom</div><button class="reset-camera" id="reset-camera" title="Reset camera" aria-label="Reset camera">⌖</button></div>
@@ -204,6 +206,7 @@
   <dialog id="style-dialog" class="style-dialog" aria-labelledby="style-dialog-title"><div class="style-dialog-heading"><div><span class="eyebrow">A DIFFERENT WAY TO LIVE OUTSIDE</span><h2 id="style-dialog-title">Find your property’s character.</h2><p>Explore 20 coordinated concepts for the garden and a restrained house renovation.</p></div><button id="style-close" class="button subtle" type="button" aria-label="Close design styles">×</button></div><div class="style-filters"><label for="style-search">Find a style<input id="style-search" type="search" placeholder="Bali, Japandi, stone, timber…" autocomplete="off"></label><label for="style-family">Design family<select id="style-family"><option value="">All families</option></select></label><span id="style-result-count" role="status"></span></div><div class="style-grid" id="style-grid"></div><p id="style-empty" hidden>No matching design. Try another word or choose All families.</p><p class="style-gallery-note">Material boards illustrate the palette. Select a style to see it on your site model, including the proposed house renovation. Current design keeps the original house exterior. Planting and design dimensions remain independently editable.</p></dialog>
   <dialog id="about" aria-label="Model and sources"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.25.0"></script>
+  <script type="module" src="./src/app.js?v=1.26.0"></script>
+<div id="interior-host" hidden></div>
 </body>
 </html>

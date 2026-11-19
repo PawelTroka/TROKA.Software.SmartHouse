@@ -424,12 +424,13 @@ async function verifyBasementGarage(){
     await frames();assert.equal(Number(await input.inputValue()),value);
   };
 
-  const candidate=await preset('raised','reserve-met');
+  const candidate=await preset('raised','structure-conflict');
   assert.ok(candidate.minimum>=candidate.reserve,JSON.stringify(candidate));
   assert.ok(parseFloat(candidate.frontRun)>9&&parseFloat(candidate.frontRun)<9.2,'The full mapped front yard is used');
   assert.ok(parseFloat(candidate.headroom)>=2.2,'Candidate must preserve the selected covered-headroom benchmark');
   assert.match(candidate.door,/2\.10 m$/,'The separate assumed 2.10 m door remains visible');
-  assert.equal(await page.locator('#garage-layout-warning').isVisible(),false,'Candidate has no configuration-specific warning');
+  assert.equal(await page.locator('#garage-layout-warning').isVisible(),true,'The newly documented cellar structure blocks this otherwise clear ramp');
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/retained stair.*flue.*two-car approach/i);
   assert.equal(await page.locator('.garage-entry-conditions').isVisible(),true,'The unresolved entrance detail stays beside the result');
   assert.match(await page.locator('.garage-entry-conditions').innerText(),/threshold[\s\S]*not yet modelled/i);
   await details('#garage-profile-card .garage-source-details',true);
@@ -448,20 +449,23 @@ async function verifyBasementGarage(){
   const excavationPixels=await warmLightDifference(disabledFrame,enabledFrame);
   assert.ok(excavationPixels.changedPixels>200,'Enabling the garage must visibly change the real WebGL scene: '+JSON.stringify(excavationPixels));
   await page.locator('#basementGarageEnabled').check();
-  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
+  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='structure-conflict');
   assert.deepEqual(await result(),candidate);
   check('Optional basement garage starts off and creates a visibly different WebGL excavation and open entrance when enabled');
 
-  const forecourt=await preset('forecourt','reserve-shortfall');
-  assert.ok(forecourt.minimum<forecourt.reserve,'Front-yard-only comparison must expose its reserve shortfall');
+  // The section-derived 0.30 m slab lowers this floor by 0.05 m compared with
+  // the old concept. With no ramp inside, the car now contacts the surface.
+  const forecourt=await preset('forecourt','contact');
+  assert.ok(forecourt.minimum<0,'Front-yard-only comparison must expose modelled underside contact');
   assert.equal(await page.locator('#garage-layout-warning').isVisible(),true);
-  assert.match(await page.locator('#garage-layout-warning').innerText(),/reserve is not achieved/i,'A real reserve shortfall remains visible beside its result');
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/underside intersects the ramp/i,'Contact remains visible beside its result');
+  assert.match(await page.locator('#garage-layout-warning').innerText(),/retained stair.*flue.*two-car approach/i,'Contact cannot hide the independent structural obstruction');
   assert.equal(Number(await page.locator('#garageInsideRun-value').inputValue()),0);
   const deeper=await preset('deeper',['contact','geometry-limit']);
   assert.ok(deeper.minimum<deeper.reserve,'Deeper floor cannot be presented as the passing candidate');
   assert.ok(deeper.minimum<candidate.minimum);
   assert.equal(Number(await page.locator('#garageExtraDepth-value').inputValue()),.6);
-  await preset('raised','reserve-met');
+  await preset('raised','structure-conflict');
   assert.deepEqual(await result(),candidate);
   check('Full front-yard-only, raised-basement and deeper-floor options show distinct conservative clearance results');
 
@@ -493,14 +497,14 @@ async function verifyBasementGarage(){
 
   await page.locator('[data-garage-reverse="true"]').click();
   await page.locator('#save-a').click();
-  await preset('forecourt','reserve-shortfall');
+  await preset('forecourt','contact');
   await page.locator('#compare').click();
   assert.equal(await page.locator('#comparison-status').innerText(),'Viewing saved A');
   assert.deepEqual(await result(),candidate,'Scenario A restores the saved garage dimensions');
   assert.equal(await page.locator('[data-garage-reverse="true"]').getAttribute('aria-pressed'),'true');
   await page.locator('#compare').click();
   assert.deepEqual(await result(),forecourt,'Comparison B restores the alternative ramp');
-  await preset('raised','reserve-met');
+  await preset('raised','structure-conflict');
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});await waitReady();
   assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true);
   assert.equal(Number(await page.locator('#garageProgress').inputValue()),40);

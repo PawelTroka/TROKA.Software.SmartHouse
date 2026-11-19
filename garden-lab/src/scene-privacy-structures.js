@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.25.0';
+import {toWorld} from './orientation.js?v=1.26.0';
 
 /** Draw the same finite members and panels used by the ray calculations.
  * The model supplies foliage only when dense coverage is explicitly selected;

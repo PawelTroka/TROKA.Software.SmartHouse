@@ -13,13 +13,13 @@ const model=createStateModel(getSiteProfile('sternicza-11',data)),fresh=model.DE
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
 
 test('fresh Sternicza defaults match the requested terrace, infinity spa, canopy and two-car option',()=>{
-  assert.equal(STATE_VERSION,25);
+  assert.equal(STATE_VERSION,26);
   for(const [key,value]of Object.entries({terraceDepth:4,jacuzziOverflow:true,canopyEnabled:true,
     canopyHeight:3,canopyDepth:4,terraceCoverType:'canopy',garageSpaces:2,garageRampWidth:5.8,basementGarageEnabled:false})){
     assert.equal(fresh[key],value,key);
     if(model.FIELDS[key])assert.equal(model.FIELDS[key].value,value,key+' control');
   }
-  assert.deepEqual(model.decodeState('v=23&site=sternicza-11'),{...fresh,poolFreeboard:.02});
+  assert.deepEqual(model.decodeState('v=23&site=sternicza-11'),{...fresh,poolFreeboard:.02,firstFloorRise:3,atticRise:6,garageSlabThickness:.25});
   assert.equal(fresh.poolFreeboard,.10);
   assert.equal(resolveSiteId('?site=nadmorska-17','#v=23&site=sternicza-11'),'sternicza-11');
 });

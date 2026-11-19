@@ -82,7 +82,7 @@ try{
 
   await details('#basement-garage-controls',true);
   await page.locator('#basement-garage-controls [data-garage-preset="raised"]').click();
-  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
+  await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='structure-conflict');
   assert.equal(Number(await page.locator('#garageSpaces-value').inputValue()),2);
   assert.equal(await page.locator('#garageSpaces-value').isEditable(),false);
   assert.equal(Number(await page.locator('#garageRampWidth-value').inputValue()),5.8);
@@ -100,7 +100,7 @@ try{
   await page.locator('#garage-view').click();
   const enabled=await sceneFrame();await page.locator('#basementGarageEnabled').uncheck();const disabled=await sceneFrame();
   report.garagePixelDifference=await changedPixels(enabled,disabled);assert.ok(report.garagePixelDifference>200);
-  await page.locator('#basementGarageEnabled').check();await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
+  await page.locator('#basementGarageEnabled').check();await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='structure-conflict');
   await page.locator('#garage-view').click();await shot('sternicza-two-car-front');
   await shot('sternicza-two-car-parking-plan','#garage-parking-plan');
   check('Two-car entrance, separated vehicle envelopes and the over-ramp landing appear in real WebGL and exported clearance checks');
@@ -108,7 +108,7 @@ try{
   await number('garageRampWidth-value',3.2);
   await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='geometry-limit');
   assert.match(await page.locator('#garage-layout-warning').innerText(),/2 cars need 5\.42 m/);
-  await number('garageRampWidth-value',5.8);await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='reserve-met');
+  await number('garageRampWidth-value',5.8);await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='structure-conflict');
   check('A narrow two-car setting is explicitly rejected rather than shown as a valid fit');
 
   await page.locator('button[data-mode="orbit"]').click();const canopyFrame=await sceneFrame();

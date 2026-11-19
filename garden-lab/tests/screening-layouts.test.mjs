@@ -49,7 +49,7 @@ test('v7 shared trees and saved A retain independent geometry, quotes and season
   for(const model of [sternicza,korz]){
     const custom=createScreeningTree('broad-hornbeam',{id:'my-old-tree',x:14,y:26});
     Object.assign(custom,{crownWidth:3.2,crownDepth:2.4,rotation:37,unitPrice:24149,enabled:false});
-    const publishedDefaults={...model.DEFAULTS,poolFreeboard:.02,terraceCoverType:'canopy',
+    const publishedDefaults={...model.DEFAULTS,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,terraceCoverType:'canopy',
       ...(model.DEFAULTS.siteId==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
       nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55};
     const saved={...publishedDefaults,hedgeFullPerimeter:false,hedgeFront:0,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
