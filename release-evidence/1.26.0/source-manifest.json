@@ -1,0 +1,1041 @@
+{
+  "version": "1.26.0",
+  "repository": "PawelTroka/TROKA.Software.SmartHouse",
+  "commit": "5c03e6a8e22f5e8abcc1923227aee9ba57b0575d",
+  "tree": "3d12578bacc64a5e9c7a7e87054adb3db65f3efa",
+  "hashAlgorithm": "git-sha1",
+  "scope": [
+    "garden-lab/src",
+    "garden-lab/vendor",
+    "garden-lab/scripts",
+    "garden-lab/data",
+    "garden-lab/tests",
+    "garden-lab/docs/interior-plan-review-1.26.0.md",
+    "garden-lab/index.html",
+    "garden-lab/style.css",
+    "garden-lab/package.json",
+    ".github/workflows/garden-lab-ci.yml"
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/garden-lab-ci.yml",
+      "mode": "100644",
+      "gitBlob": "3f209fa8745908902ddc1222de41c9a3c89329db"
+    },
+    {
+      "path": "garden-lab/data/cost-sources.json",
+      "mode": "100644",
+      "gitBlob": "7027d1149e5b16f0e459c5596b20349edbea72cd"
+    },
+    {
+      "path": "garden-lab/data/garage-sources.json",
+      "mode": "100644",
+      "gitBlob": "363c97eb460ce3f532d18bd887d9768b3d32ccf1"
+    },
+    {
+      "path": "garden-lab/data/garden-budget-sources.json",
+      "mode": "100644",
+      "gitBlob": "988391a660e2f5f236926ec9bfd7ed2a4b8972bc"
+    },
+    {
+      "path": "garden-lab/data/house-appearance.json",
+      "mode": "100644",
+      "gitBlob": "55f6dd4eb66dcd25234bb69b7a1ee05bf6f2636b"
+    },
+    {
+      "path": "garden-lab/data/korzeniowskiego-40.json",
+      "mode": "100644",
+      "gitBlob": "ed1213db848bccea95a78f1a4b42b817d15d1add"
+    },
+    {
+      "path": "garden-lab/data/nadmorska-17.json",
+      "mode": "100644",
+      "gitBlob": "e3e633c7a114a7f87ec99adc61a7ea8ea66f9f69"
+    },
+    {
+      "path": "garden-lab/data/nadmorska-source.json",
+      "mode": "100644",
+      "gitBlob": "066c9f2a8d88e4b808e4ead1aef237333f378c9d"
+    },
+    {
+      "path": "garden-lab/data/site-data.json",
+      "mode": "100644",
+      "gitBlob": "2cef8660c3aa53a2c9da3327cc5e46a3673622cb"
+    },
+    {
+      "path": "garden-lab/data/solar-sources.json",
+      "mode": "100644",
+      "gitBlob": "a72b705b87aacb5ae902d997c78e561bec67453d"
+    },
+    {
+      "path": "garden-lab/data/sternicza-neighborhood-source.json",
+      "mode": "100644",
+      "gitBlob": "5f56e4acefb0355a1229dd90b7507e8a7143fd77"
+    },
+    {
+      "path": "garden-lab/data/sternicza-refinements-1.23.0.json",
+      "mode": "100644",
+      "gitBlob": "28989c019e7cb8eacd74d454d1de25e7e8481d37"
+    },
+    {
+      "path": "garden-lab/data/tree-sources.json",
+      "mode": "100644",
+      "gitBlob": "2954d4acf4be30d5f8711e69e9efc256aa3271df"
+    },
+    {
+      "path": "garden-lab/docs/interior-plan-review-1.26.0.md",
+      "mode": "100644",
+      "gitBlob": "43a2b7ab852ee17c03269ff9dcb874eba8f37cf1"
+    },
+    {
+      "path": "garden-lab/index.html",
+      "mode": "100644",
+      "gitBlob": "abc9a7ad5aaa07fcc2c9fd306e8138bbfa5122f1"
+    },
+    {
+      "path": "garden-lab/package.json",
+      "mode": "100644",
+      "gitBlob": "d021894836c87954d5f240909965729ffe1bc447"
+    },
+    {
+      "path": "garden-lab/scripts/analyze-boundary-screening.mjs",
+      "mode": "100644",
+      "gitBlob": "13053aedd71c9d0e8b4718111f578bef3e983ac3"
+    },
+    {
+      "path": "garden-lab/scripts/build-korzeniowskiego-data.py",
+      "mode": "100644",
+      "gitBlob": "0a02393fcb64c404558916cd72dd3942ec4f06c3"
+    },
+    {
+      "path": "garden-lab/scripts/build-nadmorska-data.py",
+      "mode": "100644",
+      "gitBlob": "934474ab22a1cdffb43ef005fbfc67a5013763a3"
+    },
+    {
+      "path": "garden-lab/scripts/build.mjs",
+      "mode": "100644",
+      "gitBlob": "06168802489ac956f78b18ad57116a61c8b475e8"
+    },
+    {
+      "path": "garden-lab/scripts/compare-pool-end-screening.mjs",
+      "mode": "100644",
+      "gitBlob": "b14682242accb4635f6cba173fec26a7f43e5451"
+    },
+    {
+      "path": "garden-lab/scripts/compare-spa-sun.mjs",
+      "mode": "100644",
+      "gitBlob": "a6cfa2ac873f4f18885fc6c0f428affc13db549d"
+    },
+    {
+      "path": "garden-lab/scripts/compare-tree-alternatives.mjs",
+      "mode": "100644",
+      "gitBlob": "87058df04ff6aabefc69dcf9e1c1f9c6879db325"
+    },
+    {
+      "path": "garden-lab/scripts/expand-sternicza-neighborhood.py",
+      "mode": "100644",
+      "gitBlob": "0a09eb91b0dc83784d0baf556568d325c629fec5"
+    },
+    {
+      "path": "garden-lab/scripts/interiors-browser-check.mjs",
+      "mode": "100644",
+      "gitBlob": "44ba8f4c48019aa9f9a7343d343736a0900cecb0"
+    },
+    {
+      "path": "garden-lab/scripts/night-browser-check.mjs",
+      "mode": "100644",
+      "gitBlob": "a04bd272f8161e630a237888e56639c91078befe"
+    },
+    {
+      "path": "garden-lab/scripts/refinements-browser-check.mjs",
+      "mode": "100644",
+      "gitBlob": "2faa63bc13b7eb07960f9eb8cd975a6817f3ef2e"
+    },
+    {
+      "path": "garden-lab/scripts/search-corner-pck3-layouts.mjs",
+      "mode": "100644",
+      "gitBlob": "5e4b97fd4b17f8f89e57efc7e493e33638362638"
+    },
+    {
+      "path": "garden-lab/scripts/search-edge-pck3-layouts.mjs",
+      "mode": "100644",
+      "gitBlob": "ceb61c820ad8aba2e7de166a585574448fb3b4f0"
+    },
+    {
+      "path": "garden-lab/scripts/search-left-edge-pck3-layouts.mjs",
+      "mode": "100644",
+      "gitBlob": "c9b56929315c6b2403e846c42797ad5e669a2f92"
+    },
+    {
+      "path": "garden-lab/scripts/search-pck3-layouts.mjs",
+      "mode": "100644",
+      "gitBlob": "cea7de456961caf317c19f29563914a49a571e4d"
+    },
+    {
+      "path": "garden-lab/scripts/studio-browser-check.mjs",
+      "mode": "100644",
+      "gitBlob": "26ee29bebb2fb9a29b8bc824379156a2a529d36f"
+    },
+    {
+      "path": "garden-lab/src/app.js",
+      "mode": "100644",
+      "gitBlob": "ff24ca1d881a481f9a1643538e89e4df71108d07"
+    },
+    {
+      "path": "garden-lab/src/budget-view.js",
+      "mode": "100644",
+      "gitBlob": "27cb3237a38ef3943ddddcbe4786f5ad94fe4825"
+    },
+    {
+      "path": "garden-lab/src/buildings.js",
+      "mode": "100644",
+      "gitBlob": "20a30d7f82786da63961d70f39a8b923f9a94592"
+    },
+    {
+      "path": "garden-lab/src/costs.js",
+      "mode": "100644",
+      "gitBlob": "e1a3de080231ca42bcae8f6f931a3cfaf60490f7"
+    },
+    {
+      "path": "garden-lab/src/design-checks.js",
+      "mode": "100644",
+      "gitBlob": "f200d8dd405f4b8cebd5dfa9aa1d266f6abf86d8"
+    },
+    {
+      "path": "garden-lab/src/design-history.js",
+      "mode": "100644",
+      "gitBlob": "6eb55bfc3287c78802fc93f01ebf0ac5c601dc4e"
+    },
+    {
+      "path": "garden-lab/src/design-review.js",
+      "mode": "100644",
+      "gitBlob": "0ac41db754eb59b652464f78e23f52b66a131f41"
+    },
+    {
+      "path": "garden-lab/src/design-styles.js",
+      "mode": "100644",
+      "gitBlob": "257ed0b035cf33fc4e866850ecc42a67953ba90f"
+    },
+    {
+      "path": "garden-lab/src/diagrams.js",
+      "mode": "100644",
+      "gitBlob": "6757a90a1fa678029f136e6abfa51012a198fb56"
+    },
+    {
+      "path": "garden-lab/src/dimensions.js",
+      "mode": "100644",
+      "gitBlob": "7a95b72733243580fcae9abbdee9e4155507a6f1"
+    },
+    {
+      "path": "garden-lab/src/entrance-access.js",
+      "mode": "100644",
+      "gitBlob": "7354f40f09981d3078bcc24a9b9f592b3d61fa97"
+    },
+    {
+      "path": "garden-lab/src/facade-visibility.js",
+      "mode": "100644",
+      "gitBlob": "fe1104d1bf5e7f139b10c357be7e9391410b48d4"
+    },
+    {
+      "path": "garden-lab/src/footprint-fit.js",
+      "mode": "100644",
+      "gitBlob": "68078083dc093f1a6722a3332e6b319620bf2f9d"
+    },
+    {
+      "path": "garden-lab/src/garage-controls.js",
+      "mode": "100644",
+      "gitBlob": "d68bcf858b00f1d72c9107cc9071ce762c17e697"
+    },
+    {
+      "path": "garden-lab/src/garage-options.js",
+      "mode": "100644",
+      "gitBlob": "cbdc53edd2d17cffe4a15faa77c7c1c19cb14c68"
+    },
+    {
+      "path": "garden-lab/src/garage-ramp.js",
+      "mode": "100644",
+      "gitBlob": "b66cb41f98d05133ce35cafd347d790492ee67d1"
+    },
+    {
+      "path": "garden-lab/src/garage-vehicle.js",
+      "mode": "100644",
+      "gitBlob": "4c0773b4494c98a3393af2bd13e464be0139bddf"
+    },
+    {
+      "path": "garden-lab/src/garage.css",
+      "mode": "100644",
+      "gitBlob": "9678e498c254259d5f6940df29a572cdbb0dae82"
+    },
+    {
+      "path": "garden-lab/src/garden-budget-catalog.js",
+      "mode": "100644",
+      "gitBlob": "55af69802b956c87a00f3dcbd6963624a4c16889"
+    },
+    {
+      "path": "garden-lab/src/garden-program.js",
+      "mode": "100644",
+      "gitBlob": "fbe2865beb36115da9ac103e6c2e9ce6e021cb3d"
+    },
+    {
+      "path": "garden-lab/src/geometry.js",
+      "mode": "100644",
+      "gitBlob": "ab3c2206d90c73583a8155c26ac0c6d43bc8c568"
+    },
+    {
+      "path": "garden-lab/src/house-appearance.js",
+      "mode": "100644",
+      "gitBlob": "6f33c0c48a960b7d62690f4dcea19514f7aaf343"
+    },
+    {
+      "path": "garden-lab/src/house-renovation.js",
+      "mode": "100644",
+      "gitBlob": "fe8957647cf27b32897e27d45b44fa975575809e"
+    },
+    {
+      "path": "garden-lab/src/house-roof.js",
+      "mode": "100644",
+      "gitBlob": "cfd3f7f25346480d5db242866b16ebb0b91f0158"
+    },
+    {
+      "path": "garden-lab/src/interior-architecture.js",
+      "mode": "100644",
+      "gitBlob": "e369b8e2a35818c4ba7bd364ea734013e45390ca"
+    },
+    {
+      "path": "garden-lab/src/interior-furniture.js",
+      "mode": "100644",
+      "gitBlob": "0056156cbc2c01f4ac3393620737ee83228d9d36"
+    },
+    {
+      "path": "garden-lab/src/interior-geometry.js",
+      "mode": "100644",
+      "gitBlob": "34662d588cd1a7429308b1488bb2960e03f8d7e5"
+    },
+    {
+      "path": "garden-lab/src/interior-materials.js",
+      "mode": "100644",
+      "gitBlob": "59e03b6fef1ac542e4238f13dc23146474bdc221"
+    },
+    {
+      "path": "garden-lab/src/interior-navigation.js",
+      "mode": "100644",
+      "gitBlob": "645608f740b1aa6bbb41dc013c8279fbf2aabb7f"
+    },
+    {
+      "path": "garden-lab/src/interior-plan-view.js",
+      "mode": "100644",
+      "gitBlob": "3ef1348d867729ce6be80223e445f359b8044c99"
+    },
+    {
+      "path": "garden-lab/src/interior-plan.js",
+      "mode": "100644",
+      "gitBlob": "f484cfe64aaaa64861396e303a7207d64257471f"
+    },
+    {
+      "path": "garden-lab/src/interior-sources.js",
+      "mode": "100644",
+      "gitBlob": "291e287d4a6bb87c397db01e99da4d231ed33f2d"
+    },
+    {
+      "path": "garden-lab/src/interior-state.js",
+      "mode": "100644",
+      "gitBlob": "a926e2a1d009d13040350e9ce617ca01416babba"
+    },
+    {
+      "path": "garden-lab/src/interior-workspace.js",
+      "mode": "100644",
+      "gitBlob": "6d1286ba4c5d78f2a799f208fc666c0d3f0ac132"
+    },
+    {
+      "path": "garden-lab/src/interior.css",
+      "mode": "100644",
+      "gitBlob": "9bae237b1ecd6b49d806cd7b944dcbde3410905f"
+    },
+    {
+      "path": "garden-lab/src/layout.js",
+      "mode": "100644",
+      "gitBlob": "62dd3fc516fd8d69e3ddc482a5fd132d21ee587b"
+    },
+    {
+      "path": "garden-lab/src/mapped-house-facades.js",
+      "mode": "100644",
+      "gitBlob": "116f7890c99e0420adf969172f85f3b39a00bcaf"
+    },
+    {
+      "path": "garden-lab/src/neighborhood.js",
+      "mode": "100644",
+      "gitBlob": "c19e589eebe7d0ed6b65990c79d28dbefcf85d8b"
+    },
+    {
+      "path": "garden-lab/src/night-lighting.js",
+      "mode": "100644",
+      "gitBlob": "0037522393a9995f38fc788a4674507e153e8ef9"
+    },
+    {
+      "path": "garden-lab/src/night-view.js",
+      "mode": "100644",
+      "gitBlob": "3ef16a345249dc2eadb5c86f6a07192ce2b2ce39"
+    },
+    {
+      "path": "garden-lab/src/night.css",
+      "mode": "100644",
+      "gitBlob": "0ead735ef50a21615e58db933057149f05fdc555"
+    },
+    {
+      "path": "garden-lab/src/orientation.js",
+      "mode": "100644",
+      "gitBlob": "f26a9c1acbb59dc6bcd215f1903a0f5e33ff1a36"
+    },
+    {
+      "path": "garden-lab/src/pendant-layout.js",
+      "mode": "100644",
+      "gitBlob": "18883576cb9a5fe6a6edf1f9d7695707e4b03f98"
+    },
+    {
+      "path": "garden-lab/src/plan-exterior.js",
+      "mode": "100644",
+      "gitBlob": "a8e0e77346c27ae9de070631a9d9d17120ea43a5"
+    },
+    {
+      "path": "garden-lab/src/privacy-controls.js",
+      "mode": "100644",
+      "gitBlob": "beba9297074d13483722d05901e5cc20dc40512f"
+    },
+    {
+      "path": "garden-lab/src/privacy-options.js",
+      "mode": "100644",
+      "gitBlob": "5a0d988337764e5edf6171f76c5dd3af5f63cd6d"
+    },
+    {
+      "path": "garden-lab/src/privacy-structures.js",
+      "mode": "100644",
+      "gitBlob": "b2d8915cb31438500a58f7794ddbb1813adc63a8"
+    },
+    {
+      "path": "garden-lab/src/privacy.css",
+      "mode": "100644",
+      "gitBlob": "87be0dcc909d78a6e40dc58968125020ca1b4ae3"
+    },
+    {
+      "path": "garden-lab/src/reference-planting.js",
+      "mode": "100644",
+      "gitBlob": "143b49df1e6598bb4bea862858e9305dc6ef4bc1"
+    },
+    {
+      "path": "garden-lab/src/render-quality.js",
+      "mode": "100644",
+      "gitBlob": "e7ea97c98c7988852fc951d056282c5263472ad6"
+    },
+    {
+      "path": "garden-lab/src/roof-envelope.js",
+      "mode": "100644",
+      "gitBlob": "c68cfa49468e0ee4cc4b179a6f1bb914fd8f0f5b"
+    },
+    {
+      "path": "garden-lab/src/scene-dimensions.js",
+      "mode": "100644",
+      "gitBlob": "5a4451bed3b02db5def6dbe4b75d36762b2546ec"
+    },
+    {
+      "path": "garden-lab/src/scene-garage.js",
+      "mode": "100644",
+      "gitBlob": "a5fdca3d9cd7767a91ed32dbafa152983367f7ed"
+    },
+    {
+      "path": "garden-lab/src/scene-house-renovation.js",
+      "mode": "100644",
+      "gitBlob": "99035adb72b991bb12aae103d24cc58904cb0381"
+    },
+    {
+      "path": "garden-lab/src/scene-house.js",
+      "mode": "100644",
+      "gitBlob": "b373e9a100a6ea0a488f90ccb2bceafff244989e"
+    },
+    {
+      "path": "garden-lab/src/scene-interior.js",
+      "mode": "100644",
+      "gitBlob": "6c06c24c833b1a2b9a9e33156cb7d68cc47d4a10"
+    },
+    {
+      "path": "garden-lab/src/scene-light-boundary.js",
+      "mode": "100644",
+      "gitBlob": "a4617854578feb12d4f079e6895d219866a619e2"
+    },
+    {
+      "path": "garden-lab/src/scene-materials.js",
+      "mode": "100644",
+      "gitBlob": "87ee6e911b512fa481900bdc079f53c5b63ed618"
+    },
+    {
+      "path": "garden-lab/src/scene-night-lights.js",
+      "mode": "100644",
+      "gitBlob": "ec2aad6beacad961129493e9387dac2ab1ae1d0b"
+    },
+    {
+      "path": "garden-lab/src/scene-privacy-structures.js",
+      "mode": "100644",
+      "gitBlob": "4a9ad4fd91e54cd578c5683962ca122201162901"
+    },
+    {
+      "path": "garden-lab/src/scene-spa.js",
+      "mode": "100644",
+      "gitBlob": "6497112a195f26525f9c59d4a126e3d9ba775641"
+    },
+    {
+      "path": "garden-lab/src/scene-static-details.js",
+      "mode": "100644",
+      "gitBlob": "d904c8e887f523013acec9f373385adfbe4858b8"
+    },
+    {
+      "path": "garden-lab/src/scene-style-details.js",
+      "mode": "100644",
+      "gitBlob": "7f492965e3dbd81aa8eacb9b0ddca40e0b040223"
+    },
+    {
+      "path": "garden-lab/src/scene-terrace-cover.js",
+      "mode": "100644",
+      "gitBlob": "91bbe3736fc56ec4cef2eeef049b613024d41e53"
+    },
+    {
+      "path": "garden-lab/src/scene-trees.js",
+      "mode": "100644",
+      "gitBlob": "c6835817ffcd14cb58f5e77fb7f8487a9bd4a5e9"
+    },
+    {
+      "path": "garden-lab/src/scene.js",
+      "mode": "100644",
+      "gitBlob": "2e4813acf98f029c808f3362055ee523b63cec84"
+    },
+    {
+      "path": "garden-lab/src/screening-layouts.js",
+      "mode": "100644",
+      "gitBlob": "fc0dbcfab9233c0a6a7e9f7c5e57dd56db4c94d2"
+    },
+    {
+      "path": "garden-lab/src/screening-trees.js",
+      "mode": "100644",
+      "gitBlob": "b494e69ca99141e7d848b6176fd0969c44e17266"
+    },
+    {
+      "path": "garden-lab/src/shade.js",
+      "mode": "100644",
+      "gitBlob": "93fef899bdd57d79d672a4e801d78ffc8a3ba301"
+    },
+    {
+      "path": "garden-lab/src/sites.js",
+      "mode": "100644",
+      "gitBlob": "91909d9e5bc5555edf7bae07f197994175b1864b"
+    },
+    {
+      "path": "garden-lab/src/solar.js",
+      "mode": "100644",
+      "gitBlob": "97b71a3e81852a635a5272e701e727f1d1847a90"
+    },
+    {
+      "path": "garden-lab/src/state.js",
+      "mode": "100644",
+      "gitBlob": "97829ee968301ceaf988acf6dff91b0a41a26264"
+    },
+    {
+      "path": "garden-lab/src/studio-controls.js",
+      "mode": "100644",
+      "gitBlob": "b1f5e1839d493443fff841a9ecb78c5e75a04296"
+    },
+    {
+      "path": "garden-lab/src/studio-state.js",
+      "mode": "100644",
+      "gitBlob": "73245b5e24009eb0b6e429dcdf4518adf303bb35"
+    },
+    {
+      "path": "garden-lab/src/studio.css",
+      "mode": "100644",
+      "gitBlob": "333959387820ad66fd5a0c23aa1905dfe4536a92"
+    },
+    {
+      "path": "garden-lab/src/sun-view.js",
+      "mode": "100644",
+      "gitBlob": "98e586db70fa1e1723fbe2f0ba1f87fc40e87cd0"
+    },
+    {
+      "path": "garden-lab/src/sun.css",
+      "mode": "100644",
+      "gitBlob": "91e91e495a813a59a3b629c3aff3ff59b2cc2164"
+    },
+    {
+      "path": "garden-lab/src/terrace-cover.js",
+      "mode": "100644",
+      "gitBlob": "8762fa2714bc821346857ba34c06c8bc505393f0"
+    },
+    {
+      "path": "garden-lab/src/terrain-mesh.js",
+      "mode": "100644",
+      "gitBlob": "4329a837f2a42923d09cd2a636ae42fb48c375d9"
+    },
+    {
+      "path": "garden-lab/src/tree-catalog.js",
+      "mode": "100644",
+      "gitBlob": "cadcc00474656ec3253bc4e7eec501d2a861ce27"
+    },
+    {
+      "path": "garden-lab/src/tree-controls.js",
+      "mode": "100644",
+      "gitBlob": "3bb1016bfc52ed1256903e07865006b7849561a8"
+    },
+    {
+      "path": "garden-lab/src/tree-drawing.js",
+      "mode": "100644",
+      "gitBlob": "f10ced9f5b5b44ab81de50e3b324ceebdfd54f30"
+    },
+    {
+      "path": "garden-lab/src/tree-selection.js",
+      "mode": "100644",
+      "gitBlob": "34680e35df9e1fc54bc2179ad7c1cd97d51de57a"
+    },
+    {
+      "path": "garden-lab/src/viewpoints.js",
+      "mode": "100644",
+      "gitBlob": "e3d37a3676adaa3973bda64e1b8c132b10d97ee3"
+    },
+    {
+      "path": "garden-lab/style.css",
+      "mode": "100644",
+      "gitBlob": "8535552a655c5bfbfc2ab980703c52d3f50d3927"
+    },
+    {
+      "path": "garden-lab/tests/aligned-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "8f436d02ab8cde2af5e3fb84c80621562df86e43"
+    },
+    {
+      "path": "garden-lab/tests/buildings.test.mjs",
+      "mode": "100644",
+      "gitBlob": "f36ab42a1e35a25db369227596f4c7f62dc3be33"
+    },
+    {
+      "path": "garden-lab/tests/busier-evening-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "aac579f3d0c23e1c4abc5c7b1e18ee4c02e35dfe"
+    },
+    {
+      "path": "garden-lab/tests/compact-spa.test.mjs",
+      "mode": "100644",
+      "gitBlob": "0ad73f3e89eace6f67834a4a1cdfe835008bd8a3"
+    },
+    {
+      "path": "garden-lab/tests/conifer-model.test.mjs",
+      "mode": "100644",
+      "gitBlob": "1e74eefc11d5c84bb18df08ee64deb50c69d5b60"
+    },
+    {
+      "path": "garden-lab/tests/context-facades.test.mjs",
+      "mode": "100644",
+      "gitBlob": "084d597455e256de970d1cb516f4682ed07aa8ab"
+    },
+    {
+      "path": "garden-lab/tests/corner-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "4051fa959c556c97f6450e85b0d20385cd1b639f"
+    },
+    {
+      "path": "garden-lab/tests/costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "891c89799dab2f431061dcd16f6fc6ecb054f7a1"
+    },
+    {
+      "path": "garden-lab/tests/design-checks.test.mjs",
+      "mode": "100644",
+      "gitBlob": "f3e6726cf6e2941f5ce054765e646814114de062"
+    },
+    {
+      "path": "garden-lab/tests/design-styles.test.mjs",
+      "mode": "100644",
+      "gitBlob": "598e513bfe50428c4923dd9b79a834df7f165b5c"
+    },
+    {
+      "path": "garden-lab/tests/dimensions.test.mjs",
+      "mode": "100644",
+      "gitBlob": "85dcf02597fcf35b3864fe698b0ac3058af7877c"
+    },
+    {
+      "path": "garden-lab/tests/edge-layout.test.mjs",
+      "mode": "100644",
+      "gitBlob": "8a6c4adcd00bf0efb0eb22a2fad7b622dd07f5d4"
+    },
+    {
+      "path": "garden-lab/tests/edge-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "61d92168a88e8ecaeda1c6c9a43d56e1bbb64b35"
+    },
+    {
+      "path": "garden-lab/tests/entrance-access.test.mjs",
+      "mode": "100644",
+      "gitBlob": "ee5f370903759afde4efb1a922a0c976c0321d65"
+    },
+    {
+      "path": "garden-lab/tests/facade-visibility.test.mjs",
+      "mode": "100644",
+      "gitBlob": "23f170e2bd9dcd50fc2427dd88f4be8ea32d8216"
+    },
+    {
+      "path": "garden-lab/tests/front-hedge-costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "f09fa9e6ceb1c68b7a06bcaa02a5a0b38ceeba68"
+    },
+    {
+      "path": "garden-lab/tests/front-hedge.test.mjs",
+      "mode": "100644",
+      "gitBlob": "a7f25693d40ed6425f74ae337a4e501fcab38ed0"
+    },
+    {
+      "path": "garden-lab/tests/front-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "98625a62aac79f40e24b62fd48234e7c69c155fe"
+    },
+    {
+      "path": "garden-lab/tests/full-perimeter-costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "8a9737c94e9327874f404111950c143b105db56b"
+    },
+    {
+      "path": "garden-lab/tests/full-perimeter-hedges.test.mjs",
+      "mode": "100644",
+      "gitBlob": "541d2940218da46b775035438665dc28a65923eb"
+    },
+    {
+      "path": "garden-lab/tests/full-perimeter-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "a3917269fdf4ce313f8068bd105b9a40f8ee2326"
+    },
+    {
+      "path": "garden-lab/tests/garage-controls.test.mjs",
+      "mode": "100644",
+      "gitBlob": "04c0447dab575b074ee004c035af989a1cc31403"
+    },
+    {
+      "path": "garden-lab/tests/garage-costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "f4762d135738c55da9e96736431cd8c907abfd97"
+    },
+    {
+      "path": "garden-lab/tests/garage-plan.test.mjs",
+      "mode": "100644",
+      "gitBlob": "48177474ba037f14c25f99fa93c2e114fa2670cb"
+    },
+    {
+      "path": "garden-lab/tests/garage-ramp.test.mjs",
+      "mode": "100644",
+      "gitBlob": "3bcc68f89b30c3196c6aa2d0025a005597b1c6f3"
+    },
+    {
+      "path": "garden-lab/tests/garage-scene.test.mjs",
+      "mode": "100644",
+      "gitBlob": "70829ea4de9c227cf4f4a7fcc28408ea13a72775"
+    },
+    {
+      "path": "garden-lab/tests/garage-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "e8eb8506fecbc0d2cb408e5449fdc224b0f2765c"
+    },
+    {
+      "path": "garden-lab/tests/garden-budget.test.mjs",
+      "mode": "100644",
+      "gitBlob": "deca113f3643500333a2c30145a2121f380af25a"
+    },
+    {
+      "path": "garden-lab/tests/geometry.test.mjs",
+      "mode": "100644",
+      "gitBlob": "14d169fbde79e3192531d1cf89a59d8b62d02481"
+    },
+    {
+      "path": "garden-lab/tests/house-appearance.test.mjs",
+      "mode": "100644",
+      "gitBlob": "f1675521a5ff232e25bf9b55272aefe0f4dcbc19"
+    },
+    {
+      "path": "garden-lab/tests/house-renovation.test.mjs",
+      "mode": "100644",
+      "gitBlob": "e59b7a76712c2f4e7c02ed7e9f60d25e6e607edd"
+    },
+    {
+      "path": "garden-lab/tests/interior-plan.test.mjs",
+      "mode": "100644",
+      "gitBlob": "5981fc976f09cd904900ef7e3587f79e3f2b35e4"
+    },
+    {
+      "path": "garden-lab/tests/interior-renderer.test.mjs",
+      "mode": "100644",
+      "gitBlob": "943068cbcbe03487744602f391b037a9c12c4d1f"
+    },
+    {
+      "path": "garden-lab/tests/interior-state-integration.test.mjs",
+      "mode": "100644",
+      "gitBlob": "c8699ed8932a36b06dba292b1995278c90003a45"
+    },
+    {
+      "path": "garden-lab/tests/korzeniowskiego.test.mjs",
+      "mode": "100644",
+      "gitBlob": "dc44138f755fa7425dce6901d67f6e4152e1129c"
+    },
+    {
+      "path": "garden-lab/tests/left-edge-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "4357848cb6561c2c3c5388d38e416e5618e29293"
+    },
+    {
+      "path": "garden-lab/tests/multisite-views.test.mjs",
+      "mode": "100644",
+      "gitBlob": "59602e476504e237e820f57fffb319b1da471b54"
+    },
+    {
+      "path": "garden-lab/tests/nadmorska-budget.test.mjs",
+      "mode": "100644",
+      "gitBlob": "748ef225ceda60056457a4554227a2311da500ca"
+    },
+    {
+      "path": "garden-lab/tests/nadmorska-integration.test.mjs",
+      "mode": "100644",
+      "gitBlob": "27f41a58b22ddb610363c468c95afaec08239cb0"
+    },
+    {
+      "path": "garden-lab/tests/nadmorska-profile.test.mjs",
+      "mode": "100644",
+      "gitBlob": "dcb8f07dd394fe835139b13d8bfc4687274ec340"
+    },
+    {
+      "path": "garden-lab/tests/neighborhood-data.test.mjs",
+      "mode": "100644",
+      "gitBlob": "8fe0e1718d23dcc4c987cc4797e013c1147b8937"
+    },
+    {
+      "path": "garden-lab/tests/neighborhood.test.mjs",
+      "mode": "100644",
+      "gitBlob": "9b16eef86a8067b86c166b0810cb86519f2a088a"
+    },
+    {
+      "path": "garden-lab/tests/night-lighting.test.mjs",
+      "mode": "100644",
+      "gitBlob": "622bba38e7eac335201d992a7472bda3ad20f76f"
+    },
+    {
+      "path": "garden-lab/tests/orbit-idle.test.mjs",
+      "mode": "100644",
+      "gitBlob": "6d2c4505c7790d066182f27eb011e503a201a281"
+    },
+    {
+      "path": "garden-lab/tests/orientation.test.mjs",
+      "mode": "100644",
+      "gitBlob": "74fb8560da45b98b856b601040b85c27ecd466e6"
+    },
+    {
+      "path": "garden-lab/tests/pendant-layout.test.mjs",
+      "mode": "100644",
+      "gitBlob": "3a0e5d08b4d21c479e6e588525983eed88da70c4"
+    },
+    {
+      "path": "garden-lab/tests/pendant-rendering.test.mjs",
+      "mode": "100644",
+      "gitBlob": "cd74abe59ad262d36e09070320ab18c7292cfecd"
+    },
+    {
+      "path": "garden-lab/tests/pendant-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "9e750acde6c4fe99f1a7083f9c0f5da5fb8cd7a5"
+    },
+    {
+      "path": "garden-lab/tests/pine-model.test.mjs",
+      "mode": "100644",
+      "gitBlob": "23e5ed22c5934560fca19eae6e4b32f7bbfe1567"
+    },
+    {
+      "path": "garden-lab/tests/pool-end-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "35fd9bd9ffc8765a3cf9c3720b6be86daaac35c8"
+    },
+    {
+      "path": "garden-lab/tests/privacy-costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "997d6829df70ae30d5c92c79e00c3f99b105dfc1"
+    },
+    {
+      "path": "garden-lab/tests/privacy-rendering.test.mjs",
+      "mode": "100644",
+      "gitBlob": "a77ff2a07f647fccb6986db6c37ce73caf0efae5"
+    },
+    {
+      "path": "garden-lab/tests/privacy-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "6505df1209a5be150b75d05c9e4d686cc3816b43"
+    },
+    {
+      "path": "garden-lab/tests/privacy-structures.test.mjs",
+      "mode": "100644",
+      "gitBlob": "78a846258c29e22816dff8210976a81d71db4f7e"
+    },
+    {
+      "path": "garden-lab/tests/rear-corner-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "e24ec221fe0349ea276be909ac12e630d16fce27"
+    },
+    {
+      "path": "garden-lab/tests/reference-planting-action.test.mjs",
+      "mode": "100644",
+      "gitBlob": "09ccd59fc91588198562d08bccc463c798e808f9"
+    },
+    {
+      "path": "garden-lab/tests/reference-pool-layout.test.mjs",
+      "mode": "100644",
+      "gitBlob": "4253aa1bb57c6dee3cd5911752476b7fa6ee3484"
+    },
+    {
+      "path": "garden-lab/tests/render-quality.test.mjs",
+      "mode": "100644",
+      "gitBlob": "21d100a29ddff26232670b79573b95960c663f42"
+    },
+    {
+      "path": "garden-lab/tests/scene-light-boundary.test.mjs",
+      "mode": "100644",
+      "gitBlob": "ae60c0088ee9e7b0c2c7a53bd86c00f02eea3f87"
+    },
+    {
+      "path": "garden-lab/tests/screening-layouts.test.mjs",
+      "mode": "100644",
+      "gitBlob": "0e9249702aaef300df652ee6cd7433413bcec653"
+    },
+    {
+      "path": "garden-lab/tests/screening-trees.test.mjs",
+      "mode": "100644",
+      "gitBlob": "e81364b9adf4b476083f8993263665a71e519a21"
+    },
+    {
+      "path": "garden-lab/tests/shade.test.mjs",
+      "mode": "100644",
+      "gitBlob": "e766d26a00de228815fcb1ae3a29f336ad0c1e51"
+    },
+    {
+      "path": "garden-lab/tests/site-sides.test.mjs",
+      "mode": "100644",
+      "gitBlob": "0075478e2f20ee54a1065c8d8d477ee01e6a76ee"
+    },
+    {
+      "path": "garden-lab/tests/sites.test.mjs",
+      "mode": "100644",
+      "gitBlob": "2057e1b22bb0eae984858790c8aed317a50da4c4"
+    },
+    {
+      "path": "garden-lab/tests/solar.test.mjs",
+      "mode": "100644",
+      "gitBlob": "f017a6888a00ee50b477a224db527150863d0100"
+    },
+    {
+      "path": "garden-lab/tests/spa-costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "8c1f3d4535809b070b2095d2cb7e304c0c9bd145"
+    },
+    {
+      "path": "garden-lab/tests/spa-layout.test.mjs",
+      "mode": "100644",
+      "gitBlob": "c877f7ce12dfc3673f2313aee7b33eae45ba96ea"
+    },
+    {
+      "path": "garden-lab/tests/spa-scene.test.mjs",
+      "mode": "100644",
+      "gitBlob": "357fc0663216b883c89879a3596a6082c4a039c8"
+    },
+    {
+      "path": "garden-lab/tests/spa-shade.test.mjs",
+      "mode": "100644",
+      "gitBlob": "8906512d23008fe380067ebfc52d8a790ebe5b7a"
+    },
+    {
+      "path": "garden-lab/tests/state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "6c4a8da16d964a8b9bcc313ce998b3cf6dc61bce"
+    },
+    {
+      "path": "garden-lab/tests/sternicza-refinements.test.mjs",
+      "mode": "100644",
+      "gitBlob": "beeaa17607c268e61b073a1c0ab2794541e9ed40"
+    },
+    {
+      "path": "garden-lab/tests/studio-state-history.test.mjs",
+      "mode": "100644",
+      "gitBlob": "58cf1ed4165196562304953e8a230cd109c033b9"
+    },
+    {
+      "path": "garden-lab/tests/terrace-cover-integration.test.mjs",
+      "mode": "100644",
+      "gitBlob": "0175a0976d8ebe7c5e0eed0ff2d00be1ffbee5a4"
+    },
+    {
+      "path": "garden-lab/tests/terrace-cover.test.mjs",
+      "mode": "100644",
+      "gitBlob": "baaceb1fe15a6361225deada2d5449beb59443ef"
+    },
+    {
+      "path": "garden-lab/tests/terrace-reference.test.mjs",
+      "mode": "100644",
+      "gitBlob": "9fd7dd4c50ecd9cc262643ac1dae893a3b796b0a"
+    },
+    {
+      "path": "garden-lab/tests/tight-grove-screening.test.mjs",
+      "mode": "100644",
+      "gitBlob": "5114d207b10ea6da6f49539eddbcb36bdf826b64"
+    },
+    {
+      "path": "garden-lab/tests/tree-alternative-prices.test.mjs",
+      "mode": "100644",
+      "gitBlob": "a6612cc10f6a87f5d14aa22e91264406f84db8b3"
+    },
+    {
+      "path": "garden-lab/tests/tree-costs.test.mjs",
+      "mode": "100644",
+      "gitBlob": "858e175c4736e07291cc049f0485ea17fa096e9c"
+    },
+    {
+      "path": "garden-lab/tests/tree-drawing.test.mjs",
+      "mode": "100644",
+      "gitBlob": "66646f511c5576e25603277849e6921cff923b1e"
+    },
+    {
+      "path": "garden-lab/tests/tree-selection.test.mjs",
+      "mode": "100644",
+      "gitBlob": "b7abdb977e1a850bdd98d8f9f442770364e2c057"
+    },
+    {
+      "path": "garden-lab/tests/upper-floor-state.test.mjs",
+      "mode": "100644",
+      "gitBlob": "9b38db640891792f5067a915a7f9393b0fb64592"
+    },
+    {
+      "path": "garden-lab/tests/upper-floor-views.test.mjs",
+      "mode": "100644",
+      "gitBlob": "14a8b271e334ffeb0d9038b7904281f7a5d3a507"
+    },
+    {
+      "path": "garden-lab/vendor/OrbitControls.js",
+      "mode": "100644",
+      "gitBlob": "b427b92b25fd34c8c1c5970cdd8d7bbbc299139d"
+    },
+    {
+      "path": "garden-lab/vendor/Projector.js",
+      "mode": "100644",
+      "gitBlob": "53c16ffd0fbe60bf48dfe72019c9882712aacb10"
+    },
+    {
+      "path": "garden-lab/vendor/SVGRenderer.js",
+      "mode": "100644",
+      "gitBlob": "c2500358141f43434d4dd4cc6e14423e196c5cbd"
+    },
+    {
+      "path": "garden-lab/vendor/THREE-LICENSE.txt",
+      "mode": "100644",
+      "gitBlob": "d07e209686512b9ac93d7df5481a4a6f622093e7"
+    },
+    {
+      "path": "garden-lab/vendor/three.module.js",
+      "mode": "100644",
+      "gitBlob": "0bcc7a286da2c115853ceec9deea19923e10ddc1"
+    }
+  ]
+}

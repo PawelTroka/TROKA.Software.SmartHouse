@@ -1,7 +1,7 @@
 /** Optional Sternicza basement concept. Dimensions remain design assumptions. */
 export const GARAGE_FIELDS=Object.freeze({
   garageClearHeight:{label:'Base clear height under slab',min:2,max:3,step:.05,value:2.3,group:'garage-level'},
-  garageSlabThickness:{label:'Living-floor slab allowance',min:.1,max:.5,step:.01,value:.25,group:'garage-level'},
+  garageSlabThickness:{label:'Living-floor slab allowance',min:.1,max:.5,step:.01,value:.30,group:'garage-level'},
   garageExtraDepth:{label:'Extra basement lowering',min:0,max:1,step:.05,value:0,group:'garage-level'},
   garageSpaces:{label:'Required parking spaces',min:2,max:2,step:1,value:2,group:'garage-ramp',unit:'cars',
     help:'The basement needs two cars side by side. Adjust the clear width below to check the fit.'},

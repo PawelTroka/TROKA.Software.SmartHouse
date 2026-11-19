@@ -1,6 +1,6 @@
-import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.25.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.25.0';
-import {terrainAt} from './geometry.js?v=1.25.0';
+import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.26.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.26.0';
+import {terrainAt} from './geometry.js?v=1.26.0';
 
 const $=id=>document.getElementById(id);
 const fmt=(value,digits=1)=>Number.isFinite(value)?value.toFixed(digits):'—';
@@ -101,6 +101,7 @@ export function garageClearanceResult(layout){
   if(a.parkingWidthPass===false)return {status:'geometry-limit',label:`Garage too narrow for ${layout.parking?.spaces??2} cars with the selected allowances`};
   if(a.status==='geometry-limit')return {status:'geometry-limit',label:'Ramp geometry needs adjustment'};
   if(a.status==='reserve-shortfall'||conservative<a.requiredMargin)return {status:'reserve-shortfall',label:'Below the modelled clearance reserve'};
+  if(layout.documentedInterior?.conflicts?.length)return {status:'structure-conflict',label:'Car reserve met · existing stairs / flues obstruct the route'};
   return {status:'reserve-met',label:'Modelled car-clearance reserve met'};
 }
 export function garageConfigurationWarnings(layout){
@@ -119,6 +120,7 @@ export function garageConfigurationWarnings(layout){
   const overhead=a.minimumOverheadClearance-(a.numericalAllowance||0);
   if(overhead<0)warnings.push('The closed-car roof envelope meets the doorway or slab. Increase the opening/headroom or change the ramp profile.');
   else if(overhead<a.requiredMargin)warnings.push('The roof clearance at the doorway or slab is below the selected model reserve.');
+  if(layout.documentedInterior?.conflicts?.length)warnings.push('The supplied basement plan places retained stair / flue structure across this two-car approach. Inspect Interiors → Basement → Your renovation. A structural redesign is required before this route can be considered usable.');
   return warnings;
 }
 
@@ -187,7 +189,7 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     $('garage-forward-clearance').textContent=mm(a.forward?.minimumClearance-allowance);
     $('garage-reverse-clearance').textContent=mm(a.reverse?.minimumClearance-allowance);
     $('garage-clearance-reserve').textContent=mm(a.requiredMargin);
-    $('garage-level-summary').textContent=`Living floor ${fmt(current.livingFloorZ-current.streetZ,2)} m above street entry. Basement floor ${fmt(current.drop,2)} m below street entry, after ${fmt(settings.garageSlabThickness,2)} m slab + ${fmt(settings.garageClearHeight,2)} m base clear height${settings.garageExtraDepth>0?` + ${fmt(settings.garageExtraDepth,2)} m extra lowering`:''}. Levels remain unmeasured assumptions.`;
+    $('garage-level-summary').textContent=`Living floor ${fmt(current.livingFloorZ-current.streetZ,2)} m above street entry. Basement floor ${fmt(current.drop,2)} m below street entry, after ${fmt(settings.garageSlabThickness,2)} m slab + ${fmt(settings.garageClearHeight,2)} m base clear height${settings.garageExtraDepth>0?` + ${fmt(settings.garageExtraDepth,2)} m extra lowering`:''}. Historical cellar: −2.00 m from the living floor, 1.70 m clear. This proposal lowers it another ${fmt(current.documentedInterior?.additionalLowering,2)} m; street datum and present construction remain unverified.`;
     const direction=settings.garageReverse?'Reverse entry':'Forward entry';
     $('garage-current-pose').textContent=`${direction} preview in its own lane, beside the parked second car · ${mm(pose?.minimumClearance)} underside clearance here · pitch ${fmt(pose?.pitchDegrees??pose?.pitchRadians*180/Math.PI,1)}°. The minimum over the whole drive is shown below.`;
     const warnings=garageConfigurationWarnings(current);
@@ -203,7 +205,7 @@ export function createGarageControls({getSettings,getData,onChange,onPreview,onV
     const current=layout();
     return {enabled:true,streetZ:current.streetZ,livingFloorZ:current.livingFloorZ,ceilingZ:current.ceilingZ,
       floorZ:current.floorZ,drop:current.drop,frontRun:current.frontRun,totalRun:current.totalRun,
-      design:current.design,assessment:current.assessment,profile:current.profile,vehicle:current.vehicle,portal:current.portal,parking:current.parking,entryAccess:current.entryAccess,
+      design:current.design,assessment:current.assessment,documentedInterior:current.documentedInterior,profile:current.profile,vehicle:current.vehicle,portal:current.portal,parking:current.parking,entryAccess:current.entryAccess,
       preview:{progress:settings.garageProgress/100,reverse:settings.garageReverse},sources:sourceRecord,
       note:'Conditional geometric comparison using an assumed flat underside and design reserve. Survey, structure, drainage, traction, local rules, headroom and door-opening envelopes remain separate checks.'};
   }

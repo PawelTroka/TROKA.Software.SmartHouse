@@ -1,0 +1,211 @@
+{
+  "version": "1.26.0",
+  "preparedAt": "2026-11-19T00:30:31.803935+00:00",
+  "repository": "PawelTroka/TROKA.Software.SmartHouse",
+  "testedSourceCommit": "5c03e6a8e22f5e8abcc1923227aee9ba57b0575d",
+  "mergedSourceCommit": "0f6ac891dbfe5320d9f31c62969a6d374617c5a3",
+  "workflowRunId": 44427544268,
+  "workflowRunUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/44427544268",
+  "unitTests": {
+    "tests": 616,
+    "pass": 616,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "inputLogSha256": "8c615ae50ebcd31e5c9353bf8e89d27b89ed0ea769700ce5ca83176ccb708525",
+    "summary": "unit-test-summary.txt"
+  },
+  "browserChecks": {
+    "total": 63,
+    "reports": {
+      "interior": {
+        "source": "interiors/browser-report.json",
+        "sha256": "1c46db74778c498e26d53db5078dd005dca50eeffd1320b6bef11652e3b5b323",
+        "completedChecks": 8
+      },
+      "studio": {
+        "source": "studio/browser-report.json",
+        "sha256": "1015ea8b0b019a8face33f75250a5830514599134edb45a2560e45c97b81a365",
+        "completedChecks": 12
+      },
+      "garden": {
+        "source": "garden/browser-report.json",
+        "sha256": "a44e32d009af388fd4f123198db354dd1078f9f100da1eda2b20bbaa1933e7df",
+        "completedChecks": 35
+      },
+      "refinements": {
+        "source": "garden/refinements/browser-report.json",
+        "sha256": "6eefb88f29edbfea851b213b2e85714d370acd6b7dfd8cc0af19512cc0da2e5e",
+        "completedChecks": 8
+      }
+    }
+  },
+  "selectedScreenshots": [
+    {
+      "file": "ground-japandi-dollhouse.png",
+      "suite": "interior",
+      "source": "interiors/ground-japandi-dollhouse.png",
+      "sha256": "a271e110ed5bdd141986539ccacbcb1a4f395c68eb07e16ccb32354ebf3e5876"
+    },
+    {
+      "file": "first-floor-renovation-plan.png",
+      "suite": "interior",
+      "source": "interiors/first-floor-renovation-plan.png",
+      "sha256": "701f97fff4fa3b4e4dc9da5108d46d9176d8189faa2b4e5cbd2816fbda84ab92"
+    },
+    {
+      "file": "first-floor-master-eye-level.png",
+      "suite": "interior",
+      "source": "interiors/first-floor-master-eye-level.png",
+      "sha256": "9af78924c768294608964bf5979d46b60bf73f14a63c2658146ffad841f1700d"
+    },
+    {
+      "file": "basement-conversion-conflicts.png",
+      "suite": "interior",
+      "source": "interiors/basement-conversion-conflicts.png",
+      "sha256": "0f44b814eabf6eea7c823c20ab86184f7363fd1c4ad66d112b5078bc39c733f9"
+    },
+    {
+      "file": "mobile-floor-plan.png",
+      "suite": "interior",
+      "source": "interiors/mobile-floor-plan.png",
+      "sha256": "3ee69cc2a60c44ef30191d28d5b841990b3cfe4417c8cddf09f2d40d65a8f6c2"
+    },
+    {
+      "file": "mobile-dollhouse.png",
+      "suite": "interior",
+      "source": "interiors/mobile-dollhouse.png",
+      "sha256": "4e98c5bac4a6361e2c44fb589cfd3d678fb5b2880950e44f52329318a61dc5fd"
+    },
+    {
+      "file": "sternicza-11-hidden-bali-house-original.png",
+      "suite": "studio",
+      "source": "studio/sternicza-11-hidden-bali-house-original.png",
+      "sha256": "04bdf28255cdd53d0e23886b160649ba59b0dda417c8ceceeb5272e56f1f1f99"
+    },
+    {
+      "file": "sternicza-11-hidden-bali-house-renovated.png",
+      "suite": "studio",
+      "source": "studio/sternicza-11-hidden-bali-house-renovated.png",
+      "sha256": "1ea843f55d2415878a677f0f970e7081adf94a1b7d43f1cdef504bd83666e7c7"
+    },
+    {
+      "file": "sternicza-basement-garage-profile.jpg",
+      "suite": "garden",
+      "source": "garden/sternicza-basement-garage-profile.jpg",
+      "sha256": "0c3b3844f323b4c6de6b125d40b47f53c905383359351edf7fc881a97da9b3ad"
+    },
+    {
+      "file": "sternicza-two-car-front.png",
+      "suite": "refinements",
+      "source": "garden/refinements/sternicza-two-car-front.png",
+      "sha256": "80820662563fd00926f5f56e3d8619db519541de89932712d3fe470f49d25213"
+    },
+    {
+      "file": "sternicza-two-car-parking-plan.png",
+      "suite": "refinements",
+      "source": "garden/refinements/sternicza-two-car-parking-plan.png",
+      "sha256": "47b60035b6f16c662c5b5c2d66e318d246b2d244931217659c91efa683ff8a33"
+    }
+  ],
+  "privateSourceImagesPublished": false,
+  "evidenceScope": "Passing CI artifact reports and selected original captures. Production deployment is verified separately.",
+  "files": [
+    {
+      "path": "basement-conversion-conflicts.png",
+      "bytes": 125815,
+      "sha256": "0f44b814eabf6eea7c823c20ab86184f7363fd1c4ad66d112b5078bc39c733f9"
+    },
+    {
+      "path": "first-floor-master-eye-level.png",
+      "bytes": 378714,
+      "sha256": "9af78924c768294608964bf5979d46b60bf73f14a63c2658146ffad841f1700d"
+    },
+    {
+      "path": "first-floor-renovation-plan.png",
+      "bytes": 123354,
+      "sha256": "701f97fff4fa3b4e4dc9da5108d46d9176d8189faa2b4e5cbd2816fbda84ab92"
+    },
+    {
+      "path": "garden-report.json",
+      "bytes": 18563,
+      "sha256": "a44e32d009af388fd4f123198db354dd1078f9f100da1eda2b20bbaa1933e7df"
+    },
+    {
+      "path": "ground-japandi-dollhouse.png",
+      "bytes": 245612,
+      "sha256": "a271e110ed5bdd141986539ccacbcb1a4f395c68eb07e16ccb32354ebf3e5876"
+    },
+    {
+      "path": "interior-report.json",
+      "bytes": 4640,
+      "sha256": "1c46db74778c498e26d53db5078dd005dca50eeffd1320b6bef11652e3b5b323"
+    },
+    {
+      "path": "mobile-dollhouse.png",
+      "bytes": 132605,
+      "sha256": "4e98c5bac4a6361e2c44fb589cfd3d678fb5b2880950e44f52329318a61dc5fd"
+    },
+    {
+      "path": "mobile-floor-plan.png",
+      "bytes": 60809,
+      "sha256": "3ee69cc2a60c44ef30191d28d5b841990b3cfe4417c8cddf09f2d40d65a8f6c2"
+    },
+    {
+      "path": "pull-request-body.md",
+      "bytes": 3248,
+      "sha256": "eb6a502bbe35c84c89aebc666a388a5b8f8ba2240c5d53e21aac9fb2b5c1b0b7"
+    },
+    {
+      "path": "refinements-report.json",
+      "bytes": 286157,
+      "sha256": "6eefb88f29edbfea851b213b2e85714d370acd6b7dfd8cc0af19512cc0da2e5e"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 31438,
+      "sha256": "e23c7e0dcb264148fb5e1d02f1aad378467a18c2908e0fdf40a909f728d19b82"
+    },
+    {
+      "path": "sternicza-11-hidden-bali-house-original.png",
+      "bytes": 327719,
+      "sha256": "04bdf28255cdd53d0e23886b160649ba59b0dda417c8ceceeb5272e56f1f1f99"
+    },
+    {
+      "path": "sternicza-11-hidden-bali-house-renovated.png",
+      "bytes": 329611,
+      "sha256": "1ea843f55d2415878a677f0f970e7081adf94a1b7d43f1cdef504bd83666e7c7"
+    },
+    {
+      "path": "sternicza-basement-garage-profile.jpg",
+      "bytes": 143554,
+      "sha256": "0c3b3844f323b4c6de6b125d40b47f53c905383359351edf7fc881a97da9b3ad"
+    },
+    {
+      "path": "sternicza-two-car-front.png",
+      "bytes": 572560,
+      "sha256": "80820662563fd00926f5f56e3d8619db519541de89932712d3fe470f49d25213"
+    },
+    {
+      "path": "sternicza-two-car-parking-plan.png",
+      "bytes": 53552,
+      "sha256": "47b60035b6f16c662c5b5c2d66e318d246b2d244931217659c91efa683ff8a33"
+    },
+    {
+      "path": "studio-report.json",
+      "bytes": 19085,
+      "sha256": "1015ea8b0b019a8face33f75250a5830514599134edb45a2560e45c97b81a365"
+    },
+    {
+      "path": "unit-test-summary.txt",
+      "bytes": 189,
+      "sha256": "a40f4d4c47d2422c1d67afc791f120a0530e59324930c9e01bda308c927e6550"
+    },
+    {
+      "path": "validation.html",
+      "bytes": 12849,
+      "sha256": "58106229fa880b5ee1ac1634f72f01ee9efdd40baa4983a3ee4816a0c8d7016c"
+    }
+  ]
+}

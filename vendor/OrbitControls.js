@@ -390,7 +390,9 @@ class OrbitControls extends EventDispatcher {
 				if ( zoomChanged ||
 					lastPosition.distanceToSquared( scope.object.position ) > EPS ||
 					8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ||
-					lastTargetPosition.distanceToSquared( scope.target ) > 0 ) {
+					// clampLength can move an unchanged target by floating-point noise.
+					// Use the camera's tolerance so on-demand rendering can settle.
+					lastTargetPosition.distanceToSquared( scope.target ) > EPS ) {
 
 					scope.dispatchEvent( _changeEvent );
 

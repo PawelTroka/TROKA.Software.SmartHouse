@@ -1,12 +1,12 @@
 // Shallow, additive facade treatments in wall-local metres. The renderers use
 // these same window and entry records for the underlying house.
-import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.25.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.25.0';
-import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.25.0';
-import {roofEdgeHeight} from './roof-envelope.js?v=1.25.0';
-import {garageLayout} from './garage-ramp.js?v=1.25.0';
-import {terrainAt} from './geometry.js?v=1.25.0';
-import {getDesignStyle} from './design-styles.js?v=1.25.0';
+import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.26.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.26.0';
+import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.26.0';
+import {roofEdgeHeight} from './roof-envelope.js?v=1.26.0';
+import {garageLayout} from './garage-ramp.js?v=1.26.0';
+import {terrainAt} from './geometry.js?v=1.26.0';
+import {getDesignStyle} from './design-styles.js?v=1.26.0';
 
 function minimumRoof(edge,lo,hi){
   const roof=edge.roofEdge;

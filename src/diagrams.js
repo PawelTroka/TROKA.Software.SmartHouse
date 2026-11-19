@@ -11,18 +11,18 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.25.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.25.0';
-import {gazeDirection} from './orientation.js?v=1.25.0';
-import {localSunDirection} from './solar.js?v=1.25.0';
-import {getSiteProfile} from './sites.js?v=1.25.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.25.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.25.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.25.0';
-import {terraceStairs} from './layout.js?v=1.25.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.25.0';
+} from './geometry.js?v=1.26.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.26.0';
+import {gazeDirection} from './orientation.js?v=1.26.0';
+import {localSunDirection} from './solar.js?v=1.26.0';
+import {getSiteProfile} from './sites.js?v=1.26.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.26.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.26.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.26.0';
+import {terraceStairs} from './layout.js?v=1.26.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.26.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.25.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.26.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -90,7 +90,11 @@ export function terraceCoverPlanMarkup(cover,{X,Y,scale,labels=true,subtle=false
     box.part==='post'?'fill="#3d4c42" stroke="#fffdf5" stroke-width=".5"':'fill="none" stroke="#8a7559" stroke-width=".8" stroke-dasharray="3 2"')).join('');
   const guards=cover.boxes.filter(box=>['rail','rail-post','glass'].includes(box.part)).map(box=>rect(box,
     box.part==='glass'?'fill="#6ca4a5" fill-opacity=".22" stroke="#6ca4a5" stroke-width=".5"':'fill="#506257"')).join('');
-  const access=cover.access?`<line data-terrace-cover-access="proposed" x1="${X(cover.access.x-cover.access.width/2)}" y1="${Y(cover.access.y)}" x2="${X(cover.access.x+cover.access.width/2)}" y2="${Y(cover.access.y)}" stroke="#8bb7b3" stroke-width="3"><title>Proposed first-floor access door</title></line>`:'';
+  const access=(cover.accesses??(cover.access?[cover.access]:[])).map(door=>{
+    const a=door.a??[door.x-door.width/2,door.y],b=door.b??[door.x+door.width/2,door.y];
+    const label=door.label?door.label+' balcony door':'Proposed first-floor access door';
+    return `<line data-terrace-cover-access="proposed" data-door="${esc(door.id??'centre')}" x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="${door.fitsDeck===false?'#bb4b39':'#8bb7b3'}" stroke-width="3"><title>${esc(label)}${door.fitsDeck===false?' · incomplete deck landing':''}</title></line>`;
+  }).join('');
   const label=labels?`<text x="${X((b.x0+b.x1)/2)}" y="${Y((b.y0+b.y1)/2)}" text-anchor="middle" fill="${C.ink}" font-size="9" font-weight="650" paint-order="stroke" stroke="${C.paper}" stroke-width="2.5">BALCONY · FIRST FLOOR</text>`:'';
   return `<g data-terrace-cover-plan="balcony" pointer-events="none">${slab?rect(slab,`fill="#a5b6a9" fill-opacity="${subtle?.07:.16}" stroke="#536e5d" stroke-width="1.3"`):''}${structure}${guards}${access}${label}</g>`;
 }

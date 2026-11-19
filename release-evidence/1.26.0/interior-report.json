@@ -1,0 +1,220 @@
+{
+  "version": "1.26.0",
+  "checks": [
+    "Opening a shared floor plan creates no interior WebGL context or renderer import",
+    "Eight floor/layout combinations expose their room schedules, dimensions, openings, wall changes, attic headroom and retained garage conflicts",
+    "Both layouts on all four floors render actual dollhouse geometry",
+    "21 styles render with stable room structure. Three styled frames change pixels and the neutral finish restores the reference image",
+    "Room entry and room changes move the camera, furniture toggles affect rendered content and both renderers stop when idle",
+    "Save A, return to B, shared links and local reload preserve independent interior settings",
+    "Applying the marked garden connection exports the full-width terrace and balcony, the shared upper deck and its three access doors",
+    "390 px mobile controls, room inspector and both plan and WebGL views fit the viewport"
+  ],
+  "screenshots": [
+    "first-floor-renovation-plan.png",
+    "basement-conversion-conflicts.png",
+    "ground-japandi-dollhouse.png",
+    "first-floor-master-eye-level.png",
+    "mobile-floor-plan.png",
+    "mobile-dollhouse.png"
+  ],
+  "plans": [
+    {
+      "layout": "existing",
+      "floor": "ground",
+      "zones": 6
+    },
+    {
+      "layout": "existing",
+      "floor": "first",
+      "zones": 7
+    },
+    {
+      "layout": "existing",
+      "floor": "basement",
+      "zones": 5
+    },
+    {
+      "layout": "existing",
+      "floor": "attic",
+      "zones": 1
+    },
+    {
+      "layout": "renovation",
+      "floor": "ground",
+      "zones": 5
+    },
+    {
+      "layout": "renovation",
+      "floor": "first",
+      "zones": 9
+    },
+    {
+      "layout": "renovation",
+      "floor": "basement",
+      "zones": 3
+    },
+    {
+      "layout": "renovation",
+      "floor": "attic",
+      "zones": 1
+    }
+  ],
+  "styles": [
+    {
+      "id": "organic-modern",
+      "triangles": 31207
+    },
+    {
+      "id": "hidden-bali",
+      "triangles": 33111,
+      "difference": {
+        "changed": 58826,
+        "fraction": 0.1297278463007518
+      }
+    },
+    {
+      "id": "mediterranean-villa",
+      "triangles": 33111
+    },
+    {
+      "id": "modern-minimal",
+      "triangles": 30839
+    },
+    {
+      "id": "scandinavian",
+      "triangles": 30839
+    },
+    {
+      "id": "japandi",
+      "triangles": 33479,
+      "difference": {
+        "changed": 7101,
+        "fraction": 0.015659698714541842
+      }
+    },
+    {
+      "id": "organic-scandinavian",
+      "triangles": 30839
+    },
+    {
+      "id": "organic-japandi",
+      "triangles": 31639
+    },
+    {
+      "id": "space-age",
+      "triangles": 31271,
+      "difference": {
+        "changed": 46301,
+        "fraction": 0.10210670471511081
+      }
+    },
+    {
+      "id": "party-club",
+      "triangles": 31439
+    },
+    {
+      "id": "baltic-dune",
+      "triangles": 30839
+    },
+    {
+      "id": "gdansk-brick",
+      "triangles": 33111
+    },
+    {
+      "id": "danish-midcentury",
+      "triangles": 30839
+    },
+    {
+      "id": "finnish-sauna",
+      "triangles": 30839
+    },
+    {
+      "id": "riviera-deco",
+      "triangles": 31115
+    },
+    {
+      "id": "arts-and-crafts",
+      "triangles": 33111
+    },
+    {
+      "id": "palm-springs",
+      "triangles": 31271
+    },
+    {
+      "id": "desert-modern",
+      "triangles": 31207
+    },
+    {
+      "id": "alpine-lodge",
+      "triangles": 33111
+    },
+    {
+      "id": "industrial-loft",
+      "triangles": 30839
+    }
+  ],
+  "errors": [],
+  "models": [
+    {
+      "floor": "ground",
+      "layout": "existing",
+      "meshes": 61,
+      "triangles": 5841
+    },
+    {
+      "floor": "first",
+      "layout": "existing",
+      "meshes": 67,
+      "triangles": 10116
+    },
+    {
+      "floor": "basement",
+      "layout": "existing",
+      "meshes": 50,
+      "triangles": 2556
+    },
+    {
+      "floor": "attic",
+      "layout": "existing",
+      "meshes": 31,
+      "triangles": 2802
+    },
+    {
+      "floor": "ground",
+      "layout": "renovation",
+      "meshes": 90,
+      "triangles": 33111
+    },
+    {
+      "floor": "first",
+      "layout": "renovation",
+      "meshes": 85,
+      "triangles": 33853
+    },
+    {
+      "floor": "basement",
+      "layout": "renovation",
+      "meshes": 63,
+      "triangles": 8212
+    },
+    {
+      "floor": "attic",
+      "layout": "renovation",
+      "meshes": 31,
+      "triangles": 2802
+    }
+  ],
+  "restoration": {
+    "changed": 0,
+    "fraction": 0
+  },
+  "mobile": {
+    "screen": 390,
+    "width": 390,
+    "drawing": 459,
+    "host": 844,
+    "height": 844
+  },
+  "status": "passed"
+}

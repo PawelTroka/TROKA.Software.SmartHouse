@@ -7,7 +7,8 @@
  * are explicitly proposed alterations. Keep this file free of Three / DOM so
  * window viewpoints can use the same aperture coordinates as the renderer.
  */
-import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.25.0';
+import {getInteriorPlan} from './interior-plan.js?v=1.26.0';
+import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.26.0';
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const xyz=p=>Array.isArray(p)?p:[p.x,p.y,p.z];
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring||[];
@@ -16,8 +17,8 @@ const EPS=1e-7;
 export const HOUSE_APPEARANCE_NOTES=Object.freeze({
   source:'User-provided street photograph, November 2026; no public copy of the photograph is distributed.',
   observed:'Cream plaster, red-brown tiled pitched roof, brick raised basement, white paired window frames, brown entrance and dark metal stair rail.',
-  assumptions:'Window dimensions, their position on the mapped walls, floor rises and concealed elevations are photo-informed approximations. The main roof planes fit source returns. A restrained street-front gable on the viewer-right side follows the photograph and explicitly overrides conflicting local roof returns; its dimensions and slopes are estimated.',
-  proposed:'Rear living-room HST glazing, a first-floor balcony access door when selected, and the garage entrance / side-return entrance stair are renovation proposals.',
+  assumptions:'Window dimensions, their position on the mapped walls and concealed elevations are photo-informed approximations. Fresh first-floor and attic levels follow the supplied archived section (+3.05 m and +5.75 m); edited and historical levels remain adjustable. The main roof planes fit source returns. A restrained street-front gable on the viewer-right side follows the photograph and explicitly overrides conflicting local roof returns; its dimensions and slopes are estimated.',
+  proposed:'Rear living-room HST glazing, balcony access when selected, and the garage entrance / side-return entrance stair are renovation proposals. Applying the marked plans uses the broad rear HST and three first-floor room doors.',
 });
 
 export const photoHouseSupported=data=>Boolean(data?.site?.house?.footprint?.length>=4&&(!data.site.id||data.site.id==='sternicza-11'));
@@ -63,18 +64,32 @@ export function houseAppearanceLayout(data,settings={},options={}){
     if(floorZ-baseZ>.72)addWindow(`basement-${edge.index}-${i}`,edge,edge.length*t,.48,baseZ+.18,Math.min(.78,floorZ-baseZ-.36),{level:'basement',panes:1,source:edge===front?'front-basement-assumption':'photo-inferred'});
   const terrace=data.site.terrace,project=(edge,x)=>(x-edge.a[0])/edge.direction[0];
   const bayX0=terrace.x,bayX1=terrace.x+terrace.width,mid=(bayX0+bayX1)/2;
-  const rearBays=[[bayX0,mid-.17],[mid+.17,bayX1]].map(([x0,x1],i)=>{
-    const a=project(rear,x0),b=project(rear,x1);
-    return addWindow(`rear-hst-${i}`,rear,(a+b)/2,Math.abs(b-a),floorZ+.025,2.65,{source:'renovation-proposal',panes:2,kind:'hst'});
-  });
+  const linkedPlans=settings.planExteriorApplied===true;
+  const drawingX=x=>mid+10.77/2-x; // Plan has garden at top; site +x is the opposite horizontal direction.
+  const sourceGlazing=linkedPlans?getInteriorPlan({floor:'ground',layout:'renovation'}).walls.find(w=>w.id==='garden-hst'):null;
+  const rearBays=sourceGlazing?sourceGlazing.openings.map((o,i)=>addWindow(`rear-hst-${i}`,rear,
+    project(rear,drawingX(sourceGlazing.a[0]+o.offset+o.width/2)),o.width,floorZ+.025,o.height,
+    {source:'annotated-plan-renovation',panes:4,kind:'hst'})):
+    [[bayX0,mid-.17],[mid+.17,bayX1]].map(([x0,x1],i)=>{
+      const a=project(rear,x0),b=project(rear,x1);
+      return addWindow(`rear-hst-${i}`,rear,(a+b)/2,Math.abs(b-a),floorZ+.025,2.65,{source:'renovation-proposal',panes:2,kind:'hst'});
+    });
   const balcony=Boolean(settings.canopyEnabled&&settings.terraceCoverType==='balcony');
-  for(const [i,x]of [Math.min(...ring.map(p=>p[0]))+3.25,Math.min(...ring.map(p=>p[0]))+7.85].entries())
-    addWindow(`rear-first-${i}`,rear,project(rear,x),1.6,firstFloorZ+.62,1.72,{level:'first',source:'unphotographed-rear-assumption'});
   let balconyDoor=null;
-  if(balcony){
-    const centre=project(rear,mid),width=1.6;
-    for(let i=windows.length-1;i>=0;i--)if(windows[i].edgeIndex===rear.index&&windows[i].level==='first'&&windows[i].lo<centre+width/2+.12&&windows[i].hi>centre-width/2-.12)windows.splice(i,1);
-    balconyDoor=addWindow('rear-balcony-access',rear,centre,width,firstFloorZ,2.15,{level:'first',kind:'balcony-door',source:'renovation-proposal'});
+  if(linkedPlans&&balcony){
+    const facade=getInteriorPlan({floor:'first',layout:'renovation'}).walls.find(w=>w.id==='balcony-facade');
+    const doors=(facade?.openings||[]).map((o,i)=>addWindow(`rear-balcony-room-${i}`,rear,
+      project(rear,drawingX(facade.a[0]+o.offset+o.width/2)),o.width,firstFloorZ,o.height,
+      {level:'first',kind:'balcony-door',source:'annotated-plan-renovation'})).filter(Boolean);
+    balconyDoor=doors[1]||doors[0]||null;
+  }else{
+    for(const [i,x]of [Math.min(...ring.map(p=>p[0]))+3.25,Math.min(...ring.map(p=>p[0]))+7.85].entries())
+      addWindow(`rear-first-${i}`,rear,project(rear,x),1.6,firstFloorZ+.62,1.72,{level:'first',source:'unphotographed-rear-assumption'});
+    if(balcony){
+      const centre=project(rear,mid),width=1.6;
+      for(let i=windows.length-1;i>=0;i--)if(windows[i].edgeIndex===rear.index&&windows[i].level==='first'&&windows[i].lo<centre+width/2+.12&&windows[i].hi>centre-width/2-.12)windows.splice(i,1);
+      balconyDoor=addWindow('rear-balcony-access',rear,centre,width,firstFloorZ,2.15,{level:'first',kind:'balcony-door',source:'renovation-proposal'});
+    }
   }
   const doorX=num(garage?.entryAccess?.doorCenter?.[0],9.16),doorDistance=project(front,doorX);
   const door={id:'front-entrance',edgeIndex:front.index,centre:doorDistance,width:1.12,z:floorZ,height:2.35,

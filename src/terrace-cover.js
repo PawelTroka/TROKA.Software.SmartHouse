@@ -1,4 +1,5 @@
-import {footprintFit} from './footprint-fit.js?v=1.25.0';
+import {footprintFit} from './footprint-fit.js?v=1.26.0';
+import {facadePoint,houseAppearanceLayout} from './house-appearance.js?v=1.26.0';
 /**
  * One finite terrace-cover model for drawing, shade and sightlines. Dimensions
  * are proposals, in local metres; z is absolute elevation. A balcony replaces
@@ -16,6 +17,29 @@ const point=value=>Array.isArray(value)?value:[value.x,value.y,value.z];
 const corners=box=>[[box.x0,box.y0],[box.x1,box.y0],[box.x1,box.y1],[box.x0,box.y1]];
 const overlaps=(a,b)=>a.x0<b.x1-EPS&&a.x1>b.x0+EPS&&a.y0<b.y1-EPS&&a.y1>b.y0+EPS;
 
+// Use exactly the apertures admitted by the rendered facade's roof check.
+// The cache is independent of deck width so adjusting a support or narrowing
+// the balcony rechecks the landing under the same door openings.
+const doorCache=new WeakMap();
+function linkedBalconyDoors(settings,data){
+  const house=data.site.house;
+  if(!house?.footprint||!data.site.floorReference)return [];
+  const key=[settings.floorHeight,settings.firstFloorRise,data.site.floorReference.z,
+    data.site.terrace.x+data.site.terrace.width/2].join('|');
+  const prior=doorCache.get(house);
+  if(prior?.key===key)return prior.doors;
+  const facade=houseAppearanceLayout(data,settings);
+  const names=['Master bedroom','Main office','Guest bedroom I'];
+  const doors=facade.windows.filter(w=>w.kind==='balcony-door'&&w.source==='annotated-plan-renovation').map(w=>{
+    const index=Number(w.id.split('-').at(-1)),edge=facade.edges[w.edgeIndex];
+    const a=facadePoint(edge,w.lo,w.z).slice(0,2),b=facadePoint(edge,w.hi,w.z).slice(0,2);
+    return {id:w.id,label:names[index],x:w.position[0],y:w.position[1],z:w.z,width:w.width,
+      height:w.height,a,b,proposed:true};
+  });
+  doorCache.set(house,{key,doors});
+  return doors;
+}
+
 export function terraceCoverType(settings={},data){
   const siteId=data?.site?.id||settings.siteId||'sternicza-11';
   return siteId==='sternicza-11'&&settings.terraceCoverType==='balcony'?'balcony':'canopy';
@@ -28,7 +52,7 @@ export function terraceCoverType(settings={},data){
 export function terraceCoverLayout(settings={},data,context={}){
   const type=terraceCoverType(settings,data),floorZ=number(context.floorZ,NaN),terrace=data?.site?.terrace;
   const result={type,enabled:false,boxes:[],supports:[],footprints:[],warnings:[],assumptions:[],floorZ,
-    bounds:null,access:null,viewpoint:null,deckArea:0,clearBelow:0};
+    bounds:null,access:null,accesses:[],viewpoint:null,deckArea:0,clearBelow:0};
   if(!terrace||!Number.isFinite(floorZ))return result;
   const x=(terrace.x||0)+terrace.width/2,y0=data.site.rearMidpoint[1];
   const width=Math.max(0,number(settings.canopyWidth,8.5)),depth=Math.max(0,number(settings.canopyDepth,4));
@@ -133,13 +157,31 @@ export function terraceCoverLayout(settings={},data,context={}){
         }
       }
     }
-    result.access={x,y:y0,z:topZ,width:Math.min(1.6,Math.max(.8,width-.4)),height:2.1,proposed:true};
+    if(settings.planExteriorApplied===true){
+      result.accesses=linkedBalconyDoors(settings,data).map(door=>{
+        // The surveyed facade is rotated slightly relative to the level
+        // rectangular deck. Both jambs must lie over its width at the seam.
+        const fitsDeck=[door.a,door.b].every(([x,y])=>x>=x0-EPS&&x<=x1+EPS&&Math.abs(y-y0)<.05)
+          &&Math.abs(door.z-topZ)<.02;
+        return {...door,fitsDeck};
+      });
+      result.access=result.accesses.find(door=>door.id==='rear-balcony-room-1')??result.accesses[0]??null;
+      result.accessFits=result.accesses.length===3&&result.accesses.every(door=>door.fitsDeck);
+      if(result.accesses.length<3)result.warnings.push(
+        `Only ${result.accesses.length} of the three marked balcony doors fit below the mapped roof at this floor level.`);
+      const unsupported=result.accesses.filter(door=>!door.fitsDeck).map(door=>door.label);
+      if(unsupported.length)result.warnings.push(
+        `The balcony deck does not meet the full doorway at ${unsupported.join(', ')}. Widen or reposition the deck before using these accesses.`);
+    }else{
+      result.access={x,y:y0,z:topZ,width:Math.min(1.6,Math.max(.8,width-.4)),height:2.1,proposed:true};
+      result.accesses=[result.access];
+    }
     result.viewpoint={x,y:y1-Math.min(.65,depth*.35),groundZ:topZ,z:topZ+1.65,eyeHeight:1.65,
       preset:'balcony',surface:'balcony',label:'Balcony · standing',defaultLookYaw:0,defaultLookPitch:-8};
     result.guardHeight=a.guardHeight;result.deckThickness=a.deckThickness;
     result.minimumCoveredHeight=beamBottom-floorZ;
     result.assumptions.push('The balcony replaces the canopy. Its finished deck follows the editable first-floor level, with a proposed 0.25 m deck, 0.24 m beam, three supports and a 1.10 m guardrail.',
-      'A new garden-facing first-floor access door, structure, foundations, waterproofing, drainage and guard details require project design; the dimensions are not an engineered approval.',
+      settings.planExteriorApplied?'The three marked garden-facing door openings, structure, foundations, waterproofing, drainage and guards require project design.':'A new garden-facing first-floor access door, structure, foundations, waterproofing, drainage and guard details require project design; the dimensions are not an engineered approval.',
       'Guard glazing is treated as clear: it gives no opaque privacy or shade credit. Only the actual slab, beam, posts and rails are counted.');
     if(width<2||depth<1.5)result.warnings.push('The selected balcony is narrow or shallow. Check a usable door landing and circulation before treating it as an occupiable layout.');
     if(beamBottom-floorZ<2.2)result.warnings.push('The proposed balcony beam leaves less than 2.20 m above the terrace. Check the floor level and structure.');
