@@ -30,7 +30,9 @@ function linkedBalconyDoors(settings,data){
   if(prior?.key===key)return prior.doors;
   const facade=houseAppearanceLayout(data,settings);
   const names=['Master bedroom','Main office','Guest bedroom I'];
-  const doors=facade.windows.filter(w=>w.kind==='balcony-door'&&w.height>=1.90&&w.source==='annotated-plan-renovation').map(w=>{
+  const registered=Boolean(house.architecturalModel);
+  const doors=facade.windows.filter(w=>w.kind==='balcony-door'&&w.height>=1.90&&
+    (registered?w.level==='first':w.source==='annotated-plan-renovation')).map(w=>{
     const index=Number(w.id.split('-').at(-1)),edge=facade.edges[w.edgeIndex];
     const a=facadePoint(edge,w.lo,w.z).slice(0,2),b=facadePoint(edge,w.hi,w.z).slice(0,2);
     return {id:w.id,label:names[index],x:w.position[0],y:w.position[1],z:w.z,width:w.width,
@@ -51,6 +53,8 @@ export function terraceCoverType(settings={},data){
  */
 export function terraceCoverLayout(settings={},data,context={}){
   const type=terraceCoverType(settings,data),floorZ=number(context.floorZ,NaN),terrace=data?.site?.terrace;
+  const registered=Boolean(data?.site?.house?.architecturalModel);
+  const originalRegistered=registered&&(!settings.designStyle||settings.designStyle==='current');
   const result={type,enabled:false,boxes:[],supports:[],footprints:[],warnings:[],assumptions:[],floorZ,
     bounds:null,access:null,accesses:[],viewpoint:null,deckArea:0,clearBelow:0};
   if(!terrace||!Number.isFinite(floorZ))return result;
@@ -157,7 +161,7 @@ export function terraceCoverLayout(settings={},data,context={}){
         }
       }
     }
-    if(settings.planExteriorApplied===true){
+    if(registered||settings.planExteriorApplied===true){
       result.accesses=linkedBalconyDoors(settings,data).map(door=>{
         // The surveyed facade is rotated slightly relative to the level
         // rectangular deck. Both jambs must lie over its width at the seam.
@@ -167,7 +171,9 @@ export function terraceCoverLayout(settings={},data,context={}){
       });
       result.access=result.accesses.find(door=>door.id==='rear-balcony-room-1')??result.accesses[0]??null;
       result.accessFits=result.accesses.length===3&&result.accesses.every(door=>door.fitsDeck);
-      if(result.accesses.length<3)result.warnings.push(
+      if(originalRegistered&&!result.accesses.length)result.warnings.push(
+        'Current retains the original first-floor windows, with no balcony access door. Choose a renovation style to add the three balcony doors before treating this deck as accessible.');
+      else if(result.accesses.length<3)result.warnings.push(
         `Only ${result.accesses.length} of the three marked balcony doors fit below the mapped roof at this floor level.`);
       const unsupported=result.accesses.filter(door=>!door.fitsDeck).map(door=>door.label);
       if(unsupported.length)result.warnings.push(
@@ -181,7 +187,8 @@ export function terraceCoverLayout(settings={},data,context={}){
     result.guardHeight=a.guardHeight;result.deckThickness=a.deckThickness;
     result.minimumCoveredHeight=beamBottom-floorZ;
     result.assumptions.push('The balcony replaces the canopy. Its finished deck follows the editable first-floor level, with a proposed 0.25 m deck, 0.24 m beam, three supports and a 1.10 m guardrail.',
-      settings.planExteriorApplied?'The three marked garden-facing door openings, structure, foundations, waterproofing, drainage and guards require project design.':'A new garden-facing first-floor access door, structure, foundations, waterproofing, drainage and guard details require project design; the dimensions are not an engineered approval.',
+      originalRegistered?'Current preserves the archived first-floor windows. The proposed deck has no modelled house access; choose a renovation style to add the three marked doors. Its structure, foundations, waterproofing, drainage and guards require project design.':
+        registered||settings.planExteriorApplied?'The three marked garden-facing door openings, structure, foundations, waterproofing, drainage and guards require project design.':'A new garden-facing first-floor access door, structure, foundations, waterproofing, drainage and guard details require project design; the dimensions are not an engineered approval.',
       'Guard glazing is treated as clear: it gives no opaque privacy or shade credit. Only the actual slab, beam, posts and rails are counted.');
     if(width<2||depth<1.5)result.warnings.push('The selected balcony is narrow or shallow. Check a usable door landing and circulation before treating it as an occupiable layout.');
     if(beamBottom-floorZ<2.2)result.warnings.push('The proposed balcony beam leaves less than 2.20 m above the terrace. Check the floor level and structure.');
