@@ -1,14 +1,14 @@
 import * as THREE from '../vendor/three.module.js';
-import {buildArchitecture} from './interior-architecture.js?v=1.26.0';
-import {interiorMaterials} from './interior-materials.js?v=1.26.0';
-import {modelTools,batchGroup} from './interior-geometry.js?v=1.26.0';
-import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.26.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.26.0';
-import {addHouseRenovation} from './scene-house-renovation.js?v=1.26.0';
-import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.26.0';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.26.0';
-import {getDesignStyle} from './design-styles.js?v=1.26.0';
-import {toWorldTriangle} from './orientation.js?v=1.26.0';
+import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.27.0';
+import {interiorMaterials} from './interior-materials.js?v=1.27.0';
+import {modelTools,batchGroup} from './interior-geometry.js?v=1.27.0';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.27.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.27.0';
+import {addHouseRenovation} from './scene-house-renovation.js?v=1.27.0';
+import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.27.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.27.0';
+import {getDesignStyle} from './design-styles.js?v=1.27.0';
+import {toWorldTriangle} from './orientation.js?v=1.27.0';
 
 /** Same architecture/furniture builder as the interior viewer, with all four
  * floors assembled in the site frame. No placeholder furniture or facade holes. */
@@ -21,15 +21,18 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
     entrance:material('#463226','wood'),frame:material(style.palette.houseFrame||'#f6f3e8','frame')};
   finishes.exteriorWall=palette.plaster;
   const local=new THREE.Group();local.name='registered-house-floors';local.position.set(frame.origin[0],frame.floorZ,frame.origin[1]);local.rotation.y=frame.rotationY;root.add(local);
+  // Connections belong to the building, not either adjacent floor. The room
+  // context can omit one storey without duplicating or losing its shared stair.
+  const stairs=new THREE.Group();stairs.name='shared-house-stairs';stairs.userData.houseStairs=true;local.add(stairs);
   for(const floor of ['basement','ground','first','attic']){
     const plan=getHouseFloorPlan({floor,settings,data});
     // Exterior's engineering garage owns its ramp and vehicles. Retained cellar
     // partitions/cores remain visible because their conflicts are real.
     if(floor==='basement'&&settings.basementGarageEnabled)plan.fixtures=[];
-    if(floor==='ground'&&settings.basementGarageEnabled)plan.outdoor=plan.outdoor.filter(p=>p.kind!=='landing');
-    const model=buildArchitecture(plan,{showFurniture:true,showCeiling:true,showOutdoor:false,showExterior:!settings.basementGarageEnabled},tools,finishes);
+    plan.outdoor=plan.outdoor.filter(p=>p.kind==='landing'&&!settings.basementGarageEnabled);
+    const model=buildArchitecture(plan,{showFurniture:true,showCeiling:true,showStairs:false,showOutdoor:true,showExterior:!settings.basementGarageEnabled},tools,finishes);
     model.root.name=`shared-house-floor-${floor}`;model.root.userData.houseFloor=floor;
-    model.updateVisibility('building',new THREE.Vector3(),{showFurniture:true,showCeiling:true});
+    model.updateVisibility('building',new THREE.Vector3(),{showFurniture:true,showCeiling:true,showStairs:false});
     if(floor==='attic')model.groups.ceiling.visible=false; // Exact shared roof below owns its skin.
     // Outside never needs cutaway alternatives. Remove hidden alternatives,
     // then batch each storey by material while retaining its shared floor tag.
@@ -37,6 +40,11 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
     for(const o of hidden){o.traverse(child=>child.geometry?.dispose());o.removeFromParent();}
     batchGroup(model.root);
     local.add(model.root);models.push(model);
+    for(const flight of plan.stairs.filter(s=>s.kind!=='exterior'&&(s.kind==='hatch'?s.to===floor:s.from===floor))){
+      const connection=new THREE.Group();connection.name='shared-stair-'+flight.id;connection.position.y=plan.elevation;
+      connection.userData.houseStairConnection={id:flight.id,from:flight.from,to:flight.to,owner:floor,polygon:flight.polygon.map(p=>p.slice())};
+      addFlight(connection,flight,plan,tools,finishes.m);batchGroup(connection);stairs.add(connection);
+    }
   }
   const layout=houseAppearanceLayout(data,settings,{garageLayout}),roof=layout.roof.envelope;
   const roofGroup=new THREE.Group();roofGroup.name='shared-house-roof';roofGroup.userData.houseRoof=true;root.add(roofGroup);
@@ -57,7 +65,8 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
   addHouseRenovation(root,layout,style,{svgMode});
   root.userData.sharedHouse={source:'archived-and-marked-plans',floors:models.length,styleId:style.id,layout:settings.interiorLayout,registration:'street-wall-midpoint-no-scaling'};
   let disposed=false;
-  return{root,frame,layout,dispose(){if(disposed)return;disposed=true;for(const m of models)m.dispose();finishes.dispose();tools.dispose();
+  return{root,frame,layout,dispose(){if(disposed)return;disposed=true;for(const m of models)m.dispose();
+    stairs.traverse(o=>o.geometry?.dispose());stairs.removeFromParent();finishes.dispose();tools.dispose();
     const geometry=new Set(),materials=new Set(Object.values(palette));root.traverse(o=>{if(o.geometry)geometry.add(o.geometry);if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);});
     geometry.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());root.removeFromParent();}};
 }

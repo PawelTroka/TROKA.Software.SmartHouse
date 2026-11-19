@@ -89,7 +89,7 @@ export function fixturePlanFrame(f) {
       if(Math.abs(front[0])>.5)[width,depth]=[depth,width];
       rotation+=angle;
     }
-  } else if((kind==='bed'||kind==='toilet'||kind==='wc'||kind==='car')&&width>depth || kind==='desk'&&depth>width) {
+  } else if(((kind==='bed'||kind==='toilet'||kind==='wc'||kind==='car')&&width>depth) || (kind==='desk'&&depth>width)) {
     [width,depth]=[depth,width];rotation+=Math.PI/2;
   } else if(kind==='tv'&&depth>width) {
     [width,depth]=[depth,width];rotation-=Math.PI/2;

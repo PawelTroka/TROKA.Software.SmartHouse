@@ -2,8 +2,8 @@ import * as THREE from '../vendor/three.module.js';
 
 // Finish specifications describe construction, grain and reflectance. They are
 // independent of palette colours and keep the original/current materials intact.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.26.0';
-export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.26.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.27.0';
+export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.27.0';
 const woodTypes=new Set(['oak','ash','walnut','teak','cedar','silvered-wood','charred-wood','reclaimed-wood','weatherboard']);
 const fabricTypes=new Set(['linen','woven','boucle','canvas','velvet','vinyl']);
 const metalTypes=new Set(['bronze','brass','anodized','chrome','painted-steel','blackened-steel','zinc','standing-seam']);

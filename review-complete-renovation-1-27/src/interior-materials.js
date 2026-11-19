@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getDesignStyle} from './design-styles.js?v=1.26.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js';
+import {getDesignStyle} from './design-styles.js?v=1.27.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {

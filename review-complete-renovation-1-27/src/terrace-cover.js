@@ -1,5 +1,5 @@
-import {footprintFit} from './footprint-fit.js?v=1.26.0';
-import {facadePoint,houseAppearanceLayout} from './house-appearance.js?v=1.26.0';
+import {footprintFit} from './footprint-fit.js?v=1.27.0';
+import {facadePoint,houseAppearanceLayout} from './house-appearance.js?v=1.27.0';
 /**
  * One finite terrace-cover model for drawing, shade and sightlines. Dimensions
  * are proposals, in local metres; z is absolute elevation. A balcony replaces
@@ -24,13 +24,13 @@ const doorCache=new WeakMap();
 function linkedBalconyDoors(settings,data){
   const house=data.site.house;
   if(!house?.footprint||!data.site.floorReference)return [];
-  const key=[settings.floorHeight,settings.firstFloorRise,data.site.floorReference.z,
+  const key=[settings.designStyle,settings.interiorLayout,settings.floorHeight,settings.firstFloorRise,settings.atticRise,data.site.floorReference.z,
     data.site.terrace.x+data.site.terrace.width/2].join('|');
   const prior=doorCache.get(house);
   if(prior?.key===key)return prior.doors;
   const facade=houseAppearanceLayout(data,settings);
   const names=['Master bedroom','Main office','Guest bedroom I'];
-  const doors=facade.windows.filter(w=>w.kind==='balcony-door'&&w.source==='annotated-plan-renovation').map(w=>{
+  const doors=facade.windows.filter(w=>w.kind==='balcony-door'&&w.height>=1.90&&w.source==='annotated-plan-renovation').map(w=>{
     const index=Number(w.id.split('-').at(-1)),edge=facade.edges[w.edgeIndex];
     const a=facadePoint(edge,w.lo,w.z).slice(0,2),b=facadePoint(edge,w.hi,w.z).slice(0,2);
     return {id:w.id,label:names[index],x:w.position[0],y:w.position[1],z:w.z,width:w.width,

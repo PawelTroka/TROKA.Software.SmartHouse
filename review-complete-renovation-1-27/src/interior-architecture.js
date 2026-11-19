@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.26.0';
-import {furnishInterior} from './interior-furniture.js?v=1.26.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js';
-import {getBalconyGuardRecipe} from './exterior-recipes.js';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.27.0';
+import {furnishInterior} from './interior-furniture.js?v=1.27.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.27.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -56,7 +56,7 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
       // Draw the raised door overhead, keeping the entry and sightline open.
       if(full){box(g,m.steel,left+w/2,top-.07,-.35,w,.095,.65);}
     }else{
-      const end=o.hinge==='end',side=end?-1:1,door=group(g,end?right-.047:left+.047,0,0,-side*(o.swing||1)*1.38),leafW=w-.10,leafH=h-(full?.057:.01);
+      const end=o.hinge==='end',side=end?-1:1,door=group(g,end?right-.047:left+.047,0,0,-side*(o.swing||1)*Math.PI/2),leafW=w-.10,leafH=h-(full?.057:.01);
       rounded(door,m.wood,side*leafW/2,bottom+leafH/2+.014,0,leafW,leafH,.036,.011);
       if(design&&design.id!=='current'&&leafH>.3){
         const kind=design.cabinet,cx=side*leafW/2,cy=bottom+leafH/2+.014,pw=leafW-.10,ph=leafH-.15;
@@ -80,7 +80,7 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
     }
   }
 }
-function addFlight(parent,s,plan,tools,m) {
+export function addFlight(parent,s,plan,tools,m) {
   const {box,rod,group}=tools,b=ringBounds(s.polygon);
   if(s.kind==='hatch') {
     if(plan.floor===s.from)return; // Ceiling hatch on the lower storey is added to its ceiling group.
@@ -233,7 +233,7 @@ function finishCeiling(parent,room,plan,tools,m,design){
   }
 }
 export function buildArchitecture(plan,state,tools,finishes) {
-  const {m,architecturalFloor,style}=finishes,{group,box,rod}=tools,root=new THREE.Group(),base=group(root),ceiling=group(root),props=group(root),decor=group(root),changes=group(root),design=finishes.interiorRecipe||getInteriorStyleRecipe(style.id);
+  const {m,architecturalFloor,style}=finishes,{group,box,rod}=tools,root=new THREE.Group(),base=group(root),ceiling=group(root),props=group(root),decor=group(root),changes=group(root),stairs=group(root),design=finishes.interiorRecipe||getInteriorStyleRecipe(style.id);
   const outline=plan.envelope.outline,holes=plan.voids||[],floor=plan.floor,attic=floor==='attic',outlineBox=ringBounds(outline),h=plan.clearHeight,slab=plan.slabThickness??.30;
   const originalCellar=floor==='basement'&&plan.layout==='existing';
   const renovating=design.id!=='current'&&plan.layout==='renovation'&&!attic&&floor!=='basement',features=renovating?interiorWallFeatures(plan):new Map();
@@ -293,7 +293,7 @@ export function buildArchitecture(plan,state,tools,finishes) {
       const n=c.flues||2,along=b.width>b.depth;for(let i=0;i<n;i++){const t=(i+.5)/n-.5;box(node,m.dark,b.x+(along?t*b.width:0),height+.029,b.z+(along?0:t*b.depth),along?b.width/n*.56:b.width*.48,.008,along?b.depth*.51:b.depth/n*.54);}
     }
   }
-  for(const s of plan.stairs||[]){if(s.kind==='exterior'&&state.showExterior===false)continue;addFlight(base,s,plan,tools,m);if(s.kind==='hatch'&&s.from===floor){const b=ringBounds(s.polygon);box(ceiling,m.wood,b.x,h-.052,b.z,b.width,.05,b.depth);box(ceiling,m.trim,b.x,h-.082,b.z,b.width-.075,.018,b.depth-.075);}}
+  for(const s of plan.stairs||[]){if(s.kind==='exterior'&&state.showExterior===false)continue;addFlight(s.kind==='exterior'?base:stairs,s,plan,tools,m);if(s.kind==='hatch'&&s.from===floor){const b=ringBounds(s.polygon);box(ceiling,m.wood,b.x,h-.052,b.z,b.width,.05,b.depth);box(ceiling,m.trim,b.x,h-.082,b.z,b.width-.075,.018,b.depth-.075);}}
   for(const surface of plan.outdoor||[]) {
     if(state.showOutdoor===false||state.showExterior===false&&surface.kind==='landing')continue;
     const b=ringBounds(surface.polygon),mat=surface.kind==='landing'?m.concrete:m.boards;
@@ -328,9 +328,10 @@ export function buildArchitecture(plan,state,tools,finishes) {
     if(table){for(const t of [-.25,.25])makePendant(decor,table.x+t*table.width,table.z,h,tools,m,design.id==='current'?style.recipe.fixture:design.pendant);}
     else if(r.area>3&&containsPoint(r.polygon,b.x,b.z)){tools.cyl(ceiling,m.frame,b.x,h-.027,b.z,.108,.12,.048);tools.cyl(ceiling,m.glow,b.x,h-.054,b.z,.105,.106,.009);}
   }
-  for(const node of [base,ceiling,props,decor,changes,...[...sides.values()].flatMap(s=>[s.full,s.cut])])batchGroup(node);
+  for(const node of [base,ceiling,props,decor,changes,stairs,...[...sides.values()].flatMap(s=>[s.full,s.cut])])batchGroup(node);
+  stairs.visible=state.showStairs!==false;
   root.position.y=plan.elevation;root.userData.interiorRecipe=design.id;
-  return {root,groups:{base,ceiling,props,decor,changes,sides}, updateVisibility(view,camera,opts={}){let changed=false;const room=view==='room'||view==='building';ceiling.visible=room&&opts.showCeiling!==false;props.visible=opts.showFurniture!==false;decor.visible=props.visible;
+  return {root,groups:{base,ceiling,props,decor,changes,stairs,sides}, updateVisibility(view,camera,opts={}){let changed=false;const room=view==='room'||view==='building';ceiling.visible=room&&opts.showCeiling!==false;props.visible=opts.showFurniture!==false;decor.visible=props.visible;const stairsVisible=(opts.showStairs??state.showStairs)!==false;if(stairs.visible!==stairsVisible)changed=true;stairs.visible=stairsVisible;
     for(const [direction,s] of sides){const far=direction==='left'?camera.x>outlineBox.x:direction==='right'?camera.x<outlineBox.x:direction==='rear'?camera.z>outlineBox.z:direction==='front'?camera.z<outlineBox.z:false;
       if(s.full.visible!==(room||far))changed=true;s.full.visible=room||far;s.cut.visible=!s.full.visible;}return changed;
   },dispose(){root.traverse(obj=>obj.geometry?.dispose());root.removeFromParent();}};

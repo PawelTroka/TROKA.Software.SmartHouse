@@ -1,8 +1,8 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.26.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.26.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.27.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.27.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -36,9 +36,20 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   if(floor==='first')plan.clearHeight=Math.max(.05,attic-first);
   if(['ground','first'].includes(floor)&&plan.clearHeight<2.3)plan.issues.unshift('The edited floor levels leave only '+plan.clearHeight.toFixed(2)+' m of clear room height. Furniture and use need reconsideration; the model does not increase the available space.');
   plan.elevation=levels[floor];plan.slabThickness=floor==='first'?.30:.20;
-  plan.walls=plan.walls.map(w=>({...w,height:Math.abs(w.height-previous)<.001?plan.clearHeight:w.height}));
+  plan.walls=plan.walls.map(w=>{const height=Math.abs(w.height-previous)<.001?plan.clearHeight:w.height;
+    return{...w,height,openings:w.openings.filter(o=>(o.sill||0)<height).map(o=>({...o,height:Math.min(o.height,height-(o.sill||0))}))};});
   if(converted)plan.walls=plan.walls.map(w=>w.id==='garage-portal'?{...w,openings:w.openings.map(o=>({...o,height:plan.clearHeight}))}:w);
-  plan.stairs=plan.stairs.map(s=>({...s,rise:s.from==='ground'&&s.to==='first'?first:s.to==='attic'?attic-first:s.rise}));
+  const canonicalMain=floor==='first'?getInteriorPlan({floor:'ground',layout}).stairs.find(s=>s.id==='main-stair'):null;
+  plan.stairs=plan.stairs.map(s=>({
+    ...s,
+    ...(s.id==='main-stair'?{geometryOwner:'ground',...(canonicalMain?{
+      sourcePolygon:s.polygon.map(p=>p.slice()),polygon:canonicalMain.polygon.map(p=>p.slice()),
+      direction:canonicalMain.direction.slice(),steps:canonicalMain.steps,
+    }:{})}:{}),
+    rise:s.from==='ground'&&s.to==='first'?first:s.to==='attic'?attic-first:s.rise,
+  }));
+  if(canonicalMain)plan.issues.push('The shared main stair uses the ground-plan footprint on both floors. The archived first-floor opening remains in its drawn position; the differing outlines need a measured alignment and headroom check.');
+  if(settings.basementGarageEnabled){plan.stairs=plan.stairs.filter(s=>s.kind!=='exterior');plan.outdoor=plan.outdoor.filter(p=>p.kind!=='landing');}
   plan.roof={...plan.roof,ridgeElevation:attic+3,chimneyElevation:attic+3.85};
   const frame=houseModelFrame(data,settings);
   if(frame){
