@@ -1,0 +1,111 @@
+{
+  "version": "1.28.0",
+  "published_date": "2026-11-19",
+  "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+  "source_tree": "0b676afda229d92b4b730c04e21b9fde37101f2b",
+  "merged_commit": "e9447099a7b82e094440754e663d670d74adff5f",
+  "runtime_tree": "76b56a7779409d50db6cb085ef4ef5efb3750a76",
+  "pull_request": 28,
+  "ci": {
+    "run": 44588314857,
+    "conclusion": "success",
+    "unit_tests_passed": 662,
+    "browser_checkpoints_passed": 71,
+    "suites": [
+      {
+        "name": "interiors",
+        "checkpoints": 10,
+        "report": "reports/interiors.json",
+        "job_id": 135787183810,
+        "artifact_id": 14562232064,
+        "sha256": "b9303771658a40a25eeb7bc6857bc79ab605183f28a0a6659e3c785a9dd0d28c"
+      },
+      {
+        "name": "studio",
+        "checkpoints": 18,
+        "report": "reports/studio.json",
+        "job_id": 135787183564,
+        "artifact_id": 14562162514,
+        "sha256": "8bbab2133cff5f0dc3090ddebc7e320104ecfc1e5de6af8bc9d29b27554d0727"
+      },
+      {
+        "name": "core",
+        "checkpoints": 35,
+        "report": "reports/core.json",
+        "job_id": 135787183918,
+        "artifact_id": 14563481316,
+        "sha256": "2410a18ee675497ac14a6d25f50e2e88486a97b7fed6aa1eb41a77d990bff479"
+      },
+      {
+        "name": "refinements",
+        "checkpoints": 8,
+        "report": "reports/refinements.json",
+        "job_id": 135787183918,
+        "artifact_id": 14563481316,
+        "sha256": "b9f7894d7fa2db27c0df60f2d34d88d09a7fc2f6336a0e31779ad8a549af8a81"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": 14562232064,
+      "job_id": 135787183810,
+      "name": "interior-evidence",
+      "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+      "sha256": "26531475499d470480f1aa533cb7353fed113ce171526702e65596bef6b0d7b5"
+    },
+    {
+      "id": 14562162514,
+      "job_id": 135787183564,
+      "name": "studio-evidence",
+      "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+      "sha256": "20c5ed0695004536da71d31715f90481a81e19ac16d9d0224757d876c8b6c8ed"
+    },
+    {
+      "id": 14563481316,
+      "job_id": 135787183918,
+      "name": "garden-lab-browser-evidence",
+      "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+      "sha256": "4c82b9d32e9043eb3013eb7daad2f4e27bea01d8390a7382f3e1e11f6c1c8fa2"
+    }
+  ],
+  "images": [
+    {
+      "path": "images/coastal-exterior.png",
+      "sha256": "e5cd0bc303497e493f7998448159283f67350b1273bee5be29f1a32458b8d50b",
+      "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+      "runtime_tree": "76b56a7779409d50db6cb085ef4ef5efb3750a76",
+      "type": "ci-chromium-webgl",
+      "run": 44588314857,
+      "job_id": 135787183564,
+      "artifact_id": 14562162514,
+      "original_path": "sternicza-coastal.png"
+    },
+    {
+      "path": "images/coastal-living-room.jpg",
+      "sha256": "4762d78e9066a2e136952bc4bac5855021e7f57836ffb43316c9190536f2da22",
+      "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+      "runtime_tree": "76b56a7779409d50db6cb085ef4ef5efb3750a76",
+      "type": "live-brave-webgl",
+      "url": "https://paweltroka.github.io/TROKA.Software.SmartHouse/review-coastal-1-28/?site=sternicza-11",
+      "preview_commit": "469a3ce962d3005b75cc30497a4872aa48543e91",
+      "view": "Coastal ground floor, living room at eye level"
+    },
+    {
+      "path": "images/coastal-two-car-basement.jpg",
+      "sha256": "b4e0dc3760b9de9e9f1acdaf878fdf59eab967ffd93ad3914248f463243751c3",
+      "source_commit": "3f2c63d9660090fc09b88573aa9ec78ad427aa65",
+      "runtime_tree": "76b56a7779409d50db6cb085ef4ef5efb3750a76",
+      "type": "live-brave-webgl",
+      "url": "https://paweltroka.github.io/TROKA.Software.SmartHouse/review-coastal-1-28/?site=sternicza-11",
+      "preview_commit": "469a3ce962d3005b75cc30497a4872aa48543e91",
+      "view": "Coastal basement, two visible car fixtures"
+    }
+  ],
+  "manual_checks": [
+    "Coastal can be selected in both viewers",
+    "Original drawings preserves the independent two-car proposal",
+    "Both basement car fixtures remain visible",
+    "Coastal eye-level room shows new physical furnishings"
+  ]
+}

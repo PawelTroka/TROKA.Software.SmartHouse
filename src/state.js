@@ -1,19 +1,19 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.27.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.27.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.27.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.27.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.27.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.27.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.27.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.27.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.27.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.27.0';
-import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.27.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.28.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.28.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.28.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.28.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.28.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.28.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.28.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.28.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.28.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.28.0';
+import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.28.0';
 
-import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.27.0';
-import {changePresentationSettings} from './studio-state.js?v=1.27.0';
+import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.28.0';
+import {changePresentationSettings} from './studio-state.js?v=1.28.0';
 
-export const STATE_VERSION = 27;
+export const STATE_VERSION = 28;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -210,6 +210,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       version===15&&['spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-aligned'}:
       version===16&&oldInput.gardenProgram==='spa-pool-grove'?{...oldInput,gardenProgram:'spa-corner'}:oldInput;
     const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:version<=19?V19_DEFAULTS:version<=22?V22_DEFAULTS:version<=25?V25_DEFAULTS:DEFAULTS);
+    // The requested two-car proposal is now the Sternicza starting design.
+    // Garage-era sparse links adopt it; an explicit off value remains an off
+    // choice. Pre-garage archives still retain their unexcavated cellar.
+    if(siteId===DEFAULT_SITE_ID&&version>=22&&typeof input.basementGarageEnabled!=='boolean')next.basementGarageEnabled=DEFAULTS.basementGarageEnabled;
     // Historical designs did not contain these structures. Never add opaque
     // screening to an older shared link, including one with unknown fields.
     if(version<21){next.privacyPergolaEnabled=false;next.privacyPergolaFoliage=false;next.spaScreensEnabled=false;}
@@ -247,7 +251,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       // designs remain stable if a later release changes the starting layout.
       if(key==='screeningTrees'){p.set(key,JSON.stringify(val));continue;}
       if(key==='styleHouseFinish'&&s.designStyle!==DEFAULT_DESIGN_STYLE){p.set(key,String(val));continue;}
-      if(key==='gardenProgram'||key==='hedgeFullPerimeter'){p.set(key,String(val));continue;}
+      if(key==='gardenProgram'||key==='hedgeFullPerimeter'||key==='basementGarageEnabled'){p.set(key,String(val));continue;}
       if(key!=='siteId'&&val!==DEFAULTS[key])p.set(key,typeof val==='number'?String(Math.round(val*10000)/10000):String(val));
     }
     return p.toString();
@@ -294,11 +298,16 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     }
     return true;
   }
-  function migrateSavedState(input,version=3) {
+  function migrateSavedState(input,version=3,{restoreCurrentGarageProposal=false}={}) {
     if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return sanitizeState();
     if(version>=6&&input.siteId!==siteId)return sanitizeState();
     if(input.siteId!==undefined&&input.siteId!==siteId)return sanitizeState();
     const next=restoreVersionedState(input,version);
+    // Only the active legacy session opts into this one-time repair. Earlier
+    // releases silently disabled its garage from the Original drawings button.
+    // Imported links and saved comparison A do not request repair; a v28 save
+    // is already authoritative, including a deliberate off choice.
+    if(restoreCurrentGarageProposal===true&&siteId===DEFAULT_SITE_ID&&version>=22&&version<=27)next.basementGarageEnabled=true;
     if(version===1)next.linkedHedges=false;
     return next;
   }

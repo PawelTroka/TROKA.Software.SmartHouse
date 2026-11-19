@@ -1,0 +1,3246 @@
+Warning: truncated output (original token count: 88729)
+Total output lines: 12857
+
+{
+  "version": "1.28.0",
+  "checks": [
+    "Fresh defaults retain the two-car proposal beside the 4 m terrace, infinity jacuzzi and 3 m high / 4 m deep canopy",
+    "Two-car entrance, separated vehicle envelopes and the over-ramp landing appear in real WebGL and exported clearance checks",
+    "A narrow two-car setting is explicitly rejected rather than shown as a valid fit",
+    "A manually selected guarded balcony replaces the canopy; Current truthfully has no house access until a renovation adds doors",
+    "Swimming view uses the actual pool water level and its editable eye offset visibly moves the camera",
+    "Balcony, pool viewpoint and two-car dimensions survive sharing and reload",
+    "A v22 garage link opens with two parking bays and 5.8 m width, retaining its original terrace and cover settings",
+    "The double-garage plan, result and cover controls fit a 390 px viewport without page overflow"
+  ],
+  "screenshots": [
+    "sternicza-two-car-front.png",
+    "sternicza-two-car-parking-plan.png",
+    "sternicza-balcony-garden.png",
+    "sternicza-pool-eye.png",
+    "sternicza-mobile-garage.png",
+    "sternicza-mobile-cover-controls.png"
+  ],
+  "garage": {
+    "schemaVersion": 28,
+    "project": "Sternicza 11 · Garden Lab",
+    "siteId": "sternicza-11",
+    "site": {
+      "address": "Sternicza 11, Gdańsk",
+      "parcels": [
+        "226101_1.0034.401",
+        "226101_1.0034.400"
+      ],
+      "coordinates": {
+        "localOriginEN": [
+          476064.831756033,
+          726902.760579949
+        ],
+        "xUnitEN": [
+          0.9175405635394497,
+          -0.3976421937618153
+        ],
+        "yUnitEN": [
+          -0.3976421937618153,
+          -0.9175405635394497
+        ],
+        "horizontalCRS": "EPSG:2180",
+        "verticalDatum": "PL-EVRF2007-NH",
+        "yGridAzimuth": 203.43086313576222
+      },
+      "sources": [
+        {
+          "title": "GUGiK 2024 3D buildings (LoD1)",
+          "url": "https://opendata.geoportal.gov.pl/InneDane/Budynki3D/LOD1/2024/22/2261.zip",
+          "details": "Automatic LoD1 flat roof at median ALS building-class points, ground at lowest building footprint/DTM intersection. Not full silhouette."
+        },
+        {
+          "title": "GUGiK 1 m digital terrain model",
+          "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/81008/81008_1561323_N-34-50-C-d-1-1.asc",
+          "details": "Acquired 2024-10-01. Native grid cropped to property and interpolated bilinearly; elevations in PL-EVRF2007-NH."
+        },
+        {
+          "title": "GUGiK airborne LiDAR",
+          "url": "https://opendata.geoportal.gov.pl/NumDaneWys/DanePomiaroweLAZ/81005/81005_1559930_N-34-50-C-d-1-1-3-1.laz",
+          "details": "Acquired 2024-10-01. Class-6 building returns, maximum per native 1 m horizontal cell plus known controlling rays. Sparse samples are not a full surveyed silhouette."
+        },
+        {
+          "title": "ULDK parcel 401",
+          "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=226101_1.0034.401&result=geom_wkt&srid=2180"
+        },
+        {
+          "title": "ULDK parcel 400",
+          "url": "https://uldk.gugik.gov.pl/?request=GetParcelById&id=226101_1.0034.400&result=geom_wkt&srid=2180"
+        },
+        {
+          "title": "GUGiK buildings documentation / attribution",
+          "url": "https://www.geoportal.gov.pl/pl/dane/inne-dane/modele-3d-budynkow/",
+          "details": "Derived data: GUGiK. Source licence cited in source metadata: CC BY 4.0."
+        },
+        {
+          "title": "Sternicza neighbourhood expansion",
+          "url": "https://opendata.geoportal.gov.pl/InneDane/Budynki3D/LOD1/2024/22/2261.zip",
+          "details": "124 additional source footprints within 200 m nearest-footprint distance, processed 2026-11-13; official LoD1 ALS median heights, descriptive direction labels, and a retained source extract. The original site, buildings and analytical terrain are preserved. See data/sternicza-neighborhood-source.json."
+        }
+      ],
+      "limitations": [
+        "Includes parcel 400 behind parcel 401; cadastral geometry does not verify ownership.",
+        "House floor (+1.2 m), eye levels, glazing, terrace, canopy and landscape are adjustable design assumptions, not a measured building survey.",
+        "Five apartment volumes are sampled. Coverage means blocked sample rays from one selected observer, not area percentage or a whole-garden privacy guarantee.",
+        "Hedges are ideal continuous opaque screens, not porous or tapered individual plants. Existing vegetation is not modelled.",
+        "PCK 3 returns above absolute elevation 24 m are isolated thin features of unconfirmed identity and excluded unless high features are enabled.",
+        "Farther blocks use median LoD1 roofs; their roof objects and true maxima may be higher.",
+        "The mapped own-house body blocks sightlines from outdoor observers. Indoor presets assume an open sightline through glazing; individual walls, window apertures and existing tree crowns are not surveyed analytical obstructions. Nearby mapped buildings are approximate flat-roof blockers.",
+        "Moving garden grade does not move the house floor. Existing hedge tops remain fixed when new planting is disabled.",
+        "A raised garden is a geometry experiment, not drainage, foundation or retaining-wall approval.",
+        "Expanded neighbourhood context uses 2024 source footprints and approximate LoD1 median roof bodies. Labels describe directions and distances, not verified postal addresses or current building condition. The separate 4 m surrounding terrain is for rendering only; the original analytical terrain remains unchanged."
+      ]
+    },
+    "exportedAt": "2026-11-19T18:40:00.125Z",
+    "settings": {
+      "interiorEnabled": false,
+      "interiorLayout": "existing",
+      "interiorFloor": "ground",
+      "interiorStyle": "follow",
+      "interiorView": "dollhouse",
+      "interiorRoomId": "",
+      "interiorFurniture": true,
+      "interiorChanges": false,
+      "planExteriorApplied": false,
+      "costSpacing": 0.8,
+      "costTreePriceRear": 0,
+      "costTreePriceLeft": 0,
+      "costTreePriceRight": 0,
+      "costTreePriceFront": 0,
+      "costPriceFactor": 100,
+      "costPlantingRate": 75,
+      "costHedgeDelivery": 1000,
+      "costHedgeEquipment": 0,
+      "costScreeningPlanting": 0,
+      "costScreeningAnchoring": 0,
+      "costScreeningDelivery": 0,
+      "costScreeningCrane": 0,
+      "costScreeningEstablishment": 0,
+      "costSpaPool": 0,
+      "costSpaJacuzzi": 0,
+      "costSpaSauna": 0,
+      "costSpaColdPlunge": 0,
+      "costSpaFirepit": 0,
+      "costGardenTerrace": 0,
+      "costGardenPaving": 0,
+      "costGardenFurniture": 0,
+      "costGardenPlanting": 0,
+      "costGardenLawn": 0,
+      "costGardenIrrigation": 0,
+      "costGardenLighting": 0,
+      "costGardenUtilities": 0,
+      "costGardenDemolition": 0,
+      "costGardenDesign": 0,
+      "costGardenCanopy": 0,
+      "costBalconyQuote": 0,
+      "costStyleUpgradeQuote": 0,
+      "costPrivacyPergolaQuote": 0,
+      "costSpaScreenQuote": 0,
+      "costBasementGarageQuote": 0,
+      "costAreaOverride": 0,
+      "costBedWidth": 1,
+      "costTopsoilDepth": 0.15,
+      "costLooseFactor": 1.2,
+      "costFillRate": 75,
+      "costTopsoilRate": 110,
+      "costEarthworkRate": 50,
+      "costTruckCapacity": 10,
+      "costSoilDelivery": 500,
+      "costRetainingAllowance": 8000,
+      "costDrainageAllowance": 3000,
+      "costAccessAllowance": 1500,
+      "costContingency": 20,
+      "buyNewThujas": true,
+      "costUsePlanningAllowances": true,
+      "sunEnabled": true,
+      "sunDate": "2026-06-21",
+      "sunMinutes": 720,
+      "nightGardenLights": true,
+      "nightPendantLights": true,
+      "nightHedgeLights": true,
+      "nightWindowLights": true,
+      "nightGardenIntensity": 75,
+      "nightPendantIntensity": 80,
+      "nightHedgeIntensity": 85,
+      "nightWindowActivity": 70,
+      "nightWindowIntensity": 60,
+      "privacyPergolaHeight": 5,
+      "privacyPergolaWidth": 5,
+      "privacyPergolaDepth": 2,
+      "privacyPergolaX": 10.5,
+      "privacyPergolaY": 23.5,
+      "spaScreenHeight": 2.2,
+      "spaScreenWidth": 3.6,
+      "spaScreenReturn": 1.5,
+      "spaScreenGap": 0.65,
+      "privacyPergolaEnabled": false,
+      "privacyPergolaFoliage": false,
+      "spaScreensEnabled": false,
+      "garageClearHeight": 2.3,
+      "garageSlabThickness": 0.3,
+      "garageExtraDepth": 0,
+      "garageSpaces": 2,
+      "garageRampWidth": 5.8,
+      "garageInsideRun": 2,
+      "garageBottomApron": 0.4,
+      "garageMaxGrade": 25,
+      "garageClearanceMm": 105.6,
+      "garageReserveMm": 30,
+      "garageProgress": 40,
+      "basementGarageEnabled": true,
+      "garageReverse": false,
+      "hedgeRear": 4,
+      "hedgeLeft": 4,
+      "hedgeRight": 4,
+      "hedgeFront": 4,
+      "gardenRaise": 0.5,
+      "bedRaise": 0,
+      "terraceWidth": 8.5,
+      "terraceDepth": 4,
+      "canopyDepth": 4,
+      "canopyHeight": 3,
+      "fasciaDepth": 0.3,
+      "canopyWidth": 8.5,
+      "floorHeight": 1.2,
+      "firstFloorRise": 3.05,
+      "atticRise": 5.75,
+      "eyeHeight": 1.2,
+      "poolEyeAboveWater": 0.15,
+      "poolFreeboard": 0.1,
+      "hedgeInset": 0.5,
+      "observerX": 9.6091676564,
+      "observerY": 30,
+      "lookYaw": 0,
+      "lookPitch": 0,
+      "b9HeightDelta": 0,
+      "b9DistanceDelta": 0,
+      "b15HeightDelta": 0,
+      "b15DistanceDelta": 0,
+      "b29HeightDelta": 0,
+      "b29DistanceDelta": 0,
+      "b31HeightDelta": 0,
+      "b31DistanceDelta": 0,
+      "b53HeightDelta": 0,
+      "b53DistanceDelta": 0,
+      "preset": "sofa",
+      "mode": "orbit",
+      "raiseNewHedges": true,
+      "canopyEnabled": true,
+      "removeGarage": true,
+      "showRays": false,
+      "showDimensions": false,
+      "includeHighFeatures": false,
+      "linkedHedges": false,
+      "hedgeFullPerimeter": true,
+      "sunPathVisible": false,
+      "jacuzziOverflow": true,
+      "screeningTrees": [
+        {
+          "id": "tree-1",
+          "typeId": "thuja-excelsa-9m",
+          "x": 19.3,
+          "y": 30.2,
+          "height": 9,
+          "crownBase": 0.3,
+          "crownWidth": 2,
+          "crownDepth": 2,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "tree-2",
+          "typeId": "thuja-excelsa-9m",
+          "x": 13.8,
+          "y": 35.8,
+          "height": 9,
+          "crownBase": 0.3,
+          "crownWidth": 2,
+          "crownDepth": 2,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "tree-3",
+          "typeId": "thuja-excelsa-9m",
+          "x": 18.45,
+          "y": 35.57,
+          "height": 9,
+          "crownBase": 0.3,
+          "crownWidth": 2,
+          "crownDepth": 2,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "treeLeafMode": "auto",
+      "gardenProgram": "spa-pool-grove",
+      "terraceCoverType": "canopy",
+      "designStyle": "current",
+      "styleHouseFinish": false,
+      "renderQuality": "auto",
+      "sceneMotion": false,
+      "siteId": "sternicza-11"
+    },
+    "designPresentation": {
+      "id": "current",
+      "label": "Current design",
+      "family": "Original",
+      "description": "The original pale stone terrace, timber furniture and woven pendants.",
+      "bespoke": "",
+      "aliases": [],
+      "renovation": null,
+      "construction": null,
+      "palette": {
+        "surface": "#d7c9b3",
+        "edge": "#e8dfcd",
+        "wood": "#9c7957",
+        "frame": "#424944",
+        "fabric": "#eee7d8",
+        "accent": "#ae9468",
+        "light": "#ffce86",
+        "houseWall": "#f2f0e8",
+        "houseRoof": "#555d58",
+        "houseFrame": "#454c47"
+      },
+      "swatches": [
+        "#d7c9b3",
+        "#9c7957",
+        "#eee7d8",
+        "#ae9468"
+      ],
+      "recipe": {
+        "paving": "grid",
+        "module": [
+          1.2,
+          1.2
+        ],
+        "furniture": "original",
+        "canopy": "original",
+        "fixture": "woven"
+      },
+      "finishes": {
+        "surface": "Square stone joints",
+        "furniture": "Timber frame and linen cushions",
+        "canopy": "Timber-edged canopy",
+        "lighting": "Warm woven shades"
+      },
+      "houseFinishPreview": false,
+      "houseRenovation": {
+        "active": false,
+        "styleId": "current",
+        "description": "Original house finishes",
+        "partCount": 0,
+        "accentBayCount": 0,
+        "trimmedOpeningCount": 0,
+        "claddingAreaM2": 0,
+        "maxProjectionM": 0,
+        "coverage": "none",
+        "surfaceSpecification": null
+      },
+      "scope": "Complete coordinated renovation: furniture forms, interior architecture, materials, facades and garden finishes. Current restores the original drawing layout. Both viewers share the same house, openings, decks and actual garden context. Structural feasibility and installed costs still require project-specific verification."
+    },
+    "designChecks": {
+      "checks": [
+        {
+          "id": "garage-existing-structure",
+          "severity": "conflict",
+          "title": "Two-car approach crosses the documented existing structure",
+          "detail": "The basement drawing places retained stair / chimney elements in the straight route. Two parking spaces remain shown, but the approach is obstructed.",
+          "action": "Compare the original and proposed basement in Interiors; resolve the structural route before relying on the car clearance result.",
+          "evidence": "Historical basement plan IMG_8721.jpeg, approximately registered to the mapped house."
+        },
+        {
+          "id": "canopy-support",
+          "severity": "verify",
+          "title": "Design the offset canopy support",
+          "detail": "The post clears the jacuzzi service band. The proposed front beam extends 0.60 m beyond the roof edge to reach it.",
+          "action": "Have the beam, connections and foundation sized for this support arrangement.",
+          "evidence": "Proposed support position, existing ground model and finite beam extension."
+        },
+        {
+          "id": "garage-cellar-lowering",
+          "severity": "verify",
+          "title": "Garage needs a lower floor than the documented cellar",
+          "detail": "The section shows 1.70 m clear height and a floor at −2.00 m. This proposal puts the floor another 0.60 m lower.",
+          "action": "Survey the foundations and slab before designing excavation, underpinning or drainage.",
+          "evidence": "Historical section IMG_8724.jpeg; proposed garage dimensions."
+        },
+        {
+          "id": "garage-drive",
+          "severity": "verify",
+          "title": "Garage clearance depends on the site survey",
+          "detail": "The full forward and reverse drives leave 39 mm guarded underside clearance against 30 mm selected reserve.",
+          "action": "Inspect the ramp profile, then measure the street turn, threshold, drain, open scissor doors and existing structure.",
+          "evidence": "Closed Cyberster, straight quasi-static drive, laden clearance and selected ramp profile."
+        },
+        {
+          "id": "nearest-boundary",
+          "severity": "info",
+          "title": "Nearest finished footprint to the parcel",
+          "detail": "The minimum gap between the cold-plunge pad and steps and the mapped edge is 1.04 m.",
+          "action": "Inspect the parcel in Plan and verify the boundary on site.",
+          "evidence": "Shortest horizontal distance among contained garden features. The ramp intentionally meets the frontage."
+        },
+        {
+          "id": "pool-level",
+          "severity": "info",
+          "title": "Pool waterline and coping levels",
+          "detail": "Sampled ground varies by 0.44 m. Level water stands 0.10 m below the coping in this proposal.",
+          "action": "Choose the pool circulation system and survey the coping perimeter to set the finished levels.",
+          "evidence": "Selected pool freeboard, independent of jacuzzi overflow. Coping follows proposed grade sampled at up to 0.25 m spacing."
+        }
+      ],
+      "conflictCount": 1,
+      "verifyCount": 3,
+      "closestBoundary": {
+        "label": "Cold-plunge pad and steps",
+        "distanceM": 1.0396685394531313
+      }
+    },
+    "dimensions": [
+      {
+        "id": "terrace-width",
+        "feature": "terrace",
+        "kind": "width",
+        "value": 8.5,
+        "a": [
+          5.358610661552147,
+          18.117475217542932,
+          3.7475585030942296
+        ],
+        "b": [
+          13.858610661552147,
+          18.117475217542932,
+          3.7475585030942296
+        ],
+        "lineA": [
+          5.358610661552147,
+          17.897475217542933,
+          3.7475585030942296
+        ],
+        "lineB": [
+          13.858610661552147,
+          17.897475217542933,
+          3.7475585030942296
+        ],
+        "anchor": [
+          9.608610661552147,
+          17.897475217542933,
+          3.8275585030942296
+        ],
+        "text": "8.50 m",
+        "sceneText": "8.50 × 4.00 m",
+        "planText": "8.50 m",
+        "priority": 1,
+        "offset": [
+          0,
+          -0.22
+        ],
+        "description": "Terrace width",
+        "scope": "garden"
+      },
+      {
+        "id": "terrace-length",
+        "feature": "terrace",
+        "kind": "length",
+        "value": 4,
+        "a": [
+          13.858610661552147,
+          18.117475217542932,
+          3.7475585030942296
+        ],
+        "b": [
+          13.858610661552147,
+          22.117475217542932,
+          3.7475585030942296
+        ],
+        "lineA": [
+          14.078610661552148,
+          18.117475217542932,
+          3.7475585030942296
+        ],
+        "lineB": [
+          14.078610661552148,
+          22.117475217542932,
+          3.7475585030942296
+        ],
+        "anchor": [
+          14.078610661552148,
+          20.117475217542932,
+          3.8275585030942296
+        ],
+        "text": "4.00 m",
+        "sceneText": null,
+        "planText": "4.00 m",
+        "priority": 2,
+        "offset": [
+          0.22,
+          0
+        ],
+        "description": "Terrace length",
+        "scope": "garden"
+      },
+      {
+        "id": "terrace-drop",
+        "feature": "terrace",
+        "kind": "drop",
+        "value": 0.7456920552231145,
+        "a": [
+          9.608610661552147,
+          22.717475217542933,
+          2.891866447871115
+        ],
+        "b": [
+          9.608610661552147,
+          22.717475217542933,
+          3.6375585030942297
+        ],
+        "lineA": [
+          9.608610661552147,
+          22.717475217542933,
+          2.891866447871115
+        ],
+        "lineB": [
+          9.608610661552147,
+          22.717475217542933,
+          3.6375585030942297
+        ],
+        "anchor": [
+          9.608610661552147,
+          22.717475217542933,
+          3.264712475482672
+        ],
+        "text": "0.75 m",
+        "sceneText": "0.75 m deck / garden",
+        "planText": "deck +0.75 m",
+        "planAnchor": [
+          11.308610661552146,
+          21.76747521754293
+        ],
+        "priority": 1,
+        "description": "Terrace floor to proposed garden at the reference point",
+        "datum": "garden at terrace centreline, 0.60 m beyond deck",
+        "scope": "garden"
+      },
+      {
+        "id": "jacuzzi-width",
+        "feature": "jacuzzi",
+        "kind": "width",
+        "value": 2.3,
+        "a": [
+          5.508610661552147,
+          22.117475217542932,
+          3.7675585030942296
+        ],
+        "b": [
+          7.808610661552147,
+          22.117475217542932,
+          3.7675585030942296
+        ],
+        "lineA": [
+          5.508610661552147,
+          22.33747521754293,
+          3.7675585030942296
+        ],
+        "lineB": [
+          7.808610661552147,
+          22.33747521754293,
+          3.7675585030942296
+        ],
+        "anchor": [
+          6.658610661552148,
+          22.33747521754293,
+          3.8475585030942296
+        ],
+        "text": "2.30 m",
+        "sceneText": "2.30 × 2.30 m",
+        "planText": "2.30 m",
+        "priority": 1,
+        "offset": [
+          0,
+          0.22
+        ],
+        "description": "Jacuzzi outer rim width",
+        "groupKey": "J",
+        "groupLabel": "Jacuzzi · 7 seats · outer rim",
+        "scope": "garden"
+      },
+      {
+        "id": "jacuzzi-length",
+        "feature": "jacuzzi",
+        "kind": "length",
+        "value": 2.3000000000000007,
+        "a": [
+          5.508610661552147,
+          19.81747521754293,
+          3.7675585030942296
+        ],
+        "b": [
+          5.508610661552147,
+          22.117475217542932,
+          3.7675585030942296
+        ],
+        "lineA": [
+          5.2886106615521475,
+          19.81747521754293,
+          3.7675585030942296
+        ],
+        "lineB": [
+          5.2886106615521475,
+          22.117475217542932,
+          3.7675585030942296
+        ],
+        "anchor": [
+          5.2886106615521475,
+          20.967475217542933,
+          3.8475585030942296
+        ],
+        "text": "2.30 m",
+        "sceneText": null,
+        "planText": "2.30 m",
+        "priority": 2,
+        "offset": [
+          -0.22,
+          0
+        ],
+        "description": "Jacuzzi outer rim length",
+        "groupKey": "J",
+        "groupLabel": "Jacuzzi · 7 seats · outer rim",
+        "scope": "garden"
+      },
+      {
+        "id": "jacuzzi-water-depth",
+        "feature": "jacuzzi",
+        "kind": "waterDepth",
+        "value": 0.7450000000000001,
+        "a": [
+          7.558610661552147,
+          21.867475217542932,
+          2.8575585030942294
+        ],
+        "b": [
+          7.558610661552147,
+          21.867475217542932,
+          3.6025585030942295
+        ],
+        "lineA": [
+          7.558610661552147,
+          21.867475217542932,
+          2.8575585030942294
+        ],
+        "lineB": [
+          7.558610661552147,
+          21.867475217542932,
+          3.6025585030942295
+        ],
+        "anchor": [
+          7.558610661552147,
+          21.867475217542932,
+          3.2300585030942295
+        ],
+        "text": "0.75 m",
+        "sceneText": null,
+        "planText": "water 0.75 m",
+        "planAnchor": [
+          6.658610661552148,
+          21.47347521754293
+        ],
+        "priority": 2,
+        "description": "Jacuzzi modeled water depth",
+        "datum": "water surface to tub floor",
+        "scope": "garden"
+      },
+      {
+        "id": "jacuzzi-service-width",
+        "feature": "jacuzzi-service",
+        "kind": "width",
+        "value": 3.5,
+        "a": [
+          4.908610661552148,
+          19.21747521754293,
+          3.8075585030942296
+        ],
+        "b": [
+          8.408610661552148,
+          19.21747521754293,
+          3.8075585030942296
+        ],
+        "lineA": [
+          4.908610661552148,
+          18.99747521754293,
+          3.8075585030942296
+        ],
+        "lineB": [
+          8.408610661552148,
+          18.99747521754293,
+          3.8075585030942296
+        ],
+        "anchor": [
+          6.658610661552148,
+          18.99747521754293,
+          3.8875585030942297
+        ],
+        "text": "3.50 m",
+        "sceneText": null,
+        "planText": "3.50 m",
+        "priority": 1,
+        "offset": [
+          0,
+          -0.22
+        ],
+        "description": "Jacuzzi technical access envelope width",
+        "groupKey": "JS",
+        "groupLabel": "Jacuzzi · technical access envelope",
+        "datum": "Required technical access; removable deck and garden-side service access, not extra water area.",
+        "scope": "garden"
+      },
+      {
+        "id": "jacuzzi-service-length",
+        "feature": "jacuzzi-service",
+        "kind": "length",
+        "value": 3.5000000000000036,
+        "a": [
+          8.408610661552148,
+          19.21747521754293,
+          3.8075585030942296
+        ],
+        "b": [
+          8.408610661552148,
+          22.717475217542933,
+          3.8075585030942296
+        ],
+        "lineA": [
+          8.628610661552148,
+          19.21747521754293,
+          3.8075585030942296
+        ],
+        "lineB": [
+          8.628610661552148,
+          22.717475217542933,
+          3.8075585030942296
+        ],
+        "anchor": [
+          8.628610661552148,
+          20.967475217542933,
+          3.8875585030942297
+        ],
+        "text": "3.50 m",
+        "sceneText": null,
+        "planText": "3.50 m",
+        "priority": 2,
+        "offset": [
+          0.22,
+          0
+        ],
+        "description": "Jacuzzi technical access envelope length",
+        "groupKey": "JS",
+        "groupLabel": "Jacuzzi · technical access envelope",
+        "datum": "Required technical access; removable deck and garden-side service access, not extra water area.",
+        "scope": "garden"
+      },
+      {
+        "id": "jacuzzi-service-clearance",
+        "feature": "jacuzzi-service",
+        "kind": "clearance",
+        "value": 0.6000000000000005,
+        "a": [
+          7.808610661552147,
+          20.967475217542933,
+          3.8075585030942296
+        ],
+        "b": [
+          8.408610661552148,
+          20.967475217542933,
+          3.8075585030942296
+        ],
+        "lineA": [
+          7.808610661552147,
+          20.967475217542933,
+          3.8075585030942296
+        ],
+        "lineB": [
+          8.408610661552148,
+          20.967475217542933,
+          3.8075585030942296
+        ],
+        "anchor": [
+          8.108610661552147,
+          20.967475217542933,
+          3.8875585030942297
+        ],
+        "text": "≈ 0.60 m",
+        "sceneText": "spa access 0.60 m",
+        "planText": "≈ 0.60 m",
+        "priority": 2,
+        "description": "Jacuzzi technical service access beyond shell",
+        "datum": "Required technical access; removable deck and garden-side service access, not extra water area.",
+        "scope": "garden"
+      },
+      {
+        "id": "pool-width",
+        "feature": "pool",
+        "kind": "width",
+        "value": 3.5,
+        "a": [
+          14.52,
+          26.3,
+          3.6593611727587203
+        ],
+        "b": [
+          18.02,
+          26.3,
+          3.6593611727587203
+        ],
+        "lineA": [
+          14.52,
+          26.080000000000002,
+          3.6593611727587203
+        ],
+        "lineB": [
+          18.02,
+          26.080000000000002,
+          3.6593611727587203
+        ],
+        "anchor": [
+          16.27,
+          26.080000000000002,
+          3.7393611727587204
+        ],
+        "text": "3.50 m",
+        "sceneText": "3.50 × 8.00 m",
+        "planText": "3.50 m",
+        "priority": 1,
+        "offset": [
+          0,
+          -0.22
+        ],
+        "description": "Pool water footprint width",
+        "scope": "garden"
+      },
+      {
+        "id": "pool-length",
+        "feature": "pool",
+        "kind": "length",
+        "value": 7.9999999999999964,
+        "a": [
+          14.52,
+          26.3,
+          3.6593611727587203
+        ],
+        "b": [
+          14.52,
+          34.3,
+          3.6593611727587203
+        ],
+        "lineA": [
+          14.299999999999999,
+          26.3,
+          3.6593611727587203
+        ],
+        "lineB": [
+          14.299999999999999,
+          34.3,
+          3.6593611727587203
+        ],
+        "anchor": [
+          14.299999999999999,
+          30.299999999999997,
+          3.7393611727587204
+        ],
+        "text": "8.00 m",
+        "sceneText": null,
+        "planText": "8.00 m",
+        "priority": 2,
+        "offset": [
+          -0.22,
+          0
+        ],
+        "description": "Pool water footprint length",
+        "scope": "garden"
+      },
+      {
+        "id": "pool-water-depth",
+        "feature": "pool",
+        "kind": "waterDepth",
+        "value": 1.4,
+        "a": [
+          16.794999999999998,
+          31.9,
+          2.03936117275872
+        ],
+        "b": [
+          16.794999999999998,
+          31.9,
+          3.43936117275872
+        ],
+        "lineA": [
+          16.794999999999998,
+          31.9,
+          2.03936117275872
+        ],
+        "lineB": [
+          16.794999999999998,
+          31.9,
+          3.43936117275872
+        ],
+        "anchor": [
+          16.794999999999998,
+          31.9,
+          3.58936117275872
+        ],
+        "text": "1.40 m",
+        "sceneText": "water 1.40 m",
+        "planText": "water 1.40 m",
+        "planAnchor": [
+          16.794999999999998,
+          31.9
+        ],
+        "priority": 3,
+        "description": "Pool water depth",
+        "datum": "water surface to pool floor",
+        "scope": "garden"
+      },
+      {
+        "id": "pool-boundary",
+        "feature": "pool",
+        "kind": "clearance",
+        "value": 2.0028992160547254,
+        "a": [
+          18.3,
+          28.82702026601794,
+          3.325950905486083
+        ],
+        "b": [
+          20.302899216054726,
+          28.82702026601794,
+          3.325950905486083
+        ],
+        "lineA": [
+          18.3,
+          28.82702026601794,
+          3.325950905486083
+        ],
+        "lineB": [
+          20.302899216054726,
+          28.82702026601794,
+          3.325950905486083
+        ],
+        "anchor": [
+          19.30144960802736,
+          28.82702026601794,
+          3.4059509054860833
+        ],
+        "text": "≈ 2.00 m",
+        "sceneText": "≈ 2.00 m",
+        "planText": "≈ 2.00 m",
+        "priority": 1,
+        "description": "Pool outer coping to mapped parcel boundary",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "pool-house",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 7.881348013602434,
+        "a": [
+          14.993569022065335,
+          26.02,
+          3.278787441490567
+        ],
+        "b": [
+          14.993569022065335,
+          18.138651986397566,
+          3.278787441490567
+        ],
+        "lineA": [
+          14.993569022065335,
+          26.02,
+          3.278787441490567
+        ],
+        "lineB": [
+          14.993569022065335,
+          18.138651986397566,
+          3.278787441490567
+        ],
+        "anchor": [
+          14.993569022065335,
+          22.079325993198783,
+          3.358787441490567
+        ],
+        "text": "≈ 7.88 m",
+        "sceneText": null,
+        "planText": "≈ 7.88 m",
+        "priority": 1,
+        "description": "Pool outer coping to house wall",
+        "datum": "shortest horizontal outer coping to mapped house wall; conceptual clearance",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-width",
+        "feature": "sauna",
+        "kind": "width",
+        "value": 2.9999999999999996,
+        "a": [
+          1.35,
+          37.05,
+          3.3818092310639116
+        ],
+        "b": [
+          4.35,
+          37.05,
+          3.3818092310639116
+        ],
+        "lineA": [
+          1.35,
+          37.269999999999996,
+          3.3818092310639116
+        ],
+        "lineB": [
+          4.35,
+          37.269999999999996,
+          3.3818092310639116
+        ],
+        "anchor": [
+          2.8499999999999996,
+          37.269999999999996,
+          3.4618092310639117
+        ],
+        "text": "3.00 m",
+        "sceneText": "3.00 × 2.40 m",
+        "planText": "3.00 m",
+        "priority": 1,
+        "offset": [
+          0,
+          0.22
+        ],
+        "description": "Sauna maximum outer footprint width",
+        "groupKey": "S",
+        "groupLabel": "Sauna · 6 seats · outer envelope",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-length",
+        "feature": "sauna",
+        "kind": "length",
+        "value": 2.3999999999999986,
+        "a": [
+          4.35,
+          34.65,
+          3.3818092310639116
+        ],
+        "b": [
+          4.35,
+          37.05,
+          3.3818092310639116
+        ],
+        "lineA": [
+          4.569999999999999,
+          34.65,
+          3.3818092310639116
+        ],
+        "lineB": [
+          4.569999999999999,
+          37.05,
+          3.3818092310639116
+        ],
+        "anchor": [
+          4.569999999999999,
+          35.849999999999994,
+          3.4618092310639117
+        ],
+        "text": "2.40 m",
+        "sceneText": null,
+        "planText": "2.40 m",
+        "priority": 2,
+        "offset": [
+          0.22,
+          0
+        ],
+        "description": "Sauna maximum outer footprint length",
+        "groupKey": "S",
+        "groupLabel": "Sauna · 6 seats · outer envelope",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-height",
+        "feature": "sauna",
+        "kind": "height",
+        "value": 2.3,
+        "a": [
+          4.6,
+          36.75,
+          3.3018092310639116
+        ],
+        "b": [
+          4.6,
+          36.75,
+          5.601809231063911
+        ],
+        "lineA": [
+          4.6,
+          36.75,
+          3.3018092310639116
+        ],
+        "lineB": [
+          4.6,
+          36.75,
+          5.601809231063911
+        ],
+        "anchor": [
+          4.6,
+          36.75,
+          4.451809231063912
+        ],
+        "text": "2.30 m",
+        "sceneText": "h 2.30 m",
+        "planText": "h 2.30 m",
+        "planAnchor": [
+          2.6100000000000003,
+          36.498
+        ],
+        "priority": 2,
+        "description": "Sauna external height",
+        "datum": "sauna floor to roof",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-entry-rise",
+        "feature": "sauna",
+        "kind": "rise",
+        "value": 0.235071341419256,
+        "a": [
+          3.8999999999999995,
+          35.099999999999994,
+          3.0667378896446555
+        ],
+        "b": [
+          3.8999999999999995,
+          35.099999999999994,
+          3.3018092310639116
+        ],
+        "lineA": [
+          3.8999999999999995,
+          35.099999999999994,
+          3.0667378896446555
+        ],
+        "lineB": [
+          3.8999999999999995,
+          35.099999999999994,
+          3.3018092310639116
+        ],
+        "anchor": [
+          3.8999999999999995,
+          35.099999999999994,
+          3.1842735603542835
+        ],
+        "text": "0.24 m",
+        "sceneText": "entry +0.24 m",
+        "planText": "entry +0.24 m",
+        "planAnchor": [
+          4.499999999999999,
+          34.49999999999999
+        ],
+        "priority": 3,
+        "description": "Sauna entry total rise",
+        "datum": "outer stair approach to sauna floor",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-right-boundary",
+        "feature": "sauna",
+        "kind": "clearance",
+        "value": 1.0919262422537939,
+        "a": [
+          1.35,
+          37.05,
+          3.309720471729391
+        ],
+        "b": [
+          0.2580997294734601,
+          37.057531118546386,
+          3.309720471729391
+        ],
+        "lineA": [
+          1.35,
+          37.05,
+          3.309720471729391
+        ],
+        "lineB": [
+          0.2580997294734601,
+          37.057531118546386,
+          3.309720471729391
+        ],
+        "anchor": [
+          0.8040498647367301,
+          37.05376555927319,
+          3.389720471729391
+        ],
+        "text": "≈ 1.09 m",
+        "sceneText": "≈ 1.09 m",
+        "planText": "≈ 1.09 m",
+        "priority": 1,
+        "description": "Sauna wall to mapped right parcel boundary",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-rear-boundary",
+        "feature": "sauna",
+        "kind": "clearance",
+        "value": 1.096341872391561,
+        "a": [
+          4.35,
+          37.05,
+          3.4072856054000615
+        ],
+        "b": [
+          4.368154898234467,
+          38.14619154385952,
+          3.4072856054000615
+        ],
+        "lineA": [
+          4.35,
+          37.05,
+          3.4072856054000615
+        ],
+        "lineB": [
+          4.368154898234467,
+          38.14619154385952,
+          3.4072856054000615
+        ],
+        "anchor": [
+          4.359077449117233,
+          37.59809577192976,
+          3.4872856054000616
+        ],
+        "text": "≈ 1.10 m",
+        "sceneText": "≈ 1.10 m",
+        "planText": "≈ 1.10 m",
+        "priority": 1,
+        "description": "Sauna wall to mapped rear parcel boundary",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "firepit-width",
+        "feature": "firepit",
+        "kind": "width",
+        "value": 4.5600000000000005,
+        "a": [
+          8.32,
+          26.720000000000002,
+          3.1989492686619476
+        ],
+        "b": [
+          12.88,
+          26.720000000000002,
+          3.1989492686619476
+        ],
+        "lineA": [
+          8.32,
+          26.500000000000004,
+          3.1989492686619476
+        ],
+        "lineB": [
+          12.88,
+          26.500000000000004,
+          3.1989492686619476
+        ],
+        "anchor": [
+          10.600000000000001,
+          26.500000000000004,
+          3.2789492686619477
+        ],
+        "text": "4.56 m",
+        "sceneText": "4.56 × 4.60 m incl. coping",
+        "planText": "4.56 m outer",
+        "priority": 1,
+        "offset": [
+          0,
+          -0.22
+        ],
+        "description": "Sunken lounge including outer coping width",
+        "scope": "garden"
+      },
+      {
+        "id": "firepit-length",
+        "feature": "firepit",
+        "kind": "length",
+        "value": 4.600000000000001,
+        "a": [
+          12.88,
+          26.720000000000002,
+          3.1989492686619476
+        ],
+        "b": [
+          12.88,
+          31.320000000000004,
+          3.1989492686619476
+        ],
+        "lineA": [
+          13.100000000000001,
+          26.720000000000002,
+          3.1989492686619476
+        ],
+        "lineB": [
+          13.100000000000001,
+          31.320000000000004,
+          3.1989492686619476
+        ],
+        "anchor": [
+          13.100000000000001,
+          29.020000000000003,
+          3.2789492686619477
+        ],
+        "text": "4.60 m",
+        "sceneText": null,
+        "planText": "4.60 m outer",
+        "priority": 2,
+        "offset": [
+          0.22,
+          0
+        ],
+        "description": "Sunken lounge including outer coping length",
+        "scope": "garden"
+      },
+      {
+        "id": "firepit-drop",
+        "feature": "firepit",
+        "kind": "drop",
+        "value": 0.6000000000000001,
+        "a": [
+          12.55,
+          29.176000000000002,
+          2.4789492686619474
+        ],
+        "b": [
+          12.55,
+          29.176000000000002,
+          3.0789492686619475
+        ],
+        "lineA": [
+          12.55,
+          29.176000000000002,
+          2.4789492686619474
+        ],
+        "lineB": [
+          12.55,
+          29.176000000000002,
+          3.0789492686619475
+        ],
+        "anchor": [
+          12.55,
+          29.176000000000002,
+          3.2789492686619477
+        ],
+        "text": "0.60 m",
+        "sceneText": "−0.60 m",
+        "planText": "floor −0.60 m",
+        "planAnchor": [
+          10.600000000000001,
+          30.1
+        ],
+        "priority": 2,
+        "description": "Sunken lounge floor drop",
+        "datum": "lounge rim to recessed floor",
+        "scope": "garden"
+      },
+      {
+        "id": "cold-plunge-width",
+        "feature": "cold-plunge",
+        "kind": "width",
+        "value": 2.200000000000001,
+        "a": [
+          6.6,
+          35.55,
+          4.306306555301226
+        ],
+        "b": [
+          8.8,
+          35.55,
+          4.306306555301226
+        ],
+        "lineA": [
+          6.6,
+          35.33,
+          4.306306555301226
+        ],
+        "lineB": [
+          8.8,
+          35.33,
+          4.306306555301226
+        ],
+        "anchor": [
+          7.7,
+          35.33,
+          4.386306555301226
+        ],
+        "text": "2.20 m",
+        "sceneText": "2.20 × 1.30 m",
+        "planText": "2.20 m",
+        "priority": 1,
+        "offset": [
+          0,
+          -0.22
+        ],
+        "description": "Cold plunge outer rim width",
+        "scope": "garden"
+      },
+      {
+        "id": "cold-plunge-length",
+        "feature": "cold-plunge",
+        "kind": "length",
+        "value": 1.2999999999999972,
+        "a": [
+          8.8,
+          35.55,
+          4.306306555301226
+        ],
+        "b": [
+          8.8,
+          36.849999999999994,
+          4.306306555301226
+        ],
+        "lineA": [
+          9.020000000000001,
+          35.55,
+          4.306306555301226
+        ],
+        "lineB": [
+          9.020000000000001,
+          36.849999999999994,
+          4.306306555301226
+        ],
+        "anchor": [
+          9.020000000000001,
+          36.199999999999996,
+          4.386306555301226
+        ],
+        "text": "1.30 m",
+        "sceneText": null,
+        "planText": "1.30 m",
+        "priority": 2,
+        "offset": [
+          0.22,
+          0
+        ],
+        "description": "Cold plunge outer rim length",
+        "scope": "garden"
+      },
+      {
+        "id": "cold-plunge-height",
+        "feature": "cold-plunge",
+        "kind": "height",
+        "value": 0.7500000000000004,
+        "a": [
+          6.42,
+          35.849999999999994,
+          3.436306555301225
+        ],
+        "b": [
+          6.42,
+          35.849999999999994,
+          4.1863065553012255
+        ],
+        "lineA": [
+          6.42,
+          35.849999999999994,
+          3.436306555301225
+        ],
+        "lineB": [
+          6.42,
+          35.849999999999994,
+          4.1863065553012255
+        ],
+        "anchor": [
+          6.42,
+          35.849999999999994,
+          3.8113065553012255
+        ],
+        "text": "0.75 m",
+        "sceneText": "rim +0.75 m",
+        "planText": "rim +0.75 m",
+        "planAnchor": [
+          7.699999999999999,
+          37.55
+        ],
+        "priority": 3,
+        "description": "Cold plunge rim height",
+        "datum": "plunge pad reference to rim",
+        "scope": "garden"
+      },
+      {
+        "id": "cold-plunge-water-depth",
+        "feature": "cold-plunge",
+        "kind": "waterDepth",
+        "value": 1.1,
+        "a": [
+          8.14,
+          36.33,
+          3.016306555301225
+        ],
+        "b": [
+          8.14,
+          36.33,
+          4.116306555301225
+        ],
+        "lineA": [
+          8.14,
+          36.33,
+          3.016306555301225
+        ],
+        "lineB": [
+          8.14,
+          36.33,
+          4.116306555301225
+        ],
+        "anchor": [
+          8.14,
+          36.33,
+          4.336306555301226
+        ],
+        "text": "1.10 m",
+        "sceneText": null,
+        "planText": "water 1.10 m",
+        "planAnchor": [
+          7.699999999999999,
+          36.199999999999996
+        ],
+        "priority": 3,
+        "description": "Cold plunge water depth",
+        "datum": "water surface to plunge floor",
+        "scope": "garden"
+      },
+      {
+        "id": "cold-plunge-boundary",
+        "feature": "cold-plunge",
+        "kind": "clearance",
+        "value": 1.0396685394531313,
+        "a": [
+          8.98,
+          37.029999999999994,
+          3.589163629415357
+        ],
+        "b": [
+          8.997216414885418,
+          38.06952598187207,
+          3.589163629415357
+        ],
+        "lineA": [
+          8.98,
+          37.029999999999994,
+          3.589163629415357
+        ],
+        "lineB": [
+          8.997216414885418,
+          38.06952598187207,
+          3.589163629415357
+        ],
+        "anchor": [
+          8.98860820744271,
+          37.54976299093603,
+          3.669163629415357
+        ],
+        "text": "≈ 1.04 m",
+        "sceneText": "≈ 1.04 m",
+        "planText": "≈ 1.04 m",
+        "priority": 1,
+        "description": "Cold plunge outer pad to mapped rear parcel boundary",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "cold-plunge-entry-rise",
+        "feature": "cold-plunge",
+        "kind": "rise",
+        "value": 1.0752832000995882,
+        "a": [
+          6.449999999999999,
+          34.05,
+          3.1110233552016373
+        ],
+        "b": [
+          6.449999999999999,
+          34.05,
+          4.1863065553012255
+        ],
+        "lineA": [
+          6.449999999999999,
+          34.05,
+          3.1110233552016373
+        ],
+        "lineB": [
+          6.449999999999999,
+          34.05,
+          4.1863065553012255
+        ],
+        "anchor": [
+          6.449999999999999,
+          34.05,
+          3.6486649552514314
+        ],
+        "text": "1.08 m",
+        "sceneText": null,
+        "planText": "entry +1.08 m",
+        "planAnchor": [
+          6.449999999999999,
+          34.05
+        ],
+        "priority": 3,
+        "description": "Cold plunge approach total rise",
+        "datum": "outer stair approach to plunge rim",
+        "scope": "garden"
+      },
+      {
+        "id": "terrace-lounge",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 4.6025247824570705,
+        "a": [
+          8.32,
+          22.117475217542932,
+          2.9989117552254507
+        ],
+        "b": [
+          8.32,
+          26.720000000000002,
+          2.9989117552254507
+        ],
+        "lineA": [
+          8.32,
+          22.117475217542932,
+          2.9989117552254507
+        ],
+        "lineB": [
+          8.32,
+          26.720000000000002,
+          2.9989117552254507
+        ],
+        "anchor": [
+          8.32,
+          24.418737608771465,
+          3.078911755225451
+        ],
+        "text": "≈ 4.60 m",
+        "sceneText": "≈ 4.60 m",
+        "planText": "≈ 4.60 m",
+        "priority": 1,
+        "description": "Terrace edge to sunken lounge outer coping",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "pool-lounge",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 1.3599999999999994,
+        "a": [
+          14.24,
+          26.720000000000002,
+          3.2626359088437598
+        ],
+        "b": [
+          12.88,
+          26.720000000000002,
+          3.2626359088437598
+        ],
+        "lineA": [
+          14.24,
+          26.720000000000002,
+          3.2626359088437598
+        ],
+        "lineB": [
+          12.88,
+          26.720000000000002,
+          3.2626359088437598
+        ],
+        "anchor": [
+          13.56,
+          26.720000000000002,
+          3.34263590884376
+        ],
+        "text": "≈ 1.36 m",
+        "sceneText": "≈ 1.36 m",
+        "planText": "≈ 1.36 m",
+        "priority": 1,
+        "description": "Pool coping to sunken lounge outer coping",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-plunge",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 2.0700000000000003,
+        "a": [
+          4.35,
+          35.55,
+          3.3434933437654353
+        ],
+        "b": [
+          6.42,
+          35.55,
+          3.3434933437654353
+        ],
+        "lineA": [
+          4.35,
+          35.55,
+          3.3434933437654353
+        ],
+        "lineB": [
+          6.42,
+          35.55,
+          3.3434933437654353
+        ],
+        "anchor": [
+          5.385,
+          35.55,
+          3.4234933437654353
+        ],
+        "text": "≈ 2.07 m",
+        "sceneText": "≈ 2.07 m",
+        "planText": "≈ 2.07 m",
+        "priority": 1,
+        "description": "Sauna wall to cold plunge outer pad",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "terrace-pool",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 3.9211168696142273,
+        "a": [
+          13.858610661552147,
+          22.117475217542932,
+          3.249814023889485
+        ],
+        "b": [
+          14.24,
+          26.02,
+          3.249814023889485
+        ],
+        "lineA": [
+          13.858610661552147,
+          22.117475217542932,
+          3.249814023889485
+        ],
+        "lineB": [
+          14.24,
+          26.02,
+          3.249814023889485
+        ],
+        "anchor": [
+          14.049305330776074,
+          24.068737608771464,
+          3.329814023889485
+        ],
+        "text": "≈ 3.92 m",
+        "sceneText": "≈ 3.92 m",
+        "planText": "≈ 3.92 m",
+        "priority": 1,
+        "description": "Terrace edge to pool outer coping",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "sauna-pool",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 9.937454402411111,
+        "a": [
+          4.35,
+          35.55,
+          3.4080315342579155
+        ],
+        "b": [
+          14.24,
+          34.58,
+          3.4080315342579155
+        ],
+        "lineA": [
+          4.35,
+          35.55,
+          3.4080315342579155
+        ],
+        "lineB": [
+          14.24,
+          34.58,
+          3.4080315342579155
+        ],
+        "anchor": [
+          9.295,
+          35.065,
+          3.4880315342579156
+        ],
+        "text": "≈ 9.94 m",
+        "sceneText": "≈ 9.94 m",
+        "planText": "≈ 9.94 m",
+        "priority": 1,
+        "description": "Sauna wall to pool outer coping",
+        "datum": "horizontal finished-edge gap",
+        "scope": "garden"
+      },
+      {
+        "id": "plunge-pool",
+        "feature": "circulation",
+        "kind": "clearance",
+        "value": 5.318994265836352,
+        "a": [
+          8.98,
+          35.37,
+          3.421203697808972
+        ],
+        "b": [
+          14.24,
+          34.58,
+          3.42…63729 tokens truncated…199573166263365,
+          "z": 1.5549201033738738,
+          "grade": -0.19875954740830235,
+          "groundZ": 2.5009088848799563
+        },
+        {
+          "s": 5.640000000000004,
+          "x": 11.765493464964266,
+          "y": 5.639956388726909,
+          "z": 1.5313438510816673,
+          "grade": -0.1941779907951405,
+          "groundZ": 2.511232186424368
+        },
+        {
+          "s": 5.760000000000004,
+          "x": 11.765021559251627,
+          "y": 5.759955460827482,
+          "z": 1.50831738558304,
+          "grade": -0.18959643418197866,
+          "groundZ": 2.5228619011648834
+        },
+        {
+          "s": 5.880000000000004,
+          "x": 11.76454965353899,
+          "y": 5.879954532928054,
+          "z": 1.4858407068779922,
+          "grade": -0.18501487756881682,
+          "groundZ": 2.534597464678149
+        },
+        {
+          "s": 6.000000000000004,
+          "x": 11.764077747826352,
+          "y": 5.999953605028626,
+          "z": 1.463913814966524,
+          "grade": -0.18043332095565498,
+          "groundZ": 2.546438876965575
+        },
+        {
+          "s": 6.1200000000000045,
+          "x": 11.763605842113714,
+          "y": 6.1199526771291985,
+          "z": 1.442536709848635,
+          "grade": -0.17585176434249314,
+          "groundZ": 2.5583861380129873
+        },
+        {
+          "s": 6.240000000000005,
+          "x": 11.763133936401076,
+          "y": 6.239951749229771,
+          "z": 1.4217093915243255,
+          "grade": -0.1712702077293313,
+          "groundZ": 2.57043924784605
+        },
+        {
+          "s": 6.360000000000005,
+          "x": 11.762662030688437,
+          "y": 6.359950821330344,
+          "z": 1.4014318599935955,
+          "grade": -0.16668865111616948,
+          "groundZ": 2.58259820645199
+        },
+        {
+          "s": 6.480000000000005,
+          "x": 11.762190124975799,
+          "y": 6.479949893430916,
+          "z": 1.3817041152564449,
+          "grade": -0.16210709450300764,
+          "groundZ": 2.5948630138274766
+        },
+        {
+          "s": 6.600000000000005,
+          "x": 11.761718219263162,
+          "y": 6.599948965531489,
+          "z": 1.3625261573128737,
+          "grade": -0.1575255378898458,
+          "groundZ": 2.6071856058738048
+        },
+        {
+          "s": 6.720000000000005,
+          "x": 11.761246313550524,
+          "y": 6.7199480376320615,
+          "z": 1.343897986162882,
+          "grade": -0.15294398127668396,
+          "groundZ": 2.606931148823639
+        },
+        {
+          "s": 6.840000000000005,
+          "x": 11.760774407837886,
+          "y": 6.839947109732634,
+          "z": 1.3258196018064694,
+          "grade": -0.14836242466352212,
+          "groundZ": 2.603434557309886
+        },
+        {
+          "s": 6.960000000000005,
+          "x": 11.760302502125247,
+          "y": 6.959946181833207,
+          "z": 1.3082910042436366,
+          "grade": -0.14378086805036028,
+          "groundZ": 2.6000438145667397
+        },
+        {
+          "s": 7.080000000000005,
+          "x": 11.759830596412609,
+          "y": 7.079945253933779,
+          "z": 1.291312193474383,
+          "grade": -0.13919931143719844,
+          "groundZ": 2.5967589205994845
+        },
+        {
+          "s": 7.2000000000000055,
+          "x": 11.75935869069997,
+          "y": 7.199944326034352,
+          "z": 1.2748831694987088,
+          "grade": -0.1346177548240366,
+          "groundZ": 2.593579875401966
+        },
+        {
+          "s": 7.320000000000006,
+          "x": 11.758886784987334,
+          "y": 7.3199433981349245,
+          "z": 1.2590039323166142,
+          "grade": -0.13003619821087475,
+          "groundZ": 2.590506678978705
+        },
+        {
+          "s": 7.440000000000006,
+          "x": 11.758414879274696,
+          "y": 7.439942470235497,
+          "z": 1.243674481928099,
+          "grade": -0.1254546415977129,
+          "groundZ": 2.5875393313288146
+        },
+        {
+          "s": 7.560000000000006,
+          "x": 11.757942973562058,
+          "y": 7.55994154233607,
+          "z": 1.228894818333163,
+          "grade": -0.12087308498455107,
+          "groundZ": 2.5846778324498114
+        },
+        {
+          "s": 7.680000000000006,
+          "x": 11.75747106784942,
+          "y": 7.679940614436642,
+          "z": 1.2146649415318067,
+          "grade": -0.11629152837138923,
+          "groundZ": 2.581922182346059
+        },
+        {
+          "s": 7.800000000000006,
+          "x": 11.75699916213678,
+          "y": 7.799939686537215,
+          "z": 1.2009848515240296,
+          "grade": -0.11170997175822739,
+          "groundZ": 2.578928689924069
+        },
+        {
+          "s": 7.920000000000006,
+          "x": 11.756527256424143,
+          "y": 7.919938758637787,
+          "z": 1.187854548309832,
+          "grade": -0.10712841514506555,
+          "groundZ": 2.5757673688523934
+        },
+        {
+          "s": 8.040000000000006,
+          "x": 11.756055350711504,
+          "y": 8.03993783073836,
+          "z": 1.1752740318892139,
+          "grade": -0.1025468585319037,
+          "groundZ": 2.572606047781883
+        },
+        {
+          "s": 8.160000000000005,
+          "x": 11.755583444998868,
+          "y": 8.15993690283893,
+          "z": 1.1632433022621749,
+          "grade": -0.09796530191874192,
+          "groundZ": 2.5694447267102074
+        },
+        {
+          "s": 8.280000000000005,
+          "x": 11.75511153928623,
+          "y": 8.279935974939503,
+          "z": 1.1517623594287163,
+          "grade": -0.09338374530558008,
+          "groundZ": 2.5662834056408608
+        },
+        {
+          "s": 8.400000000000004,
+          "x": 11.754639633573591,
+          "y": 8.399935047040074,
+          "z": 1.1408312033888364,
+          "grade": -0.0888021886924183,
+          "groundZ": 2.5631220845691858
+        },
+        {
+          "s": 8.520000000000003,
+          "x": 11.754167727860953,
+          "y": 8.519934119140647,
+          "z": 1.1304498341425355,
+          "grade": -0.08422063207925651,
+          "groundZ": 2.559960763497511
+        },
+        {
+          "s": 8.640000000000002,
+          "x": 11.753695822148314,
+          "y": 8.639933191241218,
+          "z": 1.1206182516898147,
+          "grade": -0.07963907546609467,
+          "groundZ": 2.5567994424269997
+        },
+        {
+          "s": 8.760000000000002,
+          "x": 11.753223916435676,
+          "y": 8.75993226334179,
+          "z": 1.1113364560306733,
+          "grade": -0.07505751885293288,
+          "groundZ": 2.553638121357653
+        },
+        {
+          "s": 8.88,
+          "x": 11.75275201072304,
+          "y": 8.879931335442361,
+          "z": 1.102604447165111,
+          "grade": -0.07047596223977104,
+          "groundZ": 2.550476800288306
+        },
+        {
+          "s": 9,
+          "x": 11.752280105010401,
+          "y": 8.999930407542934,
+          "z": 1.0944222250931284,
+          "grade": -0.06589440562660925,
+          "groundZ": 2.547315479216631
+        },
+        {
+          "s": 9.12,
+          "x": 11.751808199297763,
+          "y": 9.119929479643504,
+          "z": 1.0867897898147247,
+          "grade": -0.06131284901344747,
+          "groundZ": 2.544068144287012
+        },
+        {
+          "s": 9.125904390764711,
+          "x": 11.75178498,
+          "y": 9.125833824752544,
+          "z": 1.0864284403012898,
+          "grade": -0.06108742150882446,
+          "groundZ": 2.5438963219039246
+        },
+        {
+          "s": 9.239999999999998,
+          "x": 11.751336293585124,
+          "y": 9.239928551744077,
+          "z": 1.079707141329901,
+          "grade": -0.05673129240028563,
+          "groundZ": 2.540626370823947
+        },
+        {
+          "s": 9.359999999999998,
+          "x": 11.750864387872486,
+          "y": 9.359927623844648,
+          "z": 1.0731742796386565,
+          "grade": -0.05214973578712384,
+          "groundZ": 2.5372904461343806
+        },
+        {
+          "s": 9.479999999999997,
+          "x": 11.750392482159848,
+          "y": 9.47992669594522,
+          "z": 1.067191204740991,
+          "grade": -0.047568179173962055,
+          "groundZ": 2.534060370216824
+        },
+        {
+          "s": 9.599999999999996,
+          "x": 11.74992057644721,
+          "y": 9.599925768045791,
+          "z": 1.0617579166369056,
+          "grade": -0.042986622560800214,
+          "groundZ": 2.5309361430720183
+        },
+        {
+          "s": 9.719999999999995,
+          "x": 11.749448670734573,
+          "y": 9.719924840146362,
+          "z": 1.0568744153263991,
+          "grade": -0.03840506594763843,
+          "groundZ": 2.5279177646986994
+        },
+        {
+          "s": 9.839999999999995,
+          "x": 11.748976765021935,
+          "y": 9.839923912246935,
+          "z": 1.0525407008094723,
+          "grade": -0.03382350933447664,
+          "groundZ": 2.525005235099458
+        },
+        {
+          "s": 9.959999999999994,
+          "x": 11.748504859309296,
+          "y": 9.959922984347505,
+          "z": 1.048756773086125,
+          "grade": -0.0292419527213148,
+          "groundZ": 2.522198554273754
+        },
+        {
+          "s": 10.079999999999993,
+          "x": 11.748032953596658,
+          "y": 10.079922056448078,
+          "z": 1.0455226321563567,
+          "grade": -0.024660396108153015,
+          "groundZ": 2.519497722220021
+        },
+        {
+          "s": 10.199999999999992,
+          "x": 11.74756104788402,
+          "y": 10.199921128548649,
+          "z": 1.0428382780201684,
+          "grade": -0.020078839494991174,
+          "groundZ": 2.5169027389390384
+        },
+        {
+          "s": 10.319999999999991,
+          "x": 11.747089142171381,
+          "y": 10.319920200649221,
+          "z": 1.0407037106775592,
+          "grade": -0.015497282881829388,
+          "groundZ": 2.514413604429863
+        },
+        {
+          "s": 10.43999999999999,
+          "x": 11.746617236458745,
+          "y": 10.439919272749792,
+          "z": 1.039118930128529,
+          "grade": -0.010915726268667603,
+          "groundZ": 2.5120303186944444
+        },
+        {
+          "s": 10.55999999999999,
+          "x": 11.746145330746106,
+          "y": 10.559918344850365,
+          "z": 1.038083936373079,
+          "grade": -0.006334169655505761,
+          "groundZ": 2.509752881730962
+        },
+        {
+          "s": 10.679999999999989,
+          "x": 11.745673425033468,
+          "y": 10.679917416950936,
+          "z": 1.037598729411208,
+          "grade": -0.0017526130423439756,
+          "groundZ": 2.5075812935426938
+        },
+        {
+          "s": 10.725904390764711,
+          "x": 11.745492903831492,
+          "y": 10.725821452760176,
+          "z": 1.0375585030942305,
+          "grade": 0,
+          "groundZ": 2.5067785717665454
+        },
+        {
+          "s": 10.799999999999988,
+          "x": 11.74520151932083,
+          "y": 10.799916489051508,
+          "z": 1.03755850309423,
+          "grade": 0,
+          "groundZ": 2.5055155541255343
+        },
+        {
+          "s": 10.919999999999987,
+          "x": 11.744729613608191,
+          "y": 10.919915561152079,
+          "z": 1.03755850309423,
+          "grade": 0,
+          "groundZ": 2.503555663480502
+        },
+        {
+          "s": 11.039999999999987,
+          "x": 11.744257707895553,
+          "y": 11.039914633252652,
+          "z": 1.03755850309423,
+          "grade": 0,
+          "groundZ": 2.5017865105083907
+        },
+        {
+          "s": 11.125904390764711,
+          "x": 11.743919884789365,
+          "y": 11.125818359762084,
+          "z": 1.03755850309423,
+          "grade": 0,
+          "groundZ": 2.5006549631722734
+        }
+      ],
+      "vehicle": {
+        "length": 4.535,
+        "width": 1.913,
+        "mirrorWidth": 2.11,
+        "height": 1.329,
+        "wheelbase": 2.69,
+        "frontOverhang": 0.955,
+        "rearOverhang": 0.89,
+        "frontRadius": 0.352,
+        "rearRadius": 0.35025,
+        "frontTrack": 1.616,
+        "rearTrack": 1.629,
+        "frontTyreWidth": 0.245,
+        "rearTyreWidth": 0.275,
+        "clearance": 0.1056
+      },
+      "portal": {
+        "center": [
+          11.75178498,
+          9.125833824752544
+        ],
+        "a": [
+          14.651762555763835,
+          9.137238212807963
+        ],
+        "b": [
+          8.851807404236165,
+          9.114429436697124
+        ],
+        "width": 5.8,
+        "bottomZ": 1.0864284403012898,
+        "topZ": 3.18642844030129,
+        "ceilingZ": 3.33755850309423,
+        "availableHeight": 2.25113006279294,
+        "clearHeight": 2.1,
+        "assumedDoorClearHeight": 2.1
+      },
+      "parking": {
+        "spaces": 2,
+        "laneWidth": 2.9,
+        "laneOffsets": [
+          -1.45,
+          1.45
+        ],
+        "movingLaneOffset": 1.45,
+        "parkedLaneOffset": -1.45,
+        "mirrorWallClearance": 0.395,
+        "bodyWallClearance": 0.49349999999999994,
+        "betweenMirrors": 0.79,
+        "betweenBodies": 0.9869999999999999,
+        "wallAllowance": 0.3,
+        "betweenAllowance": 0.6,
+        "minimumWidth": 5.42,
+        "widthPass": true
+      },
+      "entryAccess": {
+        "proposed": true,
+        "doorCenter": [
+          9.16,
+          9.11564142812329
+        ],
+        "landing": {
+          "footprint": [
+            [
+              7.4,
+              9.108720090818723
+            ],
+            [
+              9.84,
+              9.11831558117278
+            ],
+            [
+              9.843932547605316,
+              8.118323313668009
+            ],
+            [
+              7.403932547605318,
+              8.108727823313952
+            ],
+            [
+              7.4,
+              9.108720090818723
+            ]
+          ],
+          "projection": 1,
+          "thickness": 0.18,
+          "fromS": 8.125904390764711,
+          "toS": 9.125904390764711,
+          "innerLateral": 1.911799762982548,
+          "outerLateral": 4.351818630416801,
+          "topZ": 3.6375585030942297,
+          "soffitZ": 3.4575585030942295
+        },
+        "stairs": {
+          "landingX": 7.4,
+          "tread": 0.32,
+          "maxRiser": 0.18,
+          "width": 1,
+          "heading": "east"
+        },
+        "pedestrianGateCenter": [
+          5,
+          0
+        ]
+      },
+      "preview": {
+        "progress": 0.4,
+        "reverse": false
+      },
+      "sources": "./data/garage-sources.json",
+      "note": "Conditional geometric comparison using an assumed flat underside and design reserve. Survey, structure, drainage, traction, local rules, headroom and door-opening envelopes remain separate checks."
+    },
+    "terraceCover": {
+      "type": "canopy",
+      "enabled": true,
+      "bounds": {
+        "x0": 5.358610661552147,
+        "x1": 13.858610661552147,
+        "y0": 18.117475217542932,
+        "y1": 22.117475217542932,
+        "z": 6.63755850309423,
+        "fasciaBottomZ": 6.33755850309423
+      },
+      "area": 34,
+      "deckTopZ": null,
+      "undersideZ": 6.63755850309423,
+      "access": null,
+      "accesses": [],
+      "accessFits": true,
+      "warnings": [],
+      "assumptions": [
+        "A canopy post moves sideways along the front edge to clear the jacuzzi service band. The beam extension, connection and footing are proposed.",
+        "The canopy is a roof proposal, without an occupiable floor or guardrail. Its height is measured above the living terrace."
+      ]
+    },
+    "costEstimate": {
+      "currency": "PLN",
+      "basisDate": "2026-11-13",
+      "contingencyPercent": 20,
+      "planningEnabled": true,
+      "hedges": {
+        "sides": [
+          {
+            "side": "rear",
+            "height": 4,
+            "length": 19.057871814047626,
+            "count": 24,
+            "unit": {
+              "low": 300,
+              "high": 300,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockBandMaximum": 4
+            },
+            "plants": {
+              "low": 7200,
+              "high": 7200
+            },
+            "planting": 1800,
+            "status": "estimate"
+          },
+          {
+            "side": "left",
+            "height": 4,
+            "length": 36.89026700946041,
+            "count": 47,
+            "unit": {
+              "low": 300,
+              "high": 300,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockBandMaximum": 4
+            },
+            "plants": {
+              "low": 14100,
+              "high": 14100
+            },
+            "planting": 3525,
+            "status": "estimate"
+          },
+          {
+            "side": "right",
+            "height": 4,
+            "length": 37.207341952230735,
+            "count": 47,
+            "unit": {
+              "low": 300,
+              "high": 300,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockBandMaximum": 4
+            },
+            "plants": {
+              "low": 14100,
+              "high": 14100
+            },
+            "planting": 3525,
+            "status": "estimate"
+          },
+          {
+            "side": "front",
+            "height": 4,
+            "length": 11.515847219799408,
+            "count": 16,
+            "unit": {
+              "low": 300,
+              "high": 300,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockBandMaximum": 4
+            },
+            "plants": {
+              "low": 4800,
+              "high": 4800
+            },
+            "planting": 1200,
+            "status": "estimate"
+          }
+        ],
+        "count": 134,
+        "length": 104.67132799553818,
+        "spacing": 0.8,
+        "procurement": true,
+        "fullPerimeter": true,
+        "lines": {
+          "plants": {
+            "low": 40200,
+            "high": 40200
+          },
+          "planting": 10050,
+          "delivery": 1000,
+          "equipment": 0
+        },
+        "baseTotal": {
+          "low": 51250,
+          "high": 51250
+        },
+        "total": {
+          "low": 51250,
+          "high": 61500
+        },
+        "knownSubtotal": {
+          "low": 51250,
+          "high": 61500
+        },
+        "status": "estimate"
+      },
+      "earthworks": {
+        "rearGrossArea": 400.34607731021947,
+        "excludedArea": 91.01499999999989,
+        "automaticArea": 309.3310773102196,
+        "bedArea": 57.41486042352906,
+        "lengths": {
+          "rear": 19.057871814047626,
+          "left": 36.89026700946041,
+          "right": 37.207341952230735,
+          "front": 11.515847219799408
+        },
+        "frontSegmentLengths": [
+          3.895258302768954,
+          2.7648481044924313,
+          4.8557408125380235
+        ],
+        "frontSideHedgeLength": 35.23573863984662,
+        "fullPerimeter": true,
+        "area": 309.3310773102196,
+        "isAreaOverride": false,
+        "gardenVolume": 154.6655386551098,
+        "bedVolume": 0,
+        "compactedVolume": 154.6655386551098,
+        "bulkFillVolume": 108.26587705857686,
+        "topsoilVolume": 46.39966159653294,
+        "looseFillVolume": 129.91905247029223,
+        "looseTopsoilVolume": 55.679593915839526,
+        "looseVolume": 185.59864638613175,
+        "looseFactor": 1.2,
+        "loads": 19,
+        "fillLoads": 13,
+        "topsoilLoads": 6,
+        "truckCapacity": 10,
+        "lines": {
+          "fillMaterial": 9743.928935271917,
+          "topsoilMaterial": 6124.755330742348,
+          "spreading": 7733.27693275549,
+          "transport": 9500,
+          "retaining": 8000,
+          "drainage": 3000,
+          "access": 1500
+        },
+        "baseTotal": {
+          "low": 45601.96119876976,
+          "high": 45601.96119876976
+        },
+        "total": {
+          "low": 45601.96119876976,
+          "high": 54722.35343852371
+        },
+        "status": "estimate"
+      },
+      "screeningTrees": {
+        "rows": [
+          {
+            "id": "tree-1",
+            "typeId": "thuja-excelsa-9m",
+            "label": "Thuja Excelsa · 9 m tall",
+            "height": 9,
+            "crownWidth": 2,
+            "crownDepth": 2,
+            "unit": {
+              "low": 9500,
+              "high": 9500,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockMatch": true,
+              "reason": "Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra."
+            },
+            "plants": {
+              "low": 9500,
+              "high": 9500
+            },
+            "status": "estimate",
+            "sourceUrl": "https://drzewkafischer.pl/index.php/solitaire/18/show",
+            "sourceTitle": "Fischer nursery · 9 m Thuja Excelsa specimen",
+            "priceNote": "Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra.",
+            "taxNote": "VAT basis not stated on the inspected individual-specimen page; confirm the final tax-inclusive price.",
+            "taxBasis": "unspecified",
+            "deliveryIncluded": false,
+            "liftingQuoteRequired": true
+          },
+          {
+            "id": "tree-2",
+            "typeId": "thuja-excelsa-9m",
+            "label": "Thuja Excelsa · 9 m tall",
+            "height": 9,
+            "crownWidth": 2,
+            "crownDepth": 2,
+            "unit": {
+              "low": 9500,
+              "high": 9500,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockMatch": true,
+              "reason": "Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra."
+            },
+            "plants": {
+              "low": 9500,
+              "high": 9500
+            },
+            "status": "estimate",
+            "sourceUrl": "https://drzewkafischer.pl/index.php/solitaire/18/show",
+            "sourceTitle": "Fischer nursery · 9 m Thuja Excelsa specimen",
+            "priceNote": "Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra.",
+            "taxNote": "VAT basis not stated on the inspected individual-specimen page; confirm the final tax-inclusive price.",
+            "taxBasis": "unspecified",
+            "deliveryIncluded": false,
+            "liftingQuoteRequired": true
+          },
+          {
+            "id": "tree-3",
+            "typeId": "thuja-excelsa-9m",
+            "label": "Thuja Excelsa · 9 m tall",
+            "height": 9,
+            "crownWidth": 2,
+            "crownDepth": 2,
+            "unit": {
+              "low": 9500,
+              "high": 9500,
+              "status": "estimate",
+              "source": "published-stock",
+              "stockMatch": true,
+              "reason": "Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra."
+            },
+            "plants": {
+              "low": 9500,
+              "high": 9500
+            },
+            "status": "estimate",
+            "sourceUrl": "https://drzewkafischer.pl/index.php/solitaire/18/show",
+            "sourceTitle": "Fischer nursery · 9 m Thuja Excelsa specimen",
+            "priceNote": "Displayed plant-only price for one catalogued specimen. Current availability, matching multiples and VAT basis need confirmation. Delivery, unloading and planting extra.",
+            "taxNote": "VAT basis not stated on the inspected individual-specimen page; confirm the final tax-inclusive price.",
+            "taxBasis": "unspecified",
+            "deliveryIncluded": false,
+            "liftingQuoteRequired": true
+          }
+        ],
+        "count": 3,
+        "plantsKnown": {
+          "low": 28500,
+          "high": 28500
+        },
+        "plantQuoteCount": 0,
+        "lines": {
+          "plants": {
+            "low": 28500,
+            "high": 28500
+          },
+          "planting": 7500,
+          "anchoring": 1050,
+          "delivery": 3000,
+          "equipment": 2500,
+          "establishment": 2000
+        },
+        "lineStatuses": {
+          "planting": "planning-allowance",
+          "anchoring": "planning-allowance",
+          "delivery": "planning-allowance",
+          "equipment": "planning-allowance",
+          "establishment": "planning-allowance"
+        },
+        "serviceRows": [
+          {
+            "id": "planting",
+            "label": "Planting",
+            "applicable": true,
+            "cost": {
+              "low": 7500,
+              "high": 18000
+            },
+            "basis": "3 trees (3 above 5 m; 0 smaller)",
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "id": "anchoring",
+            "label": "Anchoring",
+            "applicable": true,
+            "cost": {
+              "low": 1050,
+              "high": 2400
+            },
+            "basis": "3 trees (3 above 5 m; 0 smaller)",
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "id": "delivery",
+            "label": "Delivery",
+            "applicable": true,
+            "cost": {
+              "low": 3000,
+              "high": 8000
+            },
+            "basis": "One order",
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "id": "equipment",
+            "label": "Crane / unloading",
+            "applicable": true,
+            "cost": {
+              "low": 2500,
+              "high": 8000
+            },
+            "basis": "One order",
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "id": "establishment",
+            "label": "Irrigation / establishment",
+            "applicable": true,
+            "cost": {
+              "low": 2000,
+              "high": 5000
+            },
+            "basis": "One order",
+            "priceStatus": "planning-allowance"
+          }
+        ],
+        "unquotedServices": [],
+        "deliveryRequired": true,
+        "liftingRequired": true,
+        "allDeliveryIncluded": false,
+        "knownBase": {
+          "low": 44550,
+          "high": 69900
+        },
+        "knownSubtotal": {
+          "low": 44550,
+          "high": 83880
+        },
+        "baseTotal": {
+          "low": 44550,
+          "high": 69900
+        },
+        "total": {
+          "low": 44550,
+          "high": 83880
+        },
+        "status": "estimate"
+      },
+      "spa": {
+        "enabled": true,
+        "rows": [
+          {
+            "key": "costSpaPool",
+            "label": "Swimming pool · installed",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 150000,
+              "high": 230000
+            },
+            "basis": "3.5 × 8.0 m water · 28.0 m² · 1 installed pool",
+            "scope": "Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. 8 × 3 m catalog packages are a reference, not a quote for this 3.5 m pool. The relocated, longer pool needs a project quotation. The existing whole-pool planning range is retained until that quotation is available.",
+            "referenceIds": [
+              "pool"
+            ],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costSpaJacuzzi",
+            "label": "Custom overflow jacuzzi · installed",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 105000,
+              "high": 165000
+            },
+            "basis": "2.30 × 2.30 m · bespoke overflow concept",
+            "scope": "Full custom overflow spa, structure, balance tank, hydraulics and installation allowance. No supplier quote; not a certified modification of Vienna Life.",
+            "referenceIds": [
+              "jacuzzi"
+            ],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costSpaSauna",
+            "label": "Six-person sauna · installed",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 65000,
+              "high": 95000
+            },
+            "basis": "3.0 × 2.4 m external · 6 seated places",
+            "scope": "Cabin, heater, glazing, insulated base, access steps, delivery, local electrical connection and installation. Custom diagonal glazing needs its own offer.",
+            "referenceIds": [
+              "sauna"
+            ],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costSpaColdPlunge",
+            "label": "Cold plunge · installed",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 25000,
+              "high": 45000
+            },
+            "basis": "2.2 × 1.3 m feature · 1 chiller",
+            "scope": "Plunge shell, chiller, pad, steps, local water/electric connections and installation. The catalog product is smaller; this is a custom-feature allowance.",
+            "referenceIds": [
+              "plunge"
+            ],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costSpaFirepit",
+            "label": "Sunken fire lounge · installed",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 40000,
+              "high": 75000
+            },
+            "basis": "4.4 × 4.4 m · 0.60 m sunken",
+            "scope": "Excavation and disposal, retaining structure, waterproofing, drainage, built-in seats and cushions, burner and fuel installation. Burner reference is net; the full planning range aims to include tax.",
+            "referenceIds": [
+              "fire"
+            ],
+            "priceStatus": "planning-allowance"
+          }
+        ],
+        "unquoted": [],
+        "knownBase": {
+          "low": 385000,
+          "high": 610000
+        },
+        "knownSubtotal": {
+          "low": 385000,
+          "high": 732000
+        },
+        "total": {
+          "low": 385000,
+          "high": 732000
+        },
+        "status": "estimate",
+        "planningEnabled": true,
+        "overflow": true
+      },
+      "garden": {
+        "enabled": true,
+        "rows": [
+          {
+            "key": "costGardenTerrace",
+            "label": "Raised terrace, finish and steps",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 36710,
+              "high": 63807
+            },
+            "basis": "28.7 m² net × 1,000–1,700 PLN/m² + 8,000–15,000 steps",
+            "scope": "Raised terrace frame, waterproofing, finish, removable spa service hatches and garden steps. Jacuzzi support is in the spa line; house facade / doors are excluded.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenPaving",
+            "label": "Paths and dining paving",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 7413.88310693984,
+              "high": 13180.236634559717
+            },
+            "basis": "16.5 m² × 450–800 PLN/m²",
+            "scope": "Dining pad plus a 1.15 m path with 90% stone coverage. Finish and local sub-base; excludes pool coping, terrace, access stairs and spa foundations.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenFurniture",
+            "label": "Dining set and loungers",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 22200,
+              "high": 36500
+            },
+            "basis": "1 dining set (6 seats) + 2 loungers + delivery / handling allowance",
+            "scope": "Movable furniture only. Built-in lounge seats/cushions are in the fire-lounge line. The named Cloveris benchmarks advertise free delivery; the generic range reserves 500–1,500 PLN for alternative delivery or placement assistance. Product references are not additional costs.",
+            "referenceIds": [
+              "furniture",
+              "lounger"
+            ],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenPlanting",
+            "label": "Ornamental planting",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 7998.383559365671,
+              "high": 15552.41247654436
+            },
+            "basis": "44.4 m² assumed beds × 180–350 PLN/m²",
+            "scope": "Assume 20% of garden left after hedge beds and paving. Ornamental plants, mulch and planting labour; excludes thujas, specimen trees and added bulk topsoil.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenLawn",
+            "label": "Lawn finish",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 7109.6742749917075,
+              "high": 13330.639265609452
+            },
+            "basis": "177.7 m² × 40–75 PLN/m²",
+            "scope": "Lawn finish and fine grading on prepared soil. No additional bulk fill or topsoil charged here.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenIrrigation",
+            "label": "Permanent garden irrigation",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 11422.031858183307,
+              "high": 21212.344879483288
+            },
+            "basis": "326.3 m² irrigation basis × 35–65 PLN/m² · includes 11.5 m² front-hedge strip + 35.2 m² front-side hedge strips",
+            "scope": "Permanent distribution, controls and installation for beds, hedges and lawn. Street and front-side hedges use a provisional 1 m planted-strip width for drip irrigation only; no front lawn or fill. Specimen establishment visits / temporary root-ball watering are separate.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenLighting",
+            "label": "Landscape lighting",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 27300,
+              "high": 58500
+            },
+            "basis": "39 fittings: 12 baseline + 3 garden pendants + 24 hedge lanterns · generic 700–1,500 PLN each installed",
+            "scope": "Existing generic lighting allowance applied to the illustrated fittings, local wiring and simple mounts; no pendant product or support-frame quotation has been received. Replace with a complete installed quote covering the selected shades, posts, foundations and controls. Switching a light off does not remove its installation cost. Spa built-in lights belong to their object lines; the main supply is in shared utilities.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenUtilities",
+            "label": "Shared garden utilities",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 12000,
+              "high": 25000
+            },
+            "basis": "1 shared garden supply / distribution allowance",
+            "scope": "Shared garden electric and water feeds, distribution and drain connections only. Object-level hookups and garden-fill drainage are excluded here to avoid duplication.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenDesign",
+            "label": "Garden design and coordination",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 15000,
+              "high": 30000
+            },
+            "basis": "1 garden design / technical coordination package",
+            "scope": "Garden design, level coordination and structural / services coordination allowances, including the selected full perimeter hedges. House renovation, first-floor balcony, basement garage, new gates / fencing and main utility upgrades are outside these garden allowances.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenDemolition",
+            "label": "Detached garage removal",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 23612.724986592282,
+              "high": 42502.90497586611
+            },
+            "basis": "47.2 m² garage footprint × 500–900 PLN/m²",
+            "scope": "Allowance for removal of the detached garage and its waste transport/disposal. Final demolition method and quantities require a site quote. No separate duplicate general-waste charge.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          },
+          {
+            "key": "costGardenCanopy",
+            "label": "Terrace canopy",
+            "amount": 0,
+            "quoted": false,
+            "cost": {
+              "low": 57800,
+              "high": 102000
+            },
+            "basis": "34.0 m² canopy × 1,700–3,000 PLN/m²",
+            "scope": "Selected terrace canopy, supports and installation; not charged when the cover is disabled or replaced with a balcony.",
+            "referenceIds": [],
+            "priceStatus": "planning-allowance"
+          }
+        ],
+        "unquoted": [],
+        "knownBase": {
+          "low": 228566.69778607282,
+          "high": 421585.53823206294
+        },
+        "knownSubtotal": {
+          "low": 228566.69778607282,
+          "high": 505902.6458784755
+        },
+        "total": {
+          "low": 228566.69778607282,
+          "high": 505902.6458784755
+        },
+        "status": "estimate",
+        "planningEnabled": true,
+        "quantities": {
+          "terraceGross": 34,
+          "terraceNet": 28.71,
+          "pavingArea": 16.475295793199646,
+          "pathLength": 3.4350683992267106,
+          "additionalHardscape": 13.263600000000025,
+          "ornamentalArea": 44.43546421869817,
+          "lawnArea": 177.7418568747927,
+          "irrigatedArea": 326.34376737666594,
+          "frontIrrigationArea": 11.515847219799408,
+          "frontSideIrrigationArea": 35.23573863984662,
+          "garageArea": 47.22544997318457,
+          "canopyArea": 34,
+          "loungers": 2,
+          "lightingFittings": 39,
+          "gardenPendantCount": 3,
+          "hedgePendantCount": 24
+        }
+      },
+      "privacy": {
+        "enabled": false,
+        "rows": [],
+        "unquoted": [],
+        "knownBase": {
+          "low": 0,
+          "high": 0
+        },
+        "knownSubtotal": {
+          "low": 0,
+          "high": 0
+        },
+        "total": {
+          "low": 0,
+          "high": 0
+        },
+        "status": "none",
+        "planningEnabled": false,
+        "quoteOnly": true
+      },
+      "basementGarage": {
+        "enabled": true,
+        "rows": [
+          {
+            "key": "costBasementGarageQuote",
+            "label": "Basement garage + ramp · full installed quote",
+            "amount": 0,
+            "quoted": false,
+            "cost": null,
+            "basis": "Two-car basement conversion and full front-yard approach",
+            "scope": "Survey, design, structural opening and alterations, excavation/disposal, retaining walls, waterproofing, drainage/pumping, garage door, services, ramp finish and proposed gate relocation. Confirm the entire scope and applicable tax; the garden budget does not price these works.",
+            "referenceIds": [],
+            "priceStatus": "quote-required"
+          }
+        ],
+        "unquoted": [
+          {
+            "key": "costBasementGarageQuote",
+            "label": "Basement garage + ramp · full installed quote",
+            "amount": 0,
+            "quoted": false,
+            "cost": null,
+            "basis": "Two-car basement conversion and full front-yard approach",
+            "scope": "Survey, design, structural opening and alterations, excavation/disposal, retaining walls, waterproofing, drainage/pumping, garage door, services, ramp finish and proposed gate relocation. Confirm the entire scope and applicable tax; the garden budget does not price these works.",
+            "referenceIds": [],
+            "priceStatus": "quote-required"
+          }
+        ],
+        "knownBase": {
+          "low": 0,
+          "high": 0
+        },
+        "knownSubtotal": {
+          "low": 0,
+          "high": 0
+        },
+        "total": null,
+        "status": "quote-required",
+        "planningEnabled": false,
+        "quoteOnly": true
+      },
+      "balcony": {
+        "enabled": false,
+        "rows": [],
+        "unquoted": [],
+        "knownBase": {
+          "low": 0,
+          "high": 0
+        },
+        "knownSubtotal": {
+          "low": 0,
+          "high": 0
+        },
+        "total": {
+          "low": 0,
+          "high": 0
+        },
+        "status": "none",
+        "planningEnabled": false,
+        "quoteOnly": true,
+        "deckArea": 0
+      },
+      "style": {
+        "enabled": false,
+        "rows": [],
+        "unquoted": [],
+        "knownBase": {
+          "low": 0,
+          "high": 0
+        },
+        "knownSubtotal": {
+          "low": 0,
+          "high": 0
+        },
+        "total": {
+          "low": 0,
+          "high": 0
+        },
+        "status": "none",
+        "planningEnabled": false,
+        "quoteOnly": true,
+        "styleId": "current",
+        "houseFinishPreview": false,
+        "houseRenovationIncluded": false
+      },
+      "total": null,
+      "knownSubtotal": {
+        "low": 754968.6589848426,
+        "high": 1438004.9993169992
+      },
+      "status": "quote-required",
+      "notes": [
+        "Stock height does not guarantee an opaque hedge. Spacing and crown width must be checked with the nursery.",
+        "Front / street thujas are counted separately on each planted span; proposed pedestrian and vehicle openings are excluded. The street hedge follows original ground, with no front-garden fill or raised-bed charge. New gates, fencing and driveway construction are excluded.",
+        "Left and right thujas extend along the full mapped plot edges. Their front-side sections stay at original grade and add plant supply, planting labour and drip irrigation only; no front-side garden fill or raised beds are charged. Hedge delivery remains one allowance for the whole order.",
+        "Earthwork excludes garage demolition, excavated-pool soil reuse, topsoil stripping/disposal, new paving and professional design. Retaining, drainage, transport and access are editable allowances.",
+        "Installed spa ranges are planning assumptions, supported by separate product references. They include each object’s foundations, local connections and commissioning. They are not supplier quotations for this site.",
+        "The basement garage and front ramp need a complete project quote. Zero means unquoted and excluded from the known subtotal; garden retaining/drainage allowances do not include basement works.",
+        "Garden allowances cover the rear garden + full perimeter hedges: terrace, spa programme, planting, site works and selected garage removal / canopy. Property purchase, house renovation, first-floor balcony, basement garage, front driveway, gates / fencing, operating bills and major utility-capacity upgrades are excluded from these garden allowances. The selected basement garage and ramp use the separate project quote above.",
+        "No double charge for hedge/specimen supply, garden-fill drainage/retaining or spa foundations in garden finishes. Pool coping and built-in lounge seats belong to their spa lines. Terrace finish excludes the jacuzzi footprint. Ordinary paths and lawn need finish only, with bulk fill accounted separately.",
+        "Planning rates are explicit design assumptions, not surveyed contractor rates. Ranges aim to include applicable tax, but published references retain their own gross/net/unspecified tax labels. No supplier has provided a site-specific offer; replace whole-line allowances with confirmed installed gross quotations.",
+        "Screening-tree prices describe purchased specimens, not mature sizes or guaranteed available stock. Only enabled trees are included. Latest catalog review: 2026-11-14; individual entries retain their observation dates. Crown shape and density still need specimen confirmation.",
+        "Some selected specimen prices do not state their VAT basis. Enter final tax-inclusive supplier quotes before purchasing."
+      ]
+    },
+    "solar": {
+      "date": "2026-06-21",
+      "requestedMinutes": 720,
+      "resolvedMinutes": 720,
+      "utcISO": "2026-06-21T10:00:00.000Z",
+      "timeZone": "Europe/Warsaw",
+      "latitude": 54.405452,
+      "longitude": 18.6312142,
+      "timeNote": "",
+      "azimuth": 159.35151298607923,
+      "elevation": 57.79393370160966,
+      "sunriseMinutes": 250.15,
+      "sunsetMinutes": 1284.4
+    },
+    "sunlight": {
+      "status": "daylight",
+      "cellSize": 1,
+      "zones": {
+        "garden": {
+          "sunlit": 204,
+          "shaded": 108,
+          "total": 312,
+          "percent": 65.38461538461539
+        },
+        "terrace": {
+          "sunlit": 10,
+          "shaded": 22,
+          "total": 32,
+          "percent": 31.25
+        },
+        "jacuzzi": {
+          "sunlit": 2,
+          "shaded": 2,
+          "total": 4,
+          "percent": 50
+        },
+        "pool": {
+          "sunlit": 20,
+          "shaded": 4,
+          "total": 24,
+          "percent": 83.33333333333334
+        },
+        "front": {
+          "sunlit": 139,
+          "shaded": 114,
+          "total": 253,
+          "percent": 54.9407114624506
+        },
+        "firepit": {
+          "sunlit": 8,
+          "shaded": 1,
+          "total": 9,
+          "percent": 88.88888888888889
+        },
+        "coldPlunge": {
+          "sunlit": 0,
+          "shaded": 2,
+          "total": 2,
+          "percent": 0
+        }
+      },
+      "method": "Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.",
+      "limitations": "No weather, diffuse/reflected light, glass transmission losses, existing tree crowns, decorative planting/movable furniture, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Roof interpolation, missing-roof fallbacks and foliage permeability remain simplified."
+    },
+    "buildingAdjustments": [],
+    "summary": {
+      "observer": {
+        "x": 9.608610661552147,
+        "y": 15.617475217542932,
+        "z": 4.83755850309423,
+        "preset": "sofa",
+        "label": "Living room · seated",
+        "eyeHeight": 1.2,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "visible": 169,
+      "total": 1646,
+      "blockedPercent": 89.73268529769138,
+      "worstRequiredHedge": {
+        "rear": 12.997753701308184,
+        "left": 12.100767161344198,
+        "right": 5.507672971645679,
+        "front": 0,
+        "overall": 12.997753701308184
+      }
+    },
+    "note": "A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee."
+  },
+  "garagePixelDifference": 511996,
+  "balconyPixelDifference": 3480,
+  "balcony": {
+    "observer": {
+      "x": 9.608610661552147,
+      "y": 21.467475217542933,
+      "groundZ": 6.6875585030942295,
+      "z": 8.337558503094229,
+      "eyeHeight": 1.65,
+      "preset": "balcony",
+      "surface": "balcony",
+      "label": "Balcony · standing",
+      "defaultLookYaw": 0,
+      "defaultLookPitch": -8
+    },
+    "summary": "8.5 × 4.0 m · 34.0 m² proposed first-floor balcony. Finished deck +3.05 m above the terrace; 2.80 m below the slab and 2.56 m below the front beam. 1.10 m clear-glass guard; Current retains the original first-floor windows; choose a renovation style to add balcony access. Floor height follows the first-floor assumption. Structure, foundations, waterproofing and drainage require project design and a separate quote.",
+    "accesses": [],
+    "accessFits": false
+  },
+  "poolPixelDifference": 139727,
+  "pool": {
+    "x": 16.27,
+    "y": 27.400000000000002,
+    "z": 3.58936117275872,
+    "groundZ": 3.43936117275872,
+    "waterZ": 3.43936117275872,
+    "preset": "pool",
+    "label": "Pool · swimming eye level",
+    "surface": "pool-water",
+    "eyeHeight": 0.15,
+    "defaultLookYaw": 0,
+    "defaultLookPitch": 0
+  },
+  "mobile": {
+    "viewport": 390,
+    "page": 390,
+    "plan": 326,
+    "card": 362
+  },
+  "status": "passed",
+  "pageErrors": []
+}

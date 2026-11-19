@@ -1,0 +1,382 @@
+{
+  "version": "1.28.0",
+  "checks": [
+    "Opening a shared floor plan creates no interior WebGL context or renderer import",
+    "Coastal, Current and Original drawings retain two cars; the independent garage switch remains available on every floor",
+    "Original and renovated plans expose schedules, openings and headroom; the explicit shared two-car switch reveals retained garage conflicts",
+    "Current renders the original dwelling and chosen styles render its renovation on all four floors using the actual shared site context",
+    "All 21 renovations have physical features and varied rendered geometry; Coastal is distinct from Baltic Dune, and Current restores the original layout/image",
+    "Room entry and room changes move the camera, furniture toggles affect rendered content and both renderers stop when idle",
+    "Save A, return to B, shared links and local reload preserve the whole-house style and interior navigation settings",
+    "Exports contain the ground soaking tub/dual vanity/bidet and one upper hydro spa/single basin/two-person shower; both views share the 4 m balcony and all 3 doors",
+    "Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together",
+    "390 px mobile controls, room inspector and both plan and WebGL views fit the viewport"
+  ],
+  "screenshots": [
+    "first-floor-renovation-plan.png",
+    "basement-conversion-conflicts.png",
+    "ground-hidden-bali-dollhouse.png",
+    "ground-japandi-dollhouse.png",
+    "ground-space-age-dollhouse.png",
+    "ground-coastal-dollhouse.png",
+    "first-floor-master-eye-level.png",
+    "first-floor-hydro-spa-eye-level.png",
+    "first-floor-japandi-dollhouse.png",
+    "ground-soaking-bath-eye-level.png",
+    "mobile-floor-plan.png",
+    "mobile-dollhouse.png"
+  ],
+  "plans": [
+    {
+      "layout": "existing",
+      "floor": "ground",
+      "zones": 6
+    },
+    {
+      "layout": "existing",
+      "floor": "first",
+      "zones": 7
+    },
+    {
+      "layout": "existing",
+      "floor": "basement",
+      "zones": 5
+    },
+    {
+      "layout": "existing",
+      "floor": "attic",
+      "zones": 1
+    },
+    {
+      "layout": "renovation",
+      "floor": "ground",
+      "zones": 5
+    },
+    {
+      "layout": "renovation",
+      "floor": "first",
+      "zones": 9
+    },
+    {
+      "layout": "renovation",
+      "floor": "basement",
+      "zones": 5
+    },
+    {
+      "layout": "renovation",
+      "floor": "attic",
+      "zones": 1
+    }
+  ],
+  "styles": [
+    {
+      "id": "organic-modern",
+      "meshes": 96,
+      "triangles": 52303,
+      "features": [
+        "Sculpted stone furniture bases",
+        "Curved upholstered headboards",
+        "Fluted joinery and travertine feature panels"
+      ]
+    },
+    {
+      "id": "hidden-bali",
+      "meshes": 106,
+      "triangles": 48487,
+      "features": [
+        "Teak canopy beds and woven seating",
+        "Cane cabinet doors and timber screens",
+        "Battened ceilings with basket pendants"
+      ],
+      "difference": {
+        "changed": 91677,
+        "fraction": 0.20217352472230002
+      }
+    },
+    {
+      "id": "mediterranean-villa",
+      "meshes": 97,
+      "triangles": 45863,
+      "features": [
+        "Built-in plaster seating",
+        "Ironwork beds and dining chairs",
+        "Arched surrounds, exposed beams and terracotta floors"
+      ]
+    },
+    {
+      "id": "modern-minimal",
+      "meshes": 103,
+      "triangles": 43075,
+      "features": [
+        "Cantilever chairs and waterfall tables",
+        "Floating platform beds and handleless joinery",
+        "Large wall panels with recessed linear lighting"
+      ]
+    },
+    {
+      "id": "scandinavian",
+      "meshes": 99,
+      "triangles": 58931,
+      "features": [
+        "Open timber seating and spindle chairs",
+        "Slatted oak headboards and framed cabinetry",
+        "Painted wall boarding and broad ceiling rafters"
+      ]
+    },
+    {
+      "id": "japandi",
+      "meshes": 108,
+      "triangles": 46663,
+      "features": [
+        "Low timber platform furniture",
+        "Shoji-panel doors and built-in wardrobes",
+        "Paired ceiling battens and paper lanterns"
+      ],
+      "difference": {
+        "changed": 65904,
+        "fraction": 0.14533682355769126
+      }
+    },
+    {
+      "id": "organic-scandinavian",
+      "meshes": 99,
+      "triangles": 56275,
+      "features": [
+        "Bentwood dining chairs and runner sofas",
+        "Curved headboards and ribbed joinery",
+        "Herringbone floors and soft mineral surfaces"
+      ]
+    },
+    {
+      "id": "organic-japandi",
+      "meshes": 99,
+      "triangles": 78207,
+      "features": [
+        "Low asymmetric stone seating bases",
+        "Wide walnut platforms and slatted storage",
+        "Clay walls with widely spaced timber screens"
+      ]
+    },
+    {
+      "id": "space-age",
+      "meshes": 103,
+      "triangles": 43495,
+      "features": [
+        "Moulded pod sofas and tulip pedestal chairs",
+        "Capsule beds and rounded cabinetry",
+        "Porthole feature panels and suspended light rings"
+      ],
+      "difference": {
+        "changed": 51256,
+        "fraction": 0.11303387090727456
+      }
+    },
+    {
+      "id": "party-club",
+      "meshes": 108,
+      "triangles": 59203,
+      "features": [
+        "Channel-tufted banquettes and headboards",
+        "Chrome-based tables with glossy fitted joinery",
+        "Upholstered wall channels and luminous ceiling coves"
+      ]
+    },
+    {
+      "id": "baltic-dune",
+      "meshes": 99,
+      "triangles": 70051,
+      "features": [
+        "Canvas sling chairs and open timber seating",
+        "Woven headboards with weathered-board joinery",
+        "Limewashed walls and exposed beach-house beams"
+      ]
+    },
+    {
+      "id": "coastal",
+      "meshes": 100,
+      "triangles": 56699,
+      "features": [
+        "Tailored slipcover seating and cross-back cane chairs",
+        "Louvred white joinery and beadboard beds",
+        "Painted board ceilings with linen drum pendants"
+      ],
+      "difference": {
+        "changed": 43891,
+        "fraction": 0.09679197807068807
+      }
+    },
+    {
+      "id": "gdansk-brick",
+      "meshes": 99,
+      "triangles": 45623,
+      "features": [
+        "Leather cushions on metal frames",
+        "Oak trestle tables and mission headboards",
+        "Clinker feature walls and exposed steel ceiling channels"
+      ]
+    },
+    {
+      "id": "danish-midcentury",
+      "meshes": 99,
+      "triangles": 50883,
+      "features": [
+        "Tapered teak frames and wishbone chairs",
+        "Raised upholstered beds and sliding-panel cabinetry",
+        "Bookmatched teak walls and spun saucer pendants"
+      ]
+    },
+    {
+      "id": "finnish-sauna",
+      "meshes": 100,
+      "triangles": 96507,
+      "features": [
+        "Timber bench sofas and slatted dining seats",
+        "Low board headboards and ventilated joinery",
+        "Continuous sauna-board wall and ceiling linings"
+      ]
+    },
+    {
+      "id": "riviera-deco",
+      "meshes": 100,
+      "triangles": 63735,
+      "features": [
+        "Scalloped chairs and stepped stone table bases",
+        "Fan headboards and brass-inlaid joinery",
+        "Stepped wall mouldings and tiered pendant lights"
+      ]
+    },
+    {
+      "id": "arts-and-crafts",
+      "meshes": 104,
+      "triangles": 52095,
+      "features": [
+        "Mission oak frames with visible timber rails",
+        "Cross-braced tables and framed cabinet doors",
+        "Panelled wainscoting and coffered ceilings"
+      ]
+    },
+    {
+      "id": "palm-springs",
+      "meshes": 96,
+      "triangles": 73631,
+      "features": [
+        "Low sling seating and open wire dining chairs",
+        "Cane headboards and airy slatted cabinetry",
+        "Decorative breeze-block panels and globe lights"
+      ]
+    },
+    {
+      "id": "desert-modern",
+      "meshes": 102,
+      "triangles": 37491,
+      "features": [
+        "Monolithic stone tables and built-in block seating",
+        "Deep plinth beds and flush recessed joinery",
+        "Layered earth feature walls and clay pendants"
+      ]
+    },
+    {
+      "id": "alpine-lodge",
+      "meshes": 100,
+      "triangles": 38231,
+      "features": [
+        "Cross-braced timber sofas, tables and beds",
+        "Substantial framed oak storage",
+        "Broad timber linings and exposed ceiling beams"
+      ]
+    },
+    {
+      "id": "industrial-loft",
+      "meshes": 111,
+      "triangles": 68527,
+      "features": [
+        "Black steel and leather furniture",
+        "Workshop tables and steel-frame beds",
+        "Concrete feature panels, exposed girders and cage pendants"
+      ]
+    }
+  ],
+  "errors": [],
+  "models": [
+    {
+      "floor": "ground",
+      "layout": "existing",
+      "meshes": 63,
+      "triangles": 8901
+    },
+    {
+      "floor": "first",
+      "layout": "existing",
+      "meshes": 68,
+      "triangles": 11077
+    },
+    {
+      "floor": "basement",
+      "layout": "existing",
+      "meshes": 52,
+      "triangles": 2556
+    },
+    {
+      "floor": "attic",
+      "layout": "existing",
+      "meshes": 32,
+      "triangles": 2802
+    },
+    {
+      "floor": "ground",
+      "layout": "renovation",
+      "meshes": 106,
+      "triangles": 48487
+    },
+    {
+      "floor": "first",
+      "layout": "renovation",
+      "meshes": 97,
+      "triangles": 71122
+    },
+    {
+      "floor": "basement",
+      "layout": "renovation",
+      "meshes": 50,
+      "triangles": 2556
+    },
+    {
+      "floor": "attic",
+      "layout": "renovation",
+      "meshes": 32,
+      "triangles": 2802
+    }
+  ],
+  "restoration": {
+    "changed": 0,
+    "fraction": 0
+  },
+  "bathrooms": {
+    "ground": [
+      "tub",
+      "shower",
+      "basin",
+      "toilet",
+      "bidet",
+      "mirror",
+      "towelRail"
+    ],
+    "first": [
+      "hotTub",
+      "spaStep",
+      "shower",
+      "basin",
+      "toilet",
+      "mirror",
+      "towelRail"
+    ]
+  },
+  "mobile": {
+    "screen": 390,
+    "width": 390,
+    "drawing": 459,
+    "host": 844,
+    "height": 844
+  },
+  "status": "passed"
+}

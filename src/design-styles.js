@@ -1,6 +1,6 @@
 // Garden concepts use stable IDs in saved settings and share links. Finishes and
 // ornamental modules have no authority over site measurements, planting or prices.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.27.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.28.0';
 export const DEFAULT_DESIGN_STYLE = 'current';
 
 // House finishes are applied to the owner's facade only.
@@ -17,6 +17,7 @@ const exterior = {
   'space-age': ['#e2e7e4', '#88959b', '#687a83'],
   'party-club': ['#aa9e9a', '#504a50', '#4a424b'],
   'baltic-dune': ['#d5cec0', '#7b7e73', '#73827b'],
+  coastal: ['#e6e9e2', '#77858b', '#f6f3e9'],
   'gdansk-brick': ['#b28772', '#795c4d', '#4d5146'],
   'danish-midcentury': ['#cebda3', '#71675b', '#866445'],
   'finnish-sauna': ['#a79984', '#59584e', '#70533d'],
@@ -44,6 +45,7 @@ const houseRenovations = {
   'space-age': renovation('flutes', .15, 'stepped', 1, 'Fluted facade fields across both storeys, stepped chrome surrounds, zinc roofing, terrazzo and round pedestal dining.'),
   'party-club': renovation('flutes', .11, 'fine', 2, 'Charred upper walls and lower piers, close graphite fluting, twin facade bands, dark basalt paving and a U-shaped upholstered dining banquette.'),
   'baltic-dune': renovation('lap', .14, 'cap', 0, 'Silvered upper-storey boards, sandy mineral walls, zinc roofing, canvas sling furniture and an open six-seat dining table.'),
+  coastal: renovation('weatherboard', .185, 'coastal', 0, 'Painted lapped weatherboards across both storeys, white projecting casings and louvred shutters, a zinc roof, crossed verandah guards and pale-oak outdoor furniture.'),
   'gdansk-brick': renovation('brick', .12, 'soldier', 0, 'Clinker wall finishes, coursed base and masonry piers, soldier lintels, terracotta roofing and six-seat trestle dining.'),
   'danish-midcentury': renovation('battens', .18, 'timber', 1, 'Teak upper-storey fins and window casings, one horizontal belt, limestone paving and an oval table on tapered timber legs.'),
   'finnish-sauna': renovation('boards', .105, 'fine', 0, 'Cedar boarding across the upper storey and lower piers, charred wall finishes, charcoal surrounds and low slatted dining benches.'),
@@ -55,12 +57,12 @@ const houseRenovations = {
   'industrial-loft': renovation('panels', 1.12, 'steel', 0, 'Board-marked concrete panel fields across both storeys, steel channel lintels, standing-seam roofing and reclaimed-timber six-seat dining.'),
 };
 
-function concept(id, label, family, description, colors, recipe, finishes, bespoke = '') {
+function concept(id, label, family, description, colors, recipe, finishes, bespoke = '', aliases = []) {
   const [surface, edge, wood, frame, fabric, accent, light] = colors.split(' ');
   const [houseWall, houseRoof, houseFrame] = exterior[id];
   const [paving, width, depth, furniture, canopy, fixture] = recipe;
   return Object.freeze({
-    id, label, family, description, bespoke, renovation: houseRenovations[id] || null,
+    id, label, family, description, bespoke, aliases: Object.freeze([...aliases]), renovation: houseRenovations[id] || null,
     construction: getExteriorSurfaceSpec(id),
     palette: Object.freeze({surface, edge, wood, frame, fabric, accent, light, houseWall, houseRoof, houseFrame}),
     swatches: Object.freeze([surface, wood, fabric, accent]),
@@ -121,6 +123,11 @@ export const DESIGN_STYLES = Object.freeze([
     '#aea799 #d4c8ad #a18e70 #626d66 #e9e2cb #748d91 #ffdfa9',
     ['cross-boards', 2.7, .15, 'sling', 'paired', 'bell'],
     ['Weathered cross-decking', 'Canvas sling on timber rails', 'Paired board soffit', 'Muted metal bell shades']),
+  concept('coastal', 'Coastal', 'Retreats', 'A seaside house with white weatherboards, louvred shutters, pale oak, linen cushions and a cross-braced verandah.',
+    '#d4c4a5 #f1eee3 #c3ae8b #f0eee4 #f5f0e4 #7094a4 #ffe0b5',
+    ['boards', 2.65, .185, 'coastal-crossback', 'verandah', 'lantern'],
+    ['Whitewashed oak boards', 'Cross-back chairs, plank dining table and linen daybed', 'Open rafters and crossed verandah frieze', 'White framed lanterns'],
+    '', ['seaside', 'beach house', 'coastal house', 'Hamptons', 'New England', 'Cape Cod']),
   concept('gdansk-brick', 'Gdańsk Brick Courtyard', 'Courtyards', 'Small red clinker courses and dark metal frames echo the material contrasts of the Gdańsk waterfront.',
     '#a3644d #b88b71 #80654e #464843 #dfd2b5 #687762 #ffcb85',
     ['running', .245, .12, 'trestle', 'girder', 'lantern'],
@@ -161,3 +168,9 @@ export const DESIGN_STYLES = Object.freeze([
 
 const byId = new Map(DESIGN_STYLES.map(style => [style.id, style]));
 export const getDesignStyle = id => byId.get(id) || byId.get(DEFAULT_DESIGN_STYLE);
+
+// One pure search index for the catalogue, including familiar names that are
+// not separate saved style IDs. A search never silently selects another style.
+export const designStyleSearchText = style => [style.id, style.label, style.description, style.family,
+  style.renovation?.description, ...(style.aliases || []), ...Object.values(style.finishes || {})]
+  .filter(Boolean).join(' ').toLocaleLowerCase();

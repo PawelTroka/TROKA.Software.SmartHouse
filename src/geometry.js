@@ -3,16 +3,16 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.27.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.27.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.27.0';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.27.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.27.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.27.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.28.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.28.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.28.0';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.28.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.28.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.28.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.27.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.27.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.27.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.28.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.28.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.28.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
