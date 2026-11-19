@@ -1,5 +1,6 @@
 // Garden concepts use stable IDs in saved settings and share links. Finishes and
 // ornamental modules have no authority over site measurements, planting or prices.
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.26.0';
 export const DEFAULT_DESIGN_STYLE = 'current';
 
 // House finishes are applied to the owner's facade only.
@@ -32,26 +33,26 @@ function renovation(field, pitch, trim, belt, description) {
   return Object.freeze({field, pitch, trim, belt, description});
 }
 const houseRenovations = {
-  'organic-modern': renovation('stone', .31, 'cap', 0, 'Warm ashlar accent bays and projecting stone window caps.'),
-  'hidden-bali': renovation('battens', .12, 'timber', 0, 'Close vertical timber screens on solid wall bays and deep brown window casings.'),
-  'mediterranean-villa': renovation('brick', .22, 'shutters', 0, 'Terracotta accent panels, olive louvred shutters and pale stone sills.'),
-  'modern-minimal': renovation('panels', .86, 'fine', 1, 'Large flush-jointed panels, fine graphite window surrounds and one slim horizontal band.'),
-  'scandinavian': renovation('boards', .17, 'timber', 0, 'Pale vertical weatherboards with timber window casings.'),
-  'japandi': renovation('paired', .24, 'fine', 0, 'Paired timber battens and slim dark window surrounds.'),
-  'organic-scandinavian': renovation('lap', .19, 'timber', 0, 'Blond horizontal timber cladding and simple window casings.'),
-  'organic-japandi': renovation('paired', .32, 'cap', 0, 'Widely spaced pairs of walnut-toned battens with quiet stone window caps.'),
-  'space-age': renovation('flutes', .15, 'stepped', 1, 'Fluted metal accent panels and stepped silver window heads above narrow surrounds.'),
-  'party-club': renovation('flutes', .11, 'fine', 2, 'Graphite fluting on solid wall bays with twin plum-coloured facade bands.'),
-  'baltic-dune': renovation('lap', .14, 'cap', 0, 'Narrow weathered horizontal boards paired with pale stone caps and sills.'),
-  'gdansk-brick': renovation('brick', .12, 'soldier', 0, 'Red clinker accent bays and soldier-course lintels above existing windows.'),
-  'danish-midcentury': renovation('battens', .18, 'timber', 1, 'Honey-toned timber fins and window casings with a single horizontal band.'),
-  'finnish-sauna': renovation('boards', .105, 'fine', 0, 'Fine vertical sauna boards and narrow charcoal window surrounds.'),
-  'riviera-deco': renovation('panels', .59, 'stepped', 3, 'Chalk panel bays, stepped window heads and three sea-green facade bands.'),
-  'arts-and-crafts': renovation('boards', .28, 'crosshead', 0, 'Broad oak-toned boards and projecting timber crossheads over the window casings.'),
-  'palm-springs': renovation('flutes', .25, 'cap', 1, 'Broad pale fluted panels, ledged window caps and a coral horizontal band.'),
-  'desert-modern': renovation('stone', .43, 'fine', 1, 'Wide ochre stone courses with narrow bronze-toned surrounds and a horizontal band.'),
-  'alpine-lodge': renovation('lap', .26, 'crosshead', 0, 'Wide horizontal timber boards and projecting crossheads around the windows.'),
-  'industrial-loft': renovation('panels', 1.12, 'steel', 0, 'Large concrete-look panel bays with steel channel-style window lintels.'),
+  'organic-modern': renovation('stone', .31, 'cap', 0, 'Limewashed walls, a coursed stone base, projecting stone window caps and a standing-seam roof.'),
+  'hidden-bali': renovation('battens', .12, 'timber', 0, 'Teak screens wrap the upper storey and ground-floor piers; deep timber casings, slate roofing and woven resort furniture complete the scheme.'),
+  'mediterranean-villa': renovation('brick', .22, 'shutters', 0, 'Textured limewash, terracotta roof and base courses, louvred olive shutters, stone sills and a round iron-framed dining setting.'),
+  'modern-minimal': renovation('panels', .86, 'fine', 1, 'Large panel fields across both storeys, fine aluminium surrounds, porcelain paving, standing-seam roofing and six-seat sled-frame dining.'),
+  'scandinavian': renovation('boards', .17, 'timber', 0, 'Weatherboard upper walls and lower piers, pale ash casings, standing-seam roofing and open six-seat timber dining.'),
+  'japandi': renovation('paired', .24, 'fine', 0, 'Walnut batten piers, textured mineral walls, slim dark surrounds, slate roofing and low opposing dining benches.'),
+  'organic-scandinavian': renovation('lap', .19, 'timber', 0, 'Horizontal upper-storey timber, limewash below, ash furniture with rounded cushions and an oval six-seat dining setting.'),
+  'organic-japandi': renovation('paired', .32, 'cap', 0, 'Walnut paired piers, clay-plaster walls, travertine paving, slate roofing and softly rounded six-seat dining.'),
+  'space-age': renovation('flutes', .15, 'stepped', 1, 'Fluted facade fields across both storeys, stepped chrome surrounds, zinc roofing, terrazzo and round pedestal dining.'),
+  'party-club': renovation('flutes', .11, 'fine', 2, 'Charred upper walls and lower piers, close graphite fluting, twin facade bands, dark basalt paving and a U-shaped upholstered dining banquette.'),
+  'baltic-dune': renovation('lap', .14, 'cap', 0, 'Silvered upper-storey boards, sandy mineral walls, zinc roofing, canvas sling furniture and an open six-seat dining table.'),
+  'gdansk-brick': renovation('brick', .12, 'soldier', 0, 'Clinker wall finishes, coursed base and masonry piers, soldier lintels, terracotta roofing and six-seat trestle dining.'),
+  'danish-midcentury': renovation('battens', .18, 'timber', 1, 'Teak upper-storey fins and window casings, one horizontal belt, limestone paving and an oval table on tapered timber legs.'),
+  'finnish-sauna': renovation('boards', .105, 'fine', 0, 'Cedar boarding across the upper storey and lower piers, charred wall finishes, charcoal surrounds and low slatted dining benches.'),
+  'riviera-deco': renovation('panels', .59, 'stepped', 3, 'Chalk panel fields, stepped brass-trimmed heads, three facade bands, terrazzo paving and a stepped U-shaped dining banquette.'),
+  'arts-and-crafts': renovation('boards', .28, 'crosshead', 0, 'Broad oak piers, sandy render, projecting window crossheads, slate roofing and six-seat timber trestle furniture.'),
+  'palm-springs': renovation('flutes', .25, 'cap', 1, 'Broad facade fluting, ledged window caps, a coral band, terrazzo paving and round four-seat poolside dining.'),
+  'desert-modern': renovation('stone', .43, 'fine', 1, 'Earthen render, wide sandstone base courses, bronze surrounds, zinc roofing and monolithic opposing dining benches.'),
+  'alpine-lodge': renovation('lap', .26, 'crosshead', 0, 'Wide cedar upper cladding and lower piers, timber crossheads, slate roofing and six-seat cross-braced lodge furniture.'),
+  'industrial-loft': renovation('panels', 1.12, 'steel', 0, 'Board-marked concrete panel fields across both storeys, steel channel lintels, standing-seam roofing and reclaimed-timber six-seat dining.'),
 };
 
 function concept(id, label, family, description, colors, recipe, finishes, bespoke = '') {
@@ -60,6 +61,7 @@ function concept(id, label, family, description, colors, recipe, finishes, bespo
   const [paving, width, depth, furniture, canopy, fixture] = recipe;
   return Object.freeze({
     id, label, family, description, bespoke, renovation: houseRenovations[id] || null,
+    construction: getExteriorSurfaceSpec(id),
     palette: Object.freeze({surface, edge, wood, frame, fabric, accent, light, houseWall, houseRoof, houseFrame}),
     swatches: Object.freeze([surface, wood, fabric, accent]),
     recipe: Object.freeze({paving, module: Object.freeze([width, depth]), furniture, canopy, fixture}),

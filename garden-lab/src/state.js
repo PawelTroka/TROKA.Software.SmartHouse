@@ -11,8 +11,9 @@ import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-opt
 import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.26.0';
 
 import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.26.0';
+import {changePresentationSettings} from './studio-state.js?v=1.26.0';
 
-export const STATE_VERSION = 26;
+export const STATE_VERSION = 27;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -172,7 +173,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const key of Object.keys(DEFAULTS).filter(k=>typeof DEFAULTS[k]==='boolean'))if(typeof input[key]==='boolean')out[key]=input[key];
     if(PRESETS.includes(input.preset))out.preset=input.preset;
     if(DESIGN_STYLES.some(style=>style.id===input.designStyle))out.designStyle=input.designStyle;
-    out.styleHouseFinish=out.designStyle!==DEFAULT_DESIGN_STYLE&&input.styleHouseFinish!==false;
+    out.styleHouseFinish=out.designStyle!==DEFAULT_DESIGN_STYLE;
     if(['auto','eco','high'].includes(input.renderQuality))out.renderQuality=input.renderQuality;
     if(['canopy','balcony'].includes(input.terraceCoverType))out.terraceCoverType=input.terraceCoverType;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
@@ -186,11 +187,15 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(Object.hasOwn(input,'screeningTrees'))out.screeningTrees=sanitizeScreeningTrees(input.screeningTrees,profile.bounds);
     if(TREE_LEAF_MODES.includes(input.treeLeafMode))out.treeLeafMode=input.treeLeafMode;
     Object.assign(out,sanitizeInteriorState({...out,...input},siteId));
+    out.interiorStyle='follow';
+    out.interiorLayout=out.designStyle===DEFAULT_DESIGN_STYLE?'existing':'renovation';
+    out.planExteriorApplied=siteId===DEFAULT_SITE_ID&&out.designStyle!==DEFAULT_DESIGN_STYLE;
     return out;
   }
   function sanitizeState(input={}) {return sanitizeWithDefaults(input,DEFAULTS);}
   function restoreVersionedState(input,version) {
     if(version<6&&siteId!==DEFAULT_SITE_ID)return sanitizeState();
+    if(version===26&&input.interiorStyle&&input.interiorStyle!=='follow'&&input.interiorStyle!=='current'&&DESIGN_STYLES.some(s=>s.id===input.interiorStyle))input={...input,designStyle:input.interiorStyle};
     // v22 first offered excavation and always specified one car. Earlier
     // versions had no basement and cannot opt in through unknown fields.
     if(version<22)input={...input,...LEGACY_GARAGE_DEFAULTS};
@@ -218,6 +223,13 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       [next.costTreePriceLeft,next.costTreePriceRight]=[next.costTreePriceRight,next.costTreePriceLeft];
       next.lookYaw=next.lookYaw===0?0:-next.lookYaw;
     }
+    // v26 kept independent inside/outside styles. Promote the intended style
+    // once and add its linked decks unless the saved design already linked them.
+    if(version<27&&next.designStyle!==DEFAULT_DESIGN_STYLE){
+      Object.assign(next,changePresentationSettings({...next,planExteriorApplied:input.planExteriorApplied===true},{designStyle:next.designStyle}));
+    }
+    next.interiorStyle='follow';next.interiorLayout=next.designStyle===DEFAULT_DESIGN_STYLE?'existing':'renovation';
+    next.planExteriorApplied=siteId===DEFAULT_SITE_ID&&next.designStyle!==DEFAULT_DESIGN_STYLE;
     return next;
   }
   function encodeState(state) {

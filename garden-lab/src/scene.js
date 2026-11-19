@@ -2,7 +2,8 @@ import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js?v=1.26.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
 import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.26.0';
-import { createPhotoHouseGroup } from './scene-house.js?v=1.26.0';
+import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.26.0';
+import {houseModelFrame} from './house-model.js?v=1.26.0';
 import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.26.0';
 import { addHouseRenovation } from './scene-house-renovation.js?v=1.26.0';
 import { houseAppearanceLayout } from './house-appearance.js?v=1.26.0';
@@ -378,7 +379,7 @@ export function createScene(container, data, callbacks = {}) {
   let shadowBoundsDirty=true,shadowCameraDirty=true,shadowReceiverPoints=[],shadowCasterPoints=[];
   let sunPathSignature='',previousSunPath=null;
   let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
-  let garageScene=null,currentGarageLayout=null;
+  let garageScene=null,currentGarageLayout=null,sharedHouseModel=null,contextRevision=0;
 
   const box = (group, x, y, z, width, depth, height, material, cast = true, svgOrder = 0) => {
     if (width <= 0 || depth <= 0 || height <= 0) return null;
@@ -691,7 +692,8 @@ export function createScene(container, data, callbacks = {}) {
   function addHouse(group, settings, exterior, style) {
     const activeStyle=settings.styleHouseFinish===true&&style.id!=='current'?style:null;
     if(data.site.id&&data.site.id!=='sternicza-11'){addMappedHouse(group,settings,exterior,activeStyle);return;}
-    group.add(createPhotoHouseGroup(data,settings,{garageLayout:currentGarageLayout,terrainAt,materials:mat,svgMode,style:activeStyle}));
+    sharedHouseModel=createSharedHouseModel(data,settings,{garageLayout:currentGarageLayout,terrainAt,svgMode});
+    group.add(sharedHouseModel.root);
   }
 
   function addHedges(group,settings) {
@@ -955,7 +957,7 @@ export function createScene(container, data, callbacks = {}) {
     if(!settings.canopyEnabled)return;
     const cover=terraceCover(settings,data),b=cover.bounds;
     if(!cover.enabled||!b)return;
-    if(cover.type==='balcony'){group.add(createTerraceCoverGroup(cover,mat,svgMode));return;}
+    if(cover.type==='balcony'){group.add(createTerraceCoverGroup(cover,mat,svgMode,style));return;}
     for(const member of cover.boxes){
       const finish=member.part==='roof'?mat.stoneLight:member.part==='post'?mat.metal:mat.wood;
       const m=box(group,member.x0,member.y0,member.z0,member.x1-member.x0,
@@ -1044,7 +1046,7 @@ export function createScene(container, data, callbacks = {}) {
   function rebuildFinishes(settings,style,rebuildHouse) {
     gardenNight?.dispose();
     removeGeometry(finishesGroup);
-    if(rebuildHouse)removeGeometry(houseGroup);
+    if(rebuildHouse){sharedHouseModel?.dispose();sharedHouseModel=null;removeGeometry(houseGroup);}
     disposeProposedMaterials(designMaterials,mat);
     designMaterials=proposedMaterials(mat,style);
     if(rebuildHouse)addHouse(houseGroup,settings,settings.styleHouseFinish===true?designMaterials:mat,style);
@@ -1058,6 +1060,7 @@ export function createScene(container, data, callbacks = {}) {
     gardenNight=createGardenNightLighting(settings,data,{svgMode,style});
     finishesGroup.add(gardenNight.group);
     applyNightLighting(lastSolar,settings);
+    contextRevision++;
     shadowBoundsDirty=true;
   }
 
@@ -1387,7 +1390,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
-    const signature=JSON.stringify([...['gardenProgram','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
+    const signature=JSON.stringify([...['gardenProgram','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
       'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageSpaces','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     const rebuilt=signature!==designSignature;
     if(rebuilt){designSignature=signature;rebuildDesign(settings);}
@@ -1534,7 +1537,7 @@ export function createScene(container, data, callbacks = {}) {
     cancelAnimationFrame(frameHandle);clearTimeout(motionTimer);clearTimeout(interactionTimer);
     document.removeEventListener('visibilitychange',visibilityChanged);
     reducedMotion.removeEventListener('change',visibilityChanged);
-    dimensionOverlay.dispose();
+    dimensionOverlay.dispose();sharedHouseModel?.dispose();sharedHouseModel=null;
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const geometries=new Set(),materials=new Set([...Object.values(mat),...Object.values(designMaterials)]);
     scene.traverse(o=>{
@@ -1546,5 +1549,22 @@ export function createScene(container, data, callbacks = {}) {
     gardenNight?.dispose();textures?.dispose();sun.shadow.dispose();
     renderer.dispose?.();renderer.domElement.remove();labelLayer.remove();
   }
-  return {available:true,rendererType,update,updateSun,setView,setGarageView,updateGaragePreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
+  function createInteriorContext(floor,view='room'){
+    const frame=houseModelFrame(data,currentSettings);if(!frame)return null;
+    let owned;
+    if(view==='room'){
+      owned=cloneOwnedScene([staticGroup,buildingGroup,designGroup],o=>o.userData.houseFloor!==floor&&!(floor==='attic'&&o.userData.houseRoof));
+    }else{
+      const cover=terraceCover(currentSettings,data),temporary=createTerraceCoverGroup(cover,designMaterials,svgMode,getDesignStyle(currentSettings.designStyle));
+      owned=cloneOwnedScene([temporary]);
+      const existing=new Set(Object.values(designMaterials));temporary.traverse(o=>{o.geometry?.dispose();if(o.material&&!existing.has(o.material))o.material.dispose();});
+    }
+    const transform=new THREE.Matrix4().compose(new THREE.Vector3(frame.origin[0],frame.floorZ,frame.origin[1]),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),frame.rotationY),new THREE.Vector3(1,1,1)).invert();
+    owned.root.applyMatrix4(transform);owned.root.name='actual-site-context';
+    const direction=sun.position.clone().sub(sun.target.position).normalize().applyAxisAngle(new THREE.Vector3(0,1,0),-frame.rotationY);
+    return{...owned,key:getInteriorContextKey(),source:'shared-site-model',floor,view,
+      lighting:{sunDirection:direction.toArray(),sunColor:sun.color.getHex(),sunIntensity:sun.intensity,skyColor:ambient.color.getHex(),groundColor:ambient.groundColor.getHex(),ambientIntensity:ambient.intensity,background:scene.background?.isColor?scene.background.getHex():0xb9cdd1}};
+  }
+  const getInteriorContextKey=()=>`${contextRevision}:${solarSignature}`;
+  return {available:true,rendererType,update,updateSun,setView,setGarageView,updateGaragePreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
 }

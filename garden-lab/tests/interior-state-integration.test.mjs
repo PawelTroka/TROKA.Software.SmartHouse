@@ -10,17 +10,21 @@ import {terraceCover} from '../src/geometry.js';
 import {garageLayout} from '../src/garage-ramp.js';
 import {garageClearanceResult} from '../src/garage-controls.js';
 import {terrainAt} from '../src/geometry.js';
+import {changePresentationSettings} from '../src/studio-state.js';
+import {getHouseFloorPlan} from '../src/house-model.js';
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const model=createStateModel(getSiteProfile('sternicza-11',data));
 
-test('interior layouts, every finish and each floor survive save/share without changing walls or exterior settings',()=>{
-  for(const layout of ['existing','renovation'])for(const floor of ['basement','ground','first','attic'])for(const style of ['follow',...DESIGN_STYLES.map(s=>s.id)]){
-    const state=model.sanitizeState({...model.DEFAULTS,interiorEnabled:true,interiorLayout:layout,interiorFloor:floor,
-      interiorStyle:style,interiorView:'room',interiorRoomId:'master-bedroom',interiorFurniture:false,interiorChanges:true});
+test('one whole-house style and each floor survive save/share with their linked exterior settings',()=>{
+  for(const floor of ['basement','ground','first','attic'])for(const style of DESIGN_STYLES.map(s=>s.id)){
+    const state=model.sanitizeState({...changePresentationSettings(model.DEFAULTS,{designStyle:style}),interiorEnabled:true,interiorFloor:floor,
+      interiorView:'room',interiorRoomId:'master',interiorFurniture:false,interiorChanges:true});
     const roundtrip=model.decodeState(model.encodeState(state));
     assert.deepEqual(roundtrip,state);assert.deepEqual(model.migrateSavedState(state,STATE_VERSION),state);
-    assert.equal(roundtrip.terraceCoverType,'canopy');assert.equal(roundtrip.garageSpaces,2);
-    assert.equal(roundtrip.styleHouseFinish,false);assert.equal(roundtrip.planExteriorApplied,false);
+    assert.equal(roundtrip.garageSpaces,2);assert.equal(roundtrip.interiorStyle,'follow');
+    assert.equal(roundtrip.styleHouseFinish,style!=='current');assert.equal(roundtrip.planExteriorApplied,style!=='current');
+    assert.equal(roundtrip.interiorLayout,style==='current'?'existing':'renovation');
+    assert.equal(roundtrip.terraceCoverType,style==='current'?'canopy':'balcony');
   }
 });
 test('new drawing levels do not rewrite sparse historical designs',()=>{
@@ -42,11 +46,11 @@ test('interiors reject executable fields and remain unavailable on unsurveyed pr
     assert.equal(resolveSiteId('?site=sternicza-11',`#v=26&site=${siteId}`),siteId);
   }
 });
-test('applying marked outdoor dimensions retains mapped buildings and aligns three balcony doors with the source rooms',()=>{
-  const settings=model.sanitizeState({...model.DEFAULTS,planExteriorApplied:true,terraceWidth:10.77,terraceDepth:4,
+test('marked outdoor dimensions share the registered house and preserve its source survey',()=>{
+  const settings=model.sanitizeState({...model.DEFAULTS,designStyle:'hidden-bali',planExteriorApplied:true,terraceWidth:10.77,terraceDepth:4,
     canopyEnabled:true,terraceCoverType:'balcony',canopyWidth:10.77,canopyDepth:4});
   const applied=applyPlanExterior(data,settings),cover=terraceCover(settings,applied),facade=houseAppearanceLayout(applied,settings);
-  assert.equal(applied.site.house,data.site.house);assert.equal(applied.buildings,data.buildings);
+  assert.equal(applied.site.house.sourceFootprint,data.site.house.footprint);assert.equal(applied.buildings,data.buildings);
   assert.equal(applied.site.terrace.width,10.77);assert.equal(data.site.terrace.width,8.5);
   assert.equal(applyPlanExterior(data,settings),applied,'Avoid rebuilding the world on unrelated interior updates');
   assert.equal(cover.deckArea,43.08);assert.equal(cover.depth,4);
@@ -57,6 +61,15 @@ test('applying marked outdoor dimensions retains mapped buildings and aligns thr
   const registration=planRegistrationSummary(data);
   assert.ok(registration.mapped.mainWidth>11&&registration.mapped.mainWidth<11.02);
   assert.equal(registration.drawing.mainWidth,10.77);
+});
+
+test('v26 independent interior style migrates into one shared renovation and Current is truly original',()=>{
+  const state=model.decodeState('v=26&site=sternicza-11&interiorEnabled=true&interiorStyle=hidden-bali&interiorFloor=first');
+  assert.equal(state.designStyle,'hidden-bali');assert.equal(state.interiorStyle,'follow');assert.equal(state.interiorLayout,'renovation');
+  assert.equal(state.canopyEnabled,true);assert.equal(state.canopyWidth,10.77);assert.equal(state.canopyDepth,4);
+  const original=model.sanitizeState(changePresentationSettings(state,{designStyle:'current'}));
+  assert.equal(original.interiorLayout,'existing');assert.equal(original.planExteriorApplied,false);assert.equal(original.canopyEnabled,false);
+  assert.equal(getHouseFloorPlan({floor:'first',settings:original,data}).walls.flatMap(w=>w.openings).filter(o=>o.type==='balcony-door').length,0);
 });
 test('two-car ramp clearance is explicitly separated from new existing-structure conflicts',()=>{
   const settings={...model.DEFAULTS,basementGarageEnabled:true};

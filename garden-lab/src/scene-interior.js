@@ -26,7 +26,7 @@ export function createInteriorScene(container,callbacks={}) {
   const lamp=new THREE.PointLight(0xffd39a,0,8,2);world.add(lamp);
   const shadowMat=new THREE.ShadowMaterial({opacity:.145,depthWrite:false}),shadow=new THREE.Mesh(new THREE.PlaneGeometry(130,130),shadowMat);shadow.rotation.x=-Math.PI/2;shadow.receiveShadow=true;world.add(shadow);
   const abort=new AbortController(),listen=(node,e,fn,options={})=>node.addEventListener(e,fn,{...options,signal:abort.signal});
-  let plan,state={...DEFAULTS},model,finishes,clear,raf=0,visible=true,disposed=false,dirtyShadow=true,lastTime=0;
+  let plan,state={...DEFAULTS},model,finishes,clear,context,contextKey='',raf=0,visible=true,disposed=false,dirtyShadow=true,lastTime=0;
   let yaw=0,pitch=0,eye=1.57,down=null,drag=null,drawn=0,meshCount=0,activeStyle='',sizeW=0,sizeH=0;
   const keys=new Set(),ray=new THREE.Raycaster(),floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0));
   const tools=modelTools();
@@ -92,11 +92,15 @@ export function createInteriorScene(container,callbacks={}) {
     if(disposed)return;const old=state,changedPlan=plan!==nextPlan;plan=nextPlan;state={...DEFAULTS,...options};
     const changedModel=changedPlan||old.styleId!==state.styleId||old.showChanges!==state.showChanges;
     if(changedModel){model?.dispose();if(!finishes||activeStyle!==state.styleId){finishes?.dispose();finishes=interiorMaterials(state.styleId);activeStyle=state.styleId;}
-      model=buildArchitecture(plan,state,tools,finishes);world.add(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
+      model=buildArchitecture(plan,{...state,showOutdoor:!callbacks.getExteriorContext,showExterior:!callbacks.getExteriorContext},tools,finishes);world.add(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
       sun.target.position.set(plan.envelope.width/2,plan.elevation,3);sun.position.copy(sun.target.position).add(new THREE.Vector3(-7.5,12,-6.5));
       const lowest=Math.min(-.24,...(plan.stairs||[]).filter(s=>s.to===plan.floor).map(s=>-s.rise));shadow.position.set(plan.envelope.width/2,plan.elevation+lowest-.075,plan.envelope.depth/2);dirtyShadow=true;
     }
-    orbit.enabled=state.view!=='room';const room=!orbit.enabled;world.background=room?env.sky:new THREE.Color('#e5e6dc');world.backgroundBlurriness=0;shadow.visible=!room;pad.style.display=room?'grid':'none';
+    const nextContextKey=[state.contextKey,plan.floor,state.view==='room'?'room':'dollhouse'].join('|');
+    if(callbacks.getExteriorContext&&contextKey!==nextContextKey){context?.dispose();context=callbacks.getExteriorContext(plan.floor,state.view);contextKey=nextContextKey;if(context)world.add(context.root);dirtyShadow=true;}
+    if(context?.lighting){const l=context.lighting;sun.color.setHex(l.sunColor);sun.intensity=l.sunIntensity;sky.color.setHex(l.skyColor);sky.groundColor.setHex(l.groundColor);sky.intensity=l.ambientIntensity;
+      sun.position.copy(sun.target.position).add(new THREE.Vector3(...l.sunDirection).multiplyScalar(20));}
+    orbit.enabled=state.view!=='room';const room=!orbit.enabled;world.background=new THREE.Color(room&&context?.lighting?context.lighting.background:'#e5e6dc');world.backgroundBlurriness=0;shadow.visible=!room;pad.style.display=room?'grid':'none';
     canvas.style.cursor=room?'crosshair':'grab';resize();
     if(changedPlan||old.view!==state.view||(room&&old.roomId!==state.roomId))home();
     else if(old.showFurniture!==state.showFurniture||old.showCeiling!==state.showCeiling)dirtyShadow=true;
@@ -116,7 +120,7 @@ export function createInteriorScene(container,callbacks={}) {
   listen(canvas,'webglcontextlost',e=>{e.preventDefault();if(!disposed)callbacks.onError?.('The 3D graphics context was interrupted.');});
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(container);listen(window,'resize',resize);
   function setVisible(value){visible=!!value;if(visible){resize();request();}else{keys.clear();drag=down=null;cancelAnimationFrame(raf);raf=0;lastTime=0;}}
-  return {update,home,resize,setVisible,getDiagnostics(){return {available:!disposed,visible,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye};},
-    dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(raf);abort.abort();observer?.disconnect();orbit.dispose();model?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
+  return {update,home,resize,setVisible,getDiagnostics(){return {available:!disposed,visible,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye,contextSource:context?.source||null,contextKey,renovationFeatures:finishes?.interiorRecipe?.features||[]};},
+    dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(raf);abort.abort();observer?.disconnect();orbit.dispose();model?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
   };
 }

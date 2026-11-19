@@ -128,7 +128,7 @@ test('full plan and sightline section label the selected balcony without drawing
 });
 
 test('linked garden plan shows each actual doorway and tracks missing balcony landings',()=>{
-  const s={siteId:'sternicza-11',planExteriorApplied:true,canopyEnabled:true,terraceCoverType:'balcony',
+  const s={siteId:'sternicza-11',designStyle:'hidden-bali',planExteriorApplied:true,canopyEnabled:true,terraceCoverType:'balcony',
     floorHeight:1.2,firstFloorRise:3.05,terraceWidth:10.77,canopyWidth:10.77,canopyDepth:4,terraceDepth:4};
   const applied=applyPlanExterior(data,s),floorZ=data.site.floorReference.z+s.floorHeight;
   const full=terraceCoverLayout(s,applied,{floorZ}),facade=houseAppearanceLayout(applied,s);

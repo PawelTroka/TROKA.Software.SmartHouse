@@ -30,11 +30,11 @@ function checkClearance(parts,layout){
   const openings=[...layout.windows,layout.atticWindow,layout.portal,layout.door].filter(Boolean);
   for(const p of parts){
     const edge=layout.edges[p.edgeIndex],roof=edge.roofEdge;
-    assert.ok(p.lo>=0&&p.hi<=edge.length&&p.hi>p.lo&&p.top>p.bottom&&p.bottom>=layout.baseZ);
+    assert.ok(p.lo>=0&&p.hi<=edge.length&&p.hi>p.lo&&p.top>p.bottom&&p.bottom>=Math.max(layout.baseZ,edge.baseZ??layout.baseZ));
     assert.ok(p.depth>0&&p.depth<=.14);
     // Test both part ends and every roof break that their span crosses.
-    const heightAt=d=>roof.fractions?photoRoofEdgeHeight(roof,d):roofEdgeHeight(roof,d/edge.length);
-    const samples=[p.lo,p.hi,...roof.points.map((_,i)=>edge.length*(roof.fractions?.[i]??i/(roof.points.length-1))).filter(d=>d>p.lo&&d<p.hi)];
+    const heightAt=d=>Math.min(edge.topZ??Infinity,roof?(roof.fractions?photoRoofEdgeHeight(roof,d):roofEdgeHeight(roof,d/edge.length)):Infinity);
+    const samples=[p.lo,p.hi,...(roof?.points??[]).map((_,i)=>edge.length*(roof.fractions?.[i]??i/(roof.points.length-1))).filter(d=>d>p.lo&&d<p.hi)];
     assert.ok(samples.every(d=>p.top<heightAt(d)));
     for(const w of openings.filter(w=>w.edgeIndex===edge.index)){
       assert.ok(p.hi<=w.lo||p.lo>=w.hi||p.top<=w.z||p.bottom>=w.z+w.height,`${p.kind} overlaps ${w.id??'garage portal'}`);
@@ -53,10 +53,28 @@ test('each style fits all three facades and changes the shape of physical fittin
       fingerprints.add(JSON.stringify(parts.map(p=>[p.edgeIndex,p.lo,p.hi,p.bottom,p.top,p.depth])));
       const summary=houseRenovationSummary(data,{...settings,styleHouseFinish:true},style);
       assert.equal(summary.partCount,parts.length);
-      assert.equal(summary.accentBayCount,3);
-      assert.ok(summary.trimmedOpeningCount>=10&&parts.length<900,style.id);
+      assert.ok(summary.accentBayCount>=1&&summary.claddingAreaM2>1,style.id);
+      assert.ok(summary.trimmedOpeningCount>=10&&parts.length<4500,style.id);
+      if(style.id==='hidden-bali')assert.ok(summary.claddingAreaM2>24,'The resort renovation wraps actual wall fields, rather than three small samples');
     }
     assert.equal(fingerprints.size,20,'Every style has a different geometric treatment');
+  }
+});
+
+test('plan-derived storey edges retain their vertical limits and keep actual door routes open',()=>{
+  const edge=(index,baseZ,topZ)=>({index,a:[0,0],b:[8,0],length:8,direction:[1,0],outward:[0,-1],baseZ,topZ});
+  const edges=[edge(0,0,2.75),edge(1,3.05,5.75)];
+  const layout={baseZ:0,floorZ:0,firstFloorZ:3.05,edges,front:edges[0],rear:edges[1],
+    windows:[
+      {id:'ground-window',kind:'window',edgeIndex:0,lo:2,hi:3.2,z:.8,height:1.5},
+      {id:'upstairs-window',kind:'window',edgeIndex:1,lo:2,hi:3.2,z:3.85,height:1.5},
+      {id:'actual-balcony-door',kind:'balcony-door',edgeIndex:1,lo:5.2,hi:6.4,z:3.05,height:2.2},
+    ],door:{id:'actual-entrance',kind:'door',edgeIndex:0,lo:5.4,hi:6.3,centre:5.85,z:0,height:2.1}};
+  for(const style of styles){
+    const parts=houseRenovationParts(layout,style);
+    checkClearance(parts,layout);
+    assert.ok(parts.some(p=>p.edgeIndex===0)&&parts.some(p=>p.edgeIndex===1),style.id);
+    assert.ok(parts.every(p=>p.bottom>=edges[p.edgeIndex].baseZ&&p.top<=edges[p.edgeIndex].topZ));
   }
 });
 
@@ -89,8 +107,10 @@ test('batched solids project outwards, have front-facing normals, and render in 
     const position=mesh.geometry.attributes.position,normal=mesh.geometry.attributes.normal;
     assert.equal(parent.children.length,1);
     assert.equal(position.count,parts.length*30); // front plus four returns per solid
-    assert.ok(mesh.material.userData.transient&&mesh.material.vertexColors);
-    for(const [i,p] of parts.entries()){
+    assert.ok(mesh.material.every(m=>m.userData.transient&&m.vertexColors&&m.map&&m.normalMap));
+    assert.ok(mesh.geometry.groups.length<=6,'Facade finishes are batched, never one draw per board');
+    const ordered=[...new Set(parts.map(p=>p.finish))].flatMap(finish=>parts.filter(p=>p.finish===finish));
+    for(const [i,p] of ordered.entries()){
       const edge=layout.edges[p.edgeIndex],j=i*30;
       near(normal.getX(j),edge.outward[0],1e-4);near(normal.getY(j),0);near(normal.getZ(j),edge.outward[1],1e-4);
       for(let k=j;k<j+30;k++){
@@ -103,7 +123,7 @@ test('batched solids project outwards, have front-facing normals, and render in 
     const svg=addHouseRenovation(new THREE.Group(),layout,style,{svgMode:true});
     assert.ok(svg.geometry.attributes.position.count<position.count);
     assert.deepEqual(svg.userData,mesh.userData);
-    for(const m of [mesh,svg]){m.geometry.dispose();m.material.dispose();}
+    for(const m of [mesh,svg]){m.geometry.dispose();for(const material of m.material)material.dispose();}
   }
 });
 
@@ -119,7 +139,7 @@ test('actual house mesh leaves the two-car aperture open across its full width a
     const origin=new THREE.Vector3(...toWorld(...sample));
     assert.equal(new THREE.Raycaster(origin,inward,0,.25).intersectObject(mesh).length,0);
   }
-  mesh.geometry.dispose();mesh.material.dispose();
+  mesh.geometry.dispose();for(const material of mesh.material)material.dispose();
 });
 
 test('current and disabled house treatments restore original surfaces and add no objects',()=>{

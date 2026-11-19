@@ -1,8 +1,8 @@
-/** Independent layout, finish and camera choices for the drawing-based house. */
+/** Camera and display choices for the shared drawing-based house. */
 import {DESIGN_STYLES} from './design-styles.js?v=1.26.0';
 
 export const INTERIOR_DEFAULTS=Object.freeze({
-  interiorEnabled:false,interiorLayout:'renovation',interiorFloor:'ground',
+  interiorEnabled:false,interiorLayout:'existing',interiorFloor:'ground',
   interiorStyle:'follow',interiorView:'dollhouse',interiorRoomId:'',
   interiorFurniture:true,interiorChanges:false,planExteriorApplied:false,
 });

@@ -108,13 +108,15 @@ function window(group,edge,w,palette){
   }
 }
 
-function entry(group,layout,palette,groundAt){
+export function addHouseEntry(group,layout,palette,groundAt,{drawDoor=true}={}){
   const {door,front,floorZ}=layout;
+  if(drawDoor){
   panel(group,'house-entrance-recess',front,door.lo-.14,door.hi+.14,floorZ-.01,floorZ+door.height+.08,-.035,palette.entrance);
   panel(group,'house-entrance-door',front,door.lo+.05,door.hi-.05,floorZ+.04,floorZ+door.height-.06,.012,palette.door);
   panel(group,'house-entrance-side-glass',front,door.hi-.29,door.hi-.1,floorZ+.25,floorZ+door.height-.16,.018,palette.glass);
   const handleA=facadePoint(front,door.hi-.37,floorZ+1,.05),handleB=facadePoint(front,door.hi-.37,floorZ+1.19,.05);
   beam(group,'house-entrance-handle',handleA,handleB,.012,palette.rail);
+  }
   const access=layout.entryAccess,railHeight=.95;
   const entrance=entranceAccessLayout(layout,{groundAt}),stairs=entrance.stairs;
   group.userData.entranceAccess=entrance;
@@ -138,13 +140,13 @@ function entry(group,layout,palette,groundAt){
   }
 }
 
-function roofDetails(group,layout,palette,svgMode){
+export function addHouseRoof(group,layout,palette,svgMode){
   const {roof,ring,edges}=layout;
   const faces=roof.envelope.surfaceFaces;
   if(faces.length){
     const object=mesh(group,'house-measured-terracotta-roof',faces.map(face=>toWorldRoofTriangle(...face)),palette.roof);
-    object.userData.source='Main planes fit mapped roof returns; street-front gable follows photograph and locally overrides conflicting returns; red-brown finish from photograph';
-    if(!svgMode){
+    object.userData.source=roof.envelope.provenance.main;
+    if(!svgMode&&!palette.roof.map){
       const tileJoints=[];
       // Elevation contours follow the exact shared roof slopes.
       for(const face of faces){
@@ -172,7 +174,9 @@ function roofDetails(group,layout,palette,svgMode){
   for(const chimney of roof.envelope.chimneys){
     mesh(group,`house-brick-chimney-${chimney.id}`,chimney.faces.map(face=>toWorldTriangle(...face)),palette.brick);
     slab(group,`house-chimney-cap-${chimney.id}`,chimney.footprint,chimney.topZ-.065,chimney.topZ,palette.fascia);
-    for(let i=0;i<3;i++)box(group,`house-chimney-vent-${chimney.id}-${i}`,chimney.x0+chimney.width*(i+.3)/3,chimney.y0-.006,chimney.topZ-.23,chimney.width/6,.012,.12,palette.entrance,false);
+    const a=chimney.footprint[0],b=chimney.footprint[1],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    const edge={a,b,length,direction:[(b[0]-a[0])/length,(b[1]-a[1])/length],outward:[(b[1]-a[1])/length,-(b[0]-a[0])/length]};
+    for(let i=0;i<3;i++)panel(group,`house-chimney-vent-${chimney.id}-${i}`,edge,length*(i+.3)/3,length*(i+.8)/3,chimney.topZ-.23,chimney.topZ-.11,.007,palette.entrance,false);
   }
   // The photograph shows a triangular attic aperture in a side gable. Its
   // approximate detail stays below the unchanged measured roof envelope.
@@ -209,10 +213,10 @@ export function createPhotoHouseGroup(data,settings={},options={}){
   for(const edge of layout.edges)facade(group,edge,layout,palette);
   for(const w of layout.windows)window(group,layout.edges[w.edgeIndex],w,palette);
   const groundAt=options.groundAt||((x,y)=>options.terrainAt?options.terrainAt(x,y,data):layout.baseZ);
-  entry(group,layout,palette,groundAt);
+  addHouseEntry(group,layout,palette,groundAt);
   // A thin full living slab is compatible with the garage's own soffit below.
   slab(group,'house-living-floor-slab',layout.ring,layout.floorZ-.14,layout.floorZ,palette.floor,false);
-  roofDetails(group,layout,palette,Boolean(options.svgMode));
+  addHouseRoof(group,layout,palette,Boolean(options.svgMode));
   // Retain useful scale and a visible living area behind the proposed HST.
   box(group,'house-living-sofa-base',6.2,13.5,layout.floorZ,3.1,1,.4,palette.linen,false);
   box(group,'house-living-sofa-back',6.2,13.5,layout.floorZ+.4,3.1,.27,.42,palette.linen,false);

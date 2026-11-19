@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.26.0';
 
 // Only the garden builder's unnamed, fixed, single-material boxes participate.
 // Named targets, glass sorting, vehicles, selectable terrain and fixture groups
@@ -42,8 +43,8 @@ export function batchGardenBoxes(group) {
   return saved;
 }
 
-// Style materials belong to a single design generation. The parent scene owns
-// and disposes the underlying shared textures.
+// Style materials belong to a single design generation. Original textures stay
+// shared; each proposed finish releases its owned maps when the material dies.
 export function proposedMaterials(base, style) {
   if (style.id === 'current') return base;
   const materials = {...base}, p = style.palette;
@@ -56,12 +57,11 @@ export function proposedMaterials(base, style) {
     const material = base[source].clone();
     material.color.set(color);
     if (key === 'woodLight') material.color.lerp(new THREE.Color('#f4e5c9'),.16);
+    applyExteriorSurface(material,style,key);
     materials[key] = material;
   }
-  if(['boards','cross-boards'].includes(style.recipe.paving)){
-    materials.deck=base.wood.clone();
-    materials.deck.color.set(p.surface);
-  }
+  materials.deck=(['boards','cross-boards'].includes(style.recipe.paving)?base.wood:base.stone).clone();
+  materials.deck.color.set(p.surface);applyExteriorSurface(materials.deck,style,'deck');
   return materials;
 }
 
@@ -104,10 +104,14 @@ export function finishDeckBox(mesh, material, style, originX, originY) {
   mesh.material=[mesh.material,material];
   const {position,uv}=g.attributes, [boardLength,boardWidth]=style.recipe.module;
   const cross=style.recipe.paving==='cross-boards';
+  const timber=style.recipe.paving==='boards'||cross;
   for(const i of new Set(topIndices)){
     const x=position.getX(i)+mesh.position.x-originX;
     const y=position.getZ(i)+mesh.position.z-originY;
-    uv.setXY(i,(cross?y:x)/boardLength,(cross?x:y)/(8*boardWidth));
+    const along=(cross?y:x)/boardLength,across=(cross?x:y)/(8*boardWidth);
+    // Procedural timber grain runs along texture V, matching the long board
+    // direction in the physical paving bond for either board orientation.
+    uv.setXY(i,timber?across:along,timber?along:across);
   }
   uv.needsUpdate=true;
 }

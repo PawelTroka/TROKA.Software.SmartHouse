@@ -1,6 +1,8 @@
 import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.26.0';
 import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.26.0';
 import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.26.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.26.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.26.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -32,7 +34,7 @@ function numberCell(text, tag = 'td') {
   const cell = document.createElement(tag); cell.textContent = text; return cell;
 }
 
-export function createInteriorWorkspace(container, {settings:initial = {}, onChange, onClose, onStatus} = {}) {
+export function createInteriorWorkspace(container, {settings:initial = {}, onChange, onClose, onStatus,getData,getExteriorContext,getContextKey} = {}) {
   container.classList.add('iw-workspace');
   container.setAttribute('aria-label','Sternicza 11 interior studio');
   container.setAttribute('role','region');
@@ -47,7 +49,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     <div class="iw-body">
       <aside id="iw-inspector" data-iw="inspector" class="iw-inspector" aria-label="Interior settings and room schedule">
         <div class="iw-mobile-heading"><h3>Interior settings</h3><button data-iw="hide-settings" type="button" class="iw-icon-button" aria-label="Close interior settings">${icon('close')}</button></div>
-        <section class="iw-inspector-block"><div class="iw-field-heading"><label for="iw-style">Interior style</label><div class="iw-swatches" data-iw="swatches" aria-hidden="true"></div></div>
+        <section class="iw-inspector-block"><div class="iw-field-heading"><label for="iw-style">Whole-house style</label><div class="iw-swatches" data-iw="swatches" aria-hidden="true"></div></div>
           <select id="iw-style" data-iw="style"></select><p class="iw-field-help" data-iw="finish-note"></p>
           <div class="iw-switches"><label class="iw-switch"><span>Furniture &amp; fittings</span><input type="checkbox" role="switch" data-iw="furniture"></label>
           <label class="iw-switch" data-iw="changes-wrap"><span>Highlight wall changes</span><input type="checkbox" role="switch" data-iw="changes"></label></div>
@@ -64,7 +66,8 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
           <h4 data-iw="source-title">Drawing references</h4><ul data-iw="source-list"></ul>
           <h4>Budget scope</h4><p>Interior furniture, finishes, partition changes and structural work need separate quotes. The garden estimate excludes these items.</p></div>
         </details></section>
-        <section class="iw-inspector-block iw-garden-link" data-iw="exterior-wrap"><h3>Garden connection</h3><p class="iw-field-help">Apply the marked 4 m terrace and balcony to the garden model across the 10.77 m house width, with the upper deck at the drawing’s +3.05 m level.</p><button type="button" data-iw="apply-exterior" class="iw-outlined">Apply terrace &amp; balcony ${icon('enter')}</button></section>
+        <section class="iw-inspector-block iw-garden-link" data-iw="exterior-wrap"><h3>One house, inside &amp; outside</h3><p class="iw-field-help">The windows, furniture, terrace and balcony share the garden model. Changes to deck size or floor levels appear in both views.</p><button type="button" data-iw="apply-exterior" class="iw-outlined">Restore marked 4 m decks ${icon('enter')}</button></section>
+        <section class="iw-inspector-block" data-iw="garage-wrap"><h3>Basement study</h3><label class="iw-switch"><span>Two-car conversion</span><input type="checkbox" role="switch" data-iw="garage"></label><p class="iw-field-help">Uses the same excavation, ramp and two-car option as the exterior. Retained stairs and flues remain visible.</p></section>
       </aside>
       <section class="iw-stage" aria-label="Interior viewer">
         <div class="iw-toolbar"><div class="iw-floor-field"><label for="iw-floor">Floor</label><div class="iw-floor-row">${icon('layers')}<select id="iw-floor" data-iw="floor">${options(FLOORS)}</select></div></div>
@@ -81,7 +84,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
       </section>
     </div>`;
   const q = key => container.querySelector(`[data-iw="${key}"]`);
-  const styleOptions = [['follow','Follow garden style'],...DESIGN_STYLES.map(s => [s.id,s.id === 'current' ? 'Neutral interior' : s.label])];
+  const styleOptions = DESIGN_STYLES.map(s => [s.id,s.id === 'current' ? 'Current house · no renovation' : s.label]);
   setOptions(q('style'),styleOptions);
   const abort = new AbortController(), events = {signal:abort.signal};
   let state = initial, visible = false, disposed = false, inspectorOpen = false;
@@ -140,6 +143,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     sceneLoad = import('./scene-interior.js?v=1.26.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
+        getExteriorContext,
         onRoomSelect:id => patch({interiorRoomId:id}),
         onError:message => queueMicrotask(() => {if (token === generation) sceneFailure(message);}),
       });
@@ -172,7 +176,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     q('drawing').dataset.renderedView = renderedView;
     Object.assign(container.dataset,{floor:plan.floor,layout:plan.layout,style:style.id,room:room?.id || '',view:renderedView});
     q('legend').hidden = !(state.interiorChanges && plan.layout === 'renovation');
-    q('instructions').textContent = renderedView === 'plan' ? 'Select a numbered room to inspect its area.' : renderedView === 'room' ? 'Drag to look around. Use the arrows to move. Exterior scenery is illustrative.' : 'Drag to orbit. Scroll or pinch to zoom. Select a room to inspect it.';
+    q('instructions').textContent = renderedView === 'plan' ? 'Select a numbered room to inspect its area.' : renderedView === 'room' ? 'Drag to look around. Use the arrows to move. Windows look into your garden model.' : 'Drag to orbit. Scroll or pinch to zoom. Select a room to inspect it.';
     if (!actual3d) drawPlan();
     if (view === 'plan') {
       scene?.setVisible(false); lastSceneKey = '';
@@ -180,11 +184,12 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     }
     if (sceneError) {setStatus('3D is unavailable on this device. Showing the floor plan.',true); return;}
     if (!scene) {setStatus('Opening the 3D view…'); loadScene(); return;}
-    const key = [planKey,style.id,view,room?.id,state.interiorFurniture !== false,!!state.interiorChanges].join('|');
+    const contextKey=getContextKey?.()||'';
+    const key = [planKey,style.id,view,room?.id,state.interiorFurniture !== false,!!state.interiorChanges,contextKey].join('|');
     try {
       if (lastSceneKey !== key) {
         scene.setVisible(true);
-        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room'});
+        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey});
         scene.resize(); lastSceneKey = key;
       }
       setStatus('');
@@ -192,16 +197,14 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   }
 
   function syncPlan() {
-    const floor = state.interiorFloor || 'ground', layout = state.interiorLayout || 'renovation';
-    const garage = floor === 'basement' && layout === 'renovation';
-    const key = JSON.stringify([floor,layout,...(garage ? [state.garageClearHeight,state.garageExtraDepth,state.garageSlabThickness,state.garageInsideRun,state.garageRampWidth,state.garageBottomApron,state.floorHeight] : [])]);
+    const floor = state.interiorFloor || 'ground';
+    const key = floor+'|'+houseModelKey(state);
     if (key !== planKey) {
-      plan = getInteriorPlan({floor,layout,garageVariant:garage ? 'two-car' : 'cellar',garageSettings:state});
+      plan = getHouseFloorPlan({floor,settings:state,data:getData?.()});
       planKey = key; centre = null; zoom = 1;
     }
     room = plan.rooms.find(r => r.id === state.interiorRoomId) || plan.rooms[0];
-    const id = state.interiorStyle && state.interiorStyle !== 'follow' ? state.interiorStyle : state.designStyle;
-    style = getDesignStyle(id);
+    style = getDesignStyle(state.designStyle);
   }
 
   function syncSchedule() {
@@ -245,17 +248,18 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     for (const btn of container.querySelectorAll('[data-layout]')) btn.setAttribute('aria-pressed',String(btn.dataset.layout === plan.layout));
     for (const btn of container.querySelectorAll('[data-view]')) btn.setAttribute('aria-pressed',String(btn.dataset.view === view));
     q('floor').value = plan.floor;
-    q('style').value = state.interiorStyle || 'follow';
+    q('style').value = state.designStyle || 'current';
     q('furniture').checked = state.interiorFurniture !== false;
     q('changes').checked = !!state.interiorChanges;
     q('changes-wrap').hidden = !isRenovation;
-    const styleLabel = style.id === 'current' ? 'Neutral interior' : style.label;
-    q('finish-note').textContent = q('style').value === 'follow' ? `Following garden finishes · ${styleLabel}` : 'Independent interior finishes';
+    const recipe=getInteriorStyleRecipe(style.id);
+    q('finish-note').textContent = style.id==='current'?'Original drawing layout. Select a style to renovate the house and garden together.':recipe.features.join(' · ')+'. Applied inside and outside.';
     q('swatches').replaceChildren(...style.swatches.map(hex => {const dot = document.createElement('i'); dot.style.backgroundColor = hex; return dot;}));
     q('exterior-wrap').hidden = !isRenovation || !['ground','first'].includes(plan.floor);
     const applied = state.terraceCoverType === 'balcony' && state.canopyEnabled && state.planExteriorApplied && state.firstFloorRise === 3.05 && state.terraceDepth === 4 && state.terraceWidth === 10.77 && state.canopyDepth === 4 && state.canopyWidth === 10.77;
     q('apply-exterior').disabled = applied;
-    q('apply-exterior').innerHTML = applied ? 'Applied to garden' : `Apply terrace &amp; balcony ${icon('enter')}`;
+    q('apply-exterior').innerHTML = applied ? 'Marked decks shared with garden' : `Restore marked 4 m decks ${icon('enter')}`;
+    q('garage-wrap').hidden=plan.floor!=='basement';q('garage').checked=!!state.basementGarageEnabled;
     const heightLabel = plan.floor === 'attic' ? 'to ridge' : 'clear height';
     q('drawing').dataset.conflicts = String(plan.conflicts.length);
     q('level').textContent = Number.isFinite(plan.clearHeight) ? `${plan.clearHeight.toFixed(2)} m ${heightLabel}` : floorNote[plan.floor];
@@ -290,7 +294,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     if (target.dataset.layout) {
       const layout = target.dataset.layout;
       if (layout === plan.layout) return;
-      const next = getInteriorPlan({floor:plan.floor,layout,garageVariant:layout === 'renovation' ? 'two-car' : 'cellar',garageSettings:state});
+      const next = getHouseFloorPlan({floor:plan.floor,settings:{...state,designStyle:layout==='existing'?'current':state.designStyle==='current'?'hidden-bali':state.designStyle},data:getData?.()});
       patch({interiorLayout:layout,interiorRoomId:correspondingRoom(room,next.rooms)?.id || ''});
       return;
     }
@@ -313,13 +317,14 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
         q('notes').querySelector('summary').focus({preventScroll:true}); q('notes').scrollIntoView({block:'nearest'}); break;
       case 'apply-exterior':
         patch({planExteriorApplied:true,firstFloorRise:3.05,terraceCoverType:'balcony',canopyEnabled:true,canopyDepth:4,canopyWidth:10.77,terraceDepth:4,terraceWidth:10.77});
-        onStatus?.('The 4 m terrace and balcony are applied to the garden.'); break;
+        onStatus?.('Both views now use the marked 4 m terrace and balcony.'); break;
     }
   });
   listeners(container,'change', event => {
     const {iw} = event.target.dataset, {value,checked} = event.target;
     if (iw === 'floor') patch({interiorFloor:value,interiorRoomId:''});
-    if (iw === 'style') patch({interiorStyle:value});
+    if (iw === 'style') patch({designStyle:value});
+    if (iw === 'garage') patch({basementGarageEnabled:checked});
     if (iw === 'room') patch({interiorRoomId:value});
     if (iw === 'furniture') patch({interiorFurniture:checked});
     if (iw === 'changes') patch({interiorChanges:checked});

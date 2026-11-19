@@ -13,8 +13,8 @@ const models=SITE_OPTIONS.map(site=>{
   return {site,data,model:createStateModel(getSiteProfile(site.id,data))};
 });
 
-test('schema 26 keeps the basement off in every fresh property and resolves its share identity',()=>{
-  assert.equal(STATE_VERSION,26);
+test('schema 27 keeps the basement off in every fresh property and resolves its share identity',()=>{
+  assert.equal(STATE_VERSION,27);
   for(const {site,model} of models){
     assert.equal(model.DEFAULTS.basementGarageEnabled,false,site.id);
     assert.equal(model.sanitizeState().basementGarageEnabled,false,site.id);
