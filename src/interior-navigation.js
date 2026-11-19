@@ -1,5 +1,5 @@
-import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.26.0';
-import {atticHeadroomAt} from './interior-plan.js?v=1.26.0';
+import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.27.0';
+import {atticHeadroomAt} from './interior-plan.js?v=1.27.0';
 
 const RADIUS=.16;
 function distanceToSegment(x,z,a,b) {
@@ -15,7 +15,7 @@ export function walkGeometry(plan) {
       const at=t=>[w.a[0]+dx*t/l,w.a[1]+dz*t/l];solids.push({a:at(p.left),b:at(p.right),r:w.thickness/2});}
     // Actual hinge and swing of the leaf rendered in the 3D room.
     for(const o of w.openings||[]){if(o.type!=='door'||o.width<=.12)continue;
-      const end=o.hinge==='end',sign=end?-1:1,hinge=o.offset+(end?o.width-.047:.047),t=-sign*(o.swing||1)*1.38;
+      const end=o.hinge==='end',sign=end?-1:1,hinge=o.offset+(end?o.width-.047:.047),t=-sign*(o.swing||1)*Math.PI/2;
       const a=[w.a[0]+dx*hinge/l,w.a[1]+dz*hinge/l],along=sign*(o.width-.10)*Math.cos(t),across=-sign*(o.width-.10)*Math.sin(t);
       solids.push({a,b:[a[0]+along*dx/l-across*dz/l,a[1]+along*dz/l+across*dx/l],r:.018,leaf:true});
     }

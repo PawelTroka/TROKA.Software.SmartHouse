@@ -1,4 +1,5 @@
-import {DESIGN_STYLES,getDesignStyle} from './design-styles.js?v=1.26.0';
+import {DESIGN_STYLES,getDesignStyle} from './design-styles.js?v=1.27.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
@@ -35,7 +36,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
     button.append(materialBoard(style));
     const body=document.createElement('span');body.className='style-card-body';
     body.append(text('span',style.family,'style-family'),text('strong',style.label),text('span',style.description,'style-card-description'));
-    body.append(text('span',style.renovation?`House · ${style.renovation.description}`:'House · Existing exterior retained.','style-card-renovation'));
+    body.append(text('span',style.renovation?`Inside · ${getInteriorStyleRecipe(style.id).features.join(' · ')}. Outside · ${style.renovation.description}`:'Original house · no renovation.','style-card-renovation'));
     button.append(body);button.addEventListener('click',()=>{choose(style.id);dialog.close();});grid.append(button);cards.set(style.id,button);
   }
   function filter(){
@@ -43,7 +44,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
     for(const style of DESIGN_STYLES){const show=(!family.value||family.value===style.family)&&`${style.label} ${style.description} ${style.family} ${style.renovation?.description||''} ${Object.values(style.finishes).join(' ')}`.toLocaleLowerCase().includes(query);cards.get(style.id).hidden=!show;if(show)count++;}
     $('style-result-count').textContent=`${count} ${count===1?'design':'designs'}`;$('style-empty').hidden=count!==0;
   }
-  function choose(id){onChange({designStyle:id,styleHouseFinish:id!=='current'});status.textContent=id==='current'?'Current design restored. The house uses its original exterior.':`${getDesignStyle(id).label} applied to the garden and house renovation.`;}
+  function choose(id){onChange({designStyle:id,styleHouseFinish:id!=='current'});status.textContent=id==='current'?'Current house restored with its original layout.':`${getDesignStyle(id).label} applied to the house, furniture and garden.`;}
   function open(event){lastTrigger=event?.currentTarget||$('style-open');search.value='';family.value='';filter();dialog.showModal();search.focus();}
   $('style-open').addEventListener('click',open);
   $('style-close').addEventListener('click',()=>dialog.close());
@@ -59,9 +60,9 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
   function sync(){
     const s=getSettings(),style=getDesignStyle(s.designStyle);selector.value=style.id;
     $('styleHouseFinish').checked=s.styleHouseFinish;$('styleHouseFinish').disabled=style.id==='current';
-    $('studio-house-scope').textContent=style.id==='current'?'House · Original exterior':s.styleHouseFinish?'House · Renovation included':'House · Original exterior retained';
+    $('studio-house-scope').textContent=style.id==='current'?'House · Original layout':'House · Complete renovation';
     $('studio-house-scope').dataset.renovated=String(style.id!=='current'&&s.styleHouseFinish===true);
-    $('studio-house-description').textContent=style.id==='current'?'Current design adds no house renovation. Your separate garage and terrace-cover choices remain editable.':s.styleHouseFinish?style.renovation.description:'House renovation is off for this design. Turn it on to compare the proposed façade.';
+    $('studio-house-description').textContent=style.id==='current'?'Original drawing layout and house finishes. Select a style to apply the marked renovation, furnishings and shared garden balcony. The garage study remains separately editable.':getInteriorStyleRecipe(style.id).features.join(' · ')+'. '+style.renovation.description;
     $('renderQuality').value=s.renderQuality;$('sceneMotion').checked=s.sceneMotion;
     $('design-studio').dataset.style=style.id;
     if(renderedStyle!==style.id){

@@ -1,8 +1,8 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.26.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.26.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.26.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.27.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.27.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.27.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -106,18 +106,21 @@ function groundPlan(proposed){
   const modifiedRear=h('garden-hst',.175,10.595,.175,.35,[opening('hst',.40,9.97,2.35)],{...exterior,...added});
   const fitted=[
     fixture('table','diningTable','Large dining table','dining',3.02,2.75,3.18,1.04,{seats:8}),
-    fixture('sofa','sofa','U-shaped sectional','lounge',8.16,2.94,2.34,2.83,{shape:'U',openTo:'right'}),
+    fixture('sofa','sofa','U-shaped sectional facing the TV','lounge',8.13,3.30,2.60,2.70,{shape:'U',openTo:'right',front:[1,0]}),
     fixture('tv','tv','TV on solid right-wall bay','lounge',10.34,4.14,.11,1.34),
     fixture('west-counter','counter','Kitchen cabinets','front-kitchen',.69,6.51,.65,2.96,{front:[1,0]}),
     fixture('street-counter','counter','Low cabinets below street window','front-kitchen',2.41,8.31,4.08,.62,{front:[0,-1]}),
-    fixture('east-counter','counter','Tall storage and preparation run','front-kitchen',4.10,7.02,.63,1.95,{front:[-1,0]}),
-    fixture('kitchen-fridge','fridge','Refrigerator','front-kitchen',3.82,5.70,.60,.66),
+    fixture('east-counter','counter','Preparation and appliance run','front-kitchen',4.10,6.95,.63,2.10,{front:[-1,0]}),
+    fixture('kitchen-fridge','fridge','Refrigerator facing the kitchen aisle','front-kitchen',3.70,5.38,.70,.60,{front:[-1,0]}),
     fixture('hob','hob','Cooktop','front-kitchen',.68,6.45,.49,.61,{hostId:'west-counter'}),
-    fixture('kitchen-sink','sink','Sink','front-kitchen',2.39,8.31,.75,.48,{hostId:'street-counter'}),
-    fixture('ground-tub','tub','Bath','bathroom',9.90,7.56,.78,1.75),
-    fixture('ground-shower','shower','Walk-in shower','bathroom',9.77,5.88,1.14,1.09),
-    fixture('ground-basin','basin','Vanity','bathroom',7.51,7.00,.62,1.02),
-    fixture('ground-wc','toilet','WC','bathroom',7.70,8.11,.51,.70),
+    fixture('kitchen-sink','sink','Double sink below the window','front-kitchen',2.39,8.31,.90,.48,{hostId:'street-counter',front:[0,-1],basins:2}),
+    fixture('ground-tub','tub','Deep freestanding soaking tub','bathroom',9.91,7.66,.88,1.78,{variant:'soaking',height:.68,front:[-1,0],approach:[9.12,7.13]}),
+    fixture('ground-shower','shower','Walk-in shower with north-wall fittings','bathroom',9.71,6.02,1.30,1.36,{front:[-1,0],headWall:[0,-1],approach:[8.73,6.02]}),
+    fixture('ground-basin','basin','Dual vanity on the solid stair wall','bathroom',7.42,7.00,.56,1.50,{front:[1,0],basins:2,approaches:[[8.02,6.625],[8.02,7.375]]}),
+    fixture('ground-wc','toilet','WC','bathroom',9.06,8.27,.46,.68,{front:[0,-1],approach:[9.06,7.60]}),
+    fixture('ground-bidet','bidet','Bidet below the street window','bathroom',8.36,8.28,.42,.66,{front:[0,-1],height:.44,approach:[8.36,7.60]}),
+    fixture('ground-mirror','mirror','Dual vanity mirror','bathroom',7.125,7.00,.04,1.40,{front:[1,0],wallMounted:true,mountHeight:1.56}),
+    fixture('ground-towels','towelRail','Heated towel rail','bathroom',7.36,8.62,.40,.04,{front:[0,-1],wallMounted:true,mountHeight:1.18}),
   ];
   const landing=platform('entry-landing','Twin entry landings','landing',rect(3.28,9,7.49,10.40),1.4);
   return {
@@ -131,6 +134,8 @@ function groundPlan(proposed){
       'Opening the transverse wall below existing timber floors and making a 9.97 m glazing aperture need a load-path design, verified supports and flue survey.',
       'The right-wall TV is on the short solid panel in front of the side window. The 4 m terrace crosses the rear cellar areaway; provide retained access and drainage.',
       'Kitchen, dining and lounge areas are open zones. Furniture, glazing subdivisions and clearances are design assumptions.',
+      'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
+      'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',
     ]:['The historical twin approach differs from the photo-informed present-day exterior. Door leaves, front screen details and the exact stair turn need a measured survey.'],
   };
 }
@@ -146,12 +151,13 @@ function firstPlan(proposed){
   ];
   const oldRear=h('garden-facade',.17,10.60,.17,t,rearLights(),exterior);
   const newRear=h('balcony-facade',.17,10.60,.17,t,[2.96,6.54,8.68].map(balconyDoor),{...exterior,...added});
+  const oldStairWall=v('kitchen-stair',6.95,4.925,8.83,.12,[windowAt(5.68,1.57,.88,1.15),door(7.80,.80,'start',-1)]);
   const fixed=[
     v('master-office',4.575,.17,3.895,.075),
     v('office-guest',8.07,.17,3.895,.075),
     h('office-hall',4.575,8.07,3.895,.075,[door(5.17,.80,'start',-1)]),
     v('master-door',4.575,3.895,4.925,.075,[door(3.995,.80,'end',1)]),
-    v('kitchen-stair',6.95,4.925,8.83,.12,[windowAt(5.68,1.57,.88,1.15),door(7.80,.80,'start',-1)]),
+    proposed?v('spa-stair-privacy',6.95,4.925,8.83,.12,[door(7.80,.80,'start',-1)],added):oldStairWall,
     h('east-flue-wall',6.86,proposed?9.10:8.96,4.925,.12),
   ];
   const guestWall=h('guest-hall',8.07,10.60,3.895,.075,[door(8.68,.80,'start',-1)]);
@@ -170,8 +176,8 @@ function firstPlan(proposed){
     v('guest-corridor',4.22,5.84,8.70,.10,[door(5.92,.8,'start',1),door(7.53,.80,'end',1)],added),
     h('wardrobe-front',3.68,6.95,8.70,.10,[door(4.80,.80,'start',1)],added),
     h('guest-door-shift',8.07,10.60,3.895,.075,[door(8.18,.80,'start',-1)],added),
-    v('sauna-side',9.10,3.895,4.925,.10,[door(4.05,.68,'start',1)],added),
-    h('sauna-bath',9.10,10.60,4.925,.10,[],added),
+    v('sauna-side',9.10,3.895,5.28,.10,[door(4.05,.68,'end',1)],added),
+    h('sauna-bath',9.10,10.60,5.28,.10,[],added),
   ];
   const rearRooms=[
     room('master',proposed?'Master bedroom':'Garden room I','bedroom',
@@ -193,42 +199,47 @@ function firstPlan(proposed){
     room('guest-2','Guest bedroom II','guest',[[.34,4.9625],[4.18,4.9625],[4.18,5.85],[4.17,5.85],[4.17,6.89],[.34,6.89]]),
     room('guest-3','Guest bedroom III','guest',rect(.34,6.99,4.17,8.65)),
     room('wardrobe','Front-bay wardrobe','wardrobe',rect(3.85,8.75,6.92,10.34)),
-    room('spa-bath','Spa bathroom','bathroom',[[7.01,5.23],[8.08,5.23],[8.08,4.985],[10.43,4.985],[10.43,8.66],[7.01,8.66]]),
-    room('sauna','Compact sauna','sauna',rect(9.15,3.9325,10.43,4.875)),
+    room('spa-bath','Spa bathroom','bathroom',[[7.01,5.23],[8.08,5.23],[8.08,4.985],[9.05,4.985],[9.05,5.33],[10.43,5.33],[10.43,8.66],[7.01,8.66]]),
+    room('sauna','Two-person sauna allowance','sauna',rect(9.15,3.9325,10.43,5.23)),
   ];
   const originalFittings=[
     fixture('kitchen-hob','hob','Four-ring hob','east-kitchen',7.46,5.57,.57,.54),
-    fixture('kitchen-bowl','sink','Double sink','east-kitchen',8.72,6.75,.52,1.08),
+    fixture('kitchen-bowl','sink','Double sink','east-kitchen',8.72,6.75,.52,1.08,{basins:2,front:[-1,0]}),
     fixture('historic-tub','tub','Bath','bathroom',9.48,7.71,.69,1.55),
-    fixture('historic-wc','toilet','WC','bathroom',10.12,8.19,.48,.66),
-    fixture('historic-basin','basin','Washbasin','bathroom',9.46,6.68,.51,.62),
+    fixture('historic-wc','toilet','WC','bathroom',10.12,8.19,.48,.66,{front:[0,-1]}),
+    fixture('historic-basin','basin','Washbasin','bathroom',9.46,6.68,.51,.62,{front:[1,0]}),
   ];
   const furnished=[
-    fixture('master-bed','bed','Double bed','master',1.54,2.67,1.60,2.0),
-    fixture('master-storage','wardrobe','Fitted wardrobe','master',2.28,4.55,2.36,.55),
-    fixture('office-desk','desk','Desk','office',5.13,1.97,.76,1.70),
-    fixture('office-chair','chair','Desk chair','office',5.85,1.97,.48,.48),
-    fixture('guest1-bed','bed','Guest bed','guest-1',9.79,2.33,.98,2.0),
-    fixture('guest2-bed','bed','Single bed','guest-2',1.57,5.75,2.0,.90),
-    fixture('guest3-bed','bed','Single bed','guest-3',1.59,7.73,2.0,.90),
-    fixture('guest2-store','wardrobe','Shallow storage','guest-2',3.72,5.22,.64,.45),
-    fixture('guest3-store','wardrobe','Shallow storage','guest-3',3.48,7.23,.71,.41),
-    fixture('bay-storage','wardrobe','Hanging storage','wardrobe',4.17,9.63,.59,1.15),
-    fixture('bay-storage-east','wardrobe','Hanging storage','wardrobe',6.60,9.63,.59,1.15),
-    fixture('spa-jets','tub','Compact whirlpool bath','spa-bath',8.10,5.68,1.80,.80,{variant:'whirlpool'}),
-    fixture('spa-shower','shower','Two-person shower','spa-bath',9.76,5.94,1.20,1.56,{heads:2}),
-    fixture('spa-soak','tub','Deep soaking tub','spa-bath',9.92,7.69,.86,1.70,{variant:'soaking'}),
-    fixture('spa-vanity','basin','Vanity and basin','spa-bath',7.47,6.95,.58,1.07),
-    fixture('spa-wc','toilet','WC','spa-bath',8.70,8.20,.52,.72),
-    fixture('spa-mirror','mirror','Vanity mirror','spa-bath',7.04,6.95,.04,.93,{wallMounted:true,mountHeight:1.54}),
-    fixture('spa-towels','towelRail','Heated towel rail','spa-bath',9.23,8.61,.60,.052,{wallMounted:true,mountHeight:1.18}),
-    fixture('sauna-bench','bench','Sauna bench','sauna',9.82,4.62,1.04,.41),
+    fixture('master-bed','bed','King bed facing the balcony','master',2.10,3.76,1.80,2.10,{headboard:[0,1]}),
+    fixture('master-nightstand-west','nightstand','Bedside cabinet','master',.94,4.43,.40,.40,{front:[0,-1],height:.52}),
+    fixture('master-nightstand-east','nightstand','Bedside cabinet','master',3.26,4.43,.40,.40,{front:[0,-1],height:.52}),
+    fixture('master-storage','wardrobe','East-wall fitted wardrobe','master',4.20,2.67,.55,2.20,{front:[-1,0]}),
+    fixture('office-desk','desk','Desk facing the room','office',5.05,2.17,.75,1.70,{front:[1,0]}),
+    fixture('office-chair','chair','Desk chair facing the screen','office',5.93,2.17,.60,.58,{front:[-1,0]}),
+    fixture('office-bookcase','bookcase','East-wall bookcase','office',7.80,2.75,.34,1.70,{front:[-1,0]}),
+    fixture('guest1-bed','bed','Guest bed with south headboard','guest-1',9.82,2.72,.98,2.10,{headboard:[0,1]}),
+    fixture('guest1-store','wardrobe','Guest hanging storage','guest-1',8.42,2.12,.50,1.10,{front:[1,0]}),
+    fixture('guest1-nightstand','nightstand','Guest bedside cabinet','guest-1',9.16,3.55,.34,.34,{front:[-1,0],height:.48}),
+    fixture('guest2-bed','bed','Single bed with low window headboard','guest-2',1.42,5.55,2.05,.90,{headboard:[-1,0],headboardMaxHeight:.72}),
+    fixture('guest3-bed','bed','Single bed along the partition','guest-3',1.42,7.55,2.05,.90,{headboard:[-1,0]}),
+    fixture('guest2-store','wardrobe','Shallow storage','guest-2',3.35,5.21,.95,.44,{front:[0,1]}),
+    fixture('guest3-store','wardrobe','Shallow storage','guest-3',3.39,7.23,.80,.44,{front:[0,1]}),
+    fixture('bay-storage','wardrobe','Hanging storage beside the door','wardrobe',4.30,9.07,.82,.60,{front:[0,1]}),
+    fixture('bay-storage-east','wardrobe','Wide hanging storage beside the door','wardrobe',6.29,9.07,1.18,.60,{front:[0,1]}),
+    fixture('spa-jets','hotTub','Two-person hydrotherapy spa','spa-bath',8.10,6.30,2.05,1.80,{front:[0,1],height:.86,occupants:2,jets:true,lights:true,hydromassage:true,serviceSide:'front',serviceClearance:.60}),
+    fixture('spa-step','spaStep','Removable two-level spa step','spa-bath',8.10,7.43,.70,.40,{front:[0,1],height:.32,removable:true,approach:[8.10,7.98]}),
+    fixture('spa-shower','shower','Two-person shower','spa-bath',9.79,6.17,1.20,1.62,{heads:2,front:[0,1],approach:[9.49,7.28]}),
+    fixture('spa-vanity','basin','Single vanity on the solid side wall','spa-bath',10.10,7.63,.56,1.10,{front:[-1,0],basins:1,approach:[9.49,7.63]}),
+    fixture('spa-wc','toilet','WC','spa-bath',9.47,8.29,.46,.64,{front:[0,-1],approach:[9.47,7.64]}),
+    fixture('spa-mirror','mirror','Vanity mirror','spa-bath',10.405,7.63,.04,1.00,{front:[-1,0],wallMounted:true,mountHeight:1.54}),
+    fixture('spa-towels','towelRail','Heated towel rail','spa-bath',7.36,8.63,.50,.04,{front:[0,-1],wallMounted:true,mountHeight:1.18}),
+    fixture('sauna-bench','bench','Two-person sauna bench allowance','sauna',9.79,4.985,1.08,.45),
     fixture('sauna-heater','sauna','Heater allowance','sauna',10.16,4.14,.30,.32,{variant:'heater'}),
   ];
   return {
     rooms:[...rearRooms,...(proposed?renovated:original)],
     walls:[...shell,...fixed,...(proposed?[newRear,...spaWalls]:[oldRear,guestWall,...steps,...wet])],
-    removedWalls:proposed?[oldRear,guestWall,...steps.slice(0,2),...wet]:[],
+    removedWalls:proposed?[oldRear,guestWall,oldStairWall,...steps.slice(0,2),...wet]:[],
     outdoor:proposed?[platform('balcony','Shared garden balcony · 4 m','balcony',rect(0,-4,WIDTH,0),4)]:[],
     fixtures:proposed?furnished:originalFittings,cores:flueCores(),
     stairs:[{...mainFlight(),polygon:mainOpening()},foldStair()],voids:[mainOpening()],
@@ -236,8 +247,10 @@ function firstPlan(proposed){
     issues:proposed?[
       'The two new front guest rooms fit compact singles. The folding attic hatch opens into their new circulation route; check ladder deployment and door swings.',
       'The bay is printed 3.07 × 1.68 m inside. The proposed 10 cm wardrobe partition leaves about 3.07 × 1.59 m clear; retaining the full depth would move it about 9 cm toward the hall and require the adjoining door routes to be checked.',
-      'The sauna has about 1.28 × 0.94 m inside. A 1.20 × 1.24 m two-person cabin requires roughly 0.30 m extra depth. Heater clearances, ventilation, door and final seating remain unresolved.',
-      'The spa fits a compact 1.80 × 0.80 m whirlpool, 1.70 × 0.86 m soaking bath and 1.20 × 1.56 m shower. Verify approach, privacy at the glazed stair partition, plumbing, waterproofing and filled loads on the timber floor.',
+      'Moving the new sauna partition 0.36 m into the bath gives approximately 1.28 × 1.30 m clear. A 1.20 × 1.24 m cabin footprint fits that allowance, but lining, heater separation, ventilation, service access and the selected product still need checking.',
+      'The revised spa has one 2.05 × 1.80 m hydrotherapy tub with jets and lighting, a 1.20 × 1.62 m two-person shower, one washbasin and a WC. Its approximately 11.83 m² room retains a modest 0.60 m route; the entry step must be removable for front-panel servicing.',
+      'The old glazed kitchen/stair partition is closed for bathroom privacy. Verify filled spa loads on the historic timber floor, delivery access, equipment maintenance, waterproofing, humidity control and the exact product before installation.',
+      'Tall bay wardrobes flank the new door instead of covering the side windows. The main bed faces the balcony; the two front guest beds remain compact singles, with a low headboard under the side window in guest room II.',
       'The third rear door is new. Verify structure, independent support, waterproofing, guards and thresholds for the 4 m balcony.',
     ]:['The front room extends around the stair opening into the bay. The bay is printed 3.07 × 1.68 m inside, with 24 cm masonry and 10 cm external insulation. The drawing shows a folding attic stair separately from the main timber stair. Furniture outside the printed wet-room fittings is undocumented.'],
   };
@@ -284,6 +297,13 @@ const settingsNumber=(settings,key)=>{
 // Preserve metres along the facade; the measured paper width and mapped width differ.
 function garageFrame(settings){
   const width=settingsNumber(upgradeSingleCarGarage(settings),'garageRampWidth');
+  const bounds=settings.architecturalGarageBounds;
+  if(bounds){
+    const {x0,x1}=bounds;
+    if(!Number.isFinite(x0)||!Number.isFinite(x1)||x0<0||x1>WIDTH||x1<=x0||Math.abs(x1-x0-width)>1e-5)
+      throw new RangeError('Architectural garage bounds must preserve the selected portal width inside the house');
+    return {x0,x1,width:x1-x0};
+  }
   const a=[4.13622220,9.09588503], b=[15.15178498,9.13920459];
   const centreX=Math.min(b[0]-.50-width/2,Math.max(a[0]+.50+width/2,12));
   const alongX=(centreX-(a[0]+b[0])/2)*Math.hypot(b[0]-a[0],b[1]-a[1])/(b[0]-a[0]);

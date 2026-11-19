@@ -9,21 +9,22 @@ export const INTERIOR_SOURCES = [
   {id:'detached',file:'IMG_8727(1).jpeg',title:'Separate garage or outbuilding elevations',reading:'North elevation has two portals beneath a pitched roof. West has a side door, window and dormer. South gable and east wall are shown largely blank. No dimensioned floor plan.'},
   {id:'structure',file:'IMG_8728.jpeg',title:'Floor structure over ground floor, 1:50',reading:'Existing timber floors, reinforced concrete ring beams W, concrete B15 and steel A0. Stair opening, front projection and 361 / 355 / 361 cm frontage chain. References to structural sheets 3/K and 6/K.'},
   {id:'ground-markup',file:'image(20261118-224203).png',title:'Ground-floor renovation markup',reading:'Open kitchen and living space, large dining table, U-shaped seating and right-wall TV, combined bathroom, broad rear HST and 4 m terrace.'},
-  {id:'first-markup',file:'image(20261118-224942).png',title:'First-floor renovation markup',reading:'Expanded master, office, three guest bedrooms, wardrobe, compact sauna, whirlpool, soaking tub and two-person shower. A shared 4 m balcony extends across all three rear rooms.'},
+  {id:'first-markup',file:'image(20261118-224942).png',title:'First-floor renovation markup',reading:'Expanded master, office, three guest bedrooms, wardrobe, compact sauna, whirlpool, soaking tub and two-person shower. A shared 4 m balcony extends across all three rear rooms. The later bathroom brief supersedes the two-tub markup: one hydrotherapy spa upstairs, with the deep soaking tub downstairs.'},
 ];
 
 export const INTERIOR_CHANGES = {
   ground:[
     'Open the partition between the rear rooms and the wall between dining and the front-left kitchen. Keep the two flue cores visible.',
     'Join the right kitchen and bathroom. Keep access through the landing and remove the redundant internal doorway with the divider.',
+    'Fit one deep soaking tub, a walk-in shower, a dual vanity, WC and bidet. Put the mirror on the solid stair wall and keep the low bidet below the street-window sill.',
     'Provide near-full-width rear lift-and-slide glazing (HST) to the 4.00 m terrace.',
     'Place a long table on the left, U-shaped seating facing a right-wall TV, and fitted cabinets in the front-left kitchen.',
   ],
   first:[
     'Straighten the master bedroom’s stepped front partition. Retain the middle office and right guest bedroom.',
     'Divide the front-left room into guest bedrooms II and III, with a new side corridor and independent doors. Enclose the bay as a wardrobe.',
-    'Combine the kitchen and bath into a compact spa bathroom. Fit separate whirlpool, deep tub and double shower.',
-    'Enclose the right end of the hall for a compact sauna. Move the guest-room door slightly left to clear the enclosure.',
+    'Combine the kitchen and bath into a spa bathroom with one large hydrotherapy tub, jets and lighting, a two-person shower, a single vanity and WC.',
+    'Enclose the right end of the hall for the sauna and move its new bath partition 0.36 m to give about 1.28 × 1.30 m clear. Move the guest-room door left and hinge the sauna door to open outward along the hall’s lower edge.',
     'Open three separate rear doors onto one continuous 4.00 m shared balcony.',
   ],
   basement:[

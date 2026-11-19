@@ -7,8 +7,9 @@
  * are explicitly proposed alterations. Keep this file free of Three / DOM so
  * window viewpoints can use the same aperture coordinates as the renderer.
  */
-import {getInteriorPlan} from './interior-plan.js?v=1.26.0';
-import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.26.0';
+import {getInteriorPlan} from './interior-plan.js?v=1.27.0';
+import {sharedHouseFacades} from './house-model.js?v=1.27.0';
+import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.27.0';
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const xyz=p=>Array.isArray(p)?p:[p.x,p.y,p.z];
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring||[];
@@ -31,6 +32,14 @@ export function facadePoint(edge,distance,z,offset=0){
 /** Pure aperture / entry description, in site x,y and absolute z metres. */
 export function houseAppearanceLayout(data,settings={},options={}){
   if(!photoHouseSupported(data))return {supported:false,windows:[],edges:[]};
+  if(data.site.house.architecturalModel){
+    const shared=sharedHouseFacades(data,settings),roof=sterniczaRoofEnvelope(data.site.house),floorZ=shared.frame.floorZ;
+    return{...shared,supported:true,ring:roof.ring,baseZ:data.site.house.baseZ,floorZ,firstFloorZ:floorZ+num(settings.firstFloorRise,3.05),
+      plinthTopZ:floorZ-.045,atticWindow:null,entryAccess:options.garageLayout?.enabled?options.garageLayout.entryAccess:null,
+      roof:{samples:[],eavesZ:roof.eavesZ,ridgeZ:roof.ridgeZ,shape:'registered-archived-plan',envelope:roof},
+      notes:{...HOUSE_APPEARANCE_NOTES,assumptions:roof.provenance.main+' '+roof.provenance.crossGable,
+        proposed:'One shared house model supplies the layout, furniture, facade apertures and balcony in both views.'}};
+  }
   const house=data.site.house,ring=openRing(house.footprint).map(p=>p.slice(0,2)),roofEnvelope=sterniczaRoofEnvelope(house);
   const area=ring.reduce((sum,p,i)=>sum+p[0]*ring[(i+1)%ring.length][1]-ring[(i+1)%ring.length][0]*p[1],0);
   const edges=ring.map((a,i)=>{
@@ -121,8 +130,8 @@ export function houseAppearanceLayout(data,settings={},options={}){
 export function houseWindowAnchor(facing,data,settings={},level='first'){
   const layout=houseAppearanceLayout(data,settings);
   if(!layout.supported||level!=='first')return null;
-  const window=facing==='street'?layout.windows.find(w=>w.id==='front-first-west'):
-    layout.balconyDoor||layout.windows.find(w=>w.id==='rear-first-0');
+  const window=facing==='street'?layout.windows.find(w=>w.id==='front-first-west'||w.id==='first-street-left-0'):
+    layout.balconyDoor||layout.windows.find(w=>w.id==='rear-first-0'||w.id==='first-garden-facade-0');
   if(!window)return null;
   const edge=layout.edges[window.edgeIndex],p=facadePoint(edge,window.centre,window.z),facadeOffset=.25;
   return {x:p[0]+edge.outward[0]*facadeOffset,y:p[1]+edge.outward[1]*facadeOffset,

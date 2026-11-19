@@ -1,9 +1,9 @@
-import {closestBoundary} from './dimensions.js?v=1.26.0';
-import {footprintFit, overlapArea} from './footprint-fit.js?v=1.26.0';
-import {gardenProgram} from './garden-program.js?v=1.26.0';
-import {garageLayout} from './garage-ramp.js?v=1.26.0';
-import {gardenGroundAt, jacuzziBounds, privacyStructures, spaLevels, terraceCover, terraceGroundReference, terrainAt} from './geometry.js?v=1.26.0';
-import {rectCorners, terraceStairs} from './layout.js?v=1.26.0';
+import {closestBoundary} from './dimensions.js?v=1.27.0';
+import {footprintFit, overlapArea} from './footprint-fit.js?v=1.27.0';
+import {gardenProgram} from './garden-program.js?v=1.27.0';
+import {garageLayout} from './garage-ramp.js?v=1.27.0';
+import {gardenGroundAt, jacuzziBounds, privacyStructures, spaLevels, terraceCover, terraceGroundReference, terrainAt} from './geometry.js?v=1.27.0';
+import {rectCorners, terraceStairs} from './layout.js?v=1.27.0';
 
 const boxRing = b => [[b.x0,b.y0],[b.x1,b.y0],[b.x1,b.y1],[b.x0,b.y1]];
 const areaLabel = v => v < .01 ? 'less than 0.01 m²' : `${v.toFixed(2)} m²`;

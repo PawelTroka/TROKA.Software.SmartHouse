@@ -14,6 +14,7 @@
  * fit error must not be represented as the error of this locally altered roof.
  * Chimney caps use the actual two high-return clusters (13.34 m / 13.13 m).
  */
+import {architecturalRoofEnvelope} from './architectural-roof.js?v=1.27.0';
 const cache=new WeakMap(),EPS=1e-8;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring||[];
 const value=(plane,p)=>plane[0]*p[0]+plane[1]*p[1]+plane[2];
@@ -38,6 +39,7 @@ function clip(ring,line,positive){
 
 export function sterniczaRoofEnvelope(house){
   if(cache.has(house))return cache.get(house);
+  if(house.architecturalModel){const envelope=architecturalRoofEnvelope(house);cache.set(house,envelope);return envelope;}
   const ring=openRing(house.footprint).map(p=>p.slice(0,2));
   const mainFront=[.00929205,.55661563,5.85086242],mainRear=[-.0114799946,-.576041893,20.0356836];
   const crossCentre=6.7,crossRidge=12.62,crossSlope=.68;

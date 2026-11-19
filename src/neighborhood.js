@@ -1,4 +1,4 @@
-import {terrainAt} from './geometry.js?v=1.26.0';
+import {terrainAt} from './geometry.js?v=1.27.0';
 
 /** The expanded DTM is for rendering only; property levels retain the native grid. */
 export function contextTerrainAt(x,y,data){

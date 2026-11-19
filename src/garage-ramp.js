@@ -2,10 +2,10 @@
  * geometry is implied. The conservative underside is flat over the full car.
  * Site coordinates are [x,y,elevation]; longitudinal profile s runs inward.
  */
-import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.26.0';
+import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.27.0';
 
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.26.0';
-import {getInteriorGarageConflicts} from './interior-plan.js?v=1.26.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.27.0';
+import {getInteriorGarageConflicts} from './interior-plan.js?v=1.27.0';
 export {CYBERSTER_AWD};
 const cache=new WeakMap(),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,fallback)=>Number.isFinite(x)?x:fallback;
@@ -26,7 +26,7 @@ function lineIntersection(p,d,a,b){
 export function garagePlanFrame(settings={},data){
   const supported=(data?.site?.id||settings.siteId||'sternicza-11')==='sternicza-11';
   if(!supported||!data?.site?.house?.footprint)return {supported:false,enabled:false};
-  const s=options(settings),house=ring(data.site.house.footprint),boundary=ring(data.site.boundary);
+  const s=options(settings),house=ring(data.site.house.cellarFootprint||data.site.house.footprint),boundary=ring(data.site.boundary);
   const streetIndex=Math.max(0,(data.site.boundaryNames||[]).findIndex(name=>name==='street'||name==='front'));
   const streetA=boundary[streetIndex],streetB=boundary[(streetIndex+1)%boundary.length];
   const frontIndex=house.reduce((best,a,i)=>(a[1]+house[(i+1)%house.length][1])/2<best.y
@@ -78,11 +78,16 @@ export function garagePlanFrame(settings={},data){
   const gateWidth=outerWidth+.4,gate={a:entrance(-gateWidth/2),b:entrance(gateWidth/2),width:gateWidth};
   const cutout={x0:Math.min(...outerFootprint.map(p=>p[0])),y0:Math.min(...outerFootprint.map(p=>p[1])),
     x1:Math.max(...outerFootprint.map(p=>p[0])),y1:Math.max(...outerFootprint.map(p=>p[1]))};
+  const registered=data.site.house.architecturalModel;
+  const architecturalGarageBounds=registered?(()=>{
+    const {origin,ex}=registered,localX=p=>-(p[0]-origin[0])*ex[0]-(p[1]-origin[1])*ex[1];
+    const jambs=[localX(at(frontRun,-clearWidth/2)),localX(at(frontRun,clearWidth/2))];return{x0:Math.min(...jambs),x1:Math.max(...jambs)};
+  })():null;
   return {supported:true,enabled:s.basementGarageEnabled===true,centerX:portalPoint[0],frontRun,facadeStation:frontRun,
     insideRun,totalRun,houseDepth,clearWidth,wallThickness,outerWidth,parking,entryAccess,gate,cutout,outerFootprint,clearFootprint,
     roomFootprint:footprint(frontRun,roomRearS,outerWidth),roomFloorFootprint:footprint(frontRun,roomRearS,clearWidth),roomRearS,
     entrancePoints:[entrance(-outerWidth/2),entrance(outerWidth/2)],
-    axis:{start,end:portalPoint,direction,normal,frontRun,insideRun,totalRun},at};
+    axis:{start,end:portalPoint,direction,normal,frontRun,insideRun,totalRun},at,architecturalGarageBounds};
 }
 
 function makeDesign(totalRun,drop,bottomApron,topTransition,bottomTransition,streetZ=0){
@@ -283,7 +288,7 @@ export function garageLayout(settings={},data,{terrainAt}={}){
   }
   const entries=bucket.entries;if(entries.has(key))return entries.get(key);
   const layout={...frame,vehicle,car:vehicle,settings:s,streetZ,livingFloorZ,ceilingZ,floorZ,drop};
-  layout.documentedInterior={source:'IMG_8721.jpeg + IMG_8724.jpeg',existingFloorRelative:-2,existingClearHeight:1.70,existingSlab:.30,proposedFloorRelative:floorZ-livingFloorZ,additionalLowering:Math.max(0,livingFloorZ-floorZ-2),conflicts:getInteriorGarageConflicts(s)};
+  layout.documentedInterior={source:'IMG_8721.jpeg + IMG_8724.jpeg',existingFloorRelative:-2,existingClearHeight:1.70,existingSlab:.30,proposedFloorRelative:floorZ-livingFloorZ,additionalLowering:Math.max(0,livingFloorZ-floorZ-2),conflicts:getInteriorGarageConflicts({...s,architecturalGarageBounds:frame.architecturalGarageBounds})};
   if(frame.entryAccess)layout.entryAccess={...frame.entryAccess,landing:{...frame.entryAccess.landing,
     topZ:livingFloorZ,soffitZ:livingFloorZ-frame.entryAccess.landing.thickness}};
   layout.design=optimizeDesign(layout,s);
