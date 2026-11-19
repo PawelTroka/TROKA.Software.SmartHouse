@@ -227,6 +227,13 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     // once and add its linked decks unless the saved design already linked them.
     if(version<27&&next.designStyle!==DEFAULT_DESIGN_STYLE){
       Object.assign(next,changePresentationSettings({...next,planExteriorApplied:input.planExteriorApplied===true},{designStyle:next.designStyle}));
+    }else if(version>=27&&next.designStyle!==DEFAULT_DESIGN_STYLE&&!Object.hasOwn(input,'planExteriorApplied')){
+      // A short current-version style link has the same first-adoption behavior
+      // as the selector. Complete saved designs explicitly carry the link flag;
+      // explicit dimensions in a hand-edited link still take precedence.
+      const linked=changePresentationSettings({...next,planExteriorApplied:false},{designStyle:next.designStyle});
+      for(const key of ['canopyEnabled','terraceCoverType','canopyDepth','canopyWidth','terraceDepth','terraceWidth'])if(Object.hasOwn(input,key))linked[key]=next[key];
+      Object.assign(next,linked);
     }
     next.interiorStyle='follow';next.interiorLayout=next.designStyle===DEFAULT_DESIGN_STYLE?'existing':'renovation';
     next.planExteriorApplied=siteId===DEFAULT_SITE_ID&&next.designStyle!==DEFAULT_DESIGN_STYLE;

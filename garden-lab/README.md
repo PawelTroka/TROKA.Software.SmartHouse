@@ -4,7 +4,19 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 **[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.27.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.27.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0)**
 
-## Sternicza interior studio · 1.26.0
+## Complete house renovations · 1.27.0
+
+The whole-house style selector now applies **20 physical renovation concepts**, including different furniture constructions, fitted joinery, wall treatments, ceilings, lighting, textures, facade assemblies, outdoor seating and balcony guards. **Current house · no renovation** selects the original drawing layout. Choosing a style applies the revised room programme throughout the house, with coordinated interiors and exterior finishes.
+
+The ground bathroom has one deep soaking tub, a shower, a dual vanity, WC and bidet. Upstairs has one larger hydrotherapy spa with jets and lighting, a two-person shower, one vanity and WC. Furniture orientation, window clearance, wardrobe placement and circulation have been revised.
+
+Both viewers use the same registered house, openings, furnishings, floor levels, terrace and balcony. Room views look into the actual garden model. First style adoption installs the marked **10.77 × 4.00 m** decks; their editable dimensions remain synchronized. Current preserves the original windows, so a separately enabled balcony is identified as lacking access until a renovation is chosen. The two-car conversion remains an explicit engineering study.
+
+Schema **27** preserves this coordinated selection in saved designs and links, and migrates the earlier independent interior style. Historical drawing discrepancies, compact guest rooms, the low cellar and structural/product-clearance limits remain visible.
+
+[Open the Japandi interior](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0#v=27&site=sternicza-11&designStyle=japandi&interiorEnabled=true&interiorView=dollhouse&mode=plan) · [Full style and renovation review](docs/complete-renovation-1.27.md) · [Layout review](docs/interior-layout-review-1.27.0.md) · [Release evidence](https://paweltroka.github.io/TROKA.Software.SmartHouse/release-evidence/1.27.0/validation.html)
+
+## Historical release: Sternicza interior studio · 1.26.0
 
 **Interiors** opens a separate workspace for the basement, ground floor, first floor and attic. Compare **Original drawings** with **Your renovation**, inspect the measured **Floor plan**, orbit a furnished **Dollhouse**, or enter a selected room at **Eye level**. The room schedule keeps the printed drawing areas separate from reconstructed polygon areas. The wall-change overlay identifies removed and added partitions.
 

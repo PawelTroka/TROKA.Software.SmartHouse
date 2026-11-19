@@ -252,8 +252,8 @@ try{
   assert.equal(originalScope.costEstimate.style.unquoted.length,1);
   assert.equal(originalScope.costEstimate.style.knownBase.low,0);assert.equal(originalScope.costEstimate.style.knownBase.high,0);
   assert.ok(originalScope.designChecks.checks.length>0);
-  const coverDepth=el('#canopyDepth-value'),coverPanel=coverDepth.locator('xpath=ancestor::details[1]');
-  if(await coverPanel.getAttribute('open')===null)await coverPanel.locator(':scope > summary').click();
+  const coverDepth=el('#canopyDepth-value');
+  await coverDepth.waitFor({state:'visible'});
   await coverDepth.fill('3.6');await coverDepth.press('Tab');
   await style('japandi');const editedDeck=await exportDesign();canonicalScope(editedDeck,'japandi');
   assert.equal(editedDeck.settings.canopyDepth,3.6);assert.ok(Math.abs(editedDeck.terraceCover.bounds.y1-editedDeck.terraceCover.bounds.y0-3.6)<1e-7);

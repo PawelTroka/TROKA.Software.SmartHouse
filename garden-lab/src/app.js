@@ -481,10 +481,14 @@ function update(){
   privacyControls?.render();
   garageControls?.render();
   const cover=terraceCover(settings,data);
+  const registeredHouse=Boolean(data.site.house?.architecturalModel);
   const balconyAccess=cover.type!=='balcony'||(cover.accessFits??Boolean(houseAppearanceLayout(data,settings).balconyDoor));
-  if(cover.enabled&&!balconyAccess&&!settings.planExteriorApplied)cover.warnings.push('The selected first-floor height leaves no modelled balcony door below the roof. Adjust the floor assumption or design a different roof/access opening before treating this balcony as usable.');
+  if(cover.enabled&&!balconyAccess&&!registeredHouse&&!settings.planExteriorApplied)cover.warnings.push('The selected first-floor height leaves no modelled balcony door below the roof. Adjust the floor assumption or design a different roof/access opening before treating this balcony as usable.');
+  const balconyAccessText=registeredHouse&&settings.designStyle==='current'&&!cover.accesses.length
+    ?'Current retains the original first-floor windows; choose a renovation style to add balcony access'
+    :balconyAccess?(cover.accesses.length===3?'three new rear room doors connect to the deck':'a new rear access door is proposed'):'rear access does not fit the selected deck or roof';
   $('terrace-cover-summary').textContent=cover.type==='balcony'
-    ?`${fmt(cover.width,1)} × ${fmt(cover.depth,1)} m · ${fmt(cover.deckArea,1)} m² proposed first-floor balcony. Finished deck +${fmt(settings.firstFloorRise,2)} m above the terrace; ${fmt(cover.clearBelow,2)} m below the slab and ${fmt(cover.minimumCoveredHeight,2)} m below the front beam. 1.10 m clear-glass guard; ${balconyAccess?(settings.planExteriorApplied?'three new rear room doors connect to the deck':'a new rear access door is proposed'):'rear access does not fit the selected deck or roof'}. Floor height follows the first-floor assumption. Structure, foundations, waterproofing and drainage require project design and a separate quote.`
+    ?`${fmt(cover.width,1)} × ${fmt(cover.depth,1)} m · ${fmt(cover.deckArea,1)} m² proposed first-floor balcony. Finished deck +${fmt(settings.firstFloorRise,2)} m above the terrace; ${fmt(cover.clearBelow,2)} m below the slab and ${fmt(cover.minimumCoveredHeight,2)} m below the front beam. 1.10 m clear-glass guard; ${balconyAccessText}. Floor height follows the first-floor assumption. Structure, foundations, waterproofing and drainage require project design and a separate quote.`
     :`${fmt(cover.width,1)} × ${fmt(cover.depth,1)} m canopy; roof underside +${fmt(settings.canopyHeight,2)} m above the terrace. The fascia extends ${fmt(settings.fasciaDepth,2)} m below it.`;
   $('terrace-cover-warning').hidden=!cover.enabled||!cover.warnings.length;
   $('terrace-cover-warning').textContent=cover.warnings.join(' ');

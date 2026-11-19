@@ -143,7 +143,7 @@ try{
     const item={id,meshes:s.meshes,triangles:s.triangles,features:s.renovationFeatures};
     if(['japandi','space-age','hidden-bali'].includes(id)){
       item.difference=await pixels(originalFrame,await cameraFrame());assert.ok(item.difference.changed>150,JSON.stringify(item));
-      if(id==='japandi')await shot('ground-japandi-dollhouse');
+      await shot('ground-'+id+'-dollhouse');
     }
     report.styles.push(item);
   }
@@ -151,12 +151,18 @@ try{
   const major=report.styles.filter(s=>['hidden-bali','japandi','space-age'].includes(s.id));assert.equal(new Set(major.map(s=>s.triangles)).size,3);
   await field('style').selectOption('current');await rendered('current','dollhouse');
   report.restoration=await pixels(originalFrame,await cameraFrame());assert.ok(report.restoration.fraction<.004,JSON.stringify(report.restoration));
-  check('All20 renovations have physical feature descriptions and varied rendered geometry; Bali, Japandi and Space Age visibly differ and Current restores the original layout/image');
+  check('All 20 renovations have physical feature descriptions and varied rendered geometry; Bali, Japandi and Space Age visibly differ and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
   await field('style').selectOption('japandi');await field('floor').selectOption('first');await field('room').selectOption('master');
   await field('enter').click();const eye=await rendered('japandi','room');assert.equal(eye.roomId,'master');assert.ok(eye.eyeHeight>1.1&&eye.eyeHeight<2.1);
   assert.equal(eye.contextSource,'shared-site-model');
   await shot('first-floor-master-eye-level');
+  await field('room').selectOption('spa-bath');const spa=await rendered('japandi','room');assert.equal(spa.roomId,'spa-bath');
+  await shot('first-floor-hydro-spa-eye-level');
+  await chooseView('dollhouse');await rendered('japandi','dollhouse');await shot('first-floor-japandi-dollhouse');
+  await field('floor').selectOption('ground');await field('room').selectOption('bathroom');await chooseView('room');
+  const bath=await rendered('japandi','room');assert.equal(bath.roomId,'bathroom');await shot('ground-soaking-bath-eye-level');
+  await field('floor').selectOption('first');
   await field('room').selectOption('office');const office=await rendered('japandi','room');assert.equal(office.roomId,'office');assert.notDeepEqual(office.camera,eye.camera);
   const parked=office.frames,background=await q('#render-diagnostics').getAttribute('data-frames');
   await page.waitForTimeout(240);assert.equal((await info()).scene.frames,parked);assert.equal(await q('#render-diagnostics').getAttribute('data-frames'),background);

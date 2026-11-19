@@ -36,6 +36,14 @@ test('new drawing levels do not rewrite sparse historical designs',()=>{
     assert.deepEqual(model.decodeState(model.encodeState(old)),old);
   }
 });
+test('short current-version style links adopt the shared decks and retain explicit user overrides',()=>{
+  const state=model.decodeState(`v=${STATE_VERSION}&site=sternicza-11&designStyle=japandi&interiorEnabled=true`);
+  assert.equal(state.interiorLayout,'renovation');assert.equal(state.canopyEnabled,true);assert.equal(state.terraceCoverType,'balcony');
+  assert.equal(state.canopyWidth,10.77);assert.equal(state.terraceWidth,10.77);assert.equal(state.canopyDepth,4);assert.equal(state.terraceDepth,4);
+  const altered=model.decodeState(`v=${STATE_VERSION}&site=sternicza-11&designStyle=japandi&canopyDepth=3.2&canopyEnabled=false`);
+  assert.equal(altered.canopyDepth,3.2);assert.equal(altered.canopyEnabled,false);assert.equal(altered.terraceWidth,10.77);
+  assert.deepEqual(model.decodeState(model.encodeState(altered)),altered);
+});
 test('interiors reject executable fields and remain unavailable on unsurveyed properties',()=>{
   const bad=model.sanitizeState({interiorEnabled:'true',interiorLayout:'demolish',interiorStyle:'<script>',interiorRoomId:'<svg onload=x>',interiorView:'unknown'});
   assert.equal(bad.interiorEnabled,false);assert.equal(bad.interiorRoomId,'');assert.equal(bad.interiorStyle,'follow');
