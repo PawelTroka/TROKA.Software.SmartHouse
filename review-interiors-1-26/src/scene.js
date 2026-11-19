@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import { OrbitControls } from '../vendor/OrbitControls.js';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=1.26.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
 import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.26.0';
 import { createPhotoHouseGroup } from './scene-house.js?v=1.26.0';

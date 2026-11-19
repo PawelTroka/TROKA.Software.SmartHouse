@@ -9,6 +9,9 @@ export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
 export const INTERIOR_LAYOUTS = ['existing','renovation'];
 export const INTERIOR_DIMENSIONS = {
   width:10.77, depth:9, bay:{x:3.61,width:3.55,depth:1.68}, terraceDepth:4, balconyDepth:4,
+  // The upper sheet's 355 cm chain is outside the 24 cm masonry, with
+  // 10 cm insulation separately dimensioned on each side: 307 cm clear.
+  firstBay:{x:3.51,width:3.75,depth:1.68,clearWidth:3.07,clearDepth:1.68,masonryThickness:.24,externalInsulation:.10},
   slabThickness:.30, foundationElevation:-2.50, ridgeElevation:8.75, chimneyElevation:9.60,
   roof:{pitchDeg:30,ridgeAxis:'x',ridgeZ:4.5,ridgeElevation:8.75,chimneyElevation:9.60},
   levels:{basement:{elevation:-2,clearHeight:1.70},ground:{elevation:0,clearHeight:2.75},
@@ -135,11 +138,11 @@ function groundPlan(proposed){
 function firstPlan(proposed){
   const t=.34, shell=[
     ...mainSides(t,roomLights()),
-    h('street-left',.17,3.78,8.83,t,[windowAt(1.84)],exterior),
-    h('street-right',6.99,10.60,8.83,t,[windowAt(7.68)],exterior),
-    v('bay-left',3.78,8.83,10.51,t,[windowAt(9.39,.60)],exterior),
-    v('bay-right',6.99,8.83,10.51,t,[windowAt(9.39,.60)],exterior),
-    h('bay-front',3.78,6.99,10.51,t,[windowAt(4.485,1.80)],exterior),
+    h('street-left',.17,3.68,8.83,t,[windowAt(1.84)],exterior),
+    h('street-right',7.09,10.60,8.83,t,[windowAt(7.68)],exterior),
+    v('bay-left',3.68,8.83,10.51,t,[windowAt(9.39,.60)],exterior),
+    v('bay-right',7.09,8.83,10.51,t,[windowAt(9.39,.60)],exterior),
+    h('bay-front',3.68,7.09,10.51,t,[windowAt(4.485,1.80)],exterior),
   ];
   const oldRear=h('garden-facade',.17,10.60,.17,t,rearLights(),exterior);
   const newRear=h('balcony-facade',.17,10.60,.17,t,[2.96,6.54,8.68].map(balconyDoor),{...exterior,...added});
@@ -165,7 +168,7 @@ function firstPlan(proposed){
     h('master-straight',.17,2.985,4.925,.075,[],added),steps[2],
     h('guest-divider',.17,4.22,6.94,.10,[],added),
     v('guest-corridor',4.22,5.84,8.70,.10,[door(5.92,.8,'start',1),door(7.53,.80,'end',1)],added),
-    h('wardrobe-front',3.78,6.95,8.70,.10,[door(4.80,.80,'start',1)],added),
+    h('wardrobe-front',3.68,6.95,8.70,.10,[door(4.80,.80,'start',1)],added),
     h('guest-door-shift',8.07,10.60,3.895,.075,[door(8.18,.80,'start',-1)],added),
     v('sauna-side',9.10,3.895,4.925,.10,[door(4.05,.68,'start',1)],added),
     h('sauna-bath',9.10,10.60,4.925,.10,[],added),
@@ -178,7 +181,7 @@ function firstPlan(proposed){
     room('guest-1',proposed?'Guest bedroom I':'Garden room III',proposed?'guest':'bedroom',rect(8.1075,.34,10.43,3.8575),'3/2',8.42,'Floor panels'),
   ];
   const hallOutline=[[4.6125,3.9325],[9.05,3.9325],[9.05,4.865],[6.86,4.865],[6.86,4.98],[5.88,4.98],[5.88,7.81],[6.89,7.81],[6.89,8.65],[4.27,8.65],[4.27,5.85],[4.57,5.85],[4.57,4.96],[4.6125,4.96]];
-  const originalFront=[[.34,3.9525],[2.9475,3.9525],[2.9475,4.9625],[4.18,4.9625],[4.18,5.85],[4.57,5.85],[4.57,4.98],[5.88,4.98],[5.88,7.81],[6.89,7.81],[6.89,8.66],[6.82,8.66],[6.82,10.34],[3.95,10.34],[3.95,8.66],[.34,8.66]];
+  const originalFront=[[.34,3.9525],[2.9475,3.9525],[2.9475,4.9625],[4.18,4.9625],[4.18,5.85],[4.57,5.85],[4.57,4.98],[5.88,4.98],[5.88,7.81],[6.89,7.81],[6.89,8.66],[6.92,8.66],[6.92,10.34],[3.85,10.34],[3.85,8.66],[.34,8.66]];
   const original=[
     room('hall','Hall','hall',rect(4.6125,3.9325,10.43,4.865),'4/2',5.60,'Floor panels'),
     room('front-room','Front room and bay','living',originalFront,'5/2',28.08,'Floor panels'),
@@ -189,7 +192,7 @@ function firstPlan(proposed){
     room('hall','Hall and landing','hall',hallOutline),
     room('guest-2','Guest bedroom II','guest',[[.34,4.9625],[4.18,4.9625],[4.18,5.85],[4.17,5.85],[4.17,6.89],[.34,6.89]]),
     room('guest-3','Guest bedroom III','guest',rect(.34,6.99,4.17,8.65)),
-    room('wardrobe','Front-bay wardrobe','wardrobe',rect(3.95,8.75,6.82,10.34)),
+    room('wardrobe','Front-bay wardrobe','wardrobe',rect(3.85,8.75,6.92,10.34)),
     room('spa-bath','Spa bathroom','bathroom',[[7.01,5.23],[8.08,5.23],[8.08,4.985],[10.43,4.985],[10.43,8.66],[7.01,8.66]]),
     room('sauna','Compact sauna','sauna',rect(9.15,3.9325,10.43,4.875)),
   ];
@@ -210,8 +213,8 @@ function firstPlan(proposed){
     fixture('guest3-bed','bed','Single bed','guest-3',1.59,7.73,2.0,.90),
     fixture('guest2-store','wardrobe','Shallow storage','guest-2',3.72,5.22,.64,.45),
     fixture('guest3-store','wardrobe','Shallow storage','guest-3',3.48,7.23,.71,.41),
-    fixture('bay-storage','wardrobe','Hanging storage','wardrobe',4.27,9.63,.59,1.15),
-    fixture('bay-storage-east','wardrobe','Hanging storage','wardrobe',6.50,9.63,.59,1.15),
+    fixture('bay-storage','wardrobe','Hanging storage','wardrobe',4.17,9.63,.59,1.15),
+    fixture('bay-storage-east','wardrobe','Hanging storage','wardrobe',6.60,9.63,.59,1.15),
     fixture('spa-jets','tub','Compact whirlpool bath','spa-bath',8.10,5.68,1.80,.80,{variant:'whirlpool'}),
     fixture('spa-shower','shower','Two-person shower','spa-bath',9.76,5.94,1.20,1.56,{heads:2}),
     fixture('spa-soak','tub','Deep soaking tub','spa-bath',9.92,7.69,.86,1.70,{variant:'soaking'}),
@@ -232,10 +235,11 @@ function firstPlan(proposed){
     sources:sources('first','front','side','section','structure',...(proposed?['first-markup']:[])),
     issues:proposed?[
       'The two new front guest rooms fit compact singles. The folding attic hatch opens into their new circulation route; check ladder deployment and door swings.',
+      'The bay is printed 3.07 × 1.68 m inside. The proposed 10 cm wardrobe partition leaves about 3.07 × 1.59 m clear; retaining the full depth would move it about 9 cm toward the hall and require the adjoining door routes to be checked.',
       'The sauna has about 1.28 × 0.94 m inside. A 1.20 × 1.24 m two-person cabin requires roughly 0.30 m extra depth. Heater clearances, ventilation, door and final seating remain unresolved.',
       'The spa fits a compact 1.80 × 0.80 m whirlpool, 1.70 × 0.86 m soaking bath and 1.20 × 1.56 m shower. Verify approach, privacy at the glazed stair partition, plumbing, waterproofing and filled loads on the timber floor.',
       'The third rear door is new. Verify structure, independent support, waterproofing, guards and thresholds for the 4 m balcony.',
-    ]:['The front room extends around the stair opening into the bay. The drawing shows a folding attic stair separately from the main timber stair. Furniture outside the printed wet-room fittings is undocumented.'],
+    ]:['The front room extends around the stair opening into the bay. The bay is printed 3.07 × 1.68 m inside, with 24 cm masonry and 10 cm external insulation. The drawing shows a folding attic stair separately from the main timber stair. Furniture outside the printed wet-room fittings is undocumented.'],
   };
 }
 
@@ -392,8 +396,9 @@ export function getInteriorPlan({floor='ground',layout='renovation',garageVarian
   const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed),
     first:()=>firstPlan(proposed),attic:atticPlan};
   const detail=builders[floor]();
-  const {bay,roof}=INTERIOR_DIMENSIONS;
-  const outline=floor==='ground'||floor==='first'?[[0,0],[WIDTH,0],[WIDTH,9],[7.16,9],[7.16,10.68],[3.61,10.68],[3.61,9],[0,9]]:rect(0,0,WIDTH,9);
+  const {roof}=INTERIOR_DIMENSIONS,bay=floor==='first'?INTERIOR_DIMENSIONS.firstBay:INTERIOR_DIMENSIONS.bay;
+  const bayRight=round(bay.x+bay.width),bayFront=round(DEPTH+bay.depth);
+  const outline=floor==='ground'||floor==='first'?[[0,0],[WIDTH,0],[WIDTH,9],[bayRight,9],[bayRight,bayFront],[bay.x,bayFront],[bay.x,9],[0,9]]:rect(0,0,WIDTH,9);
   const plan={floor,layout,garageVariant:converted?'two-car':'cellar',envelope:{width:WIDTH,depth:DEPTH,bay:{...bay},outline},
     roof:{...roof},...INTERIOR_DIMENSIONS.levels[floor],conflicts:[],...detail};
   plan.walls=plan.walls.map(w=>({...w,height:w.height??plan.clearHeight}));

@@ -94,16 +94,18 @@ function makePendant(g,x,z,y,tools,m,kind) {
 export function buildArchitecture(plan,state,tools,finishes) {
   const {m,architecturalFloor,style}=finishes,{group,box,rod}=tools,root=new THREE.Group(),base=group(root),ceiling=group(root),props=group(root),decor=group(root),changes=group(root);
   const outline=plan.envelope.outline,holes=plan.voids||[],floor=plan.floor,attic=floor==='attic',outlineBox=ringBounds(outline),h=plan.clearHeight,slab=.20;
+  const originalCellar=floor==='basement'&&plan.layout==='existing';
   const sides=new Map();
   function wallPair(key){if(!sides.has(key))sides.set(key,{full:group(root),cut:group(root)});return sides.get(key);}
   function edgeBox(parent,material,a,b,height,bottom,width){const dx=b[0]-a[0],dz=b[1]-a[1];const mesh=box(parent,material,(a[0]+b[0])/2,bottom+height/2,(a[1]+b[1])/2,Math.hypot(dx,dz),height,width);mesh.rotation.y=-Math.atan2(dz,dx);}
-  floorMesh(base,outline,floor==='basement'?m.concrete:architecturalFloor,.002,holes);
+  floorMesh(base,outline,floor==='basement'?(originalCellar?m.earth:m.concrete):architecturalFloor,.002,holes);
   edges(outline,(a,b)=>edgeBox(base,m.plinth,a,b,slab,-slab,.009));
   for(const hole of holes)edges(hole,(a,b)=>edgeBox(base,m.wood,a,b,slab,-slab,.026));
-  // Finish patches follow the room polygons, with a continuous structural floor beneath.
+  // Finish patches follow the room polygons over a continuous display base.
   for(const r of plan.rooms){
     const wet=['bathroom','bath','kitchen','sauna','utility','garage'].includes(r.kind),finish=(r.finish||'').toLowerCase();
-    const mat=floor==='basement'?m.concrete:r.kind==='sauna'?m.boards:wet||finish.includes('tile')?m.tiles:architecturalFloor;
+    const cellarFinish=originalCellar?(finish==='brick'?m.brickFloor:m.earth):m.concrete;
+    const mat=floor==='basement'?cellarFinish:r.kind==='sauna'?m.boards:wet||finish.includes('tile')?m.tiles:architecturalFloor;
     floorMesh(base,r.polygon,mat,.008,holes);
     if(r.kind==='sauna'&&plan.layout==='renovation'){
       const b=ringBounds(r.polygon),n=Math.ceil(b.width/.086);for(let i=0;i<n;i++)box(base,m.oak,b.x0+(i+.5)*b.width/n,.75,b.z1-.012,b.width/n-.005,1.5,.024);
@@ -127,7 +129,13 @@ export function buildArchitecture(plan,state,tools,finishes) {
       const panel=panels.sort((a,b)=>(b.right-b.left)-(a.right-a.left))[0];
       if(panel){const offset=(panel.left+panel.right)/2,len=Math.hypot(dx,dz),px=w.a[0]+dx/len*offset,pz=w.a[1]+dz/len*offset;
         const toward=dir==='left'?[1,0]:dir==='right'?[-1,0]:[0,-1];const room=plan.rooms.find(r=>containsPoint(r.polygon,px+toward[0]*.45,pz+toward[1]*.45));
-        if(room&&['living','bedroom','guest','dining','office'].includes(room.kind)){
+        // Keep the picture's 70 cm span clear of the TV on the same solid bay.
+        const tvOverlap=room&&(plan.fixtures||[]).some(f=>{
+          if(f.kind!=='tv'||f.roomId!==room.id)return false;
+          const x=px+toward[0]*(w.thickness/2+.018)-f.x,z=pz+toward[1]*(w.thickness/2+.018)-f.z,a=f.rotation||0,c=Math.cos(a),s=Math.sin(a);
+          return Math.abs(x*c-z*s)<f.width/2+.38&&Math.abs(x*s+z*c)<f.depth/2+.38;
+        });
+        if(room&&!tvOverlap&&['living','bedroom','guest','dining','office'].includes(room.kind)){
           const trim=group(pair.full,px+toward[0]*(w.thickness/2+.018),1.58,pz+toward[1]*(w.thickness/2+.018),Math.atan2(toward[0],toward[1]));
           box(trim,m.wood,0,0,0,.70,.83,.031);box(trim,m.paper,0,0,.017,.653,.783,.007);const art=new THREE.Mesh(new THREE.PlaneGeometry(.505,.631),m.art);art.position.z=.022;trim.add(art);
         }

@@ -35,6 +35,15 @@ function mineral(tile) {
     if(tile){ctx.fillStyle='#a9a8a0';ctx.fillRect(0,0,256,1.4);ctx.fillRect(0,0,1.4,256);}
   },tile?1/.58:1,tile?1/.58:1);
 }
+function brickPaving() {
+  return pattern(256,128,(ctx,rnd)=>{
+    ctx.fillStyle='#b6b0a4';ctx.fillRect(0,0,256,128);
+    for(let row=0;row<2;row++)for(let col=-1;col<3;col++){
+      const shade=Math.round(214+rnd()*30);ctx.fillStyle=`rgb(${shade},${shade-4},${shade-7})`;
+      ctx.fillRect(col*128+(row%2)*64+2,row*64+2,124,60);
+    }
+  },1/.50,1/.24);
+}
 function weave(rug=false) {
   return pattern(128,128,(ctx,rnd)=>{
     ctx.fillStyle='#f4f0e5';ctx.fillRect(0,0,128,128);
@@ -68,6 +77,7 @@ export function interiorMaterials(styleId) {
     leaf:make('#52694c',.8),leafLight:make('#829573',.76),pot:make(mix(p.accent,'#ca9378',.43),.8),paper:make('#e5dcc4'),art:make('#ffffff',.8,{map:map(artwork(p))}),
     glow:make(p.light,.5,{emissive:p.light,emissiveIntensity:.55}),addition:make('#539a80'),removed:make('#c35844'),
     concrete:make('#aca99d',.94,{map:stoneMap}),brick:make('#aa8169',.93,{map:tileMap}),plinth:make('#5b635b',.88),
+    brickFloor:make('#a36d4f',.96,{map:map(brickPaving())}),earth:make('#74634e',1,{map:stoneMap}),
   };
   const stoneFloors=['modern-minimal','space-age','party-club','industrial-loft','mediterranean-villa','desert-modern','riviera-deco','palm-springs'];
   const architecturalFloor=stoneFloors.includes(style.id)?m.tiles:m.boards;
