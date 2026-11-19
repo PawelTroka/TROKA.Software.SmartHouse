@@ -73,10 +73,34 @@ function wallDrawing(wall, changes) {
   return `<g transform="${transform}">${solids}${symbols}</g>`;
 }
 
+// Front/headboard vectors describe world-space facing while width/depth remain
+// world-axis footprint dimensions. Three's positive Y rotation becomes a
+// negative SVG rotation because the paper's z axis runs down the page.
+export function fixturePlanFrame(f) {
+  let width=f.width,depth=f.depth,rotation=f.rotation||0;
+  const kind=String(f.kind||'').toLowerCase();
+  const front=kind==='bed'&&f.headboard?f.headboard.map(v=>-v):f.front;
+  if(front) {
+    const angle=Math.atan2(front[0],front[1]);
+    if(kind==='sofa'&&f.shape?.toUpperCase()==='U') {
+      if(Math.abs(front[1])>.5)[width,depth]=[depth,width];
+      rotation+=angle-Math.PI/2;
+    } else {
+      if(Math.abs(front[0])>.5)[width,depth]=[depth,width];
+      rotation+=angle;
+    }
+  } else if(((kind==='bed'||kind==='toilet'||kind==='wc'||kind==='car')&&width>depth) || (kind==='desk'&&depth>width)) {
+    [width,depth]=[depth,width];rotation+=Math.PI/2;
+  } else if(kind==='tv'&&depth>width) {
+    [width,depth]=[depth,width];rotation-=Math.PI/2;
+  }
+  return {width,depth,rotation};
+}
+
 function fixtureDrawing(f) {
-  const w = f.width, d = f.depth;
+  const {width:w,depth:d,rotation}=fixturePlanFrame(f);
   if (!(w > 0 && d > 0)) return '';
-  const kind = f.kind, x = -w/2, y = -d/2;
+  const kind = String(f.kind).toLowerCase(), x = -w/2, y = -d/2;
   const rect = (a,b,width,height,r = .035) => `<rect x="${n(a)}" y="${n(b)}" width="${n(width)}" height="${n(height)}" rx="${n(r)}"/>`;
   let shape = rect(x,y,w,d);
   if (/bed/.test(kind)) {
@@ -87,18 +111,50 @@ function fixtureDrawing(f) {
     shape += rect(x+w*.08,y+d*.19,w*.84,d*.7,.07);
   } else if (/dining|table/.test(kind)) {
     shape = rect(x,y,w,d,.12);
-  } else if (/bath|tub|sink|basin/.test(kind)) {
+  } else if (kind==='hottub') {
+    shape=rect(x,y,w,d,.12)+rect(x+.15,y+.15,w-.30,d-.30,.17);
+    for(let i=0;i<10;i++) {
+      const angle=i*Math.PI/5;
+      shape+=`<circle cx="${n(Math.cos(angle)*(w/2-.21))}" cy="${n(Math.sin(angle)*(d/2-.21))}" r=".024"/>`;
+    }
+  } else if (/sink|basin/.test(kind)) {
+    const count=f.basins===2?2:1;
+    for(let i=0;i<count;i++) {
+      const cx=(i-(count-1)/2)*w/count;
+      shape+=`<ellipse cx="${n(cx)}" cy="${n(d*.025)}" rx="${n(w/count*.37)}" ry="${n(d*.34)}"/>`;
+      shape+=line(cx,-d*.41,cx,-d*.22,'');
+    }
+  } else if (/bath|tub/.test(kind)) {
     shape += rect(x+w*.1,y+d*.12,w*.8,d*.76,Math.min(w,d)*.23);
   } else if (/shower/.test(kind)) {
-    shape += line(x,y,-x,-y,'') + line(-x,y,x,-y,'');
+    // The open front and rain-head positions follow the same fixture frame as
+    // the 3D shower, including a side-wall mixer beside an existing window.
+    shape += line(x,y,-x,y,'')+line(x,y,x,d*.25,'');
+    const headWall=f.headWall;
+    const local=headWall?[Math.cos(rotation)*headWall[0]-Math.sin(rotation)*headWall[1],Math.sin(rotation)*headWall[0]+Math.cos(rotation)*headWall[1]]:[0,-1];
+    for(let i=0;i<(f.heads||1);i++) {
+      const t=(i-((f.heads||1)-1)/2)*.46;
+      const hx=Math.abs(local[0])>.5?Math.sign(local[0])*w*.32:t*w;
+      const hz=Math.abs(local[0])>.5?t*d:Math.sign(local[1])*d*.32;
+      shape+=`<circle cx="${n(hx)}" cy="${n(hz)}" r=".075"/>`;
+    }
   } else if (/toilet|wc/.test(kind)) {
     shape = rect(x,y,w,d*.23) + `<ellipse cx="0" cy="${n(y+d*.59)}" rx="${n(w*.44)}" ry="${n(d*.37)}"/>`;
+  } else if(kind==='bidet') {
+    shape=`<ellipse cx="0" cy="0" rx="${n(w*.47)}" ry="${n(d*.47)}"/>`+rect(-w*.27,-d*.20,w*.54,d*.49,Math.min(w,d)*.15)+line(0,-d*.40,0,-d*.24,'');
+  } else if(kind==='desk') {
+    shape+=rect(-w*.28,-d*.27,w*.56,.035,.008)+rect(-w*.19,d*.10,w*.38,d*.17,.01);
+  } else if(kind==='chair') {
+    shape+=rect(x,y,w,d*.15,.025);
+  } else if(kind==='spastep') {
+    shape+=line(x,0,-x,0,'');
   } else if (/wardrobe|cabinet|counter|shelf|kitchen|closet/.test(kind)) {
     shape += line(x+w/2,y,x+w/2,-y,'');
+    shape += line(-w*.30,d*.40,w*.30,d*.40,'');
   } else if (/car/.test(kind)) {
     shape += rect(x+w*.1,y+d*.24,w*.8,d*.48,.11);
   }
-  return `<g class="iw-fixture" transform="translate(${n(f.x)} ${n(f.z)}) rotate(${n((f.rotation||0)*180/Math.PI)})"><title>${esc(f.label || kind)}</title>${shape}</g>`;
+  return `<g class="iw-fixture" data-iw-fixture="${esc(f.id)}" transform="translate(${n(f.x)} ${n(f.z)}) rotate(${n(-rotation*180/Math.PI)})"><title>${esc(f.label || kind)}</title>${shape}</g>`;
 }
 
 function stairDrawing(stair, idx) {

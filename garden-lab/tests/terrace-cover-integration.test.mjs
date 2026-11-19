@@ -128,7 +128,7 @@ test('full plan and sightline section label the selected balcony without drawing
 });
 
 test('linked garden plan shows each actual doorway and tracks missing balcony landings',()=>{
-  const s={siteId:'sternicza-11',planExteriorApplied:true,canopyEnabled:true,terraceCoverType:'balcony',
+  const s={siteId:'sternicza-11',designStyle:'hidden-bali',planExteriorApplied:true,canopyEnabled:true,terraceCoverType:'balcony',
     floorHeight:1.2,firstFloorRise:3.05,terraceWidth:10.77,canopyWidth:10.77,canopyDepth:4,terraceDepth:4};
   const applied=applyPlanExterior(data,s),floorZ=data.site.floorReference.z+s.floorHeight;
   const full=terraceCoverLayout(s,applied,{floorZ}),facade=houseAppearanceLayout(applied,s);
@@ -154,4 +154,35 @@ test('linked garden plan shows each actual doorway and tracks missing balcony la
   const tooHigh=terraceCoverLayout({...s,firstFloorRise:6},applied,{floorZ});
   assert.equal(tooHigh.accessFits,false);assert.equal(tooHigh.accesses.length,0);assert.equal(tooHigh.access,null);
   assert.ok(tooHigh.warnings.some(w=>w.includes('0 of the three')));
+});
+
+test('a registered Current house cannot invent a balcony door from the manual deck selection or plan flag',()=>{
+  const settings={...base,designStyle:'current',interiorLayout:'renovation',firstFloorRise:3.05,
+    terraceWidth:10.77,canopyWidth:10.77},floorZ=data.site.floorReference.z+settings.floorHeight;
+  for(const planExteriorApplied of [false,true]){
+    const s={...settings,planExteriorApplied},registered=applyPlanExterior(data,s);
+    const cover=terraceCoverLayout(s,registered,{floorZ}),facade=houseAppearanceLayout(registered,s);
+    assert.equal(cover.enabled,true);assert.ok(cover.boxes.some(box=>box.part==='slab'));
+    assert.equal(facade.windows.some(w=>w.kind==='balcony-door'),false);
+    assert.equal(cover.access,null);assert.deepEqual(cover.accesses,[]);assert.equal(cover.accessFits,false);
+    assert.match(cover.warnings.join(' '),/Current retains the original first-floor windows[\s\S]*Choose a renovation style/);
+    assert.doesNotMatch(cover.warnings.join(' '),/below the mapped roof/);
+    assert.doesNotMatch(terraceCoverPlanMarkup(cover,{X:x=>x,Y:y=>y,scale:1}),/data-terrace-cover-access/);
+  }
+  const legacy=terraceCoverLayout({...settings,planExteriorApplied:false},data,{floorZ});
+  assert.ok(legacy.access);assert.equal(legacy.accesses.length,1);
+  assert.equal(legacy.access.proposed,true,'Unregistered historical assumptions keep their proposed access');
+});
+
+test('registered renovations follow all three actual balcony apertures even without the old plan flag',()=>{
+  const settings={...base,designStyle:'hidden-bali',interiorLayout:'existing',planExteriorApplied:false,
+    firstFloorRise:3.05,terraceWidth:10.77,canopyWidth:10.77};
+  const registered=applyPlanExterior(data,settings),floorZ=data.site.floorReference.z+settings.floorHeight;
+  const actual=terraceCoverLayout(settings,registered,{floorZ});
+  const flagged=terraceCoverLayout({...settings,planExteriorApplied:true},registered,{floorZ});
+  assert.equal(actual.accessFits,true);assert.equal(actual.accesses.length,3);
+  assert.deepEqual(actual.accesses,flagged.accesses);
+  assert.ok(actual.accesses.every(door=>door.id.startsWith('rear-balcony-room-')&&door.fitsDeck));
+  assert.equal(actual.access.id,'rear-balcony-room-1');
+  assert.doesNotMatch(actual.warnings.join(' '),/Choose a renovation style/);
 });

@@ -1,7 +1,7 @@
 /** Shared front-entry stairs and their gate-to-bottom approach, in site metres.
  * Feed the filtered house appearance layout: inactive garage frame proposals
  * must never select the side-return stair. All dimensions remain proposals. */
-import {facadePoint} from './house-appearance.js?v=1.26.0';
+import {facadePoint} from './house-appearance.js?v=1.27.0';
 
 const EPS=1e-7;
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;

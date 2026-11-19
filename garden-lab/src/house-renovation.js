@@ -1,22 +1,50 @@
 // Shallow, additive facade treatments in wall-local metres. The renderers use
 // these same window and entry records for the underlying house.
-import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.26.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.26.0';
-import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.26.0';
-import {roofEdgeHeight} from './roof-envelope.js?v=1.26.0';
-import {garageLayout} from './garage-ramp.js?v=1.26.0';
-import {terrainAt} from './geometry.js?v=1.26.0';
-import {getDesignStyle} from './design-styles.js?v=1.26.0';
+import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.27.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.27.0';
+import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.27.0';
+import {roofEdgeHeight} from './roof-envelope.js?v=1.27.0';
+import {garageLayout} from './garage-ramp.js?v=1.27.0';
+import {terrainAt} from './geometry.js?v=1.27.0';
+import {getDesignStyle} from './design-styles.js?v=1.27.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.27.0';
 
 function minimumRoof(edge,lo,hi){
   const roof=edge.roofEdge;
+  if(!roof)return Number.isFinite(edge.topZ)?edge.topZ:Infinity;
   const height=d=>roof.fractions?photoRoofEdgeHeight(roof,d):roofEdgeHeight(roof,d/edge.length);
   let minimum=Math.min(height(lo),height(hi));
   for(let i=1;i<roof.points.length-1;i++){
     const d=edge.length*(roof.fractions?.[i]??i/(roof.points.length-1));
     if(d>lo&&d<hi)minimum=Math.min(minimum,roof.points[i][2]);
   }
-  return minimum;
+  return Math.min(minimum,Number.isFinite(edge.topZ)?edge.topZ:Infinity);
+}
+
+// Keep the portion of a wall band beneath its own roof segment. Taking the
+// lowest eave across an entire irregular facade would erase usable wall fields.
+function roofSpans(edge,lo,hi,height){
+  if(Number.isFinite(edge.topZ)&&height>edge.topZ)return [];
+  const roof=edge.roofEdge;
+  if(!roof)return [[lo,hi]];
+  const spans=[];
+  for(let i=0;i<roof.points.length-1;i++){
+    const x0=edge.length*(roof.fractions?.[i]??i/(roof.points.length-1));
+    const x1=edge.length*(roof.fractions?.[i+1]??(i+1)/(roof.points.length-1));
+    let a=Math.max(lo,x0),b=Math.min(hi,x1);
+    if(b<=a||x1<=x0)continue;
+    const z0=roof.points[i][2],z1=roof.points[i+1][2],slope=(z1-z0)/(x1-x0);
+    if(Math.abs(slope)<1e-8){if(z0<height)continue;}
+    else{
+      const crossing=x0+(height-z0)/slope;
+      if(slope>0)a=Math.max(a,crossing);else b=Math.min(b,crossing);
+    }
+    if(b<=a)continue;
+    const previous=spans.at(-1);
+    if(previous&&Math.abs(previous[1]-a)<1e-7)previous[1]=b;
+    else spans.push([a,b]);
+  }
+  return spans;
 }
 
 function openingGuards(layout,edge){
@@ -88,7 +116,7 @@ function openingTrim(w,trim,shutters,place){
 function cladding(bay,recipe,place){
   const {lo,hi,bottom,top,edgeIndex}=bay,{field,pitch}=recipe;
   const put=(kind,a,b,c,d,depth,finish,tone=1)=>place({
-    kind,lo:a,hi:b,bottom:c,top:d,depth,finish,tone,bayId:`bay-${edgeIndex}`});
+    kind,lo:a,hi:b,bottom:c,top:d,depth,finish,tone,bayId:bay.id??`bay-${edgeIndex}`});
   const wood=['boards','battens','paired','lap'].includes(field);
   const finish=wood?'wood':field==='flutes'?'houseFrame':'surface';
   put('cladding-backing',lo,hi,bottom,top,.027,wood?'houseFrame':'edge');
@@ -127,18 +155,18 @@ function cladding(bay,recipe,place){
 /** Every part lies outside apertures and below the roof seam on its own facade. */
 export function houseRenovationParts(layout,style){
   if(!style?.renovation||!layout?.edges?.length)return [];
-  const recipe=style.renovation,parts=[],bays=[];
+  const recipe=style.renovation,construction=getExteriorSurfaceSpec(style),parts=[],bays=[];
   // Bound the number of full-height shutter assemblies. Give the garden facade first choice.
   const trimWindows=layout.windows.filter(w=>w.level!=='basement'&&w.hi>w.lo&&w.height>0);
   const shutterOrder=trimWindows.filter(w=>!['hst','balcony-door'].includes(w.kind))
     .sort((a,b)=>Number(b.edgeIndex===layout.rear.index)-Number(a.edgeIndex===layout.rear.index));
-  const shutterIds=new Set(shutterOrder.slice(0,5).map(w=>w.id));
+  const shutterIds=new Set(shutterOrder.slice(0,14).map(w=>w.id));
   for(const edge of layout.edges){
     if(edge.length<1.5)continue;
     const guards=openingGuards(layout,edge);
     const place=part=>{
       const {lo,hi,bottom,top}=part;
-      if(lo<.105||hi>edge.length-.105||hi<=lo||top<=bottom||bottom<layout.baseZ+.035||top>minimumRoof(edge,lo,hi)-.09)return false;
+      if(lo<.105||hi>edge.length-.105||hi<=lo||top<=bottom||bottom<Math.max(layout.baseZ,edge.baseZ??layout.baseZ)+.035||top>minimumRoof(edge,lo,hi)-.09)return false;
       if(guards.some(g=>hi>g.lo-.015&&lo<g.hi+.015&&top>g.bottom-.015&&bottom<g.top+.015))return false;
       parts.push({...part,edgeIndex:edge.index});return true;
     };
@@ -153,26 +181,62 @@ export function houseRenovationParts(layout,style){
         if(hi-lo>.40)place({kind:'stringcourse',lo,hi,bottom,top,depth:.076-i*.01,finish:i===0&&recipe.belt===1&&style.id!=='palm-springs'?'houseFrame':'accent'});
       }
     }
-    // Select an uninterrupted patch of masonry between existing openings. On
-    // mapped houses the unlocated street entrances keep their lower wall clear.
-    const levels=[layout.floorZ+3.13];
-    if(layout.door||edge===layout.rear)levels.push(layout.floorZ+.16);
-    let best=null;
-    for(const bottom of levels){
-      const targetTop=bottom+2.50;
+    // Renovations cover actual wall fields rather than three isolated samples.
+    // Split at every reveal/trim height first, then clip every horizontal band
+    // around openings. This preserves light and access through the whole facade.
+    const upper=(layout.firstFloorZ??layout.floorZ+3.05)+.10;
+    const lower=layout.floorZ+.16;
+    const canUseLower=Boolean(layout.door||edge===layout.rear);
+    const coverage=construction?.coverage??'piers';
+    const fullFields=[];
+    if(['upper','upper-and-piers','all-panels'].includes(coverage))fullFields.push([upper,upper+2.49]);
+    if(coverage==='all-panels'&&canUseLower)fullFields.push([lower,lower+2.50]);
+    if(['mineral-base','masonry-piers'].includes(coverage)&&canUseLower)fullFields.push([lower,lower+(coverage==='masonry-piers'?.91:.72)]);
+    for(const [requestedBottom,requestedTop] of fullFields){
+      const bottom=Math.max(requestedBottom,(edge.baseZ??layout.baseZ)+.04);
+      const top=Math.min(requestedTop,Number.isFinite(edge.topZ)?edge.topZ-.18:Infinity);
+      if(top-bottom<.15)continue;
+      const roofCuts=edge.roofEdge?.points.map(p=>p[2]-.18)??[];
+      const cuts=[...new Set([bottom,top,...blocked.flatMap(g=>[g.bottom-.055,g.top+.055]),...roofCuts].filter(z=>z>=bottom&&z<=top))].sort((a,b)=>a-b);
+      for(let k=0;k<cuts.length-1;k++){
+        const z0=cuts[k],z1=cuts[k+1];if(z1-z0<.055)continue;
+        for(const [a,b]of freeSpans(edge,z0,z1,blocked,.06)){
+          for(const [lo,hi]of roofSpans(edge,a,b,z1+.18)){
+            if(hi-lo<.12)continue;
+            bays.push({id:`field-${edge.index}-${k}`,edgeIndex:edge.index,lo,hi,bottom:z0,top:z1,place});
+          }
+        }
+      }
+    }
+    // Piers use the remaining full-height solid bays. On mapped houses, an
+    // unlocated street entrance still reserves its lower facade.
+    const levels=['piers','masonry-piers','mineral-base'].includes(coverage)?[upper]:[];
+    if(canUseLower&&['piers','upper-and-piers','masonry-piers'].includes(coverage))levels.push(lower);
+    for(const level of levels){
+      const bottom=Math.max(level,(edge.baseZ??layout.baseZ)+.04);
+      const targetTop=level+2.50;
+      if(targetTop<=bottom+.15)continue;
       for(const [left,right] of freeSpans(edge,bottom,targetTop,blocked,.105)){
-        const width=Math.min(2.45,right-left);
+        const width=Math.min(3.10,right-left);
         if(width<.59)continue;
         const lo=(left+right-width)/2,hi=lo+width;
         const top=Math.min(targetTop,minimumRoof(edge,lo,hi)-.22);
         if(top-bottom<1.12)continue;
-        const score=width*(top-bottom);
-        if(!best||score>best.score)best={edgeIndex:edge.index,lo,hi,bottom,top,score,place};
+        // The lower masonry base already covers the first 91 cm.
+        const from=coverage==='masonry-piers'&&bottom===lower?lower+.95:bottom;
+        if(top-from>.2)bays.push({id:`pier-${edge.index}-${lo.toFixed(3)}-${bottom.toFixed(3)}`,edgeIndex:edge.index,lo,hi,bottom:from,top,place});
       }
     }
-    if(best)bays.push({...best,score:best.score+(edge===layout.rear?5:0)});
+    // Fine eaves caps and cornice shadows run across each available wall. They
+    // remain inside the established 14 cm projection and never cover a pane.
+    const eaveTop=minimumRoof(edge,.22,edge.length-.22)-.11;
+    if(eaveTop>upper+1){
+      const eaveDepth=recipe.trim==='crosshead'?.135:recipe.trim==='stepped'?.12:.075;
+      for(const [lo,hi]of freeSpans(edge,eaveTop-.10,eaveTop,guards,.055))if(hi-lo>.25)
+        place({kind:'eaves-finish',lo,hi,bottom:eaveTop-.10,top:eaveTop,depth:eaveDepth,finish:['boards','battens','paired','lap'].includes(recipe.field)?'wood':'edge'});
+    }
   }
-  for(const bay of bays.sort((a,b)=>b.score-a.score).slice(0,3))cladding(bay,recipe,bay.place);
+  for(const bay of bays)cladding(bay,recipe,bay.place);
   return parts;
 }
 
@@ -180,7 +244,9 @@ export function summarizeHouseRenovation(parts,style){
   return {active:parts.length>0,styleId:style?.id??'current',description:style?.renovation?.description??'Original house finishes',
     partCount:parts.length,accentBayCount:new Set(parts.map(p=>p.bayId).filter(Boolean)).size,
     trimmedOpeningCount:new Set(parts.map(p=>p.openingId).filter(Boolean)).size,
-    maxProjectionM:parts.reduce((max,p)=>Math.max(max,p.depth),0)};
+    claddingAreaM2:parts.filter(p=>p.kind==='cladding-backing').reduce((sum,p)=>sum+(p.hi-p.lo)*(p.top-p.bottom),0),
+    maxProjectionM:parts.reduce((max,p)=>Math.max(max,p.depth),0),coverage:getExteriorSurfaceSpec(style)?.coverage??'none',
+    surfaceSpecification:getExteriorSurfaceSpec(style)};
 }
 
 export function houseRenovationSummary(data,settings,style=getDesignStyle(settings.designStyle)){

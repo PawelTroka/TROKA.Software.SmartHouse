@@ -122,7 +122,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,26);
+ assert.equal(STATE_VERSION,27);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -421,7 +421,7 @@ test('explicit v17 empty and custom planting preserves quotes and changes throug
  }
 });
 
-test('v24 styles adopt the renovated house and discard the old scope quote, while v25 preserves opt-outs',()=>{
+test('historical styles adopt one coordinated renovation while explicit Current remains original',()=>{
  const site=DEFAULTS.siteId;
  for(const styleHouseFinish of [undefined,true,false]){
   const original={siteId:site,designStyle:'japandi',costStyleUpgradeQuote:22500,canopyHeight:2.8};
@@ -434,7 +434,7 @@ test('v24 styles adopt the renovated house and discard the old scope quote, whil
   }
   shared.set('v','25');
   for(const current of [sanitizeState(original),migrateSavedState(original,25),decodeState(shared.toString())]){
-   assert.equal(current.styleHouseFinish,styleHouseFinish!==false);
+   assert.equal(current.styleHouseFinish,true);
    assert.equal(current.costStyleUpgradeQuote,22500);
    assert.deepEqual(decodeState(encodeState(current)),current);
   }

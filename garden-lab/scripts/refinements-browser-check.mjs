@@ -116,14 +116,21 @@ try{
   await page.waitForFunction(()=>document.querySelector('#viewport')?.dataset.terraceCover==='balcony');
   assert.equal(await page.locator('[data-field="canopyHeight"]').isVisible(),false);
   assert.equal(await page.locator('[data-preset="balcony"]').isVisible(),true);
-  assert.match(await page.locator('#terrace-cover-summary').innerText(),/first-floor balcony[\s\S]*clear-glass guard[\s\S]*new rear access door/);
+  assert.equal(await page.locator('#designStyle').inputValue(),'current');
+  assert.match(await page.locator('#terrace-cover-summary').innerText(),/first-floor balcony[\s\S]*clear-glass guard[\s\S]*Current retains[\s\S]*choose a renovation style/);
+  assert.equal(await page.locator('#terrace-cover-warning').isVisible(),true);
+  assert.match(await page.locator('#terrace-cover-warning').innerText(),/no balcony access door[\s\S]*Choose a renovation style/);
   const balconyFrame=await sceneFrame();report.balconyPixelDifference=await changedPixels(canopyFrame,balconyFrame);assert.ok(report.balconyPixelDifference>150);
   await shot('sternicza-balcony-garden');await page.locator('[data-preset="balcony"]').click();
   await page.waitForFunction(()=>document.querySelector('#observer-readout')?.textContent.includes('above balcony deck'));
   const balconyExport=await exported();assert.equal(balconyExport.summary.observer.surface,'balcony');
   assert.equal(balconyExport.settings.terraceCoverType,'balcony');assert.equal(balconyExport.settings.canopyEnabled,true);
-  report.balcony={observer:balconyExport.summary.observer,summary:await page.locator('#terrace-cover-summary').innerText()};
-  check('Balcony replaces the canopy in the rendered scene and exposes a first-floor viewpoint and proposed guarded deck');
+  assert.equal(balconyExport.terraceCover.access,null);assert.deepEqual(balconyExport.terraceCover.accesses,[]);
+  assert.equal(balconyExport.terraceCover.accessFits,false);
+  assert.ok(balconyExport.interiors.floors.first.walls.every(wall=>wall.openings.every(opening=>opening.type!=='balcony-door')));
+  report.balcony={observer:balconyExport.summary.observer,summary:await page.locator('#terrace-cover-summary').innerText(),
+    accesses:balconyExport.terraceCover.accesses,accessFits:balconyExport.terraceCover.accessFits};
+  check('A manually selected guarded balcony replaces the canopy; Current truthfully has no house access until a renovation adds doors');
 
   await page.locator('[data-preset="pool"]').click();
   await page.waitForFunction(()=>document.querySelector('#observer-readout')?.textContent.includes('0.15 m above pool water'));

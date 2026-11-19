@@ -124,9 +124,10 @@ test('renovated fittings stay in their assigned room and clear the flue cores',(
     const zOverlap=(a.depth+b.depth)/2-Math.abs(a.z-b.z);
     assert.ok(xOverlap<=0||zOverlap<=0,a.id+' overlaps '+b.id);
   }
-  assert.deepEqual(first.fixtures.filter(f=>f.kind==='tub').map(f=>f.variant).sort(),['soaking','whirlpool']);
+  assert.equal(first.fixtures.filter(f=>f.kind==='tub').length,0);
+  assert.equal(first.fixtures.filter(f=>f.kind==='hotTub').length,1);
   assert.equal(first.fixtures.find(f=>f.kind==='shower').heads,2);
-  assert.match(first.issues.find(x=>x.includes('sauna')),/extra depth/);
+  assert.match(first.issues.find(x=>x.includes('sauna')),/1\.28 × 1\.30/);
 });
 test('every proposed upper room connects to the landing through real doorway gaps',()=>{
   const plan=proposal('first');
