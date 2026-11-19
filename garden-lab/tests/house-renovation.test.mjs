@@ -43,7 +43,7 @@ function checkClearance(parts,layout){
 }
 
 test('each style fits all three facades and changes the shape of physical fittings',()=>{
-  assert.equal(styles.length,20);
+  assert.equal(styles.length,21);
   for(const {data,model} of sites){
     const settings=model.DEFAULTS,layout=makeLayout(data,settings),fingerprints=new Set();
     for(const style of styles){
@@ -57,7 +57,26 @@ test('each style fits all three facades and changes the shape of physical fittin
       assert.ok(summary.trimmedOpeningCount>=10&&parts.length<4500,style.id);
       if(style.id==='hidden-bali')assert.ok(summary.claddingAreaM2>24,'The resort renovation wraps actual wall fields, rather than three small samples');
     }
-    assert.equal(fingerprints.size,20,'Every style has a different geometric treatment');
+    assert.equal(fingerprints.size,styles.length,'Every style has a different geometric treatment');
+  }
+});
+
+test('Coastal builds white lapped siding and louvred shutters, distinct from the Baltic upper-storey treatment',()=>{
+  for(const {data,model}of sites){
+    const layout=makeLayout(data,model.DEFAULTS),coastal=houseRenovationParts(layout,getDesignStyle('coastal'));
+    const dune=houseRenovationParts(layout,getDesignStyle('baltic-dune'));
+    checkClearance(coastal,layout);
+    assert.ok(coastal.some(p=>p.kind==='weatherboard-course'&&p.finish==='houseWall'));
+    assert.ok(coastal.some(p=>p.kind==='shutter-louvre'&&p.finish==='houseFrame'));
+    assert.ok(coastal.some(p=>p.kind==='window-jamb'&&p.finish==='houseFrame'));
+    const clad=coastal.filter(p=>p.kind==='cladding-backing');
+    const firstFloor=layout.firstFloorZ??layout.floorZ+3.05;
+    assert.ok(clad.some(p=>p.bottom>firstFloor),data.site.id);
+    // The other properties retain their mapped unknown entrance reserves and
+    // large ground-floor apertures. Sternicza has documented solid bays below.
+    if(data.site.id==='sternicza-11')assert.ok(clad.some(p=>p.top<firstFloor));
+    assert.notDeepEqual(coastal.map(p=>[p.edgeIndex,p.lo,p.hi,p.bottom,p.top,p.depth]),
+      dune.map(p=>[p.edgeIndex,p.lo,p.hi,p.bottom,p.top,p.depth]));
   }
 });
 

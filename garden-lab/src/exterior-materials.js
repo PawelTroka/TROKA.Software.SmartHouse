@@ -2,9 +2,9 @@ import * as THREE from '../vendor/three.module.js';
 
 // Finish specifications describe construction, grain and reflectance. They are
 // independent of palette colours and keep the original/current materials intact.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.27.0';
-export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.27.0';
-const woodTypes=new Set(['oak','ash','walnut','teak','cedar','silvered-wood','charred-wood','reclaimed-wood','weatherboard']);
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.28.0';
+export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.28.0';
+const woodTypes=new Set(['oak','ash','walnut','teak','cedar','silvered-wood','charred-wood','reclaimed-wood','weatherboard','whitewashed-oak','painted-wood','painted-weatherboard']);
 const fabricTypes=new Set(['linen','woven','boucle','canvas','velvet','vinyl']);
 const metalTypes=new Set(['bronze','brass','anodized','chrome','painted-steel','blackened-steel','zinc','standing-seam']);
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
@@ -22,7 +22,14 @@ export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
     const u=x/size,v=y/size,i=y*size+x;
     const grit=wave(u*23+wave(u*3,v*2)*.12,v*19)*.045+wave(u*43,v*31)*.025;
     let h=.5,tone=.93,warm=0;
-    if(woodTypes.has(kind)){
+    if(kind==='painted-weatherboard'){
+      // Wall UVs use horizontal U and vertical V. Keep both the lapped courses
+      // and their soft painted grain horizontal, including the solid reveals.
+      const seam=Math.min(fract(v*5),1-fract(v*5));
+      const grain=Math.sin((v*73+wave(u*2,v*3)*.10)*Math.PI*2);
+      h=.53+grain*.018+grit*.18-(seams&&seam<.055?.14:0);
+      tone=.973+grain*.009+grit*.08-(seams&&seam<.035?.105:0);
+    }else if(woodTypes.has(kind)){
       const plank=Math.floor(u*5),seam=Math.min(fract(u*5),1-fract(u*5));
       const grain=Math.sin((u*49+wave(u*3,v*2)*.30+wave(u*7,v)*.12)*Math.PI*2);
       const fine=Math.sin((u*113+wave(u*4,v*3)*.16)*Math.PI*2);
@@ -32,6 +39,8 @@ export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
       if(weathered)tone+=wave(u*7,v*17)*.045;
       if(dark){h+=Math.max(0,Math.sin(u*83*Math.PI*2+Math.sin(v*8*Math.PI*2)))*.07;tone=.78+(tone-.78)*.55;}
       warm=kind==='teak'||kind==='cedar'?.035:kind==='silvered-wood'?-.015:.014;
+      if(kind==='whitewashed-oak'){h=.52+(h-.52)*.65;tone=.96+(tone-.84)*.42;warm=.004;}
+      if(kind==='painted-wood'){h=.52+(h-.52)*.35;tone=.975+(tone-.84)*.18;warm=0;}
     }else if(fabricTypes.has(kind)){
       const scale=kind==='woven'?16:kind==='boucle'?23:kind==='canvas'?39:kind==='velvet'?48:64;
       const warp=Math.cos(u*scale*Math.PI*2),weft=Math.cos(v*scale*Math.PI*2);
@@ -94,9 +103,11 @@ function own(material,textures){
 }
 export function exteriorFinishForRole(style,role){
   const s=getExteriorSurfaceSpec(style);if(!s)return null;
+  const id=typeof style==='string'?style:style?.id;
+  if(id==='coastal'&&['frame','houseFrame','rail','hstFrame','door'].includes(role))return 'painted-wood';
   if(['wood','woodLight','timber','door'].includes(role))return s.wood;
   if(['linen','fabric','upholstery'].includes(role))return s.fabric;
-  if(['wall','plaster'].includes(role))return s.wall;
+  if(['wall','houseWall','plaster'].includes(role))return s.wall;
   if(role==='roof')return s.roof;
   if(role==='deck')return s.paving;
   if(['metal','frame','houseFrame','rail','hstFrame','styleAccent'].includes(role))return s.metal;

@@ -14,7 +14,7 @@ const values={...NIGHT_DEFAULTS,sunEnabled:true};
 for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40','korzeniowskiego-40.json'],['nadmorska-17','nadmorska-17.json']]){
   const data=JSON.parse(readFileSync(new URL('../data/'+file,import.meta.url)));
   const model=createStateModel(getSiteProfile(id,data));
-  const publishedDefaults=Object.freeze({...model.DEFAULTS,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
+  const publishedDefaults=Object.freeze({...model.DEFAULTS,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
     ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
     terraceCoverType:'canopy',nightWindowActivity:35,...previousPendantDefaults});
   test(id+': existing version-19 saved and shared designs retain their published pendant defaults without moving the design',()=>{

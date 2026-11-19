@@ -13,6 +13,7 @@ export const EXTERIOR_SURFACES=Object.freeze({
   'space-age':spec('smooth-render','zinc','silvered-wood','terrazzo','vinyl','chrome','all-panels','round-four','glass'),
   'party-club':spec('charred-wood','standing-seam','charred-wood','basalt','velvet','blackened-steel','upper-and-piers','club-banquette','glass'),
   'baltic-dune':spec('sand-render','zinc','silvered-wood','silvered-wood','canvas','anodized','upper','long-six','horizontal-timber'),
+  coastal:spec('painted-weatherboard','zinc','whitewashed-oak','whitewashed-oak','linen','painted-steel','all-panels','crossback-six','cross-timber'),
   'gdansk-brick':spec('clinker','terracotta-roof','oak','clinker','canvas','blackened-steel','masonry-piers','long-six','steel-pickets'),
   'danish-midcentury':spec('limewash','standing-seam','teak','limestone','linen','bronze','upper','oval-six','vertical-timber'),
   'finnish-sauna':spec('charred-wood','standing-seam','cedar','cedar','linen','blackened-steel','upper-and-piers','low-banquette','horizontal-timber'),
@@ -27,6 +28,6 @@ export const getExteriorSurfaceSpec=style=>EXTERIOR_SURFACES[typeof style==='str
 
 export function getBalconyGuardRecipe(style){
   const form=getExteriorSurfaceSpec(style)?.guard??'original';
-  return Object.freeze({form,spacing:form==='vertical-timber'?.16:form==='steel-pickets'?.12:.32,
+  return Object.freeze({form,spacing:form==='cross-timber'?1.05:form==='vertical-timber'?.16:form==='steel-pickets'?.12:.32,
     railWidth:form.includes('timber')?.052:.024,keepClearGlass:true});
 }

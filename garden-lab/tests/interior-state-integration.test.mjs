@@ -90,3 +90,20 @@ test('two-car ramp clearance is explicitly separated from new existing-structure
   assert.equal(layout.assessment.structuralRouteClear,false);assert.equal(layout.assessment.conversionPass,false);
   if(layout.assessment.passes)assert.equal(garageClearanceResult(layout).status,'structure-conflict');
 });
+test('house-style and original-layout transitions retain the independently selected two-car proposal',()=>{
+  for(const enabled of [true,false]){
+    let state=model.sanitizeState({...model.DEFAULTS,basementGarageEnabled:enabled,interiorEnabled:true,interiorFloor:'basement',
+      garageRampWidth:6.1,garageInsideRun:2.4,garageProgress:78,garageReverse:true});
+    const before=Object.fromEntries(['basementGarageEnabled','garageSpaces','garageRampWidth','garageInsideRun','garageProgress','garageReverse']
+      .map(key=>[key,state[key]]));
+    for(const patch of [{interiorLayout:'renovation'},...DESIGN_STYLES.map(style=>({designStyle:style.id})),
+      {interiorLayout:'existing'},{interiorLayout:'renovation'},{designStyle:'current'}]){
+      state=model.sanitizeState(changePresentationSettings(state,patch));
+      for(const [key,value] of Object.entries(before))assert.equal(state[key],value,`${JSON.stringify(patch)} preserves ${key}`);
+      const basement=getHouseFloorPlan({floor:'basement',settings:state,data});
+      assert.equal(basement.fixtures.filter(f=>f.kind==='car').length,enabled?2:0);
+      assert.equal(basement.walls.some(w=>w.id==='garage-portal'),enabled);
+      assert.deepEqual(model.decodeState(model.encodeState(state)),state);
+    }
+  }
+});

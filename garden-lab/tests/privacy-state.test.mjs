@@ -52,8 +52,8 @@ test('current shares and JSON save/reload retain every privacy dimension, switch
 });
 
 test('v20 sparse and custom designs never acquire privacy structures, even with unknown true flags',()=>{
-  // The historical terrace and canopy remain independent of garage capacity.
-  const historical={...custom,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,jacuzziOverflow:false,terraceCoverType:'canopy'};
+  // The historical terrace and canopy predate the basement garage proposal.
+  const historical={...custom,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,jacuzziOverflow:false,terraceCoverType:'canopy'};
   const previous=without(historical,privacyKeys),original=clone(previous);
   const shared=new URLSearchParams(model.encodeState(historical));
   shared.set('v','20');

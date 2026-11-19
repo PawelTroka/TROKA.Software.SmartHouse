@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.27.0';
+import {toWorld} from './orientation.js?v=1.28.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.
@@ -191,6 +191,17 @@ function base(kit, form, m, w,l,h,x=0,y=0) {
   if (form==='shell') {
     drum(cx,cy,h*.12,w*.63,l*.52,h*.24,m.metal);
     drum(cx,cy,h*.59,w*.34,l*.30,h*.75,m.metal);
+  } else if (form==='coastal-crossback') {
+    // An open oak frame, with visible stretchers and crossed end braces, is
+    // shared by the daybed, occasional table and six individual dining chairs.
+    for(const fx of [.11,.89])for(const fy of [.12,.88])
+      box(x+fx*w,y+fy*l,h/2,Math.min(.055,w*.10),Math.min(.055,l*.10),h,m.wood);
+    for(const fy of [.12,.88]){
+      box(cx,y+fy*l,h*.86,w*.82,Math.min(.045,l*.09),h*.15,m.woodLight);
+      bar([x+w*.15,y+fy*l,h*.16],[x+w*.85,y+fy*l,h*.72],.016,m.woodLight);
+      bar([x+w*.85,y+fy*l,h*.16],[x+w*.15,y+fy*l,h*.72],.016,m.woodLight);
+    }
+    for(const fx of [.11,.89])box(x+fx*w,cy,h*.80,Math.min(.045,w*.09),l*.80,h*.13,m.wood);
   } else if (['pebble','low-pebble','deco','block','platform','channel','bench','weave'].includes(form)) {
     if (form==='pebble'||form==='low-pebble') {
       cushion(cx,cy,0,w*.79,l*.84,h,m.stoneLight,form==='pebble'?2.3:3.2);
@@ -254,14 +265,16 @@ export function createStyledLounger(style,m,r,options) {
     }
   } else {
     if (form==='platform'||form==='low-pebble')box(w/2,l/2,seatH+.026,w,l,.052,m.woodLight);
-    const seatWidth=form==='weave'?.80:form==='platform'?.85:form==='shell'?.84:.96;
+    if(form==='coastal-crossback')for(let i=0;i<11;i++)
+      box(w/2,l*(.06+.88*(i+.5)/11),seatH+.025,w*.90,l*.88/11-.015,.05,m.woodLight);
+    const seatWidth=form==='weave'||form==='coastal-crossback'?.80:form==='platform'?.85:form==='shell'?.84:.96;
     cushion(w/2,l/2,seatH+.055,w*seatWidth,l*.96,.115,m.linen,roundness);
     if(form==='channel'){
       for(let i=0;i<6;i++)cushion(w*(.105+.158*i),l/2,seatH+.12,w*.145,l*.93,.066,m.linen,5);
     }
     if(form==='shell')cushion(w/2,l*.25,seatH+.125,w*.965,l*.44,.14,m.stoneLight,2);
-    cushion(w/2,l*.23,seatH+(form==='shell'?.245:.172),w*(form==='shell'?.69:.79),l*.275,.09,form==='shell'||form==='deco'?accent:m.linen,roundness);
-    if(form==='weave')for(const side of [.055,.945]){
+    cushion(w/2,l*.23,seatH+(form==='shell'?.245:.172),w*(form==='shell'?.69:form==='coastal-crossback'?.68:.79),l*.275,.09,['shell','deco','coastal-crossback'].includes(form)?accent:m.linen,roundness);
+    if(form==='weave'||form==='coastal-crossback')for(const side of [.055,.945]){
       box(w*side,l*.38,seatH+.20,w*.055,l*.65,.085,m.woodLight);
       for(const fy of [.09,.64])box(w*side,l*fy,seatH+.09,w*.047,.04,.24,m.wood);
     }
@@ -278,7 +291,7 @@ export function createStyledSideTable(style,m,r,options) {
   const kit=assembly('styled-side-table',r,options);
   const {width:w,length:l}=r, form=style.recipe.furniture;
   base(kit,form,m,w,l,.28);
-  if(['shell','pebble','low-pebble','deco','runner','scroll'].includes(form))kit.drum(w/2,l/2,.315,w,l,.065,form==='shell'?m.styleAccent:m.stoneLight);
+  if(['shell','pebble','low-pebble','deco','runner','scroll','coastal-crossback'].includes(form))kit.drum(w/2,l/2,.315,w,l,.065,form==='shell'?m.styleAccent:form==='coastal-crossback'?m.woodLight:m.stoneLight);
   else kit.box(w/2,l/2,.315,w,l,.065,m.woodLight);
   return kit.finish();
 }
@@ -287,11 +300,13 @@ export function createStyledDining(style,m,r,options) {
   const kit=assembly('styled-dining-'+style.recipe.furniture,r,options);
   const {width:w,length:l}=r,form=style.recipe.furniture;
   const composition=style.construction?.dining??'long-six',round=composition==='round-four';
-  const tw=round?Math.min(1.05,w*.38,l*.42):Math.min(composition==='club-banquette'?1.55:2.08,w*.62);
+  const tw=round?Math.min(1.05,w*.38,l*.42):Math.min(composition==='club-banquette'?1.55:composition==='crossback-six'?1.90:2.08,w*(composition==='crossback-six'?.54:.62));
   const tl=round?tw:Math.min(.84,l*.31),tableHeight=composition==='low-banquette'?.65:.70;
   base(kit,form,m,tw,tl,tableHeight,(w-tw)/2,(l-tl)/2);
   if(round)kit.drum(w/2,l/2,tableHeight+.035,tw,tl,.07,form==='shell'?m.stoneLight:m.woodLight,32);
   else if(composition==='oval-six')kit.cushion(w/2,l/2,tableHeight,tw,tl,.075,m.woodLight,2.5);
+  else if(composition==='crossback-six')for(let i=0;i<5;i++)
+    kit.box(w/2,(l-tl)/2+tl*(i+.5)/5,tableHeight+.035,tw,tl/5-.008,.07,m.woodLight);
   else kit.box(w/2,l/2,tableHeight+.035,tw,tl,.07,['block','deco','channel'].includes(form)?m.stoneLight:m.woodLight);
 
   const cw=Math.min(.50,tw*.38),cl=Math.min(.45,l*.17);
@@ -305,7 +320,11 @@ export function createStyledDining(style,m,r,options) {
     }else{
       for(const side of [-1,1])kit.bar([bx+(alongX?0:side*cw*.40),by+(alongX?side*cw*.40:0),.41],
         [bx+(alongX?0:side*cw*.40),by+(alongX?side*cw*.40:0),.77],.021,m.wood);
-      if(form==='slat'||form==='bench')for(const dz of [.56,.66,.76])kit.box(bx,by,dz,alongX?.04:cw*.92,alongX?cw*.92:.04,.043,m.woodLight);
+      if(form==='coastal-crossback'){
+        kit.box(bx,by,.76,alongX?.045:cw*.92,alongX?cw*.92:.045,.04,m.woodLight);
+        for(const sign of [-1,1])kit.bar([bx+(alongX?0:sign*cw*.35),by+(alongX?sign*cw*.35:0),.49],
+          [bx-(alongX?0:sign*cw*.35),by-(alongX?sign*cw*.35:0),.72],.016,m.woodLight);
+      }else if(form==='slat'||form==='bench')for(const dz of [.56,.66,.76])kit.box(bx,by,dz,alongX?.04:cw*.92,alongX?cw*.92:.04,.043,m.woodLight);
       else kit.box(bx,by,.70,alongX?.045:cw*.92,alongX?cw*.92:.045,form==='sling'?.21:.12,form==='sling'?m.linen:m.woodLight);
     }
   };
@@ -323,6 +342,13 @@ export function createStyledDining(style,m,r,options) {
   if(round){
     for(const [fx,fy]of [[1,0],[-1,0],[0,1],[0,-1]])chair(w/2-fx*(tw/2+cl*.67),l/2-fy*(tl/2+cl*.67),fx,fy);
     seats=4;
+  }else if(composition==='crossback-six'){
+    // Two at each long side and one at each end; every chair faces the table.
+    for(const sign of [-1,1]){
+      for(const fraction of [-.25,.25])chair(w/2+tw*fraction,l/2+sign*(tl/2+cl*.67),0,-sign);
+      chair(w/2+sign*(tw/2+cl*.67),l/2,-sign,0);
+    }
+    seats=6;
   }else if(composition.endsWith('banquette')){
     const bw=Math.min(w*.76,2.35),bd=Math.min(.53,l*.19);
     for(const sign of [-1,1])bench(w/2,l/2+sign*(tl/2+bd*.66),bw,bd,0,sign);
@@ -348,10 +374,10 @@ export function createStyledCanopyTrim(style,m,b) {
   const h=Math.max(0,b.z-(b.fasciaBottomZ??b.z-.3));
   const form=style.recipe.canopy;
   const detailMat=m.styleAccent??m.metal;
-  if (['battens','paired','rafters'].includes(form)){
-    const spacing=form==='battens'?.18:form==='paired'?.53:.67;
+  if (['battens','paired','rafters','verandah'].includes(form)){
+    const spacing=form==='battens'?.18:form==='paired'?.53:form==='verandah'?.59:.67;
     for(let xx=.10;xx<w-.07;xx+=spacing){
-      box(xx,l/2,-.022,form==='rafters'?.087:.043,l,.043,m.woodLight);
+      box(xx,l/2,-.022,form==='rafters'||form==='verandah'?.087:.043,l,.043,m.woodLight);
       if(form==='paired'&&xx+.12<w-.03)box(xx+.12,l/2,-.022,.043,l,.043,m.woodLight);
     }
   }
@@ -366,6 +392,14 @@ export function createStyledCanopyTrim(style,m,b) {
     else if(form==='bands'||form==='chrome')for(const fraction of [.21,.79])band(-h*fraction,form==='chrome'?.047:.034,form==='chrome'?m.metal:m.woodLight);
     else if(form==='stripe'){band(-h*.32,.04,detailMat);band(-h*.69,.018,detailMat);}
     else band(-h*.65,.029,m.metal);
+  }else if(form==='verandah'){
+    band(-h*.14,.025,m.woodLight);band(-h*.86,.025,m.woodLight);
+    const n=Math.max(1,Math.floor(w/.70)),pitch=w/n,r=Math.min(.014,h*.08);
+    for(let i=0;i<n;i++){
+      const left=i*pitch+.06,right=(i+1)*pitch-.06;
+      for(const sign of [-1,1])bar([left,l+.052,-h*(sign===1?.25:.75)],
+        [right,l+.052,-h*(sign===1?.75:.25)],r,m.woodLight);
+    }
   }else if(form==='pegs'||form==='girder'){
     band(-h*.52,.042,form==='girder'?m.metal:m.woodLight);
     for(let xx=.14;xx<w-.12;xx+=.53)for(const fraction of [.24,.79]){

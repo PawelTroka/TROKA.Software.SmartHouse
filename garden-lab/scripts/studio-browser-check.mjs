@@ -172,14 +172,19 @@ try{
   page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
   const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
-  assert.equal(new Set(options).size,21);assert.ok(options.includes('current'));
+  assert.equal(new Set(options).size,22);assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));
+  assert.equal(await el('#basementGarageEnabled').isChecked(),true);
+  assert.equal((await settledInfo()).garageVehicles,2,'The fresh scene must contain two actual vehicles');
   await el('#style-open').click();assert.equal(await el('#style-search').evaluate(e=>e===document.activeElement),true);
+  for(const query of ['Coastal','Hamptons','seaside']){
+    await el('#style-search').fill(query);assert.equal(await el('[data-style-id="coastal"]').isVisible(),true,query);
+  }
   await el('#style-search').fill('Japandi');assert.equal(await el('#style-grid button:visible').count(),2);
   await el('#style-family').selectOption('Statement');assert.equal(await el('#style-empty').isVisible(),true);
   await el('#style-search').fill('');assert.equal(await el('#style-grid button:visible').count(),4);
   await page.keyboard.press('Escape');await el('#style-dialog').waitFor({state:'hidden'});
   assert.ok(await el('#style-open').evaluate(e=>e===document.activeElement));
-  check('All 21 choices are accessible through select, search, family filter and Escape focus return');
+  check('All 22 choices are accessible; Coastal is found by name, Hamptons or seaside, with family filtering and Escape focus return');
 
   await el('button[data-mode="orbit"]').click();await details();
   await el('#renderQuality').selectOption('eco');await sceneVisible();
@@ -217,27 +222,30 @@ try{
   for(const id of options.filter(id=>id!=='current')){
     await style(id);
     const info=await houseScope(true);
+    assert.equal(await el('#basementGarageEnabled').isChecked(),true,id+' must retain the garage');
+    assert.equal(info.garageVehicles,2,id+' must retain both actual vehicle groups');
     geometrySignatures.add(info.houseRenovationParts);selectedInfo.set(id,info);
-    if(['hidden-bali','space-age','mediterranean-villa'].includes(id)){
+    if(['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
       const diff=await pixelChange(original,frame);
       assert.ok(diff.pixels>100,id+' changed only '+diff.pixels+' canvas pixels');
       selectedShots.set(id,frame);report.styles.push({id,diff,stats:info});
     }else report.styles.push({id,stats:info});
   }
-  for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age']]){
+  for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age'],['coastal','baltic-dune']]){
     assert.ok((await pixelChange(selectedShots.get(a),selectedShots.get(b))).pixels>100,a+' and '+b+' look identical');
     assert.notEqual(selectedInfo.get(a).triangles,selectedInfo.get(b).triangles,a+' and '+b+' must change actual rendered geometry');
     assert.notEqual(selectedInfo.get(a).houseRenovationParts,selectedInfo.get(b).houseRenovationParts,a+' and '+b+' must use different physical facade assemblies');
   }
-  assert.equal(geometrySignatures.size,20,'All 20 styles must change the rendered facade assemblies, not only their colours');
+  assert.equal(geometrySignatures.size,21,'All 21 styles must change the rendered facade assemblies, not only their colours');
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
+  assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
   const restored=await shot('sternicza-current-restored','#scene-host canvas');
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check('All 20 styles have distinct actual facade assemblies and selected furniture/finish frames differ; Current restores the neutral WebGL image and resource counts');
+  check('All 21 styles have distinct facade assemblies and retain both cars; Coastal differs from Baltic Dune and Current restores the neutral dwelling');
 
   await el('#style-open').click();await el('#style-search').fill('Bali');await el('[data-style-id="hidden-bali"]').focus();
   await page.keyboard.press('Enter');await el('#style-dialog').waitFor({state:'hidden'});
@@ -386,7 +394,7 @@ try{
   report.mobile=[];
   for(const width of [390,320]){
     await page.setViewportSize({width,height:844});await el('#style-open').click();
-    assert.equal(await el('#style-grid button:visible').count(),21);
+    assert.equal(await el('#style-grid button:visible').count(),22);
     const last=el('#style-grid button').last();await last.scrollIntoViewIfNeeded();
     assert.ok(await last.evaluate(e=>{const box=e.getBoundingClientRect();return box.bottom<=innerHeight+2&&box.top>=0;}));
     const measured=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,dialog:document.querySelector('#style-dialog').getBoundingClientRect().width,scroll:document.querySelector('#style-dialog').scrollWidth,client:document.querySelector('#style-dialog').clientWidth}));
@@ -395,7 +403,7 @@ try{
     await page.keyboard.press('Escape');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
   }
-  check('390 px and 320 px editor and scrollable catalogue fit all 21 choices');
+  check('390 px and 320 px editor and scrollable catalogue fit all 22 choices');
   await page.setViewportSize({width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});
   for(const [site,id] of [['korzeniowskiego-40','organic-japandi'],['nadmorska-17','party-club']]){
     await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();
@@ -417,6 +425,50 @@ try{
   await page.goto(base+'/?site=sternicza-11#v=24&site=sternicza-11&designStyle=japandi',{waitUntil:'domcontentloaded'});await ready();
   assert.equal(await el('#designStyle').inputValue(),'japandi');await houseScope(true);
   check('An existing v24 styled link opens with its house renovation included');
+
+  // Reproduce the reported loss in the previous release's active local save.
+  // Only that last-used design is repaired; the archived comparison stays exact.
+  const legacy=await exportDesign();
+  await page.evaluate(({settings})=>{
+    const prefix='garden-lab-sternicza-11-v';
+    for(const key of Object.keys(localStorage))if(key.startsWith(prefix))localStorage.removeItem(key);
+    const saved={...settings,basementGarageEnabled:false,garageSpaces:2};
+    localStorage.setItem(prefix+'27',JSON.stringify(saved));
+    localStorage.setItem(prefix+'27-A',JSON.stringify(saved));
+    history.replaceState(null,'',location.pathname+'?site=sternicza-11');
+  },legacy);
+  await page.reload({waitUntil:'domcontentloaded'});await ready();
+  assert.equal(await el('#basementGarageEnabled').isChecked(),true);
+  assert.equal((await settledInfo()).garageVehicles,2);
+  assert.equal(await page.evaluate(version=>JSON.parse(localStorage.getItem('garden-lab-sternicza-11-v'+version)).basementGarageEnabled,legacy.schemaVersion),true);
+  await el('#compare').click();await sceneVisible();
+  assert.equal(await el('#basementGarageEnabled').isChecked(),false,'Archived A must retain its original cellar comparison');
+  assert.equal((await settledInfo()).garageVehicles,0);
+  await el('#compare').click();await sceneVisible();assert.equal((await settledInfo()).garageVehicles,2);
+  await page.reload({waitUntil:'domcontentloaded'});await ready();assert.equal((await settledInfo()).garageVehicles,2);
+  check('The former active garage-off save is repaired once, while archived scenario A keeps its exact off choice');
+
+  const garageSettings=el('#basement-garage-controls');
+  if(await garageSettings.getAttribute('open')===null)await garageSettings.locator(':scope > summary').click();
+  await el('#basementGarageEnabled').uncheck();
+  for(const id of ['coastal','current']){await style(id);assert.equal((await settledInfo()).garageVehicles,0);}
+  await el('#share').click();assert.equal(new URL(page.url()).hash.includes('basementGarageEnabled=false'),true);
+  await page.reload({waitUntil:'domcontentloaded'});await ready();assert.equal((await settledInfo()).garageVehicles,0);
+  await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));
+  await page.reload({waitUntil:'domcontentloaded'});await ready();assert.equal((await settledInfo()).garageVehicles,0);
+  await page.goto(base+'/?site=sternicza-11#v=27&site=sternicza-11&basementGarageEnabled=false',{waitUntil:'domcontentloaded'});await ready();
+  assert.equal((await settledInfo()).garageVehicles,0);
+  check('A new explicit off choice survives style changes, sharing and normal reload; an explicit older off link is also preserved');
+
+  await page.goto(base+'/?site=sternicza-11#v='+legacy.schemaVersion+'&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true&showDimensions=false&renderQuality=eco',{waitUntil:'domcontentloaded'});await ready();
+  await el('#garage-view').click();await sceneVisible();
+  assert.equal((await settledInfo()).garageVehicles,2);
+  const coastalGarage=await exportDesign();canonicalScope(coastalGarage,'coastal');
+  assert.equal(coastalGarage.basementGarage.parking.spaces,2);
+  assert.equal(coastalGarage.interiors.floors.basement.fixtures.filter(f=>f.kind==='car').length,2);
+  await shot('sternicza-coastal-two-car-garage','#scene-host canvas');
+  report.coastalGarage={vehicles:(await stats()).garageVehicles,parkingSpaces:2,style:coastalGarage.settings.designStyle};
+  check('The final Coastal exterior renders two vehicles and exports the same two-car basement');
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;

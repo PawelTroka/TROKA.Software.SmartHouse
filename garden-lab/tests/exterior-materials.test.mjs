@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import * as THREE from '../vendor/three.module.js';
 import {DESIGN_STYLES,getDesignStyle} from '../src/design-styles.js';
 import {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from '../src/exterior-recipes.js';
-import {exteriorSurfacePixels,applyExteriorSurface} from '../src/exterior-materials.js';
+import {exteriorSurfacePixels,applyExteriorSurface,exteriorFinishForRole} from '../src/exterior-materials.js';
 import {proposedMaterials,disposeProposedMaterials} from '../src/scene-static-details.js';
 import {createStyledDining} from '../src/scene-style-details.js';
 import {createTerraceCoverGroup} from '../src/scene-terrace-cover.js';
@@ -14,9 +14,9 @@ const digest=values=>createHash('sha256').update(values).digest('hex');
 const styles=DESIGN_STYLES.filter(s=>s.id!=='current');
 const base=()=>Object.fromEntries(['stone','stoneLight','wood','woodLight','metal','linen','wall','roof','plinth'].map(role=>[role,new THREE.MeshStandardMaterial()]));
 
-test('all twenty renovations have coherent construction and furnishing specifications independent of colour',()=>{
-  assert.equal(Object.keys(EXTERIOR_SURFACES).length,20);
-  assert.equal(new Set(styles.map(s=>JSON.stringify(s.construction))).size,20);
+test('every renovation has coherent construction and furnishing specifications independent of colour',()=>{
+  assert.equal(Object.keys(EXTERIOR_SURFACES).length,styles.length);
+  assert.equal(new Set(styles.map(s=>JSON.stringify(s.construction))).size,styles.length);
   assert.equal(getExteriorSurfaceSpec('current'),null);
   for(const style of styles){
     assert.ok(Object.isFrozen(style.construction));
@@ -27,7 +27,7 @@ test('all twenty renovations have coherent construction and furnishing specifica
 });
 
 test('proposed finishes contain distinct physical relief and deterministic colour pixels, with bounded texture memory',()=>{
-  const types=['teak','silvered-wood','charred-wood','clinker','terracotta','terracotta-roof','slate','board-concrete','standing-seam','terrazzo','limewash','woven','boucle','linen'];
+  const types=['teak','silvered-wood','charred-wood','whitewashed-oak','painted-wood','painted-weatherboard','clinker','terracotta','terracotta-roof','slate','board-concrete','standing-seam','terrazzo','limewash','woven','boucle','linen'];
   const maps=types.map(type=>exteriorSurfacePixels(type));
   assert.equal(new Set(maps.map(m=>digest(m.color))).size,types.length);
   assert.ok(new Set(maps.map(m=>digest(m.normals))).size>=12);
@@ -36,6 +36,23 @@ test('proposed finishes contain distinct physical relief and deterministic colou
     assert.equal(digest(m.color),digest(exteriorSurfacePixels(types[i]).color));
     assert.ok(new Set(Array.from(m.relief).filter((_,j)=>j%4===0)).size>2,types[i]+' has visible relief, with polished materials deliberately flatter');
   }
+});
+
+test('Coastal uses painted joinery, soft oak grain and horizontal weatherboard relief instead of metallic window trim',()=>{
+  for(const role of ['frame','houseFrame','door','hstFrame','rail'])assert.equal(exteriorFinishForRole('coastal',role),'painted-wood');
+  for(const role of ['wall','houseWall'])assert.equal(exteriorFinishForRole('coastal',role),'painted-weatherboard');
+  for(const role of ['wood','deck'])assert.equal(exteriorFinishForRole('coastal',role),'whitewashed-oak');
+  const {relief,size}=exteriorSurfacePixels('painted-weatherboard');
+  let horizontal=0,vertical=0;
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    const h=relief[(y*size+x)*4];
+    horizontal+=Math.abs(h-relief[(y*size+(x+1)%size)*4]);
+    vertical+=Math.abs(h-relief[(((y+1)%size)*size+x)*4]);
+  }
+  assert.ok(vertical>horizontal*3,'Grain and lap seams run across the facade, with relief changes up its height');
+  const material=new THREE.MeshStandardMaterial({color:'#f6f3e9'});
+  applyExteriorSurface(material,'coastal','houseFrame');assert.equal(material.metalness,0);
+  assert.ok(material.map&&material.normalMap);material.dispose();
 });
 
 test('renovation textures and reflectance change and every owned map is disposed when current is restored',()=>{
@@ -70,7 +87,7 @@ test('outdoor dining actually changes between round tables, six-place tables and
     assert.ok(bounds.min.x>=-1e-5&&bounds.max.x<=3.5+1e-5&&bounds.min.z>=-1e-5&&bounds.max.z<=2.8+1e-5);
     group.traverse(mesh=>mesh.geometry?.dispose());
   }
-  assert.equal(compositions.size,6);assert.ok(geometries.size>=16,'Differences must exist in the vertices, not just materials');
+  assert.equal(compositions.size,7);assert.ok(geometries.size>=17,'Differences must exist in the vertices, not just materials');
   for(const material of Object.values(m))material.dispose();
 });
 
@@ -104,6 +121,6 @@ test('balcony styles change guard geometry while retaining the same clear panels
     const owned=new Set();group.traverse(mesh=>{mesh.geometry?.dispose();if(mesh.material?.userData.transient)owned.add(mesh.material);});
     for(const material of owned)material.dispose();
   }
-  assert.equal(shapes.size,4,'Vertical timber, fine pickets, horizontal timber and Deco have different vertices');
+  assert.equal(shapes.size,5,'Vertical timber, fine pickets, horizontal timber, crossed timber and Deco have different vertices');
   for(const material of Object.values(m))material.dispose();
 });

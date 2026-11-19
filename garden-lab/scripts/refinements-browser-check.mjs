@@ -76,9 +76,10 @@ try{
   for(const id of ['jacuzziOverflow','canopyEnabled'])assert.equal(await page.locator('#'+id).isChecked(),true,id);
   assert.equal(await page.locator('#terraceCoverType').inputValue(),'canopy');
   assert.equal(await page.locator('#viewport').getAttribute('data-terrace-cover'),'canopy');
-  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),false);
+  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true);
+  assert.equal(await page.locator('#garage-parking-plan [data-car]').count(),2);
   await page.locator('#showDimensions').uncheck();await details('#sun-controls',false);await details('#night-adjustments',false);
-  check('Fresh defaults use a 4 m terrace, infinity jacuzzi and 3 m high / 4 m deep canopy; basement remains optional');
+  check('Fresh defaults retain the two-car proposal beside the 4 m terrace, infinity jacuzzi and 3 m high / 4 m deep canopy');
 
   await details('#basement-garage-controls',true);
   await page.locator('#basement-garage-controls [data-garage-preset="raised"]').click();
