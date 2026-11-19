@@ -13,7 +13,9 @@
     "Blue-hour renovation switching preserves the real dusk activation, garden lights, neighbouring windows and camera",
     "Same solar time, orbit mode and viewport size do not refit the shadow camera",
     "Reduced motion, diagram/offscreen pauses and synthetic visibilitychange after headless foreground freeze",
-    "390 px and 320 px editor and scrollable catalogue fit all 21 choices"
+    "390 px and 320 px editor and scrollable catalogue fit all 21 choices",
+    "Each mapped property renders a distinct renovation from its own garden viewpoint while retaining its own garden geometry",
+    "An existing v24 styled link opens with its house renovation included"
   ],
   "screenshots": [
     "sternicza-before-first-renovation.png",
@@ -35,7 +37,7 @@
     "nadmorska-17-party-club.png",
     "nadmorska-17-party-club-house-original.png",
     "nadmorska-17-party-club-house-renovated.png",
-    "failure.png"
+    "desktop-editor.png"
   ],
   "styles": [
     {
@@ -438,7 +440,7 @@
         "fraction": 0.11414876705955335
       },
       "stats": {
-        "frames": 6,
+        "frames": 5,
         "shadowUpdates": 2,
         "calls": 352,
         "triangles": 132458,
@@ -462,7 +464,7 @@
         "fraction": 0.2165400124069479
       },
       "stats": {
-        "frames": 6,
+        "frames": 5,
         "shadowUpdates": 2,
         "calls": 485,
         "triangles": 272675,
@@ -622,7 +624,7 @@
         "fraction": 0.43245725418734493
       },
       "on": {
-        "frames": 10,
+        "frames": 9,
         "shadowUpdates": 4,
         "calls": 228,
         "triangles": 123244,
@@ -638,11 +640,59 @@
         "motionActive": false
       },
       "off": {
-        "frames": 9,
+        "frames": 8,
         "shadowUpdates": 3,
         "calls": 228,
         "triangles": 123192,
         "geometries": 245,
+        "textures": 14,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 0,
+        "houseRenovationProjection": 0,
+        "renderer": "webgl",
+        "motionActive": false
+      }
+    },
+    {
+      "site": "nadmorska-17",
+      "id": "party-club",
+      "view": {
+        "mode": "eye",
+        "preset": "garden",
+        "yaw": "180",
+        "date": "2026-06-21",
+        "time": "12:00",
+        "observer": "Eye 1.73 m above original garden reference · 1.65 m above local ground"
+      },
+      "diff": {
+        "pixels": 248203,
+        "fraction": 0.6014534545595533
+      },
+      "on": {
+        "frames": 9,
+        "shadowUpdates": 4,
+        "calls": 329,
+        "triangles": 251675,
+        "geometries": 327,
+        "textures": 40,
+        "pixelRatio": 1.5,
+        "bufferWidth": 1248,
+        "bufferHeight": 742,
+        "shadowSize": 2048,
+        "houseRenovationParts": 950,
+        "houseRenovationProjection": 0.14,
+        "renderer": "webgl",
+        "motionActive": false
+      },
+      "off": {
+        "frames": 8,
+        "shadowUpdates": 3,
+        "calls": 331,
+        "triangles": 254467,
+        "geometries": 336,
         "textures": 14,
         "pixelRatio": 1.5,
         "bufferWidth": 1248,
@@ -698,6 +748,5 @@
       "client": 298
     }
   ],
-  "status": "failed",
-  "error": "AssertionError [ERR_ASSERTION]: nadmorska-17 facade has no extra visible geometry: {\"on\":{\"frames\":10,\"shadowUpdates\":4,\"calls\":329,\"triangles\":251675,\"geometries\":327,\"textures\":40,\"pixelRatio\":1.5,\"bufferWidth\":1248,\"bufferHeight\":742,\"shadowSize\":2048,\"houseRenovationParts\":950,\"houseRenovationProjection\":0.14,\"renderer\":\"webgl\",\"motionActive\":false},\"off\":{\"frames\":9,\"shadowUpdates\":3,\"calls\":331,\"triangles\":254467,\"geometries\":336,\"textures\":14,\"pixelRatio\":1.5,\"bufferWidth\":1248,\"bufferHeight\":742,\"shadowSize\":2048,\"houseRenovationParts\":0,\"houseRenovationProjection\":0,\"renderer\":\"webgl\",\"motionActive\":false}}\n    at compareHouse (file:///home/runner/work/TROKA.Software.SmartHouse/TROKA.Software.SmartHouse/garden-lab/scripts/studio-browser-check.mjs:155:10)\n    at async file:///home/runner/work/TROKA.Software.SmartHouse/TROKA.Software.SmartHouse/garden-lab/scripts/studio-browser-check.mjs:410:5"
+  "status": "passed"
 }

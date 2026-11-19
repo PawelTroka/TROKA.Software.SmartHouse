@@ -1,0 +1,10 @@
+2026-11-19T17:02:29.9425840Z 1..654
+2026-11-19T17:02:29.9425987Z # tests 654
+2026-11-19T17:02:29.9426281Z # pass 654
+2026-11-19T17:02:29.9426406Z # fail 0
+2026-11-19T17:02:29.9426548Z # cancelled 0
+2026-11-19T17:02:29.9426693Z # skipped 0
+2026-11-19T17:02:29.9426834Z # todo 0
+2026-11-19T17:02:29.9426990Z # duration_ms 17294.883142
+2026-11-19T17:02:30.0688013Z Static simulator built in public/
+2026-11-19T17:11:12.8211444Z REFINEMENT_RESULT {"status":"passed","checks":8,"screenshots":["sternicza-two-car-front.png","sternicza-two-car-parking-plan.png","sternicza-balcony-garden.png","sternicza-pool-eye.png","sternicza-mobile-garage.png","sternicza-mobile-cover-controls.png"],"report":"/home/runner/work/TROKA.Software.SmartHouse/TROKA.Software.SmartHouse/garden-lab/test-results/refinements/browser-report.json"}

@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "release": "1.27.0",
   "repository": "paweltroka/TROKA.Software.SmartHouse",
-  "preparedAt": "2026-11-19T17:15:29+00:00",
-  "status": "validated-awaiting-deployment",
+  "preparedAt": "2026-11-19T17:23:41+00:00",
+  "status": "live-verified",
   "candidate": {
     "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
     "ciRunId": "44572630110",
@@ -19,14 +19,79 @@
     "treeVerifiedIdentical": true
   },
   "deployment": {
-    "status": "pending",
+    "status": "live-verified",
     "plannedSourceCommit": "caa69621b80eb94510a22a7a49e79a22832adb39",
-    "sourceCommit": null,
-    "applicationDeploymentCommit": null,
-    "publishedCommit": null,
-    "url": null,
-    "checkedAt": null,
-    "note": "Live verification will refer to the application deployment commit; any later evidence-only commit is separate."
+    "sourceCommit": "caa69621b80eb94510a22a7a49e79a22832adb39",
+    "applicationDeploymentCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "publishedCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "url": "https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0",
+    "checkedAt": "2026-11-19T17:21:51Z",
+    "note": "Observed live verification applies to this application deployment commit. A later evidence-only commit is separate and does not change the verified application tree.",
+    "applicationDeploymentTree": "f379838f65cb06f886a6c61637307e43803459c9",
+    "appTree": "978516bfa182a2f0a363288f92c3d3fba81410f0",
+    "pages": {
+      "status": "success",
+      "runId": "44575476297",
+      "url": "https://github.com/paweltroka/TROKA.Software.SmartHouse/actions/runs/44575476297"
+    },
+    "liveVerification": {
+      "status": "passed",
+      "url": "https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0",
+      "observedAt": "2026-11-19T17:21:51Z",
+      "displayTimeEuropeWarsaw": "2026-11-19 18:21:51 Europe/Warsaw",
+      "version": "1.27.0",
+      "styleOptions": 21,
+      "controlChecks": [
+        {
+          "id": "application-version",
+          "status": "passed",
+          "observed": "Meta application-version is 1.27.0."
+        },
+        {
+          "id": "style-options",
+          "status": "passed",
+          "observed": "21 style choices: Current plus 20 renovation styles."
+        },
+        {
+          "id": "shared-style",
+          "status": "passed",
+          "observed": "Selecting Japandi outdoors reports Complete renovation and the same interior style."
+        },
+        {
+          "id": "upper-bath-programme",
+          "status": "passed",
+          "observed": "The first-floor plan has nine spaces, with one hydro spa, a two-person shower, one vanity basin and WC."
+        },
+        {
+          "id": "shared-balcony",
+          "status": "passed",
+          "observed": "The shared balcony and three upper access doors are visible in the live plan/fallback view."
+        },
+        {
+          "id": "restore-marked-decks",
+          "status": "passed",
+          "observed": "Restore marked decks sets both depth controls to 4.0 m."
+        },
+        {
+          "id": "original-drawings",
+          "status": "passed",
+          "observed": "Original drawings selects Current."
+        },
+        {
+          "id": "restore-renovation",
+          "status": "passed",
+          "observed": "Selecting Japandi again restores Your renovation."
+        }
+      ],
+      "verifiedApplicationDeploymentCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+      "method": "Cloud-browser live smoke using the lightweight/plan fallback",
+      "webglRenderedInLiveCheck": false,
+      "rendered3DVerification": {
+        "method": "Passing WebGL CI browser suites and manually reviewed actual simulator captures",
+        "ciRunId": "44572630110",
+        "testedSourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1"
+      }
+    }
   },
   "expectedCurrentRun": {
     "unitTests": 654,
@@ -345,14 +410,19 @@
   "evidencePage": {
     "path": "validation.html",
     "reviewState": "Reviewed screenshots and cloud-browser page layout; no blocking layout issue observed.",
-    "published": false,
     "pendingReviewSnapshotTree": "dabfb9e409ab16377771e2c4f585e9d2443cbc70",
-    "publicationStatus": "pending",
-    "evidenceOnlyCommit": null
+    "evidenceOnlyCommit": null,
+    "applicationDeploymentCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "role": "Evidence-only update recording the already observed application verification",
+    "liveVerificationAppliesToApplicationCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "generatedBeforeEvidenceCommit": true,
+    "commitNote": "The evidence-only commit is created after this file. It is intentionally not claimed as the application revision verified at 17:21:51 UTC."
   },
   "notes": [
-    "Unit tests, build and browser suites passed on the tested candidate. The merge tree is identical to that tested tree.",
-    "Application publication and live smoke verification remain pending. Record the application deployment commit separately from a later evidence-only commit."
+    "All 654 unit tests, the build and all 67 browser checkpoints passed on the tested candidate. The merged and deployed application preserves that exact application tree.",
+    "Pages deployment completed successfully for application commit 28b6a31c286b91499b0075b5241b7161497ddcd4. The live version and listed controls were observed at 2026-11-19T17:21:51Z.",
+    "The live cloud-browser check used the lightweight/plan fallback because that browser had no WebGL renderer. Rendered 3D was verified by the passing WebGL CI suites and reviewed actual captures.",
+    "This evidence-only update records prior application verification; its future commit is not included in the live-verification claim."
   ],
   "merge": {
     "status": "merged",

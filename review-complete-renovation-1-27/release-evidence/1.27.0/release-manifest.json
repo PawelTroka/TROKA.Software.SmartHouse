@@ -2,27 +2,96 @@
   "schemaVersion": 1,
   "release": "1.27.0",
   "repository": "paweltroka/TROKA.Software.SmartHouse",
-  "preparedAt": "2026-11-19T17:05:40+00:00",
-  "status": "validation-pending",
+  "preparedAt": "2026-11-19T17:23:41+00:00",
+  "status": "live-verified",
   "candidate": {
     "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
     "ciRunId": "44572630110",
     "ciUrl": "https://github.com/paweltroka/TROKA.Software.SmartHouse/actions/runs/44572630110",
-    "pullRequest": 27
+    "pullRequest": 27,
+    "ciConclusion": "success"
   },
   "runtime": {
+    "testedSourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+    "mergedSourceCommit": "caa69621b80eb94510a22a7a49e79a22832adb39",
+    "gitTree": "3d138ee03ea9386cdc05735b7ef4fe99224c8a5c",
     "appTree": "978516bfa182a2f0a363288f92c3d3fba81410f0",
-    "identicalToSourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-    "runtimeEntriesCompared": 6,
-    "changeScope": "Studio test assertion only; simulator runtime unchanged",
-    "verification": "Tree comparison reported by release maintainer"
+    "treeVerifiedIdentical": true
   },
   "deployment": {
-    "status": "pending",
-    "sourceCommit": null,
-    "publishedCommit": null,
-    "url": null,
-    "checkedAt": null
+    "status": "live-verified",
+    "plannedSourceCommit": "caa69621b80eb94510a22a7a49e79a22832adb39",
+    "sourceCommit": "caa69621b80eb94510a22a7a49e79a22832adb39",
+    "applicationDeploymentCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "publishedCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "url": "https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0",
+    "checkedAt": "2026-11-19T17:21:51Z",
+    "note": "Observed live verification applies to this application deployment commit. A later evidence-only commit is separate and does not change the verified application tree.",
+    "applicationDeploymentTree": "f379838f65cb06f886a6c61637307e43803459c9",
+    "appTree": "978516bfa182a2f0a363288f92c3d3fba81410f0",
+    "pages": {
+      "status": "success",
+      "runId": "44575476297",
+      "url": "https://github.com/paweltroka/TROKA.Software.SmartHouse/actions/runs/44575476297"
+    },
+    "liveVerification": {
+      "status": "passed",
+      "url": "https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0",
+      "observedAt": "2026-11-19T17:21:51Z",
+      "displayTimeEuropeWarsaw": "2026-11-19 18:21:51 Europe/Warsaw",
+      "version": "1.27.0",
+      "styleOptions": 21,
+      "controlChecks": [
+        {
+          "id": "application-version",
+          "status": "passed",
+          "observed": "Meta application-version is 1.27.0."
+        },
+        {
+          "id": "style-options",
+          "status": "passed",
+          "observed": "21 style choices: Current plus 20 renovation styles."
+        },
+        {
+          "id": "shared-style",
+          "status": "passed",
+          "observed": "Selecting Japandi outdoors reports Complete renovation and the same interior style."
+        },
+        {
+          "id": "upper-bath-programme",
+          "status": "passed",
+          "observed": "The first-floor plan has nine spaces, with one hydro spa, a two-person shower, one vanity basin and WC."
+        },
+        {
+          "id": "shared-balcony",
+          "status": "passed",
+          "observed": "The shared balcony and three upper access doors are visible in the live plan/fallback view."
+        },
+        {
+          "id": "restore-marked-decks",
+          "status": "passed",
+          "observed": "Restore marked decks sets both depth controls to 4.0 m."
+        },
+        {
+          "id": "original-drawings",
+          "status": "passed",
+          "observed": "Original drawings selects Current."
+        },
+        {
+          "id": "restore-renovation",
+          "status": "passed",
+          "observed": "Selecting Japandi again restores Your renovation."
+        }
+      ],
+      "verifiedApplicationDeploymentCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+      "method": "Cloud-browser live smoke using the lightweight/plan fallback",
+      "webglRenderedInLiveCheck": false,
+      "rendered3DVerification": {
+        "method": "Passing WebGL CI browser suites and manually reviewed actual simulator captures",
+        "ciRunId": "44572630110",
+        "testedSourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1"
+      }
+    }
   },
   "expectedCurrentRun": {
     "unitTests": 654,
@@ -33,84 +102,95 @@
       "interiors": 9,
       "studio": 15
     },
-    "note": "Expected counts only; not evidence that the current CI run passed."
+    "note": "The observed final-run totals match these expected counts.",
+    "confirmed": true
   },
   "currentRun": {
-    "status": "in_progress",
+    "status": "passed",
+    "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+    "ciRunId": "44572630110",
     "unitTests": {
-      "status": "pending",
-      "passed": null
+      "status": "passed",
+      "passed": 654,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "build": {
+      "status": "passed"
     },
     "browserCheckpoints": {
-      "status": "pending",
-      "passed": null
+      "status": "passed",
+      "passed": 67
     },
     "browserSuites": {
       "core": {
-        "status": "pending",
-        "passed": null
+        "status": "passed",
+        "passed": 35
       },
       "refinements": {
-        "status": "pending",
-        "passed": null
+        "status": "passed",
+        "passed": 8
       },
       "interiors": {
-        "status": "pending",
-        "passed": null
+        "status": "passed",
+        "passed": 9
       },
       "studio": {
-        "status": "pending",
-        "passed": null
+        "status": "passed",
+        "passed": 15
       }
     }
   },
-  "observedLocalTests": {
-    "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-    "passed": 654,
-    "source": "Release maintainer local verification"
-  },
   "observedEvidence": {
     "core": {
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
-      "jobId": "135723567307",
-      "artifactId": "14553228847",
-      "artifactZipSha256": "27da414dbc7800d8dffeb92a3bca29e19de8fdbaa3e59748cc64c5644a3377e2",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
+      "jobId": "135731543166",
+      "artifactId": "14555956357",
+      "artifactZipSha256": "5a037e76d9e42fbe443015049e5e8f9feef984e84c1dfbb25564fd449835a98a",
+      "artifactSizeBytes": 4876113,
       "reportPath": "core/browser-report.json",
       "reportSha256": "cf2e98f78a4887daee3b3dc87df6b3a8016580831f6d3a2b0e32dade6fa4a220",
       "status": "passed",
       "completedCheckpoints": 35,
       "pageErrors": [],
       "consoleErrors": [],
-      "isCurrentCandidateRun": false
+      "isCurrentCandidateRun": true,
+      "screenshotCount": 17
     },
     "refinements": {
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
-      "jobId": "135723567307",
-      "artifactId": "14553228847",
-      "artifactZipSha256": "27da414dbc7800d8dffeb92a3bca29e19de8fdbaa3e59748cc64c5644a3377e2",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
+      "jobId": "135731543166",
+      "artifactId": "14555956357",
+      "artifactZipSha256": "5a037e76d9e42fbe443015049e5e8f9feef984e84c1dfbb25564fd449835a98a",
+      "artifactSizeBytes": 4876113,
       "reportPath": "core/refinements/browser-report.json",
-      "reportSha256": "3d39d1a9c65acda3b9482971dd39f187ddb6f1a16758b88493aac32e80be0054",
+      "reportSha256": "7a0cccaaae7b1ef123524dd17585a2023aed7aebf9fd8176e978aed6af15b3a0",
       "status": "passed",
       "completedCheckpoints": 8,
       "pageErrors": [],
-      "consoleErrors": [],
-      "isCurrentCandidateRun": false
+      "consoleErrors": null,
+      "isCurrentCandidateRun": true,
+      "screenshotCount": 6
     },
     "interiors": {
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
-      "jobId": "135723570517",
-      "artifactId": "14554443151",
-      "artifactZipSha256": "5e0e4efa27c30d0d4f331230dea1007f6bcc4ba6ac8e728dd721ae1e16cfc29a",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
+      "jobId": "135731542562",
+      "artifactId": "14554134811",
+      "artifactZipSha256": "0b656e85094d520a2278a414ceba80cc735087adf036ffa95b684baf7d8c7d75",
+      "artifactSizeBytes": 2808412,
       "reportPath": "interiors/browser-report.json",
       "reportSha256": "f78c391bd5314f4f572a5daf6c1340f669b0a2279831686fbb54cce0b7821960",
       "status": "passed",
       "completedCheckpoints": 9,
       "pageErrors": [],
-      "consoleErrors": [],
-      "isCurrentCandidateRun": false,
+      "consoleErrors": null,
+      "isCurrentCandidateRun": true,
+      "screenshotCount": 11,
       "plans": 8,
       "renderedModels": 8,
       "styles": 20,
@@ -119,198 +199,209 @@
         37491,
         96507
       ],
-      "currentRestorationChangedPixels": 0,
-      "screenshotCount": 11
+      "currentRestorationChangedPixels": 0
     },
     "studio": {
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
-      "jobId": "135723569339",
-      "artifactId": "14553163805",
-      "artifactZipSha256": "b470e2b1282dc99f3210145eae7e3173ac1625304ed9c53466c024ed3eb1dd5c",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
+      "jobId": "135731543098",
+      "artifactId": "14555292421",
+      "artifactZipSha256": "655c65a7c665e6188efceba1e958eefc1defa5aecb2e1a9a76a7b337a95f761e",
+      "artifactSizeBytes": 6327268,
       "reportPath": "studio/browser-report.json",
-      "reportSha256": "c8b7e64ce8a587735de7549f92897bd3632420bd9d496e4f0fcbef1a1852883e",
-      "status": "failed",
-      "completedCheckpoints": 13,
+      "reportSha256": "0a6adaecac2eb72cff159cb046adbb55700901268dde465d01f0ebad684b88d7",
+      "status": "passed",
+      "completedCheckpoints": 15,
       "pageErrors": [],
-      "consoleErrors": [],
-      "isCurrentCandidateRun": false,
-      "failureSummary": "Legacy assertion required renovation total triangles to increase; visual change and actual renovation parts were present. The current candidate corrects only this test."
+      "consoleErrors": null,
+      "isCurrentCandidateRun": true,
+      "screenshotCount": 20,
+      "styleMeasurements": 22,
+      "currentRestorationChangedPixels": 0,
+      "firstUndoChangedPixels": 0,
+      "restoredResources": {
+        "referenceGeometries": 681,
+        "resetGeometries": 681,
+        "referenceTextures": 20,
+        "resetTextures": 20
+      },
+      "sterniczaRearChangedPixels": 158549,
+      "sterniczaRearChangedFraction": 0.3842010119416873
     }
   },
   "referencedImages": [
     {
       "path": "core/refinements/sternicza-balcony-garden.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "a84bd2339c8d5f6d0a60be2c10c9b8721505a4812d91e4b9cbd83b3113865897",
       "width": 982,
       "height": 573
     },
     {
       "path": "core/refinements/sternicza-two-car-front.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "223cb166d32d5d65ac242a2ba6e12680563dbc6999df769a8a8498a1c583e569",
       "width": 982,
       "height": 573
     },
     {
       "path": "core/refinements/sternicza-two-car-parking-plan.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "47b60035b6f16c662c5b5c2d66e318d246b2d244931217659c91efa683ff8a33",
       "width": 938,
       "height": 694
     },
     {
       "path": "interiors/basement-conversion-conflicts.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "84fb4ec5f34580e6f27e91f00679bcdfa40bf1937681df99807f9cd69cbb1e19",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/first-floor-hydro-spa-eye-level.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
-      "sha256": "dc87efc2a66c6e5b9135e784f874c1807808c7982c25c0388a5611ac742d6fd8",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
+      "sha256": "bf379ade8c63d4b1a0471c1f7b1b6b8e802b3a14b74e0ff8aa54007d86fde72a",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/first-floor-japandi-dollhouse.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
-      "sha256": "1ada5df562537bfce9ab6aacc9af3bd62897f9e3cb5d7e0a6a6aab784e04ea2a",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
+      "sha256": "3a7d166f94c98064c45e80b4df17a1f02562faa95a545f4e1a3e7c7548fb3d68",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/first-floor-master-eye-level.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "91ef8b172f7a26221ed3c51d5ef57b5495962957a041645a72ea7f8862107642",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/first-floor-renovation-plan.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "05684b5563536501761738647ce83d782dfbe1a0a0da4d9cea22ca08e8076e6f",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/ground-hidden-bali-dollhouse.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "8ecf3222f85a9606c4a0a7572068293091b6ba9480123ea82bf7af5537503962",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/ground-japandi-dollhouse.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "5cfbafcd0fdc89253f513d382da95cf107979820a690ba4376286ad5da0e99c9",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/ground-soaking-bath-eye-level.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "2f9f6a9e91b9c0319807daac8a80687d664c0d24a68bbcfd1375c009d1048190",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/ground-space-age-dollhouse.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "4bbf7c531ba3b138393a2ca6a97557b06e401ac126f71224ed3c6245ca1da71c",
       "width": 1240,
       "height": 868
     },
     {
       "path": "interiors/mobile-dollhouse.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "647ed1e4b8492cdaaa3f5af4db1de0a2752e5d94fc7d4a19eeabc8a1a88826cf",
       "width": 390,
       "height": 844
     },
     {
       "path": "interiors/mobile-floor-plan.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "812d3b6f2d596f11fe29599babbfe570b04c45442ed930fb2ced8a8a091b9d9c",
       "width": 390,
       "height": 844
     },
     {
       "path": "studio/mobile-catalogue-320.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "3a9d9f2ba3f9cd03e992664a6dda4188f2f6eaf454017779c2b31d714c0ef30c",
       "width": 320,
       "height": 844
     },
     {
       "path": "studio/mobile-catalogue-390.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "66566b9a4a1ba67ce1c3c4ce3f87bc822ecb06ab0bae95100cc8afc852835f5e",
       "width": 390,
       "height": 844
     },
     {
       "path": "studio/sternicza-11-hidden-bali-house-original.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "22935d8d3ae6b4e83ff852fb589c35834fb32c947010c9409dae7f8545c47c76",
       "width": 832,
       "height": 496
     },
     {
       "path": "studio/sternicza-11-hidden-bali-house-renovated.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "c67f1b5d91f4d30888c46a90dc984c5afd3509e277f3ffcd1ae6916422d31485",
       "width": 832,
       "height": 496
     },
     {
       "path": "studio/sternicza-current.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "4687e6d2299dc0d8a4fe7651b7a5a2f4da51c85c624dc3fcf90db32abbc31aa7",
       "width": 832,
       "height": 496
     },
     {
       "path": "studio/sternicza-hidden-bali.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "96be1ac69d935714f521983d6a38584e079ce8d195baccf7dea8ab1724a4daa5",
       "width": 832,
       "height": 496
     },
     {
       "path": "studio/sternicza-mediterranean-villa.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "cb91efb4372a7f27172f48e13dff2b81602e5d7db0d6cbc7e2125801bb9ddda3",
       "width": 832,
       "height": 496
     },
     {
       "path": "studio/sternicza-space-age.png",
-      "sourceCommit": "1033fe4e1cefcc3f4f521f953ba915a713ba5cfa",
-      "ciRunId": "44570407407",
+      "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+      "ciRunId": "44572630110",
       "sha256": "1326de2334d7138a5132089dcde40f6231800bc34c64563b662d1671ef7ac939",
       "width": 832,
       "height": 496
@@ -318,11 +409,36 @@
   ],
   "evidencePage": {
     "path": "validation.html",
-    "reviewState": "reviewed-images; HTML structure audited; browser page layout review pending",
-    "published": false
+    "reviewState": "Reviewed screenshots and cloud-browser page layout; no blocking layout issue observed.",
+    "pendingReviewSnapshotTree": "dabfb9e409ab16377771e2c4f585e9d2443cbc70",
+    "evidenceOnlyCommit": null,
+    "applicationDeploymentCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "role": "Evidence-only update recording the already observed application verification",
+    "liveVerificationAppliesToApplicationCommit": "28b6a31c286b91499b0075b5241b7161497ddcd4",
+    "generatedBeforeEvidenceCommit": true,
+    "commitNote": "The evidence-only commit is created after this file. It is intentionally not claimed as the application revision verified at 17:21:51 UTC."
   },
   "notes": [
-    "Per-artifact source and run identify the files currently displayed. Replacement artifacts must update these records and hashes together.",
-    "Passing earlier evidence and identical runtime do not mark the new candidate CI or deployment as passed."
-  ]
+    "All 654 unit tests, the build and all 67 browser checkpoints passed on the tested candidate. The merged and deployed application preserves that exact application tree.",
+    "Pages deployment completed successfully for application commit 28b6a31c286b91499b0075b5241b7161497ddcd4. The live version and listed controls were observed at 2026-11-19T17:21:51Z.",
+    "The live cloud-browser check used the lightweight/plan fallback because that browser had no WebGL renderer. Rendered 3D was verified by the passing WebGL CI suites and reviewed actual captures.",
+    "This evidence-only update records prior application verification; its future commit is not included in the live-verification claim."
+  ],
+  "merge": {
+    "status": "merged",
+    "pullRequest": 27,
+    "sourceCommit": "caa69621b80eb94510a22a7a49e79a22832adb39",
+    "gitTree": "3d138ee03ea9386cdc05735b7ef4fe99224c8a5c",
+    "testedCandidateTree": "3d138ee03ea9386cdc05735b7ef4fe99224c8a5c",
+    "treeMatchesTestedCandidate": true,
+    "verification": "Repository tree comparison reported by release maintainer"
+  },
+  "unitAndBuildEvidence": {
+    "sourceCommit": "9fcb8858a33dfe3090e5ed71b0d7bc87c893e0a1",
+    "ciRunId": "44572630110",
+    "jobId": "135731543166",
+    "path": "core/verified-job-summary.txt",
+    "sha256": "5323d20e1db19ae9e6bbc47a5372c3a3035ae6d88a9fcf1e4f610d6b89d48359",
+    "description": "Bounded extract from the successful core job log; records all 654 tests and the static production build."
+  }
 }
