@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.27.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.27.0';
+import {toWorld} from './orientation.js?v=1.28.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.28.0';
 
 // Decorative infill stays within the guard envelope, with the original glass
 // and structural rail/post boxes retained. It does not earn opaque-screen or
@@ -34,11 +34,24 @@ function addGuardInfill(group,layout,materials,recipe){
       g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),vector.normalize()));
       g.translate(...a.add(b).multiplyScalar(.5).toArray());append(g);
     };
+    const timberBrace=(u0,z0,u1,z1)=>{
+      const a=new THREE.Vector3(...toWorld(centre[0]+(acrossX?u0:0),centre[1]+(acrossX?0:u0),z0));
+      const b=new THREE.Vector3(...toWorld(centre[0]+(acrossX?u1:0),centre[1]+(acrossX?0:u1),z1));
+      const direction=b.clone().sub(a),length=direction.length();
+      const normal=new THREE.Vector3(acrossX?0:1,0,acrossX?1:0);
+      direction.normalize();const widthAxis=direction.clone().cross(normal);
+      const g=new THREE.BoxGeometry(recipe.railWidth,length,.032);
+      g.applyMatrix4(new THREE.Matrix4().makeBasis(widthAxis,direction,normal));
+      g.translate(...a.add(b).multiplyScalar(.5).toArray());append(g);
+    };
     if(recipe.form==='vertical-timber'||recipe.form==='steel-pickets'){
       const n=Math.max(1,Math.ceil(span/recipe.spacing)),width=recipe.form==='vertical-timber'?.038:.014;
       for(let i=1;i<n;i++)box(-span/2+i*span/n,centre[2],width,height-.04);
     }else if(recipe.form==='horizontal-timber'){
       for(let i=1;i<5;i++)box(0,pane.z0+height*i/5,span-.035,.045,.032);
+    }else if(recipe.form==='cross-timber'){
+      const left=-span/2+.065,right=span/2-.065,bottom=pane.z0+.075,top=pane.z1-.075;
+      if(right>left&&top>bottom){timberBrace(left,bottom,right,top);timberBrace(left,top,right,bottom);}
     }else if(recipe.form==='deco-metal'){
       const n=Math.max(1,Math.floor(span/recipe.spacing)),pitch=span/n;
       for(let i=0;i<n;i++){

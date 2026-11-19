@@ -1,13 +1,13 @@
 // Shallow, additive facade treatments in wall-local metres. The renderers use
 // these same window and entry records for the underlying house.
-import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.27.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.27.0';
-import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.27.0';
-import {roofEdgeHeight} from './roof-envelope.js?v=1.27.0';
-import {garageLayout} from './garage-ramp.js?v=1.27.0';
-import {terrainAt} from './geometry.js?v=1.27.0';
-import {getDesignStyle} from './design-styles.js?v=1.27.0';
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.27.0';
+import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.28.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.28.0';
+import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.28.0';
+import {roofEdgeHeight} from './roof-envelope.js?v=1.28.0';
+import {garageLayout} from './garage-ramp.js?v=1.28.0';
+import {terrainAt} from './geometry.js?v=1.28.0';
+import {getDesignStyle} from './design-styles.js?v=1.28.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.28.0';
 
 function minimumRoof(edge,lo,hi){
   const roof=edge.roofEdge;
@@ -79,7 +79,7 @@ function freeSpans(edge,bottom,top,guards,margin){
 
 function openingTrim(w,trim,shutters,place){
   const {lo,hi,z,height}=w,top=z+height;
-  const jamb=['timber','crosshead','fine','steel','stepped'].includes(trim);
+  const jamb=['timber','crosshead','fine','steel','stepped','coastal'].includes(trim);
   const width=trim==='fine'?.057:.115;
   const timber=['timber','crosshead'].includes(trim);
   const finish=timber?'wood':['cap','soldier','shutters'].includes(trim)?'edge':'houseFrame';
@@ -91,21 +91,22 @@ function openingTrim(w,trim,shutters,place){
   }
   // Keep all thresholds flush, including the first-floor balcony access.
   if(w.kind==='hst'||w.kind==='balcony-door') return;
-  const overhang=trim==='crosshead'?.23:width+.04;
+  const overhang=trim==='crosshead'||trim==='coastal'?.23:width+.04;
   put('window-sill',lo-overhang,hi+overhang,z-gap-.075,z-gap,.14);
   if(trim==='soldier'){
     const n=Math.max(3,Math.round((hi-lo+.16)/.095)),pitch=(hi-lo+.16)/n;
     for(let i=0;i<n;i++) put('soldier-lintel',lo-.08+i*pitch,lo-.08+(i+1)*pitch-.008,top+gap,top+gap+.21,.085,'surface');
   }else{
-    const height=trim==='crosshead'||trim==='cap'?.14:width;
+    const height=['crosshead','cap','coastal'].includes(trim)?.14:width;
     put('window-head',lo-overhang,hi+overhang,top+gap,top+gap+height,.106);
-    if(trim==='stepped'||trim==='steel'){
+    if(['stepped','steel','coastal'].includes(trim)){
       put('projecting-head-cap',lo-overhang-.07,hi+overhang+.07,top+gap+height,top+gap+height+.065,.135,trim==='stepped'?'accent':finish);
     }
   }
-  if(trim==='shutters'&&shutters){
+  if((trim==='shutters'||trim==='coastal')&&shutters){
     const leaf=Math.min(.43,(hi-lo)*.26);
-    for(const left of [lo-.105-leaf,hi+.105]){
+    const offset=trim==='coastal'?gap+width+.04:.105;
+    for(const left of [lo-offset-leaf,hi+offset]){
       if(!put('shutter-back',left,left+leaf,z,top,.045,'houseFrame'))continue;
       for(let y=z+.07;y<top-.05;y+=.155)
         put('shutter-louvre',left+.028,left+leaf-.028,y,Math.min(y+.105,top-.035),.082,'houseFrame');
@@ -117,8 +118,8 @@ function cladding(bay,recipe,place){
   const {lo,hi,bottom,top,edgeIndex}=bay,{field,pitch}=recipe;
   const put=(kind,a,b,c,d,depth,finish,tone=1)=>place({
     kind,lo:a,hi:b,bottom:c,top:d,depth,finish,tone,bayId:bay.id??`bay-${edgeIndex}`});
-  const wood=['boards','battens','paired','lap'].includes(field);
-  const finish=wood?'wood':field==='flutes'?'houseFrame':'surface';
+  const wood=['boards','battens','paired','lap','weatherboard'].includes(field);
+  const finish=field==='weatherboard'?'houseWall':wood?'wood':field==='flutes'?'houseFrame':'surface';
   put('cladding-backing',lo,hi,bottom,top,.027,wood?'houseFrame':'edge');
   if(['battens','paired','boards','flutes'].includes(field)){
     const n=Math.max(2,Math.round((hi-lo)/pitch)),step=(hi-lo)/n;
@@ -131,6 +132,19 @@ function cladding(bay,recipe,place){
         const fill=field==='boards'?.92:field==='flutes'?.66:.52;
         put(field,x+(1-fill)*step/2,x+(1+fill)*step/2,bottom,top,field==='boards'?.052:.094,finish);
       }
+    }
+    return;
+  }
+  if(field==='weatherboard'){
+    // Register the lap courses to one shared height grid over the whole house. Cutting
+    // around a shutter or reveal must not squeeze the remaining boards into a
+    // different pitch on the next strip of the same wall.
+    const origin=bay.courseOrigin??0;
+    for(let row=Math.floor((bottom-origin)/pitch);origin+row*pitch<top;row++){
+      const z=origin+row*pitch,a=Math.max(bottom,z+.007),b=Math.min(top,z+pitch-.007);
+      if(b-a>.012)put('weatherboard-course',lo,hi,a,b,.065,finish);
+      const lipBottom=Math.max(bottom,z+.007),lipTop=Math.min(top,z+.035);
+      if(lipTop-lipBottom>.006)put('weatherboard-drip',lo,hi,lipBottom,lipTop,.085,finish);
     }
     return;
   }
@@ -233,10 +247,10 @@ export function houseRenovationParts(layout,style){
     if(eaveTop>upper+1){
       const eaveDepth=recipe.trim==='crosshead'?.135:recipe.trim==='stepped'?.12:.075;
       for(const [lo,hi]of freeSpans(edge,eaveTop-.10,eaveTop,guards,.055))if(hi-lo>.25)
-        place({kind:'eaves-finish',lo,hi,bottom:eaveTop-.10,top:eaveTop,depth:eaveDepth,finish:['boards','battens','paired','lap'].includes(recipe.field)?'wood':'edge'});
+        place({kind:'eaves-finish',lo,hi,bottom:eaveTop-.10,top:eaveTop,depth:eaveDepth,finish:recipe.field==='weatherboard'?'houseFrame':['boards','battens','paired','lap'].includes(recipe.field)?'wood':'edge'});
     }
   }
-  for(const bay of bays)cladding(bay,recipe,bay.place);
+  for(const bay of bays)cladding({...bay,courseOrigin:layout.floorZ},recipe,bay.place);
   return parts;
 }
 

@@ -2,9 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.27.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.27.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.27.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.28.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.28.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.28.0)**
 
-## Complete house renovations · 1.27.0
+## Coastal and the retained two-car proposal · 1.28.0
+
+**Coastal** is now an explicitly named, separate physical renovation: horizontal weatherboards, white casings and louvred shutters, pale timber decking, cross-braced guards, slipcovered seating, cane/timber dining furniture, louvred joinery, boarded headboards and linen lighting. Its geometry and textures differ from Baltic Dune. The catalogue offers **21 renovations plus Current house**, with Coastal also searchable as Hamptons, seaside or beach house.
+
+**Sternicza starts with its two-car basement proposal enabled.** Choosing Current, Original drawings or another style preserves it. An independent switch is available on every interior floor for viewing the archived cellar. Schema **28** repairs the last-used garage-era legacy save once; future explicit off choices, archived scenario A and explicit off links remain authoritative. Both actual cars stay in the shared model.
+
+[Open Coastal with the two-car garage](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.28.0#v=28&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true) · [Coastal interior](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.28.0#v=28&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true&interiorEnabled=true&interiorView=dollhouse&mode=plan) · [Change and migration details](docs/coastal-garage-1.28.md)
+
+## Historical release: complete house renovations · 1.27.0
 
 The whole-house style selector now applies **20 physical renovation concepts**, including different furniture constructions, fitted joinery, wall treatments, ceilings, lighting, textures, facade assemblies, outdoor seating and balcony guards. **Current house · no renovation** selects the original drawing layout. Choosing a style applies the revised room programme throughout the house, with coordinated interiors and exterior finishes.
 

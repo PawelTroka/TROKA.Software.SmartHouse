@@ -394,9 +394,10 @@ async function verifyBasementGarage(){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
   await details('#basement-garage-controls',true);
-  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),false,'Garage excavation starts off');
-  assert.equal(await page.locator('#garage-profile-card').getAttribute('data-enabled'),'false');
-  assert.equal(await page.locator('#garage-view').isDisabled(),true);
+  assert.equal(await page.locator('#basementGarageEnabled').isChecked(),true,'Sternicza starts with its requested two-car proposal');
+  assert.equal(await page.locator('#garage-profile-card').getAttribute('data-enabled'),'true');
+  assert.equal(await page.locator('#garage-view').isDisabled(),false);
+  assert.equal(await page.locator('#garage-parking-plan [data-car]').count(),2);
 
   const result=async()=>await page.locator('#garage-result').evaluate(node=>({
     status:node.dataset.status,minimum:Number(node.dataset.minimumClearance),reserve:Number(node.dataset.requiredMargin),
@@ -451,7 +452,7 @@ async function verifyBasementGarage(){
   await page.locator('#basementGarageEnabled').check();
   await page.waitForFunction(()=>document.querySelector('#garage-result')?.dataset.status==='structure-conflict');
   assert.deepEqual(await result(),candidate);
-  check('Optional basement garage starts off and creates a visibly different WebGL excavation and open entrance when enabled');
+  check('Sternicza starts with two cars; its independent switch changes the actual WebGL excavation and open entrance');
 
   // The section-derived 0.30 m slab lowers this floor by 0.05 m compared with
   // the old concept. With no ramp inside, the car now contacts the surface.
@@ -550,13 +551,13 @@ async function verifyBasementGarage(){
   assert.deepEqual(await result(),candidate);
   await page.locator('[data-garage-reverse="false"]').click();
   await details('#basement-garage-controls',true);
-  await page.locator('#basementGarageEnabled').uncheck();
+  await page.locator('#basementGarageEnabled').check();
   await details('#basement-garage-controls',false);
   await page.locator('button[data-mode="orbit"]').click();await page.locator('#reset-camera').click();
   await frames();
   report.garage={candidate,forecourt,deeper,excavationPixels,posePixels,reversePixels,mobile,
-    renderer:'WebGL',scenarioSaved:true,normalReloadPassed:true,shareReloadPassed:true,siteIsolationPassed:true,restoredEnabled:false};
-  check('Garage state stays isolated to Sternicza and the browser check restores the original garage-off design');
+    renderer:'WebGL',scenarioSaved:true,normalReloadPassed:true,shareReloadPassed:true,siteIsolationPassed:true,restoredEnabled:true};
+  check('Garage state stays isolated to Sternicza and the browser check retains its two-car proposal');
 }
 
 async function verifyPrivacyScreening(){

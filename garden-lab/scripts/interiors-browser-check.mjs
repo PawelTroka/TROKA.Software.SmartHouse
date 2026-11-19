@@ -80,6 +80,21 @@ try{
   assert.equal(await page.evaluate(()=>performance.getEntriesByType('resource').some(e=>new URL(e.name).pathname.endsWith('/scene-interior.js'))),false);
   check('Opening a shared floor plan creates no interior WebGL context or renderer import');
 
+  await field('floor').selectOption('basement');
+  assert.equal(await field('garage').isChecked(),true,'Sparse garage-era links restore the requested two-car proposal');
+  for(const id of ['coastal','current','coastal']){
+    await field('style').selectOption(id);
+    assert.equal(await field('garage').isChecked(),true);
+    assert.equal(await field('plan').locator('[data-iw-fixture^="car-"]').count(),2);
+    await chooseLayout('existing');
+    assert.equal((await appState()).layout,'existing','The layout buttons describe the dwelling, independently of the garage');
+    assert.equal(await field('garage').isChecked(),true,'Original drawings must never remove the garage proposal');
+    assert.equal(await field('plan').locator('[data-iw-fixture^="car-"]').count(),2);
+  }
+  await field('floor').selectOption('ground');assert.equal(await field('garage').isVisible(),true);
+  await field('garage').uncheck();
+  check('Coastal, Current and Original drawings retain two cars; the independent garage switch remains available on every floor');
+
   for(const layout of ['existing','renovation']){
     await chooseLayout(layout);
     assert.equal((await appState()).style,layout==='existing'?'current':'hidden-bali');
@@ -133,7 +148,7 @@ try{
   const ref=await rendered('hidden-bali','dollhouse');assert.ok(ref.drawCalls>0&&ref.furnitureCount>0);assert.equal(ref.layout,'renovation');
   assert.equal(await field('apply-exterior').isDisabled(),true,'The marked terrace/balcony must be linked automatically');
   const ids=await field('style').locator('option').evaluateAll(nodes=>nodes.map(n=>n.value).filter(v=>v!=='follow'));
-  assert.equal(new Set(ids).size,21);
+  assert.equal(new Set(ids).size,22);assert.ok(ids.includes('coastal'));
   const geometryCounts=new Set(),featureSets=new Set();
   for(const id of ids.filter(id=>id!=='current')){
     await field('style').selectOption(id);const s=await rendered(id,'dollhouse');
@@ -141,17 +156,18 @@ try{
     assert.equal(s.renovationFeatures.length,3);assert.equal(s.contextSource,'shared-site-model');
     geometryCounts.add(s.triangles);featureSets.add(JSON.stringify(s.renovationFeatures));
     const item={id,meshes:s.meshes,triangles:s.triangles,features:s.renovationFeatures};
-    if(['japandi','space-age','hidden-bali'].includes(id)){
+    if(['japandi','space-age','hidden-bali','coastal'].includes(id)){
       item.difference=await pixels(originalFrame,await cameraFrame());assert.ok(item.difference.changed>150,JSON.stringify(item));
       await shot('ground-'+id+'-dollhouse');
     }
     report.styles.push(item);
   }
-  assert.ok(geometryCounts.size>=10,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,20);
-  const major=report.styles.filter(s=>['hidden-bali','japandi','space-age'].includes(s.id));assert.equal(new Set(major.map(s=>s.triangles)).size,3);
+  assert.ok(geometryCounts.size>=11,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,21);
+  const major=report.styles.filter(s=>['hidden-bali','japandi','space-age','coastal'].includes(s.id));assert.equal(new Set(major.map(s=>s.triangles)).size,4);
+  assert.notEqual(report.styles.find(s=>s.id==='coastal').triangles,report.styles.find(s=>s.id==='baltic-dune').triangles,'Coastal is a distinct physical interior, not another name for Baltic Dune');
   await field('style').selectOption('current');await rendered('current','dollhouse');
   report.restoration=await pixels(originalFrame,await cameraFrame());assert.ok(report.restoration.fraction<.004,JSON.stringify(report.restoration));
-  check('All 20 renovations have physical feature descriptions and varied rendered geometry; Bali, Japandi and Space Age visibly differ and Current restores the original layout/image');
+  check('All 21 renovations have physical features and varied rendered geometry; Coastal is distinct from Baltic Dune, and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
   await field('style').selectOption('japandi');await field('floor').selectOption('first');await field('room').selectOption('master');
   await field('enter').click();const eye=await rendered('japandi','room');assert.equal(eye.roomId,'master');assert.ok(eye.eyeHeight>1.1&&eye.eyeHeight<2.1);

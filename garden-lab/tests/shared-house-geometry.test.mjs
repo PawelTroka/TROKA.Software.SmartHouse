@@ -115,7 +115,7 @@ test('the registered roof covers the exact main and projecting bay footprint wit
   }
 });
 
-test('all twenty facade renovations remain clipped to the registered storeys and exact openings',()=>{
+test('every facade renovation remains clipped to the registered storeys and exact openings',()=>{
   const data=applyPlanExterior(source,base),layout=houseAppearanceLayout(data,base),fingerprints=new Set();
   for(const style of DESIGN_STYLES.filter(s=>s.renovation)){
     const parts=houseRenovationParts(layout,style);assert.ok(parts.length>100,style.id);
@@ -127,7 +127,7 @@ test('all twenty facade renovations remain clipped to the registered storeys and
         assert.ok(p.hi<=o.lo||p.lo>=o.hi||p.top<=o.z||p.bottom>=o.z+o.height,p.kind+' overlaps '+o.id);
     }
   }
-  assert.equal(fingerprints.size,20);
+  assert.equal(fingerprints.size,DESIGN_STYLES.filter(s=>s.renovation).length);
 });
 
 test('the garage ramp and converted cellar use the same registered portal jambs and vertical aperture',()=>{

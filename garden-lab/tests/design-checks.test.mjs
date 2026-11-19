@@ -42,11 +42,13 @@ test('entire edges crossing a concave cadastral notch are counted with all footp
   near(overlapArea(rect(0,0,2,2),rect(2,0,1,2)),0);
 });
 
-test('fresh site envelopes are contained and their closest gaps use finished parts',()=>{
+test('fresh garden envelopes are contained and the retained garage exposes its structural conflict',()=>{
   const expected=[1.03967,.84501,.85196];
   for(const [i,{data,s}] of sites.entries()){
     const report=evaluateDesignChecks(s,data);
-    assert.equal(report.conflictCount,0);
+    const expectedConflicts=s.siteId==='sternicza-11'?['garage-existing-structure']:[];
+    assert.equal(report.conflictCount,expectedConflicts.length);
+    assert.deepEqual(report.checks.filter(c=>c.severity==='conflict').map(c=>c.id),expectedConflicts);
     near(report.closestBoundary.distanceM,expected[i],.00001);
     assert.ok(report.checks.every(c=>c.title&&c.detail&&c.action&&c.evidence));
     assert.deepEqual(evaluateDesignChecks({...s,showDimensions:false,mode:'sun',designStyle:'test'},data),report);

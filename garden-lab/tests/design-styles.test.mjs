@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
-import {DEFAULT_DESIGN_STYLE, DESIGN_STYLES, getDesignStyle} from '../src/design-styles.js';
+import {DEFAULT_DESIGN_STYLE, DESIGN_STYLES, getDesignStyle, designStyleSearchText} from '../src/design-styles.js';
 import {createStyledDeck,createStyledLounger,createStyledSideTable,createStyledDining,createStyledCanopyTrim} from '../src/scene-style-details.js';
 import {createGardenNightLighting} from '../src/scene-night-lights.js';
 import {createStateModel} from '../src/state.js';
@@ -21,13 +21,29 @@ const rect={x:4.1,y:8.5,z:2.4,width:.78,length:2};
 test('style IDs are stable, unique and all proposals have different architectural recipes',()=>{
   assert.equal(getDesignStyle('__proto__').id,DEFAULT_DESIGN_STYLE);
   assert.equal(getDesignStyle(null).id,DEFAULT_DESIGN_STYLE);
-  assert.equal(new Set(DESIGN_STYLES.map(s=>s.id)).size,21);
-  assert.equal(new Set(proposals.map(s=>JSON.stringify(s.recipe))).size,20);
+  assert.equal(new Set(DESIGN_STYLES.map(s=>s.id)).size,22);
+  assert.equal(new Set(proposals.map(s=>JSON.stringify(s.recipe))).size,21);
   for(const style of DESIGN_STYLES){
     assert.equal(getDesignStyle(style.id),style);
     assert.ok(Object.isFrozen(style.recipe.module)&&Object.isFrozen(style.palette));
     for(const value of Object.values(style.palette))assert.match(value,/^#[0-9a-f]{6}$/i);
     assert.deepEqual(Object.keys(style.finishes),['surface','furniture','canopy','lighting']);
+  }
+});
+
+test('Coastal is an explicit searchable choice with a different physical scheme from Baltic Dune',()=>{
+  const coastal=getDesignStyle('coastal'),dune=getDesignStyle('baltic-dune');
+  assert.equal(coastal.id,'coastal');assert.equal(coastal.label,'Coastal');
+  for(const query of ['coastal','seaside','beach house','hamptons','new england','cape cod'])
+    assert.ok(DESIGN_STYLES.filter(style=>designStyleSearchText(style).includes(query)).includes(coastal),query);
+  assert.ok(Object.isFrozen(coastal.aliases));
+  for(const key of ['paving','furniture','canopy'])assert.notEqual(coastal.recipe[key],dune.recipe[key]);
+  for(const key of ['field','pitch','trim'])assert.notEqual(coastal.renovation[key],dune.renovation[key]);
+  for(const [make,r]of [[createStyledLounger,rect],[createStyledSideTable,{...rect,width:.65,length:.65}],
+    [createStyledDining,{...rect,width:3.5,length:2.8}]]){
+    const coast=make(coastal,materials,r),baltic=make(dune,materials,r);
+    assert.notDeepEqual(snapshot(coast),snapshot(baltic),'Furniture vertices change with identical materials');
+    for(const group of [coast,baltic])group.traverse(mesh=>mesh.geometry?.dispose());
   }
 });
 
@@ -95,7 +111,7 @@ test('styled luminaires retain the original schedules, physical locations and in
     const settings=createStateModel(getSiteProfile(data.site.id,data)).DEFAULTS;
     const original=createGardenNightLighting(settings,data);
     try{
-      for(const id of ['hidden-bali','space-age','organic-japandi','mediterranean-villa','party-club']){
+      for(const id of ['hidden-bali','space-age','organic-japandi','mediterranean-villa','party-club','coastal']){
         const style=getDesignStyle(id),lighting=createGardenNightLighting(settings,data,{style});
         try{
           assert.deepEqual(lighting.fixtures,original.fixtures);

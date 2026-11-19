@@ -1,5 +1,5 @@
-import {DESIGN_STYLES,getDesignStyle} from './design-styles.js?v=1.27.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.28.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
@@ -41,7 +41,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
   }
   function filter(){
     const query=search.value.trim().toLocaleLowerCase();let count=0;
-    for(const style of DESIGN_STYLES){const show=(!family.value||family.value===style.family)&&`${style.label} ${style.description} ${style.family} ${style.renovation?.description||''} ${Object.values(style.finishes).join(' ')}`.toLocaleLowerCase().includes(query);cards.get(style.id).hidden=!show;if(show)count++;}
+    for(const style of DESIGN_STYLES){const show=(!family.value||family.value===style.family)&&designStyleSearchText(style).includes(query);cards.get(style.id).hidden=!show;if(show)count++;}
     $('style-result-count').textContent=`${count} ${count===1?'design':'designs'}`;$('style-empty').hidden=count!==0;
   }
   function choose(id){onChange({designStyle:id,styleHouseFinish:id!=='current'});status.textContent=id==='current'?'Current house restored with its original layout.':`${getDesignStyle(id).label} applied to the house, furniture and garden.`;}
@@ -79,7 +79,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
   function performanceInfo(value){
     stats=value;if(!value)return;
     const host=$('render-diagnostics');
-    for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','shadowSize','houseRenovationParts','houseRenovationProjection'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
+    for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','shadowSize','houseRenovationParts','houseRenovationProjection','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
     host.dataset.renderer=value.rendererType;host.dataset.motionActive=String(Boolean(value.motionActive));
     $('render-quality-status').textContent=value.rendererType==='webgl'?`${value.quality==='eco'?'Eco':value.quality==='high'?'High detail':'Automatic'} · ${Number(value.pixelRatio||1).toFixed(2)}× display scale`:'Lightweight renderer';
     $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.bufferWidth||0} × ${value.bufferHeight||0} drawing buffer`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';

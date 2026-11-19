@@ -13,11 +13,11 @@ const models=SITE_OPTIONS.map(site=>{
   return {site,data,model:createStateModel(getSiteProfile(site.id,data))};
 });
 
-test('schema 27 keeps the basement off in every fresh property and resolves its share identity',()=>{
-  assert.equal(STATE_VERSION,27);
+test('schema 28 starts Sternicza with the two-car proposal and leaves other properties unchanged',()=>{
+  assert.equal(STATE_VERSION,28);
   for(const {site,model} of models){
-    assert.equal(model.DEFAULTS.basementGarageEnabled,false,site.id);
-    assert.equal(model.sanitizeState().basementGarageEnabled,false,site.id);
+    assert.equal(model.DEFAULTS.basementGarageEnabled,site.id==='sternicza-11',site.id);
+    assert.equal(model.sanitizeState().basementGarageEnabled,site.id==='sternicza-11',site.id);
     assert.deepEqual(model.decodeState(model.encodeState(model.DEFAULTS)),model.DEFAULTS);
     assert.equal(resolveSiteId('?site=sternicza-11',`#v=${STATE_VERSION}&site=${site.id}`),site.id);
   }
@@ -37,9 +37,48 @@ test('current shares and saves retain garage dimensions, preview, explicit zeros
       assert.deepEqual(restored,state);
       assert.deepEqual(model.decodeState(model.encodeState(restored)),state,'Repeated share stays stable');
     }
+    assert.equal(new URLSearchParams(model.encodeState(state)).get('basementGarageEnabled'),String(patch.basementGarageEnabled),
+      'Every share carries the actual garage choice, including the default');
     const saved=clone(state);model.sanitizeState(state).screeningTrees[0].x+=1;
     assert.deepEqual(state,saved,'Editing scenario B cannot mutate A');
   }
+});
+test('garage-era sparse links adopt two cars while explicit off links and saved comparisons remain off',()=>{
+  const {model}=models[0];
+  for(let version=22;version<=STATE_VERSION;version++){
+    const sparse=model.decodeState(`v=${version}&site=sternicza-11`);
+    assert.equal(sparse.basementGarageEnabled,true,`v${version} omitted garage`);
+    assert.equal(sparse.garageSpaces,2);assert.equal(sparse.garageRampWidth,5.8);
+    const off=model.decodeState(`v=${version}&site=sternicza-11&basementGarageEnabled=false`);
+    assert.equal(off.basementGarageEnabled,false,`v${version} explicit link off`);
+    assert.equal(model.migrateSavedState({siteId:'sternicza-11',basementGarageEnabled:false},version).basementGarageEnabled,false,
+      `v${version} saved comparison off`);
+    assert.deepEqual(model.decodeState(model.encodeState(off)),off);
+  }
+});
+test('only active legacy Sternicza sessions receive the one-time missing-garage repair',()=>{
+  const {model}=models[0];
+  const saved={...model.DEFAULTS,basementGarageEnabled:false,garageRampWidth:6.1,garageClearHeight:2.55,
+    garageInsideRun:2.4,garageProgress:73,garageReverse:true,costBasementGarageQuote:438000,
+    terraceDepth:4.8,hedgeRear:5.4,nightWindowActivity:51};
+  const before=clone(saved);
+  for(const version of [23,24,25,26,27]){
+    const repaired=model.migrateSavedState(saved,version,{restoreCurrentGarageProposal:true});
+    assert.equal(repaired.basementGarageEnabled,true,`v${version} current session repaired`);
+    assert.equal(repaired.garageSpaces,2);
+    for(const key of ['garageRampWidth','garageClearHeight','garageInsideRun','garageProgress','garageReverse',
+      'costBasementGarageQuote','terraceDepth','hedgeRear','nightWindowActivity'])assert.equal(repaired[key],saved[key],`${version} ${key}`);
+    assert.equal(model.migrateSavedState(saved,version).basementGarageEnabled,false,'Archived comparison A stays off');
+    const optedOut={...repaired,basementGarageEnabled:false};
+    assert.equal(model.migrateSavedState(optedOut,STATE_VERSION,{restoreCurrentGarageProposal:true}).basementGarageEnabled,false,
+      'The new storage key makes later off choices authoritative');
+    assert.deepEqual(model.decodeState(model.encodeState(optedOut)),optedOut);
+  }
+  assert.equal(model.migrateSavedState({siteId:'sternicza-11',basementGarageEnabled:false},22,{restoreCurrentGarageProposal:true}).basementGarageEnabled,true);
+  assert.equal(model.migrateSavedState(saved,21,{restoreCurrentGarageProposal:true}).basementGarageEnabled,false);
+  for(const {site,model:other} of models.slice(1))assert.equal(other.migrateSavedState({...other.DEFAULTS,basementGarageEnabled:false},27,
+    {restoreCurrentGarageProposal:true}).basementGarageEnabled,false,site.id);
+  assert.deepEqual(saved,before,'Migration does not mutate the archived source');
 });
 test('every v1–21 design keeps the basement absent despite unknown garage settings',()=>{
   for(const {site,model} of models){
@@ -143,7 +182,7 @@ test('garage settings bound edits and reject nonfinite numbers without coercing 
     assert.equal(model.sanitizeState({[key]:field.max+999})[key],field.max,key);
     for(const value of [NaN,Infinity,-Infinity,'3',null])assert.equal(model.sanitizeState({[key]:value})[key],field.value,key);
   }
-  assert.equal(model.sanitizeState({basementGarageEnabled:'true'}).basementGarageEnabled,false);
+  assert.equal(model.sanitizeState({basementGarageEnabled:'false'}).basementGarageEnabled,true);
   assert.equal(model.sanitizeState({garageReverse:1}).garageReverse,false);
 });
 test('sun, lights, trees, view and car-preview edits reuse the complete garage assessment',()=>{

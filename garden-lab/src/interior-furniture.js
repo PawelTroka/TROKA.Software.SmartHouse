@@ -1,11 +1,12 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
 export function furnishInterior(parent,plan,tools,finishes) {
   const {box,rounded,oval,cyl,rod,group}=tools,{m,style}=finishes;
   const design=finishes.interiorRecipe||getInteriorStyleRecipe(style.id), renovated=design.id!=='current';
+  const painted=m.painted||m.trim;
   const form=style.recipe.furniture, platform=['platform','low-pebble','block','pebble','deco'].includes(form), soft=['pebble','low-pebble','shell','runner','deco'].includes(form);
   const family=['trestle','crossbuck','taper','sling'].includes(form)?m.wood:m.frame;
   function legs(g,w,d,h,r=.025,material=family,splay=.025) {
@@ -35,6 +36,13 @@ export function furnishInterior(parent,plan,tools,finishes) {
     const n=Math.max(3,Math.min(24,Math.round(w/spacing)));
     for(let i=0;i<n;i++)rounded(g,material,x-w/2+(i+.5)*w/n,y,z,w/n*.62,h,.026,.008);
   }
+  function louvrePanel(g,x,y,z,w,h,material=painted) {
+    const n=Math.max(3,Math.min(25,Math.round(h/.073)));
+    for(let i=0;i<n;i++){
+      const blade=box(g,material,x,y-h/2+(i+.5)*h/n,z,w,h/n*.86,.013);
+      blade.rotation.x=-.34;
+    }
+  }
   function arch(g,mat,x,y,z,w,h,th=.025) {
     const base=h-w/2,n=16;rod(g,mat,[x-w/2,y,z],[x-w/2,y+base,z],th);rod(g,mat,[x+w/2,y,z],[x+w/2,y+base,z],th);
     for(let i=0;i<n;i++){const a=i*Math.PI/n,b=(i+1)*Math.PI/n;rod(g,mat,[x+Math.cos(a)*w/2,y+base+Math.sin(a)*w/2,z],[x+Math.cos(b)*w/2,y+base+Math.sin(b)*w/2,z],th);}
@@ -47,14 +55,22 @@ export function furnishInterior(parent,plan,tools,finishes) {
         else {cyl(cg,m.steel,0,.21,0,.035,.09,.40,18);cyl(cg,m.steel,0,.027,0,w*.36,w*.42,.052,24);}
       }else if(['cantilever','steel','wire','sling'].includes(kind)){
         for(const a of [-1,1]){const xx=a*w*.42;rod(cg,m.frame,[xx,.028,-d*.4],[xx,.028,d*.41],.017);rod(cg,m.frame,[xx,.028,d*.41],[xx,seat,d*.35],.017);rod(cg,m.frame,[xx,seat,d*.35],[xx,seat,-d*.36],.017);}
-      }else legs(cg,w*.72,d*.69,seat-.02,.022,m.wood,['wishbone','bentwood'].includes(kind)?.035:.012);
-      const hard=['spindle','slatted','mission','crossbuck','wishbone','cane'].includes(kind);
-      rounded(cg,hard?m.oak:m.fabric,0,seat,0,w*.97,hard?.055:.10,d*.91,hard?.018:.045);
+      }else legs(cg,w*.72,d*.69,seat-.02,.022,kind==='crossback-cane'?painted:m.wood,['wishbone','bentwood'].includes(kind)?.035:.012);
+      const hard=['spindle','slatted','mission','crossbuck','wishbone','cane','crossback-cane'].includes(kind);
+      rounded(cg,kind==='crossback-cane'?painted:hard?m.oak:m.fabric,0,seat,0,w*.97,hard?.055:.10,d*.91,hard?.018:.045);
       if(['tulip','shell','curved','upholstered','block'].includes(kind)){
         const shell=oval(cg,kind==='tulip'?m.ceramic:m.fabric,0,.675,-d*.33,w*.95,.43,.14);shell.rotation.x=-.13;
         if(kind==='shell')for(let i=0;i<5;i++){const t=(i-2)/2;rounded(cg,m.accent,t*w*.19,.685-Math.abs(t)*.045,-d*.285,w*.17,.34,.032,.012);}
       }else if(kind==='iron'){
         arch(cg,m.frame,0,seat,-d*.39,w*.84,.47,.014);for(const a of [-1,1]){const ring=new THREE.Mesh(new THREE.TorusGeometry(w*.16,.011,5,18),m.frame);ring.position.set(a*w*.18,.66,-d*.39);cg.add(ring);}
+      }else if(kind==='crossback-cane'){
+        const seatWeave=group(cg,0,seat+.031,0);seatWeave.rotation.x=-Math.PI/2;
+        weavePanel(seatWeave,0,0,0,w*.80,d*.72);
+        for(const a of [-1,1]){
+          rod(cg,painted,[a*w*.42,seat-.045,-d*.34],[a*w*.42,.925,-d*.43],.018);
+          rod(cg,painted,[a*w*.35,seat+.09,-d*.36],[-a*w*.35,.84,-d*.415],.014);
+        }
+        rounded(cg,painted,0,.91,-d*.42,w*.96,.065,.060,.019);
       }else if(kind==='cane'){
         rounded(cg,m.wood,0,.697,-d*.40,w,.39,.045,.018);weavePanel(cg,0,.695,-d*.37,w*.82,.30);
       }else if(['sling','wire'].includes(kind)){
@@ -77,9 +93,15 @@ export function furnishInterior(parent,plan,tools,finishes) {
   }
   function sofa(g,w,d,{arms=true,cushions=true}={}) {
     if(renovated){
-      const kind=design.seating,low=['platform','pebble-low','sling-low'].includes(kind),seat=low?.33:.43,arm=Math.min(.12,w*.1),back=Math.min(.17,d*.22),side=arms?arm:0,span=w-2*side;
+      const kind=design.seating,low=['platform','pebble-low','sling-low'].includes(kind),seat=low?.33:.43,arm=Math.min(kind==='slipcover'?.18:.12,w*.1),back=Math.min(.17,d*.22),side=arms?arm:0,span=w-2*side;
       const stone=['masonry','block','pebble','pebble-low'].includes(kind),pod=kind==='pod',timber=['woven','slatted','bench','crossbuck','mission','taper','runner','sling','sling-low'].includes(kind),open=timber||['sled','steel','leather'].includes(kind);
-      if(stone){rounded(g,kind==='masonry'?m.wall:m.stone,0,seat*.36,0,w*.98,seat*.70,d*.98,kind.startsWith('pebble')?.105:.025);}
+      if(kind==='slipcover'){
+        rounded(g,m.fabric,0,.235,0,w,.32,d*.98,.062);
+        // Separate skirt panels and folded corner returns, with a clear hem.
+        const panels=Math.max(2,Math.ceil(w/.66));
+        for(const a of [-1,1])for(let i=0;i<panels;i++)rounded(g,m.linen,-w/2+(i+.5)*w/panels,.17,a*(d/2-.012),w/panels-.009,.255,.019,.006);
+        for(const a of [-1,1])box(g,m.linen,a*(w/2-.012),.17,0,.019,.255,d-.035);
+      }else if(stone){rounded(g,kind==='masonry'?m.wall:m.stone,0,seat*.36,0,w*.98,seat*.70,d*.98,kind.startsWith('pebble')?.105:.025);}
       else if(pod){oval(g,m.ceramic,0,.24,0,w,.38,d);cyl(g,m.steel,0,.07,0,Math.min(w,d)*.26,Math.min(w,d)*.32,.12,20);}
       else if(kind==='deco'){for(let i=0;i<3;i++)rounded(g,i===1?m.bronze:m.stone,0,.055+i*.055,0,w-i*.045,.055,d-i*.032,.025);}
       else if(['platform','channel'].includes(kind)){rounded(g,kind==='platform'?m.wood:m.frame,0,seat*.32,0,w,.19,d,.025);}
@@ -109,7 +131,11 @@ export function furnishInterior(parent,plan,tools,finishes) {
       }
       if(arms)for(const a of [-1,1]){
         const x=a*(w/2-arm/2);
-        if(timber){
+        if(kind==='slipcover'){
+          rounded(g,m.fabric,x,seat-.015,0,arm,.30,d*.94,.047);
+          oval(g,m.fabric,x,seat+.15,0,arm,.19,d*.94);
+          rod(g,m.linen,[x,seat+.245,-d*.40],[x,seat+.245,d*.40],.004);
+        }else if(timber){
           rounded(g,m.wood,x,seat+.22,0,arm,.055,d*.96,.017);
           for(const z of [-d*.4,d*.4])box(g,m.wood,x,seat*.57,z,arm*.48,seat+.13,.045);
           if(kind==='woven')weavePanel(group(g,x,0,0,Math.PI/2),0,seat*.70,0,d*.79,seat*.61);
@@ -139,12 +165,23 @@ export function furnishInterior(parent,plan,tools,finishes) {
     const depth=Math.min(.91,w*.33,d*.29),rear=group(g,-w/2+depth/2,0,0,Math.PI/2);sofa(rear,d,depth,{arms:false});
     const armW=w-depth-.016;
     for(const a of [-1,1]) {const arm=group(g,depth/2,0,a*(d/2-depth/2),a>0?Math.PI:0);sofa(arm,armW,depth,{arms:false,cushions:false});}
+    if(renovated&&design.seating==='slipcover')for(const a of [-1,1]){
+      const end=.17;oval(g,m.fabric,w/2-end/2,.58,a*(d/2-depth/2),end,.22,depth*.94);
+      rod(g,m.linen,[w/2-end/2,.687,a*(d/2-depth/2)-depth*.39],[w/2-end/2,.687,a*(d/2-depth/2)+depth*.39],.004);
+    }
   }
   function table(g,w,d,dining) {
     if(renovated){
       const kind=design.table,h=dining?.755:['low-slab','boulder-low'].includes(kind)?.27:.35,top=kind==='farmhouse'?.075:.05;
       const stone=['boulder','boulder-low','deco','monolith','waterfall'].includes(kind);
-      if(kind==='tulip')turned(g,m.steel,0,0,0,[[.001,0],[.34,.014],[.35,.041],[.12,.10],[.048,h*.68],[.08,h*.85],[.20,h-.035]],Math.min(w,d),Math.min(w,d));
+      if(kind==='twin-pedestal'){
+        for(const a of dining?[-1,1]:[0]){
+          const x=a*w*.27;
+          turned(g,painted,x,0,0,[[.10,.055],[.12,.10],[.062,h*.32],[.095,h*.50],[.053,h*.70],[.09,h-.065]],1,1);
+          rounded(g,painted,x,.055,0,Math.min(.28,w*.28),.075,d*.78,.025);
+          rounded(g,painted,x,h-.074,0,Math.min(.28,w*.28),.055,d*.67,.012);
+        }
+      }else if(kind==='tulip')turned(g,m.steel,0,0,0,[[.001,0],[.34,.014],[.35,.041],[.12,.10],[.048,h*.68],[.08,h*.85],[.20,h-.035]],Math.min(w,d),Math.min(w,d));
       else if(['boulder','boulder-low'].includes(kind))for(const a of [-1,1])oval(g,m.stone,a*w*.23,(h-top)*.48,a*d*.045,w*.29,h-top,d*.62);
       else if(kind==='waterfall')for(const a of [-1,1])rounded(g,m.stone,a*(w/2-.043),(h-top)/2,0,.086,h-top,d,.015);
       else if(kind==='deco')for(let i=0;i<3;i++)rounded(g,i===1?m.bronze:m.stone,0,(i+.5)*(h-top)/3,0,w*(.52-i*.10),(h-top)/3,d*(.72-i*.10),.025);
@@ -161,7 +198,11 @@ export function furnishInterior(parent,plan,tools,finishes) {
       }else if(kind==='farmhouse')for(const a of [-1,1])for(const b of [-1,1])turned(g,m.wood,a*w*.40,0,b*d*.35,[[.04,0],[.046,.06],[.026,h*.50],[.055,h*.66],[.042,h-.07]],1,1);
       else legs(g,w*.76,d*.69,h-top,kind==='chrome'?.025:.037,kind==='chrome'?m.steel:m.wood,kind==='oval-taper'?.055:.012);
       const surface=stone?m.stone:['tulip','chrome'].includes(kind)?m.ceramic:m.oak;
-      if(kind.startsWith('oval')||['tulip','boulder','boulder-low'].includes(kind)){const topMesh=cyl(g,surface,0,h-top/2,0,1,1,top,48);topMesh.scale.x=w/2;topMesh.scale.z=d/2;}
+      if(kind==='twin-pedestal'){
+        const cap=Math.min(.085,w*.08),n=Math.max(3,Math.ceil(d/.20));
+        for(let i=0;i<n;i++)rounded(g,m.oak,0,h-top/2,-d/2+(i+.5)*d/n,w-2*cap,top,d/n-.004,.010);
+        for(const a of [-1,1])rounded(g,m.oak,a*(w/2-cap/2),h-top/2,0,cap,top,d,.009);
+      }else if(kind.startsWith('oval')||['tulip','boulder','boulder-low'].includes(kind)){const topMesh=cyl(g,surface,0,h-top/2,0,1,1,top,48);topMesh.scale.x=w/2;topMesh.scale.z=d/2;}
       else if(kind==='slat-trestle'){const n=Math.max(3,Math.ceil(d/.09));for(let i=0;i<n;i++)rounded(g,m.oak,0,h-top/2,-d/2+(i+.5)*d/n,w,top,d/n-.007,.012);}
       else rounded(g,surface,0,h-top/2,0,w,top,d,kind==='teak'?.025:.018);
       if(!dining){books(g,-w*.18,h,0,Math.min(.29,w*.28));turned(g,m.ceramic,w*.20,h,-d*.04,[[0,0],[.34,0],[.5,.045],[.49,.055],[.33,.012],[0,.01]],.19,.19);return;}
@@ -185,7 +226,8 @@ export function furnishInterior(parent,plan,tools,finishes) {
     if(renovated){
       const kind=design.bed==='canopy'&&(w<1.2||f.headboardMaxHeight)?'woven':design.bed,low=['platform','platform-wide','slatted-low','plinth'].includes(kind),mattress=low?.25:.38;
       const wood=['canopy','slatted','slatted-low','platform','platform-wide','mission','crossbuck','taper','woven','cane'].includes(kind);
-      if(['steel','iron'].includes(kind)){legs(g,w*.88,d*.83,.24,.024,m.frame,.005);box(g,m.frame,0,.245,0,w,.055,d);}
+      if(kind==='beadboard'){legs(g,w*.85,d*.86,.18,.031,painted,.005);rounded(g,painted,0,.235,0,w,.18,d,.018);}
+      else if(['steel','iron'].includes(kind)){legs(g,w*.88,d*.83,.24,.024,m.frame,.005);box(g,m.frame,0,.245,0,w,.055,d);}
       else if(kind==='floating'){rounded(g,m.frame,0,.105,0,w*.66,.21,d*.65,.025);rounded(g,m.wood,0,.25,0,w,.085,d,.026);}
       else if(kind==='taper'){legs(g,w*.82,d*.83,.20,.035,m.wood,.025);rounded(g,m.wood,0,.23,0,w,.12,d,.03);}
       else if(kind==='capsule'){rounded(g,m.ceramic,0,.25,0,w,.34,d,.14);}
@@ -197,7 +239,13 @@ export function furnishInterior(parent,plan,tools,finishes) {
       rounded(g,m.accent,0,mattress+.19,d*.33,w*.96,.028,d*.16,.012);
       const back=-d/2+.045,headY=low?.47:.62,headH=low?.69:1.03;
       const bedBase=g;g=group(g);
-      if(kind==='canopy'){
+      if(kind==='beadboard'){
+        const inner=w-.12,n=Math.max(4,Math.ceil(inner/.10));
+        for(const a of [-1,1])rounded(g,painted,a*(w/2-.027),headY,back,.054,headH,.067,.012);
+        for(let i=0;i<n;i++)box(g,painted,-inner/2+(i+.5)*inner/n,headY,back,inner/n-.004,headH-.09,.038);
+        for(const yy of [headY-headH/2+.03,headY+headH/2-.03])rounded(g,painted,0,yy,back,w,.06,.078,.012);
+        rounded(g,painted,0,.265,d/2-.028,w,.22,.056,.012);
+      }else if(kind==='canopy'){
         for(const a of [-1,1])for(const b of [-1,1])box(g,m.wood,a*(w/2-.035),1.08,b*(d/2-.035),.07,2.16,.07);
         for(const a of [-1,1]){box(g,m.wood,a*(w/2-.035),2.13,0,.075,.075,d);box(g,m.wood,0,2.13,a*(d/2-.035),w,.075,.075);}
         const n=Math.min(12,Math.round(w/.15));for(let i=0;i<n;i++)box(g,m.wood,-w/2+(i+.5)*w/n,2.115,0,.029,.035,d*.94);
@@ -238,18 +286,22 @@ export function furnishInterior(parent,plan,tools,finishes) {
   function kitchen(g,f,w,d,tall=false) {
     [g,w,d]=faceFront(g,f,w,d);const h=tall?1.95:.9;
     if(renovated){
-      const kind=design.cabinet,body=['cane','slatted','shoji','midcentury','framed'].includes(kind)?m.wood:kind==='steel'?m.frame:kind==='gloss'?m.lacquer||m.cabinet:m.cabinet;
+      const kind=design.cabinet,body=kind==='louvred'?painted:['cane','slatted','shoji','midcentury','framed'].includes(kind)?m.wood:kind==='steel'?m.frame:kind==='gloss'?m.lacquer||m.cabinet:m.cabinet;
       box(g,m.frame,0,.06,-.012,w*.94,.12,d*.88);
       if(kind==='capsule')rounded(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022,.075);else box(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022);
       const n=Math.max(1,Math.round(w/(tall?.55:.65)));
       for(let i=0;i<n;i++){
         const x=-w/2+(i+.5)*w/n,dw=w/n-.014,dh=h-.15,y=(h+.12)/2,z=d/2;
         if(kind==='capsule')rounded(g,m.ceramic,x,y,z,dw,dh,.03,.014);else box(g,body,x,y,z,dw,dh,.016);
-        if(['shaker','framed','cane','shoji','midcentury','steel'].includes(kind)){
-          const frame=kind==='steel'?m.frame:m.oak,thin=kind==='shoji'?.025:.043;
+        if(['shaker','framed','cane','shoji','midcentury','steel','louvred'].includes(kind)){
+          const frame=kind==='louvred'?painted:kind==='steel'?m.frame:m.oak,thin=kind==='shoji'?.025:.043;
           if(kind==='shoji')box(g,m.linen,x,y,z+.014,dw-.04,dh-.04,.008);
           for(const a of [-1,1]){box(g,frame,x+a*(dw/2-thin/2),y,z+.022,thin,dh,.026);box(g,frame,x,y+a*(dh/2-thin/2),z+.022,dw,thin,.026);}
           if(kind==='cane')weavePanel(g,x,y,z+.026,dw-.09,dh-.09);
+          if(kind==='louvred'){
+            if(tall){for(const a of [-1,1])louvrePanel(g,x,y+a*dh*.25,z+.026,dw-.09,dh*.50-.08);box(g,painted,x,y,z+.023,dw,.045,.024);}
+            else louvrePanel(g,x,y,z+.026,dw-.09,dh-.09);
+          }
           if(kind==='shoji'){for(let k=1;k<4;k++)box(g,m.wood,x,y-dh/2+k*dh/4,z+.031,dw,.018,.018);box(g,m.wood,x,y,z+.032,.018,dh,.018);}
           if(kind==='midcentury'){box(g,m.wood,x,y+.17,z+.026,dw,.023,.02);box(g,m.frame,x+dw*.32,y,z+.028,.018,dh*.22,.015);}
           if(kind==='steel')for(const a of [-1,1])for(const b of [-1,1])oval(g,m.steel,x+a*dw*.40,y+b*dh*.43,z+.042,.015,.015,.011);
@@ -262,7 +314,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
         }
         if(['flush','capsule','gloss'].includes(kind))box(g,m.frame,x,h-.11,z+.018,dw*.75,.012,.013);
         else if(!['midcentury','shoji'].includes(kind)){
-          if(['shaker','framed'].includes(kind))cyl(group(g,x+dw*.30,tall?1.04:h-.14,z+.04,Math.PI/2),m.bronze,0,0,0,.018,.018,.028,12).rotation.x=Math.PI/2;
+          if(['shaker','framed','louvred'].includes(kind))cyl(group(g,x+dw*.30,tall?1.04:h-.14,z+.04,Math.PI/2),m.bronze,0,0,0,.018,.018,.028,12).rotation.x=Math.PI/2;
           else box(g,kind==='steel'?m.steel:m.bronze,x+dw*.30,tall?1.03:h-.14,z+.043,.015,tall?.20:.09,.025);
         }
       }
@@ -299,7 +351,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
       rounded(g,m.frame,0,.08,0,w*.98,.16,d*.98,.035);
       // Four skirt walls surround a hollow well; a solid body box would hide
       // the seats and make the transparent water appear to rest on timber.
-      for(const a of [-1,1]){rounded(g,m.wood,a*(w/2-wall/2),h*.44,0,wall,h*.78,d,.035);rounded(g,m.wood,0,h*.44,a*(d/2-wall/2),iw,h*.78,wall,.035);}
+      for(const a of [-1,1]){rounded(g,design.cabinet==='louvred'?painted:m.wood,a*(w/2-wall/2),h*.44,0,wall,h*.78,d,.035);rounded(g,design.cabinet==='louvred'?painted:m.wood,0,h*.44,a*(d/2-wall/2),iw,h*.78,wall,.035);}
       for(const a of [-1,1]){box(g,m.ceramic,a*(iw/2-.003),.49,0,.012,.40,id);box(g,m.ceramic,0,.49,a*(id/2-.003),iw,.40,.012);}
       // The four independent rim pieces leave a genuinely open bathing well.
       for(const a of [-1,1]){rounded(g,m.ceramic,a*(w/2-wall/2),h-.075,0,wall,.15,d,.040);rounded(g,m.ceramic,0,h-.075,a*(d/2-wall/2),iw+.02,.15,wall,.040);}
@@ -309,7 +361,8 @@ export function furnishInterior(parent,plan,tools,finishes) {
         const recline=rounded(g,m.ceramic,a*iw*.28,.60,-id*.35,iw*.40,.39,.17,.065);recline.rotation.x=-.20;
         rounded(g,m.dark,a*iw*.28,h-.06,-id*.44,iw*.28,.075,.13,.03);
       }
-      if(['cane','slatted','shoji','framed'].includes(design.cabinet))for(const a of [-1,1])slatPanel(g,0,h*.43,a*(d/2-.013),w*.97,h*.66,m.wood,.085);
+      if(design.cabinet==='louvred')for(const a of [-1,1])louvrePanel(g,0,h*.43,a*(d/2-.018),w*.94,h*.65);
+      else if(['cane','slatted','shoji','framed'].includes(design.cabinet))for(const a of [-1,1])slatPanel(g,0,h*.43,a*(d/2-.013),w*.97,h*.66,m.wood,.085);
       else for(const a of [-1,1])for(let i=0;i<4;i++)box(g,m.frame,0,.17+i*h*.15,a*(d/2-.003),w*.98,.006,.006);
       rounded(g,m.spaWater||m.water,0,h-.17,0,iw-.025,.012,id-.025,.035);
       if(f.jets!==false)for(const a of [-1,1])for(let i=0;i<4;i++){
@@ -330,8 +383,8 @@ export function furnishInterior(parent,plan,tools,finishes) {
     }else if(f.kind==='basin'||f.kind==='sink') {
       const hosted=Boolean(f.hostId)||f.kind==='sink',h=hosted?.929:.78;
       if(!hosted){
-        rounded(g,m.wood,0,.49,0,w*.96,.48,d*.9,.025);box(g,m.stone,0,h-.035,0,w,.07,d);
-        const n=Math.max(2,Math.round(w/.45));for(let i=0;i<n;i++){const x=-w*.47+(i+.5)*w*.94/n;box(g,m.cabinet,x,.49,d*.46,w*.94/n-.012,.44,.014);if(renovated&&['fluted','slatted'].includes(design.cabinet))slatPanel(g,x,.49,d*.48,w*.94/n-.02,.42,m.wood,.05);else box(g,m.bronze,x,.63,d*.49,Math.min(.16,w/n*.5),.01,.015);}
+        rounded(g,design.cabinet==='louvred'?painted:m.wood,0,.49,0,w*.96,.48,d*.9,.025);box(g,m.stone,0,h-.035,0,w,.07,d);
+        const n=Math.max(2,Math.round(w/.45));for(let i=0;i<n;i++){const x=-w*.47+(i+.5)*w*.94/n;box(g,design.cabinet==='louvred'?painted:m.cabinet,x,.49,d*.46,w*.94/n-.012,.44,.014);if(renovated&&design.cabinet==='louvred')louvrePanel(g,x,.49,d*.48,w*.94/n-.04,.36);else if(renovated&&['fluted','slatted'].includes(design.cabinet))slatPanel(g,x,.49,d*.48,w*.94/n-.02,.42,m.wood,.05);else box(g,m.bronze,x,.63,d*.49,Math.min(.16,w/n*.5),.01,.015);}
       }
       if(f.kind==='sink'&&!f.hostId)kitchen(g,{...f,front:null},w,d);
       const count=f.basins===2?2:1,scale=hosted?.9:count===2?.79:.76;
@@ -377,7 +430,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'storage':case 'wardrobe':kitchen(g,f,w,d,true);break;
       case 'basin':case 'tub':case 'hotTub':case 'bidet':case 'shower':case 'wc':case 'toilet':case 'sink':bathroom(g,f,w,d);break;
       case 'spaStep':{const h=f.height||.32;box(g,m.wood,0,h*.25,d*.25,w,h*.50,d*.50);box(g,m.wood,0,h*.50,-d*.25,w,h,d*.50);for(const z of [-d*.25,d*.25])for(let i=0;i<4;i++)box(g,m.frame,0,z<0?h+.003:h*.50+.003,z-d*.19+i*d*.12,w*.92,.006,.012);break;}
-      case 'nightstand':{const h=f.height||.52;if(renovated&&['taper','woven','slatted','midcentury','cane'].includes(design.cabinet))legs(g,w*.72,d*.68,.18,.022,m.wood,.012);rounded(g,m.wood,0,h*.60,0,w,h*.74,d,.024);rounded(g,m.stone,0,h,0,w,.035,d,.012);box(g,m.cabinet,0,h*.67,d*.51,w*.91,h*.37,.018);if(renovated&&design.cabinet==='cane')weavePanel(g,0,h*.67,d*.525,w*.80,h*.26);else box(g,m.bronze,0,h*.75,d*.54,w*.21,.011,.015);books(g,0,h+.02,0,w*.53);break;}
+      case 'nightstand':{const h=f.height||.52;if(renovated&&['taper','woven','slatted','midcentury','cane'].includes(design.cabinet))legs(g,w*.72,d*.68,.18,.022,m.wood,.012);rounded(g,design.cabinet==='louvred'?painted:m.wood,0,h*.60,0,w,h*.74,d,.024);rounded(g,m.stone,0,h,0,w,.035,d,.012);box(g,design.cabinet==='louvred'?painted:m.cabinet,0,h*.67,d*.51,w*.91,h*.37,.018);if(renovated&&design.cabinet==='cane')weavePanel(g,0,h*.67,d*.525,w*.80,h*.26);else if(renovated&&design.cabinet==='louvred')louvrePanel(g,0,h*.66,d*.525,w*.80,h*.26);else box(g,m.bronze,0,h*.75,d*.54,w*.21,.011,.015);books(g,0,h+.02,0,w*.53);break;}
       case 'sauna':if(f.variant==='heater'){rounded(g,m.frame,0,.30,0,w,.53,d,.035);for(let i=0;i<8;i++)oval(g,m.slate,Math.sin(i*2.4)*w*.29,.57,Math.cos(i*2.4)*d*.29,.079,.056,.082);}else sauna(g,w,d);break;
       case 'bench':bench(g,w,d);break;
       case 'car':car(g,w,d);break;

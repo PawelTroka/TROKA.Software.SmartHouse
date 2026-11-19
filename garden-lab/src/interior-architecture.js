@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.27.0';
-import {furnishInterior} from './interior-furniture.js?v=1.27.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.27.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.27.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.28.0';
+import {furnishInterior} from './interior-furniture.js?v=1.28.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.28.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -16,6 +16,16 @@ function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
       const count=Math.ceil(length/recipe.spacing),width=recipe.form==='vertical-timber'?.038:.014;
       for(let i=1;i<count;i++)box(g,finish,-length/2+i*length/count,height*.50,0,width,height-.10,.027);
     }else if(recipe.form==='horizontal-timber'){for(let i=1;i<5;i++)box(g,finish,0,height*i/5,0,length,.045,.032);}
+    else if(recipe.form==='cross-timber'){
+      for(let i=0;i<n;i++){
+        const x0=-length/2+i*length/n+.065,x1=-length/2+(i+1)*length/n-.065,low=.075,high=height-.075;
+        if(x1-x0<.04)continue;
+        for(const direction of [-1,1]){
+          const beam=box(g,finish,(x0+x1)/2,(low+high)/2,0,Math.hypot(x1-x0,high-low),.052,.032);
+          beam.rotation.z=direction*Math.atan2(high-low,x1-x0);
+        }
+      }
+    }
     else if(recipe.form==='deco-metal'){
       const count=Math.max(1,Math.floor(length/recipe.spacing));for(let i=0;i<count;i++){const x=-length/2+(i+.5)*length/count,w=length/count*.68;rod(g,m.bronze,[x-w/2,.20,0],[x,height-.18,0],.009);rod(g,m.bronze,[x,height-.18,0],[x+w/2,.20,0],.009);rod(g,m.bronze,[x-w/2,.20,0],[x+w/2,.20,0],.009);}
     }
@@ -39,7 +49,7 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
   for(const o of wall.openings||[]) {
     const left=o.offset,right=Math.min(len,o.offset+o.width),bottom=o.sill||0,top=Math.min(bottom+o.height,height),w=right-left,h=top-bottom;
     if(w<.04||h<.04||o.type==='passage')continue;
-    const full=bottom+o.height<=height+.001, glazed=['window','hst','balcony-door'].includes(o.type),frame=glazed?m.frame:m.oak;
+    const full=bottom+o.height<=height+.001, glazed=['window','hst','balcony-door'].includes(o.type),frame=glazed?m.frame:design?.cabinet==='louvred'?(m.painted||m.trim):m.oak;
     for(const x of [left+.021,right-.021])box(g,frame,x,bottom+h/2,0,.042,h,glazed?.087:th+.027);
     if(full)box(g,frame,left+w/2,top-.023,0,w,.046,glazed?.088:th+.028);
     if(glazed){
@@ -57,7 +67,7 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
       if(full){box(g,m.steel,left+w/2,top-.07,-.35,w,.095,.65);}
     }else{
       const end=o.hinge==='end',side=end?-1:1,door=group(g,end?right-.047:left+.047,0,0,-side*(o.swing||1)*Math.PI/2),leafW=w-.10,leafH=h-(full?.057:.01);
-      rounded(door,m.wood,side*leafW/2,bottom+leafH/2+.014,0,leafW,leafH,.036,.011);
+      rounded(door,design?.cabinet==='louvred'?(m.painted||m.trim):m.wood,side*leafW/2,bottom+leafH/2+.014,0,leafW,leafH,.036,.011);
       if(design&&design.id!=='current'&&leafH>.3){
         const kind=design.cabinet,cx=side*leafW/2,cy=bottom+leafH/2+.014,pw=leafW-.10,ph=leafH-.15;
         for(const face of [-1,1]){
@@ -66,6 +76,11 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
           else if(kind==='shoji'){
             box(door,m.linen,cx,cy,z,pw,ph,.008);box(door,m.wood,cx,cy,z+face*.007,.022,ph,.012);
             for(let i=1;i<5;i++)box(door,m.wood,cx,cy-ph/2+i*ph/5,z+face*.007,pw,.02,.012);
+          }else if(kind==='louvred'){
+            const painted=m.painted||m.trim,n=Math.max(3,Math.ceil(ph/.09));
+            for(let i=0;i<n;i++){const blade=box(door,painted,cx,cy-ph/2+(i+.5)*ph/n,z+face*.006,pw-.045,ph/n*.83,.006);blade.rotation.x=-face*.13;}
+            for(const a of [-1,1])box(door,painted,cx+a*pw/2,cy,z+face*.007,.028,ph,.012);
+            for(const yy of [cy-ph/2,cy,cy+ph/2])box(door,painted,cx,yy,z+face*.008,pw,.030,.013);
           }else if(['cane','slatted','fluted'].includes(kind)){
             const n=kind==='fluted'?Math.ceil(pw/.045):Math.ceil(pw/.085);for(let i=0;i<n;i++)box(door,m.oak,cx-pw/2+(i+.5)*pw/n,cy,z+face*.006,pw/n*.55,ph,.014);
             if(kind==='cane')for(let i=1;i<Math.ceil(ph/.09);i++)box(door,m.cane||m.wood,cx,cy-ph/2+i*.09,z+face*.013,pw,.012,.008);
@@ -118,6 +133,12 @@ export function addFlight(parent,s,plan,tools,m) {
 function makePendant(g,x,z,y,tools,m,kind) {
   const {rod,cyl,oval,box,group}=tools,h=Math.min(.53,y*.21),lampY=y-h-.09;
   cyl(g,m.frame,x,y-.024,z,.05,.05,.04);rod(g,m.frame,[x,y-.045,z],[x,lampY+.09,z],.0045);
+  if(kind==='linen-drum'){
+    const shade=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.24,40,1,true),m.lampShade||m.linen);shade.position.set(x,lampY,z);g.add(shade);
+    for(const yy of [lampY-.12,lampY+.12]){const ring=new THREE.Mesh(new THREE.TorusGeometry(.22,.007,6,40),m.oak);ring.rotation.x=Math.PI/2;ring.position.set(x,yy,z);g.add(ring);}
+    for(let i=0;i<3;i++){const a=i*Math.PI*2/3;rod(g,m.bronze,[x,lampY+.12,z],[x+Math.cos(a)*.215,lampY+.12,z+Math.sin(a)*.215],.0035);}
+    oval(g,m.glow,x,lampY-.015,z,.12,.15,.12);cyl(g,m.linen,x,lampY-.119,z,.211,.211,.006,40);return;
+  }
   if(kind==='linear'){box(g,m.frame,x,lampY,z,1.06,.045,.055);box(g,m.glow,x,lampY-.025,z,1.02,.007,.040);return;}
   if(kind==='cluster'){for(let i=0;i<3;i++){const dx=(i-1)*.16,yy=lampY+(i%2)*.15;rod(g,m.bronze,[x,y-.03,z],[x+dx,yy+.08,z],.005);oval(g,m.glow,x+dx,yy,z,.17,.17,.17);}return;}
   if(kind==='tiered'){for(let i=0;i<3;i++){const r=.21-i*.04;cyl(g,i===1?m.bronze:m.frame,x,lampY+i*.065,z,r,r,.036,28);}cyl(g,m.glow,x,lampY-.022,z,.14,.14,.008,28);return;}
@@ -177,11 +198,18 @@ export function interiorWallFeatures(plan) {
 function finishFeatureWall(parent,wall,feature,height,tools,m,design) {
   const {box,cyl,rod,group}=tools,dx=wall.b[0]-wall.a[0],dz=wall.b[1]-wall.a[1],length=Math.hypot(dx,dz),centre=(feature.left+feature.right)/2,w=feature.right-feature.left;
   const g=group(parent,wall.a[0]+dx/length*centre,0,wall.a[1]+dz/length*centre,-Math.atan2(dz,dx));
-  const depth=feature.sign*(wall.thickness/2+.014),kind=feature.wet?'wet':design.wall,h=Math.min(height-.014,feature.height-.07,['wainscot','half-boards'].includes(kind)?1.07:2.54);
+  const depth=feature.sign*(wall.thickness/2+.014),kind=feature.wet?'wet':design.wall,h=Math.min(height-.014,feature.height-.07,kind==='beadboard'?1.24:['wainscot','half-boards'].includes(kind)?1.07:2.54);
   if(h<.12||w<.2||kind==='none')return;
   if(kind==='wet'){box(g,m.tiles,0,h/2,depth,w,h,.018);box(g,m.bronze,0,h-.017,depth+feature.sign*.012,w,.012,.012);return;}
   const y=h/2;
-  if(['battens','battens-wide','ribs','sauna-boards','timber','half-boards','weatherboards'].includes(kind)){
+  if(kind==='beadboard'){
+    const painted=m.painted||m.trim,n=Math.max(3,Math.ceil(w/.105));
+    for(let i=0;i<n;i++){
+      const x=-w/2+(i+.5)*w/n;box(g,painted,x,y,depth,w/n-.004,h,.022);
+      if(i>0)cyl(g,painted,x-w/n/2+.008,y,depth+feature.sign*.014,.0035,.0035,h-.02,7);
+    }
+    if(h>1.1){box(g,painted,0,h-.028,depth+feature.sign*.008,w,.056,.038);box(g,painted,0,h-.069,depth+feature.sign*.010,w,.014,.031);}
+  }else if(['battens','battens-wide','ribs','sauna-boards','timber','half-boards','weatherboards'].includes(kind)){
     const horizontal=['timber','weatherboards'].includes(kind),spacing=kind==='battens-wide'?.28:kind==='sauna-boards'?.105:kind==='ribs'?.075:horizontal?.19:.13;
     box(g,m.wall,0,y,depth,w,h,.012);
     if(horizontal){const n=Math.ceil(h/spacing);for(let i=0;i<n;i++)box(g,m.wood,0,(i+.5)*h/n,depth+feature.sign*.012,w,h/n-.009,.025);}
@@ -208,11 +236,36 @@ function finishFeatureWall(parent,wall,feature,height,tools,m,design) {
   }
 }
 
+// Clip board runs to the room and leave a conservative margin around the
+// actual stair openings. A board never bridges a void or an L-shaped notch.
+export function coastalCeilingPanels(room,plan) {
+  const b=ringBounds(room.polygon),holes=(plan.stairs||[]).filter(s=>s.from===plan.floor&&s.kind!=='hatch').map(s=>ringBounds(s.polygon));
+  if(b.width<.18||b.depth<.18)return [];
+  const zMin=b.z0+.035,zMax=b.z1-.035,zCuts=new Set([zMin,zMax]);
+  for(const [,z] of room.polygon)for(const delta of [-.025,.025])if(z+delta>zMin&&z+delta<zMax)zCuts.add(z+delta);
+  for(const hole of holes)for(const z of [hole.z0-.025,hole.z1+.025])if(z>zMin&&z<zMax)zCuts.add(z);
+  const zs=[...zCuts].sort((a,c)=>a-c),n=Math.min(64,Math.max(1,Math.ceil((b.width-.07)/.16))),step=(b.width-.07)/n,result=[];
+  for(let i=0;i<n;i++){
+    const x0=b.x0+.035+i*step+.003,x1=b.x0+.035+(i+1)*step-.003,xs=[x0,(x0+x1)/2,x1];
+    for(const [x] of room.polygon)if(x>x0&&x<x1)xs.push(Math.max(x0,x-.001),Math.min(x1,x+.001));
+    let start=null,end=null;
+    const flush=()=>{if(start!==null&&end-start>.025)result.push({x:(x0+x1)/2,z:(start+end)/2,width:x1-x0,depth:end-start-.004});start=null;end=null;};
+    for(let j=0;j<zs.length-1;j++){
+      const z0=zs[j],z1=zs[j+1],safe=xs.every(x=>[z0+.001,(z0+z1)/2,z1-.001].every(z=>containsPoint(room.polygon,x,z)))&&!holes.some(h=>x1>h.x0-.025&&x0<h.x1+.025&&z1>h.z0-.024&&z0<h.z1+.024);
+      if(safe){if(start===null)start=z0;end=z1;}else flush();
+    }
+    flush();
+  }
+  return result;
+}
+
 function finishCeiling(parent,room,plan,tools,m,design){
   const {box,rod}=tools,b=ringBounds(room.polygon),h=plan.clearHeight,kind=design.ceiling;if(room.area<3||kind==='none')return;
   const holes=(plan.stairs||[]).filter(s=>s.from===plan.floor&&s.kind!=='hatch').map(s=>s.polygon);
   const safe=(x,z)=>containsPoint(room.polygon,x,z)&&!holes.some(r=>containsPoint(r,x,z));
-  if(['beams','rafters','battens','paired','slats','girder','coffers'].includes(kind)){
+  if(kind==='v-groove'){
+    for(const panel of coastalCeilingPanels(room,plan))box(parent,m.painted||m.trim,panel.x,h-.027,panel.z,panel.width,.026,panel.depth);
+  }else if(['beams','rafters','battens','paired','slats','girder','coffers'].includes(kind)){
     const spacing=kind==='battens'?.25:kind==='paired'?.58:kind==='slats'?.40:kind==='rafters'?.85:1.12,depth=kind==='beams'?.13:kind==='girder'?.11:.055,width=kind==='beams'?.10:kind==='girder'?.07:kind==='coffers'?.065:.029;
     const n=Math.max(1,Math.min(20,Math.floor(b.width/spacing)));
     for(let i=0;i<n;i++)for(const offset of kind==='paired'?[-.045,.045]:[0]){
