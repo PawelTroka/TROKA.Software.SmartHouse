@@ -82,7 +82,7 @@ async function waitReady(){
       Number(d.surfaceAssetsLoaded)+Number(d.surfaceAssetsFailed)===Number(d.surfaceAssetsRequested);
   });
   assert.equal(await page.locator('#renderQuality').inputValue(),'eco');
-  assert.match(await page.locator('#render-quality-status').innerText(),/^Eco ·/);
+  assert.match(await page.locator('#render-quality-status').textContent(),/^Eco ·/);
   assert.equal(await page.locator('#render-diagnostics').getAttribute('data-surface-assets-failed'),'0',
     'Pixel comparisons require all photographic surfaces to finish loading');
   await frames();
