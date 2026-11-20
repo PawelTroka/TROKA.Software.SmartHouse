@@ -1,0 +1,225 @@
+{
+  "checks": [
+    "Bali, Coastal and Modern render photographic materials, contact shading and both cars",
+    "A photograph replaces the rendered placeholder in two independent GPU contexts and an early clone",
+    "Eco renders the same design with its less expensive pipeline",
+    "Mobile renders successfully without desktop contact-shading buffers",
+    "Interior receives the same photographic surfaces and contact shading"
+  ],
+  "screenshots": [
+    "before-bali-overview.png",
+    "before-bali-terrace.png",
+    "before-bali-garden-house.png",
+    "after-hidden-bali-overview.png",
+    "after-bali-terrace.png",
+    "after-bali-pool.png",
+    "after-bali-garden-house.png",
+    "after-coastal-overview.png",
+    "after-modern-minimal-overview.png",
+    "after-modern-two-car-garage.png",
+    "after-modern-mobile.png",
+    "after-bali-interior.png"
+  ],
+  "scenes": [
+    {
+      "style": "hidden-bali",
+      "frames": "9",
+      "shadowUpdates": "1",
+      "calls": "970",
+      "triangles": "1171122",
+      "geometries": "913",
+      "textures": "80",
+      "pixelRatio": "1.5",
+      "bufferWidth": "1602",
+      "bufferHeight": "907",
+      "shadowSize": "4096",
+      "houseRenovationParts": "1055",
+      "houseRenovationProjection": "0.14",
+      "garageVehicles": "2",
+      "renderer": "webgl",
+      "motionActive": "false",
+      "contactShading": "true",
+      "interacting": "false",
+      "toneMapping": "AgX",
+      "poolReflections": "true",
+      "surfaceAssetsRequested": "18",
+      "surfaceAssetsLoaded": "18",
+      "surfaceAssetsFailed": "0",
+      "assets": {
+        "requested": 18,
+        "loaded": 18,
+        "failed": [],
+        "liveTextures": 72
+      }
+    },
+    {
+      "style": "coastal",
+      "frames": "14",
+      "shadowUpdates": "2",
+      "calls": "974",
+      "triangles": "824554",
+      "geometries": "995",
+      "textures": "85",
+      "pixelRatio": "1.5",
+      "bufferWidth": "1602",
+      "bufferHeight": "907",
+      "shadowSize": "4096",
+      "houseRenovationParts": "1931",
+      "houseRenovationProjection": "0.14",
+      "garageVehicles": "2",
+      "renderer": "webgl",
+      "motionActive": "false",
+      "contactShading": "true",
+      "interacting": "false",
+      "toneMapping": "AgX",
+      "poolReflections": "true",
+      "surfaceAssetsRequested": "18",
+      "surfaceAssetsLoaded": "18",
+      "surfaceAssetsFailed": "0",
+      "assets": {
+        "requested": 18,
+        "loaded": 18,
+        "failed": [],
+        "liveTextures": 63
+      }
+    },
+    {
+      "style": "modern-minimal",
+      "frames": "16",
+      "shadowUpdates": "3",
+      "calls": "967",
+      "triangles": "752470",
+      "geometries": "987",
+      "textures": "84",
+      "pixelRatio": "1.5",
+      "bufferWidth": "1602",
+      "bufferHeight": "907",
+      "shadowSize": "4096",
+      "houseRenovationParts": "815",
+      "houseRenovationProjection": "0.14",
+      "garageVehicles": "2",
+      "renderer": "webgl",
+      "motionActive": "false",
+      "contactShading": "true",
+      "interacting": "false",
+      "toneMapping": "AgX",
+      "poolReflections": "true",
+      "surfaceAssetsRequested": "18",
+      "surfaceAssetsLoaded": "18",
+      "surfaceAssetsFailed": "0",
+      "assets": {
+        "requested": 18,
+        "loaded": 18,
+        "failed": [],
+        "liveTextures": 63
+      }
+    }
+  ],
+  "errors": [],
+  "pool": {
+    "frames": "12",
+    "shadowUpdates": "1",
+    "calls": "158",
+    "triangles": "496024",
+    "geometries": "929",
+    "textures": "80",
+    "pixelRatio": "1.5",
+    "bufferWidth": "1602",
+    "bufferHeight": "907",
+    "shadowSize": "4096",
+    "houseRenovationParts": "1055",
+    "houseRenovationProjection": "0.14",
+    "garageVehicles": "2",
+    "renderer": "webgl",
+    "motionActive": "false",
+    "contactShading": "true",
+    "interacting": "false",
+    "toneMapping": "AgX",
+    "poolReflections": "true",
+    "surfaceAssetsRequested": "18",
+    "surfaceAssetsLoaded": "18",
+    "surfaceAssetsFailed": "0"
+  },
+  "photographicUpload": {
+    "before": [
+      {
+        "range": 0,
+        "deviation": 0,
+        "glError": 0
+      },
+      {
+        "range": 0,
+        "deviation": 0,
+        "glError": 0
+      }
+    ],
+    "after": [
+      {
+        "range": 111,
+        "deviation": 16.513972393313328,
+        "glError": 0
+      },
+      {
+        "range": 111,
+        "deviation": 16.513972393313328,
+        "glError": 0
+      }
+    ],
+    "imageSize": [
+      1024,
+      1024
+    ]
+  },
+  "interior": {
+    "visible": true,
+    "renderedView": "room",
+    "sceneError": "",
+    "drawnRevision": 1,
+    "floor": "ground",
+    "layout": "renovation",
+    "roomId": "lounge",
+    "styleId": "hidden-bali",
+    "scene": {
+      "available": true,
+      "visible": true,
+      "interacting": false,
+      "view": "room",
+      "styleId": "hidden-bali",
+      "roomId": "lounge",
+      "floor": "ground",
+      "layout": "renovation",
+      "wallCount": 9,
+      "furnitureCount": 16,
+      "meshes": 103,
+      "drawCalls": 464,
+      "triangles": 896798,
+      "frames": 4,
+      "framePending": false,
+      "camera": [
+        10.08025,
+        1.57,
+        0.6875
+      ],
+      "eyeHeight": 1.57,
+      "contextSource": "shared-site-model",
+      "contextKey": "5:true,true,57.79393370160966,2026-06-21,false,0.36875081583889435,0.38480572952407543,0.8461367421070863,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|room",
+      "renovationFeatures": [
+        "Teak canopy beds and woven seating",
+        "Cane cabinet doors and timber screens",
+        "Battened ceilings with basket pendants"
+      ],
+      "contactShading": true,
+      "contactShadingSupported": true,
+      "aoWidth": 1266,
+      "aoHeight": 727,
+      "msaaSamples": 4,
+      "toneMapping": "AgX",
+      "surfaceAssets": {
+        "requested": 18,
+        "loaded": 18,
+        "failed": [],
+        "liveTextures": 156
+      }
+    }
+  }
+}

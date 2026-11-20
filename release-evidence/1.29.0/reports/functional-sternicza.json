@@ -1,0 +1,128 @@
+{
+  "version": "1.29.0",
+  "scenarioGroup": "sternicza",
+  "renderQuality": "eco",
+  "status": "passed",
+  "startedAt": "2026-11-20T21:54:45.214Z",
+  "scenarios": [
+    {
+      "name": "sternicza",
+      "status": "passed",
+      "startedAt": "2026-11-20T21:55:05.307Z",
+      "firstCheck": 2,
+      "durationMs": 204501,
+      "checks": 12
+    }
+  ],
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+    "All eight upper-floor presets enter eye mode with correct direction, posture and readout",
+    "Editable first and attic floor heights update the actual observer readout",
+    "Night preview and both independent lighting switches work",
+    "All three dimmers respond, including an actual rendered change from 0% to 100% active windows",
+    "Daylight restores the sun clock and turns simulated artificial lights off",
+    "Upper-floor preset, eye mode and night time survive a normal page reload",
+    "The visible Share view action creates a reloadable upper-floor night view",
+    "Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow",
+    "Spa screening improves the visible PCK3 result and a reduced service gap shows a layout warning",
+    "Switching established pergola foliage off reduces the actual terrace screening result",
+    "Combined Plan displays the finite pergola, two planted sides and both spa screen panels",
+    "Combined screening survives Share and reload in the actual WebGL orbit scene",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [
+    {
+      "id": "first-garden-seated",
+      "eye": "Eye 5.45 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the garden façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "first-garden-standing",
+      "eye": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the garden façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "first-street-seated",
+      "eye": "Eye 5.45 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the street façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "first-street-standing",
+      "eye": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the street façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-garden-seated",
+      "eye": "Eye 8.15 m above original garden reference · 1.20 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-garden-standing",
+      "eye": "Eye 8.60 m above original garden reference · 1.65 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-street-seated",
+      "eye": "Eye 8.15 m above original garden reference · 1.20 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-street-standing",
+      "eye": "Eye 8.60 m above original garden reference · 1.65 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    }
+  ],
+  "screenshots": [
+    "first-floor-garden-night.jpg",
+    "attic-street-night.jpg",
+    "sternicza-privacy-combined-orbit.jpg"
+  ],
+  "night": {
+    "activation": 1,
+    "garden": 0.75,
+    "pendants": 0.8,
+    "hedge": 0.85,
+    "windows": 0.6,
+    "mode": "eye"
+  },
+  "daylight": {
+    "activation": 0,
+    "garden": 0,
+    "pendants": 0,
+    "hedge": 0,
+    "windows": 0,
+    "mode": "eye"
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390,
+    "overflowing": []
+  },
+  "privacy": {
+    "baseline": {
+      "before": 10.2,
+      "after": 10.2
+    },
+    "spa": {
+      "before": 10.2,
+      "after": 98.8
+    },
+    "pergola": {
+      "before": 10.2,
+      "after": 92.6
+    },
+    "bare": {
+      "before": 10.2,
+      "after": 50
+    },
+    "combined": {
+      "before": 10.2,
+      "after": 100
+    },
+    "sharedReloadPassed": true,
+    "renderer": "WebGL"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}

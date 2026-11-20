@@ -1,0 +1,370 @@
+{
+  "version": "1.29.0",
+  "scenarioGroup": "nadmorska",
+  "renderQuality": "eco",
+  "status": "passed",
+  "startedAt": "2026-11-20T21:54:44.405Z",
+  "scenarios": [
+    {
+      "name": "nadmorska",
+      "status": "passed",
+      "startedAt": "2026-11-20T21:55:04.631Z",
+      "firstCheck": 2,
+      "durationMs": 312553,
+      "checks": 15
+    }
+  ],
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+    "The property selector exposes all three independently named properties",
+    "Switching to Korzeniowskiego preserves its own floor height and upstairs view",
+    "Sternicza privacy comparisons and quotes stay hidden on the other two properties",
+    "Nadmorska WebGL load uses its own plot, floor and final LiDAR roof evidence",
+    "Nadmorska first-floor street control points +90 degrees and shares that exact direction",
+    "The busier 70% evening visibly lights more neighbouring windows than 35% in the same WebGL street view",
+    "Nadmorska window activity, independent light switches and visible WebGL water glow work after dark",
+    "Garden pendants and thuja lanterns each brighten the actual WebGL scene independently of landscape accents",
+    "Garden master switches both hanging-light channels off while retaining their settings and neighbouring windows",
+    "Pendant switches and dimmers survive Share and reload without changing the property or garden layout",
+    "Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels",
+    "At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged",
+    "Nadmorska whole-plot plan shows 709.29 square metres, pool sizes and both side access openings",
+    "Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page",
+    "The 390px mobile night scene renders all active hedge lighting and visibly responds to its switch in WebGL",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [],
+  "screenshots": [
+    "nadmorska-street-busy-evening.png",
+    "nadmorska-day.png",
+    "nadmorska-night.png",
+    "nadmorska-pendants-night.png",
+    "nadmorska-hedge-isolated-off.png",
+    "nadmorska-hedge-isolated-low.png",
+    "nadmorska-hedge-isolated-on.png",
+    "nadmorska-plan.png",
+    "nadmorska-mobile-plan.png",
+    "nadmorska-mobile-hedge-off.png",
+    "nadmorska-mobile-night.png"
+  ],
+  "nadmorska": {
+    "roofPoints": 3182,
+    "surroundingBuildings": 52,
+    "roofTopZ": 14.29,
+    "street": {
+      "id": "first-street-standing",
+      "eye": "Eye 6.15 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    "windowActivityComparison": {
+      "from": 35,
+      "to": 70,
+      "width": 982,
+      "height": 573,
+      "changedPixels": 7121,
+      "warmBrightenedPixels": 4666,
+      "brightnessGain": 711717.333333338
+    },
+    "windowActivityVisible": true,
+    "waterGlow": {
+      "width": 982,
+      "height": 573,
+      "aquaPixels": 317484,
+      "brighterAquaPixels": 7721,
+      "brightnessGain": 486498
+    },
+    "night": {
+      "activation": 1,
+      "garden": 0.75,
+      "pendants": 0.8,
+      "hedge": 0.85,
+      "windows": 0.6,
+      "mode": "orbit"
+    },
+    "pendantLighting": {
+      "gardenPixels": {
+        "width": 982,
+        "height": 573,
+        "changedPixels": 16102,
+        "warmBrightenedPixels": 1987,
+        "brightnessGain": 177369.00000000023
+      },
+      "hedgePixels": {
+        "width": 982,
+        "height": 573,
+        "changedPixels": 143904,
+        "warmBrightenedPixels": 100091,
+        "brightnessGain": 8896480.99999991
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "restoredWindowActivity": 70,
+      "sharedReloadPassed": true
+    },
+    "hedgeSurfaceLighting": {
+      "lowPercent": 25,
+      "highPercent": 85,
+      "lowSurface": {
+        "width": 982,
+        "height": 573,
+        "patches": [
+          {
+            "id": "rear-lantern-8-foliage",
+            "pixels": 594,
+            "brightenedPixels": 447,
+            "brightnessGain": 23980.999999999996
+          },
+          {
+            "id": "rear-lantern-9-foliage",
+            "pixels": 667,
+            "brightenedPixels": 480,
+            "brightnessGain": 26071.00000000001
+          },
+          {
+            "id": "rear-lantern-10-foliage",
+            "pixels": 690,
+            "brightenedPixels": 518,
+            "brightnessGain": 28328.00000000001
+          },
+          {
+            "id": "side-lantern-2-ground",
+            "pixels": 713,
+            "brightenedPixels": 713,
+            "brightnessGain": 43766.3333333333
+          },
+          {
+            "id": "side-lantern-3-ground",
+            "pixels": 828,
+            "brightenedPixels": 828,
+            "brightnessGain": 44988.999999999985
+          }
+        ],
+        "outsidePatches": [
+          {
+            "id": "outside-rear-west-ground",
+            "bounds": [
+              0.28,
+              0.74,
+              0.3,
+              0.775
+            ],
+            "pixelBounds": [
+              275,
+              424,
+              295,
+              444
+            ],
+            "pixels": 400,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-rear-middle-ground",
+            "bounds": [
+              0.405,
+              0.88,
+              0.43,
+              0.92
+            ],
+            "pixelBounds": [
+              398,
+              504,
+              422,
+              527
+            ],
+            "pixels": 552,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-side-lane-ground",
+            "bounds": [
+              0.921,
+              0.526,
+              0.944,
+              0.57
+            ],
+            "pixelBounds": [
+              904,
+              301,
+              927,
+              327
+            ],
+            "pixels": 598,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          }
+        ]
+      },
+      "surface": {
+        "width": 982,
+        "height": 573,
+        "patches": [
+          {
+            "id": "rear-lantern-8-foliage",
+            "pixels": 594,
+            "brightenedPixels": 467,
+            "brightnessGain": 41103.66666666665
+          },
+          {
+            "id": "rear-lantern-9-foliage",
+            "pixels": 667,
+            "brightenedPixels": 543,
+            "brightnessGain": 44515.33333333341
+          },
+          {
+            "id": "rear-lantern-10-foliage",
+            "pixels": 690,
+            "brightenedPixels": 580,
+            "brightnessGain": 47913.66666666674
+          },
+          {
+            "id": "side-lantern-2-ground",
+            "pixels": 713,
+            "brightenedPixels": 713,
+            "brightnessGain": 80004.00000000012
+          },
+          {
+            "id": "side-lantern-3-ground",
+            "pixels": 828,
+            "brightenedPixels": 828,
+            "brightnessGain": 85279.33333333337
+          }
+        ],
+        "outsidePatches": [
+          {
+            "id": "outside-rear-west-ground",
+            "bounds": [
+              0.28,
+              0.74,
+              0.3,
+              0.775
+            ],
+            "pixelBounds": [
+              275,
+              424,
+              295,
+              444
+            ],
+            "pixels": 400,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-rear-middle-ground",
+            "bounds": [
+              0.405,
+              0.88,
+              0.43,
+              0.92
+            ],
+            "pixelBounds": [
+              398,
+              504,
+              422,
+              527
+            ],
+            "pixels": 552,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-side-lane-ground",
+            "bounds": [
+              0.921,
+              0.526,
+              0.944,
+              0.57
+            ],
+            "pixelBounds": [
+              904,
+              301,
+              927,
+              327
+            ],
+            "pixels": 598,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          }
+        ]
+      },
+      "outsideLimits": {
+        "meanPositiveLumaGain": 0.5,
+        "brightenedPixelFraction": 0.01,
+        "lumaPixelThreshold": 3
+      },
+      "isolated": {
+        "activation": 1,
+        "garden": 0,
+        "pendants": 0,
+        "hedge": 0.85,
+        "windows": 0,
+        "mode": "orbit"
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "allOtherLightsOff": true
+    },
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    "mobileNight": {
+      "renderer": "WebGL",
+      "lights": {
+        "activation": 1,
+        "garden": 0.75,
+        "pendants": 0.8,
+        "hedge": 0.85,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "hedgePixels": {
+        "width": 360,
+        "height": 449,
+        "changedPixels": 54255,
+        "warmBrightenedPixels": 33172,
+        "brightnessGain": 2460244.666666668
+      }
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}

@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.28.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.29.0';
 
 // Only the garden builder's unnamed, fixed, single-material boxes participate.
 // Named targets, glass sorting, vehicles, selectable terrain and fixture groups
@@ -45,23 +45,23 @@ export function batchGardenBoxes(group) {
 
 // Style materials belong to a single design generation. Original textures stay
 // shared; each proposed finish releases its owned maps when the material dies.
-export function proposedMaterials(base, style) {
+export function proposedMaterials(base, style, {svgMode=false} = {}) {
   if (style.id === 'current') return base;
   const materials = {...base}, p = style.palette;
   for (const [key, source, color] of [
     ['stone','stone',p.surface], ['stoneLight','stoneLight',p.edge],
     ['wood','wood',p.wood], ['woodLight','woodLight',p.wood], ['metal','metal',p.frame],
-    ['linen','linen',p.fabric], ['styleAccent','metal',p.accent], ['styleLight','linen',p.light],
+    ['linen','linen',p.fabric], ['fabricAccent','linen',p.accent], ['styleAccent','metal',p.accent], ['styleLight','linen',p.light],
     ['wall','wall',p.houseWall], ['roof','roof',p.houseRoof], ['plinth','plinth',p.houseFrame]
   ]) {
     const material = base[source].clone();
     material.color.set(color);
     if (key === 'woodLight') material.color.lerp(new THREE.Color('#f4e5c9'),.16);
-    applyExteriorSurface(material,style,key);
+    applyExteriorSurface(material,style,key==='fabricAccent'?'fabric':key,{svgMode});
     materials[key] = material;
   }
   materials.deck=(['boards','cross-boards'].includes(style.recipe.paving)?base.wood:base.stone).clone();
-  materials.deck.color.set(p.surface);applyExteriorSurface(materials.deck,style,'deck');
+  materials.deck.color.set(p.surface);applyExteriorSurface(materials.deck,style,'deck',{svgMode});
   return materials;
 }
 

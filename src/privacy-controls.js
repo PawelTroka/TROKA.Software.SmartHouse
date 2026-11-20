@@ -1,5 +1,5 @@
-import {PRIVACY_PRESETS,privacyPresetState,matchesPrivacyPreset} from './privacy-options.js?v=1.28.0';
-import {analyzeVisibility,privacyStructures} from './geometry.js?v=1.28.0';
+import {PRIVACY_PRESETS,privacyPresetState,matchesPrivacyPreset} from './privacy-options.js?v=1.29.0';
+import {analyzeVisibility,privacyStructures} from './geometry.js?v=1.29.0';
 
 const $=id=>document.getElementById(id);
 const fmt=(value,digits=1)=>Number.isFinite(value)?value.toFixed(digits):'—';

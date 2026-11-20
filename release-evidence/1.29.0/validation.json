@@ -1,0 +1,579 @@
+{
+  "evidenceFormatVersion": 1,
+  "generatedAt": "2026-11-20T22:09:12+00:00",
+  "release": {
+    "version": "1.29.0",
+    "savedStateSchemaVersion": 28
+  },
+  "source": {
+    "repository": "PawelTroka/TROKA.Software.SmartHouse",
+    "commit": "b5fae5e78993bb3a7d609b5470e11bcf66f24667",
+    "tree": "4a6621fbea9652d58b0840b8fab2cefdda37215f",
+    "baselineCommit": "e9447099a7b82e094440754e663d670d74adff5f",
+    "pullRequest": 29,
+    "pullRequestUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/29",
+    "mergedCommit": "55494c5b6d88904a035c1291326f20869d9bc5bd",
+    "mergedTree": "4a6621fbea9652d58b0840b8fab2cefdda37215f"
+  },
+  "ci": {
+    "runId": 44824211404,
+    "url": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/44824211404",
+    "status": "passed",
+    "pendingSuites": [],
+    "note": "All seven CI jobs passed on the frozen source commit. Architecture, functional, refinements, interior and studio evidence has been downloaded and checked.",
+    "jobsPassed": 7,
+    "jobsTotal": 7
+  },
+  "unitTests": {
+    "status": "passed",
+    "tests": 686,
+    "passed": 686,
+    "failed": 0,
+    "report": {
+      "path": "reports/unit-test-summary.log",
+      "bytes": 155,
+      "sha256": "d011ca137e98f846a1980e5c760a3ca87e9a01a381fe44ad7e4010b19a20f986",
+      "gitBlobSha1": "14888a31a1425f4ebbd180350345f4df29a110a7"
+    }
+  },
+  "architecture": {
+    "status": "passed",
+    "checkCount": 5,
+    "checks": [
+      "Bali, Coastal and Modern render photographic materials, contact shading and both cars",
+      "A photograph replaces the rendered placeholder in two independent GPU contexts and an early clone",
+      "Eco renders the same design with its less expensive pipeline",
+      "Mobile renders successfully without desktop contact-shading buffers",
+      "Interior receives the same photographic surfaces and contact shading"
+    ],
+    "errorFields": {
+      "errors": []
+    },
+    "report": {
+      "path": "reports/architectural-rendering.json",
+      "bytes": 5960,
+      "sha256": "ee3c732f957179baa3442406a37f7bf7d4cc3d17991d7f105cce24d377067256",
+      "gitBlobSha1": "15002f6b94478ef9e7d1e7c5d45c1806a952014a"
+    },
+    "jobId": 136592674702,
+    "jobUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/44824211404/job/136592674702",
+    "artifact": {
+      "id": 14673028577,
+      "name": "architectural-rendering-evidence",
+      "bytes": 13468853,
+      "sha256": "3fe78187735149fd1b583f43d413fe5c1f3067198789db6a3d6d643f7e480597"
+    },
+    "exactReport": {
+      "checks": [
+        "Bali, Coastal and Modern render photographic materials, contact shading and both cars",
+        "A photograph replaces the rendered placeholder in two independent GPU contexts and an early clone",
+        "Eco renders the same design with its less expensive pipeline",
+        "Mobile renders successfully without desktop contact-shading buffers",
+        "Interior receives the same photographic surfaces and contact shading"
+      ],
+      "screenshots": [
+        "before-bali-overview.png",
+        "before-bali-terrace.png",
+        "before-bali-garden-house.png",
+        "after-hidden-bali-overview.png",
+        "after-bali-terrace.png",
+        "after-bali-pool.png",
+        "after-bali-garden-house.png",
+        "after-coastal-overview.png",
+        "after-modern-minimal-overview.png",
+        "after-modern-two-car-garage.png",
+        "after-modern-mobile.png",
+        "after-bali-interior.png"
+      ],
+      "scenes": [
+        {
+          "style": "hidden-bali",
+          "frames": "9",
+          "shadowUpdates": "1",
+          "calls": "970",
+          "triangles": "1171122",
+          "geometries": "913",
+          "textures": "80",
+          "pixelRatio": "1.5",
+          "bufferWidth": "1602",
+          "bufferHeight": "907",
+          "shadowSize": "4096",
+          "houseRenovationParts": "1055",
+          "houseRenovationProjection": "0.14",
+          "garageVehicles": "2",
+          "renderer": "webgl",
+          "motionActive": "false",
+          "contactShading": "true",
+          "interacting": "false",
+          "toneMapping": "AgX",
+          "poolReflections": "true",
+          "surfaceAssetsRequested": "18",
+          "surfaceAssetsLoaded": "18",
+          "surfaceAssetsFailed": "0",
+          "assets": {
+            "requested": 18,
+            "loaded": 18,
+            "failed": [],
+            "liveTextures": 72
+          }
+        },
+        {
+          "style": "coastal",
+          "frames": "14",
+          "shadowUpdates": "2",
+          "calls": "974",
+          "triangles": "824554",
+          "geometries": "995",
+          "textures": "85",
+          "pixelRatio": "1.5",
+          "bufferWidth": "1602",
+          "bufferHeight": "907",
+          "shadowSize": "4096",
+          "houseRenovationParts": "1931",
+          "houseRenovationProjection": "0.14",
+          "garageVehicles": "2",
+          "renderer": "webgl",
+          "motionActive": "false",
+          "contactShading": "true",
+          "interacting": "false",
+          "toneMapping": "AgX",
+          "poolReflections": "true",
+          "surfaceAssetsRequested": "18",
+          "surfaceAssetsLoaded": "18",
+          "surfaceAssetsFailed": "0",
+          "assets": {
+            "requested": 18,
+            "loaded": 18,
+            "failed": [],
+            "liveTextures": 63
+          }
+        },
+        {
+          "style": "modern-minimal",
+          "frames": "16",
+          "shadowUpdates": "3",
+          "calls": "967",
+          "triangles": "752470",
+          "geometries": "987",
+          "textures": "84",
+          "pixelRatio": "1.5",
+          "bufferWidth": "1602",
+          "bufferHeight": "907",
+          "shadowSize": "4096",
+          "houseRenovationParts": "815",
+          "houseRenovationProjection": "0.14",
+          "garageVehicles": "2",
+          "renderer": "webgl",
+          "motionActive": "false",
+          "contactShading": "true",
+          "interacting": "false",
+          "toneMapping": "AgX",
+          "poolReflections": "true",
+          "surfaceAssetsRequested": "18",
+          "surfaceAssetsLoaded": "18",
+          "surfaceAssetsFailed": "0",
+          "assets": {
+            "requested": 18,
+            "loaded": 18,
+            "failed": [],
+            "liveTextures": 63
+          }
+        }
+      ],
+      "errors": [],
+      "pool": {
+        "frames": "12",
+        "shadowUpdates": "1",
+        "calls": "158",
+        "triangles": "496024",
+        "geometries": "929",
+        "textures": "80",
+        "pixelRatio": "1.5",
+        "bufferWidth": "1602",
+        "bufferHeight": "907",
+        "shadowSize": "4096",
+        "houseRenovationParts": "1055",
+        "houseRenovationProjection": "0.14",
+        "garageVehicles": "2",
+        "renderer": "webgl",
+        "motionActive": "false",
+        "contactShading": "true",
+        "interacting": "false",
+        "toneMapping": "AgX",
+        "poolReflections": "true",
+        "surfaceAssetsRequested": "18",
+        "surfaceAssetsLoaded": "18",
+        "surfaceAssetsFailed": "0"
+      },
+      "photographicUpload": {
+        "before": [
+          {
+            "range": 0,
+            "deviation": 0,
+            "glError": 0
+          },
+          {
+            "range": 0,
+            "deviation": 0,
+            "glError": 0
+          }
+        ],
+        "after": [
+          {
+            "range": 111,
+            "deviation": 16.513972393313328,
+            "glError": 0
+          },
+          {
+            "range": 111,
+            "deviation": 16.513972393313328,
+            "glError": 0
+          }
+        ],
+        "imageSize": [
+          1024,
+          1024
+        ]
+      },
+      "interior": {
+        "visible": true,
+        "renderedView": "room",
+        "sceneError": "",
+        "drawnRevision": 1,
+        "floor": "ground",
+        "layout": "renovation",
+        "roomId": "lounge",
+        "styleId": "hidden-bali",
+        "scene": {
+          "available": true,
+          "visible": true,
+          "interacting": false,
+          "view": "room",
+          "styleId": "hidden-bali",
+          "roomId": "lounge",
+          "floor": "ground",
+          "layout": "renovation",
+          "wallCount": 9,
+          "furnitureCount": 16,
+          "meshes": 103,
+          "drawCalls": 464,
+          "triangles": 896798,
+          "frames": 4,
+          "framePending": false,
+          "camera": [
+            10.08025,
+            1.57,
+            0.6875
+          ],
+          "eyeHeight": 1.57,
+          "contextSource": "shared-site-model",
+          "contextKey": "5:true,true,57.79393370160966,2026-06-21,false,0.36875081583889435,0.38480572952407543,0.8461367421070863,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|room",
+          "renovationFeatures": [
+            "Teak canopy beds and woven seating",
+            "Cane cabinet doors and timber screens",
+            "Battened ceilings with basket pendants"
+          ],
+          "contactShading": true,
+          "contactShadingSupported": true,
+          "aoWidth": 1266,
+          "aoHeight": 727,
+          "msaaSamples": 4,
+          "toneMapping": "AgX",
+          "surfaceAssets": {
+            "requested": 18,
+            "loaded": 18,
+            "failed": [],
+            "liveTextures": 156
+          }
+        }
+      }
+    }
+  },
+  "functional": {
+    "status": "passed",
+    "suites": {
+      "sternicza": {
+        "status": "passed",
+        "checkCount": 15,
+        "checks": [
+          "Built application loads with a real WebGL canvas",
+          "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+          "All eight upper-floor presets enter eye mode with correct direction, posture and readout",
+          "Editable first and attic floor heights update the actual observer readout",
+          "Night preview and both independent lighting switches work",
+          "All three dimmers respond, including an actual rendered change from 0% to 100% active windows",
+          "Daylight restores the sun clock and turns simulated artificial lights off",
+          "Upper-floor preset, eye mode and night time survive a normal page reload",
+          "The visible Share view action creates a reloadable upper-floor night view",
+          "Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow",
+          "Spa screening improves the visible PCK3 result and a reduced service gap shows a layout warning",
+          "Switching established pergola foliage off reduces the actual terrace screening result",
+          "Combined Plan displays the finite pergola, two planted sides and both spa screen panels",
+          "Combined screening survives Share and reload in the actual WebGL orbit scene",
+          "No unhandled JavaScript or browser console errors"
+        ],
+        "errorFields": {
+          "pageErrors": [],
+          "consoleErrors": []
+        },
+        "report": {
+          "path": "reports/functional-sternicza.json",
+          "bytes": 6129,
+          "sha256": "de0659eae94a04100ded6bbaa1d86625e5d5fe2d215146f3c0bdba0093969270",
+          "gitBlobSha1": "f0dae82269c6a655cf46d6a30f579f2bdaf24e6d"
+        },
+        "renderQuality": "eco"
+      },
+      "nadmorska": {
+        "status": "passed",
+        "checkCount": 18,
+        "checks": [
+          "Built application loads with a real WebGL canvas",
+          "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+          "The property selector exposes all three independently named properties",
+          "Switching to Korzeniowskiego preserves its own floor height and upstairs view",
+          "Sternicza privacy comparisons and quotes stay hidden on the other two properties",
+          "Nadmorska WebGL load uses its own plot, floor and final LiDAR roof evidence",
+          "Nadmorska first-floor street control points +90 degrees and shares that exact direction",
+          "The busier 70% evening visibly lights more neighbouring windows than 35% in the same WebGL street view",
+          "Nadmorska window activity, independent light switches and visible WebGL water glow work after dark",
+          "Garden pendants and thuja lanterns each brighten the actual WebGL scene independently of landscape accents",
+          "Garden master switches both hanging-light channels off while retaining their settings and neighbouring windows",
+          "Pendant switches and dimmers survive Share and reload without changing the property or garden layout",
+          "Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels",
+          "At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged",
+          "Nadmorska whole-plot plan shows 709.29 square metres, pool sizes and both side access openings",
+          "Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page",
+          "The 390px mobile night scene renders all active hedge lighting and visibly responds to its switch in WebGL",
+          "No unhandled JavaScript or browser console errors"
+        ],
+        "errorFields": {
+          "pageErrors": [],
+          "consoleErrors": []
+        },
+        "report": {
+          "path": "reports/functional-nadmorska.json",
+          "bytes": 10695,
+          "sha256": "4a40d44b74a114df048a70ad7bf7d96146de5987f5941519b6289d677364862e",
+          "gitBlobSha1": "eb87435a75858b633e0748170b30b312d1fb8742"
+        },
+        "renderQuality": "eco"
+      },
+      "garage": {
+        "status": "passed",
+        "checkCount": 9,
+        "checks": [
+          "Built application loads with a real WebGL canvas",
+          "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+          "Sternicza starts with two cars; its independent switch changes the actual WebGL excavation and open entrance",
+          "Full front-yard-only, raised-basement and deeper-floor options show distinct conservative clearance results",
+          "Car position and reverse preview change actual WebGL and the equal-scale profile without changing full-drive minima",
+          "Garage dimensions and preview direction survive scenario A/B, normal reload and Share reload",
+          "The garage profile and clearance results remain readable at 390px without horizontal overflow",
+          "Garage state stays isolated to Sternicza and the browser check retains its two-car proposal",
+          "No unhandled JavaScript or browser console errors"
+        ],
+        "errorFields": {
+          "pageErrors": [],
+          "consoleErrors": []
+        },
+        "report": {
+          "path": "reports/functional-garage.json",
+          "bytes": 3461,
+          "sha256": "fc7107cc6a3412cdb177f749ab53db97d0ec71f945d32231cb872a85355fbf1d",
+          "gitBlobSha1": "2ce6a2bcfc73948a7c6ec54d36e2d0a98717f069"
+        },
+        "renderQuality": "eco"
+      }
+    }
+  },
+  "refinements": {
+    "status": "passed",
+    "checkCount": 8,
+    "checks": [
+      "Fresh defaults retain the two-car proposal beside the 4 m terrace, infinity jacuzzi and 3 m high / 4 m deep canopy",
+      "Two-car entrance, separated vehicle envelopes and the over-ramp landing appear in real WebGL and exported clearance checks",
+      "A narrow two-car setting is explicitly rejected rather than shown as a valid fit",
+      "A manually selected guarded balcony replaces the canopy; Current truthfully has no house access until a renovation adds doors",
+      "Swimming view uses the actual pool water level and its editable eye offset visibly moves the camera",
+      "Balcony, pool viewpoint and two-car dimensions survive sharing and reload",
+      "A v22 garage link opens with two parking bays and 5.8 m width, retaining its original terrace and cover settings",
+      "The double-garage plan, result and cover controls fit a 390 px viewport without page overflow"
+    ],
+    "errorFields": {
+      "pageErrors": []
+    },
+    "report": {
+      "path": "reports/refinements.json",
+      "bytes": 354916,
+      "sha256": "2a9e9830003e4b84561fc7d31a924161ce866aba3b88973b8342587d0728372b",
+      "gitBlobSha1": "bafffbde6cdfa283bc6c8a5300bee8161ec9482a"
+    }
+  },
+  "interior": {
+    "status": "passed",
+    "checkCount": 10,
+    "checks": [
+      "Opening a shared floor plan creates no interior WebGL context or renderer import",
+      "Coastal, Current and Original drawings retain two cars; the independent garage switch remains available on every floor",
+      "Original and renovated plans expose schedules, openings and headroom; the explicit shared two-car switch reveals retained garage conflicts",
+      "Current renders the original dwelling and chosen styles render its renovation on all four floors using the actual shared site context",
+      "All 21 renovations have physical features and varied rendered geometry; Coastal is distinct from Baltic Dune, and Current restores the original layout/image",
+      "Room entry and room changes move the camera, furniture toggles affect rendered content and both renderers stop when idle",
+      "Save A, return to B, shared links and local reload preserve the whole-house style and interior navigation settings",
+      "Exports contain the ground soaking tub/dual vanity/bidet and one upper hydro spa/single basin/two-person shower; both views share the 4 m balcony and all 3 doors",
+      "Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together",
+      "390 px mobile controls, room inspector and both plan and WebGL views fit the viewport"
+    ],
+    "errorFields": {
+      "errors": []
+    },
+    "report": {
+      "path": "reports/interiors.json",
+      "bytes": 10152,
+      "sha256": "fa6c4ae97082c1b69130ac50a873b8f018dc966410a290b6abdc974bb1be2aa6",
+      "gitBlobSha1": "4ce256e73df778e90c9adc962f363715f1028378"
+    }
+  },
+  "studio": {
+    "status": "passed",
+    "checkCount": 18,
+    "checks": [
+      "All 22 choices are accessible; Coastal is found by name, Hamptons or seaside, with family filtering and Escape focus return",
+      "Automatic and Eco bound resolution and shadow texture size",
+      "First style adoption installs the marked 4 m terrace, shared balcony and all three doors; Undo restores the complete original state",
+      "All 21 styles have distinct facade assemblies and retain both cars; Coastal differs from Baltic Dune and Current restores the neutral dwelling",
+      "Switching between proposed styles preserves an independently edited balcony depth and the separate terrace depth",
+      "Keyboard selection applies a complete renovation. Undo and Redo of Current preserve the camera and golden-hour time",
+      "Restoring Current survives the share link, saved-design reload and JSON export without a hidden garden-only style",
+      "A 20,000 PLN renovation quote clears when Current or a different style is selected, and Undo restores its original scope",
+      "Save A and return to B preserve the intermediate real design as the Undo target",
+      "Blue-hour renovation switching preserves the real dusk activation, garden lights, neighbouring windows and camera",
+      "Same solar time, orbit mode and viewport size do not refit the shadow camera",
+      "Reduced motion, diagram/offscreen pauses and synthetic visibilitychange after headless foreground freeze",
+      "390 px and 320 px editor and scrollable catalogue fit all 22 choices",
+      "Each mapped property renders a distinct renovation from its own garden viewpoint while retaining its own garden geometry",
+      "An existing v24 styled link opens with its house renovation included",
+      "The former active garage-off save is repaired once, while archived scenario A keeps its exact off choice",
+      "A new explicit off choice survives style changes, sharing and normal reload; an explicit older off link is also preserved",
+      "The final Coastal exterior renders two vehicles and exports the same two-car basement"
+    ],
+    "errorFields": {
+      "errors": []
+    },
+    "screenshotCount": 23,
+    "report": {
+      "path": "reports/studio.json",
+      "bytes": 29819,
+      "sha256": "84052faab1039cdf9b145829a26a40f97199f777a4dfb375c608226497ba1d03",
+      "gitBlobSha1": "1c9b23597f7675db09bc3deacadc2cd792d3a2c8"
+    },
+    "jobId": 136592675101,
+    "jobUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/44824211404/job/136592675101",
+    "artifact": {
+      "id": 14674226380,
+      "name": "studio-evidence",
+      "headSha": "b5fae5e78993bb3a7d609b5470e11bcf66f24667"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "before-bali-garden-house.png",
+      "bytes": 1060987,
+      "sha256": "ddcaec5c7e68be5f383a07b4c55ba86b7fa60c6692bf0aac025ac44f35c0e61e",
+      "gitBlobSha1": "f91cb7e4192ee293ecc4e7d471945d7ae1f62d7d",
+      "width": 1602,
+      "height": 909,
+      "role": "baseline",
+      "view": "Bali garden toward house",
+      "sourceArtifact": "architectural-rendering-evidence",
+      "sourceJobId": 136592674702
+    },
+    {
+      "path": "after-bali-garden-house.png",
+      "bytes": 1179254,
+      "sha256": "b70daa09a0bd84062bc8244488c0ff7b89aedc0b0ff3107a70b944e4865e3847",
+      "gitBlobSha1": "0eea071322f24ef175349e18d02f6ad70d5e1b16",
+      "width": 1602,
+      "height": 909,
+      "role": "release",
+      "view": "Bali garden toward house",
+      "sourceArtifact": "architectural-rendering-evidence",
+      "sourceJobId": 136592674702
+    },
+    {
+      "path": "after-hidden-bali-overview.png",
+      "bytes": 1036848,
+      "sha256": "b747a8d4486ab0ee56629e716a66fad2730d8196989a6ab3f8cc2b28573454f8",
+      "gitBlobSha1": "0620329a10ba3a362470e45b9c64e9514682bafa",
+      "width": 1602,
+      "height": 909,
+      "role": "release",
+      "view": "Bali garden overview",
+      "sourceArtifact": "architectural-rendering-evidence",
+      "sourceJobId": 136592674702
+    },
+    {
+      "path": "after-bali-pool.png",
+      "bytes": 1042629,
+      "sha256": "9426739027774b8c292c05fe97382580bfb16bf5cb0e9e246735100e456c694b",
+      "gitBlobSha1": "7a239a52cb7a4296ee51dac8828a97ea1438c566",
+      "width": 1602,
+      "height": 909,
+      "role": "release",
+      "view": "Bali pool at swimming eye level",
+      "sourceArtifact": "architectural-rendering-evidence",
+      "sourceJobId": 136592674702
+    },
+    {
+      "path": "after-bali-interior.png",
+      "bytes": 1896237,
+      "sha256": "16d1b094275b556edb8442f39c3fc2b48a34a00ec829dc00c10cff9fe2b3f859",
+      "gitBlobSha1": "c707919af15377265c609340fed369771b109aaa",
+      "width": 1809,
+      "height": 1040,
+      "role": "release",
+      "view": "Bali living room",
+      "sourceArtifact": "architectural-rendering-evidence",
+      "sourceJobId": 136592674702
+    },
+    {
+      "path": "after-modern-two-car-garage.png",
+      "bytes": 1548759,
+      "sha256": "69500b4db74bae222cd21e524c15e20dd00cf526156f583f3347bf87e17d9071",
+      "gitBlobSha1": "d0a898c589adfdc526d4f0deccb75a99c14fedfe",
+      "width": 1602,
+      "height": 909,
+      "role": "release",
+      "view": "Modern garage access; one car visible",
+      "sourceArtifact": "architectural-rendering-evidence",
+      "sourceJobId": 136592674702
+    }
+  ],
+  "screenshotSelection": {
+    "count": 6,
+    "note": "These are selected screenshots. The exact raw reports preserve names of additional screenshots retained in their original CI artifacts."
+  },
+  "visualAssessment": {
+    "claim": "Real-time surface and model detail improvement; 100% photorealism has not been achieved.",
+    "observedImprovements": [
+      "The matched garden view shows photographic lawn variation, rounded cushions and open woven furniture frames.",
+      "The interior shows visible floorboard grain and knots, timber material detail and contact shading.",
+      "The pool reflects surrounding scene content, and the visible garage car has a curved reflective body."
+    ],
+    "remainingLimits": [
+      "Close vegetation shows repeated foliage cards, branch pieces and simplified plant forms.",
+      "Surrounding buildings remain simplified context geometry.",
+      "Exterior architectural surfaces and comparatively even lighting retain a model-like appearance.",
+      "The swimming-eye pool view shows broad horizontal reflection bands and simplified water response."
+    ],
+    "materialScope": "Photographic maps are representative finishes, not photographs or verified specifications of installed materials.",
+    "vehicleEvidence": "The Modern garage screenshot visibly shows one car. Scene counters and functional/refinements checks verify the two-car configuration; that screenshot alone does not demonstrate both cars."
+  },
+  "buildFileHashes": {
+    "path": "build-files.sha256.json",
+    "bytes": 14734,
+    "sha256": "f5c1bb0d3ddaaa6875fcedf4d8f6b4a5b8f2a7ed5e52cb0bee7ce77828f24a6c",
+    "gitBlobSha1": "2c48b80b28f412a808aacfe9cb008a3cc7624e3f"
+  }
+}

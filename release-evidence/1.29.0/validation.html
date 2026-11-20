@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Garden Lab 1.29.0 — rendering evidence</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #243b32; background: #f4f4ef; }
+    * { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.6; }
+    a { color: #275b49; text-underline-offset: .2em; }
+    a:hover { color: #123e2e; }
+    a:focus-visible { outline: 3px solid #9a6324; outline-offset: 4px; border-radius: 2px; }
+    .skip { position: absolute; left: 1rem; top: -6rem; padding: .75rem 1rem; background: white; z-index: 2; }
+    .skip:focus { top: 1rem; }
+    .wrap { width: min(1500px, calc(100% - 3rem)); margin-inline: auto; }
+    header { padding: 2.5rem 0 1.5rem; border-bottom: 1px solid #dce1d6; }
+    .eyebrow { margin: 0 0 .4rem; color: #61745e; font-size: .78rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.15; letter-spacing: -.035em; }
+    .intro { margin: 1rem 0; max-width: 72ch; color: #516157; }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; font-weight: 600; }
+    main { padding: 1.5rem 0 3rem; }
+    .facts { display: flex; flex-wrap: wrap; gap: 1rem 3rem; margin: 0 0 1rem; }
+    .facts div { min-width: 7rem; }
+    dt { color: #627267; font-size: .82rem; }
+    dd { margin: .15rem 0 0; font-size: 1.05rem; font-weight: 650; }
+    .status { margin: 0; padding: 1rem 1.2rem; background: #e9eee3; border-left: 3px solid #718c66; border-radius: 0 7px 7px 0; }
+    section { margin-top: 2rem; }
+    h2 { margin: 0 0 .3rem; font-size: 1.4rem; line-height: 1.3; letter-spacing: -.02em; }
+    .section-note { margin: 0 0 1rem; color: #627267; font-size: .92rem; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+    figure { margin: 0; overflow: hidden; background: #fff; border: 1px solid #dce1d6; border-radius: 10px; }
+    figure > a { display: block; background: #e6e9e1; }
+    figure > a:focus-visible { outline-offset: -4px; }
+    figure img { display: block; width: 100%; height: auto; }
+    figcaption { padding: .8rem 1rem 1rem; }
+    figcaption strong { display: block; line-height: 1.4; }
+    figcaption span { display: block; margin-top: .15rem; color: #627267; font-size: .85rem; }
+    .limits { max-width: 100ch; margin-bottom: 0; color: #516157; }
+    footer { padding: 1.2rem 0 1.8rem; border-top: 1px solid #dce1d6; color: #627267; font-size: .85rem; }
+    footer p { margin: 0; }
+    @media (max-width: 760px) {
+      .wrap { width: calc(100% - 2rem); }
+      header { padding-top: 1.8rem; }
+      .grid { grid-template-columns: 1fr; }
+      .facts { gap: 1rem 1.5rem; }
+    }
+    @media print {
+      body { background: white; }
+      .wrap { width: 100%; }
+      .skip { display: none; }
+      header { padding-top: 0; }
+      figure, .status { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#evidence">Skip to rendering evidence</a>
+  <header>
+    <div class="wrap">
+      <p class="eyebrow">Garden Lab · Sternicza 11</p>
+      <h1>Rendering evidence</h1>
+      <p class="intro">Actual application screenshots for release 1.29.0. The paired garden views show the same viewpoint before and after the rendering changes. Select any image to inspect it at full resolution.</p>
+      <nav aria-label="Source and validation">
+        <a href="https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/29">Source changes · PR #29</a>
+        <a href="https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/44824211404">Browser validation run</a>
+        <a href="validation.json">Validation data</a>
+      </nav>
+    </div>
+  </header>
+  <main id="evidence" class="wrap">
+    <dl class="facts" aria-label="Release details">
+      <div><dt>Version</dt><dd>1.29.0</dd></div>
+      <div><dt>Saved-state version</dt><dd>28</dd></div>
+      <div><dt>Unit checks</dt><dd>686</dd></div>
+    </dl>
+    <p class="status"><strong>Validation passed:</strong> All seven CI jobs completed successfully, including the final studio browser checks. See <a href="validation.json">validation.json</a> for exact run results.</p>
+
+    <section aria-labelledby="comparison-title">
+      <h2 id="comparison-title">Matched garden view</h2>
+      <p class="section-note">Bali style, looking from the garden toward the house.</p>
+      <div class="grid">
+        <figure>
+          <a href="before-bali-garden-house.png"><img src="before-bali-garden-house.png" alt="Bali-style house viewed from the garden before the rendering changes." decoding="async"></a>
+          <figcaption><strong>Before</strong><span>Previous renderer · same garden viewpoint</span></figcaption>
+        </figure>
+        <figure>
+          <a href="after-bali-garden-house.png"><img src="after-bali-garden-house.png" alt="Bali-style house viewed from the same garden position in version 1.29.0." decoding="async"></a>
+          <figcaption><strong>After · 1.29.0</strong><span>Current renderer · same garden viewpoint</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section aria-labelledby="views-title">
+      <h2 id="views-title">Additional views</h2>
+      <p class="section-note">Overview, water, interior and garage access from the same validation run.</p>
+      <div class="grid">
+        <figure>
+          <a href="after-hidden-bali-overview.png"><img src="after-hidden-bali-overview.png" alt="Elevated overview of the Bali-style house, garden, planting and pool." loading="lazy" decoding="async"></a>
+          <figcaption><strong>Bali · garden overview</strong><span>House and garden in their surrounding context</span></figcaption>
+        </figure>
+        <figure>
+          <a href="after-bali-pool.png"><img src="after-bali-pool.png" alt="Bali garden and pool water viewed from swimming eye level." loading="lazy" decoding="async"></a>
+          <figcaption><strong>Bali · pool</strong><span>Water surface from swimming eye level</span></figcaption>
+        </figure>
+        <figure>
+          <a href="after-bali-interior.png"><img src="after-bali-interior.png" alt="Living-room interior in the Bali-style renovation." loading="lazy" decoding="async"></a>
+          <figcaption><strong>Bali · living room</strong><span>Furnished renovation interior</span></figcaption>
+        </figure>
+        <figure>
+          <a href="after-modern-two-car-garage.png"><img src="after-modern-two-car-garage.png" alt="A red car on the garage access ramp beside the Modern-style house." loading="lazy" decoding="async"></a>
+          <figcaption><strong>Modern · garage access</strong><span>One car is visible here; the two-car configuration is checked in the reports.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section aria-labelledby="limits-title">
+      <h2 id="limits-title">How to read these images</h2>
+      <p class="limits">These real-time browser renders improve surface and model detail, but do not achieve 100% photorealism. Representative photographic material maps illustrate proposed finishes; they are not photographs or verified specifications of installed materials. Close foliage still shows repeated cards and branches, surrounding buildings remain simplified, exterior lighting is comparatively even, and pool reflections can form visible horizontal bands. Read these images as design previews. The source changes and validation data document what was implemented and checked.</p>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap"><p>Garden Lab 1.29.0 · Screenshots captured from the application during browser validation.</p></div>
+  </footer>
+</body>
+</html>

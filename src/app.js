@@ -1,33 +1,33 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.28.0';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.28.0';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.28.0';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.28.0';
-import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.28.0';
-import {createTreeControls} from './tree-controls.js?v=1.28.0';
-import {createPrivacyControls} from './privacy-controls.js?v=1.28.0';
-import {createGarageControls} from './garage-controls.js?v=1.28.0';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures,terraceCover} from './geometry.js?v=1.28.0';
-import {renderPlan,renderSection} from './diagrams.js?v=1.28.0';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.28.0';
-import {analyzeSunlight} from './shade.js?v=1.28.0';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.28.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.28.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.28.0';
-import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.28.0';
-import {gardenDimensions} from './dimensions.js?v=1.28.0';
-import {UPPER_FLOOR_PRESETS,upperFloorPreset} from './viewpoints.js?v=1.28.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.28.0';
-import {houseRenovationSummary} from './house-renovation.js?v=1.28.0';
-import {renderNightReadouts} from './night-view.js?v=1.28.0';
-import {getDesignStyle} from './design-styles.js?v=1.28.0';
-import {createStudioControls} from './studio-controls.js?v=1.28.0';
-import {createDesignHistory} from './design-history.js?v=1.28.0';
-import {evaluateDesignChecks} from './design-checks.js?v=1.28.0';
-import {renderDesignReview} from './design-review.js?v=1.28.0';
-import {changePresentationSettings} from './studio-state.js?v=1.28.0';
-import {applyPlanExterior,planRegistrationSummary} from './plan-exterior.js?v=1.28.0';
-import {getInteriorPlan,INTERIOR_SOURCES,INTERIOR_DIMENSIONS,INTERIOR_CHANGES} from './interior-plan.js?v=1.28.0';
-import {getHouseFloorPlan} from './house-model.js?v=1.28.0';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.29.0';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.29.0';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.29.0';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.29.0';
+import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.29.0';
+import {createTreeControls} from './tree-controls.js?v=1.29.0';
+import {createPrivacyControls} from './privacy-controls.js?v=1.29.0';
+import {createGarageControls} from './garage-controls.js?v=1.29.0';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures,terraceCover} from './geometry.js?v=1.29.0';
+import {renderPlan,renderSection} from './diagrams.js?v=1.29.0';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.29.0';
+import {analyzeSunlight} from './shade.js?v=1.29.0';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.29.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.29.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.29.0';
+import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.29.0';
+import {gardenDimensions} from './dimensions.js?v=1.29.0';
+import {UPPER_FLOOR_PRESETS,upperFloorPreset} from './viewpoints.js?v=1.29.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.29.0';
+import {houseRenovationSummary} from './house-renovation.js?v=1.29.0';
+import {renderNightReadouts} from './night-view.js?v=1.29.0';
+import {getDesignStyle} from './design-styles.js?v=1.29.0';
+import {createStudioControls} from './studio-controls.js?v=1.29.0';
+import {createDesignHistory} from './design-history.js?v=1.29.0';
+import {evaluateDesignChecks} from './design-checks.js?v=1.29.0';
+import {renderDesignReview} from './design-review.js?v=1.29.0';
+import {changePresentationSettings} from './studio-state.js?v=1.29.0';
+import {applyPlanExterior,planRegistrationSummary} from './plan-exterior.js?v=1.29.0';
+import {getInteriorPlan,INTERIOR_SOURCES,INTERIOR_DIMENSIONS,INTERIOR_CHANGES} from './interior-plan.js?v=1.29.0';
+import {getHouseFloorPlan} from './house-model.js?v=1.29.0';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -546,7 +546,7 @@ async function syncInteriorWorkspace(){
   $('interior-open').setAttribute('aria-expanded',String(enabled));
   if(!enabled){interiorWorkspace?.setVisible(false);return;}
   if(!interiorWorkspace){
-    if(!interiorWorkspacePromise)interiorWorkspacePromise=import('./interior-workspace.js?v=1.28.0').then(({createInteriorWorkspace})=>{
+    if(!interiorWorkspacePromise)interiorWorkspacePromise=import('./interior-workspace.js?v=1.29.0').then(({createInteriorWorkspace})=>{
       interiorWorkspace=createInteriorWorkspace($('interior-host'),{settings,onChange:changeInterior,onClose:()=>changeInterior({interiorEnabled:false}),onStatus:toast,getData:()=>data,getExteriorContext:(floor,view)=>scene?.createInteriorContext?.(floor,view),getContextKey:()=>scene?.getInteriorContextKey?.()||''});
       return interiorWorkspace;
     }).catch(error=>{console.error('Interior workspace unavailable',error);interiorWorkspacePromise=null;changeInterior({interiorEnabled:false});toast('Interiors could not load. Please refresh and try again.');});
@@ -766,7 +766,7 @@ try{
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   fetch(new URL('../data/garden-budget-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Garden price sources unavailable');return r.json();}).then(renderGardenPriceSources).catch(()=>{$('garden-price-date').textContent='Garden supplier references and estimate assumptions are documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.28.0');
+    const {createScene}=await import('./scene.js?v=1.29.0');
     scene=createScene($('scene-host'),data,{onPerformanceInfo:stats=>studioControls?.performanceInfo(stats),onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;syncLookDirections();}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Night surface lighting and cast shadows need WebGL; simplified glowing windows and fixture markers remain available. Open Sun & shade for calculated shadows.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}

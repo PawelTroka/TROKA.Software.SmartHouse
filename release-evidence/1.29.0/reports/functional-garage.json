@@ -1,0 +1,119 @@
+{
+  "version": "1.29.0",
+  "scenarioGroup": "garage",
+  "renderQuality": "eco",
+  "status": "passed",
+  "startedAt": "2026-11-20T21:54:29.770Z",
+  "scenarios": [
+    {
+      "name": "garage",
+      "status": "passed",
+      "startedAt": "2026-11-20T21:54:49.552Z",
+      "firstCheck": 2,
+      "durationMs": 232510,
+      "checks": 6
+    }
+  ],
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+    "Sternicza starts with two cars; its independent switch changes the actual WebGL excavation and open entrance",
+    "Full front-yard-only, raised-basement and deeper-floor options show distinct conservative clearance results",
+    "Car position and reverse preview change actual WebGL and the equal-scale profile without changing full-drive minima",
+    "Garage dimensions and preview direction survive scenario A/B, normal reload and Share reload",
+    "The garage profile and clearance results remain readable at 390px without horizontal overflow",
+    "Garage state stays isolated to Sternicza and the browser check retains its two-car proposal",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [],
+  "screenshots": [
+    "sternicza-basement-garage-entry.jpg",
+    "sternicza-basement-garage-profile.jpg",
+    "sternicza-basement-garage-mobile.jpg"
+  ],
+  "garage": {
+    "candidate": {
+      "status": "structure-conflict",
+      "minimum": 0.0387171534214491,
+      "reserve": 0.03,
+      "frontRun": "9.13 m",
+      "drop": "1.45 m",
+      "grade": "25.0%",
+      "headroom": "2.25 m",
+      "door": "5.80 × 2.10 m",
+      "parking": "6.99 m",
+      "forward": "38.7 mm",
+      "reverse": "39.0 mm"
+    },
+    "forecourt": {
+      "status": "contact",
+      "minimum": -0.0016067153158105642,
+      "reserve": 0.03,
+      "frontRun": "9.13 m",
+      "drop": "1.45 m",
+      "grade": "25.0%",
+      "headroom": "2.30 m",
+      "door": "5.80 × 2.10 m",
+      "parking": "8.59 m",
+      "forward": "-1.6 mm",
+      "reverse": "-0.9 mm"
+    },
+    "deeper": {
+      "status": "contact",
+      "minimum": -0.013126191514937161,
+      "reserve": 0.03,
+      "frontRun": "9.13 m",
+      "drop": "2.05 m",
+      "grade": "25.0%",
+      "headroom": "2.79 m",
+      "door": "5.80 × 2.10 m",
+      "parking": "6.99 m",
+      "forward": "-13.1 mm",
+      "reverse": "-13.1 mm"
+    },
+    "excavationPixels": {
+      "width": 982,
+      "height": 573,
+      "changedPixels": 551254,
+      "warmBrightenedPixels": 1894,
+      "brightnessGain": 46062.000000000015
+    },
+    "posePixels": {
+      "width": 982,
+      "height": 573,
+      "changedPixels": 23652,
+      "warmBrightenedPixels": 173,
+      "brightnessGain": 3486.666666666667
+    },
+    "reversePixels": {
+      "width": 982,
+      "height": 573,
+      "changedPixels": 10757,
+      "warmBrightenedPixels": 460,
+      "brightnessGain": 10694.000000000011
+    },
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390,
+      "card": {
+        "left": 14,
+        "right": 376,
+        "width": 362
+      },
+      "svg": {
+        "left": 32,
+        "right": 358,
+        "width": 326,
+        "height": 85.203125
+      }
+    },
+    "renderer": "WebGL",
+    "scenarioSaved": true,
+    "normalReloadPassed": true,
+    "shareReloadPassed": true,
+    "siteIsolationPassed": true,
+    "restoredEnabled": true
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
