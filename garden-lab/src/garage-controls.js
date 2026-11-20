@@ -1,6 +1,6 @@
-import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.28.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.28.0';
-import {terrainAt} from './geometry.js?v=1.28.0';
+import {GARAGE_PRESETS,garagePresetState,matchesGaragePreset,createGarageLayoutCache} from './garage-options.js?v=1.29.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.29.0';
+import {terrainAt} from './geometry.js?v=1.29.0';
 
 const $=id=>document.getElementById(id);
 const fmt=(value,digits=1)=>Number.isFinite(value)?value.toFixed(digits):'—';

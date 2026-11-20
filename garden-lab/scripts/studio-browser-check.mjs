@@ -38,6 +38,8 @@ const sceneVisible=async()=>{
   await el('#scene-host').scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
     Number(document.querySelector('#render-diagnostics').dataset.frames)>0);
+  await page.waitForFunction(()=>{const d=document.querySelector('#render-diagnostics').dataset;
+    return Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&d.surfaceAssetsFailed==='0';});
   await waitFrames();
 };
 async function ready(){

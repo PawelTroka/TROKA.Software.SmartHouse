@@ -1,10 +1,29 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.29.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.29.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
 export function furnishInterior(parent,plan,tools,finishes) {
-  const {box,rounded,oval,cyl,rod,group}=tools,{m,style}=finishes;
+  const {oval,cyl,rod,group}=tools,{m,style}=finishes;
+  const cloth=new Set([m.fabric,m.linen,m.duvet,m.accent]),hard=new Set([m.wood,m.oak,m.frame,m.steel,m.bronze,m.stone,m.ceramic,m.cabinet,m.painted,m.trim]);
+  const detailCache=new Map();
+  const cached=(key,create)=>{if(!detailCache.has(key))detailCache.set(key,create());return detailCache.get(key);};
+  const detailMesh=(parent,geometry,material,x,y,z)=>{const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,y,z);parent.add(mesh);return mesh;};
+  function box(g,material,x,y,z,w,h,d){
+    if(!hard.has(material)||Math.min(w,h,d)<.016||Math.max(w,h,d)<.10)return tools.box(g,material,x,y,z,w,h,d);
+    return detailMesh(g,cached(`edge:${w}:${h}:${d}`,()=>beveledBoxGeometry(w,h,d,{radius:Math.min(.003,Math.min(w,h,d)*.10),segments:1})),material,x,y,z);
+  }
+  function rounded(g,material,x,y,z,w,h,d,r=.045){
+    if(cloth.has(material)&&Math.min(w,h,d)>=.055){
+      const axis=h<=Math.min(w,d)?'y':d<=w?'z':'x',roundness=Math.max(3.1,Math.min(7,2+Math.min(w,h,d)/(Math.max(.001,r))));
+      const key=`cloth:${w}:${h}:${d}:${axis}:${roundness}`;
+      const mesh=detailMesh(g,cached(key,()=>cushionGeometry(w,h,d,{axis,roundness})),material,x,y,z);
+      const welt=detailMesh(mesh,cached(key+':welt',()=>cushionPipingGeometry(w,h,d,{axis,roundness})),material,0,0,0);
+      welt.name='sewn-upholstery-edge';return mesh;
+    }
+    return tools.rounded(g,material,x,y,z,w,h,d,r);
+  }
   const design=finishes.interiorRecipe||getInteriorStyleRecipe(style.id), renovated=design.id!=='current';
   const painted=m.painted||m.trim;
   const form=style.recipe.furniture, platform=['platform','low-pebble','block','pebble','deco'].includes(form), soft=['pebble','low-pebble','shell','runner','deco'].includes(form);
@@ -27,10 +46,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
     const stack=group(g,x,y,z,.11);box(stack,m.accent,0,.024,0,w,.048,w*.68);box(stack,m.paper,0,.063,0,w*.9,.031,w*.66).rotation.y=-.18;box(stack,m.wood,0,.087,0,w*.81,.017,w*.65);
   }
   function weavePanel(g,x,y,z,w,h,material=m.cane||m.wood) {
-    // Open cane weave is real geometry, bounded to this measured panel.
-    const columns=Math.min(12,Math.max(4,Math.round(w/.065))),rows=Math.min(12,Math.max(3,Math.round(h/.065)));
-    for(let i=0;i<=columns;i++)box(g,material,x-w/2+i*w/columns,y,z,.012,h,.013);
-    for(let i=0;i<=rows;i++)box(g,material,x,y-h/2+i*h/rows,z+.008,w,.01,.011);
+    detailMesh(g,cached(`weave:${w}:${h}`,()=>wovenPanelGeometry(w,h)),material,x,y,z);
   }
   function slatPanel(g,x,y,z,w,h,material=m.wood,spacing=.09) {
     const n=Math.max(3,Math.min(24,Math.round(w/spacing)));

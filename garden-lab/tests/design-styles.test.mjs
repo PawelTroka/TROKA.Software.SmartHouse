@@ -67,14 +67,14 @@ test('every bond clips diagonal and horizontal joints to the physical terrace an
   }
 });
 
-test('furniture stays inside the corresponding existing footprint and does not cast analytical shade',()=>{
+test('furniture stays inside the corresponding existing footprint and casts visible sun shadows',()=>{
   for(const style of proposals){
     for(const [make,r] of [[createStyledLounger,rect],[createStyledSideTable,{...rect,width:.65,length:.65}],
       [createStyledDining,{...rect,width:3.5,length:2.8}]]){
       const group=make(style,materials,r),b=bounds(group);
       assert.ok(group.children.length>0&&group.children.length<=6,style.id);
       assert.ok(fits(b.min.x,b.max.x,r.x,r.x+r.width)&&fits(b.min.z,b.max.z,r.y,r.y+r.length),style.id);
-      assert.ok(group.children.every(mesh=>mesh.castShadow===false&&Object.values(materials).includes(mesh.material)),style.id);
+      assert.ok(group.children.every(mesh=>mesh.castShadow===!mesh.material.transparent&&Object.values(materials).includes(mesh.material)),style.id);
       assert.ok(b.max.y<r.z+.85);
     }
   }
@@ -99,6 +99,7 @@ test('SVG furniture has finite local cap triangles and zero fascia depth adds no
   for(const style of proposals){
     const group=createStyledLounger(style,materials,rect,{svgMode:true});
     assert.ok(group.children.every(mesh=>Array.from(mesh.geometry.attributes.position.array).every(Number.isFinite)));
+    assert.ok(group.children.every(mesh=>mesh.castShadow===false),'The diagram fallback has no WebGL shadow pass');
     assert.ok(fits(bounds(group).min.x,bounds(group).max.x,rect.x,rect.x+rect.width));
   }
   const flat={x0:0,x1:8,y0:0,y1:4,z:3,fasciaBottomZ:3};

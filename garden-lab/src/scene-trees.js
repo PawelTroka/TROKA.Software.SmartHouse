@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.28.0';
+import {toWorld} from './orientation.js?v=1.29.0';
+import {createFoliageMaterial} from './scene-vegetation.js?v=1.29.0';
 
 const point = (x, y, z) => new THREE.Vector3(...toWorld(x, y, z));
 
@@ -12,16 +13,18 @@ function specimenRandom(id) {
 
 // Merge the botanical detail into one foliage and one branch draw call. Positions
 // remain crown-local until the completed mesh receives the specimen's rotation.
-function geometryCollector(withColors = false) {
+function geometryCollector(withColors = false, botanicalAtlas = false) {
   const positions = [], uvs = [], colors = [], indices = [];
   return {
-    append(geometry, transform, tint) {
+    append(geometry, transform, tint, spray = false) {
       const p = geometry.getAttribute('position'), uv = geometry.getAttribute('uv');
       const offset = positions.length / 3;
       for (let i = 0; i < p.count; i++) {
         const original = [p.getX(i), p.getY(i), p.getZ(i)];
         positions.push(...transform(original));
-        uvs.push(uv?.getX(i) || 0, uv?.getY(i) || 0);
+        const u = uv?.getX(i) || 0, v = uv?.getY(i) || 0;
+        uvs.push(botanicalAtlas ? (spray ? .510 + .480 * u : .006 + .486 * u) : u,
+          botanicalAtlas ? (spray ? .985 - .970 * v : .03 + .93 * v) : v);
         if (withColors) colors.push(...tint(original));
       }
       if (geometry.index) for (const index of geometry.index.array) indices.push(offset + index);
@@ -39,6 +42,25 @@ function geometryCollector(withColors = false) {
       return geometry;
     },
   };
+}
+
+// Small curved compound fronds add needle-scale silhouette to every crown pad.
+// The same material atlas shades the recessed mass and cuts out these sprays,
+// keeping hundreds of twigs in one draw call rather than one mesh per leaf.
+const sprayPlane = new THREE.PlaneGeometry(1, 1, 1, 2);
+function leafSpray(collector, center, width, length, angle, inclination, project, shade) {
+  const c = Math.cos(angle), s = Math.sin(angle), ci = Math.cos(inclination), si = Math.sin(inclination);
+  collector.append(sprayPlane, ([x, y]) => {
+    const along = y + .5, bend = Math.sin(along * Math.PI) * width * .12;
+    return project([
+      center[0] - s * x * width + c * (along * length * ci + bend),
+      center[1] + along * length * si,
+      center[2] + c * x * width + s * (along * length * ci + bend),
+    ]);
+  }, ([, y]) => {
+    const tone = shade + .055 * (y + .5);
+    return [tone * .96, tone, tone * .89];
+  }, true);
 }
 
 /** The analytical crown remains an ideal, dense volume. Its unpainted mesh
@@ -88,7 +110,7 @@ function addPine(group, v, materials, svgMode, valid) {
     branches.append(geometry, inside);
     geometry.dispose();
   };
-  const foliage = geometryCollector(true);
+  const foliage = geometryCollector(true, !svgMode);
   const pad = new THREE.SphereGeometry(1, svgMode ? 6 : 10, svgMode ? 4 : 7);
   const needleTip = new THREE.SphereGeometry(1, 6, 4);
   let padCount = 0;
@@ -99,7 +121,7 @@ function addPine(group, v, materials, svgMode, valid) {
     foliage.append(tip ? needleTip : pad, ([x, y, z]) => {
       // Deep inward notches and upturned, flattened branch fans interrupt the
       // smooth ball silhouette. Small tip fans replace each rounded outer pad.
-      const ruffle = .76 + .14 * Math.sin(x * 10 + y * 4 + detail) * Math.cos(z * 9 - y * 6)
+      const ruffle = (svgMode ? .76 : .43) + .13 * Math.sin(x * 10 + y * 4 + detail) * Math.cos(z * 9 - y * 6)
         + .09 * Math.sin(z * 17 + x * 13 + detail);
       const u = x * size[0] * ruffle, w = z * size[2] * ruffle;
       return inside([(center[0] + u * cos - w * sin) * radii[0],
@@ -109,6 +131,18 @@ function addPine(group, v, materials, svgMode, valid) {
       const tone = shade + .11 * (y * .5 + .5);
       return [tone * .96, tone, tone * .89];
     });
+    if (!svgMode && valid) {
+      const project = ([x, y, z]) => inside([x * radii[0], y * radii[1], z * radii[2]]);
+      const sprays = tip ? 7 : 12;
+      for (let twig = 0; twig < sprays; twig++) {
+        const az = angle + twig / sprays * TAU + (random() - .5) * .22;
+        const start = [center[0] + Math.cos(az) * size[0] * .28,
+          center[1] + (random() - .5) * size[1] * .24,
+          center[2] + Math.sin(az) * size[2] * .28];
+        const reach = Math.max(size[0], size[2]) * (.72 + random() * .22);
+        leafSpray(foliage, start, reach * .72, reach, az, .08 + random() * .36, project, shade + .05);
+      }
+    }
   };
   const levels = svgMode ? 6 : 9;
   for (let level = 0; level < levels; level++) {
@@ -161,11 +195,13 @@ function addPine(group, v, materials, svgMode, valid) {
   frame.add(branchMesh);
 
   if (v.foliageActive) {
-    const mesh = new THREE.Mesh(foliage.finish(), valid ? materials.pine : materials.ghost);
+    const material = valid && !svgMode ? createFoliageMaterial(materials.pine, 'pine') : valid ? materials.pine : materials.ghost;
+    const mesh = new THREE.Mesh(foliage.finish(), material);
     mesh.name = 'pine-needle-pads';
     mesh.receiveShadow = true;
     mesh.userData.withinCrownEnvelope = true;
     mesh.userData.padCount = padCount;
+    mesh.userData.contactShading = false;
     frame.add(mesh);
     const envelopeGeometry = new THREE.SphereGeometry(1, svgMode ? 12 : 28, svgMode ? 8 : 18);
     envelopeGeometry.scale(...radii);
@@ -224,25 +260,25 @@ function addConifer(group, v, materials, svgMode, valid) {
     const scale = radial > reach ? reach / radial : 1;
     return [x * scale, clippedY, z * scale];
   };
-  const branches = geometryCollector(), foliage = geometryCollector(true);
+  const branches = geometryCollector(), foliage = geometryCollector(true, !svgMode);
   const branch = (start, end, radius) => {
     const a = new THREE.Vector3(...start), b = new THREE.Vector3(...end);
     const direction = b.clone().sub(a), length = direction.length();
     if (length < .01) return;
-    const geometry = new THREE.CylinderGeometry(radius * .28, radius, length, svgMode ? 4 : 5);
+    const geometry = new THREE.CylinderGeometry(radius * .08, radius, length, svgMode ? 4 : 5);
     geometry.applyMatrix4(new THREE.Matrix4().compose(a.add(b).multiplyScalar(.5),
       new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize()), new THREE.Vector3(1, 1, 1)));
     branches.append(geometry, inside);
     geometry.dispose();
   };
-  const fan = new THREE.SphereGeometry(1, svgMode ? 5 : 8, svgMode ? 3 : 5);
+  const fan = new THREE.SphereGeometry(1, svgMode ? 5 : 6, 3);
   let fanCount = 0;
   const addFan = (center, size, angle, shade, sweep = 0) => {
     if (!v.foliageActive) return;
     fanCount++;
     const c = Math.cos(angle), s = Math.sin(angle), texturePhase = random() * TAU;
     foliage.append(fan, ([x, y, z]) => {
-      const edge = .83 + .10 * Math.sin(x * 12 + z * 8 + texturePhase)
+      const edge = (svgMode ? .83 : .41) + .10 * Math.sin(x * 12 + z * 8 + texturePhase)
         + .06 * Math.cos(y * 15 - z * 11 + texturePhase);
       const u = x * size[0] * edge, w = z * size[2] * edge;
       return inside([center[0] + u * c - w * s,
@@ -252,6 +288,16 @@ function addConifer(group, v, materials, svgMode, valid) {
       const tone = shade + .12 * (y * .5 + .5) + .025 * x;
       return [tone * .96, tone, tone * (family === 'thuja' ? .86 : 1.03)];
     });
+    if (!svgMode && valid) for (let twig = 0; twig < 6; twig++) {
+      const az = angle + (twig - 2.5) * .43 + (random() - .5) * .18;
+      const start = [center[0] + Math.cos(az) * size[0] * .24,
+        center[1] - size[1] * .16, center[2] + Math.sin(az) * size[2] * .24];
+      const length = family === 'thuja' ? Math.max(size[1] * 1.8, Math.min(size[0], size[2]) * .92)
+        : Math.max(size[0], size[2]) * .95;
+      const width = family === 'thuja' ? Math.min(size[0], size[2]) * .92 : length * .55;
+      const incline = family === 'thuja' ? 1.02 + random() * .30 : family === 'fir' ? .12 + random() * .22 : -.14 + random() * .20;
+      leafSpray(foliage, start, width, length, az, incline, inside, shade + .04);
+    }
   };
 
   if (v.foliageActive) {
@@ -261,7 +307,7 @@ function addConifer(group, v, materials, svgMode, valid) {
     foliage.append(core, ([x, y, z]) => {
       const altitude = y + height / 2;
       const angle = Math.atan2(z, x);
-      const ruffle = .48 + .055 * Math.sin(altitude / height * 53 + angle * 3 + phase);
+      const ruffle = .31 + .055 * Math.sin(altitude / height * 53 + angle * 3 + phase);
       return inside([x * rx * ruffle, altitude, z * rz * ruffle]);
     }, ([, y]) => {
       const tone = .57 + .12 * (y / height + .5);
@@ -269,7 +315,9 @@ function addConifer(group, v, materials, svgMode, valid) {
     });
     core.dispose();
   }
-  const levels = svgMode ? (family === 'thuja' ? 8 : 7) : family === 'thuja' ? 17 : family === 'fir' ? 15 : 18;
+  const levels = svgMode ? (family === 'thuja' ? 8 : 7) : family === 'thuja' ?
+    Math.max(18,Math.min(28,Math.ceil(height/.35))) : family === 'fir' ?
+      Math.max(15,Math.min(22,Math.ceil(height/.42))) : Math.max(18,Math.min(22,Math.ceil(height/.39)));
   for (let level = 0; level < levels; level++) {
     const fraction = .025 + level / (levels - 1) * .925;
     const reach = 1 - fraction, levelY = fraction * height;
@@ -279,18 +327,23 @@ function addConifer(group, v, materials, svgMode, valid) {
       const az = layerPhase + i * TAU / count + (random() - .5) * .13;
       const c = Math.cos(az), s = Math.sin(az);
       const radial = reach * (.60 + random() * .07);
-      const jitter = (random() - .5) * height / levels * .13;
-      const center = [c * rx * radial, levelY + jitter, s * rz * radial];
-      const base = [0, levelY + (family === 'spruce' ? .025 : -.012) * height, 0];
-      const tipY = levelY + (family === 'spruce' ? -.018 : .008) * height;
-      const tip = [c * rx * reach * .92, tipY, s * rz * reach * .92];
+      const jitter = (random() - .5) * height / levels * .42;
+      const branchY = levelY + jitter;
+      const center = [c * rx * radial, branchY, s * rz * radial];
+      const base = [0, branchY + (family === 'spruce' ? .025 : -.012) * height, 0];
+      const tipY = branchY + (family === 'spruce' ? -.018 : .008) * height;
+      // Woody structure ends inside the fine outer sprays. Extending thick
+      // cylinders to the crown edge leaves a row of exposed cut branch ends.
+      // Shared per-branch variation keeps wood and foliage together and avoids
+      // perfectly horizontal rings; the unchanged inside() clips every vertex.
+      const tip = [c * rx * reach * .80, tipY, s * rz * reach * .80];
       branch(base, tip, Math.max(.009, (v.trunkRadius || .12) * reach * .16));
       const shade = .73 + random() * .18;
       if (family === 'thuja') {
         // Upright overlapping scale-leaf sprays, without the horizontal skirts
         // of spruce/fir. A second small outer fan gives the feathered edge.
         addFan(center, [rx * reach * .34, height / levels * .76, rz * reach * .24], az, shade, height / levels * .24);
-        if (!svgMode) addFan([c * rx * reach * .85, levelY + height / levels * .17, s * rz * reach * .85],
+        if (!svgMode) addFan([c * rx * reach * .85, branchY + height / levels * .17, s * rz * reach * .85],
           [rx * reach * .15, height / levels * .43, rz * reach * .12], az + .16, shade + .03, height / levels * .20);
       } else {
         // Fir branches form broad flat combs; spruce carries thinner hanging
@@ -316,7 +369,7 @@ function addConifer(group, v, materials, svgMode, valid) {
   frame.add(branchMesh);
 
   if (v.foliageActive) {
-    const material = valid ? materials.spruce.clone() : materials.ghost;
+    const material = valid ? (!svgMode ? createFoliageMaterial(materials.spruce, family) : materials.spruce.clone()) : materials.ghost;
     if (valid) {
       material.color.set(v.type?.foliageColor ?? {thuja: 0x527447, fir: 0x4f705a, spruce: 0x3d6453}[family]);
       material.userData.transient = true;
@@ -327,6 +380,7 @@ function addConifer(group, v, materials, svgMode, valid) {
     mesh.userData.withinCrownEnvelope = true;
     mesh.userData.fanCount = fanCount;
     mesh.userData.visualFamily = family;
+    mesh.userData.contactShading = false;
     frame.add(mesh);
     const envelopeGeometry = new THREE.ConeGeometry(1, height, svgMode ? 12 : 24, 1);
     envelopeGeometry.scale(rx, 1, rz);

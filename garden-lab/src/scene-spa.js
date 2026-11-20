@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.28.0';
+import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.29.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.29.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const ringOpen=ring=>ring.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring;
@@ -118,6 +119,11 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
   if(pit){
     const g=new THREE.Group();g.name='sunken-firepit';group.add(g);
     const rim=levels.firepit.rimZ,floor=levels.firepit.floorZ,t=pit.wallThickness??.18;
+    const softened=mesh=>{
+      if(mesh&&!svgMode){const {width,height,depth}=mesh.geometry.parameters;mesh.geometry.dispose();
+        mesh.geometry=beveledBoxGeometry(width,height,depth,{radius:.005,segments:2});mesh.castShadow=true;}
+      return mesh;
+    };
     box(g,'firepit-sunken-floor',pit.x,pit.y,floor-.10,pit.width,pit.length,.10,mat.stoneLight);
     box(g,'firepit-back-retaining-wall',pit.x,pit.y+pit.length-t,floor,pit.width,t,rim-floor,mat.stone);
     box(g,'firepit-west-retaining-wall',pit.x,pit.y,floor,t,pit.length,rim-floor,mat.stone);
@@ -125,21 +131,60 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
     const steps=levels.firepit.steps,entryX=steps[0].x,entryW=steps[0].width;
     box(g,'firepit-front-wall-left',pit.x,pit.y,floor,entryX-pit.x,t,rim-floor,mat.stone);
     box(g,'firepit-front-wall-right',entryX+entryW,pit.y,floor,pit.x+pit.width-entryX-entryW,t,rim-floor,mat.stone);
-    for(const [wx,wy,ww,wl] of [[pit.x-.08,pit.y+pit.length-.08,pit.width+.16,.20],[pit.x-.08,pit.y-.08,.20,pit.length+.16],[pit.x+pit.width-.12,pit.y-.08,.20,pit.length+.16]])box(g,'firepit-coping',wx,wy,rim-.03,ww,wl,.08,mat.stoneLight,false);
+    for(const [wx,wy,ww,wl] of [[pit.x-.08,pit.y+pit.length-.08,pit.width+.16,.20],[pit.x-.08,pit.y-.08,.20,pit.length+.16],[pit.x+pit.width-.12,pit.y-.08,.20,pit.length+.16]])softened(box(g,'firepit-coping',wx,wy,rim-.03,ww,wl,.08,mat.stoneLight,false));
     for(const [i,step] of steps.entries())box(g,`firepit-entry-step-${i}`,step.x,step.y,floor-.02,step.width,step.length,step.topZ-floor+.02,mat.stoneLight,false);
     const seat=levels.firepit.seatZ-floor;
     for(const [i,b] of pit.seats.entries()){
       const {x,y,width:w,length:l}=b;if(l<=0)continue;
-      box(g,`firepit-seat-base-${i}`,x,y,floor,w,l,seat,mat.wood,false);
-      box(g,`firepit-seat-cushion-${i}`,x+.025,y+.025,floor+seat,w-.05,l-.05,.10,mat.linen,false);
+      softened(box(g,`firepit-seat-base-${i}`,x,y,floor,w,l,seat,mat.wood,false));
+      if(svgMode)box(g,`firepit-seat-cushion-${i}`,x+.025,y+.025,floor+seat,w-.05,l-.05,.10,mat.linen,false);
+      else{
+        const cushion=new THREE.Mesh(cushionGeometry(w-.05,.10,l-.05,{roundness:5,crease:.0018}),mat.linen);
+        cushion.name=`firepit-seat-cushion-${i}`;cushion.position.copy(point(x+w/2,y+l/2,floor+seat+.05));
+        cushion.castShadow=true;cushion.receiveShadow=true;g.add(cushion);
+        const welt=new THREE.Mesh(cushionPipingGeometry(w-.05,.10,l-.05,{roundness:5,radius:.0018}),mat.linen);
+        welt.name=`firepit-seat-seam-${i}`;welt.receiveShadow=true;cushion.add(welt);
+      }
     }
     const cx=pit.x+pit.width/2,cy=pit.y+pit.length*.57;
-    const bowl=new THREE.Mesh(new THREE.CylinderGeometry(.48,.35,.20,svgMode?12:32),mat.metal);
+    const bowlProfile=[[0,-.10],[.33,-.10],[.355,-.09],[.402,-.045],[.447,.015],
+      [.475,.065],[.48,.086],[.477,.098],[.470,.10],[.460,.096],[.455,.084],
+      [.436,.03],[.393,-.028],[.34,-.070],[0,-.070]];
+    const bowl=new THREE.Mesh(svgMode?new THREE.CylinderGeometry(.48,.35,.20,12):
+      new THREE.LatheGeometry(bowlProfile.map(p=>new THREE.Vector2(...p)),64),mat.metal);
     bowl.name='firepit-bowl';bowl.position.copy(point(cx,cy,floor+.29));bowl.castShadow=true;bowl.receiveShadow=true;g.add(bowl);
-    const embers=new THREE.Mesh(new THREE.CircleGeometry(.37,svgMode?12:24),mat.fireGlow||mat.gold);embers.name='firepit-embers';embers.rotation.x=-Math.PI/2;embers.position.copy(point(cx,cy,floor+.395));g.add(embers);
+    if(svgMode){
+      const embers=new THREE.Mesh(new THREE.CircleGeometry(.37,12),mat.fireGlow||mat.gold);
+      embers.name='firepit-embers';embers.rotation.x=-Math.PI/2;embers.position.copy(point(cx,cy,floor+.395));g.add(embers);
+    }else{
+      // A dark bed of individual clinker pieces replaces the flat orange disc.
+      // Only scattered ember pieces use the existing animated fireGlow finish;
+      // the scene's shared night control continues to own its emissive strength.
+      for(const [name,count,material,ember] of [['firepit-charcoal',52,mat.metal,false],['firepit-embers',20,mat.fireGlow||mat.gold,true]]){
+        const mesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),material,count),matrix=new THREE.Matrix4();
+        const color=new THREE.Color(),rotation=new THREE.Quaternion();mesh.name=name;mesh.receiveShadow=true;
+        for(let i=0;i<count;i++){
+          const angle=i*2.399963+(ember?.7:0),r=.315*Math.sqrt((i+.5)/count),size=ember?.024+.008*Math.sin(i*2.7)**2:.042+.016*Math.sin(i*1.8)**2;
+          rotation.setFromEuler(new THREE.Euler(i*.61,i*.89,i*.37));
+          matrix.compose(point(cx+Math.cos(angle)*r,cy+Math.sin(angle)*r,floor+(ember?.341:.324)),rotation,
+            new THREE.Vector3(size,size*.55,size*.78));mesh.setMatrixAt(i,matrix);
+          const shade=ember?.48+.3*Math.sin(i*2.1)**2:.58+.23*Math.sin(i*1.7)**2;
+          color.setRGB(shade,shade*.94,shade*.86);mesh.setColorAt(i,color);
+        }
+        mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;g.add(mesh);
+      }
+    }
     for(let i=0;i<3;i++){
-      const log=new THREE.Mesh(new THREE.CylinderGeometry(.05,.065,.57,6),mat.treeBark||mat.wood);
-      log.name='firepit-log';log.position.copy(point(cx+.10*Math.cos(i*2.1),cy+.10*Math.sin(i*2.1),floor+.43));log.rotation.set(.15+i*.1,i*1.1,Math.PI/2);g.add(log);
+      const geometry=new THREE.CylinderGeometry(svgMode?.05:.038,svgMode?.065:.061,.57,svgMode?6:12,svgMode?1:6);
+      if(!svgMode){
+        const p=geometry.attributes.position;
+        for(let j=0;j<p.count;j++){const x=p.getX(j),z=p.getZ(j),a=Math.atan2(z,x),y=p.getY(j);
+          const ridge=.95+.035*Math.sin(a*7+y*31+i);p.setXYZ(j,x*ridge,y,z*ridge);}
+        geometry.computeVertexNormals();
+      }
+      const log=new THREE.Mesh(geometry,svgMode?(mat.treeBark||mat.wood):[mat.treeBark||mat.wood,mat.metal,mat.metal]);
+      log.name='firepit-log';log.position.copy(point(cx+.10*Math.cos(i*2.1),cy+.10*Math.sin(i*2.1),floor+.43));log.rotation.set(.15+i*.1,i*1.1,Math.PI/2);
+      log.castShadow=!svgMode;log.receiveShadow=true;g.add(log);
     }
   }
   return group;

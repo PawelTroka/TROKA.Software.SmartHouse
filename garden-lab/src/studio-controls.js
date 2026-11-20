@@ -1,5 +1,5 @@
-import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.28.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.29.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.29.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
@@ -81,8 +81,15 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
     const host=$('render-diagnostics');
     for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','shadowSize','houseRenovationParts','houseRenovationProjection','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
     host.dataset.renderer=value.rendererType;host.dataset.motionActive=String(Boolean(value.motionActive));
+    host.dataset.contactShading=String(Boolean(value.contactShading));
+    host.dataset.interacting=String(Boolean(value.interacting));
+    host.dataset.toneMapping=value.toneMapping||'direct';
+    host.dataset.poolReflections=String(Boolean(value.poolReflections));
+    host.dataset.surfaceAssetsRequested=String(value.surfaceAssets?.requested||0);
+    host.dataset.surfaceAssetsLoaded=String(value.surfaceAssets?.loaded||0);
+    host.dataset.surfaceAssetsFailed=String(value.surfaceAssets?.failed?.length||0);
     $('render-quality-status').textContent=value.rendererType==='webgl'?`${value.quality==='eco'?'Eco':value.quality==='high'?'High detail':'Automatic'} · ${Number(value.pixelRatio||1).toFixed(2)}× display scale`:'Lightweight renderer';
-    $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.bufferWidth||0} × ${value.bufferHeight||0} drawing buffer`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';
+    $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.bufferWidth||0} × ${value.bufferHeight||0} drawing buffer${value.contactShading?' · Contact shading':''}`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';
     $('render-motion-status').textContent=getSettings().sceneMotion?(value.motionActive?'Gentle water movement is active.':'Motion pauses while the scene is hidden, in a diagram, or when reduced motion is preferred.'):'The scene rests between interactions.';
   }
   function history({canUndo,canRedo}){$('studio-undo').disabled=!canUndo;$('studio-redo').disabled=!canRedo;}

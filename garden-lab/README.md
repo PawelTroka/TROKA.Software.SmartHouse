@@ -2,9 +2,19 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.28.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.28.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.28.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.29.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.29.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.29.0)**
 
-## Coastal and the retained two-car proposal · 1.28.0
+## Architectural materials and model detail · 1.29.0
+
+The interactive renderer now uses six self-hosted photographic material sets, physical texture scale, softened furniture edges, shaped cushions with seams, woven cane with real openings, and detailed instanced foliage. High detail adds contact shading, a reflection of the actual garden in the pool, and finer sun shadows. Both cars have curved bodywork, glazing, tyres and alloy rims while retaining their checked physical envelopes.
+
+Choose **House, finishes & scene settings → Rendering quality → High detail** for the full rendering path on a capable desktop. Navigation temporarily reduces the extra shading work; the completed view settles after interaction. Eco and mobile retain the same design with a lighter rendering path.
+
+All 21 renovation styles, Current house, existing dimensions, two-car layout and saved-state schema **28** are retained. This remains a real-time architectural visualization with representative photographic finishes and procedural models; it is not a claim that every view is indistinguishable from a photograph.
+
+[Rendering changes, source attribution, budgets and verification](docs/architectural-rendering-1.29.md)
+
+## Historical release: Coastal and the retained two-car proposal · 1.28.0
 
 **Coastal** is now an explicitly named, separate physical renovation: horizontal weatherboards, white casings and louvred shutters, pale timber decking, cross-braced guards, slipcovered seating, cane/timber dining furniture, louvred joinery, boarded headboards and linen lighting. Its geometry and textures differ from Baltic Dune. The catalogue offers **21 renovations plus Current house**, with Coastal also searchable as Hamptons, seaside or beach house.
 

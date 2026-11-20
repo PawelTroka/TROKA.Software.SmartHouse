@@ -1,18 +1,28 @@
 import * as THREE from '../vendor/three.module.js';
+import {createPhotographicMaps,calibratePhotographicTint} from './material-assets.js?v=1.29.0';
 
-// Original procedural textures: no external images, network requests or asset licences.
-// These give proposed finishes visual scale; they are not photographs of the site.
+// Local photographic PBR finish samples supplement the procedural botanical
+// and water textures. Files are self-hosted CC0 assets; none depict this site.
 // The periodic functions have identical values and slopes on opposite tile
 // boundaries. Numeric normal/height data stays linear irrespective of display.
 export function createDetailMaps(size = 128) {
   const normal = new Uint8Array(size * size * 4);
   const relief = new Uint8Array(size * size * 4), bark = new Uint8Array(size * size * 4);
   const tau = Math.PI * 2;
+  // Small crossing wind ripples on a two-metre tile. Independent directions
+  // and phases prevent the three broad, regular stripes of the old surface.
+  // Integer frequencies keep both values and derivatives seamless at edges.
+  const waterWaves = [
+    [1,2,.018,.47],[-2,1,.014,1.83],[3,4,.0075,4.12],[5,-3,.004,2.66],
+    [7,2,.0027,5.27],[-4,9,.002,3.38],[11,7,.0013,.92],[13,-9,.001,5.91],
+  ];
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
     const u = tau * x / size, v = tau * y / size, i = (y * size + x) * 4;
-    // Three crossing wave trains on an approximately two-metre water tile.
-    const a = .09 * Math.cos(2*u+v), b = .035 * Math.cos(u-3*v), c = .017 * Math.cos(4*u+3*v);
-    const nx = -(2*a+b+4*c), ny = -(a-3*b+3*c), length = Math.hypot(nx,ny,1);
+    let nx=0,ny=0;
+    for(const [kx,ky,amplitude,phase] of waterWaves){
+      const slope=amplitude*Math.cos(kx*u+ky*v+phase);nx-=kx*slope;ny-=ky*slope;
+    }
+    const length = Math.hypot(nx,ny,1);
     normal.set([nx,ny,1].map(n => Math.round(127.5 * (1+n/length))), i);
     normal[i+3] = 255;
     const pores = Math.sin(19*u+1.3*Math.sin(5*v)) * Math.sin(17*v+Math.cos(9*u));
@@ -178,5 +188,25 @@ export function createSurfaceTextures(maxAnisotropy = 4) {
   const {waterNormal,microHeight,barkHeight} = createDetailMaps();
   const maps = {stone, stucco, wood, grass, foliage, pineNeedles, bark, roof, textiles,
     environment, waterNormal, microHeight, barkHeight};
-  return {...maps, dispose() { Object.values(maps).forEach(texture => texture.dispose()); }};
+  for(const [name,asset] of [['stone','stone'],['stucco','plaster'],['wood','wood'],['grass','grass'],['textiles','linen']]){
+    const photo=createPhotographicMaps(asset,{anisotropy:maxAnisotropy});if(!photo)continue;
+    maps[name].dispose();maps[name]=photo.map;maps[name+'Normal']=photo.normalMap;maps[name+'Roughness']=photo.roughnessMap;
+  }
+  return {...maps, dispose() { new Set(Object.values(maps)).forEach(texture => texture.dispose()); }};
+}
+
+/** These handles belong to createSurfaceTextures, not the individual materials. */
+export function configureBasePhotographicMaterials(materials,textures){
+  if(!textures)return;
+  for(const [role,family,asset,strength] of [
+    ['stone','stone','stone',.35],['stoneLight','stone','stone',.35],
+    ['wall','stucco','plaster',.23],['wood','wood','wood',.6],['woodLight','wood','wood',.6],
+    ['grass','grass','grass',.72],['linen','textiles','linen',.4],
+  ]){
+    const material=materials[role];if(!material||!textures[family+'Normal'])continue;
+    material.map=textures[family];material.normalMap=textures[family+'Normal'];material.roughnessMap=textures[family+'Roughness'];
+    material.bumpMap=null;material.normalScale=new THREE.Vector2(strength,strength);material.roughness=1;
+    calibratePhotographicTint(material,asset);material.userData.metricTexture=true;
+    material.userData.photographicSurface=material.map.userData.materialAsset.id;material.needsUpdate=true;
+  }
 }

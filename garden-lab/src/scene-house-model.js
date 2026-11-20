@@ -1,20 +1,20 @@
 import * as THREE from '../vendor/three.module.js';
-import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.28.0';
-import {interiorMaterials} from './interior-materials.js?v=1.28.0';
-import {modelTools,batchGroup} from './interior-geometry.js?v=1.28.0';
-import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.28.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.28.0';
-import {addHouseRenovation} from './scene-house-renovation.js?v=1.28.0';
-import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.28.0';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.28.0';
-import {getDesignStyle} from './design-styles.js?v=1.28.0';
-import {toWorldTriangle} from './orientation.js?v=1.28.0';
+import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.29.0';
+import {interiorMaterials} from './interior-materials.js?v=1.29.0';
+import {modelTools,batchGroup} from './interior-geometry.js?v=1.29.0';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.29.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.29.0';
+import {addHouseRenovation} from './scene-house-renovation.js?v=1.29.0';
+import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.29.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.29.0';
+import {getDesignStyle} from './design-styles.js?v=1.29.0';
+import {toWorldTriangle} from './orientation.js?v=1.29.0';
 
 /** Same architecture/furniture builder as the interior viewer, with all four
  * floors assembled in the site frame. No placeholder furniture or facade holes. */
 export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svgMode=false}={}){
   const root=new THREE.Group();root.name='sternicza-shared-house';
-  const frame=houseModelFrame(data,settings),style=getDesignStyle(settings.designStyle),finishes=interiorMaterials(style.id),tools=modelTools(),models=[];
+  const frame=houseModelFrame(data,settings),style=getDesignStyle(settings.designStyle),finishes=interiorMaterials(style.id,{svgMode}),tools=modelTools(),models=[];
   const material=(color,role,extra={})=>{const m=new THREE.MeshStandardMaterial({color,roughness:.85,side:THREE.DoubleSide,...extra});m.userData.transient=true;applyExteriorSurface(m,style,role,{svgMode});return m;};
   const palette={plaster:material(style.palette.houseWall||'#eee9dc','wall'),roof:material(style.palette.houseRoof||'#965c48','roof'),
     brick:material('#87513d','stone'),fascia:material(style.palette.houseFrame||'#654331','frame'),rail:material(style.palette.houseFrame||'#303834','frame'),

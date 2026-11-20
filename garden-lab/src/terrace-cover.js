@@ -1,5 +1,5 @@
-import {footprintFit} from './footprint-fit.js?v=1.28.0';
-import {facadePoint,houseAppearanceLayout} from './house-appearance.js?v=1.28.0';
+import {footprintFit} from './footprint-fit.js?v=1.29.0';
+import {facadePoint,houseAppearanceLayout} from './house-appearance.js?v=1.29.0';
 /**
  * One finite terrace-cover model for drawing, shade and sightlines. Dimensions
  * are proposals, in local metres; z is absolute elevation. A balcony replaces

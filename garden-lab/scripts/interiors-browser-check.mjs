@@ -22,7 +22,9 @@ async function chooseView(view){await q(`#interior-host button[data-view="${view
 async function rendered(style,view){
   await page.waitForFunction(({style,view})=>{
     const host=document.querySelector('#interior-host'),d=host?.getInteriorDiagnostics?.(),s=d?.scene;
-    return s?.available&&s.visible&&s.styleId===style&&s.view===view&&s.floor===host.dataset.floor&&s.layout===host.dataset.layout&&s.frames>0&&!s.framePending&&s.triangles>0;
+    const assets=s?.surfaceAssets;
+    return s?.available&&s.visible&&s.styleId===style&&s.view===view&&s.floor===host.dataset.floor&&s.layout===host.dataset.layout&&s.frames>0&&!s.framePending&&!s.interacting&&s.triangles>0&&
+      assets?.requested>0&&assets.loaded===assets.requested&&assets.failed.length===0;
   },{style,view},{timeout:30000});
   return (await info()).scene;
 }

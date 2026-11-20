@@ -6,16 +6,21 @@
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile,writeFile,mkdir,stat} from 'node:fs/promises';
+import {writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {UPPER_FLOOR_PRESETS} from '../src/viewpoints.js';
+import {STATE_VERSION} from '../src/state.js';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const publicRoot = path.join(project,'public');
-const resultsRoot = path.join(project,'test-results');
+const scenarioGroup=process.env.GARDEN_SCENARIO_GROUP||'all';
+assert.ok(['all','garage','sternicza','nadmorska'].includes(scenarioGroup),'Unknown browser scenario group: '+scenarioGroup);
+const resultsRoot = path.join(project,'test-results','night',scenarioGroup);
 const expectedVersion = JSON.parse(await readFile(path.join(project,'package.json'),'utf8')).version;
-const report = {version:expectedVersion,checks:[],presets:[],screenshots:[]};
+const report = {version:expectedVersion,scenarioGroup,renderQuality:'eco',status:'running',
+  startedAt:new Date().toISOString(),scenarios:[],checks:[],presets:[],screenshots:[]};
 const pageErrors = [],consoleErrors = [];
 await mkdir(resultsRoot,{recursive:true});
 
@@ -42,7 +47,15 @@ const server = createServer(async(req,res)=>{
 await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
 const baseURL = 'http://127.0.0.1:'+server.address().port;
 let browser,page;
-const check = label=>{report.checks.push(label);console.log('GARDEN_CHECK '+label);};
+// Keep a useful partial report if the runner is interrupted mid-scenario.
+const progress=()=>writeFileSync(path.join(resultsRoot,'browser-report.json'),JSON.stringify({...report,pageErrors,consoleErrors},null,2)+'\n');
+const check = label=>{report.checks.push(label);console.log('GARDEN_CHECK '+label);progress();};
+async function runScenario(name,verify){
+  if(scenarioGroup!=='all'&&scenarioGroup!==name)return;
+  const scenario={name,status:'running',startedAt:new Date().toISOString(),firstCheck:report.checks.length};
+  report.scenarios.push(scenario);progress();const start=Date.now();
+  await verify();scenario.status='passed';scenario.durationMs=Date.now()-start;scenario.checks=report.checks.length-scenario.firstCheck;progress();
+}
 
 async function frames(){
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -53,6 +66,25 @@ async function waitReady(){
   await page.waitForFunction(()=>document.querySelector('#observer-readout')?.textContent.startsWith('Eye '));
   assert.equal(await page.locator('meta[name="application-version"]').getAttribute('content'),expectedVersion);
   assert.equal(await page.locator('#scene-host canvas').count(),1,'Real WebGL canvas is required; SVG fallback does not pass');
+  // These are functional state/pixel regressions on the full WebGL geometry.
+  // The separate architectural-rendering job verifies the High HDR/AO path.
+  // Select Eco through the public control on fresh properties as well as reloads.
+  if(await page.locator('#renderQuality').inputValue()!=='eco'){
+    const wasOpen=await page.locator('.studio-details').getAttribute('open')!==null;
+    await details('.studio-details',true);await page.locator('#renderQuality').selectOption('eco');
+    if(!wasOpen)await details('.studio-details',false);
+  }
+  await page.locator('#scene-host').scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>{
+    const d=document.querySelector('#render-diagnostics')?.dataset;
+    return d?.renderer==='webgl'&&d.contactShading==='false'&&d.poolReflections==='false'&&
+      Number(d.shadowSize)<=1024&&Number(d.frames)>0&&Number(d.surfaceAssetsRequested)>0&&
+      Number(d.surfaceAssetsLoaded)+Number(d.surfaceAssetsFailed)===Number(d.surfaceAssetsRequested);
+  });
+  assert.equal(await page.locator('#renderQuality').inputValue(),'eco');
+  assert.match(await page.locator('#render-quality-status').textContent(),/^Eco ·/);
+  assert.equal(await page.locator('#render-diagnostics').getAttribute('data-surface-assets-failed'),'0',
+    'Pixel comparisons require all photographic surfaces to finish loading');
   await frames();
 }
 async function details(selector,open){
@@ -420,8 +452,14 @@ async function verifyBasementGarage(){
   };
   const frame=async()=>{await page.locator('#scene-host').scrollIntoViewIfNeeded();await frames();return page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});};
   const slider=async(value)=>{
-    const input=page.locator('#garageProgress');await input.focus();await input.press(value>50?'End':'Home');
-    for(let n=0;n<(value>50?100-value:value);n++)await input.press(value>50?'ArrowLeft':'ArrowRight');
+    const input=page.locator('#garageProgress'),reverse=value>50,steps=reverse?100-value:value;
+    await input.focus();await input.press(reverse?'End':'Home');
+    // Chromium's native range PageUp/PageDown advances 10% of this 0–100
+    // slider. Retain keyboard coverage without rendering forty intermediate poses.
+    for(let n=0;n<Math.floor(steps/10);n++)await input.press(reverse?'PageDown':'PageUp');
+    for(let n=0;n<steps%10;n++)await input.press(reverse?'ArrowLeft':'ArrowRight');
+    // A single arrow step and return also verifies its fine keyboard increment.
+    if(value>0&&value<100){await input.press('ArrowRight');assert.equal(Number(await input.inputValue()),value+1);await input.press('ArrowLeft');}
     await frames();assert.equal(Number(await input.inputValue()),value);
   };
 
@@ -854,28 +892,7 @@ async function verifyNadmorska(){
   await page.locator('#plan-host').waitFor({state:'visible'});
 }
 
-try {
-  browser=await chromium.launch({
-    headless:true,
-    executablePath:process.env.GARDEN_BROWSER_EXECUTABLE||undefined,
-    args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader',
-      '--ignore-gpu-blocklist','--disable-dev-shm-usage'],
-  });
-  const context=await browser.newContext({
-    viewport:{width:1430,height:1040},deviceScaleFactor:1,reducedMotion:'reduce',
-  });
-  page=await context.newPage();
-  page.setDefaultTimeout(30000);
-  page.on('pageerror',error=>pageErrors.push(error.message));
-  page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});
-  await page.goto(baseURL+'/?site=sternicza-11',{waitUntil:'domcontentloaded',timeout:60000});
-  await waitReady();
-  check('Built application loads with a real WebGL canvas');
-  await page.locator('#showDimensions').uncheck();
-  await details('#sun-controls',false);
-
-  await verifyBasementGarage();
-
+async function verifySterniczaViewpointsAndNight(){
   assert.equal(UPPER_FLOOR_PRESETS.length,8);
   for(const preset of UPPER_FLOOR_PRESETS)report.presets.push(await selectPreset(preset));
   check('All eight upper-floor presets enter eye mode with correct direction, posture and readout');
@@ -1002,8 +1019,33 @@ try {
   });
   check('Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow');
 
-  await verifyPrivacyScreening();
-  await verifyNadmorska();
+}
+
+try {
+  browser=await chromium.launch({
+    headless:true,
+    executablePath:process.env.GARDEN_BROWSER_EXECUTABLE||undefined,
+    args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader',
+      '--ignore-gpu-blocklist','--disable-dev-shm-usage'],
+  });
+  const context=await browser.newContext({
+    viewport:{width:1430,height:1040},deviceScaleFactor:1,reducedMotion:'reduce',
+  });
+  page=await context.newPage();
+  page.setDefaultTimeout(30000);
+  page.on('pageerror',error=>pageErrors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});
+  await page.goto(baseURL+'/?site=sternicza-11#v='+STATE_VERSION+'&site=sternicza-11&renderQuality=eco',
+    {waitUntil:'domcontentloaded',timeout:60000});
+  await waitReady();
+  check('Built application loads with a real WebGL canvas');
+  check('Functional browser regressions use explicit Eco WebGL; High rendering is verified separately');
+  await page.locator('#showDimensions').uncheck();
+  await details('#sun-controls',false);
+
+  await runScenario('garage',verifyBasementGarage);
+  await runScenario('sternicza',async()=>{await verifySterniczaViewpointsAndNight();await verifyPrivacyScreening();});
+  await runScenario('nadmorska',verifyNadmorska);
 
   assert.deepEqual(pageErrors,[],'Unhandled JavaScript errors');
   assert.deepEqual(consoleErrors,[],'Browser console errors');
