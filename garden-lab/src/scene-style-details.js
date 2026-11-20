@@ -193,6 +193,10 @@ function assembly(name, origin, {svgMode=false,upholsteryMaterials=[]} = {}) {
       g.setAttribute('normal',new THREE.Float32BufferAttribute(data.normals,3));
       g.setAttribute('uv',new THREE.Float32BufferAttribute(data.uvs,2));
       const mesh=new THREE.Mesh(g,material);mesh.receiveShadow=true;
+      // The assembled chairs, daybeds and tables need their own real sun
+      // shadows as well as contact shading. These are visual casters only;
+      // the independent analytical shade calculation keeps its existing scope.
+      mesh.castShadow=!svgMode&&!material.transparent;
       group.add(mesh);
     }
     return group;

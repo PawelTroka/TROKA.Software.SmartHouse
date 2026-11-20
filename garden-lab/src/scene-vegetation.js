@@ -197,9 +197,17 @@ function hedgeSpecimen(variant, heightBand) {
           center[2]+tangent[2]*(u*w+v*twist)+radial[2]*(along+fold)]);
       });
       const tex=[[.510,.985],[.750,.985],[.990,.985],[.510,.015],[.750,.015],[.990,.015]];
-      for(const indices of [[0,1,4],[0,4,3],[1,2,5],[1,5,4]]){
-        const side=indices[0]===0?-1:1;
-        const normal=new THREE.Vector3(radial[0]+tangent[0]*side*.28,.22,radial[2]+tangent[2]*side*.28).normalize().toArray();
+      for(const sourceIndices of [[0,4,1],[0,3,4],[1,5,2],[1,4,5]]){
+        const indices=[...sourceIndices];
+        const a=new THREE.Vector3(...ps[indices[0]]),b=new THREE.Vector3(...ps[indices[1]]),c=new THREE.Vector3(...ps[indices[2]]);
+        const face=new THREE.Vector3().crossVectors(b.sub(a),c.sub(a));
+        // Tangent × upward points inward. Use outward winding and normals
+        // derived after envelope clipping; a supplied opposite normal is
+        // flipped inward again by DoubleSide when viewed from outside.
+        // Clipping the tip can reverse a small folded triangle, so orient
+        // those triangles individually rather than assuming a flat quad.
+        if(face.x*radial[0]+face.z*radial[2]<0){[indices[1],indices[2]]=[indices[2],indices[1]];face.negate();}
+        const normal=face.normalize().toArray();
         triangle(indices.map(i=>ps[i]),indices.map(()=>normal),indices.map(i=>tex[i]),indices.map(i=>shade+(i>2?.025:0)));
       }
       sprays++;

@@ -24,9 +24,49 @@ test('all photographic PBR channels match the vendored provenance manifest',asyn
       assert.equal(createHash('md5').update(bytes).digest('hex'),entry.md5);
       assert.equal(entry.colorSpace,channel==='Diffuse'?'sRGB':'linear');
       assert.equal(entry.width,1024);assert.ok(entry.height>=1024&&entry.height<=1030,'Provider 1K linen retains its measured non-square aspect');
+      assert.deepEqual(spec.pixels,[entry.width,entry.height],'Placeholder storage must match every shipped map before its first GPU upload');
     }
   }
   assert.ok(total<11_000_000,'The entire six-material download has a fixed browser asset budget');
+});
+
+test('pending photographs and live clones keep their immutable GPU dimensions when loading completes',async()=>{
+  const previousDocument=globalThis.document,previousLoad=THREE.ImageLoader.prototype.load,pending=[];
+  const handles=[];
+  try{
+    globalThis.document={
+      createElementNS(){},
+      createElement(){
+        return {width:0,height:0,getContext(){return {
+          fillRect(){},drawImage(){},putImageData(){},
+          getImageData(){return {data:new Uint8ClampedArray([128,128,128,255])};},
+        };}};
+      },
+    };
+    THREE.ImageLoader.prototype.load=function(url,ready){pending.push({url,ready});return {};};
+    // An isolated module cache gives this lifecycle test fresh pending sources.
+    const photos=await import('../src/material-assets.js?pending-dimension-test');
+    const maps=photos.createPhotographicMaps('linen');handles.push(...Object.values(maps));
+    const clone=maps.map.clone();handles.push(clone);
+    assert.equal(pending.length,3);
+    for(const texture of handles){assert.equal(texture.image.width,1024);assert.equal(texture.image.height,1026);}
+    const source=maps.map.source,cloneVersion=clone.version,disposedVersion=maps.map.version;
+    assert.equal(clone.source,source);
+    maps.map.dispose();
+    for(const item of pending)item.ready({width:1024,height:1026});
+    assert.equal(clone.source,source,'Existing renderer handles retain their shared source identity');
+    assert.ok(clone.version>cloneVersion,'Every live renderer clone receives the late photograph');
+    assert.equal(maps.map.version,disposedVersion,'Disposed handles must not be resurrected by an asynchronous load');
+    assert.equal(clone.image.width,1024);assert.equal(clone.image.height,1026);
+    assert.equal(photos.surfaceAssetDiagnostics().loaded,3);
+    assert.deepEqual(photos.surfaceAssetDiagnostics().failed,[]);
+    for(const texture of handles)texture.dispose();
+    assert.equal(photos.surfaceAssetDiagnostics().liveTextures,0);
+  }finally{
+    for(const texture of handles)texture.dispose();
+    THREE.ImageLoader.prototype.load=previousLoad;
+    if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;
+  }
 });
 
 test('headless geometry imports never request images and palette calibration remains bounded and repeatable',()=>{

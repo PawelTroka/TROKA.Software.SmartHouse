@@ -40,9 +40,6 @@ jobs:
         run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
       - name: Install Chromium and system dependencies
         run: npx --no-install playwright install --with-deps chromium
-      - name: Browser regression and screenshots
-        timeout-minutes: 10
-        run: node scripts/night-browser-check.mjs
       - name: Terrace, balcony and two-car browser checks
         timeout-minutes: 5
         run: node scripts/refinements-browser-check.mjs
@@ -55,10 +52,48 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  browser-regression:
+    name: WebGL regression · ${{ matrix.scenario }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        scenario: [garage, sternicza, nadmorska]
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: npx --no-install playwright install --with-deps chromium
+      - name: Functional WebGL regression and screenshots
+        timeout-minutes: 12
+        env:
+          GARDEN_SCENARIO_GROUP: ${{ matrix.scenario }}
+        run: node scripts/night-browser-check.mjs
+      - name: Upload scenario evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: garden-lab-browser-${{ matrix.scenario }}
+          path: garden-lab/test-results/night/${{ matrix.scenario }}/
+          if-no-files-found: ignore
+          retention-days: 7
+
   studio:
     name: Design studio, rendering and mobile checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # The complete style/save/history run took 14m32s with the detailed models.
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: garden-lab

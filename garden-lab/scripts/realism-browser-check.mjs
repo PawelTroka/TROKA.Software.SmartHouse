@@ -41,6 +41,48 @@ async function waitForAssets(){
   const status=await page.evaluate(async()=>{const version=document.querySelector('meta[name="application-version"]').content;const m=await import(new URL('src/material-assets.js?v='+version,document.baseURI).href);return m.surfaceAssetDiagnostics();});
   assert.deepEqual(status.failed,[]);return status;
 }
+async function verifyPhotographicUpload(){
+  // Force a real placeholder upload before the photograph finishes loading.
+  // A decoded image count cannot detect a stale immutable GPU allocation.
+  const result=await page.evaluate(async()=>{
+    const THREE=await import(new URL('vendor/three.module.js',document.baseURI).href);
+    const version=document.querySelector('meta[name="application-version"]').content;
+    const assets=await import(new URL('src/material-assets.js?v='+version+'&upload-check',document.baseURI).href);
+    const maps=assets.createPhotographicMaps('grass',{repeat:[1,1]}),clone=maps.map.clone();
+    const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-1,1,1,-1,.1,10);camera.position.z=1;
+    const geometry=new THREE.PlaneGeometry(2,2),material=new THREE.MeshBasicMaterial({map:maps.map,toneMapped:false});
+    scene.add(new THREE.Mesh(geometry,material));
+    const renderers=[0,1].map(()=>new THREE.WebGLRenderer({antialias:false}));
+    const targets=renderers.map(()=>new THREE.WebGLRenderTarget(64,64));
+    const sample=(renderer,index)=>{
+      material.map=index?clone:maps.map;material.needsUpdate=true;
+      renderer.setRenderTarget(targets[index]);renderer.render(scene,camera);
+      const pixels=new Uint8Array(64*64*4);renderer.readRenderTargetPixels(targets[index],0,0,64,64,pixels);
+      let sum=0,sum2=0,min=255,max=0;
+      for(let i=0;i<pixels.length;i+=4){const v=(pixels[i]+pixels[i+1]+pixels[i+2])/3;sum+=v;sum2+=v*v;min=Math.min(min,v);max=Math.max(max,v);}
+      const mean=sum/(64*64);return {range:max-min,deviation:Math.sqrt(Math.max(0,sum2/(64*64)-mean*mean)),glError:renderer.getContext().getError()};
+    };
+    try{
+      const before=renderers.map(sample);
+      await new Promise((resolve,reject)=>{
+        let stop;
+        const timeout=setTimeout(()=>{stop?.();reject(Error('Photographic upload check timed out'));},30000);
+        const ready=()=>{const d=assets.surfaceAssetDiagnostics();if(d.failed.length){clearTimeout(timeout);stop?.();reject(Error(d.failed.join(',')));}
+          else if(d.requested===3&&d.loaded===3){clearTimeout(timeout);stop?.();resolve();}};
+        stop=assets.onSurfaceAssetsChanged(ready);ready();
+      });
+      return {before,after:renderers.map(sample),imageSize:[maps.map.image.width,maps.map.image.height]};
+    }finally{
+      geometry.dispose();material.dispose();for(const texture of [...Object.values(maps),clone])texture.dispose();
+      targets.forEach(target=>target.dispose());renderers.forEach(renderer=>{renderer.dispose();renderer.forceContextLoss();});
+    }
+  });
+  for(const sample of result.before){assert.ok(sample.range<2,'Placeholder must be uniform before image loading');assert.equal(sample.glError,0);}
+  for(const sample of result.after){assert.equal(sample.glError,0,'Photographic image must upload without GPU allocation errors');
+    assert.ok(sample.range>30&&sample.deviation>5,'Photographic detail must reach both renderers, including an early clone');}
+  assert.deepEqual(result.imageSize,[1024,1024]);report.photographicUpload=result;
+  check('A photograph replaces the rendered placeholder in two independent GPU contexts and an early clone');
+}
 async function open(style,before=false,extra=''){
   await page.goto(base+(before?'/baseline/':'/current/')+'?site=sternicza-11#v=28&site=sternicza-11&designStyle='+style+'&styleHouseFinish=true&showDimensions=false&renderQuality=high'+extra,{waitUntil:'networkidle'});
   await page.locator('#loading').waitFor({state:'hidden',timeout:90000});
@@ -75,6 +117,10 @@ try{
     }
   }
   check('Bali, Coastal and Modern render photographic materials, contact shading and both cars');
+
+  await page.locator('#garage-view').click();await screenshot('after-modern-two-car-garage');
+  assert.equal((await diagnostics()).garageVehicles,'2');
+  await verifyPhotographicUpload();
 
   // Eco and a small-screen viewport must remain functional without the HDR/AO pass.
   await page.locator('.studio-details').evaluate(el=>el.open=true);

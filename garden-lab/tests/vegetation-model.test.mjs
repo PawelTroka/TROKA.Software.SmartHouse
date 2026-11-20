@@ -101,3 +101,30 @@ test('foliage atlases release with originals and independently owned interior cl
   assert.ok(cutout > 20000 && solid > 60000,'Atlas needs both real transparent needle gaps and a dense interior tile');
   pine.dispose();
 });
+
+
+test('folded hedge sprays have outward winding and matching normals after instancing', () => {
+  const group=make(),a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3();
+  const face=new THREE.Vector3(),normal=new THREE.Vector3(),centroid=new THREE.Vector3(),centre=new THREE.Vector3();
+  const matrix=new THREE.Matrix4(),normalMatrix=new THREE.Matrix3();let inspected=0;
+  for(const mesh of group.children){
+    mesh.getMatrixAt(0,matrix);normalMatrix.getNormalMatrix(matrix);centre.setFromMatrixPosition(matrix);
+    const {position,normal:attribute,uv}=mesh.geometry.attributes;
+    for(let i=0;i<position.count;i+=3){
+      if(uv.getX(i)<.5)continue; // The opaque recessed core is a separate UV tile.
+      a.fromBufferAttribute(position,i).applyMatrix4(matrix);
+      b.fromBufferAttribute(position,i+1).applyMatrix4(matrix);
+      c.fromBufferAttribute(position,i+2).applyMatrix4(matrix);
+      face.crossVectors(b.clone().sub(a),c.clone().sub(a));
+      assert.ok(face.lengthSq()>1e-14,'Clipped botanical sprays must retain a drawable face');
+      face.normalize();centroid.copy(a).add(b).add(c).multiplyScalar(1/3).sub(centre);centroid.y=0;
+      assert.ok(face.dot(centroid)>-1e-6,'Spray winding must face away from the plant centre');
+      for(let j=0;j<3;j++){
+        normal.fromBufferAttribute(attribute,i+j).applyMatrix3(normalMatrix).normalize();
+        assert.ok(face.dot(normal)>.9999,'DoubleSide must not flip an incorrectly supplied outward normal inward');
+      }
+      inspected++;
+    }
+  }
+  assert.ok(inspected>7000,'Check all four actual folded specimens under their nonuniform instance transforms');
+});

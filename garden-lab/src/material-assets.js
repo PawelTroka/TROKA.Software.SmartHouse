@@ -3,11 +3,13 @@ import * as THREE from '../vendor/three.module.js';
 // Original 1K PBR files from Poly Haven, vendored for offline/self-hosted use.
 // See assets/materials/manifest.json for source URLs, authors, exact hashes and
 // measured dimensions. These are representative finishes, not site photographs.
-const asset=(id,meters,mean,{contrast=1,chroma=.4}={})=>Object.freeze({id,meters:Object.freeze(meters),mean:Object.freeze(mean),contrast,chroma});
+const asset=(id,meters,mean,{contrast=1,chroma=.4,pixels=[1024,1024]}={})=>Object.freeze({
+  id,meters:Object.freeze(meters),mean:Object.freeze(mean),pixels:Object.freeze(pixels),contrast,chroma,
+});
 export const MATERIAL_ASSETS=Object.freeze({
   wood:asset('fine_grained_wood',[.600000024,.600000024],[.055045,.0302896,.0154847],{chroma:.55}),
   grass:asset('grass_ground',[2.50999999,2.50999999],[.1581314,.1190771,.0492145],{contrast:1.1,chroma:.7}),
-  linen:asset('rough_linen',[.270708139,.271299988],[.2868386,.4099622,.6156103],{contrast:.8,chroma:.08}),
+  linen:asset('rough_linen',[.270708139,.271299988],[.2868386,.4099622,.6156103],{contrast:.8,chroma:.08,pixels:[1024,1026]}),
   plaster:asset('white_stucco',[1.998062968,1.998064041],[.6801998,.6513028,.6294243],{contrast:.9,chroma:.1}),
   stone:asset('marble_01',[1.5,1.5],[.4430806,.3379491,.1944884],{chroma:.35}),
   floor:asset('wood_floor_worn',[1.999999642,1.999999642],[.2533258,.0996638,.0288337],{chroma:.5}),
@@ -51,14 +53,21 @@ export function surfaceAssetDiagnostics(){
 function getSource(asset,channel){
   const file=`${asset.id}_${channel}.jpg`;
   if(sources.has(file))return sources.get(file);
-  const c=document.createElement('canvas');c.width=c.height=1;
+  // WebGL2 allocates immutable storage on the first upload. In Three r160 a
+  // later needsUpdate updates its contents; it does not resize that storage.
+  // A 1px placeholder therefore leaves a flat texture when the photo arrives.
+  // Allocate the verified final dimensions before either renderer can upload.
+  const c=document.createElement('canvas');[c.width,c.height]=asset.pixels;
   const ctx=c.getContext('2d');
   const color=channel==='diffuse'?[231,231,231]:
     channel==='nor_gl'?[128,128,255]:[220,220,220];
-  ctx.fillStyle=`rgb(${color.join(',')})`;ctx.fillRect(0,0,1,1);
+  ctx.fillStyle=`rgb(${color.join(',')})`;ctx.fillRect(0,0,c.width,c.height);
   const record={source:new THREE.Source(c),handles:new Set(),file,loaded:false,failed:false};
   sources.set(file,record);
   new THREE.ImageLoader().load(new URL(`../assets/materials/${file}`,import.meta.url).href,image=>{
+    if(image.width!==asset.pixels[0]||image.height!==asset.pixels[1]){
+      record.failed=true;notify();return;
+    }
     if(channel==='diffuse'){
       // White-balance the photograph around its measured mean, retaining dark
       // texture detail and restrained natural colour variation for the palette.

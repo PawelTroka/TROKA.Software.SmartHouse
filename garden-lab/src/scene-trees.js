@@ -265,7 +265,7 @@ function addConifer(group, v, materials, svgMode, valid) {
     const a = new THREE.Vector3(...start), b = new THREE.Vector3(...end);
     const direction = b.clone().sub(a), length = direction.length();
     if (length < .01) return;
-    const geometry = new THREE.CylinderGeometry(radius * .28, radius, length, svgMode ? 4 : 5);
+    const geometry = new THREE.CylinderGeometry(radius * .08, radius, length, svgMode ? 4 : 5);
     geometry.applyMatrix4(new THREE.Matrix4().compose(a.add(b).multiplyScalar(.5),
       new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize()), new THREE.Vector3(1, 1, 1)));
     branches.append(geometry, inside);
@@ -327,18 +327,23 @@ function addConifer(group, v, materials, svgMode, valid) {
       const az = layerPhase + i * TAU / count + (random() - .5) * .13;
       const c = Math.cos(az), s = Math.sin(az);
       const radial = reach * (.60 + random() * .07);
-      const jitter = (random() - .5) * height / levels * .13;
-      const center = [c * rx * radial, levelY + jitter, s * rz * radial];
-      const base = [0, levelY + (family === 'spruce' ? .025 : -.012) * height, 0];
-      const tipY = levelY + (family === 'spruce' ? -.018 : .008) * height;
-      const tip = [c * rx * reach * .92, tipY, s * rz * reach * .92];
+      const jitter = (random() - .5) * height / levels * .42;
+      const branchY = levelY + jitter;
+      const center = [c * rx * radial, branchY, s * rz * radial];
+      const base = [0, branchY + (family === 'spruce' ? .025 : -.012) * height, 0];
+      const tipY = branchY + (family === 'spruce' ? -.018 : .008) * height;
+      // Woody structure ends inside the fine outer sprays. Extending thick
+      // cylinders to the crown edge leaves a row of exposed cut branch ends.
+      // Shared per-branch variation keeps wood and foliage together and avoids
+      // perfectly horizontal rings; the unchanged inside() clips every vertex.
+      const tip = [c * rx * reach * .80, tipY, s * rz * reach * .80];
       branch(base, tip, Math.max(.009, (v.trunkRadius || .12) * reach * .16));
       const shade = .73 + random() * .18;
       if (family === 'thuja') {
         // Upright overlapping scale-leaf sprays, without the horizontal skirts
         // of spruce/fir. A second small outer fan gives the feathered edge.
         addFan(center, [rx * reach * .34, height / levels * .76, rz * reach * .24], az, shade, height / levels * .24);
-        if (!svgMode) addFan([c * rx * reach * .85, levelY + height / levels * .17, s * rz * reach * .85],
+        if (!svgMode) addFan([c * rx * reach * .85, branchY + height / levels * .17, s * rz * reach * .85],
           [rx * reach * .15, height / levels * .43, rz * reach * .12], az + .16, shade + .03, height / levels * .20);
       } else {
         // Fir branches form broad flat combs; spruce carries thinner hanging

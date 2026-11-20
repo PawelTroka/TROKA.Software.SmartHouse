@@ -11,6 +11,7 @@ lighting visible in the supplied Bali and Modern screenshots.
 | Materials | Six Poly Haven CC0 photographic PBR sets: fine wood, wooden floorboards, grass, linen, stucco and marble tile. Eighteen local diffuse/normal/roughness files total 9,997,745 bytes. |
 | Material scale | Physical source dimensions drive the UV scale. Separate normal and roughness channels replace diffuse-colour-as-height shortcuts. Style colours use bounded linear-light calibration. |
 | Furniture | Rounded solid edges, inflated upholstery, deterministic compression folds and sewn piping. Bali timber frames and cane panels contain actual openings and interlaced reeds. |
+| Cars | Curved body lofts, glazing, wheel arches, clearcoat paint, tapered tyre shoulders and ten-spoke alloy rims retain the checked vehicle bounds and both parking positions. |
 | Hedges | Four instanced, irregular conifer specimens with fine cutout foliage replace the visible rectangular screen and repeated ball clusters. The ideal analytical screen remains an invisible shadow proxy. |
 | Trees | Fine foliage sprays on pine and conifer branch pads retain the configured crown envelopes, clear stems and locations. |
 | Lighting | Lower ambient fill, AgX tone mapping, linear HDR composition and denoised GTAO contact shading. High detail permits 4096² sun shadows when supported. |
@@ -66,13 +67,20 @@ conflicts, remain applicable.
 
 ## Verification
 
-The complete local geometry/state suite passes **683 tests**. The static build
+The complete local geometry/state suite passes **685 tests**. The static build
 and renderer-module import checks pass. Targeted checks cover measured bounds,
 foliage clearance, material ownership, asset hashes, UV invariants, the reflected
 camera/clip plane, shader-hook composition and rendering budgets.
 
 The browser suites include an explicit asset-ready and navigation-settled gate
-before image comparisons. `scripts/realism-browser-check.mjs` captures matching
+before image comparisons. A two-context GPU readback additionally uploads the
+placeholder first, then checks that real photographic variation reaches both the
+original texture and an early clone after loading. Initial texture dimensions
+match the photographic files, including the non-square linen maps, so immutable
+WebGL2 storage cannot retain a flat placeholder. A geometry regression checks
+that folded hedge spray winding and normals agree after nonuniform instancing.
+
+`scripts/realism-browser-check.mjs` captures matching
 before/after views plus Bali, Coastal, Modern, interior and mobile scenes. The
 CI job retains its screenshots and JSON report as an artifact for visual review.
 
