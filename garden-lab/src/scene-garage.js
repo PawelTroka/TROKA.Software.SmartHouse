@@ -127,8 +127,11 @@ function createVehicle(vehicle,svgMode,prefix='garage-cyberster',paintColor='#a3
     glass=transient('#263a40',{roughness:.085,metalness:.25}),caliper=transient('#c13425'),
     light=transient('#ece8d8',{emissive:'#d9ddcc',emissiveIntensity:.12}),tailLight=transient('#bb191d',{emissive:'#9d1319',emissiveIntensity:.2});
   const tail=-v.rearOverhang,nose=v.wheelbase+v.frontOverhang,bottom=clearance-r;
-  const sections=[{u:tail,w:.72,h:.59},{u:tail+.25,w:.89,h:.75},{u:0,w:v.width/2,h:.87},
-    {u:.65,w:.91,h:.82},{u:1.7,w:.88,h:.76},{u:v.wheelbase,w:v.width/2,h:svgMode?.75:.86},{u:nose-.24,w:.88,h:.57},{u:nose,w:.69,h:.40}];
+  // Recess the end caps behind their exterior lenses and bumper inlays. The
+  // inlays reach the published end planes without lengthening the vehicle.
+  const endInset=svgMode?0:.055;
+  const sections=[{u:tail+endInset,w:.72,h:.59},{u:tail+.25,w:.89,h:.75},{u:0,w:v.width/2,h:.87},
+    {u:.65,w:.91,h:.82},{u:1.7,w:.88,h:.76},{u:v.wheelbase,w:v.width/2,h:svgMode?.75:.86},{u:nose-.24,w:.88,h:.57},{u:nose-endInset,w:.69,h:.40}];
   const add=(name,g,material,parent=group)=>{
     const m=new THREE.Mesh(g,material);m.name=name;m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
   };
@@ -202,8 +205,8 @@ function createVehicle(vehicle,svgMode,prefix='garage-cyberster',paintColor='#a3
       tube(`${prefix}-window-sill-${side}`,[[side*.723,.79-r,.13],[side*.723,.775-r,1.035],[side*.723,.76-r,1.94]],dark,.012);
     }
     for(const t of [0,1])tube(`${prefix}-roof-header-${t}`,Array.from({length:13},(_,i)=>roof(2*i/12-1,t)),dark,.010);
-    localBox(group,`${prefix}-front-intake`,0,.27-r,nose-.027,.86,.105,.028,dark);
-    localBox(group,`${prefix}-rear-diffuser`,0,.25-r,tail+.026,.95,.13,.025,dark);
+    localBox(group,`${prefix}-front-intake`,0,.27-r,nose-.04,.86,.105,.08,dark);
+    localBox(group,`${prefix}-rear-diffuser`,0,.25-r,tail+.04,.95,.13,.08,dark);
   }
   for(const side of [-1,1]){
     if(svgMode){
@@ -214,9 +217,13 @@ function createVehicle(vehicle,svgMode,prefix='garage-cyberster',paintColor='#a3
       const mirror=add(`${prefix}-mirror-${side}`,new THREE.SphereGeometry(1,20,12),paint);
       mirror.scale.set(.055,.0325,.09);mirror.position.set(side*(v.mirrorWidth/2-.055),.91-r,1.58);
       tube(`${prefix}-mirror-stalk-${side}`,[[side*.73,.84-r,1.58],[side*.91,.88-r,1.58],[side*.99,.91-r,1.58]],dark,.012);
+      const headlampHousing=add(`${prefix}-headlamp-housing-${side}`,new THREE.SphereGeometry(1,20,10),dark);
+      headlampHousing.scale.set(.18,.038,.034);headlampHousing.position.set(side*.47,.335-r,nose-.044);
       const headlamp=add(`${prefix}-headlamp-${side}`,new THREE.SphereGeometry(1,20,10),light);
-      headlamp.scale.set(.19,.018,.04);headlamp.position.set(side*.57,.50-r,nose-.17);headlamp.rotation.y=side*.12;
-      tube(`${prefix}-tail-lamp-${side}`,[[side*.39,.55-r,tail+.025],[side*.56,.57-r,tail+.030],[side*.73,.55-r,tail+.07]],tailLight,.017);
+      headlamp.scale.set(.16,.026,.022);headlamp.position.set(side*.47,.335-r,nose-.023);
+      const rearLens=[[side*.31,.51-r,tail+.018],[side*.52,.535-r,tail+.018],[side*.66,.515-r,tail+.018]];
+      tube(`${prefix}-tail-lamp-housing-${side}`,rearLens.map(([x,y,z])=>[x,y,z+.019]),dark,.029);
+      tube(`${prefix}-tail-lamp-${side}`,rearLens,tailLight,.017);
     }
     for(const [axle,u,radius,track,width] of [['rear',0,v.rearRadius,v.rearTrack,.275],['front',v.wheelbase,v.frontRadius,v.frontTrack,.245]]){
       const wheel=new THREE.Group();wheel.name=`${prefix}-wheel-${axle}-${side}`;

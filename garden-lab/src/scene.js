@@ -335,7 +335,9 @@ export function createScene(container, data, callbacks = {}) {
   standard('thuja', '#a5b68b', { map: textures?.foliage, bumpMap:textures?.microHeight,bumpScale:.003, roughness: .95 });
   standard('hedgeTop', '#476b4c');
   standard('leaf', '#99ae7e', {map:textures?.foliage,roughness:1});
-  standard('grass', '#94a575', { map: textures?.grass });
+  // The old lawn combined a tinted map and vertex pigment. Calibrate their
+  // measured mean reflectance to the new neutral photographic map.
+  standard('grass', textures?'#65763f':'#94a575', { map: textures?.grass });
   standard('context', '#d3d6d0', { map: textures?.stucco });
   standard('target', '#d5d4c7', { map: textures?.stucco });
   standard('contextRoof', '#89918c', { map: textures?.roof });

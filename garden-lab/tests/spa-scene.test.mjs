@@ -76,3 +76,27 @@ test('moved pool coping clears the uneven terrain and its skirt reaches grade in
   assert.ok(old.waterZ>gardenGroundAt(oldPool.x+oldPool.width/2,oldPool.y+oldPool.length/2,classic,data)+.075-.10);
   for(const [x,y] of program.furniture.path)assert.equal(rectanglesOverlap({x,y,width:1.15,length:.9},program.firepit,.08),false,'A stepping stone must not bridge the excavated lounge or coping');
 });
+
+
+test('detailed firepit seats, seams and rolled bowl retain the existing measured envelopes',()=>{
+  const fireGlow=new THREE.MeshStandardMaterial({color:'#aa5230',emissive:'#c34916',emissiveIntensity:0});
+  const group=createSpaAmenityGroup(program,levels,{...materials,fireGlow});
+  for(const [i,seat] of program.firepit.seats.entries()){
+    const cushion=group.getObjectByName(`firepit-seat-cushion-${i}`),b=bounds(cushion);
+    near(b.min.x,seat.x+.025);near(b.max.x,seat.x+seat.width-.025);
+    near(b.min.z,seat.y+.025);near(b.max.z,seat.y+seat.length-.025);
+    near(b.min.y,levels.firepit.seatZ);near(b.max.y,levels.firepit.seatZ+.10);
+    const seam=bounds(cushion.getObjectByName(`firepit-seat-seam-${i}`));
+    assert.ok(b.containsBox(seam),'Sewn detail must stay inside the existing seat envelope');
+    const base=bounds(group.getObjectByName(`firepit-seat-base-${i}`));
+    near(base.min.y,levels.firepit.floorZ);near(base.max.y,levels.firepit.seatZ);
+    near(base.max.x-base.min.x,seat.width);near(base.max.z-base.min.z,seat.length);
+  }
+  const bowl=bounds(group.getObjectByName('firepit-bowl'));
+  near(bowl.min.y,levels.firepit.floorZ+.19);near(bowl.max.y,levels.firepit.floorZ+.39);
+  near(bowl.max.x-bowl.min.x,.96);near(bowl.max.z-bowl.min.z,.96);
+  const embers=group.getObjectByName('firepit-embers');
+  assert.ok(bowl.containsBox(bounds(embers)),'Glowing clinker remains inside the existing bowl');
+  assert.equal(embers.material,fireGlow,'Shared daylight/night controls must still own ember emission');
+  near(fireGlow.emissiveIntensity,0);
+});
