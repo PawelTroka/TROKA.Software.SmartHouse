@@ -1,9 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
+import {applyPhotographicSurface, MATERIAL_ASSETS} from './material-assets.js?v=1.29.0';
 
 // Finish specifications describe construction, grain and reflectance. They are
 // independent of palette colours and keep the original/current materials intact.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.28.0';
-export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.28.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.29.0';
+export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.29.0';
 const woodTypes=new Set(['oak','ash','walnut','teak','cedar','silvered-wood','charred-wood','reclaimed-wood','weatherboard','whitewashed-oak','painted-wood','painted-weatherboard']);
 const fabricTypes=new Set(['linen','woven','boucle','canvas','velvet','vinyl']);
 const metalTypes=new Set(['bronze','brass','anodized','chrome','painted-steel','blackened-steel','zinc','standing-seam']);
@@ -16,7 +17,7 @@ const wave=(u,v)=>Math.sin(u*2*Math.PI)*Math.cos(v*2*Math.PI);
  * Map units are projected by the mesh UVs. The finish name describes a proposed
  * material, not a photographed manufacturer product or a cost allowance. */
 export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
-  size=Math.max(16,Math.min(256,Math.round(size)));
+  size=Math.max(16,Math.min(512,Math.round(size)));
   const height=new Float32Array(size*size),color=new Uint8Array(size*size*4);
   for(let y=0;y<size;y++)for(let x=0;x<size;x++){
     const u=x/size,v=y/size,i=y*size+x;
@@ -79,13 +80,18 @@ export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
     }
     height[i]=clamp(h);color.set([clamp(tone+warm),clamp(tone),clamp(tone-warm)].map(n=>Math.round(n*255)).concat(255),i*4);
   }
-  const normals=new Uint8Array(size*size*4),relief=new Uint8Array(size*size*4);
+  const normals=new Uint8Array(size*size*4),relief=new Uint8Array(size*size*4),roughness=new Uint8Array(size*size*4);
+  const metal=metalTypes.has(kind),fabric=fabricTypes.has(kind),polished=['porcelain','terrazzo','vinyl'].includes(kind);
   for(let y=0;y<size;y++)for(let x=0;x<size;x++){
     const i=y*size+x,h=height[i],dx=height[y*size+(x+1)%size]-height[y*size+(x-1+size)%size],dy=height[((y+1)%size)*size+x]-height[((y-1+size)%size)*size+x],length=Math.hypot(dx*1.5,dy*1.5,1);
     normals.set([-dx*1.5,-dy*1.5,1].map(n=>Math.round((n/length*.5+.5)*255)).concat(255),i*4);
     const q=Math.round(h*255);relief.set([q,q,q,255],i*4);
+    // Independent linear microsurface response, correlated with relief instead
+    // of treating the diffuse colour's stain/paint as a height or gloss map.
+    const r=Math.round(clamp((metal?.86:fabric?.95:polished?.82:.9)+(h-.5)*(fabric?.12:metal?.3:.28)+Math.hypot(dx,dy)*.12,.4,1)*255);
+    roughness.set([r,r,r,255],i*4);
   }
-  return {size,color,normals,relief};
+  return {size,color,normals,relief,roughness};
 }
 
 function dataTexture(bytes,size,color=false){
@@ -119,15 +125,29 @@ export function exteriorFinishForRole(style,role){
  * All generated maps are released on material.dispose(), including replacements. */
 export function applyExteriorSurface(material,style,role,{svgMode=false,seams=role!=='deck'}={}){
   const finish=exteriorFinishForRole(style,role);if(!finish||!material)return material;
+  const previous=material.userData.photographicTint;
+  if(previous&&material.color.toArray().every((v,i)=>Math.abs(v-previous.scaled[i])<1e-9))material.color.fromArray(previous.base);
+  delete material.userData.photographicTint;delete material.userData.photographicSurface;delete material.userData.metricTexture;
   const metal=metalTypes.has(finish),fabric=fabricTypes.has(finish),polished=['porcelain','terrazzo','vinyl'].includes(finish);
   material.roughness=finish==='chrome'?.20:finish==='brass'?.29:finish==='anodized'?.34:metal?.46:polished?.34:fabric?.91:woodTypes.has(finish)?.64:.86;
   material.metalness=finish==='chrome'?.88:['brass','bronze','zinc','standing-seam','anodized'].includes(finish)?.62:finish==='blackened-steel'?.45:0;
   if(!svgMode){
     // The terrace renderer supplies metre-registered paving/board joints. Its
     // colour map must not paint a second, contradictory grid over that bond.
-    const {size,color,normals}=exteriorSurfacePixels(finish,128,{seams}),map=dataTexture(color,size,true),normal=dataTexture(normals,size);
-    own(material,[map,normal]);material.map=map;material.normalMap=normal;
-    material.bumpMap=null;material.roughnessMap=null;material.normalScale=new THREE.Vector2(metal?.24:fabric?.28:.60,metal?.24:fabric?.28:.60);
+    const photographed=woodTypes.has(finish)&&!['charred-wood','painted-wood','painted-weatherboard'].includes(finish)?'wood':
+      ['linen','woven','canvas'].includes(finish)?'linen':
+      ['sand-render','smooth-render','limewash','clay-render'].includes(finish)?'plaster':null;
+    const repeat=role==='deck'&&photographed==='wood'&&style?.recipe?.module?
+      [8*style.recipe.module[1]/MATERIAL_ASSETS.wood.meters[0],style.recipe.module[0]/MATERIAL_ASSETS.wood.meters[1]]:undefined;
+    const photographic=photographed?applyPhotographicSurface(material,photographed,{repeat,metric:role!=='deck',
+      normalStrength:photographed==='plaster'?(finish==='smooth-render'?.1:.4):photographed==='linen'?.48:.55}):null;
+    if(photographic)own(material,photographic);
+    else{
+      const {size,color,normals,roughness}=exteriorSurfacePixels(finish,256,{seams});
+      const map=dataTexture(color,size,true),normal=dataTexture(normals,size),rough=dataTexture(roughness,size);
+      own(material,[map,normal,rough]);material.map=map;material.normalMap=normal;material.roughnessMap=rough;
+      material.bumpMap=null;material.normalScale=new THREE.Vector2(metal?.24:fabric?.28:.60,metal?.24:fabric?.28:.60);
+    }
   }
   material.userData.exteriorFinish=finish;material.userData.exteriorRole=role;material.needsUpdate=true;
   return material;

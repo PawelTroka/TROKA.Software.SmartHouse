@@ -11,18 +11,18 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.28.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.28.0';
-import {gazeDirection} from './orientation.js?v=1.28.0';
-import {localSunDirection} from './solar.js?v=1.28.0';
-import {getSiteProfile} from './sites.js?v=1.28.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.28.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.28.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.28.0';
-import {terraceStairs} from './layout.js?v=1.28.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.28.0';
+} from './geometry.js?v=1.29.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.29.0';
+import {gazeDirection} from './orientation.js?v=1.29.0';
+import {localSunDirection} from './solar.js?v=1.29.0';
+import {getSiteProfile} from './sites.js?v=1.29.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.29.0';
+import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.29.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.29.0';
+import {terraceStairs} from './layout.js?v=1.29.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.29.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.28.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.29.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',

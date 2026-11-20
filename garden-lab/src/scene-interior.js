@@ -1,26 +1,29 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js?v=1.28.0';
-import {buildArchitecture} from './interior-architecture.js?v=1.28.0';
-import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.28.0';
-import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.28.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.28.0';
-import {renderBudget} from './render-quality.js?v=1.28.0';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.29.0';
+import {buildArchitecture} from './interior-architecture.js?v=1.29.0';
+import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.29.0';
+import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.29.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.29.0';
+import {renderBudget} from './render-quality.js?v=1.29.0';
+import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.29.0';
+import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.29.0';
 
 const walkKeys=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
 const DEFAULTS={view:'dollhouse',styleId:'current',roomId:null,showChanges:false,showFurniture:true,showCeiling:true};
 export function createInteriorScene(container,callbacks={}) {
   let renderer;
-  try {renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});} catch(error){
+  try {renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});} catch(error){
     const message='WebGL is unavailable. The floor plan remains available.';callbacks.onError?.(message);
     return {update(){},dispose(){},resize(){},home(){},setVisible(){},getDiagnostics:()=>({available:false,error:message})};
   }
   const canvas=renderer.domElement;canvas.setAttribute('aria-label','Interactive three-dimensional house interior');canvas.setAttribute('role','region');canvas.tabIndex=0;canvas.dataset.interiorRenderer='webgl';
   Object.assign(canvas.style,{display:'block',width:'100%',height:'100%',touchAction:'none',outlineOffset:'-3px'});container.append(canvas);
-  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
+  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
   const world=new THREE.Scene(),env=interiorEnvironment(renderer);world.environment=env.env;
   const camera=new THREE.PerspectiveCamera(35,1,.035,140),orbit=new OrbitControls(camera,canvas);
+  const presentation=createArchitecturalRenderer(renderer,world,camera,{interior:true});
   orbit.enableDamping=true;orbit.dampingFactor=.13;orbit.minPolarAngle=.06;orbit.maxPolarAngle=Math.PI*.475;orbit.minDistance=4.2;orbit.maxDistance=57;
-  const sky=new THREE.HemisphereLight(0xf8fbff,0xa8997f,1.05);world.add(sky);
+  const sky=new THREE.HemisphereLight(0xe9f1ff,0xa8997f,.62);world.add(sky);
   const sun=new THREE.DirectionalLight(0xffeed2,2.35);sun.castShadow=true;sun.shadow.camera.near=.1;sun.shadow.camera.far=47;Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12});sun.shadow.bias=-.00020;sun.shadow.normalBias=.014;world.add(sun,sun.target);
   const fill=new THREE.DirectionalLight(0xd5e6ed,.60);fill.position.set(0,7,12);world.add(fill);
   const lamp=new THREE.PointLight(0xffd39a,0,8,2);world.add(lamp);
@@ -28,6 +31,8 @@ export function createInteriorScene(container,callbacks={}) {
   const abort=new AbortController(),listen=(node,e,fn,options={})=>node.addEventListener(e,fn,{...options,signal:abort.signal});
   let plan,state={...DEFAULTS},model,finishes,clear,context,contextKey='',raf=0,visible=true,disposed=false,dirtyShadow=true,lastTime=0;
   let yaw=0,pitch=0,eye=1.57,down=null,drag=null,drawn=0,meshCount=0,activeStyle='',sizeW=0,sizeH=0;
+  let interacting=false,interactionTimer=0,sizeRatio=0,sizeQuality='',sizeInteracting=false;
+  const unsubscribeSurfaceAssets=onSurfaceAssetsChanged(request);
   const keys=new Set(),ray=new THREE.Raycaster(),floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0));
   const tools=modelTools();
   const pad=document.createElement('div');pad.setAttribute('aria-label','Walk controls');pad.dataset.interiorWalkControls='';
@@ -40,6 +45,11 @@ export function createInteriorScene(container,callbacks={}) {
   }
   container.append(pad);
   function request(){if(!raf&&!disposed&&visible&&plan)raf=requestAnimationFrame(frame);}
+  function navigationChanged(){
+    if(!interacting){interacting=true;resize();}
+    clearTimeout(interactionTimer);
+    interactionTimer=setTimeout(()=>{interactionTimer=0;interacting=false;resize();request();},180);
+  }
   function orient(){camera.rotation.order='YXZ';camera.rotation.y=-yaw;camera.rotation.x=pitch;camera.rotation.z=0;}
   function move(right,forward,distance){
     const norm=Math.hypot(right,forward);if(!norm)return;
@@ -54,11 +64,11 @@ export function createInteriorScene(container,callbacks={}) {
     raf=0;if(disposed||!visible||!model)return;
     const dt=Math.max(0,Math.min(.056,(now-lastTime)/1000||0));lastTime=now;
     const walking=state.view==='room'&&keys.size>0;
-    if(walking)move(Number(keys.has('right'))-Number(keys.has('left')),Number(keys.has('forward'))-Number(keys.has('back')),dt*1.68);
+    if(walking){navigationChanged();move(Number(keys.has('right'))-Number(keys.has('left')),Number(keys.has('forward'))-Number(keys.has('back')),dt*1.68);}
     if(orbit.enabled)orbit.update();
     if(model.updateVisibility(state.view,camera.position,state))dirtyShadow=true;
     if(dirtyShadow){renderer.shadowMap.needsUpdate=true;dirtyShadow=false;}
-    renderer.render(world,camera);drawn++;
+    presentation.render();drawn++;
     if(walking)request();
   }
   function fitDollhouse(){
@@ -83,9 +93,13 @@ export function createInteriorScene(container,callbacks={}) {
   }
   function resize(){
     if(disposed)return;const rect=container.getBoundingClientRect(),w=Math.round(rect.width),h=Math.round(rect.height);if(!w||!h)return;
-    if(w===sizeW&&h===sizeH)return;const oldAspect=camera.aspect;sizeW=w;sizeH=h;
-    const budget=renderBudget('auto',w,h,window.devicePixelRatio||1,{memoryGB:navigator.deviceMemory,maxTextureSize:renderer.capabilities.maxTextureSize});renderer.setPixelRatio(budget.pixelRatio);renderer.setSize(w,h,false);
-    const shadowSize=Math.min(1536,budget.shadowSize);if(sun.shadow.mapSize.width!==shadowSize){sun.shadow.mapSize.set(shadowSize,shadowSize);sun.shadow.map?.dispose();sun.shadow.map=null;dirtyShadow=true;}
+    const quality=state.quality||'auto';
+    const budget=renderBudget(quality,w,h,window.devicePixelRatio||1,{memoryGB:navigator.deviceMemory,maxTextureSize:renderer.capabilities.maxTextureSize,interacting});
+    if(w===sizeW&&h===sizeH&&sizeRatio===budget.pixelRatio&&sizeQuality===quality&&sizeInteracting===interacting)return;
+    const oldAspect=camera.aspect;sizeW=w;sizeH=h;sizeRatio=budget.pixelRatio;sizeQuality=quality;sizeInteracting=interacting;
+    renderer.setPixelRatio(budget.pixelRatio);renderer.setSize(w,h,false);
+    presentation.resize(w,h,budget.pixelRatio,quality,{memoryGB:navigator.deviceMemory,interacting});
+    const shadowSize=budget.shadowSize;if(sun.shadow.mapSize.width!==shadowSize){sun.shadow.mapSize.set(shadowSize,shadowSize);sun.shadow.map?.dispose();sun.shadow.map=null;dirtyShadow=true;}
     camera.aspect=w/h;camera.updateProjectionMatrix();if(plan&&state.view==='dollhouse'&&Math.abs(oldAspect-camera.aspect)>.13)fitDollhouse();request();
   }
   function update(nextPlan,options={}){
@@ -96,7 +110,7 @@ export function createInteriorScene(container,callbacks={}) {
       (!!callbacks.getExteriorContext&&((old.view==='room')!==(state.view==='room')));
     if(changedModel){model?.dispose();if(!finishes||activeStyle!==state.styleId){finishes?.dispose();finishes=interiorMaterials(state.styleId);activeStyle=state.styleId;}
       const localPlan=callbacks.getExteriorContext?{...plan,outdoor:plan.outdoor.filter(p=>p.kind==='landing'),fixtures:sharedRoom?plan.fixtures.filter(f=>f.kind!=='car'):plan.fixtures}:plan;
-      model=buildArchitecture(localPlan,{...state,showOutdoor:true,showExterior:true,showStairs:!sharedRoom},tools,finishes);world.add(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
+      model=buildArchitecture(localPlan,{...state,showOutdoor:true,showExterior:true,showStairs:!sharedRoom},tools,finishes);world.add(model.root);projectArchitecturalMaterialUVs(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
       sun.target.position.set(plan.envelope.width/2,plan.elevation,3);sun.position.copy(sun.target.position).add(new THREE.Vector3(-7.5,12,-6.5));
       const lowest=Math.min(-.24,...(plan.stairs||[]).filter(s=>s.to===plan.floor).map(s=>-s.rise));shadow.position.set(plan.envelope.width/2,plan.elevation+lowest-.075,plan.envelope.depth/2);dirtyShadow=true;
     }
@@ -119,9 +133,9 @@ export function createInteriorScene(container,callbacks={}) {
     else if(old.showFurniture!==state.showFurniture||old.showCeiling!==state.showCeiling)dirtyShadow=true;
     request();
   }
-  orbit.addEventListener('change',()=>{if(orbit.enabled)request();});
+  orbit.addEventListener('change',()=>{if(orbit.enabled){navigationChanged();request();}});
   listen(canvas,'pointerdown',e=>{if(e.button!==0)return;canvas.focus({preventScroll:true});down={x:e.clientX,y:e.clientY,id:e.pointerId};if(state.view==='room'){drag={...down};canvas.setPointerCapture(e.pointerId);} });
-  listen(canvas,'pointermove',e=>{if(!drag||e.pointerId!==drag.id||state.view!=='room')return;yaw+=(e.clientX-drag.x)*.0043;pitch=THREE.MathUtils.clamp(pitch-(e.clientY-drag.y)*.0043,-1.24,1.24);drag.x=e.clientX;drag.y=e.clientY;orient();request();});
+  listen(canvas,'pointermove',e=>{if(!drag||e.pointerId!==drag.id||state.view!=='room')return;navigationChanged();yaw+=(e.clientX-drag.x)*.0043;pitch=THREE.MathUtils.clamp(pitch-(e.clientY-drag.y)*.0043,-1.24,1.24);drag.x=e.clientX;drag.y=e.clientY;orient();request();});
   listen(canvas,'pointerup',e=>{
     if(!down||e.pointerId!==down.id)return;const clicked=Math.hypot(e.clientX-down.x,e.clientY-down.y)<5;down=drag=null;
     if(!clicked||!plan||state.view!=='dollhouse')return;
@@ -132,8 +146,8 @@ export function createInteriorScene(container,callbacks={}) {
   listen(canvas,'keyup',e=>keys.delete(walkKeys.get(e.code)));listen(canvas,'blur',()=>keys.clear());listen(window,'blur',()=>{keys.clear();down=drag=null;});
   listen(canvas,'webglcontextlost',e=>{e.preventDefault();if(!disposed)callbacks.onError?.('The 3D graphics context was interrupted.');});
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(container);listen(window,'resize',resize);
-  function setVisible(value){visible=!!value;if(visible){resize();request();}else{keys.clear();drag=down=null;cancelAnimationFrame(raf);raf=0;lastTime=0;}}
-  return {update,home,resize,setVisible,getDiagnostics(){return {available:!disposed,visible,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye,contextSource:context?.source||null,contextKey,renovationFeatures:finishes?.interiorRecipe?.features||[]};},
-    dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(raf);abort.abort();observer?.disconnect();orbit.dispose();model?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
+  function setVisible(value){visible=!!value;if(visible){resize();request();}else{keys.clear();drag=down=null;clearTimeout(interactionTimer);interactionTimer=0;interacting=false;cancelAnimationFrame(raf);raf=0;lastTime=0;}}
+  return {update,home,resize,setVisible,getDiagnostics(){const render=presentation.sceneInfo||renderer.info.render;return {available:!disposed,visible,interacting,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:render.calls,triangles:render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye,contextSource:context?.source||null,contextKey,renovationFeatures:finishes?.interiorRecipe?.features||[],...presentation.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};},
+    dispose(){if(disposed)return;disposed=true;unsubscribeSurfaceAssets();cancelAnimationFrame(raf);clearTimeout(interactionTimer);abort.abort();observer?.disconnect();orbit.dispose();model?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();presentation.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
   };
 }

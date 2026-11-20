@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.28.0';
+import {toWorld} from './orientation.js?v=1.29.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.29.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.
@@ -87,7 +88,7 @@ export function createStyledDeck(style, {x,y,width,length,z,hole}, {svgMode=fals
 
 // Each small assembly batches parts by finish. Geometry is in local coordinates,
 // leaving the mapped origin and the garden's existing furniture footprint intact.
-function assembly(name, origin, {svgMode=false} = {}) {
+function assembly(name, origin, {svgMode=false,upholsteryMaterials=[]} = {}) {
   const group = new THREE.Group(), batches = new Map();
   group.name=name;
   group.position.set(...toWorld(origin.x,origin.y,origin.z));
@@ -106,8 +107,9 @@ function assembly(name, origin, {svgMode=false} = {}) {
     }
     geometry.dispose();
   };
-  const box = (x,y,z,w,l,h,m) => add(new THREE.BoxGeometry(w,h,l,
-    svgMode?Math.ceil(w/.26):1,1,svgMode?Math.ceil(l/.26):1),m,x,y,z);
+  const box = (x,y,z,w,l,h,m) => add(!svgMode&&Math.min(w,h,l)>.024?
+    beveledBoxGeometry(w,h,l,{radius:Math.min(.004,Math.min(w,h,l)*.10),segments:1}):
+    new THREE.BoxGeometry(w,h,l,svgMode?Math.ceil(w/.26):1,1,svgMode?Math.ceil(l/.26):1),m,x,y,z);
   const drum = (x,y,z,w,l,h,m,sides=20) => {
     const geometry=new THREE.CylinderGeometry(.5,.5,h,sides);
     geometry.scale(w,1,l);add(geometry,m,x,y,z);
@@ -119,9 +121,22 @@ function assembly(name, origin, {svgMode=false} = {}) {
     const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),direction.normalize());
     add(new THREE.CylinderGeometry(r,r*taper,distance,8),m,(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,q);
   };
+  const weave=(x,y,z,w,h,m,angle=0)=>{
+    if(svgMode){
+      const q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),angle);
+      add(new THREE.BoxGeometry(w,h,.008),m,x,y,z,q);return;
+    }
+    add(wovenPanelGeometry(w,h),m,x,y,z,new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),angle));
+  };
   // Gently rounded vertical edges and a crowned top, with a true cushion seam
   // silhouette at normal eye height. The ring exponent controls the plan shape.
   const cushion = (x,y,z,w,l,h,m,roundness=4) => {
+    if(!svgMode&&upholsteryMaterials.includes(m)){
+      const axis=h<=Math.min(w,l)?'y':l<=w?'z':'x';
+      add(cushionGeometry(w,h,l,{axis,roundness}),m,x,y,z+h/2);
+      add(cushionPipingGeometry(w,h,l,{axis,roundness}),m,x,y,z+h/2);
+      return;
+    }
     const shape=new THREE.Shape(), sides=32;
     for(let i=0;i<=sides;i++){
       const a=2*Math.PI*i/sides, c=Math.cos(a),s=Math.sin(a);
@@ -182,7 +197,7 @@ function assembly(name, origin, {svgMode=false} = {}) {
     }
     return group;
   };
-  return {box,drum,bar,cushion,finish};
+  return {box,drum,bar,cushion,weave,finish};
 }
 
 function base(kit, form, m, w,l,h,x=0,y=0) {
@@ -207,14 +222,26 @@ function base(kit, form, m, w,l,h,x=0,y=0) {
       cushion(cx,cy,0,w*.79,l*.84,h,m.stoneLight,form==='pebble'?2.3:3.2);
     } else if (form==='deco') {
       for(let k=0;k<3;k++) cushion(cx,cy,k*h/3,w*(.76+k*.08),l*(.82+k*.065),h/3,k===1?m.styleAccent:m.woodLight,4);
+    } else if(form==='weave'){
+      // Teak rails and legs remain visible behind an open woven apron. A
+      // textured solid block cannot produce the same silhouette or parallax.
+      const frame=.045;
+      for(const fx of [.065,.935])for(const fy of [.065,.935])
+        box(x+w*fx,y+l*fy,h/2,frame,frame,h,m.wood);
+      for(const dz of [.055,h-.025]){
+        for(const fy of [.065,.935])box(cx,y+l*fy,dz,w*.90,frame,.035,m.wood);
+        for(const fx of [.065,.935])box(x+w*fx,cy,dz,frame,l*.90,.035,m.wood);
+      }
+      const panelH=Math.max(.04,h-.11),panelZ=.055+panelH/2;
+      for(const fy of [.065,.935])kit.weave(cx,y+l*fy,panelZ,w*.84,panelH,m.woodLight);
+      for(const fx of [.065,.935])kit.weave(x+w*fx,cy,panelZ,l*.84,panelH,m.woodLight,Math.PI/2);
     } else {
       const timber=form==='platform'||form==='bench'||form==='weave';
       box(cx,cy,h/2,w*.90,l*.93,h,timber?m.wood:form==='block'?m.stone:m.metal);
-      if (form==='bench'||form==='weave') for(const side of [-1,1]){
+      if (form==='bench') for(const side of [-1,1]){
         const faceX=cx+side*w*.455;
         const n=Math.max(4,Math.round(l/.085));
         for(let i=0;i<n;i++) box(faceX,y+l*(.05+.90*(i+.5)/n),h/2,.012,.035,h*.95,m.woodLight);
-        if (form==='weave') for(const line of [.23,.51,.79]) box(faceX+side*.008,cy,h*line,.012,l*.92,.012,m.styleAccent);
       }
     }
     return;
@@ -239,9 +266,9 @@ function base(kit, form, m, w,l,h,x=0,y=0) {
 }
 
 export function createStyledLounger(style,m,r,options) {
-  const kit=assembly('styled-lounger-'+style.recipe.furniture,r,options);
+  const kit=assembly('styled-lounger-'+style.recipe.furniture,r,{...options,upholsteryMaterials:[m.linen,m.fabricAccent??m.styleAccent]});
   const {box,bar,cushion}=kit, {width:w,length:l}=r, form=style.recipe.furniture;
-  const accent=m.styleAccent??m.woodLight;
+  const accent=m.fabricAccent??m.styleAccent??m.woodLight;
   const seatH=['platform','low-pebble'].includes(form)?.18:form==='channel'?.27:.245;
   base(kit,form,m,w,l,seatH);
   const rounded=['pebble','low-pebble','runner','shell','deco'].includes(form);
@@ -297,7 +324,7 @@ export function createStyledSideTable(style,m,r,options) {
 }
 
 export function createStyledDining(style,m,r,options) {
-  const kit=assembly('styled-dining-'+style.recipe.furniture,r,options);
+  const kit=assembly('styled-dining-'+style.recipe.furniture,r,{...options,upholsteryMaterials:[m.linen,m.fabricAccent??m.styleAccent]});
   const {width:w,length:l}=r,form=style.recipe.furniture;
   const composition=style.construction?.dining??'long-six',round=composition==='round-four';
   const tw=round?Math.min(1.05,w*.38,l*.42):Math.min(composition==='club-banquette'?1.55:composition==='crossback-six'?1.90:2.08,w*(composition==='crossback-six'?.54:.62));
@@ -316,7 +343,7 @@ export function createStyledDining(style,m,r,options) {
     kit.cushion(cx,cy,.38,ew,el,.08,m.linen,form==='shell'||form==='pebble'?2.2:5);
     const bx=cx-fx*cl*.43,by=cy-fy*cl*.43;
     if(['shell','channel','deco','block'].includes(form)){
-      kit.cushion(bx,by,.45,alongX?.09:cw*.94,alongX?cw*.94:.09,.31,form==='shell'?m.styleAccent:m.linen,4);
+      kit.cushion(bx,by,.45,alongX?.09:cw*.94,alongX?cw*.94:.09,.31,form==='shell'?(m.fabricAccent??m.styleAccent):m.linen,4);
     }else{
       for(const side of [-1,1])kit.bar([bx+(alongX?0:side*cw*.40),by+(alongX?side*cw*.40:0),.41],
         [bx+(alongX?0:side*cw*.40),by+(alongX?side*cw*.40:0),.77],.021,m.wood);

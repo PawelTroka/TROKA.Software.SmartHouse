@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.28.0';
-import {furnishInterior} from './interior-furniture.js?v=1.28.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.28.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.29.0';
+import {furnishInterior} from './interior-furniture.js?v=1.29.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.29.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.29.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {

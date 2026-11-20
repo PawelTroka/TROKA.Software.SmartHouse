@@ -1,6 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {getDesignStyle} from './design-styles.js?v=1.28.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.28.0';
+import {applyPhotographicSurface} from './material-assets.js?v=1.29.0';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.29.0';
+import {getDesignStyle} from './design-styles.js?v=1.29.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.29.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {
@@ -127,7 +129,7 @@ function artwork(palette) {
     ctx.fillStyle='#eee8da';ctx.fillRect(0,194,160,6);
   });
 }
-export function interiorMaterials(styleId) {
+export function interiorMaterials(styleId,{svgMode=false}={}) {
   const style=getDesignStyle(styleId), p=style.palette, current=style.id==='current', interiorRecipe=getInteriorStyleRecipe(style.id),maps=[];
   const map=t=>{maps.push(t);return t;};
   const coastal=style.id==='coastal';
@@ -137,6 +139,7 @@ export function interiorMaterials(styleId) {
   const floorMap=current?woodMap:map(parquetFloor?parquet(interiorRecipe.floor==='deco-parquet'):timberFloors.includes(interiorRecipe.floor)?planks(interiorRecipe.floor):materialSurface(interiorRecipe.floor));
   const wallMap=current?null:interiorRecipe.wallSurface==='wood'?woodMap:map(materialSurface(interiorRecipe.wallSurface==='brick'?'clinker':interiorRecipe.wallSurface));
   const make=(color,roughness=.8,more={})=>new THREE.MeshStandardMaterial({color,roughness,...more});
+  const physical=(color,roughness=.8,more={})=>new THREE.MeshPhysicalMaterial({color,roughness,...more});
   const fabricRoughness=interiorRecipe.upholstery==='leather'?.48:interiorRecipe.upholstery==='velvet'?.75:.95;
   const m={
     wall:make(current?'#e9e3d7':mix(p.houseWall,'#fff8e8',.36),.88,wallMap?{map:wallMap,bumpMap:wallMap,bumpScale:['clay','stucco','wood','brick'].includes(interiorRecipe.wallSurface)?.012:.004}:{}),ceiling:make('#f3eee4',.89,{side:THREE.DoubleSide}),cut:make('#474e48'),trim:make(current?'#eee8dd':mix(p.edge,'#fffaf0',.48)),
@@ -144,20 +147,60 @@ export function interiorMaterials(styleId) {
     boards:make(current?'#c9a47b':mix(p.wood,'#ddc3a0',interiorRecipe.floor==='dark-boards'?.11:.30),.69,{map:floorMap,...(!current?{bumpMap:floorMap,bumpScale:.006}:{})}),tiles:make(mix(p.surface,'#e7e3d7',.27),['zellige','marble','mosaic'].includes(interiorRecipe.wetFloor)?.27:.63,{map:tileMap,...(!current?{bumpMap:tileMap,bumpScale:interiorRecipe.wetFloor==='riverstone'?.018:.006}:{})}),
     stone:make(coastal?'#f1eee4':mix(p.edge,'#e6ded0',.27),coastal?.36:interiorRecipe.wetFloor==='marble'?.28:.58,{map:stoneMap,...(!current?{bumpMap:stoneMap,bumpScale:.004}:{})}),slate:make(mix(p.frame,'#a5aaa1',.34),.84,{map:tileMap}),
     frame:make(p.frame,.48,{metalness:.15}),dark:make('#303938',.4),blackGlass:make('#182628',.17,{metalness:.42}),steel:make('#bcbab0',.27,{metalness:.73}),bronze:make('#a18356',.32,{metalness:.62}),
-    cabinet:make(current?'#9b9d87':mix(p.accent,p.edge,.4),interiorRecipe.cabinet==='gloss'?.20:.51),fabric:make(p.fabric,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:interiorRecipe.upholstery==='boucle'?.012:.004}:{})}),accent:make(p.accent,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:.004}:{})}),
-    linen:make('#f5ecdb',.93,{map:linen}),duvet:make(mix(p.fabric,p.accent,.21),.92,{map:linen}),rug:make(mix(p.edge,p.accent,.15),.99,{map:map(weave(true))}),
+    cabinet:make(current?'#9b9d87':mix(p.accent,p.edge,.4),interiorRecipe.cabinet==='gloss'?.20:.51),fabric:physical(p.fabric,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:interiorRecipe.upholstery==='boucle'?.012:.004}:{})}),accent:physical(p.accent,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:.004}:{})}),
+    linen:physical('#f5ecdb',.93,{map:linen}),duvet:physical(mix(p.fabric,p.accent,.21),.92,{map:linen}),rug:make(mix(p.edge,p.accent,.15),.99,{map:map(weave(true))}),
     painted:make('#f5f4eb',.58,coastal?{map:wallMap,bumpMap:wallMap,bumpScale:.002}:{}),lampShade:make('#f4eddb',.92,{map:linen,side:THREE.DoubleSide,emissive:'#e8dec7',emissiveIntensity:.08}),
-    ceramic:make('#fcf9eb',.2,{metalness:.035}),water:make('#a8c6bf',.12,{metalness:.17}),glass:make('#accac4',.11,{transparent:true,opacity:.19,depthWrite:false,metalness:.11,side:THREE.DoubleSide}),
+    ceramic:physical('#fcf9eb',.2,{metalness:0,clearcoat:.22,clearcoatRoughness:.12}),water:make('#a8c6bf',.12,{metalness:.17}),glass:physical('#eef8f7',.06,{transparent:true,opacity:.14,depthWrite:false,metalness:0,ior:1.5,reflectivity:.5,side:THREE.DoubleSide}),
     leaf:make('#52694c',.8),leafLight:make('#829573',.76),pot:make(mix(p.accent,'#ca9378',.43),.8),paper:make('#e5dcc4'),art:make('#ffffff',.8,{map:map(artwork(p))}),
     glow:make(p.light,.5,{emissive:p.light,emissiveIntensity:.55}),addition:make('#539a80'),removed:make('#c35844'),
     concrete:make('#aca99d',.94,{map:stoneMap}),brick:make('#aa8169',.93,{map:tileMap}),plinth:make('#5b635b',.88),
     brickFloor:make('#a36d4f',.96,{map:map(brickPaving())}),earth:make('#74634e',1,{map:stoneMap}),
-    cane:make(mix(p.wood,'#dcc099',.40),.82,{map:linen,bumpMap:linen,bumpScale:.008}),lacquer:make(p.accent,.16,{metalness:.1}),
+    cane:make(mix(p.wood,'#dcc099',.40),.82,{map:linen,bumpMap:linen,bumpScale:.008}),lacquer:physical(p.accent,.22,{metalness:0,clearcoat:.85,clearcoatRoughness:.10}),
     spaWater:make('#83cbd1',.11,{metalness:.03,transparent:true,opacity:.58,depthWrite:false}),spaGlow:make('#7bdde9',.3,{emissive:'#45d7ed',emissiveIntensity:.85}),bubbles:make('#d9ffff',.12,{transparent:true,opacity:.73,depthWrite:false}),
   };
   if(!current&&!timberFloors.includes(interiorRecipe.floor))m.floor=make(mix(p.surface,'#e8e0d2',.12),['resin','terrazzo'].includes(interiorRecipe.floor)?.35:.77,{map:floorMap,bumpMap:floorMap,bumpScale:interiorRecipe.floor==='terracotta'?.012:.004});
+  // Diffuse colour is paint/grain/stain, not height. Replace the former sRGB
+  // colour-as-bump shortcut with independent linear microsurface channels.
+  const channelCache=new Map();
+  const channels=(kind,source,scale=.22)=>{
+    const repeat=source?.repeat?.toArray()||[1,1],key=kind+'/'+repeat.join('/');
+    if(!channelCache.has(key)){
+      const pixels=exteriorSurfacePixels(kind,128,{seams:false}),entry={};
+      for(const [name,data] of [['normalMap',pixels.normals],['roughnessMap',pixels.roughness]]){
+        const texture=new THREE.DataTexture(data,pixels.size,pixels.size,THREE.RGBAFormat);
+        texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;
+        texture.magFilter=THREE.LinearFilter;texture.generateMipmaps=true;texture.colorSpace=THREE.NoColorSpace;
+        texture.repeat.set(...repeat);texture.needsUpdate=true;entry[name]=map(texture);
+      }
+      channelCache.set(key,entry);
+    }
+    return {...channelCache.get(key),normalScale:new THREE.Vector2(scale,scale),bumpMap:null};
+  };
+  for(const material of Object.values(m))if(material.bumpMap){
+    Object.assign(material,channels(material===m.fabric||material===m.accent?interiorRecipe.upholstery==='boucle'?'boucle':'linen':
+      [m.wood,m.oak,m.boards,m.cane].includes(material)?'oak':'smooth-render',material.map));
+  }
+  const photographic=(material,asset,options={})=>{
+    if(svgMode)return;
+    const owned=applyPhotographicSurface(material,asset,options);if(owned)maps.push(...owned);
+  };
+  for(const material of [m.wood,m.oak])photographic(material,'wood',{normalStrength:.45});
+  const cloth=['linen','woven','canvas','washed-linen','fine'].includes(interiorRecipe.upholstery);
+  for(const material of [m.fabric,m.accent,m.linen,m.duvet]){
+    material.sheen=interiorRecipe.upholstery==='leather'?0:interiorRecipe.upholstery==='velvet'?.65:.35;
+    material.sheenColor.copy(material.color);material.sheenRoughness=.8;
+    if(cloth)photographic(material,'linen',{normalStrength:.40});
+  }
+  if(!['wood','brick'].includes(interiorRecipe.wallSurface))photographic(m.wall,'plaster',{
+    normalStrength:['plain','smooth','eggshell'].includes(interiorRecipe.wallSurface)?.09:.27});
+  photographic(m.ceiling,'plaster',{normalStrength:.06});
+  if(timberFloors.includes(interiorRecipe.floor)&&!parquetFloor){
+    const scale=interiorRecipe.floor==='wide-boards'?.72:interiorRecipe.floor==='narrow-boards'?1.55:1;
+    photographic(m.boards,'floor',{normalStrength:.35,repeat:[.5*scale,.5*scale]});
+  }
+  if(['marble','honed-stone','travertine'].includes(interiorRecipe.wetFloor))photographic(m.tiles,'stone',{normalStrength:.35});
   const architecturalFloor=m.floor||m.boards;
-  return {m,style,interiorRecipe,architecturalFloor,dispose(){for(const mat of new Set(Object.values(m)))mat.dispose();for(const t of maps)t.dispose();}};
+  return {m,style,interiorRecipe,architecturalFloor,dispose(){for(const mat of new Set(Object.values(m)))mat.dispose();for(const t of new Set(maps))t.dispose();}};
 }
 
 /** Low-frequency sky and two bright panels provide soft reflections on brass,
