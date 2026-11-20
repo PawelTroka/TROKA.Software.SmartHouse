@@ -325,7 +325,7 @@ export function createScene(container, data, callbacks = {}) {
   standard('metal', '#343f3b', { roughness: 0.6, metalness: 0.3 });
   standard('glass', '#94c6c3', { transparent: true, opacity: 0.13, roughness: 0.15, depthWrite: false });
   const waterOptions={roughness:.14,metalness:0,ior:1.333,
-    transparent:!svgMode,depthWrite:svgMode,side:THREE.DoubleSide,envMapIntensity:1.1,
+    transparent:!svgMode,depthWrite:svgMode,side:svgMode?THREE.DoubleSide:THREE.FrontSide,envMapIntensity:1.1,
     ...(textures?{normalMap:textures.waterNormal,normalScale:new THREE.Vector2(.72,.72)}:{}),
     forceSinglePass:true,};
   mat.water=new THREE.MeshPhysicalMaterial({color:'#579a91',opacity:svgMode?1:.62,...waterOptions});
@@ -490,7 +490,6 @@ export function createScene(container, data, callbacks = {}) {
     let m = material;
     if (vertexColors) {
       m = material.clone();
-      m.color.set('#ffffff');
       m.vertexColors = true;
       m.userData.transient = true;
     }
@@ -1327,7 +1326,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     requestRender();
   }
-  controls.addEventListener('change',requestRender);
+  controls.addEventListener('change',cameraInteraction);
   controls.addEventListener('start',cameraInteraction);
   controls.addEventListener('end',cameraInteraction);
 

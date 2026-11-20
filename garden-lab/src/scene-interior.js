@@ -25,7 +25,7 @@ export function createInteriorScene(container,callbacks={}) {
   orbit.enableDamping=true;orbit.dampingFactor=.13;orbit.minPolarAngle=.06;orbit.maxPolarAngle=Math.PI*.475;orbit.minDistance=4.2;orbit.maxDistance=57;
   const sky=new THREE.HemisphereLight(0xe9f1ff,0xa8997f,.62);world.add(sky);
   const sun=new THREE.DirectionalLight(0xffeed2,2.35);sun.castShadow=true;sun.shadow.camera.near=.1;sun.shadow.camera.far=47;Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12});sun.shadow.bias=-.00020;sun.shadow.normalBias=.014;world.add(sun,sun.target);
-  const fill=new THREE.DirectionalLight(0xd5e6ed,.60);fill.position.set(0,7,12);world.add(fill);
+  const fill=new THREE.DirectionalLight(0xd5e6ed,.16);fill.position.set(0,7,12);world.add(fill);
   const lamp=new THREE.PointLight(0xffd39a,0,8,2);world.add(lamp);
   const shadowMat=new THREE.ShadowMaterial({opacity:.145,depthWrite:false}),shadow=new THREE.Mesh(new THREE.PlaneGeometry(130,130),shadowMat);shadow.rotation.x=-Math.PI/2;shadow.receiveShadow=true;world.add(shadow);
   const abort=new AbortController(),listen=(node,e,fn,options={})=>node.addEventListener(e,fn,{...options,signal:abort.signal});
@@ -125,8 +125,16 @@ export function createInteriorScene(container,callbacks={}) {
       });
       clear=walkGeometry({...plan,fixtures:[...plan.fixtures.filter(f=>f.kind!=='car'),...cars]});
     }
-    if(context?.lighting){const l=context.lighting;sun.color.setHex(l.sunColor);sun.intensity=l.sunIntensity;sky.color.setHex(l.skyColor);sky.groundColor.setHex(l.groundColor);sky.intensity=l.ambientIntensity;
+    if(context?.lighting){const l=context.lighting;sun.color.setHex(l.sunColor);sun.intensity=l.sunIntensity;sky.color.setHex(l.skyColor);sky.groundColor.setHex(l.groundColor);sky.intensity=l.ambientIntensity*(state.view==='room'?.52:1);
       sun.position.copy(sun.target.position).add(new THREE.Vector3(...l.sunDirection).multiplyScalar(20));}
+    // Indoor diffuse fill is bounded; otherwise the exterior sky illuminates
+    // every enclosed surface equally and erases material shape and contact.
+    const indoor=state.view==='room',environmentMaterials=new Set();
+    model.root.traverse(o=>{for(const material of Array.isArray(o.material)?o.material:[o.material]){
+      if(!material?.isMeshStandardMaterial||environmentMaterials.has(material))continue;
+      environmentMaterials.add(material);material.userData.interiorEnvIntensity??=material.envMapIntensity;
+      material.envMapIntensity=material.userData.interiorEnvIntensity*(indoor?.38:.75);
+    }});
     orbit.enabled=state.view!=='room';const room=!orbit.enabled;world.background=new THREE.Color(room&&context?.lighting?context.lighting.background:'#e5e6dc');world.backgroundBlurriness=0;shadow.visible=!room;pad.style.display=room?'grid':'none';
     canvas.style.cursor=room?'crosshair':'grab';resize();
     if(changedPlan||old.view!==state.view||(room&&old.roomId!==state.roomId))home();

@@ -121,7 +121,7 @@ function addPine(group, v, materials, svgMode, valid) {
     foliage.append(tip ? needleTip : pad, ([x, y, z]) => {
       // Deep inward notches and upturned, flattened branch fans interrupt the
       // smooth ball silhouette. Small tip fans replace each rounded outer pad.
-      const ruffle = (svgMode ? .76 : .61) + .14 * Math.sin(x * 10 + y * 4 + detail) * Math.cos(z * 9 - y * 6)
+      const ruffle = (svgMode ? .76 : .43) + .13 * Math.sin(x * 10 + y * 4 + detail) * Math.cos(z * 9 - y * 6)
         + .09 * Math.sin(z * 17 + x * 13 + detail);
       const u = x * size[0] * ruffle, w = z * size[2] * ruffle;
       return inside([(center[0] + u * cos - w * sin) * radii[0],
@@ -133,13 +133,13 @@ function addPine(group, v, materials, svgMode, valid) {
     });
     if (!svgMode && valid) {
       const project = ([x, y, z]) => inside([x * radii[0], y * radii[1], z * radii[2]]);
-      const sprays = tip ? 4 : 7;
+      const sprays = tip ? 7 : 12;
       for (let twig = 0; twig < sprays; twig++) {
         const az = angle + twig / sprays * TAU + (random() - .5) * .22;
         const start = [center[0] + Math.cos(az) * size[0] * .28,
           center[1] + (random() - .5) * size[1] * .24,
           center[2] + Math.sin(az) * size[2] * .28];
-        const reach = Math.max(size[0], size[2]) * (.58 + random() * .22);
+        const reach = Math.max(size[0], size[2]) * (.72 + random() * .22);
         leafSpray(foliage, start, reach * .72, reach, az, .08 + random() * .36, project, shade + .05);
       }
     }
@@ -271,14 +271,14 @@ function addConifer(group, v, materials, svgMode, valid) {
     branches.append(geometry, inside);
     geometry.dispose();
   };
-  const fan = new THREE.SphereGeometry(1, svgMode ? 5 : 8, svgMode ? 3 : 5);
+  const fan = new THREE.SphereGeometry(1, svgMode ? 5 : 6, 3);
   let fanCount = 0;
   const addFan = (center, size, angle, shade, sweep = 0) => {
     if (!v.foliageActive) return;
     fanCount++;
     const c = Math.cos(angle), s = Math.sin(angle), texturePhase = random() * TAU;
     foliage.append(fan, ([x, y, z]) => {
-      const edge = (svgMode ? .83 : .66) + .10 * Math.sin(x * 12 + z * 8 + texturePhase)
+      const edge = (svgMode ? .83 : .41) + .10 * Math.sin(x * 12 + z * 8 + texturePhase)
         + .06 * Math.cos(y * 15 - z * 11 + texturePhase);
       const u = x * size[0] * edge, w = z * size[2] * edge;
       return inside([center[0] + u * c - w * s,
@@ -288,12 +288,12 @@ function addConifer(group, v, materials, svgMode, valid) {
       const tone = shade + .12 * (y * .5 + .5) + .025 * x;
       return [tone * .96, tone, tone * (family === 'thuja' ? .86 : 1.03)];
     });
-    if (!svgMode && valid) for (let twig = 0; twig < 4; twig++) {
-      const az = angle + (twig - 1.5) * .43 + (random() - .5) * .12;
+    if (!svgMode && valid) for (let twig = 0; twig < 6; twig++) {
+      const az = angle + (twig - 2.5) * .43 + (random() - .5) * .18;
       const start = [center[0] + Math.cos(az) * size[0] * .24,
         center[1] - size[1] * .16, center[2] + Math.sin(az) * size[2] * .24];
-      const length = family === 'thuja' ? Math.max(size[1] * 1.55, Math.min(size[0], size[2]) * .75)
-        : Math.max(size[0], size[2]) * .75;
+      const length = family === 'thuja' ? Math.max(size[1] * 1.8, Math.min(size[0], size[2]) * .92)
+        : Math.max(size[0], size[2]) * .95;
       const width = family === 'thuja' ? Math.min(size[0], size[2]) * .92 : length * .55;
       const incline = family === 'thuja' ? 1.02 + random() * .30 : family === 'fir' ? .12 + random() * .22 : -.14 + random() * .20;
       leafSpray(foliage, start, width, length, az, incline, inside, shade + .04);
@@ -307,7 +307,7 @@ function addConifer(group, v, materials, svgMode, valid) {
     foliage.append(core, ([x, y, z]) => {
       const altitude = y + height / 2;
       const angle = Math.atan2(z, x);
-      const ruffle = .48 + .055 * Math.sin(altitude / height * 53 + angle * 3 + phase);
+      const ruffle = .31 + .055 * Math.sin(altitude / height * 53 + angle * 3 + phase);
       return inside([x * rx * ruffle, altitude, z * rz * ruffle]);
     }, ([, y]) => {
       const tone = .57 + .12 * (y / height + .5);
@@ -315,7 +315,9 @@ function addConifer(group, v, materials, svgMode, valid) {
     });
     core.dispose();
   }
-  const levels = svgMode ? (family === 'thuja' ? 8 : 7) : family === 'thuja' ? 17 : family === 'fir' ? 15 : 18;
+  const levels = svgMode ? (family === 'thuja' ? 8 : 7) : family === 'thuja' ?
+    Math.max(18,Math.min(28,Math.ceil(height/.35))) : family === 'fir' ?
+      Math.max(15,Math.min(22,Math.ceil(height/.42))) : Math.max(18,Math.min(22,Math.ceil(height/.39)));
   for (let level = 0; level < levels; level++) {
     const fraction = .025 + level / (levels - 1) * .925;
     const reach = 1 - fraction, levelY = fraction * height;

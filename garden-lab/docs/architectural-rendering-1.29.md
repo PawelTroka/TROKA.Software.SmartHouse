@@ -52,7 +52,7 @@ conflicts, remain applicable.
 ## Budgets and ownership
 
 - A representative 100 m, 4 m hedge uses 155 plants, four instanced draw calls
-  and 122,450 triangles.
+  and 367,392 triangles. Dense folded branchlets surround a recessed core.
 - Contact shading uses a reduced resolution and bounded sample count. Colour
   composition uses multisampling; tone mapping and display conversion occur once.
 - Pool reflection is limited to 1024 pixels on its longest edge and 650,000
@@ -66,7 +66,7 @@ conflicts, remain applicable.
 
 ## Verification
 
-The complete local geometry/state suite passes **681 tests**. The static build
+The complete local geometry/state suite passes **683 tests**. The static build
 and renderer-module import checks pass. Targeted checks cover measured bounds,
 foliage clearance, material ownership, asset hashes, UV invariants, the reflected
 camera/clip plane, shader-hook composition and rendering budgets.

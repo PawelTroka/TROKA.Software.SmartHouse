@@ -45,7 +45,7 @@ test('physical-water and garden-light shader hooks compose in either installatio
     assert.match(shader.fragmentShader,/reflectedLight\.indirectSpecular/);
     assert.match(shader.fragmentShader,/0\.02037/);
     assert.equal(material.normalMap,normal);assert.equal(material.opacity,.62);assert.equal(material.transparent,true);
-    assert.match(material.customProgramCacheKey(),/garden-planar-pool-v1/);
+    assert.match(material.customProgramCacheKey(),/garden-planar-pool-v2/);
     assert.match(material.customProgramCacheKey(),/garden-local-light-boundary-v1/);
   }
 });

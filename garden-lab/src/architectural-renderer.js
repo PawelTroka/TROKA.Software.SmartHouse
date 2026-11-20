@@ -56,10 +56,12 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     const draw=colorPass.render.bind(colorPass);
     colorPass.render=(...args)=>{draw(...args);sceneInfo={...renderer.info.render};};
     ao=new ArchitecturalAO(scene,camera,1,1,undefined,
-      {radius:interior?.38:.52,distanceExponent:1.4,thickness:interior?.45:.8,
-        distanceFallOff:.8,scale:1,samples:12,screenSpaceRadius:false},
-      {radius:5,depthPhi:2,normalPhi:4,samples:8});
-    ao.blendIntensity=interior?.48:.42;
+      // Seats and table tops are 0.4–0.8 m above the floor. A smaller radius
+      // never reaches their ground contact and leaves the furniture floating.
+      {radius:interior?.9:1.0,distanceExponent:1.35,thickness:interior?.9:1.25,
+        distanceFallOff:.7,scale:1.1,samples:12,screenSpaceRadius:false},
+      {radius:4,depthPhi:2,normalPhi:4,samples:8});
+    ao.blendIntensity=interior?.9:.82;
     ao.normalMaterial.side=THREE.DoubleSide;
     output=new OutputPass();
     composer.addPass(colorPass);composer.addPass(ao);composer.addPass(output);

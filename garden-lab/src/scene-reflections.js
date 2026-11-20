@@ -7,7 +7,7 @@ import * as THREE from '../vendor/three.module.js';
 // only on demand; it does not replace the pool with an opaque mirror shader.
 
 const UP = new THREE.Vector3(0, 1, 0);
-const CACHE_KEY = 'garden-planar-pool-v1';
+const CACHE_KEY = 'garden-planar-pool-v2';
 
 export function poolReflectionBudget(quality, width, height, {
   visible = true, interacting = false, maxTextureSize = 2048,
@@ -84,9 +84,11 @@ uniform vec2 poolReflectionTexel;
 varying vec4 vPoolReflectionPosition;
 varying float vPoolWorldHeight;`);
     shader.fragmentShader = replaceRequired(shader.fragmentShader, '#include <opaque_fragment>', `
-// Existing waves, sun highlights, basin colour and alpha remain in the PBR
-// water material. Replace its distant-environment specular with the reflected
-// scene at this plane, weighted by water's Schlick Fresnel (n = 1.333).
+// Replace the distant environment with the actual scene at this plane. The
+// surface becomes opaque at grazing angles: multiplying every reflected ray
+// by a constant alpha would leave the basin visible through a near-mirror.
+// Compose in premultiplied linear light, then return to ordinary alpha for the
+// existing transparent material. Normal incidence still reveals the basin.
 if ( poolReflectionEnabled > 0.5 && vPoolReflectionPosition.w > 0.0 ) {
   vec2 reflectionUv = vPoolReflectionPosition.xy / vPoolReflectionPosition.w;
   vec3 planeNormal = inverseTransformDirection( nonPerturbedNormal, viewMatrix );
@@ -104,8 +106,14 @@ if ( poolReflectionEnabled > 0.5 && vPoolReflectionPosition.w > 0.0 ) {
   reflectedScene += texture2D( poolReflectionTexture, sampleUv - vec2( 0.0, blur.y ) ).rgb * 0.15;
   float facing = saturate( dot( normal, normalize( vViewPosition ) ) );
   float fresnel = 0.02037 + 0.97963 * pow( 1.0 - facing, 5.0 );
-  outgoingLight = max( vec3(0.0), outgoingLight - coverage * reflectedLight.indirectSpecular ) +
-    coverage * fresnel * reflectedScene;
+  float reflectedOpacity = coverage * fresnel;
+  float waterOpacity = diffuseColor.a;
+  float composedOpacity = waterOpacity + ( 1.0 - waterOpacity ) * reflectedOpacity;
+  vec3 sunGlints = coverage * reflectedLight.directSpecular;
+  vec3 waterBody = max( vec3(0.0), outgoingLight - coverage * reflectedLight.indirectSpecular - sunGlints );
+  outgoingLight = ( waterBody * waterOpacity * ( 1.0 - reflectedOpacity ) +
+    sunGlints * waterOpacity + reflectedScene * reflectedOpacity ) / max( composedOpacity, 0.0001 );
+  diffuseColor.a = composedOpacity;
 }
 #include <opaque_fragment>`);
   };

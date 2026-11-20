@@ -16,7 +16,7 @@ function seeded(id) {
  * cached, but every material owns/disposes its own GPU texture. */
 function foliageAtlas(family) {
   if (!atlasPixels.has(family)) {
-    const size = 256, width = size * 2, pixels = new Uint8Array(width * size * 4);
+    const size = 512, width = size * 2, pixels = new Uint8Array(width * size * 4);
     const random = seeded('foliage-atlas:' + family);
     const paint = (x, y, alpha, color) => {
       const ix = Math.floor(x), iy = Math.floor(y);
@@ -38,49 +38,71 @@ function foliageAtlas(family) {
         }
       }
     };
+    // Match the interior and spray reflectance. Large dark capsules with pale
+    // cards pasted over them are less convincing than similarly coloured,
+    // overlapping branchlets whose separation comes from their actual normals.
     for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-      const n = random(), shade = 138 + n * 36 + Math.sin(x * .13 + y * .07) * 9;
+      const n = random(), shade = 185 + n * 22 + Math.sin(x * .17 + y * .11) * 5;
       const p = (y * width + x) * 4;
-      pixels.set([shade * .95, shade, shade * .87, 255], p);
+      pixels.set([shade * .97, shade, shade * .91, 255], p);
     }
-    // Opaque interior texture uses the same small needle scale as the cutouts.
-    for (let i = 0; i < 2200; i++) {
+    for (let i = 0; i < 4200; i++) {
       const x = random() * size, y = random() * size, a = random() * TAU;
-      const length = 3 + random() * 10, shade = 105 + random() * 95;
-      const endX = clamp(x + Math.cos(a) * length, 0, size - 2);
-      stroke(x, y, endX, y + Math.sin(a) * length, .38 + random() * .5, [shade * .94, shade, shade * .83]);
+      const length = 5 + random() * 17, shade = 169 + random() * 43;
+      stroke(x, y, clamp(x + Math.cos(a) * length, 0, size - 3), y + Math.sin(a) * length,
+        .6 + random() * .8, [shade * .97, shade, shade * .90]);
     }
-    const cx = size + size / 2;
-    stroke(cx, 245, cx - 3, 14, 1.7, [121, 124, 93]);
-    const needle = family === 'pine', tiers = needle ? 12 : 13;
+    const cx = size * 1.5, stemBottom = size * .955, stemTop = size * .065;
+    const needle = family === 'pine' || family === 'spruce' || family === 'fir';
+    const leafColour = shade => [shade * .97, shade, shade * .90];
+    const blade = (x, y, angle, length, radius, shade) => {
+      stroke(x, y, x + Math.cos(angle) * length, y + Math.sin(angle) * length,
+        radius, leafColour(shade));
+    };
+    // Compound, asymmetrical three-order sprays. Several short scale-leaf fans
+    // grow from each branchlet, rather than a single broad fern-shaped stamp.
+    stroke(cx, stemBottom, cx - size * .025, stemTop, 2.1, leafColour(176));
+    const tiers = needle ? 18 : 16;
     for (let tier = 0; tier < tiers; tier++) for (const side of [-1, 1]) {
-      const t = (tier + .5) / tiers, stemY = 230 - t * 197;
-      const reach = (needle ? 77 : 90) * Math.sin(Math.PI * (.13 + t * .8)) * (.9 + random() * .12);
-      const bx = cx + side * reach, by = stemY - (needle ? 26 : 32) - t * 9;
-      stroke(cx - t * 3, stemY, bx, by, 1.25, [139, 153, 116]);
-      const leafCount = needle ? 10 : 8;
-      for (let leaf = 0; leaf < leafCount; leaf++) {
-        const u = (leaf + .5) / leafCount, x = cx + side * reach * u, y = stemY + (by - stemY) * u;
-        const leafLength = (needle ? 21 : 13) * (1 - u * .35) * (.85 + random() * .3);
-        const shade = 164 + random() * 58;
+      const t = (tier + .4 + random() * .2) / tiers;
+      const stemY = stemBottom - t * (stemBottom - stemTop) * .95;
+      const stemX = cx - size * .025 * t;
+      const reach = size * (.32 + random() * .045) * Math.sin(Math.PI * (.08 + t * .86));
+      const rise = size * (.07 + t * .045 + random() * .025);
+      const bx = stemX + side * reach, by = stemY - rise;
+      stroke(stemX, stemY, bx, by, 1.6, leafColour(183 + random() * 15));
+      const shoots = needle ? 10 : 8;
+      for (let shoot = 0; shoot < shoots; shoot++) {
+        const u = (shoot + .55) / shoots;
+        const x = stemX + (bx - stemX) * u, y = stemY + (by - stemY) * u;
         for (const branchSide of [-1, 1]) {
-          const tipX = x + side * leafLength * (branchSide > 0 ? .88 : .25);
-          const tipY = y - leafLength * (branchSide > 0 ? .32 : .98);
-          stroke(x, y, tipX, tipY, needle ? .78 : 2.0, [shade * .94, shade, shade * .82]);
-          if (!needle) stroke(x + side * .7, y - 1, tipX - side * .7, tipY - .4, .5, [shade, Math.min(255, shade + 9), shade * .88]);
+          const direction = Math.atan2(-rise, side * reach) + branchSide * (.56 + random() * .22);
+          const branchLength = size * (.050 + random() * .025) * (1.08 - u * .37);
+          const tx = x + Math.cos(direction) * branchLength, ty = y + Math.sin(direction) * branchLength;
+          stroke(x, y, tx, ty, needle ? .8 : 1.15, leafColour(184 + random() * 17));
+          const leaves = needle ? 6 : 5;
+          for (let leaf = 0; leaf < leaves; leaf++) {
+            const f = (leaf + .35) / leaves;
+            const lx = x + (tx - x) * f, ly = y + (ty - y) * f;
+            const leafLength = size * (needle ? .024 : .015) * (.75 + random() * .4);
+            const shade = 190 + random() * 25;
+            for (const k of [-1, 1]) blade(lx, ly, direction + k * (needle ? 1.0 : .62),
+              leafLength * (1 - f * .25), needle ? .72 : 1.25, shade);
+          }
+          blade(tx,ty,direction,size*.015,needle?.7:1.3,202+random()*13);
         }
       }
     }
-    for (let i = 0; i < 7; i++) {
-      const y = 43 - i * 4, length = 10 - i * .8;
-      for (const side of [-1, 1]) stroke(cx - 3, y, cx - 3 + side * length * .45, y - length, needle ? .7 : 1.5, [201, 215, 176]);
+    for (let i = 0; i < 9; i++) {
+      const y = stemTop + size * .10 - i * size * .011, length = size * (.03 - i * .0022);
+      for (const side of [-1, 1]) blade(cx - size * .025, y,
+        -Math.PI / 2 + side * .48, length, needle ? .8 : 1.2, 202 + random() * 13);
     }
-    // Leave a transparent gutter around the spray to stop neighbouring atlas
-    // tiles leaking into alpha-tested edges under linear mip filtering.
-    for (let y = 0; y < size; y++) for (let x = size; x < size + 5; x++) pixels[(y * width + x) * 4 + 3] = 0;
+    // Transparent padding prevents another atlas tile leaking into mip edges.
+    for (let y = 0; y < size; y++) for (let x = size; x < size + 10; x++) pixels[(y * width + x) * 4 + 3] = 0;
     atlasPixels.set(family, pixels);
   }
-  const texture = new THREE.DataTexture(atlasPixels.get(family), 512, 256, THREE.RGBAFormat);
+  const texture = new THREE.DataTexture(atlasPixels.get(family), 1024, 512, THREE.RGBAFormat);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.minFilter = THREE.LinearMipmapLinearFilter;
@@ -117,61 +139,80 @@ export function createFoliageMaterial(base, family = 'thuja') {
 function hedgeSpecimen(variant, heightBand) {
   const random = seeded(`hedge:${variant}:${heightBand}`), phase = random() * TAU;
   const positions = [], normals = [], colors = [], uvs = [];
-  const profile = y => y < .08 ? .74 + y * 2.5 : y < .77 ? .94 - y * .06 : Math.max(.025, .90 * ((1 - y) / .23) ** .40);
-  const point = (y, a, extra = 0) => {
-    const irregular = .92 + .045 * Math.sin(a * 5 + y * 31 + phase) + .035 * Math.cos(a * 9 - y * 19);
-    const r = (profile(y) * irregular + extra);
-    return [Math.cos(a) * r, y, Math.sin(a) * r];
+  // A clipped hedge carries branch tips over its full width almost to the top.
+  // Individual rounded, full-height columns would produce an artificial picket
+  // silhouette. The small tapered tip region and variation are specimen-local.
+  const shoulder = .895 + variant * .011;
+  const profile = y => y < .075 ? .76 + y * 2.3 : y < shoulder ? .94 :
+    Math.max(.025, .94 * ((1 - y) / (1 - shoulder)) ** .55);
+  const limitPoint = p => {
+    const y = clamp(p[1],.003,.999), radius = Math.hypot(p[0],p[2]);
+    const maxR = Math.min(.999,profile(y) + .025);
+    const scale = Math.min(1,maxR / Math.max(radius,.0001));
+    return [p[0] * scale,y,p[2] * scale];
   };
   const vertex = (p, normal, uv, shade) => {
     positions.push(...p); normals.push(...normal); uvs.push(...uv);
-    colors.push(shade * .95, shade, shade * .89);
+    colors.push(shade * .98, shade, shade * .94);
   };
   const triangle = (points, ns, tex, shades) => points.forEach((p, i) => vertex(p, ns[i], tex[i], shades[i]));
-  const rings = 17, sides = 14;
-  for (let row = 0; row < rings; row++) for (let side = 0; side < sides; side++) {
-    const y0 = .006 + row / rings * .987, y1 = .006 + (row + 1) / rings * .987;
-    const a0 = side / sides * TAU, a1 = (side + 1) / sides * TAU;
-    const ps = [point(y0, a0), point(y0, a1), point(y1, a1), point(y1, a0)];
-    const ns = [a0, a1, a1, a0].map(a => [Math.cos(a), .1, Math.sin(a)]);
-    const shade = .61 + random() * .11;
-    const tex = [[.006, .03], [.492, .03], [.492, .96], [.006, .96]];
-    for (const indices of [[0, 2, 1], [0, 3, 2]]) triangle(indices.map(i => ps[i]), indices.map(i => ns[i]), indices.map(i => tex[i]), indices.map(i => shade + ps[i][1] * .08));
+  // A narrow, rough core sits behind several layers of foliage. It never owns
+  // the broad outer face, and cannot turn the hedge into a row of smooth tubes.
+  const corePoint = (y,a) => {
+    const irregular = .33 + .065 * Math.sin(a * 5 + y * 41 + phase) + .05 * Math.cos(a * 9 - y * 29);
+    const r = profile(y) * irregular;
+    return [Math.cos(a) * r,y,Math.sin(a) * r];
+  };
+  const rings = 10, sides = 10;
+  for (let row=0;row<rings;row++)for(let side=0;side<sides;side++){
+    const y0=.006+row/rings*.981,y1=.006+(row+1)/rings*.981;
+    const a0=side/sides*TAU,a1=(side+1)/sides*TAU;
+    const ps=[corePoint(y0,a0),corePoint(y0,a1),corePoint(y1,a1),corePoint(y1,a0)];
+    const ns=[a0,a1,a1,a0].map(a=>[Math.cos(a),.14,Math.sin(a)]);
+    const shade=.82+random()*.08, tex=[[.006,.03],[.492,.03],[.492,.96],[.006,.96]];
+    for(const indices of [[0,2,1],[0,3,2]])triangle(indices.map(i=>ps[i]),indices.map(i=>ns[i]),indices.map(i=>tex[i]),indices.map(()=>shade));
   }
-  const levels = Math.max(10, Math.min(28, Math.round(heightBand / .27)));
+  // Each compound branch is folded along its spine. Two differently oriented
+  // halves catch different light and reveal fine needle edges when seen obliquely.
+  const levels = Math.max(12,Math.min(48,Math.round(heightBand/.19)));
   let sprays = 0;
-  for (let tier = 0; tier < levels; tier++) {
-    const y = .025 + tier / Math.max(1, levels - 1) * .94;
-    const count = y > .88 ? 7 : 11;
-    for (let twig = 0; twig < count; twig++) {
-      const a = phase + tier * 2.399963 + twig / count * TAU + (random() - .5) * .16;
-      const centre = point(y, a, -.055);
-      const w = (.30 + random() * .16) * Math.max(.42, profile(y));
-      const h = (.23 + random() * .14) / heightBand;
-      const lean = .13 + random() * .17;
-      const tangent = [-Math.sin(a), 0, Math.cos(a)];
-      const radial = [Math.cos(a), 0, Math.sin(a)];
-      const n = [radial[0], -.12, radial[2]];
-      const corners = [[-.5, 0], [.5, 0], [.5, 1], [-.5, 1]].map(([u, v]) => {
-        const py = Math.min(.998, centre[1] + v * h);
-        const x = centre[0] + tangent[0] * u * w + radial[0] * v * lean;
-        const z = centre[2] + tangent[2] * u * w + radial[2] * v * lean;
-        const r = Math.hypot(x, z), limit = Math.min(1, profile(py) + .10);
-        return [x * Math.min(1, limit / Math.max(.001, r)), py, z * Math.min(1, limit / Math.max(.001, r))];
+  for (let tier=0;tier<levels;tier++) {
+    const nominalY=.015+tier/Math.max(1,levels-1)*.96;
+    const count=nominalY>.92?7:12;
+    for(let layer=0;layer<2;layer++)for(let twig=0;twig<count;twig++){
+      const y=clamp(nominalY+(random()-.5)*.13/heightBand,.005,.975);
+      const a=phase+tier*2.399963+twig/count*TAU+layer*.31+(random()-.5)*.23;
+      const radial=[Math.cos(a),0,Math.sin(a)],tangent=[-Math.sin(a),0,Math.cos(a)];
+      const radialStart=(layer===0?.38:.68)*profile(y)+random()*.045;
+      const center=[radial[0]*radialStart,y,radial[2]*radialStart];
+      const w=(.48+random()*.24)*Math.max(.32,profile(y));
+      const h=(.30+random()*.17)/heightBand;
+      const reach=(layer===0?.34:.24)*(1-y*.15);
+      const twist=(random()-.5)*.31;
+      const shade=.84+random()*.16;
+      const ps=[[-.5,0],[0,0],[.5,0],[-.5,1],[0,1],[.5,1]].map(([u,v])=>{
+        const along=v*reach,fold=(1-Math.abs(u)*2)*(.035+v*.035);
+        return limitPoint([center[0]+tangent[0]*(u*w+v*twist)+radial[0]*(along+fold),
+          center[1]+v*h+(u*twist*.12/heightBand),
+          center[2]+tangent[2]*(u*w+v*twist)+radial[2]*(along+fold)]);
       });
-      const tex = [[.510, .985], [.990, .985], [.990, .015], [.510, .015]];
-      const shade = .84 + random() * .16;
-      for (const indices of [[0, 1, 2], [0, 2, 3]]) triangle(indices.map(i => corners[i]), indices.map(() => n), indices.map(i => tex[i]), indices.map(() => shade));
+      const tex=[[.510,.985],[.750,.985],[.990,.985],[.510,.015],[.750,.015],[.990,.015]];
+      for(const indices of [[0,1,4],[0,4,3],[1,2,5],[1,5,4]]){
+        const side=indices[0]===0?-1:1;
+        const normal=new THREE.Vector3(radial[0]+tangent[0]*side*.28,.22,radial[2]+tangent[2]*side*.28).normalize().toArray();
+        triangle(indices.map(i=>ps[i]),indices.map(()=>normal),indices.map(i=>tex[i]),indices.map(i=>shade+(i>2?.025:0)));
+      }
       sprays++;
     }
   }
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-  geometry.computeBoundingBox(); geometry.computeBoundingSphere();
-  geometry.userData.sprayCount = sprays;
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
+  geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+  geometry.computeBoundingBox();geometry.computeBoundingSphere();
+  geometry.userData.sprayCount=sprays;
+  geometry.userData.recessedCoreRadius=.445;
   return geometry;
 }
 
@@ -209,15 +250,17 @@ export function createHedgeVegetation(segments, {
       const band = Math.max(2, Math.min(14, Math.ceil((height - 1e-6) / 2) * 2)), variant = i % 4;
       const key = `${band}:${variant}`, bucket = buckets.get(key) || {band, variant, plants: []};
       buckets.set(key, bucket);
+      const topVariation = .974 + .026 * Math.sin((i + 1) * 1.754 + a[0] * .41 + a[1] * .23) ** 2;
+      const widthVariation = .94 + .06 * Math.sin((i + 1) * 2.14 + a[0] * .28) ** 2;
       const matrix = new THREE.Matrix4().makeBasis(new THREE.Vector3(tx, 0, ty), new THREE.Vector3(0, 1, 0), new THREE.Vector3(-ty, 0, tx));
-      matrix.scale(new THREE.Vector3(along, h, radius * .88)); matrix.setPosition(x, ground, y);
+      matrix.scale(new THREE.Vector3(along * widthVariation, h * topVariation, radius * .88 * widthVariation)); matrix.setPosition(x, ground, y);
       bucket.plants.push({matrix, shade: .90 + .09 * Math.sin((i + 1) * 2.399963 + a[0] * .7 + a[1] * .4) ** 2});
       count++;
     }
   }
   if (!count) return group;
   const foliageMaterial = createFoliageMaterial(material, 'thuja');
-  foliageMaterial.color.set('#71845e');
+  foliageMaterial.color.set('#87986b');
   for (const {band, variant, plants} of buckets.values()) {
     const geometry = hedgeSpecimen(variant, band), mesh = new THREE.InstancedMesh(geometry, foliageMaterial, plants.length);
     mesh.name = `hedge-sprays-${band}-${variant}`;

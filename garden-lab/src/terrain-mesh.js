@@ -5,7 +5,6 @@ import { toWorld } from './orientation.js?v=1.29.0';
 // preserving clipped intersections, triangle winding, physical UVs and heights.
 export function terrainVertexBuffer(heightAt, vertexColors = false) {
   const positions = [], uvs = [], colors = [], indices = [], rows = new Map();
-  const baseColor = new THREE.Color('#91a36c');
   return {
     add(x, y) {
       let row = rows.get(y);
@@ -17,8 +16,10 @@ export function terrainVertexBuffer(heightAt, vertexColors = false) {
         positions.push(...toWorld(x, y, heightAt(x, y)));
         uvs.push(x / 2.5, y / 2.5);
         if (vertexColors) {
-          const variation = .92 + .08 * Math.sin(x * 2.31 + y * 1.27) * Math.cos(y * .63);
-          colors.push(baseColor.r * variation, baseColor.g * variation, baseColor.b * variation);
+          // The photographic material owns the actual grass colour. Vertices
+          // add only broad, subtle variation across the continuous terrain.
+          const variation = .96 + .04 * Math.sin(x * .31 + y * .27) * Math.cos(y * .13);
+          colors.push(variation, variation, variation);
         }
       }
       indices.push(index);

@@ -48,21 +48,22 @@ test('detailed hedges leave real access openings clear and respect terrain-depen
   }
 });
 
-test('a full perimeter batches botanical sprays with fewer triangles than the old ball clusters', () => {
+test('a full perimeter batches dense botanical sprays within the detailed geometry budget', () => {
   const group = make();
   assert.equal(group.userData.drawCalls,4);
   assert.ok(group.userData.plantCount > 150);
   let triangles = 0;
   for (const mesh of group.children) {
     triangles += mesh.count * mesh.geometry.attributes.position.count / 3;
-    assert.ok(mesh.geometry.userData.sprayCount >= 150);
+    assert.ok(mesh.geometry.userData.sprayCount >= 450);
+    assert.ok(mesh.geometry.userData.recessedCoreRadius < .5,'The opaque core must remain behind the visible compound branches');
     assert.ok(mesh.material.alphaTest > 0);
     assert.equal(mesh.material.transparent,false,'Cutouts should write stable depth and avoid transparency sorting');
     assert.equal(mesh.material.alphaToCoverage,true);
     assert.equal(mesh.material.map.wrapS,THREE.ClampToEdgeWrapping);
     assert.ok(mesh.geometry.boundingBox.max.y <= 1);
   }
-  assert.ok(triangles < 150000, `Perimeter foliage costs ${triangles} triangles`);
+  assert.ok(triangles < 400000, `Perimeter foliage costs ${triangles} triangles`);
   assert.equal(group.userData.analyticalScreen,false);
   assert.equal(make(spans,{svgMode:true}).children.length,0,'SVG retains its explicit fallback hedge planes');
   assert.equal(make(spans,{topAt:()=>2}).children.length,0,'A zero-height hedge creates no decorative blocking');

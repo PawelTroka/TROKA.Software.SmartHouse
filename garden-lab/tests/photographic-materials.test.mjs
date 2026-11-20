@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import * as THREE from '../vendor/three.module.js';
-import {MATERIAL_ASSETS,createPhotographicMaps,calibratePhotographicTint,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from '../src/material-assets.js';
+import {MATERIAL_ASSETS,createPhotographicMaps,calibratePhotographicTint,photographicReflectance,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from '../src/material-assets.js';
 import {exteriorSurfacePixels} from '../src/exterior-materials.js';
 
 // These are shipped runtime assets: a missing or corrupt map silently destroys
@@ -38,6 +38,21 @@ test('headless geometry imports never request images and palette calibration rem
   assert.deepEqual(material.userData.photographicTint.base,original.toArray());material.dispose();
 });
 
+test('photographic dark detail survives palette calibration while highlight reflectance remains physical',()=>{
+  for(const [name,spec] of Object.entries(MATERIAL_ASSETS)){
+    const dark=photographicReflectance(spec.mean.map(v=>v*.25),name);
+    const mean=photographicReflectance(spec.mean,name);
+    const bright=photographicReflectance(spec.mean.map(v=>Math.min(1,v*2)),name);
+    assert.ok(dark.every(v=>v>0&&v<.3),`${name} must retain dark pores/grain instead of a pale texture floor`);
+    assert.ok(mean.every(v=>Math.abs(v-.8)<1e-12),`${name} must remove the scan's original base dye`);
+    assert.ok(bright.every((v,i)=>v>mean[i]&&v<=1),`${name} must retain highlights without impossible diffuse reflectance`);
+    assert.deepEqual(photographicReflectance([0,0,0],name),[0,0,0]);
+  }
+  const wood=MATERIAL_ASSETS.wood;
+  const varied=photographicReflectance(wood.mean.map((v,i)=>v*[1.2,.9,.65][i]),'wood');
+  assert.ok(varied[0]>varied[1]&&varied[1]>varied[2],'Natural local timber hue variation must survive white balance');
+});
+
 test('metric texturing changes no vertices and accounts for actual instance scale without modifying shared geometry',()=>{
   const root=new THREE.Group(),shared=new THREE.BoxGeometry();shared.userData.sharedPrimitive=true;
   const before=Array.from(shared.attributes.position.array),originalUV=Array.from(shared.attributes.uv.array);
@@ -57,6 +72,19 @@ test('metric texturing changes no vertices and accounts for actual instance scal
   }
   assert.equal(projectArchitecturalMaterialUVs(root),0,'Repeating scene updates must not progressively alter UVs');
   a.geometry.dispose();b.geometry.dispose();shared.dispose();material.dispose();
+});
+
+test('the photographed lawn uses one physical tile instead of scaling metre UVs a second time',()=>{
+  const spec=MATERIAL_ASSETS.grass;
+  const material=new THREE.MeshStandardMaterial();material.userData.metricTexture=true;
+  const geometry=new THREE.PlaneGeometry(...spec.meters);
+  const lawn=new THREE.Mesh(geometry,material);lawn.rotation.x=-Math.PI/2;lawn.position.set(12,.3,-8);
+  projectArchitecturalMaterialUVs(lawn);
+  const {uv}=geometry.attributes,u=[],v=[];
+  for(let i=0;i<uv.count;i++){u.push(uv.getX(i));v.push(uv.getY(i));}
+  assert.ok(Math.abs((Math.max(...u)-Math.min(...u))/spec.meters[0]-1)<1e-6);
+  assert.ok(Math.abs((Math.max(...v)-Math.min(...v))/spec.meters[1]-1)<1e-6);
+  geometry.dispose();material.dispose();
 });
 
 test('procedural finish fallback has an independent, nonconstant linear roughness channel',()=>{

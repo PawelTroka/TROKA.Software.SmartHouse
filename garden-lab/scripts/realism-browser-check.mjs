@@ -44,6 +44,9 @@ async function waitForAssets(){
 async function open(style,before=false,extra=''){
   await page.goto(base+(before?'/baseline/':'/current/')+'?site=sternicza-11#v=28&site=sternicza-11&designStyle='+style+'&styleHouseFinish=true&showDimensions=false&renderQuality=high'+extra,{waitUntil:'networkidle'});
   await page.locator('#loading').waitFor({state:'hidden',timeout:90000});
+  // The app intentionally opens an active garage study at the front entrance.
+  // The comparison needs the rear garden overview shown in the user's request.
+  if(!extra.includes('mode=eye'))await page.locator('button[data-mode="orbit"]').click();
   await page.locator('#scene-host').scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>Number(document.querySelector('#render-diagnostics')?.dataset.frames)>0);
   if(!before){await waitForAssets();await page.waitForFunction(()=>document.querySelector('#render-diagnostics')?.dataset.contactShading==='true');}
@@ -52,12 +55,13 @@ async function open(style,before=false,extra=''){
 try{
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,
     args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--disable-dev-shm-usage']});
-  const context=await browser.newContext({viewport:{width:1540,height:1100},deviceScaleFactor:1,reducedMotion:'reduce',acceptDownloads:true});
+  const context=await browser.newContext({viewport:{width:1540,height:1100},deviceScaleFactor:1.5,reducedMotion:'reduce',acceptDownloads:true});
   page=await context.newPage();page.setDefaultTimeout(45000);
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text());});
   if(baseline){
     await open('hidden-bali',true);await screenshot('before-bali-overview');
     await page.locator('[data-mode="eye"]').click();await page.locator('[data-preset="terrace"]').click();await screenshot('before-bali-terrace');
+    await open('hidden-bali',true,'&mode=eye&preset=garden&lookYaw=180&lookPitch=0&fov=60');await screenshot('before-bali-garden-house');
   }
   for(const style of ['hidden-bali','coastal','modern-minimal']){
     await open(style);await screenshot('after-'+style+'-overview');
@@ -66,6 +70,8 @@ try{
     if(style==='hidden-bali'){
       await page.locator('[data-mode="eye"]').click();await page.locator('[data-preset="terrace"]').click();await screenshot('after-bali-terrace');
       await page.locator('[data-preset="pool"]').click();await screenshot('after-bali-pool');
+      report.pool=await diagnostics();assert.equal(report.pool.poolReflections,'true','Swimming-eye reflection must be active');
+      await open('hidden-bali',false,'&mode=eye&preset=garden&lookYaw=180&lookPitch=0&fov=60');await screenshot('after-bali-garden-house');
     }
   }
   check('Bali, Coastal and Modern render photographic materials, contact shading and both cars');

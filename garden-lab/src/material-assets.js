@@ -3,18 +3,43 @@ import * as THREE from '../vendor/three.module.js';
 // Original 1K PBR files from Poly Haven, vendored for offline/self-hosted use.
 // See assets/materials/manifest.json for source URLs, authors, exact hashes and
 // measured dimensions. These are representative finishes, not site photographs.
-const asset=(id,meters,mean)=>Object.freeze({id,meters:Object.freeze(meters),mean:Object.freeze(mean)});
+const asset=(id,meters,mean,{contrast=1,chroma=.4}={})=>Object.freeze({id,meters:Object.freeze(meters),mean:Object.freeze(mean),contrast,chroma});
 export const MATERIAL_ASSETS=Object.freeze({
-  wood:asset('fine_grained_wood',[.600000024,.600000024],[.055045,.0302896,.0154847]),
-  grass:asset('grass_ground',[2.50999999,2.50999999],[.1581314,.1190771,.0492145]),
-  linen:asset('rough_linen',[.270708139,.271299988],[.2868386,.4099622,.6156103]),
-  plaster:asset('white_stucco',[1.998062968,1.998064041],[.6801998,.6513028,.6294243]),
-  stone:asset('marble_01',[1.5,1.5],[.4430806,.3379491,.1944884]),
-  floor:asset('wood_floor_worn',[1.999999642,1.999999642],[.2533258,.0996638,.0288337]),
+  wood:asset('fine_grained_wood',[.600000024,.600000024],[.055045,.0302896,.0154847],{chroma:.55}),
+  grass:asset('grass_ground',[2.50999999,2.50999999],[.1581314,.1190771,.0492145],{contrast:1.1,chroma:.7}),
+  linen:asset('rough_linen',[.270708139,.271299988],[.2868386,.4099622,.6156103],{contrast:.8,chroma:.08}),
+  plaster:asset('white_stucco',[1.998062968,1.998064041],[.6801998,.6513028,.6294243],{contrast:.9,chroma:.1}),
+  stone:asset('marble_01',[1.5,1.5],[.4430806,.3379491,.1944884],{chroma:.35}),
+  floor:asset('wood_floor_worn',[1.999999642,1.999999642],[.2533258,.0996638,.0288337],{chroma:.5}),
 });
 const sources=new Map(),listeners=new Set();
 const canLoad=()=>typeof document!=='undefined'&&typeof document.createElementNS==='function';
 const srgb=x=>x<=.0031308?12.92*x:1.055*Math.pow(x,1/2.4)-.055;
+const linearBytes=Float64Array.from({length:256},(_,i)=>{
+  const c=i/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);
+});
+const neutralReflectance=.8;
+const luminance=rgb=>.2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];
+
+/** Keep the measured grain, pores and grass/soil variation in linear light.
+ * The material supplies its authored average pigment instead of multiplying
+ * that pigment by a second brown/blue scan. Only highlights have a soft shoulder;
+ * dark photographic detail is not raised to a pale minimum. Residual chroma
+ * preserves natural per-pixel variation without inheriting a scan's base dye.
+ * A bounded map and a bounded calibrated pigment keep diffuse reflectance <=1.
+ */
+export function photographicReflectance(rgb,name,out=[0,0,0]){
+  const spec=typeof name==='string'?MATERIAL_ASSETS[name]:name;
+  const relativeLuminance=luminance(rgb)/luminance(spec.mean);
+  const value=neutralReflectance*Math.pow(Math.max(0,relativeLuminance),spec.contrast);
+  for(let c=0;c<3;c++){
+    const chroma=relativeLuminance>1e-10?rgb[c]/spec.mean[c]/relativeLuminance:1;
+    const reflectance=Math.max(0,value*(1+spec.chroma*(chroma-1)));
+    out[c]=reflectance<=neutralReflectance?reflectance:
+      neutralReflectance+(1-neutralReflectance)*(1-Math.exp(-(reflectance-neutralReflectance)/(1-neutralReflectance)));
+  }
+  return out;
+}
 export function onSurfaceAssetsChanged(callback){listeners.add(callback);return()=>listeners.delete(callback);}
 const notify=()=>{for(const listener of listeners)listener();};
 export function surfaceAssetDiagnostics(){
@@ -35,16 +60,16 @@ function getSource(asset,channel){
   sources.set(file,record);
   new THREE.ImageLoader().load(new URL(`../assets/materials/${file}`,import.meta.url).href,image=>{
     if(channel==='diffuse'){
-      // Compress the photographed linear-light variation into a bounded neutral
-      // reflectance field before applying the chosen palette. This preserves
-      // pores/grain without multiplying two browns or overexposing pale cloth.
+      // White-balance the photograph around its measured mean, retaining dark
+      // texture detail and restrained natural colour variation for the palette.
       const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;
       const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(image,0,0);
       const pixels=context.getImageData(0,0,canvas.width,canvas.height);
-      for(let i=0;i<pixels.data.length;i+=4)for(let channel=0;channel<3;channel++){
-        const c=pixels.data[i+channel]/255,linear=c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);
-        const reflectance=.80+.17*Math.tanh((linear/asset.mean[channel]-1)*1.6);
-        pixels.data[i+channel]=Math.round(srgb(reflectance)*255);
+      const rgb=[0,0,0],reflectance=[0,0,0];
+      for(let i=0;i<pixels.data.length;i+=4){
+        for(let c=0;c<3;c++)rgb[c]=linearBytes[pixels.data[i+c]];
+        photographicReflectance(rgb,asset,reflectance);
+        for(let c=0;c<3;c++)pixels.data[i+c]=Math.round(srgb(reflectance[c])*255);
       }
       context.putImageData(pixels,0,0);record.source.data=canvas;
     }else record.source.data=image;
@@ -85,7 +110,7 @@ export function createPhotographicMaps(name,{repeat,anisotropy=8}={}){
   return maps;
 }
 
-/** The loaded diffuse scan has bounded variation around 0.8 in linear light.
+/** A sample at the scan's measured mean maps to 0.8 in linear light.
  * Cap diffuse pigment reflectance at 0.8, so even the brightest photo sample
  * remains below one after the selected palette is applied. Metallic surfaces
  * do not use this calibration. Normal and roughness maps remain untouched. */
@@ -94,7 +119,8 @@ export function calibratePhotographicTint(material,name){
   const previous=material.userData.photographicTint;
   const base=material.color.clone();
   if(previous&&material.color.toArray().every((v,i)=>Math.abs(v-previous.scaled[i])<1e-9))base.fromArray(previous.base);
-  material.color.setRGB(Math.min(.8,base.r)/.8,Math.min(.8,base.g)/.8,Math.min(.8,base.b)/.8);
+  material.color.setRGB(Math.min(neutralReflectance,base.r)/neutralReflectance,
+    Math.min(neutralReflectance,base.g)/neutralReflectance,Math.min(neutralReflectance,base.b)/neutralReflectance);
   material.userData.photographicTint={base:base.toArray(),scaled:material.color.toArray()};
 }
 
