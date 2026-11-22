@@ -2,19 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.29.0">
+  <meta name="application-version" content="1.30.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
   <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
   <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.29.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.29.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.29.0">
-  <link rel="stylesheet" href="./src/privacy.css?v=1.29.0">
-  <link rel="stylesheet" href="./src/garage.css?v=1.29.0">
-  <link rel="stylesheet" href="./src/studio.css?v=1.29.0">
-  <link rel="stylesheet" href="./src/interior.css?v=1.29.0">
+  <link rel="stylesheet" href="./style.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/privacy.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/garage.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/studio.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/interior.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/neighborhood.css?v=1.30.0">
+  <link rel="stylesheet" href="./src/sea.css?v=1.30.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
@@ -128,6 +130,13 @@
         <p id="style-status" class="sr-only" role="status" aria-live="polite"></p>
       </section>
       <nav class="workspace-jumps" aria-label="Workspace sections"><a href="#viewer">View</a><a href="#design-controls">Adjust design</a><a href="#design-checks">Design checks</a></nav>
+      <section class="neighborhood-controls" id="neighborhood-controls" aria-label="Existing neighbourhood" hidden>
+        <div class="neighborhood-heading"><div><span class="eyebrow">THE REAL SURROUNDINGS</span><h3>Around Sternicza</h3></div><span id="neighborhood-tree-count" class="neighborhood-source-badge">Loading canopy data…</span></div>
+        <p>Existing trees from the 2024 laser scan, with nearby façades reconstructed from your reference views.</p>
+        <div class="neighborhood-options"><label><input type="checkbox" id="existingVegetation" checked> Show existing trees</label><label><input type="checkbox" id="existingCanopyAnalysis" checked> Include crowns in privacy &amp; shade</label><label for="existingLeafMode">Existing foliage<select id="existingLeafMode"><option value="auto">Follow season</option><option value="summer">Leaf-on comparison</option><option value="winter">Leaf-off comparison</option></select></label></div>
+        <p class="neighborhood-status" id="existing-nature-status" role="status" aria-live="polite"></p>
+        <details><summary>What is measured?</summary><p>Canopy positions, heights and extents come from classified laser returns. A group may contain several trees. Stems, branches, seasonal foliage and detailed façade arrangements are reconstructed; concealed windows and species are not established by these measurements. The leaf-on comparison uses dense crown envelopes. Leaf-off crowns provide no opaque foliage screening.</p><p><a href="./data/sternicza-surrounding-nature.json" target="_blank" rel="noopener noreferrer">Canopy sources &amp; acquisition dates ↗</a> · <a href="./data/sternicza-appearance-observations.json" target="_blank" rel="noopener noreferrer">Façade observations ↗</a></p></details>
+      </section>
       <div class="viewer-card" id="viewer">
         <div class="interior-entry" id="interior-entry" hidden><div><strong>Step inside Sternicza 11</strong><span>Original drawings · your renovation · furnished rooms</span></div><button class="button primary" id="interior-enter" type="button">Explore interiors →</button></div>
         <div class="viewer-toolbar"><div class="mode-tabs" role="group" aria-label="View mode"><button data-mode="orbit" aria-pressed="true">3D model</button><button data-mode="eye" aria-pressed="false">Eye level</button><button data-mode="plan" aria-pressed="false">Plan</button><button data-mode="section" aria-pressed="false">Sightline</button><button data-mode="sun" aria-pressed="false">Sun &amp; shade</button></div><div class="viewer-toggles"><label class="ray-toggle"><input id="showDimensions" type="checkbox" checked> Dimensions</label><label class="ray-toggle"><input id="showRays" type="checkbox"> Show rays</label></div></div>
@@ -155,6 +164,7 @@
           </div></details>
         </section>
       </div>
+      <section id="sea-view-panel" hidden aria-label="Sea-view height simulation"></section>
       <section class="privacy-shortcuts" id="privacy-shortcuts" aria-label="Compare screening structures">
         <div><span class="eyebrow">NEW VIEW OPTIONS</span><strong>Screen PCK3 from the places you use.</strong></div>
         <div class="privacy-quick-buttons" role="group" aria-label="Quick privacy comparisons"><button type="button" data-privacy-preset="spa" aria-pressed="false">Spa canopy + screens</button><button type="button" data-privacy-preset="pergola" aria-pressed="false">Planted pergola</button><button type="button" data-privacy-preset="layered" aria-pressed="false">Combine both</button><button type="button" data-privacy-preset="none" aria-pressed="true">Off</button><button id="privacy-edit" class="text-button" type="button">Details &amp; dimensions ↗</button></div>
@@ -206,7 +216,7 @@
   <dialog id="style-dialog" class="style-dialog" aria-labelledby="style-dialog-title"><div class="style-dialog-heading"><div><span class="eyebrow">A DIFFERENT WAY TO LIVE</span><h2 id="style-dialog-title">Find your property’s character.</h2><p>Explore 20 complete renovation concepts for your home and garden.</p></div><button id="style-close" class="button subtle" type="button" aria-label="Close design styles">×</button></div><div class="style-filters"><label for="style-search">Find a style<input id="style-search" type="search" placeholder="Bali, Japandi, stone, timber…" autocomplete="off"></label><label for="style-family">Design family<select id="style-family"><option value="">All families</option></select></label><span id="style-result-count" role="status"></span></div><div class="style-grid" id="style-grid"></div><p id="style-empty" hidden>No matching design. Try another word or choose All families.</p><p class="style-gallery-note">Material boards introduce each concept. Select a style to change furniture forms, interior details, textures, façades and outdoor furnishings. Current house restores the original layout. The renovated terrace and balcony are shared between both views; planting and dimensions remain editable.</p></dialog>
   <dialog id="about" aria-label="Model and sources"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.29.0"></script>
+  <script type="module" src="./src/app.js?v=1.30.0"></script>
 <div id="interior-host" hidden></div>
 </body>
 </html>

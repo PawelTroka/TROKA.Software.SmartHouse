@@ -67,8 +67,8 @@ export function treeSectionMarkup(volumes, {origin, direction, minS, maxS, X, Y,
     const colour = v.plantable === false ? '#ac664e' : '#54744c';
     const along = (v.x - origin[0]) * direction[0] + (v.y - origin[1]) * direction[1];
     const lateral = Math.abs((v.x - origin[0]) * direction[1] - (v.y - origin[1]) * direction[0]);
-    const trunk = lateral <= v.trunkRadius && along >= minS && along <= maxS
+    const trunk = v.trunkRadius > 0 && lateral <= v.trunkRadius && along >= minS && along <= maxS
       ? `<line x1="${X(along)}" x2="${X(along)}" y1="${Y(v.groundZ)}" y2="${Y(v.trunkTopZ ?? v.crownBottomZ)}" stroke="#80684b" stroke-width="${Math.max(1, v.trunkRadius * 2 * scale)}"/>` : '';
-    return `<g><title>${esc(v.type?.label || 'Screening tree')} — crown cross-section${active ? '' : ', no foliage screening'}</title>${trunk}<polygon points="${points.map(p => p.join(',')).join(' ')}" fill="${colour}" fill-opacity="${active ? '.38' : '.04'}" stroke="${colour}" stroke-width="1.3"${active ? '' : ' stroke-dasharray="3 3"'}/></g>`;
+    return `<g><title>${esc(v.type?.label || v.label || 'Screening tree')} — crown cross-section${active ? '' : ', no foliage screening'}</title>${trunk}<polygon points="${points.map(p => p.join(',')).join(' ')}" fill="${colour}" fill-opacity="${active ? '.38' : '.04'}" stroke="${colour}" stroke-width="1.3"${active ? '' : ' stroke-dasharray="3 3"'}/></g>`;
   }).join('');
 }

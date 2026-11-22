@@ -1,0 +1,4833 @@
+{
+ "currentVersion": 11.5,
+ "cimVersion": "3.5.0",
+ "id": 0,
+ "name": "Drzewa",
+ "type": "Feature Layer",
+ "description": "",
+ "geometryType": "esriGeometryPoint",
+ "sourceSpatialReference": {
+  "wkid": 2177,
+  "latestWkid": 2177,
+  "xyTolerance": 0.001,
+  "zTolerance": 0.001,
+  "mTolerance": 0.001,
+  "falseX": 877300,
+  "falseY": -10001300,
+  "xyUnits": 10000,
+  "falseZ": -100000,
+  "zUnits": 10000,
+  "falseM": 0,
+  "mUnits": 1
+ },
+ "spatialReference": {
+  "wkid": 2177,
+  "latestWkid": 2177,
+  "xyTolerance": 0.001,
+  "zTolerance": 0.001,
+  "mTolerance": 0.001,
+  "falseX": 877300,
+  "falseY": -10001300,
+  "xyUnits": 10000,
+  "falseZ": -100000,
+  "zUnits": 10000,
+  "falseM": -100000,
+  "mUnits": 10000
+ },
+ "copyrightText": "",
+ "parentLayer": null,
+ "subLayers": [],
+ "minScale": 0,
+ "maxScale": 0,
+ "drawingInfo": {
+  "renderer": {
+   "type": "uniqueValue",
+   "field1": "status_drz",
+   "uniqueValueGroups": [
+    {
+     "heading": "Status drzewa",
+     "classes": [
+      {
+       "label": "Istniejące",
+       "description": "Istniejące",
+       "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [
+         39,
+         109,
+         51,
+         204
+        ],
+        "size": 7,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "outline": {
+         "color": [
+          255,
+          255,
+          255,
+          255
+         ],
+         "width": 1
+        }
+       },
+       "values": [
+        [
+         "Istniejące"
+        ]
+       ]
+      },
+      {
+       "label": "Nasadzenie",
+       "description": "Nasadzenie",
+       "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [
+         175,
+         134,
+         52,
+         204
+        ],
+        "size": 7,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "outline": {
+         "color": [
+          255,
+          255,
+          255,
+          255
+         ],
+         "width": 1
+        }
+       },
+       "values": [
+        [
+         "Nasadzenie"
+        ]
+       ]
+      },
+      {
+       "label": "Nasadzenie zastępcze",
+       "description": "Nasadzenie zastępcze",
+       "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [
+         171,
+         171,
+         116,
+         204
+        ],
+        "size": 7,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "outline": {
+         "color": [
+          255,
+          255,
+          255,
+          255
+         ],
+         "width": 1
+        }
+       },
+       "values": [
+        [
+         "Nasadzenie zastępcze"
+        ]
+       ]
+      },
+      {
+       "label": "Świadek",
+       "description": "Świadek",
+       "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [
+         17,
+         48,
+         15,
+         239
+        ],
+        "size": 7,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "outline": {
+         "color": [
+          255,
+          255,
+          255,
+          255
+         ],
+         "width": 1
+        }
+       },
+       "values": [
+        [
+         "Świadek"
+        ]
+       ]
+      }
+     ]
+    }
+   ],
+   "uniqueValueInfos": [
+    {
+     "symbol": {
+      "type": "esriSMS",
+      "style": "esriSMSCircle",
+      "color": [
+       39,
+       109,
+       51,
+       204
+      ],
+      "size": 7,
+      "angle": 0,
+      "xoffset": 0,
+      "yoffset": 0,
+      "outline": {
+       "color": [
+        255,
+        255,
+        255,
+        255
+       ],
+       "width": 1
+      }
+     },
+     "value": "Istniejące",
+     "label": "Istniejące"
+    },
+    {
+     "symbol": {
+      "type": "esriSMS",
+      "style": "esriSMSCircle",
+      "color": [
+       175,
+       134,
+       52,
+       204
+      ],
+      "size": 7,
+      "angle": 0,
+      "xoffset": 0,
+      "yoffset": 0,
+      "outline": {
+       "color": [
+        255,
+        255,
+        255,
+        255
+       ],
+       "width": 1
+      }
+     },
+     "value": "Nasadzenie",
+     "label": "Nasadzenie"
+    },
+    {
+     "symbol": {
+      "type": "esriSMS",
+      "style": "esriSMSCircle",
+      "color": [
+       171,
+       171,
+       116,
+       204
+      ],
+      "size": 7,
+      "angle": 0,
+      "xoffset": 0,
+      "yoffset": 0,
+      "outline": {
+       "color": [
+        255,
+        255,
+        255,
+        255
+       ],
+       "width": 1
+      }
+     },
+     "value": "Nasadzenie zastępcze",
+     "label": "Nasadzenie zastępcze"
+    },
+    {
+     "symbol": {
+      "type": "esriSMS",
+      "style": "esriSMSCircle",
+      "color": [
+       17,
+       48,
+       15,
+       239
+      ],
+      "size": 7,
+      "angle": 0,
+      "xoffset": 0,
+      "yoffset": 0,
+      "outline": {
+       "color": [
+        255,
+        255,
+        255,
+        255
+       ],
+       "width": 1
+      }
+     },
+     "value": "Świadek",
+     "label": "Świadek"
+    }
+   ],
+   "fieldDelimiter": ",",
+   "authoringInfo": {
+    "colorRamp": {
+     "type": "multipart",
+     "colorRamps": [
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        132,
+        196,
+        147,
+        255
+       ],
+       "toColor": [
+        132,
+        196,
+        147,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        53,
+        242,
+        91,
+        255
+       ],
+       "toColor": [
+        53,
+        242,
+        91,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        126,
+        247,
+        152,
+        255
+       ],
+       "toColor": [
+        126,
+        247,
+        152,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        64,
+        168,
+        83,
+        255
+       ],
+       "toColor": [
+        64,
+        168,
+        83,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        177,
+        250,
+        212,
+        255
+       ],
+       "toColor": [
+        177,
+        250,
+        212,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        57,
+        219,
+        103,
+        255
+       ],
+       "toColor": [
+        57,
+        219,
+        103,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        124,
+        230,
+        168,
+        255
+       ],
+       "toColor": [
+        124,
+        230,
+        168,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        137,
+        171,
+        145,
+        255
+       ],
+       "toColor": [
+        137,
+        171,
+        145,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        56,
+        199,
+        127,
+        255
+       ],
+       "toColor": [
+        56,
+        199,
+        127,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        72,
+        176,
+        124,
+        255
+       ],
+       "toColor": [
+        72,
+        176,
+        124,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        171,
+        214,
+        184,
+        255
+       ],
+       "toColor": [
+        171,
+        214,
+        184,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        70,
+        250,
+        157,
+        255
+       ],
+       "toColor": [
+        70,
+        250,
+        157,
+        255
+       ]
+      },
+      {
+       "type": "algorithmic",
+       "algorithm": "esriCIELabAlgorithm",
+       "fromColor": [
+        94,
+        168,
+        131,
+        255
+       ],
+       "toColor": [
+        94,
+        168,
+        131,
+        255
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "scaleSymbols": false,
+  "transparency": 0,
+  "labelingInfo": null
+ },
+ "defaultVisibility": true,
+ "extent": {
+  "xmin": "NaN",
+  "ymin": "NaN",
+  "xmax": "NaN",
+  "ymax": "NaN",
+  "zmin": null,
+  "zmax": null,
+  "spatialReference": {
+   "wkid": 2177,
+   "latestWkid": 2177,
+   "xyTolerance": 0.001,
+   "zTolerance": 0.001,
+   "mTolerance": 0.001,
+   "falseX": 877300,
+   "falseY": -10001300,
+   "xyUnits": 10000,
+   "falseZ": -100000,
+   "zUnits": 10000,
+   "falseM": -100000,
+   "mUnits": 10000
+  }
+ },
+ "hasAttachments": false,
+ "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+ "displayField": "nazwa_pl",
+ "typeIdField": null,
+ "subtypeFieldName": null,
+ "subtypeField": null,
+ "defaultSubtypeCode": null,
+ "fields": [
+  {
+   "name": "status_drz",
+   "type": "esriFieldTypeString",
+   "alias": "Status drzewa",
+   "length": 255,
+   "domain": null
+  },
+  {
+   "name": "nazwa_pl",
+   "type": "esriFieldTypeInteger",
+   "alias": "Nazwa polska",
+   "domain": {
+    "type": "codedValue",
+    "name": "SL_DRZEWA_PL",
+    "description": "Słownik gatunków drzew - nazwy polskie",
+    "codedValues": [
+     {
+      "name": "*gatunek nieokreślony*",
+      "code": 1
+     },
+     {
+      "name": "ambrowiec balsamiczny",
+      "code": 2
+     },
+     {
+      "name": "bez sp.",
+      "code": 3
+     },
+     {
+      "name": "bez czarny ",
+      "code": 4
+     },
+     {
+      "name": "bez koralowy ",
+      "code": 5
+     },
+     {
+      "name": "biota sp.",
+      "code": 6
+     },
+     {
+      "name": "biota wschodnia (żywotnik wschodni)",
+      "code": 7
+     },
+     {
+      "name": "bożodrzew sp.",
+      "code": 8
+     },
+     {
+      "name": "bożodrzew gruczołkowaty",
+      "code": 9
+     },
+     {
+      "name": "brzoskwinia sp.",
+      "code": 10
+     },
+     {
+      "name": "brzoskwinia pospolita",
+      "code": 11
+     },
+     {
+      "name": "brzostownica japońska",
+      "code": 12
+     },
+     {
+      "name": "brzoza sp.",
+      "code": 13
+     },
+     {
+      "name": "brzoza brodawkowata",
+      "code": 14
+     },
+     {
+      "name": "brzoza brodawkowata 'Dalecarlica'",
+      "code": 15
+     },
+     {
+      "name": "brzoza brodawkowata 'Fastigiata'",
+      "code": 16
+     },
+     {
+      "name": "brzoza brodawkowata 'Purpurea'",
+      "code": 17
+     },
+     {
+      "name": "brzoza brodawkowata 'Youngii'",
+      "code": 18
+     },
+     {
+      "name": "brzoza Hosera",
+      "code": 19
+     },
+     {
+      "name": "brzoza karłowata CHRONIONY",
+      "code": 20
+     },
+     {
+      "name": "brzoza Maksymowicza",
+      "code": 21
+     },
+     {
+      "name": "brzoza ojcowska CHRONIONY",
+      "code": 22
+     },
+     {
+      "name": "brzoza omszona",
+      "code": 23
+     },
+     {
+      "name": "brzoza papierowa",
+      "code": 24
+     },
+     {
+      "name": "brzoza pożyteczna 'Doorenbos'",
+      "code": 25
+     },
+     {
+      "name": "brzoza pożyteczna 'Jacquemonta'",
+      "code": 26
+     },
+     {
+      "name": "buk sp.",
+      "code": 27
+     },
+     {
+      "name": "buk pospolity",
+      "code": 28
+     },
+     {
+      "name": "buk pospolity 'Asplenifolia'",
+      "code": 29
+     },
+     {
+      "name": "buk pospolity 'Dawyck'",
+      "code": 30
+     },
+     {
+      "name": "buk pospolity 'Pendula'",
+      "code": 31
+     },
+     {
+      "name": "buk pospolity 'Purpurea Pendula'",
+      "code": 32
+     },
+     {
+      "name": "buk pospolity 'Purpurea Tricolor'",
+      "code": 33
+     },
+     {
+      "name": "buk pospolity 'Purpurea'",
+      "code": 34
+     },
+     {
+      "name": "buk pospolity 'Zlatia'",
+      "code": 35
+     },
+     {
+      "name": "bukszpan sp.",
+      "code": 36
+     },
+     {
+      "name": "bukszpan wieczniezielony",
+      "code": 37
+     },
+     {
+      "name": "choina sp.",
+      "code": 38
+     },
+     {
+      "name": "choina kanadyjska",
+      "code": 39
+     },
+     {
+      "name": "choina różnolistna",
+      "code": 40
+     },
+     {
+      "name": "cis sp.",
+      "code": 41
+     },
+     {
+      "name": "cis pospolity CHRONIONY",
+      "code": 42
+     },
+     {
+      "name": "cyprysik sp.",
+      "code": 43
+     },
+     {
+      "name": "cyprysik groszkowy",
+      "code": 44
+     },
+     {
+      "name": "cyprysik Lawsona",
+      "code": 45
+     },
+     {
+      "name": "cyprysik Lawsona 'Columnaris'",
+      "code": 46
+     },
+     {
+      "name": "cyprysik nutkajski",
+      "code": 47
+     },
+     {
+      "name": "cyprysik nutkajski 'Pendula'",
+      "code": 48
+     },
+     {
+      "name": "cyprysik nutkajski 'Tatra'",
+      "code": 49
+     },
+     {
+      "name": "cypryśnik",
+      "code": 50
+     },
+     {
+      "name": "cypryśnik błotny",
+      "code": 51
+     },
+     {
+      "name": "czeremcha sp.",
+      "code": 52
+     },
+     {
+      "name": "czeremcha pospolita",
+      "code": 53
+     },
+     {
+      "name": "czeremcha pospolita 'Colorata'",
+      "code": 54
+     },
+     {
+      "name": "czeremcha późna",
+      "code": 55
+     },
+     {
+      "name": "czereśnia sp.",
+      "code": 56
+     },
+     {
+      "name": "czereśnia ptasia",
+      "code": 57
+     },
+     {
+      "name": "daglezja sp.",
+      "code": 58
+     },
+     {
+      "name": "daglezja zielona",
+      "code": 59
+     },
+     {
+      "name": "daglezja zielona var.glauca",
+      "code": 60
+     },
+     {
+      "name": "dąb sp.",
+      "code": 61
+     },
+     {
+      "name": "dąb bezszypułkowy",
+      "code": 62
+     },
+     {
+      "name": "dąb bezszypułkowy 'Insecata'",
+      "code": 63
+     },
+     {
+      "name": "dąb bezszypułkowy 'Mespilifolia'",
+      "code": 64
+     },
+     {
+      "name": "dąb bezszypułkowy 'Westcolumn'",
+      "code": 65
+     },
+     {
+      "name": "dąb biały",
+      "code": 66
+     },
+     {
+      "name": "dąb błotny",
+      "code": 67
+     },
+     {
+      "name": "dąb burgundzki",
+      "code": 68
+     },
+     {
+      "name": "dąb czerwony",
+      "code": 69
+     },
+     {
+      "name": "dąb czerwony 'Aurea'",
+      "code": 70
+     },
+     {
+      "name": "dąb kaukaski",
+      "code": 71
+     },
+     {
+      "name": "dąb omszony",
+      "code": 72
+     },
+     {
+      "name": "dąb szkarłatny ",
+      "code": 73
+     },
+     {
+      "name": "dąb szypułkowy",
+      "code": 74
+     },
+     {
+      "name": "dąb szypułkowy 'Concordia'",
+      "code": 75
+     },
+     {
+      "name": "dąb szypułkowy 'Fastigiata'",
+      "code": 76
+     },
+     {
+      "name": "dąb szypułkowy 'Pectinata'",
+      "code": 77
+     },
+     {
+      "name": "dąb szypułkowy 'Pendula'",
+      "code": 78
+     },
+     {
+      "name": "dąb szypułkowy 'Fastigiate Koster'",
+      "code": 79
+     },
+     {
+      "name": "dąb węgierski",
+      "code": 80
+     },
+     {
+      "name": "dąb wielkoowocowy",
+      "code": 81
+     },
+     {
+      "name": "dereń sp.",
+      "code": 82
+     },
+     {
+      "name": "dereń jadalny",
+      "code": 83
+     },
+     {
+      "name": "dereń kousa",
+      "code": 84
+     },
+     {
+      "name": "dereń kwiecisty",
+      "code": 85
+     },
+     {
+      "name": "dereń świdwa",
+      "code": 86
+     },
+     {
+      "name": "ewodia Daniella",
+      "code": 87
+     },
+     {
+      "name": "glediczja sp.",
+      "code": 88
+     },
+     {
+      "name": "glediczja trójcierniowa",
+      "code": 89
+     },
+     {
+      "name": "glediczja trójcierniowa 'Sunburst'",
+      "code": 90
+     },
+     {
+      "name": "glediczja trójcierniowa 'Inermis'",
+      "code": 91
+     },
+     {
+      "name": "głóg sp.",
+      "code": 92
+     },
+     {
+      "name": "głóg cętkowany",
+      "code": 93
+     },
+     {
+      "name": "głóg długocierniowy",
+      "code": 94
+     },
+     {
+      "name": "głóg dwuszyjkowy",
+      "code": 95
+     },
+     {
+      "name": "głóg jednoszyjkowy",
+      "code": 96
+     },
+     {
+      "name": "głóg jednoszyjkowy 'Rosea'",
+      "code": 97
+     },
+     {
+      "name": "głóg jednoszyjkowy 'Stricta'",
+      "code": 98
+     },
+     {
+      "name": "głóg Lavalle'a 'Carrierei'",
+      "code": 99
+     },
+     {
+      "name": "głóg mordeński 'Toba'",
+      "code": 100
+     },
+     {
+      "name": "głóg odgiętodziałkowy",
+      "code": 101
+     },
+     {
+      "name": "głóg pośredni 'Alboplena'",
+      "code": 102
+     },
+     {
+      "name": "głóg pośredni 'Candidoplena'",
+      "code": 103
+     },
+     {
+      "name": "głóg pośredni 'Paul's Scarlet'",
+      "code": 104
+     },
+     {
+      "name": "głóg pośredni 'Rubra Plena'",
+      "code": 105
+     },
+     {
+      "name": "głóg szypułkowy",
+      "code": 106
+     },
+     {
+      "name": "głóg śliwolistny ",
+      "code": 107
+     },
+     {
+      "name": "głóg śliwolistny 'Splendens'",
+      "code": 108
+     },
+     {
+      "name": "głóg wachlarzowaty",
+      "code": 109
+     },
+     {
+      "name": "głogonieszpułka wielkokwiatowa",
+      "code": 110
+     },
+     {
+      "name": "grab sp.",
+      "code": 111
+     },
+     {
+      "name": "grab pospolity",
+      "code": 112
+     },
+     {
+      "name": "grab pospolity 'Columnaris'",
+      "code": 113
+     },
+     {
+      "name": "grab pospolity 'Quercifolia'",
+      "code": 114
+     },
+     {
+      "name": "grujecznik sp.",
+      "code": 115
+     },
+     {
+      "name": "grujecznik japoński",
+      "code": 116
+     },
+     {
+      "name": "grusza sp.",
+      "code": 117
+     },
+     {
+      "name": "grusza pospolita 'Beech Hill'",
+      "code": 118
+     },
+     {
+      "name": "grusza drobnoowocowa 'Chanticleer'",
+      "code": 119
+     },
+     {
+      "name": "grusza polna",
+      "code": 120
+     },
+     {
+      "name": "grusza wierzbolistna",
+      "code": 121
+     },
+     {
+      "name": "grusza wierzbolistna 'Pendula'",
+      "code": 122
+     },
+     {
+      "name": "jabłoń  'Royality'",
+      "code": 123
+     },
+     {
+      "name": "jabłoń 'John Downie'",
+      "code": 124
+     },
+     {
+      "name": "jabłoń dzika",
+      "code": 125
+     },
+     {
+      "name": "jabłoń sp.",
+      "code": 126
+     },
+     {
+      "name": "jabłoń domowa",
+      "code": 127
+     },
+     {
+      "name": "jabłoń jagodowa",
+      "code": 128
+     },
+     {
+      "name": "jabłoń kwiecista",
+      "code": 129
+     },
+     {
+      "name": "jabłoń purpurowa",
+      "code": 130
+     },
+     {
+      "name": "jabłoń purpurowa 'Fryderyk Chopin'",
+      "code": 131
+     },
+     {
+      "name": "jabłoń purpurowa 'Ola'",
+      "code": 132
+     },
+     {
+      "name": "jabłoń purpurowa 'Rogów'",
+      "code": 133
+     },
+     {
+      "name": "jabłoń Scheideckera",
+      "code": 134
+     },
+     {
+      "name": "jabłoń Sieversa odm. Niedźwieckiego",
+      "code": 135
+     },
+     {
+      "name": "jałowiec sp.",
+      "code": 136
+     },
+     {
+      "name": "jałowiec chiński",
+      "code": 137
+     },
+     {
+      "name": "jałowiec pospolity",
+      "code": 138
+     },
+     {
+      "name": "jałowiec wirginijski",
+      "code": 139
+     },
+     {
+      "name": "jałowiec wirginijski 'Glauca'",
+      "code": 140
+     },
+     {
+      "name": "jałowiec wirginijski 'Skyrocket'",
+      "code": 141
+     },
+     {
+      "name": "jarząb sp.",
+      "code": 142
+     },
+     {
+      "name": "jarząb brekinia CHRONIONY",
+      "code": 143
+     },
+     {
+      "name": "jarząb domowy",
+      "code": 144
+     },
+     {
+      "name": "jarząb mączny",
+      "code": 145
+     },
+     {
+      "name": "jarząb mączny 'Magnifica'",
+      "code": 146
+     },
+     {
+      "name": "jarząb pospolity",
+      "code": 147
+     },
+     {
+      "name": "jarząb pospolity 'Edulis'",
+      "code": 148
+     },
+     {
+      "name": "jarząb pospolity 'Fastigiata'",
+      "code": 149
+     },
+     {
+      "name": "jarząb pospolity 'Pendula'",
+      "code": 150
+     },
+     {
+      "name": "jarząb szerokolistny",
+      "code": 151
+     },
+     {
+      "name": "jarząb szerokolistny 'Atrovirens'",
+      "code": 152
+     },
+     {
+      "name": "jarząb szwedzki CHRONIONY",
+      "code": 153
+     },
+     {
+      "name": "jesion sp.",
+      "code": 154
+     },
+     {
+      "name": "jesion amerykański 'Skyline'",
+      "code": 155
+     },
+     {
+      "name": "jesion mannowy",
+      "code": 156
+     },
+     {
+      "name": "jesion mannowy 'Ebben's Column'",
+      "code": 157
+     },
+     {
+      "name": "jesion mannowy 'Louisa Lady'",
+      "code": 158
+     },
+     {
+      "name": "jesion pensylwański",
+      "code": 159
+     },
+     {
+      "name": "jesion pensylwański 'Aucubaefolia'",
+      "code": 160
+     },
+     {
+      "name": "jesion pensylwański 'Crispa'",
+      "code": 161
+     },
+     {
+      "name": "jesion wąskolistkowy",
+      "code": 162
+     },
+     {
+      "name": "jesion wyniosły",
+      "code": 163
+     },
+     {
+      "name": "jesion wyniosły 'Heterophylla Pendula'",
+      "code": 164
+     },
+     {
+      "name": "jesion wyniosły 'Jaspidea'",
+      "code": 165
+     },
+     {
+      "name": "jesion wyniosły 'Pendula'",
+      "code": 166
+     },
+     {
+      "name": "jesion wyniosły f. diverisifolia",
+      "code": 167
+     },
+     {
+      "name": "jodła sp.",
+      "code": 168
+     },
+     {
+      "name": "jodła grecka",
+      "code": 169
+     },
+     {
+      "name": "jodła jednobarwna",
+      "code": 170
+     },
+     {
+      "name": "jodła kaukaska",
+      "code": 171
+     },
+     {
+      "name": "jodła koreańska",
+      "code": 172
+     },
+     {
+      "name": "jodła koreańska 'Silberlocke'",
+      "code": 173
+     },
+     {
+      "name": "jodła nikkońska",
+      "code": 174
+     },
+     {
+      "name": "jodła olbrzymia",
+      "code": 175
+     },
+     {
+      "name": "jodła pospolita",
+      "code": 176
+     },
+     {
+      "name": "jodła szlachetna",
+      "code": 177
+     },
+     {
+      "name": "jodła szlachetna 'Glauca'",
+      "code": 178
+     },
+     {
+      "name": "jodła Veitcha",
+      "code": 179
+     },
+     {
+      "name": "kalina sp.",
+      "code": 180
+     },
+     {
+      "name": "kalina koralowa",
+      "code": 181
+     },
+     {
+      "name": "karagana sp.",
+      "code": 182
+     },
+     {
+      "name": "karagana syberyjska 'Lorbergii'",
+      "code": 183
+     },
+     {
+      "name": "karagana syberyjska 'Pendula'",
+      "code": 184
+     },
+     {
+      "name": "karagana syberyjska 'Walker'",
+      "code": 185
+     },
+     {
+      "name": "kasztan sp.",
+      "code": 186
+     },
+     {
+      "name": "kasztan jadalny",
+      "code": 187
+     },
+     {
+      "name": "kasztanowiec sp.",
+      "code": 188
+     },
+     {
+      "name": "kasztanowiec czerwony",
+      "code": 189
+     },
+     {
+      "name": "kasztanowiec czerwony 'Briotii'",
+      "code": 190
+     },
+     {
+      "name": "kasztanowiec gładki",
+      "code": 191
+     },
+     {
+      "name": "kasztanowiec japoński",
+      "code": 192
+     },
+     {
+      "name": "kasztanowiec krwisty",
+      "code": 193
+     },
+     {
+      "name": "kasztanowiec pospolity",
+      "code": 194
+     },
+     {
+      "name": "kasztanowiec pospolity 'Baumanni'",
+      "code": 195
+     },
+     {
+      "name": "kasztanowiec pospolity 'Pyramidalis'",
+      "code": 196
+     },
+     {
+      "name": "kasztanowiec żółty",
+      "code": 197
+     },
+     {
+      "name": "klon sp.",
+      "code": 198
+     },
+     {
+      "name": "klon cukrowy",
+      "code": 199
+     },
+     {
+      "name": "klon czerwony",
+      "code": 200
+     },
+     {
+      "name": "klon czerwony 'Scanlon'",
+      "code": 201
+     },
+     {
+      "name": "klon jawor",
+      "code": 202
+     },
+     {
+      "name": "klon jawor 'Worley'",
+      "code": 203
+     },
+     {
+      "name": "klon jawor 'Atropurpureum'",
+      "code": 204
+     },
+     {
+      "name": "klon jawor 'Erecta'",
+      "code": 205
+     },
+     {
+      "name": "klon jawor 'Leopoldii'",
+      "code": 206
+     },
+     {
+      "name": "klon jawor 'Brilantissimum'",
+      "code": 207
+     },
+     {
+      "name": "klon jesionolistny",
+      "code": 208
+     },
+     {
+      "name": "klon jesionolistny 'Aureovariegatum'",
+      "code": 209
+     },
+     {
+      "name": "klon jesionolistny 'Flamingo'",
+      "code": 210
+     },
+     {
+      "name": "klon jesionolistny 'Odessanum'",
+      "code": 211
+     },
+     {
+      "name": "klon jesionolistny 'Tadeusz Szymanowski'",
+      "code": 212
+     },
+     {
+      "name": "klon jesionolistny 'Variegatum'",
+      "code": 213
+     },
+     {
+      "name": "klon nikkoński",
+      "code": 214
+     },
+     {
+      "name": "klon okrągłolistny",
+      "code": 215
+     },
+     {
+      "name": "klon palmowy",
+      "code": 216
+     },
+     {
+      "name": "klon palmowy 'Atropurpureum'",
+      "code": 217
+     },
+     {
+      "name": "klon pensylwański",
+      "code": 218
+     },
+     {
+      "name": "klon polny",
+      "code": 219
+     },
+     {
+      "name": "klon polny 'Elsrijk'",
+      "code": 220
+     },
+     {
+      "name": "klon polny 'Nanum'",
+      "code": 221
+     },
+     {
+      "name": "klon pospolity",
+      "code": 222
+     },
+     {
+      "name": "klon pospolity 'Drummondii'",
+      "code": 223
+     },
+     {
+      "name": "klon pospolity 'Fassen's Black'",
+      "code": 224
+     },
+     {
+      "name": "klon pospolity 'Globosum'",
+      "code": 225
+     },
+     {
+      "name": "klon pospolity 'Palmatifidum'",
+      "code": 226
+     },
+     {
+      "name": "klon pospolity 'Prof. Tadeusz Szczęsny'",
+      "code": 227
+     },
+     {
+      "name": "klon pospolity 'Reitenbachii'",
+      "code": 228
+     },
+     {
+      "name": "klon pospolity 'Schwedleri'",
+      "code": 229
+     },
+     {
+      "name": "klon srebrzysty",
+      "code": 230
+     },
+     {
+      "name": "klon srebrzysty 'Laciniatum Wieri'",
+      "code": 231
+     },
+     {
+      "name": "klon srebrzysty 'Pyramidale'",
+      "code": 232
+     },
+     {
+      "name": "klon strzępiastokory",
+      "code": 233
+     },
+     {
+      "name": "klon tatarski",
+      "code": 234
+     },
+     {
+      "name": "klon tatarski subsp. Ginnala",
+      "code": 235
+     },
+     {
+      "name": "kłęk sp.",
+      "code": 236
+     },
+     {
+      "name": "kłęk amerykański",
+      "code": 237
+     },
+     {
+      "name": "korkowiec sp.",
+      "code": 238
+     },
+     {
+      "name": "korkowiec amurski",
+      "code": 239
+     },
+     {
+      "name": "leszczyna sp.",
+      "code": 240
+     },
+     {
+      "name": "leszczyna turecka",
+      "code": 241
+     },
+     {
+      "name": "lilak sp.",
+      "code": 242
+     },
+     {
+      "name": "lilak pospolity",
+      "code": 243
+     },
+     {
+      "name": "lipa sp.",
+      "code": 244
+     },
+     {
+      "name": "lipa amerykańska",
+      "code": 245
+     },
+     {
+      "name": "lipa drobnolistna",
+      "code": 246
+     },
+     {
+      "name": "lipa drobnolistna 'Greenspire'",
+      "code": 247
+     },
+     {
+      "name": "lipa drobnolistna 'Bohlje'",
+      "code": 248
+     },
+     {
+      "name": "lipa holenderska",
+      "code": 249
+     },
+     {
+      "name": "lipa holenderska 'Pallida'",
+      "code": 250
+     },
+     {
+      "name": "lipa holenderska 'Wratislaviensis'",
+      "code": 251
+     },
+     {
+      "name": "lipa krymska",
+      "code": 252
+     },
+     {
+      "name": "lipa srebrzysta",
+      "code": 253
+     },
+     {
+      "name": "lipa srebrzysta 'Brabant'",
+      "code": 254
+     },
+     {
+      "name": "lipa srebrzysta 'Pendula'",
+      "code": 255
+     },
+     {
+      "name": "lipa srebrzysta 'Varsaviensis'",
+      "code": 256
+     },
+     {
+      "name": "lipa szerokolistna",
+      "code": 257
+     },
+     {
+      "name": "lipa szerokolistna 'Aurea'",
+      "code": 258
+     },
+     {
+      "name": "magnolia sp.",
+      "code": 259
+     },
+     {
+      "name": "magnolia drzewiasta",
+      "code": 260
+     },
+     {
+      "name": "magnolia gwiaździsta",
+      "code": 261
+     },
+     {
+      "name": "magnolia japońska",
+      "code": 262
+     },
+     {
+      "name": "magnolia japońska 'Wadas Memory'",
+      "code": 263
+     },
+     {
+      "name": "magnolia parasolowata",
+      "code": 264
+     },
+     {
+      "name": "magnolia purpurowa",
+      "code": 265
+     },
+     {
+      "name": "magnolia purpurowa 'Nigra'",
+      "code": 266
+     },
+     {
+      "name": "magnolia Siebolda",
+      "code": 267
+     },
+     {
+      "name": "magnolia Soulange'a",
+      "code": 268
+     },
+     {
+      "name": "magnolia Soulange'a 'Alexandrina'",
+      "code": 269
+     },
+     {
+      "name": "magnolia Soulange'a 'Amabilis'",
+      "code": 270
+     },
+     {
+      "name": "magnolia Soulange'a 'Lennei'",
+      "code": 271
+     },
+     {
+      "name": "magnolia Soulange'a 'Speciosa'",
+      "code": 272
+     },
+     {
+      "name": "mamutowiec olbrzymi ",
+      "code": 273
+     },
+     {
+      "name": "metasekwoja sp.",
+      "code": 274
+     },
+     {
+      "name": "metasekwoja chińska",
+      "code": 275
+     },
+     {
+      "name": "migdałek sp.",
+      "code": 276
+     },
+     {
+      "name": "migdałek trójklapowy",
+      "code": 277
+     },
+     {
+      "name": "migdałowiec pospolity",
+      "code": 278
+     },
+     {
+      "name": "miłorząb sp.",
+      "code": 279
+     },
+     {
+      "name": "miłorząb dwuklapowy",
+      "code": 280
+     },
+     {
+      "name": "miłorząb dwuklapowy 'Fastigiata'",
+      "code": 281
+     },
+     {
+      "name": "modrzew sp.",
+      "code": 282
+     },
+     {
+      "name": "modrzew archangielski",
+      "code": 283
+     },
+     {
+      "name": "modrzew eurojapoński",
+      "code": 284
+     },
+     {
+      "name": "modrzew europejski",
+      "code": 285
+     },
+     {
+      "name": "modrzew europejski subsp. polonica",
+      "code": 286
+     },
+     {
+      "name": "modrzew japoński",
+      "code": 287
+     },
+     {
+      "name": "modrzew japoński 'Diana'",
+      "code": 288
+     },
+     {
+      "name": "modrzew japoński 'Pendula'",
+      "code": 289
+     },
+     {
+      "name": "morela pospolita",
+      "code": 290
+     },
+     {
+      "name": "morela sp.",
+      "code": 291
+     },
+     {
+      "name": "morwa sp.",
+      "code": 292
+     },
+     {
+      "name": "morwa biała",
+      "code": 293
+     },
+     {
+      "name": "morwa biała 'Pendula'",
+      "code": 294
+     },
+     {
+      "name": "oczar sp.",
+      "code": 295
+     },
+     {
+      "name": "oliwnik sp.",
+      "code": 296
+     },
+     {
+      "name": "oliwnik wąskolistny",
+      "code": 297
+     },
+     {
+      "name": "olsza sp.",
+      "code": 298
+     },
+     {
+      "name": "olsza czarna",
+      "code": 299
+     },
+     {
+      "name": "olsza czarna 'Laciniata'",
+      "code": 300
+     },
+     {
+      "name": "olsza szara",
+      "code": 301
+     },
+     {
+      "name": "olsza szara 'Laciniata'",
+      "code": 302
+     },
+     {
+      "name": "olsza szara 'Pendula'",
+      "code": 303
+     },
+     {
+      "name": "orzech sp.",
+      "code": 304
+     },
+     {
+      "name": "orzech ajlantolistny",
+      "code": 305
+     },
+     {
+      "name": "orzech ajlantolistny 'Cordiformis'",
+      "code": 306
+     },
+     {
+      "name": "orzech czarny",
+      "code": 307
+     },
+     {
+      "name": "orzech szary",
+      "code": 308
+     },
+     {
+      "name": "orzech włoski",
+      "code": 309
+     },
+     {
+      "name": "orzesznik gorzki",
+      "code": 310
+     },
+     {
+      "name": "orzesznik pięciolistkowy",
+      "code": 311
+     },
+     {
+      "name": "orzesznik siedmiolistkowy",
+      "code": 312
+     },
+     {
+      "name": "orzesznik sp.",
+      "code": 313
+     },
+     {
+      "name": "ostrokrzew sp.",
+      "code": 314
+     },
+     {
+      "name": "parczelina sp.",
+      "code": 315
+     },
+     {
+      "name": "parczelina trójlistkowa",
+      "code": 316
+     },
+     {
+      "name": "pigwa sp.",
+      "code": 317
+     },
+     {
+      "name": "pigwa pospolita",
+      "code": 318
+     },
+     {
+      "name": "platan sp.",
+      "code": 319
+     },
+     {
+      "name": "platan klonolistny",
+      "code": 320
+     },
+     {
+      "name": "platan wschodni",
+      "code": 321
+     },
+     {
+      "name": "robinia sp.",
+      "code": 322
+     },
+     {
+      "name": "robinia biała",
+      "code": 323
+     },
+     {
+      "name": "robinia biała 'Bessoniana'",
+      "code": 324
+     },
+     {
+      "name": "robinia biała 'Frisia'",
+      "code": 325
+     },
+     {
+      "name": "robinia biała 'Rozynskiana'",
+      "code": 326
+     },
+     {
+      "name": "robinia biała 'Sandraudiga'",
+      "code": 327
+     },
+     {
+      "name": "robinia biała 'Umbraculifera'",
+      "code": 328
+     },
+     {
+      "name": "robinia biała 'Tortuosa'",
+      "code": 329
+     },
+     {
+      "name": "robinia lepka",
+      "code": 330
+     },
+     {
+      "name": "robinia Małgorzaty 'Pink Cascade'",
+      "code": 331
+     },
+     {
+      "name": "rokitnik sp.",
+      "code": 332
+     },
+     {
+      "name": "rokitnik pospolity",
+      "code": 333
+     },
+     {
+      "name": "skrzydłorzech sp.",
+      "code": 334
+     },
+     {
+      "name": "skrzydłorzech kaukaski",
+      "code": 335
+     },
+     {
+      "name": "sosna sp.",
+      "code": 338
+     },
+     {
+      "name": "sosna Banksa",
+      "code": 339
+     },
+     {
+      "name": "sosna błotna CHRONIONY",
+      "code": 340
+     },
+     {
+      "name": "sosna czarna",
+      "code": 341
+     },
+     {
+      "name": "sosna czarna 'Pyramidalis'",
+      "code": 342
+     },
+     {
+      "name": "sosna drzewokosa CHRONIONY",
+      "code": 343
+     },
+     {
+      "name": "sosna koreańska",
+      "code": 344
+     },
+     {
+      "name": "sosna limba CHRONIONY",
+      "code": 345
+     },
+     {
+      "name": "sosna pospolita",
+      "code": 346
+     },
+     {
+      "name": "sosna pospolita 'Fastigiata'",
+      "code": 347
+     },
+     {
+      "name": "sosna rumelijska",
+      "code": 348
+     },
+     {
+      "name": "sosna smołowa",
+      "code": 349
+     },
+     {
+      "name": "sosna wejmutka",
+      "code": 350
+     },
+     {
+      "name": "sosna żółta",
+      "code": 351
+     },
+     {
+      "name": "strączyn zółty",
+      "code": 352
+     },
+     {
+      "name": "sumak sp.",
+      "code": 353
+     },
+     {
+      "name": "sumak octowiec",
+      "code": 354
+     },
+     {
+      "name": "sumak octowiec 'Dissecta'",
+      "code": 355
+     },
+     {
+      "name": "surmia sp.",
+      "code": 356
+     },
+     {
+      "name": "surmia bignoniowa",
+      "code": 357
+     },
+     {
+      "name": "surmia wielkokwiatowa",
+      "code": 358
+     },
+     {
+      "name": "surmia żółtokwiatowa",
+      "code": 359
+     },
+     {
+      "name": "szakłak sp.",
+      "code": 360
+     },
+     {
+      "name": "szakłak pospolity",
+      "code": 361
+     },
+     {
+      "name": "śliwa sp.",
+      "code": 362
+     },
+     {
+      "name": "śliwa ałycza",
+      "code": 363
+     },
+     {
+      "name": "śliwa ałycza 'Nigra'",
+      "code": 364
+     },
+     {
+      "name": "śliwa ałycza 'Pissardii'",
+      "code": 365
+     },
+     {
+      "name": "śliwa ałycza 'Woodii'",
+      "code": 366
+     },
+     {
+      "name": "śliwa domowa",
+      "code": 367
+     },
+     {
+      "name": "śliwa domowa lubaszka",
+      "code": 368
+     },
+     {
+      "name": "śliwa domowa mirabelka",
+      "code": 369
+     },
+     {
+      "name": "śliwa domowa renkloda",
+      "code": 370
+     },
+     {
+      "name": "śliwa domowa węgierka",
+      "code": 371
+     },
+     {
+      "name": "śliwa dziecięca",
+      "code": 372
+     },
+     {
+      "name": "śliwa tarnina",
+      "code": 373
+     },
+     {
+      "name": "świerk sp.",
+      "code": 374
+     },
+     {
+      "name": "świerk biały",
+      "code": 375
+     },
+     {
+      "name": "świerk biały 'Conica'",
+      "code": 376
+     },
+     {
+      "name": "świerk Brewera",
+      "code": 377
+     },
+     {
+      "name": "świerk kaukaski",
+      "code": 378
+     },
+     {
+      "name": "świerk kaukaski 'Aurea'",
+      "code": 379
+     },
+     {
+      "name": "świerk kłujący",
+      "code": 380
+     },
+     {
+      "name": "świerk kłujący 'Glauca'",
+      "code": 381
+     },
+     {
+      "name": "świerk kłujący 'Hoopsii'",
+      "code": 382
+     },
+     {
+      "name": "świerk pospolity",
+      "code": 383
+     },
+     {
+      "name": "świerk pospolity 'Inversa'",
+      "code": 384
+     },
+     {
+      "name": "świerk pospolity 'Viminalis'",
+      "code": 385
+     },
+     {
+      "name": "świerk pospolity 'Virgata'",
+      "code": 386
+     },
+     {
+      "name": "świerk pospolity subsp. obovata",
+      "code": 387
+     },
+     {
+      "name": "świerk serbski",
+      "code": 388
+     },
+     {
+      "name": "świerk sitkajski",
+      "code": 389
+     },
+     {
+      "name": "topola sp.",
+      "code": 390
+     },
+     {
+      "name": "topola berlińska",
+      "code": 391
+     },
+     {
+      "name": "topola biała",
+      "code": 392
+     },
+     {
+      "name": "topola biała 'Pyramidalis'",
+      "code": 393
+     },
+     {
+      "name": "topola biała 'Nivea'",
+      "code": 394
+     },
+     {
+      "name": "topola czarna",
+      "code": 395
+     },
+     {
+      "name": "topola czarna 'Italica'",
+      "code": 396
+     },
+     {
+      "name": "topola kanadyjska",
+      "code": 397
+     },
+     {
+      "name": "topola kanadyjska 'Grandis'",
+      "code": 398
+     },
+     {
+      "name": "topola kanadyjska 'Marilandica'",
+      "code": 399
+     },
+     {
+      "name": "topola kanadyjska 'Robusta'",
+      "code": 400
+     },
+     {
+      "name": "topola kanadyjska 'Serotina'",
+      "code": 401
+     },
+     {
+      "name": "topola Maksymowicza",
+      "code": 402
+     },
+     {
+      "name": "topola osika",
+      "code": 403
+     },
+     {
+      "name": "topola Simona",
+      "code": 404
+     },
+     {
+      "name": "topola Simona 'Fastigiata'",
+      "code": 405
+     },
+     {
+      "name": "topola szara",
+      "code": 406
+     },
+     {
+      "name": "trzmielina pospolita",
+      "code": 407
+     },
+     {
+      "name": "trzmielina sp.",
+      "code": 408
+     },
+     {
+      "name": "tulipanowiec sp.",
+      "code": 409
+     },
+     {
+      "name": "tulipanowiec amerykański",
+      "code": 410
+     },
+     {
+      "name": "wiąz sp.",
+      "code": 411
+     },
+     {
+      "name": "wiąz 'Camperdownii'",
+      "code": 412
+     },
+     {
+      "name": "wiąz 'Dampieri'",
+      "code": 413
+     },
+     {
+      "name": "wiąz 'Wredei'",
+      "code": 414
+     },
+     {
+      "name": "wiąz górski ",
+      "code": 415
+     },
+     {
+      "name": "wiąz górski 'Exoniensis'",
+      "code": 416
+     },
+     {
+      "name": "wiąz holenderski",
+      "code": 417
+     },
+     {
+      "name": "wiąz polny",
+      "code": 418
+     },
+     {
+      "name": "wiąz syberyjski",
+      "code": 419
+     },
+     {
+      "name": "wiąz szypułkowy",
+      "code": 420
+     },
+     {
+      "name": "wiązowiec sp.",
+      "code": 421
+     },
+     {
+      "name": "wiązowiec zachodni",
+      "code": 422
+     },
+     {
+      "name": "wierzba sp.",
+      "code": 423
+     },
+     {
+      "name": "wierzba babilońska",
+      "code": 424
+     },
+     {
+      "name": "wierzba babilońska 'Tortuosa'",
+      "code": 425
+     },
+     {
+      "name": "wierzba biała",
+      "code": 426
+     },
+     {
+      "name": "wierzba całolistna 'Hakuro Nishiki'",
+      "code": 427
+     },
+     {
+      "name": "wierzba iwa",
+      "code": 428
+     },
+     {
+      "name": "wierzba iwa 'Klimarnock'",
+      "code": 429
+     },
+     {
+      "name": "wierzba krucha",
+      "code": 430
+     },
+     {
+      "name": "wierzba laurowa",
+      "code": 431
+     },
+     {
+      "name": "wierzba migdałowa",
+      "code": 432
+     },
+     {
+      "name": "wierzba płacząca",
+      "code": 433
+     },
+     {
+      "name": "wierzba purpurowa",
+      "code": 434
+     },
+     {
+      "name": "wierzba purpurowa 'Pendula'",
+      "code": 435
+     },
+     {
+      "name": "wiśnia sp.",
+      "code": 436
+     },
+     {
+      "name": "wiśnia osobliwa",
+      "code": 437
+     },
+     {
+      "name": "wiśnia osobliwa 'Umbraculifera'",
+      "code": 438
+     },
+     {
+      "name": "wiśnia piłkowana",
+      "code": 439
+     },
+     {
+      "name": "wiśnia piłkowana 'Amanogawa'",
+      "code": 440
+     },
+     {
+      "name": "wiśnia piłkowana 'Kanzan'",
+      "code": 441
+     },
+     {
+      "name": "wiśnia piłkowana 'Kiku-shidare-zakura'",
+      "code": 442
+     },
+     {
+      "name": "wiśnia piłkowana 'Ukon'",
+      "code": 443
+     },
+     {
+      "name": "wiśnia pospolita",
+      "code": 444
+     },
+     {
+      "name": "wiśnia różowa",
+      "code": 445
+     },
+     {
+      "name": "wiśnia różowa 'Jugatsu-zakura'",
+      "code": 446
+     },
+     {
+      "name": "wiśnia wonna",
+      "code": 447
+     },
+     {
+      "name": "złotokap sp.",
+      "code": 448
+     },
+     {
+      "name": "złotokap pospolity",
+      "code": 449
+     },
+     {
+      "name": "złotokap Waterera",
+      "code": 450
+     },
+     {
+      "name": "żywotnik sp.",
+      "code": 451
+     },
+     {
+      "name": "żywotnik olbrzymi",
+      "code": 452
+     },
+     {
+      "name": "żywotnik olbrzymi 'Kórnik'",
+      "code": 453
+     },
+     {
+      "name": "żywotnik olbrzymi 'Zebrina'",
+      "code": 454
+     },
+     {
+      "name": "żywotnik zachodni",
+      "code": 455
+     },
+     {
+      "name": "żywotnik zachodni 'Aureospicata'",
+      "code": 456
+     },
+     {
+      "name": "żywotnik zachodni 'Aurescens'",
+      "code": 457
+     },
+     {
+      "name": "żywotnik zachodni 'Brabant'",
+      "code": 458
+     },
+     {
+      "name": "żywotnik zachodni 'Fastigiata'",
+      "code": 459
+     },
+     {
+      "name": "żywotnik zachodni 'Holmstrup'",
+      "code": 460
+     },
+     {
+      "name": "żywotnik zachodni 'Smaragd'",
+      "code": 461
+     },
+     {
+      "name": "żywotnik zachodni 'Spiralis'",
+      "code": 462
+     },
+     {
+      "name": "żywotnik zachodni 'Sunkist'",
+      "code": 463
+     },
+     {
+      "name": "żywotnik zachodni 'Yellow Ribbon'",
+      "code": 464
+     },
+     {
+      "name": "żywotnikowiec japoński",
+      "code": 465
+     },
+     {
+      "name": "żywotnikowiec sp.",
+      "code": 466
+     },
+     {
+      "name": "dąb szypułkowy 'Columnaris'",
+      "code": 467
+     },
+     {
+      "name": "wiśnia piłkowana 'Fugenzo'",
+      "code": 468
+     },
+     {
+      "name": "wierzba biała 'Tristis'",
+      "code": 469
+     },
+     {
+      "name": "grab pospolity 'Fastigiata'",
+      "code": 470
+     },
+     {
+      "name": "surmia bignoniowa 'Aurea'",
+      "code": 471
+     },
+     {
+      "name": "surmia bignoniowa 'Nana'",
+      "code": 472
+     },
+     {
+      "name": "wiśnia piłkowana 'Royal Burgundy''",
+      "code": 473
+     },
+     {
+      "name": "klon pospolity 'Laciniatum'",
+      "code": 474
+     },
+     {
+      "name": "wiśnia  'Okame'",
+      "code": 475
+     },
+     {
+      "name": "dawidia chińska",
+      "code": 476
+     },
+     {
+      "name": "magnolia Soulange'a 'Galaxy'",
+      "code": 477
+     },
+     {
+      "name": "magnolia Soulange'a 'Alba Superba'",
+      "code": 478
+     },
+     {
+      "name": "cedr himalajski",
+      "code": 479
+     },
+     {
+      "name": "Mydleniec wiechowaty",
+      "code": 480
+     },
+     {
+      "name": "Aralia japońska",
+      "code": 481
+     },
+     {
+      "name": "jarząb turyngski 'Fastigiata'",
+      "code": 482
+     },
+     {
+      "name": "głogonieszpułka wielkokwiatowa",
+      "code": 483
+     },
+     {
+      "name": "cyprysik groszkowy  'Filifera'",
+      "code": 484
+     },
+     {
+      "name": "cyprysik groszkowy 'Plumosa'",
+      "code": 485
+     },
+     {
+      "name": "dereń biały",
+      "code": 486
+     },
+     {
+      "name": "głóg pośredni",
+      "code": 487
+     },
+     {
+      "name": "jałowiec pośredni",
+      "code": 488
+     },
+     {
+      "name": "jodła balsamiczna",
+      "code": 489
+     },
+     {
+      "name": "jodła kalifornijska",
+      "code": 490
+     },
+     {
+      "name": "karagana syberyjska",
+      "code": 491
+     },
+     {
+      "name": "kosodrzewina",
+      "code": 492
+     },
+     {
+      "name": "sosna hakowata",
+      "code": 493
+     },
+     {
+      "name": "magnolia naga",
+      "code": 494
+     },
+     {
+      "name": "modrzew europejski 'Pendula'",
+      "code": 495
+     },
+     {
+      "name": "robinia pośrednia",
+      "code": 496
+     },
+     {
+      "name": "świerk czarny",
+      "code": 497
+     },
+     {
+      "name": "wierzba Smitha",
+      "code": 498
+     },
+     {
+      "name": "złotokap alpejski",
+      "code": 499
+     },
+     {
+      "name": "żywotnik zachodni 'Globosa'",
+      "code": 500
+     },
+     {
+      "name": "perełkowiec sp.",
+      "code": 336
+     },
+     {
+      "name": "perełkowiec japoński",
+      "code": 337
+     },
+     {
+      "name": "jałowiec skalny",
+      "code": 501
+     },
+     {
+      "name": "leszczyna pospolita",
+      "code": 502
+     },
+     {
+      "name": "cis pośredni",
+      "code": 503
+     },
+     {
+      "name": "lipa drobnolistna 'Rancho'",
+      "code": 504
+     },
+     {
+      "name": "głóg dwuszyjkowy 'Paul's Scarlet'",
+      "code": 505
+     },
+     {
+      "name": "grusza pospolita",
+      "code": 506
+     },
+     {
+      "name": "wiąz 'Lobel'",
+      "code": 507
+     },
+     {
+      "name": "jabłoń śliwolistna odm. Rinki",
+      "code": 508
+     },
+     {
+      "name": "oczar omszony",
+      "code": 509
+     },
+     {
+      "name": "oczar wirginijski",
+      "code": 510
+     },
+     {
+      "name": "buk pospolity 'Rohanii'",
+      "code": 511
+     },
+     {
+      "name": "klon polny 'Queen Elizabeth'",
+      "code": 512
+     },
+     {
+      "name": "lipa szerokolistna 'Fastigiata'",
+      "code": 513
+     },
+     {
+      "name": "brzoza brodawkowata 'Tristis'",
+      "code": 514
+     },
+     {
+      "name": "olsza czarna 'Imperialis'",
+      "code": 515
+     },
+     {
+      "name": "parocja perska",
+      "code": 516
+     }
+    ],
+    "mergePolicy": "esriMPTDefaultValue",
+    "splitPolicy": "esriSPTDefaultValue"
+   }
+  },
+  {
+   "name": "nazwa_lc",
+   "type": "esriFieldTypeInteger",
+   "alias": "Nazwa łacińska",
+   "domain": {
+    "type": "codedValue",
+    "name": "SL_DRZEWA_LC",
+    "description": "Słownik gatunków drzew - nazwy łacińskie",
+    "codedValues": [
+     {
+      "name": "*indeterminata species*",
+      "code": 1
+     },
+     {
+      "name": "Liquidambar styraciflua",
+      "code": 2
+     },
+     {
+      "name": "Sambucus sp.",
+      "code": 3
+     },
+     {
+      "name": "Sambucus nigra",
+      "code": 4
+     },
+     {
+      "name": "Sambucus racemosa",
+      "code": 5
+     },
+     {
+      "name": "Platycladus sp.",
+      "code": 6
+     },
+     {
+      "name": "Ailanthus sp.",
+      "code": 8
+     },
+     {
+      "name": "Ailanthus altissima",
+      "code": 9
+     },
+     {
+      "name": "Prunus sp.(brzoskwinia)",
+      "code": 10
+     },
+     {
+      "name": "Prunus persica",
+      "code": 11
+     },
+     {
+      "name": "Zelkowa serrata",
+      "code": 12
+     },
+     {
+      "name": "Betula sp.",
+      "code": 13
+     },
+     {
+      "name": "Betula pendula",
+      "code": 14
+     },
+     {
+      "name": "Betula pendula 'Dalecarlica'",
+      "code": 15
+     },
+     {
+      "name": "Betula pendula 'Fastigiata'",
+      "code": 16
+     },
+     {
+      "name": "Betula pendula 'Purpurea'",
+      "code": 17
+     },
+     {
+      "name": "Betula pendula 'Youngii'",
+      "code": 18
+     },
+     {
+      "name": "Betula 'Hoseri'",
+      "code": 19
+     },
+     {
+      "name": "Betula nana",
+      "code": 20
+     },
+     {
+      "name": "Betula maxymowicziana",
+      "code": 21
+     },
+     {
+      "name": "Betula oycoviensis",
+      "code": 22
+     },
+     {
+      "name": "Betula pubescens",
+      "code": 23
+     },
+     {
+      "name": "Betula papyrifera",
+      "code": 24
+     },
+     {
+      "name": "Betula utilis 'Doorenbos'",
+      "code": 25
+     },
+     {
+      "name": "Betula utilis 'Jacquemonta'",
+      "code": 26
+     },
+     {
+      "name": "Fagus sp.",
+      "code": 27
+     },
+     {
+      "name": "Fagus sylvatica",
+      "code": 28
+     },
+     {
+      "name": "Fagus sylvatica 'Asplenifolia'",
+      "code": 29
+     },
+     {
+      "name": "Fagus sylvatica 'Dawyck'",
+      "code": 30
+     },
+     {
+      "name": "Fagus sylvatica 'Pendula'",
+      "code": 31
+     },
+     {
+      "name": "Fagus sylvatica 'Purpurea Pendula'",
+      "code": 32
+     },
+     {
+      "name": "Fagus sylvatica 'Purpurea Tricolor'",
+      "code": 33
+     },
+     {
+      "name": "Fagus sylvatica 'Purpurea'",
+      "code": 34
+     },
+     {
+      "name": "Fagus sylvatica 'Zlatia'",
+      "code": 35
+     },
+     {
+      "name": "Buxus sp.",
+      "code": 36
+     },
+     {
+      "name": "Buxus sempervirens",
+      "code": 37
+     },
+     {
+      "name": "Tsuga sp.",
+      "code": 38
+     },
+     {
+      "name": "Tsuga canadensis",
+      "code": 39
+     },
+     {
+      "name": "Tsuga diversifolia",
+      "code": 40
+     },
+     {
+      "name": "Taxus sp.",
+      "code": 41
+     },
+     {
+      "name": "Taxus baccata",
+      "code": 42
+     },
+     {
+      "name": "Chamaecyparis sp.",
+      "code": 43
+     },
+     {
+      "name": "Chamaecyparis pisifera",
+      "code": 44
+     },
+     {
+      "name": "Chamaecyparis lawsoniana",
+      "code": 45
+     },
+     {
+      "name": "Chamaecyparis lawsoniana 'Columnaris'",
+      "code": 46
+     },
+     {
+      "name": "Chamaecyparis nootkatensis",
+      "code": 47
+     },
+     {
+      "name": "Chamaecyparis nootkatensis 'Pendula'",
+      "code": 48
+     },
+     {
+      "name": "Chamaecyparis nootkatensis 'Tatra'",
+      "code": 49
+     },
+     {
+      "name": "Taxodium sp",
+      "code": 50
+     },
+     {
+      "name": "Taxodium distichum",
+      "code": 51
+     },
+     {
+      "name": "Prunus sp.(czeremcha)",
+      "code": 52
+     },
+     {
+      "name": "Prunus padus",
+      "code": 53
+     },
+     {
+      "name": "Prunus padus 'Colorata'",
+      "code": 54
+     },
+     {
+      "name": "Prunus serotina",
+      "code": 55
+     },
+     {
+      "name": "Prunus sp.(czereśnia)",
+      "code": 56
+     },
+     {
+      "name": "Prunus avium",
+      "code": 57
+     },
+     {
+      "name": "Pseudotsuga sp.",
+      "code": 58
+     },
+     {
+      "name": "Pseudotsuga menziesii",
+      "code": 59
+     },
+     {
+      "name": "Pseudotsuga menziesii var.glauca",
+      "code": 60
+     },
+     {
+      "name": "Quercus sp.",
+      "code": 61
+     },
+     {
+      "name": "Quercus petraea",
+      "code": 62
+     },
+     {
+      "name": "Quercus petraea 'Insecata'",
+      "code": 63
+     },
+     {
+      "name": "Quercus petraea 'Mespilifolia'",
+      "code": 64
+     },
+     {
+      "name": "Quercus petraea 'Westcolumn'",
+      "code": 65
+     },
+     {
+      "name": "Quercus alba",
+      "code": 66
+     },
+     {
+      "name": "Quercus palustris",
+      "code": 67
+     },
+     {
+      "name": "Quercus cerris",
+      "code": 68
+     },
+     {
+      "name": "Quercus rubra",
+      "code": 69
+     },
+     {
+      "name": "Quercus rubra 'Aurea'",
+      "code": 70
+     },
+     {
+      "name": "Quercus macranthera",
+      "code": 71
+     },
+     {
+      "name": "Quercus pubescens",
+      "code": 72
+     },
+     {
+      "name": "Quercus coccinea",
+      "code": 73
+     },
+     {
+      "name": "Quercus robur",
+      "code": 74
+     },
+     {
+      "name": "Quercus robur 'Concordia'",
+      "code": 75
+     },
+     {
+      "name": "Quercus robur 'Fastigiata'",
+      "code": 76
+     },
+     {
+      "name": "Quercus robur 'Pectinata'",
+      "code": 77
+     },
+     {
+      "name": "Quercus robur 'Pendula'",
+      "code": 78
+     },
+     {
+      "name": "Quercus robur 'Fastigiate Koster''",
+      "code": 79
+     },
+     {
+      "name": "Quercus frainetto",
+      "code": 80
+     },
+     {
+      "name": "Quercus macrocarpa",
+      "code": 81
+     },
+     {
+      "name": "Cornus sp.",
+      "code": 82
+     },
+     {
+      "name": "Cornus mas",
+      "code": 83
+     },
+     {
+      "name": "Cornus kousa",
+      "code": 84
+     },
+     {
+      "name": "Cornus florida",
+      "code": 85
+     },
+     {
+      "name": "Cornus sanguinea",
+      "code": 86
+     },
+     {
+      "name": "Tetradium daniellii",
+      "code": 87
+     },
+     {
+      "name": "Gleditsia sp.",
+      "code": 88
+     },
+     {
+      "name": "Gleditsia triacanthos",
+      "code": 89
+     },
+     {
+      "name": "Gleditsia triacanthos 'Sunburst'",
+      "code": 90
+     },
+     {
+      "name": "Gleditsia triacanthos 'Inermis'",
+      "code": 91
+     },
+     {
+      "name": "Crataegus sp.",
+      "code": 92
+     },
+     {
+      "name": "Crataegus punctata",
+      "code": 93
+     },
+     {
+      "name": "Crataegus macracantha",
+      "code": 94
+     },
+     {
+      "name": "Crataegus laevigata",
+      "code": 95
+     },
+     {
+      "name": "Crataegus monogyna",
+      "code": 96
+     },
+     {
+      "name": "Crataegus monogyna 'Rosea'",
+      "code": 97
+     },
+     {
+      "name": "Crataegus monogyna 'Stricta'",
+      "code": 98
+     },
+     {
+      "name": "Crataegus × lavallei 'Carrierei'",
+      "code": 99
+     },
+     {
+      "name": "Crataegus × mordenensis 'Toba'",
+      "code": 100
+     },
+     {
+      "name": "Crataegus rhipidophylla",
+      "code": 101
+     },
+     {
+      "name": "Crataegus × media 'Alboplena'",
+      "code": 102
+     },
+     {
+      "name": "Crataegus × media 'Candidoplena'",
+      "code": 103
+     },
+     {
+      "name": "Crataegus × media 'Paul's Scarlet'",
+      "code": 104
+     },
+     {
+      "name": "Crataegus × media 'Rubra Plena'",
+      "code": 105
+     },
+     {
+      "name": "Crataegus pedicellata",
+      "code": 106
+     },
+     {
+      "name": "Crataegus persimilis ",
+      "code": 107
+     },
+     {
+      "name": "Crataegus persimilis 'Splendens'",
+      "code": 108
+     },
+     {
+      "name": "Crataegus flabellata",
+      "code": 109
+     },
+     {
+      "name": "Crataemespilus grandifolia",
+      "code": 110
+     },
+     {
+      "name": "Carpinus sp.",
+      "code": 111
+     },
+     {
+      "name": "Carpinus betulus",
+      "code": 112
+     },
+     {
+      "name": "Carpinus betulus 'Columnaris'",
+      "code": 113
+     },
+     {
+      "name": "Carpinus betulus 'Quercifolia'",
+      "code": 114
+     },
+     {
+      "name": "Cercidiphyllum sp.",
+      "code": 115
+     },
+     {
+      "name": "Cercidiphyllum japonicum",
+      "code": 116
+     },
+     {
+      "name": "Pyrus sp.",
+      "code": 117
+     },
+     {
+      "name": "Pyrus communis 'Beech Hill'",
+      "code": 118
+     },
+     {
+      "name": "Pyrus calleryana 'Chanticleer'",
+      "code": 119
+     },
+     {
+      "name": "Pyrus pyraster",
+      "code": 120
+     },
+     {
+      "name": "Pyrus salicifolia",
+      "code": 121
+     },
+     {
+      "name": "Pyrus salicifolia 'Pendula'",
+      "code": 122
+     },
+     {
+      "name": "Malus 'Royality'",
+      "code": 123
+     },
+     {
+      "name": "Malus 'John Downie'",
+      "code": 124
+     },
+     {
+      "name": "Malus sylvestris",
+      "code": 125
+     },
+     {
+      "name": "Malus sp.",
+      "code": 126
+     },
+     {
+      "name": "Malus domestica",
+      "code": 127
+     },
+     {
+      "name": "Malus baccata",
+      "code": 128
+     },
+     {
+      "name": "Malus floribunda",
+      "code": 129
+     },
+     {
+      "name": "Malus × purpurea",
+      "code": 130
+     },
+     {
+      "name": "Malus × purpurea 'Fryderyk Chopin'",
+      "code": 131
+     },
+     {
+      "name": "Malus × purpurea 'Ola'",
+      "code": 132
+     },
+     {
+      "name": "Malus × purpurea 'Rogów'",
+      "code": 133
+     },
+     {
+      "name": "Malus × scheideckeri",
+      "code": 134
+     },
+     {
+      "name": "Malus sieversii 'Niedzwetzkyana'",
+      "code": 135
+     },
+     {
+      "name": "Juniperus sp.",
+      "code": 136
+     },
+     {
+      "name": "Juniperus chinensis",
+      "code": 137
+     },
+     {
+      "name": "Juniperus communis",
+      "code": 138
+     },
+     {
+      "name": "Juniperus virginiana",
+      "code": 139
+     },
+     {
+      "name": "Juniperus virginiana 'Glauca'",
+      "code": 140
+     },
+     {
+      "name": "Juniperus virginiana 'Skyrocket'",
+      "code": 141
+     },
+     {
+      "name": "Sorbus sp.",
+      "code": 142
+     },
+     {
+      "name": "Sorbus torminalis",
+      "code": 143
+     },
+     {
+      "name": "Sorbus domestica",
+      "code": 144
+     },
+     {
+      "name": "Sorbus aria",
+      "code": 145
+     },
+     {
+      "name": "Sorbus aria 'Magnifica'",
+      "code": 146
+     },
+     {
+      "name": "Sorbus aucuparia",
+      "code": 147
+     },
+     {
+      "name": "Sorbus aucuparia 'Edulis'",
+      "code": 148
+     },
+     {
+      "name": "Sorbus aucuparia 'Fastigiata'",
+      "code": 149
+     },
+     {
+      "name": "Sorbus aucuparia 'Pendula'",
+      "code": 150
+     },
+     {
+      "name": "Sorbus latifolia",
+      "code": 151
+     },
+     {
+      "name": "Sorbus latifolia 'Atrovirens'",
+      "code": 152
+     },
+     {
+      "name": "Sorbus intermedia",
+      "code": 153
+     },
+     {
+      "name": "Fraxinus sp.",
+      "code": 154
+     },
+     {
+      "name": "Fraxinus americana 'Skyline'",
+      "code": 155
+     },
+     {
+      "name": "Fraxinus ornus",
+      "code": 156
+     },
+     {
+      "name": "Fraxinus ornus 'Ebben's Column'",
+      "code": 157
+     },
+     {
+      "name": "Fraxinus ornus 'Louisa Lady'",
+      "code": 158
+     },
+     {
+      "name": "Fraxinus pennsylvanica",
+      "code": 159
+     },
+     {
+      "name": "Fraxinus pennsylvanica 'Aucubaefolia'",
+      "code": 160
+     },
+     {
+      "name": "Fraxinus pennsylvanica 'Crispa'",
+      "code": 161
+     },
+     {
+      "name": "Fraxinus angustifolia",
+      "code": 162
+     },
+     {
+      "name": "Fraxinus excelsior",
+      "code": 163
+     },
+     {
+      "name": "Fraxinus excelsior 'Heterophylla Pendula'",
+      "code": 164
+     },
+     {
+      "name": "Fraxinus excelsior 'Jaspidea'",
+      "code": 165
+     },
+     {
+      "name": "Fraxinus excelsior 'Pendula'",
+      "code": 166
+     },
+     {
+      "name": "Fraxinus excelsior f. diverisifolia",
+      "code": 167
+     },
+     {
+      "name": "Abies sp.",
+      "code": 168
+     },
+     {
+      "name": "Abies cephalonica",
+      "code": 169
+     },
+     {
+      "name": "Abies concolor",
+      "code": 170
+     },
+     {
+      "name": "Abies nordmanniana",
+      "code": 171
+     },
+     {
+      "name": "Abies koreana",
+      "code": 172
+     },
+     {
+      "name": "Abies koreana 'Silberlocke'",
+      "code": 173
+     },
+     {
+      "name": "Abies homolepis",
+      "code": 174
+     },
+     {
+      "name": "Abies grandis ",
+      "code": 175
+     },
+     {
+      "name": "Abies alba",
+      "code": 176
+     },
+     {
+      "name": "Abies procera ",
+      "code": 177
+     },
+     {
+      "name": "Abies procera 'Glauca'",
+      "code": 178
+     },
+     {
+      "name": "Abies veitchii",
+      "code": 179
+     },
+     {
+      "name": "Viburnum sp.",
+      "code": 180
+     },
+     {
+      "name": "Viburnum opulus",
+      "code": 181
+     },
+     {
+      "name": "Caragana sp.",
+      "code": 182
+     },
+     {
+      "name": "Caragana arborescens 'Lorbergii'",
+      "code": 183
+     },
+     {
+      "name": "Caragana arborescens 'Pendula'",
+      "code": 184
+     },
+     {
+      "name": "Caragana arborescens 'Walker'",
+      "code": 185
+     },
+     {
+      "name": "Castanea sp.",
+      "code": 186
+     },
+     {
+      "name": "Castanea sativa",
+      "code": 187
+     },
+     {
+      "name": "Aesculus sp.",
+      "code": 188
+     },
+     {
+      "name": "Aesculus × carnea",
+      "code": 189
+     },
+     {
+      "name": "Aesculus × carnea 'Briotii'",
+      "code": 190
+     },
+     {
+      "name": "Aesculus glabra",
+      "code": 191
+     },
+     {
+      "name": "Aesculus turbinata",
+      "code": 192
+     },
+     {
+      "name": "Aesculus pavia",
+      "code": 193
+     },
+     {
+      "name": "Aesculus hippocastanum",
+      "code": 194
+     },
+     {
+      "name": "Aesculus hippocastanum 'Baumanni'",
+      "code": 195
+     },
+     {
+      "name": "Aesculus hippocastanum 'Pyramidalis'",
+      "code": 196
+     },
+     {
+      "name": "Aesculus flava",
+      "code": 197
+     },
+     {
+      "name": "Acer sp.",
+      "code": 198
+     },
+     {
+      "name": "Acer saccharum",
+      "code": 199
+     },
+     {
+      "name": "Acer rubrum",
+      "code": 200
+     },
+     {
+      "name": "Acer rubrum 'Scanlon'",
+      "code": 201
+     },
+     {
+      "name": "Acer pseudoplatanus",
+      "code": 202
+     },
+     {
+      "name": "Acer pseudoplatanus 'Worley'",
+      "code": 203
+     },
+     {
+      "name": "Acer pseudoplatanus 'Atropurpureum'",
+      "code": 204
+     },
+     {
+      "name": "Acer pseudoplatanus 'Erecta'",
+      "code": 205
+     },
+     {
+      "name": "Acer pseudoplatanus 'Leopoldii'",
+      "code": 206
+     },
+     {
+      "name": "Acer pseudoplatanus 'Brilantissimum'",
+      "code": 207
+     },
+     {
+      "name": "Acer negundo",
+      "code": 208
+     },
+     {
+      "name": "Acer negundo 'Aureovariegatum'",
+      "code": 209
+     },
+     {
+      "name": "Acer negundo 'Flamingo'",
+      "code": 210
+     },
+     {
+      "name": "Acer negundo 'Odessanum'",
+      "code": 211
+     },
+     {
+      "name": "Acer negundo 'Tadeusz Szymanowski'",
+      "code": 212
+     },
+     {
+      "name": "Acer negundo 'Variegatum'",
+      "code": 213
+     },
+     {
+      "name": "Acer maximowiczianum",
+      "code": 214
+     },
+     {
+      "name": "Acer circinatum",
+      "code": 215
+     },
+     {
+      "name": "Acer palmatum",
+      "code": 216
+     },
+     {
+      "name": "Acer palmatum 'Atropurpureum'",
+      "code": 217
+     },
+     {
+      "name": "Acer pensylvanicum",
+      "code": 218
+     },
+     {
+      "name": "Acer campestre",
+      "code": 219
+     },
+     {
+      "name": "Acer campestre 'Elsrijk'",
+      "code": 220
+     },
+     {
+      "name": "Acer campestre 'Nanum'",
+      "code": 221
+     },
+     {
+      "name": "Acer platanoides",
+      "code": 222
+     },
+     {
+      "name": "Acer platanoides 'Drummondii'",
+      "code": 223
+     },
+     {
+      "name": "Acer platanoides 'Fassen's Black'",
+      "code": 224
+     },
+     {
+      "name": "Acer platanoides 'Globosum'",
+      "code": 225
+     },
+     {
+      "name": "Acer platanoides 'Palmatifidum'",
+      "code": 226
+     },
+     {
+      "name": "Acer platanoides 'Prof. Tadeusz Szczęsny'",
+      "code": 227
+     },
+     {
+      "name": "Acer platanoides 'Reitenbachii'",
+      "code": 228
+     },
+     {
+      "name": "Acer platanoides 'Schwedleri'",
+      "code": 229
+     },
+     {
+      "name": "Acer saccharinum",
+      "code": 230
+     },
+     {
+      "name": "Acer saccharinum 'Laciniatum Wieri'",
+      "code": 231
+     },
+     {
+      "name": "Acer saccharinum 'Pyramidale'",
+      "code": 232
+     },
+     {
+      "name": "Acer griseum",
+      "code": 233
+     },
+     {
+      "name": "Acer tataricum",
+      "code": 234
+     },
+     {
+      "name": "Acer tataricum subsp. Ginnala",
+      "code": 235
+     },
+     {
+      "name": "Gymnocladus sp.",
+      "code": 236
+     },
+     {
+      "name": "Gymnocladus dioica",
+      "code": 237
+     },
+     {
+      "name": "Phellodendron sp.",
+      "code": 238
+     },
+     {
+      "name": "Phellodendron amurense",
+      "code": 239
+     },
+     {
+      "name": "Corylus sp.",
+      "code": 240
+     },
+     {
+      "name": "Corylus colurna",
+      "code": 241
+     },
+     {
+      "name": "Syringa sp.",
+      "code": 242
+     },
+     {
+      "name": "Syringa vulgaris",
+      "code": 243
+     },
+     {
+      "name": "Tilia sp.",
+      "code": 244
+     },
+     {
+      "name": "Tilia americana",
+      "code": 245
+     },
+     {
+      "name": "Tilia cordata",
+      "code": 246
+     },
+     {
+      "name": "Tilia cordata 'Greenspire'",
+      "code": 247
+     },
+     {
+      "name": "Tilia cordata 'Bohlje'",
+      "code": 248
+     },
+     {
+      "name": "Tilia × europaea",
+      "code": 249
+     },
+     {
+      "name": "Tilia × europaea 'Pallida'",
+      "code": 250
+     },
+     {
+      "name": "Tilia × europaea 'Wratislaviensis'",
+      "code": 251
+     },
+     {
+      "name": "Tilia 'Euchlora'",
+      "code": 252
+     },
+     {
+      "name": "Tilia tomentosa",
+      "code": 253
+     },
+     {
+      "name": "Tilia tomentosa 'Brabant'",
+      "code": 254
+     },
+     {
+      "name": "Tilia tomentosa 'Pendula'",
+      "code": 255
+     },
+     {
+      "name": "Tilia tomentosa 'Varsaviensis'",
+      "code": 256
+     },
+     {
+      "name": "Tilia platyphyllos",
+      "code": 257
+     },
+     {
+      "name": "Tilia platyphyllos 'Aurea'",
+      "code": 258
+     },
+     {
+      "name": "Magnolia sp.",
+      "code": 259
+     },
+     {
+      "name": "Magnolia acuminata",
+      "code": 260
+     },
+     {
+      "name": "Magnolia stellata",
+      "code": 261
+     },
+     {
+      "name": "Magnolia kobus",
+      "code": 262
+     },
+     {
+      "name": "Magnolia kobus 'Wadas Memory'",
+      "code": 263
+     },
+     {
+      "name": "Magnolia tripetala",
+      "code": 264
+     },
+     {
+      "name": "Magnolia liliiflora",
+      "code": 265
+     },
+     {
+      "name": "Magnolia liliiflora 'Nigra'",
+      "code": 266
+     },
+     {
+      "name": "Magnolia sieboldii",
+      "code": 267
+     },
+     {
+      "name": "Magnolia × soulangeana",
+      "code": 268
+     },
+     {
+      "name": "Magnolia × soulangeana 'Alexandrina'",
+      "code": 269
+     },
+     {
+      "name": "Magnolia × soulangeana 'Amabilis'",
+      "code": 270
+     },
+     {
+      "name": "Magnolia × soulangeana 'Lennei'",
+      "code": 271
+     },
+     {
+      "name": "Magnolia × soulangeana 'Speciosa'",
+      "code": 272
+     },
+     {
+      "name": "Sequoiadendron giganteum",
+      "code": 273
+     },
+     {
+      "name": "Metasequoia sp.",
+      "code": 274
+     },
+     {
+      "name": "Metasequoia glyptostroboides",
+      "code": 275
+     },
+     {
+      "name": "Prunus sp.(migdałek)",
+      "code": 276
+     },
+     {
+      "name": "Prunus triloba",
+      "code": 277
+     },
+     {
+      "name": "Prunus dulcis",
+      "code": 278
+     },
+     {
+      "name": "Ginkgo sp.",
+      "code": 279
+     },
+     {
+      "name": "Ginkgo biloba",
+      "code": 280
+     },
+     {
+      "name": "Ginkgo biloba 'Fastigiata'",
+      "code": 281
+     },
+     {
+      "name": "Larix sp.",
+      "code": 282
+     },
+     {
+      "name": "Larix archangelica",
+      "code": 283
+     },
+     {
+      "name": "Larix × marschlinsii",
+      "code": 284
+     },
+     {
+      "name": "Larix decidua",
+      "code": 285
+     },
+     {
+      "name": "Larix decidua subsp. polonica",
+      "code": 286
+     },
+     {
+      "name": "Larix kaempferi",
+      "code": 287
+     },
+     {
+      "name": "Larix kaempferi 'Diana'",
+      "code": 288
+     },
+     {
+      "name": "Larix kaempferi 'Pendula'",
+      "code": 289
+     },
+     {
+      "name": "Prunus armeniaca",
+      "code": 290
+     },
+     {
+      "name": "Prunus sp.(morela)",
+      "code": 291
+     },
+     {
+      "name": "Morus sp.",
+      "code": 292
+     },
+     {
+      "name": "Morus alba",
+      "code": 293
+     },
+     {
+      "name": "Morus alba 'Pendula'",
+      "code": 294
+     },
+     {
+      "name": "Hamamelis sp.",
+      "code": 295
+     },
+     {
+      "name": "Elaeagnus sp.",
+      "code": 296
+     },
+     {
+      "name": "Elaeagnus angustifolia",
+      "code": 297
+     },
+     {
+      "name": "Alnus sp.",
+      "code": 298
+     },
+     {
+      "name": "Alnus glutinosa",
+      "code": 299
+     },
+     {
+      "name": "Alnus glutinosa 'Laciniata'",
+      "code": 300
+     },
+     {
+      "name": "Alnus incana",
+      "code": 301
+     },
+     {
+      "name": "Alnus incana 'Laciniata'",
+      "code": 302
+     },
+     {
+      "name": "Alnus incana 'Pendula'",
+      "code": 303
+     },
+     {
+      "name": "Juglans sp.",
+      "code": 304
+     },
+     {
+      "name": "Juglans ailantifolia",
+      "code": 305
+     },
+     {
+      "name": "Juglans ailantifolia 'Cordiformis'",
+      "code": 306
+     },
+     {
+      "name": "Juglans nigra",
+      "code": 307
+     },
+     {
+      "name": "Juglans cinerea",
+      "code": 308
+     },
+     {
+      "name": "Juglans regia",
+      "code": 309
+     },
+     {
+      "name": "Carya cordiformis",
+      "code": 310
+     },
+     {
+      "name": "Carya ovata",
+      "code": 311
+     },
+     {
+      "name": "Carya laciniosa",
+      "code": 312
+     },
+     {
+      "name": "Carya sp.",
+      "code": 313
+     },
+     {
+      "name": "Ilex sp.",
+      "code": 314
+     },
+     {
+      "name": "Ptelea sp.",
+      "code": 315
+     },
+     {
+      "name": "Ptelea trifoliata",
+      "code": 316
+     },
+     {
+      "name": "Cydonia sp.",
+      "code": 317
+     },
+     {
+      "name": "Cydonia oblonga",
+      "code": 318
+     },
+     {
+      "name": "Platanus sp.",
+      "code": 319
+     },
+     {
+      "name": "Platanus × hispanica",
+      "code": 320
+     },
+     {
+      "name": "Platanus orientalis",
+      "code": 321
+     },
+     {
+      "name": "Robinia sp.",
+      "code": 322
+     },
+     {
+      "name": "Robinia pseudoacacia",
+      "code": 323
+     },
+     {
+      "name": "Robinia pseudoacacia 'Bessoniana'",
+      "code": 324
+     },
+     {
+      "name": "Robinia pseudoacacia 'Frisia'",
+      "code": 325
+     },
+     {
+      "name": "Robinia pseudoacacia 'Rozynskiana'",
+      "code": 326
+     },
+     {
+      "name": "Robinia pseudoacacia 'Sandraudiga'",
+      "code": 327
+     },
+     {
+      "name": "Robinia pseudoacacia 'Umbraculifera'",
+      "code": 328
+     },
+     {
+      "name": "Robinia pseudoacacia 'Tortuosa'",
+      "code": 329
+     },
+     {
+      "name": "Robinia viscosa",
+      "code": 330
+     },
+     {
+      "name": "Robinia × margaretta 'Pink Cascade'",
+      "code": 331
+     },
+     {
+      "name": "Hippophae sp.",
+      "code": 332
+     },
+     {
+      "name": "Hippophae rhamnoides",
+      "code": 333
+     },
+     {
+      "name": "Pterocarya sp.",
+      "code": 334
+     },
+     {
+      "name": "Pterocarya fraxinifolia",
+      "code": 335
+     },
+     {
+      "name": "Pinus sp.",
+      "code": 338
+     },
+     {
+      "name": "Pinus banksiana",
+      "code": 339
+     },
+     {
+      "name": "Pinus mugo",
+      "code": 340
+     },
+     {
+      "name": "Pinus nigra",
+      "code": 341
+     },
+     {
+      "name": "Pinus nigra 'Pyramidalis'",
+      "code": 342
+     },
+     {
+      "name": "Pinus rhaetica Brūgger",
+      "code": 343
+     },
+     {
+      "name": "Pinus koraiensis",
+      "code": 344
+     },
+     {
+      "name": "Pinus cembra",
+      "code": 345
+     },
+     {
+      "name": "Pinus sylvestris",
+      "code": 346
+     },
+     {
+      "name": "Pinus sylvestris 'Fastigiata'",
+      "code": 347
+     },
+     {
+      "name": "Pinus peuce",
+      "code": 348
+     },
+     {
+      "name": "Pinus rigida",
+      "code": 349
+     },
+     {
+      "name": "Pinus strobus",
+      "code": 350
+     },
+     {
+      "name": "Pinus ponderosa",
+      "code": 351
+     },
+     {
+      "name": "Cladrastis kentukea",
+      "code": 352
+     },
+     {
+      "name": "Rhus sp.",
+      "code": 353
+     },
+     {
+      "name": "Rhus typhina",
+      "code": 354
+     },
+     {
+      "name": "Rhus typhina 'Dissecta'",
+      "code": 355
+     },
+     {
+      "name": "Catalpa sp.",
+      "code": 356
+     },
+     {
+      "name": "Catalpa bignonioides",
+      "code": 357
+     },
+     {
+      "name": "Catalpa speciosa",
+      "code": 358
+     },
+     {
+      "name": "Catalpa ovata",
+      "code": 359
+     },
+     {
+      "name": "Rhamnus sp.",
+      "code": 360
+     },
+     {
+      "name": "Rhamnus cathartica",
+      "code": 361
+     },
+     {
+      "name": "Prunus sp.(śliwa)",
+      "code": 362
+     },
+     {
+      "name": "Prunus cerasifera",
+      "code": 363
+     },
+     {
+      "name": "Prunus cerasifera 'Nigra'",
+      "code": 364
+     },
+     {
+      "name": "Prunus cerasifera 'Pissardii'",
+      "code": 365
+     },
+     {
+      "name": "Prunus cerasifera 'Woodii'",
+      "code": 366
+     },
+     {
+      "name": "Prunus domestica",
+      "code": 367
+     },
+     {
+      "name": "Prunus domestica subsp. italica",
+      "code": 368
+     },
+     {
+      "name": "Prunus domestica subsp. syriaca",
+      "code": 369
+     },
+     {
+      "name": "Prunus domestica subsp. insititia",
+      "code": 370
+     },
+     {
+      "name": "Prunus domestica subsp. domestica",
+      "code": 371
+     },
+     {
+      "name": "Prunus × cistena",
+      "code": 372
+     },
+     {
+      "name": "Prunus spinosa",
+      "code": 373
+     },
+     {
+      "name": "Picea sp.",
+      "code": 374
+     },
+     {
+      "name": "Picea glauca",
+      "code": 375
+     },
+     {
+      "name": "Picea glauca 'Conica'",
+      "code": 376
+     },
+     {
+      "name": "Picea breweriana",
+      "code": 377
+     },
+     {
+      "name": "Picea orientalis",
+      "code": 378
+     },
+     {
+      "name": "Picea orientalis 'Aurea'",
+      "code": 379
+     },
+     {
+      "name": "Picea pungens",
+      "code": 380
+     },
+     {
+      "name": "Picea pungens 'Glauca'",
+      "code": 381
+     },
+     {
+      "name": "Picea pungens 'Hoopsii'",
+      "code": 382
+     },
+     {
+      "name": "Picea abies",
+      "code": 383
+     },
+     {
+      "name": "Picea abies 'Inversa'",
+      "code": 384
+     },
+     {
+      "name": "Picea abies 'Viminalis'",
+      "code": 385
+     },
+     {
+      "name": "Picea abies 'Virgata'",
+      "code": 386
+     },
+     {
+      "name": "Picea abies subsp. obovata",
+      "code": 387
+     },
+     {
+      "name": "Picea omorika",
+      "code": 388
+     },
+     {
+      "name": "Picea sitchensis",
+      "code": 389
+     },
+     {
+      "name": "Populus sp.",
+      "code": 390
+     },
+     {
+      "name": "Populus × berolinensis",
+      "code": 391
+     },
+     {
+      "name": "Populus alba",
+      "code": 392
+     },
+     {
+      "name": "Populus alba 'Pyramidalis'",
+      "code": 393
+     },
+     {
+      "name": "Populus alba 'Nivea'",
+      "code": 394
+     },
+     {
+      "name": "Populus nigra",
+      "code": 395
+     },
+     {
+      "name": "Populus nigra 'Italica'",
+      "code": 396
+     },
+     {
+      "name": "Populus × canadensis",
+      "code": 397
+     },
+     {
+      "name": "Populus × canadensis 'Grandis'",
+      "code": 398
+     },
+     {
+      "name": "Populus × canadensis 'Marilandica'",
+      "code": 399
+     },
+     {
+      "name": "Populus × canadensis 'Robusta'",
+      "code": 400
+     },
+     {
+      "name": "Populus × canadensis 'Serotina'",
+      "code": 401
+     },
+     {
+      "name": "Populus maximowiczii",
+      "code": 402
+     },
+     {
+      "name": "Populus tremula",
+      "code": 403
+     },
+     {
+      "name": "Populus simonii",
+      "code": 404
+     },
+     {
+      "name": "Populus simonii 'Fastigiata'",
+      "code": 405
+     },
+     {
+      "name": "Populus × canescens",
+      "code": 406
+     },
+     {
+      "name": "Euonymus europaeus",
+      "code": 407
+     },
+     {
+      "name": "Euonymus sp.",
+      "code": 408
+     },
+     {
+      "name": "Liriodendron sp.",
+      "code": 409
+     },
+     {
+      "name": "Liriodendron tulipifera",
+      "code": 410
+     },
+     {
+      "name": "Ulmus sp.",
+      "code": 411
+     },
+     {
+      "name": "Ulmus 'Camperdownii'",
+      "code": 412
+     },
+     {
+      "name": "Ulmus 'Dampieri'",
+      "code": 413
+     },
+     {
+      "name": "Ulmus 'Wredei'",
+      "code": 414
+     },
+     {
+      "name": "Ulmus glabra ",
+      "code": 415
+     },
+     {
+      "name": "Ulmus glabra 'Exoniensis'",
+      "code": 416
+     },
+     {
+      "name": "Ulmus × hollandica",
+      "code": 417
+     },
+     {
+      "name": "Ulmus minor",
+      "code": 418
+     },
+     {
+      "name": "Ulmus pumila",
+      "code": 419
+     },
+     {
+      "name": "Ulmus laevis ",
+      "code": 420
+     },
+     {
+      "name": "Celtis sp.",
+      "code": 421
+     },
+     {
+      "name": "Celtis occidentalis",
+      "code": 422
+     },
+     {
+      "name": "Salix sp.",
+      "code": 423
+     },
+     {
+      "name": "Salix babylonica",
+      "code": 424
+     },
+     {
+      "name": "Salix babylonica 'Tortuosa'",
+      "code": 425
+     },
+     {
+      "name": "Salix alba",
+      "code": 426
+     },
+     {
+      "name": "Salix integra 'Hakuro Nishiki'",
+      "code": 427
+     },
+     {
+      "name": "Salix caprea",
+      "code": 428
+     },
+     {
+      "name": "Salix caprea 'Klimarnock'",
+      "code": 429
+     },
+     {
+      "name": "Salix pentandra",
+      "code": 431
+     },
+     {
+      "name": "Salix triandra",
+      "code": 432
+     },
+     {
+      "name": "Salix × sepulcralis 'Chrysocoma'",
+      "code": 433
+     },
+     {
+      "name": "Salix purpurea",
+      "code": 434
+     },
+     {
+      "name": "Salix purpurea 'Pendula'",
+      "code": 435
+     },
+     {
+      "name": "Prunus sp.(wiśnia)",
+      "code": 436
+     },
+     {
+      "name": "Prunus × eminens",
+      "code": 437
+     },
+     {
+      "name": "Prunus × eminens 'Umbraculifera'",
+      "code": 438
+     },
+     {
+      "name": "Prunus serrulata",
+      "code": 439
+     },
+     {
+      "name": "Prunus serrulata 'Amanogawa'",
+      "code": 440
+     },
+     {
+      "name": "Prunus serrulata 'Kanzan'",
+      "code": 441
+     },
+     {
+      "name": "Prunus serrulata 'Kiku-shidare-zakura'",
+      "code": 442
+     },
+     {
+      "name": "Prunus serrulata 'Ukon'",
+      "code": 443
+     },
+     {
+      "name": "Prunus cerasus",
+      "code": 444
+     },
+     {
+      "name": "Prunus subhirtella",
+      "code": 445
+     },
+     {
+      "name": "Prunus subhirtella 'Jugatsu-zakura'",
+      "code": 446
+     },
+     {
+      "name": "Prunus mahaleb",
+      "code": 447
+     },
+     {
+      "name": "Laburnum sp.",
+      "code": 448
+     },
+     {
+      "name": "Laburnum anagyroides",
+      "code": 449
+     },
+     {
+      "name": "Laburnum × watereri",
+      "code": 450
+     },
+     {
+      "name": "Thuja sp.",
+      "code": 451
+     },
+     {
+      "name": "Thuja plicata",
+      "code": 452
+     },
+     {
+      "name": "Thuja plicata 'Kórnik'",
+      "code": 453
+     },
+     {
+      "name": "Thuja plicata 'Zebrina'",
+      "code": 454
+     },
+     {
+      "name": "Thuja occidentalis",
+      "code": 455
+     },
+     {
+      "name": "Thuja occidentalis 'Aureospicata'",
+      "code": 456
+     },
+     {
+      "name": "Thuja occidentalis 'Aurescens'",
+      "code": 457
+     },
+     {
+      "name": "Thuja occidentalis 'Brabant'",
+      "code": 458
+     },
+     {
+      "name": "Thuja occidentalis 'Fastigiata'",
+      "code": 459
+     },
+     {
+      "name": "Thuja occidentalis 'Holmstrup'",
+      "code": 460
+     },
+     {
+      "name": "Thuja occidentalis 'Smaragd'",
+      "code": 461
+     },
+     {
+      "name": "Thuja occidentalis 'Spiralis'",
+      "code": 462
+     },
+     {
+      "name": "Thuja occidentalis 'Sunkist'",
+      "code": 463
+     },
+     {
+      "name": "Thuja occidentalis 'Yellow Ribbon'",
+      "code": 464
+     },
+     {
+      "name": "Thujopsis dolabrata",
+      "code": 465
+     },
+     {
+      "name": "Thujopsis sp.",
+      "code": 466
+     },
+     {
+      "name": "Quercus robur 'Columnaris'",
+      "code": 467
+     },
+     {
+      "name": "Prunus serrulata 'Fugenzo'",
+      "code": 468
+     },
+     {
+      "name": "Salix alba 'Tristis'",
+      "code": 469
+     },
+     {
+      "name": "Carpinus betulus 'Fastigiata'",
+      "code": 470
+     },
+     {
+      "name": "Catalpa bignonioides 'Aurea'",
+      "code": 471
+     },
+     {
+      "name": "Catalpa bignonioides 'Nana'",
+      "code": 472
+     },
+     {
+      "name": "Prunus serrulata 'Royal Burgundy''",
+      "code": 473
+     },
+     {
+      "name": "Acer platanoides 'Laciniatum'",
+      "code": 474
+     },
+     {
+      "name": "Prunus campanulata 'Okame'",
+      "code": 475
+     },
+     {
+      "name": "Davidia involucrata",
+      "code": 476
+     },
+     {
+      "name": "Magnolia × soulangeana 'Galaxy'",
+      "code": 477
+     },
+     {
+      "name": "Magnolia × soulangeana 'Alba Superba'",
+      "code": 478
+     },
+     {
+      "name": "Cedrus deodara",
+      "code": 479
+     },
+     {
+      "name": "Koelreuteria paniculata",
+      "code": 480
+     },
+     {
+      "name": "Aralia elata",
+      "code": 481
+     },
+     {
+      "name": "Sorbus thuringiaca 'Fastigiata'",
+      "code": 482
+     },
+     {
+      "name": "Crataemespilus grandiflora",
+      "code": 483
+     },
+     {
+      "name": "Chamaecyparis pisifera 'Filifera'",
+      "code": 484
+     },
+     {
+      "name": "Chamaecyparis pisifera 'Plumosa'",
+      "code": 485
+     },
+     {
+      "name": "Cornus alba",
+      "code": 486
+     },
+     {
+      "name": "Crataegus × media",
+      "code": 487
+     },
+     {
+      "name": "Juniperus × pfitzeriana",
+      "code": 488
+     },
+     {
+      "name": "Abies balsamea",
+      "code": 489
+     },
+     {
+      "name": "Abies concolor",
+      "code": 490
+     },
+     {
+      "name": "Caragana arborescens",
+      "code": 491
+     },
+     {
+      "name": "Pinus mugo Turra",
+      "code": 492
+     },
+     {
+      "name": "Pinus mugo subsp. uncinata",
+      "code": 493
+     },
+     {
+      "name": "Magnolia denudata 'Desrouss'",
+      "code": 494
+     },
+     {
+      "name": "Larix decidua 'Pendula'",
+      "code": 495
+     },
+     {
+      "name": "Robinia × ambigua",
+      "code": 496
+     },
+     {
+      "name": "Picea mariana",
+      "code": 497
+     },
+     {
+      "name": "Salix × smithiana",
+      "code": 498
+     },
+     {
+      "name": "Laburnum alpinum",
+      "code": 499
+     },
+     {
+      "name": "Thuja occidentalis 'Globosa'",
+      "code": 500
+     },
+     {
+      "name": "Styphnolobium sp.",
+      "code": 336
+     },
+     {
+      "name": "Styphnolobium japonicum",
+      "code": 337
+     },
+     {
+      "name": "Salix × fragilis",
+      "code": 430
+     },
+     {
+      "name": "Juniperus scopulorum",
+      "code": 501
+     },
+     {
+      "name": "Corylus avellana",
+      "code": 502
+     },
+     {
+      "name": "Taxus × media",
+      "code": 503
+     },
+     {
+      "name": "Tilia cordata 'Rancho'",
+      "code": 504
+     },
+     {
+      "name": "Crataegus laevigata 'Paul's Scarlet'",
+      "code": 505
+     },
+     {
+      "name": "Pyrus communis",
+      "code": 506
+     },
+     {
+      "name": "Platycladus orientalis(=Thuja orientalis)",
+      "code": 7
+     },
+     {
+      "name": "Ulmus × hybrida 'Lobel'",
+      "code": 507
+     },
+     {
+      "name": "Malus prunifolia var. rinki",
+      "code": 508
+     },
+     {
+      "name": "Hamamelis mollis",
+      "code": 509
+     },
+     {
+      "name": "Hamamelis virginiana",
+      "code": 510
+     },
+     {
+      "name": "Rohanii'  Fagus sylvatica 'Rohanii'",
+      "code": 511
+     },
+     {
+      "name": "Acer campestre 'Queen Elizabeth'",
+      "code": 512
+     },
+     {
+      "name": "Tilia platyphyllos 'Fastigiata'",
+      "code": 513
+     },
+     {
+      "name": "Betula pendula 'Tristis'",
+      "code": 514
+     },
+     {
+      "name": "Alnus glutinosa 'Imperialis'",
+      "code": 515
+     },
+     {
+      "name": "Parrotia persica",
+      "code": 516
+     }
+    ],
+    "mergePolicy": "esriMPTDefaultValue",
+    "splitPolicy": "esriSPTDefaultValue"
+   }
+  },
+  {
+   "name": "obwod_100",
+   "type": "esriFieldTypeInteger",
+   "alias": "Obwód na wysokości 100 [cm]",
+   "domain": null
+  },
+  {
+   "name": "najnowszy_obwod_130",
+   "type": "esriFieldTypeString",
+   "alias": "Obwód na wysokości 130 [cm]",
+   "length": 255,
+   "domain": null
+  },
+  {
+   "name": "data_sadz",
+   "type": "esriFieldTypeDate",
+   "alias": "Data sadzenia",
+   "length": 8,
+   "domain": null
+  },
+  {
+   "name": "data_gwar",
+   "type": "esriFieldTypeDate",
+   "alias": "Data końca gwarancji",
+   "length": 8,
+   "domain": null
+  },
+  {
+   "name": "nr_arb",
+   "type": "esriFieldTypeString",
+   "alias": "Numer arbotagu",
+   "length": 80,
+   "domain": null
+  },
+  {
+   "name": "id_globalny",
+   "type": "esriFieldTypeInteger",
+   "alias": "Identyfikator globalny ze śr. mobilnego",
+   "domain": null
+  },
+  {
+   "name": "Shape",
+   "type": "esriFieldTypeGeometry",
+   "alias": "SHAPE",
+   "domain": null
+  },
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeOID",
+   "alias": "Identyfikator globalny",
+   "domain": null
+  }
+ ],
+ "geometryField": {
+  "name": "Shape",
+  "type": "esriFieldTypeGeometry",
+  "alias": "SHAPE"
+ },
+ "indexes": null,
+ "subtypes": [],
+ "relationships": [],
+ "canModifyLayer": true,
+ "canScaleSymbols": false,
+ "hasLabels": false,
+ "capabilities": "Map,Query,Data",
+ "maxRecordCount": 2000,
+ "maxSelectionCount": 2000,
+ "supportsStatistics": true,
+ "supportsExceedsLimitStatistics": true,
+ "supportsAdvancedQueries": true,
+ "hasZ": true,
+ "supportedQueryFormats": "JSON, geoJSON, PBF",
+ "isDataVersioned": false,
+ "ownershipBasedAccessControlForFeatures": {"allowOthersToQuery": true},
+ "useStandardizedQueries": true,
+ "supportedSpatialRelationships": [
+  "esriSpatialRelIntersects",
+  "esriSpatialRelContains",
+  "esriSpatialRelCrosses",
+  "esriSpatialRelEnvelopeIntersects",
+  "esriSpatialRelIndexIntersects",
+  "esriSpatialRelOverlaps",
+  "esriSpatialRelTouches",
+  "esriSpatialRelWithin",
+  "esriSpatialRelRelation"
+ ],
+ "advancedQueryCapabilities": {
+  "useStandardizedQueries": true,
+  "supportsStatistics": true,
+  "supportsPercentileStatistics": true,
+  "supportsHavingClause": true,
+  "supportsOrderBy": true,
+  "supportsDistinct": true,
+  "supportsCountDistinct": true,
+  "supportsAdvancedQueryRelated": true,
+  "supportsQueryRelatedPagination": true,
+  "supportsPagination": true,
+  "supportsLod": false,
+  "supportsQueryWithLodSR": false,
+  "supportsTrueCurve": true,
+  "supportsQueryWithDatumTransformation": true,
+  "supportsReturningQueryExtent": true,
+  "supportsQueryWithDistance": true,
+  "supportsSqlExpression": true,
+  "supportsTimeRelation": true,
+  "supportsSqlFormat": false,
+  "supportsQueryAnalytic": true,
+  "supportsCurrentUserQueries": true
+ },
+ "supportsDatumTransformation": true,
+ "advancedQueryAnalyticCapabilities": {
+  "supportsLinearRegression": true,
+  "supportsAsync": false,
+  "supportsPercentileAnalytic": true
+ },
+ "dateFieldsTimeReference": null,
+ "preferredTimeReference": null,
+ "datesInUnknownTimezone": false,
+ "hasMetadata": true,
+ "isDataArchived": false,
+ "archivingInfo": {
+  "supportsQueryWithHistoricMoment": false,
+  "startArchivingMoment": -1
+ },
+ "supportsCoordinatesQuantization": true,
+ "supportsDynamicLegends": true,
+ "serviceItemId": "6afecfaa747b474a95e50d37e7922fb8"
+}

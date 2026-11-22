@@ -1,43 +1,49 @@
 import * as THREE from '../vendor/three.module.js';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=1.29.0';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=1.30.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.29.0';
-import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.29.0';
-import {houseModelFrame} from './house-model.js?v=1.29.0';
-import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.29.0';
-import { addHouseRenovation } from './scene-house-renovation.js?v=1.29.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.29.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.29.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.29.0';
-import { sampledRoofFaces } from './shade.js?v=1.29.0';
-import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.29.0';
-import { renderBudget } from './render-quality.js?v=1.29.0';
-import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.29.0';
-import { createHedgeVegetation } from './scene-vegetation.js?v=1.29.0';
-import { createPoolReflections } from './scene-reflections.js?v=1.29.0';
-import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.29.0';
-import { getDesignStyle } from './design-styles.js?v=1.29.0';
-import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim } from './scene-style-details.js?v=1.29.0';
-import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.29.0';
-import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.29.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.29.0';
-import { getSiteProfile } from './sites.js?v=1.29.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.29.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.29.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.29.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.29.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.29.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.29.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.29.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.29.0';
-import { gardenDimensions } from './dimensions.js?v=1.29.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.29.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.29.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.29.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.29.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.29.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.29.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.29.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.30.0';
+import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.30.0';
+import {houseModelFrame} from './house-model.js?v=1.30.0';
+import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.30.0';
+import { addHouseRenovation } from './scene-house-renovation.js?v=1.30.0';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.30.0';
+import { entranceAccessLayout } from './entrance-access.js?v=1.30.0';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.30.0';
+import { sampledRoofFaces } from './shade.js?v=1.30.0';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.30.0';
+import { renderBudget } from './render-quality.js?v=1.30.0';
+import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.30.0';
+import { createHedgeVegetation } from './scene-vegetation.js?v=1.30.0';
+import { createPoolReflections } from './scene-reflections.js?v=1.30.0';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.30.0';
+import { getDesignStyle } from './design-styles.js?v=1.30.0';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim } from './scene-style-details.js?v=1.30.0';
+import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.30.0';
+import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.30.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.30.0';
+import { getSiteProfile } from './sites.js?v=1.30.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.30.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.30.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.30.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.30.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.30.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.30.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.30.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.30.0';
+import { gardenDimensions } from './dimensions.js?v=1.30.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.30.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.30.0';
+import {existingCanopyRecords} from './existing-vegetation.js?v=1.30.0';
+import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.30.0';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.30.0';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.30.0';
+import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.30.0';
+import {projectContextGroundUVs} from './context-ground.js?v=1.30.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.30.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.30.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.30.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.30.0';
+import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.30.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -126,6 +132,8 @@ function isWindowlessFacade(a,b,building,observation){
  * A user-recorded blank wall suppresses the shared placements, so panes,
  * frames, mullions and sills all disappear in both WebGL and SVG views. */
 export function contextFacadePlacements(building, origin, distanceLimit = 160, observation = null) {
+  const observed=observedFacadePlacements(building,origin,distanceLimit,observation);
+  if(observed!==null)return observed;
   const ring=closeRing(building.footprint||[]),base=Number(building.baseZ),roof=Number(building.roofZ);
   if(ring.length<3||!Number.isFinite(base)||!Number.isFinite(roof)||roof<=base)return [];
   const c=centroid(ring),distance=Math.hypot(c[0]-origin[0],c[1]-origin[1]);
@@ -345,6 +353,13 @@ export function createScene(container, data, callbacks = {}) {
   standard('windowFrame', '#d6d9cb', { roughness: .65 });
   standard('road', '#b6b9b0');
   standard('walkway', '#d4d1c2');
+  standard('contextGround', '#8b9679');
+  if(data.contextGroundColour&&!svgMode){
+    const groundMap=new THREE.TextureLoader().load(new URL('../data/sternicza-ground-colour.png',import.meta.url).href,()=>requestRender());
+    groundMap.colorSpace=THREE.SRGBColorSpace;groundMap.anisotropy=4;
+    mat.contextGroundColour=new THREE.MeshStandardMaterial({color:'#ffffff',map:groundMap,roughness:1,transparent:true,opacity:.8,alphaTest:.03,depthWrite:false});
+    mat.contextGroundColour.addEventListener('dispose',()=>groundMap.dispose());
+  }
   standard('linen', '#fffaf0', { map: textures?.textiles });
   standard('gold', '#d7a74a', { roughness: 0.55, metalness: 0.15 });
   standard('treeBark', textures?'#b3a38c':'#766049', { map: textures?.bark,bumpMap:textures?.barkHeight,bumpScale:.012,roughness:1 });
@@ -372,10 +387,11 @@ export function createScene(container, data, callbacks = {}) {
   if(textures)configureBasePhotographicMaterials(mat,textures);
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
-  const houseGroup = new THREE.Group(), finishesGroup = new THREE.Group();
+  const houseGroup = new THREE.Group(), finishesGroup = new THREE.Group(), existingVegetationGroup = new THREE.Group();
+  let vegetationSignature='',vegetationSource;
   const reflections=svgMode?null:createPoolReflections(renderer,scene,camera,{sky,
     exclude:[markerGroup,rayGroup,sunGuideGroup],waterMaterials:[mat.water,mat.waterLight]});
-  scene.add(staticGroup, buildingGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
+  scene.add(staticGroup, buildingGroup, existingVegetationGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
   const sunMarker=new THREE.Mesh(new THREE.SphereGeometry(.52,svgMode?8:16,svgMode?6:12),new THREE.MeshBasicMaterial({color:'#fff0ad',transparent:true,opacity:.95,depthTest:false,depthWrite:false,fog:false,toneMapped:false}));
   sunGuideGroup.renderOrder=1000;sunPathGroup.renderOrder=1000;sunMarker.renderOrder=1002;
   sunGuideGroup.add(sunPathGroup,sunMarker);sunGuideGroup.visible=false;
@@ -529,17 +545,19 @@ export function createScene(container, data, callbacks = {}) {
     const c = centroid(ring), target = building.kind === 'target';
     const base = num(building.baseZ, contextGrade(...c)), roof = num(building.roofZ, base + 7);
     if(roof<=base)return;
-    const roofPts = (building.roofPoints || []).map(xyz).filter(p => p.length >= 3 && Number.isFinite(p[2]));
+    const roofDetail=visualNeighborRoof(building,data);
+    const roofPts = (roofDetail?.roofPoints||building.roofPoints || []).map(xyz).filter(p => p.length >= 3 && Number.isFinite(p[2]));
     const roofMax = Math.max(roof, ...roofPts.map(p => p[2]));
     const facadeMaterial = (target ? mat.target : mat.context).clone();
     const palette = target ? ['#d3d2c1', '#c5ccc7', '#d4c9b5', '#c4c8bd'] : ['#ddd8ca', '#d2d8d1', '#e4ded0', '#cfc8bb', '#dbdcd2'];
-    facadeMaterial.color.set(palette[Math.abs(building.index || 0) % palette.length]);
+    facadeMaterial.color.set(observedBuildingAppearance(building)?.facadeColor||palette[Math.abs(building.index || 0) % palette.length]);
     facadeMaterial.userData.transient = true;
-    const body=polygonPrism(ring, base, roof, facadeMaterial, false);
+    const body=roofDetail?new THREE.Mesh(geometryFromTriangles(roofDetail.wallFaces.map(([a,b,c])=>localTriangle(a,b,c))),facadeMaterial):polygonPrism(ring, base, roof, facadeMaterial, false);
+    body.castShadow=true;body.receiveShadow=true;
     body.name=`context-building-${building.id}`;
     buildingGroup.add(body);
     if (roofPts.length > 6) {
-      const roofGeometry = sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roof);
+      const roofGeometry = sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roofDetail?.edgeZ??roof,roofDetail?.edgePoints);
       const roofMesh = new THREE.Mesh(roofGeometry || geometryFromTriangles([]), mat.contextRoof);
       roofMesh.castShadow = true; roofMesh.receiveShadow = true;
       buildingGroup.add(roofMesh);
@@ -549,7 +567,7 @@ export function createScene(container, data, callbacks = {}) {
       const cap=THREE.ShapeUtils.triangulateShape(ring.map(p=>new THREE.Vector2(...p)),[]);
       for(const [a,b,c] of cap)contextDetails.roofs.push(toWorldRoofTriangle([...ring[a],roof],[...ring[b],roof],[...ring[c],roof]));
     }
-    contextDetails.windows.push(...contextFacadePlacements({...building,baseZ:base,roofZ:roof},plotCentre,svgMode?95:160,data.facadeOverrides?.[building.id]));
+    contextDetails.windows.push(...clipFacadeToVisualRoof(contextFacadePlacements({...building,baseZ:base,roofZ:roof},plotCentre,svgMode?95:160,data.facadeOverrides?.[building.id]),roofDetail));
     const distance=Math.hypot(c[0]-plotCentre[0],c[1]-plotCentre[1]);
     if(distance<125){
       const winding=Math.sign(ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
@@ -558,7 +576,7 @@ export function createScene(container, data, callbacks = {}) {
         if(length<.2)continue;
         const nx=winding*dy/length,ny=-winding*dx/length,edge={x:(a[0]+b[0])/2,y:(a[1]+b[1])/2,nx,ny,angle:Math.atan2(nx,ny),width:length};
         const trimHeight=Math.min(.14,(roof-base)*.04),plinthHeight=Math.min(.28,(roof-base)*.08);
-        contextDetails.roofEdges.push({...edge,z:roof-trimHeight/2,height:trimHeight,depth:.055,offset:.015});
+        if(!roofDetail)contextDetails.roofEdges.push({...edge,z:roof-trimHeight/2,height:trimHeight,depth:.055,offset:.015});
         contextDetails.plinths.push({...edge,z:base+plinthHeight/2,height:plinthHeight,depth:.035,offset:.012});
       }
     }
@@ -619,6 +637,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     (data.buildings || []).filter(b => b.id !== data.site.house.id && b.id !== data.site.garage?.id && b.kind!=='house' && b.kind!=='garage').forEach(addContextBuilding);
     flushContextDetails();
+    buildingGroup.add(createNeighborhoodAppearanceGroup(data.buildings,data,{origin:plotCentre,svgMode}));
     applyNightLighting(lastSolar,currentSettings);
     shadowBoundsDirty=true;
   }
@@ -638,9 +657,14 @@ export function createScene(container, data, callbacks = {}) {
     // inside its frame, then use the coarser grid only outside that frame.
     const localFrame={x0:plot.minX-.1,y0:plot.minY-.1,x1:plot.maxX+.1,y1:plot.maxY+.1};
     contextTerrains=[
-      makeTerrain(staticGroup,extent,svgMode?12:4,(x,y)=>contextGrade(x,y)-.015,mat.walkway,null,false,[...cutouts,localFrame]),
+      makeTerrain(staticGroup,extent,svgMode?12:4,(x,y)=>contextGrade(x,y)-.015,data.existingVegetation?mat.contextGround:mat.walkway,null,false,[...cutouts,localFrame]),
       makeTerrain(staticGroup,[localFrame.x0,localFrame.y0,localFrame.x1,localFrame.y1],svgMode?2:.65,(x,y)=>terrainAt(x,y,data)-.015,mat.walkway,null,false,cutouts),
     ];
+    if(mat.contextGroundColour){
+      const overlay=new THREE.Mesh(projectContextGroundUVs(contextTerrains[0].geometry.clone(),data.contextGroundColour),mat.contextGroundColour);
+      overlay.position.y=.02;overlay.name='measured-neighborhood-ground-colours';overlay.receiveShadow=true;
+      staticGroup.add(overlay);contextTerrains.push(overlay);
+    }
   }
   syncContextTerrain({terraceDepth:data.site.terrace.depth});
   const mappedRoads=data.neighborhood?.roads?.filter(r=>r.footprint?.length>=3)||[];
@@ -660,6 +684,16 @@ export function createScene(container, data, callbacks = {}) {
     label(profile.streetLabel, [plotCentre[0],-3.7,terrainAt(plotCentre[0],-3.7,data)+.18], 'road');
   }
   rebuildContextBuildings();
+
+  function syncExistingVegetation(settings){
+    const signature=JSON.stringify([settings.existingVegetation,settings.existingCanopyAnalysis,settings.existingLeafMode,settings.sunDate?.slice(5,7)]);
+    if(signature===vegetationSignature&&vegetationSource===data.existingVegetation)return;
+    vegetationSignature=signature;vegetationSource=data.existingVegetation;
+    removeGeometry(existingVegetationGroup);
+    existingVegetationGroup.add(createExistingVegetationGroup(data,settings,{svgMode,origin:plotCentre}));
+    contextRevision++;shadowBoundsDirty=true;
+    gardenLightBoundary?.install(existingVegetationGroup);
+  }
 
   /** Fit proposed glazing and finishes to each mapped property's wall edges.
    * The mapped footprint and sampled roof remain the existing envelope. */
@@ -1085,6 +1119,12 @@ export function createScene(container, data, callbacks = {}) {
       });
     };
     collect(buildingGroup,false);collect(designGroup,true);
+    // Instanced canopies have measured envelopes. Include their actual extent
+    // in the sun's depth range without expanding the plot receiver footprint.
+    if(currentSettings.existingVegetation!==false)for(const canopy of existingCanopyRecords(data)){
+      const radius=Math.max(canopy.radiusX,canopy.radiusY);
+      for(const x of [canopy.x-radius,canopy.x+radius])for(const y of [canopy.y-radius,canopy.y+radius])for(const z of [canopy.baseZ,canopy.topZ])shadowCasterPoints.push(point(x,y,z));
+    }
     // Before the first design update, retain a valid plot-sized lighting region.
     if(!shadowReceiverPoints.length)for(const p of data.site.boundary)shadowReceiverPoints.push(point(p[0],p[1],terrainAt(...p,data)));
     shadowBoundsDirty=false;shadowCameraDirty=true;
@@ -1395,6 +1435,7 @@ export function createScene(container, data, callbacks = {}) {
       designSignature='';
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
+    syncExistingVegetation(settings);
     const signature=JSON.stringify([...['gardenProgram','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
       'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageSpaces','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     const rebuilt=signature!==designSignature;
@@ -1560,7 +1601,7 @@ export function createScene(container, data, callbacks = {}) {
     const frame=houseModelFrame(data,currentSettings);if(!frame)return null;
     let owned;
     if(view==='room'){
-      owned=cloneOwnedScene([staticGroup,buildingGroup,designGroup],o=>o.userData.houseFloor!==floor&&!(floor==='attic'&&o.userData.houseRoof));
+      owned=cloneOwnedScene([staticGroup,buildingGroup,existingVegetationGroup,designGroup],o=>o.userData.houseFloor!==floor&&!(floor==='attic'&&o.userData.houseRoof));
     }else{
       // Cutaways show only the outdoor space belonging to this storey. Clone
       // the finished site objects, including their actual materials and tub

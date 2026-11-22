@@ -2,9 +2,21 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.29.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.29.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.29.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.30.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.30.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.30.0)**
 
-## Architectural materials and model detail · 1.29.0
+## Measured neighbourhood and sea views · 1.30.0
+
+Sternicza now includes **490 surrounding canopy and shrub groups**, derived from classified GUGiK laser returns acquired on **2024-10-01**. Crown positions, elevations and extents follow the scan; individual stems, branches and leaves are reconstructed. Separate municipal inventory records are retained without assigning unverified species to grouped crowns. Summer, winter and date-based foliage controls allow comparisons, and existing crowns can participate in privacy and sunlight calculations without entering the planting budget.
+
+Twelve neighbouring buildings have reference-informed façade colours, window arrangements and selected balcony/entrance details. Nine additional roofs use measured building returns for visual silhouettes. Ground-return colour adds registered surface variation where observations exist. Other façades, hidden elevations and branch topology remain approximate; the source notes distinguish measured geometry from reconstruction.
+
+**How high to see the sea?** follows the full measured route from four positions on the plot to the mapped shoreline. Compare distant sea with water 1 km offshore, choose a tested bearing, adjust eye height and clearance, and inspect the controlling obstacle in a profile and map. The model includes earth curvature, conservative native DSM cell maxima and explicit missing-data/further-coast checks. The default house-axis estimates are **15.8 m eye height above original ground for distant sea**, and **22.9 m for water 1 km beyond the shore**, with a 1 m clearance allowance in the best tested direction. These are historical-surface planning estimates, not surveyed or guaranteed sea views.
+
+Saved-state schema **28**, the three properties, existing design proposals and the two-car default are retained. Nature settings are saved and shareable; sea results and their assumptions are included in scenario JSON exports.
+
+[Evidence and implementation scope](docs/sternicza-realism-1-30.md) · [Nature data and reproduction](docs/sternicza-nature-provenance.md) · [Façade observations](docs/sternicza-appearance-observations.md) · [Sea model, sources and limitations](docs/sea-visibility-1.30.md)
+
+## Historical release: architectural materials and model detail · 1.29.0
 
 The interactive renderer now uses six self-hosted photographic material sets, physical texture scale, softened furniture edges, shaped cushions with seams, woven cane with real openings, and detailed instanced foliage. High detail adds contact shading, a reflection of the actual garden in the pool, and finer sun shadows. Both cars have curved bodywork, glazing, tyres and alloy rims while retaining their checked physical envelopes.
 
