@@ -377,6 +377,8 @@ try{
   check('Beach House has a living guide and a one-click evening scene with active lighting');
 
   await el('button[data-mode="orbit"]').click();await sceneVisible();
+  await el('#reset-camera').click();await sceneVisible();
+  await shot('sternicza-beach-house-evening-overview','#scene-host canvas');
   const shadowBefore=(await settledInfo()).shadowUpdates;
   await page.evaluate(()=>{
     document.querySelector('#sun-time').dispatchEvent(new Event('change',{bubbles:true}));

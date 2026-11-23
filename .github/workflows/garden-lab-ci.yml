@@ -92,8 +92,10 @@ jobs:
   studio:
     name: Design studio, rendering and mobile checks
     runs-on: ubuntu-24.04
-    # The complete style/save/history run took 14m32s with the detailed models.
-    timeout-minutes: 20
+    # The 1.31 SwiftShader run passed all styles, mobile and mapped-site checks,
+    # then reached the 20m runner deadline in the final persistence cases.
+    # Keep the individual action/render timeouts while allowing the full suite.
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: garden-lab
