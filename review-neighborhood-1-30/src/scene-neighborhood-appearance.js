@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
 import {toWorld} from './orientation.js?v=1.30.0';
-import {neighborhoodAppearanceLayout} from './neighborhood-appearance.js?v=1.30.0&rev=20261123-reference';
+import {neighborhoodAppearanceLayout} from './neighborhood-appearance.js?v=1.30.0&rev=20261123-roofs';
 
 const transient=material=>{material.userData.transient=true;return material;};
 

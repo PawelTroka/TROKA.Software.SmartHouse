@@ -1,4 +1,5 @@
 import {localRoofEnvelope,roofEdgeHeight} from './roof-envelope.js?v=1.30.0';
+import {reconstructSteppedRoof,transformRoofPatches} from './observed-roof-patches.js?v=1.30.0';
 
 const cache=new WeakMap();
 const finite=(value,fallback=0)=>Number.isFinite(value)?value:fallback;
@@ -70,6 +71,22 @@ export function visualNeighborRoof(building,data){
   const roofPoints=filtered.points.map(p=>[p[0],p[1],baseZ+(p[2]-baseZ)*scale]);
   const signedArea=ring.reduce((sum,a,i)=>{const b=ring[(i+1)%ring.length];return sum+a[0]*b[1]-b[0]*a[1];},0);
   if(signedArea<0)ring.reverse();
+  // The supported lower roofs at 4h are disconnected from the main gables.
+  // A continuous height field wrongly draped dark roof triangles down their
+  // several-metre wall steps. Keep this evidence-specific correction separate
+  // from the shared triangulator and the unmodified analytical building mass.
+  if(building.officialId==='ID-2261-26BC7443-6C90-FAF6-E053-CA2BA8C0FAE4'){
+    const nativePoint=p=>[p[0]-dx,p[1]-dy,baseZ+(p[2]-baseZ)/scale];
+    const nativeBuilding={footprint:ring.map(p=>[p[0]-dx,p[1]-dy]),baseZ};
+    const reconstructed=reconstructSteppedRoof(nativeBuilding,points.map(nativePoint),roofPoints.map(nativePoint));
+    if(reconstructed){
+      const patched=transformRoofPatches(reconstructed,{dx,dy,scale,baseZ});
+      const value={...patched,officialId:building.officialId,sourceId:observation.sourceId,acquired:observation.acquired,
+        sampleCount:patched.roofPoints.length,excludedCount:points.length-patched.roofPoints.length,
+        meaning:'4h source-supported separate roof patches. Step positions are estimated within recorded return gaps; low-extension plane fits and near-edge interpolation regularize the seam. Main roof samples and supported high returns remain. Visual reconstruction, not surveyed roof topology.'};
+      cache.set(building,{source,value});return value;
+    }
+  }
   const envelope=localRoofEnvelope({footprint:ring,baseZ,roofZ:building.roofZ,roofPoints});
   const zs=envelope.boundary.map(p=>p[2]),sorted=zs.slice().sort((a,b)=>a-b);
   const value={roofPoints,edgeZ:quantile(sorted,.5),wallTopZ:Math.min(...zs),
