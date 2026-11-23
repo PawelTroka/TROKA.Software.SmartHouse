@@ -1,4 +1,4 @@
-import {neighborhoodAppearanceData} from './neighborhood-appearance-data.js?v=1.30.0';
+import {neighborhoodAppearanceData} from './neighborhood-appearance-data.js?v=1.30.0&rev=20261123-reference';
 import {visualNeighborRoof} from './observed-neighbor-roofs.js?v=1.30.0';
 
 const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
@@ -68,17 +68,29 @@ export function observedFacadePlacements(building,origin,distanceLimit=160,blank
     const floors=interpreted?profile.floorCount:Math.min(24,Math.max(0,Math.floor(((roof-base)/scale-2.695)/2.9)+1));
     const windowHeight=(interpreted?profile.windowHeight:1.35)*scale;
     for(let floor=0;floor<floors;floor++)for(let column=0;column<bays.length;column++){
+      if(interpreted&&(facade.rowBays?.[floor]&&!facade.rowBays[floor].includes(column)||
+        facade.omitWindows?.some(opening=>opening.floor===floor&&opening.column===column)))continue;
       const t=bays[column],stair=interpreted&&column===facade.stairBay;
-      const balcony=interpreted&&floor>0&&(facade.balconyBays||[]).includes(column);
+      const balcony=interpreted&&floor>=finite(facade.balconyStartFloor,1)&&(facade.balconyBays||[]).includes(column);
       const height=balcony?2.10*scale:stair?windowHeight*.82:windowHeight;
-      const floorZ=base+floor*(interpreted?profile.floorRise:2.9)*scale;
-      const z=floorZ+(balcony?1.15:interpreted?profile.firstWindowHeight:1.9)*scale;
-      const width=Math.min(stair?.68:interpreted?profile.windowWidth:1.1,edge.length/bays.length*.55);
+      const rowZ=base+floor*(interpreted?profile.floorRise:2.9)*scale;
+      const floorZ=rowZ+(interpreted?finite(profile.firstFloorHeight):0)*scale;
+      const z=balcony?floorZ+1.15*scale:rowZ+(interpreted?profile.firstWindowHeight:1.9)*scale;
+      const width=Math.min(stair?.68:interpreted?finite(facade.bayWidths?.[column],profile.windowWidth):1.1,edge.length/bays.length*.55);
       if(z+height/2+.12*scale>=roof||z-height/2-.12*scale<=base)continue;
       const pane=windowOnEdge(building,edge,t,z,width,height,floor,column,distance);
       pane.appearanceEvidence=interpreted?'user-reference-estimate':'illustrative';
       if(balcony){pane.balcony=true;pane.balconyFloorZ=floorZ;}
       windows.push(pane);
+    }
+    // Basement slots are separate evidence, never an extra residential floor.
+    // Only elevations where the small openings can be read receive this row.
+    const basement=interpreted&&facade.basementWindows;
+    if(basement)for(const [column,t] of basement.bays.entries()){
+      const z=base+basement.centerHeight*scale,height=basement.height*scale;
+      if(z-height/2<=base||z+height/2>=roof)continue;
+      const pane=windowOnEdge(building,edge,t,z,basement.width,height,-1,column,distance);
+      pane.appearanceEvidence='user-reference-estimate';pane.basement=true;windows.push(pane);
     }
   }
   return windows;
@@ -103,16 +115,20 @@ export function neighborhoodAppearanceLayout(buildings,data,{origin=data?.site?.
       // rectangular colour overlay would otherwise protrude through a gable.
       if(facade&&!measuredRoof){
         result.panels.push(facadeRect(edge,0,1,base+.025,roof-.025,facade.color||profile.facadeColor,{offset:.009}));
-        for(const panel of facade.panels||[])
-          result.panels.push(facadeRect(edge,panel.u0,panel.u1,base+height*panel.z0,base+height*panel.z1,panel.color,{offset:.014}));
+        for(const [layer,panel] of (facade.panels||[]).entries())
+          result.panels.push(facadeRect(edge,panel.u0,panel.u1,base+height*panel.z0,base+height*panel.z1,panel.color,{offset:.014+layer*.002}));
       }
       result.panels.push(facadeRect(edge,0,1,base+.01,base+Math.min(.38*scale,height*.1),'#8d9085',{offset:.019}));
       // The cap is placed below the mapped top. No invented extra skyline height.
       if(!measuredRoof)result.parapets.push(facadeRect(edge,0,1,roof-.14*scale,roof,'#7b7d73',{depth:.14,offset:.025}));
       if(!facade||!facade.entrance||isRecordedBlankFacade(edge,building,blank)||edge.length<5.5)continue;
-      const center=facadeRect(edge,.5-1.35/edge.length/2,.5+1.35/edge.length/2,base+.08,base+2.15*scale,'#565c55',{offset:.025});
+      const entranceU=finite(facade.entranceU,.5),entranceWidth=finite(facade.entranceWidth,1.35);
+      const entranceTop=base+finite(facade.entranceTopHeight,2.15)*scale;
+      const center=facadeRect(edge,entranceU-entranceWidth/edge.length/2,entranceU+entranceWidth/edge.length/2,
+        base+finite(facade.entranceBottomHeight,.08)*scale,entranceTop,'#565c55',{offset:.025});
       result.doors.push(center);
-      result.entryCanopies.push({...center,z:base+2.38*scale,width:2.5,height:.16,depth:1.1,offset:.5,color:'#a9aca4'});
+      if(facade.entranceCanopy!==false)
+        result.entryCanopies.push({...center,z:entranceTop+.23*scale,width:2.5,height:.16,depth:1.1,offset:.5,color:'#a9aca4'});
     }
     for(const pane of observedFacadePlacements(building,origin,distanceLimit,blank)||[]){
       if(!pane.balcony)continue;

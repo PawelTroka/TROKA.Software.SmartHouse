@@ -64,6 +64,54 @@
       "imageType": "Google Maps oblique 3D reference",
       "acquisitionDate": null,
       "usage": "Visual observation only; source imagery is not redistributed as a simulator texture."
+    },
+    {
+      "id": "screenshot-20261122-131120",
+      "filename": "Screenshot 2026-11-22 131120.png",
+      "sha256": "da2bb46a01d451a3f802f12548a032ea76b941a763028cbd91094fc991815bb9",
+      "supplied": "2026-11-23",
+      "imageType": "cadastral reference",
+      "acquisitionDate": null,
+      "usage": "Visual observation only; source imagery is not redistributed as a simulator texture."
+    },
+    {
+      "id": "screenshot-20261122-131221",
+      "filename": "Screenshot 2026-11-22 131221.png",
+      "sha256": "fc5d78ff50522f27441fc2d1d59a21a1e4f28ff7339d78991e6f51e42428bcad",
+      "supplied": "2026-11-23",
+      "imageType": "cadastral / orthophoto reference",
+      "acquisitionDate": null,
+      "usage": "Visual observation only; source imagery is not redistributed as a simulator texture."
+    },
+    {
+      "id": "screenshot-20261122-131412",
+      "filename": "Screenshot 2026-11-22 131412.png",
+      "sha256": "92a4576bb7e1a34bec0dbbe714b888870b21d22de78cbe9b9d71c9d9414dacb1",
+      "supplied": "2026-11-23",
+      "imageType": "Google Maps oblique 3D reference",
+      "acquisitionDate": null,
+      "usage": "Visual observation only; source imagery is not redistributed as a simulator texture.",
+      "displayedViewHeadingDegrees": 200.81
+    },
+    {
+      "id": "screenshot-20261122-131553",
+      "filename": "Screenshot 2026-11-22 131553.png",
+      "sha256": "fb76ab234e2c45f0b7e3b388c4983feb4453195679876ac098e55a03d5fed43f",
+      "supplied": "2026-11-23",
+      "imageType": "Google Maps oblique 3D reference",
+      "acquisitionDate": null,
+      "usage": "Visual observation only; source imagery is not redistributed as a simulator texture.",
+      "displayedViewHeadingDegrees": 26.86
+    },
+    {
+      "id": "screenshot-20261122-131737",
+      "filename": "Screenshot 2026-11-22 131737.png",
+      "sha256": "94a6ab546549390628578f311979e1cf8cd1e0c10ca371728d1e4221af0010e9",
+      "supplied": "2026-11-23",
+      "imageType": "Google Maps oblique 3D reference",
+      "acquisitionDate": null,
+      "usage": "Visual observation only; source imagery is not redistributed as a simulator texture.",
+      "displayedViewHeadingDegrees": 289.83
     }
   ],
   "profiles": [
@@ -77,130 +125,197 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 16.56,
-      "floorCount": 6,
-      "firstWindowHeight": 1.55,
-      "floorRise": 2.73,
+      "floorCount": 5,
+      "firstWindowHeight": 3.0,
+      "floorRise": 3.0,
       "windowHeight": 1.3,
-      "windowWidth": 1.1,
+      "windowWidth": 1.65,
       "roofForm": "flat roof with measured rooftop forms",
       "observations": [
         "Pale cream and light blue facade fields.",
-        "Six apparent stacked levels of openings.",
-        "Projecting balconies on side elevations; pale frames and dark window glass."
+        "Projecting balconies on side elevations; pale frames and dark window glass.",
+        "Five full-size window rows and four principal columns on plot-facing and PCK-street-facing elevations; the inner two windows are wider.",
+        "Three balcony stacks on each visible side elevation. Small basement openings are distinct from the five regular floors.",
+        "A street entrance replaces the lowest right-middle opening; entry, window and balcony dimensions remain visual estimates.",
+        "Both principal elevations have a warm-yellow central rectangle over two middle-upper rows within pale blue and cream fields; the balcony elevations are predominantly pale neutral."
       ],
       "facades": {
         "front": {
           "bays": [
-            0.09,
-            0.22,
-            0.36,
-            0.5,
-            0.64,
-            0.78,
-            0.91
+            0.3,
+            0.435,
+            0.565,
+            0.7
           ],
-          "color": "#dbe0d7",
+          "color": "#e3e5db",
           "panels": [
             {
               "u0": 0,
-              "u1": 0.22,
-              "z0": 0.03,
-              "z1": 1,
-              "color": "#b6cbd4"
+              "u1": 0.26,
+              "z0": 0.02,
+              "z1": 0.85,
+              "color": "#c2d3dc"
             },
             {
-              "u0": 0.78,
+              "u0": 0.26,
               "u1": 1,
-              "z0": 0.03,
+              "z0": 0.43,
               "z1": 1,
-              "color": "#bdd0d6"
+              "color": "#c2d3dc"
+            },
+            {
+              "u0": 0.38,
+              "u1": 0.62,
+              "z0": 0.42,
+              "z1": 0.83,
+              "color": "#d9c07f"
+            },
+            {
+              "u0": 0,
+              "u1": 0.38,
+              "z0": 0.85,
+              "z1": 1,
+              "color": "#e3e5db"
             }
+          ],
+          "bayWidths": [
+            1.1,
+            1.65,
+            1.65,
+            1.1
           ]
         },
         "rear": {
           "bays": [
-            0.09,
-            0.22,
-            0.36,
-            0.5,
-            0.64,
-            0.78,
-            0.91
+            0.3,
+            0.435,
+            0.565,
+            0.7
           ],
-          "color": "#e1e1d2",
-          "stairBay": 3,
-          "entrance": true
+          "color": "#e3e5db",
+          "entrance": true,
+          "bayWidths": [
+            1.1,
+            1.65,
+            1.65,
+            1.1
+          ],
+          "omitWindows": [
+            {
+              "floor": 0,
+              "column": 2
+            }
+          ],
+          "entranceU": 0.565,
+          "entranceBottomHeight": 0.15,
+          "entranceTopHeight": 3.55,
+          "entranceCanopy": false,
+          "panels": [
+            {
+              "u0": 0,
+              "u1": 0.26,
+              "z0": 0.02,
+              "z1": 0.85,
+              "color": "#c2d3dc"
+            },
+            {
+              "u0": 0.26,
+              "u1": 1,
+              "z0": 0.43,
+              "z1": 1,
+              "color": "#c2d3dc"
+            },
+            {
+              "u0": 0.38,
+              "u1": 0.62,
+              "z0": 0.42,
+              "z1": 0.83,
+              "color": "#d9c07f"
+            },
+            {
+              "u0": 0,
+              "u1": 0.38,
+              "z0": 0.85,
+              "z1": 1,
+              "color": "#e3e5db"
+            }
+          ]
         },
         "east": {
           "bays": [
             0.1,
-            0.26,
+            0.22,
             0.42,
-            0.58,
+            0.54,
             0.74,
-            0.9
+            0.86
           ],
-          "color": "#dde0d5",
+          "color": "#e0e4dc",
           "balconyBays": [
             1,
-            4
+            3,
+            5
           ],
           "balconyColor": "#ccd7d7",
-          "panels": [
-            {
-              "u0": 0.2,
-              "u1": 0.35,
-              "z0": 0.04,
-              "z1": 0.97,
-              "color": "#b8cdd2"
-            },
-            {
-              "u0": 0.65,
-              "u1": 0.8,
-              "z0": 0.04,
-              "z1": 0.97,
-              "color": "#b8cdd2"
-            }
-          ]
+          "panels": [],
+          "bayWidths": [
+            1.65,
+            0.9,
+            1.65,
+            0.9,
+            1.65,
+            0.9
+          ],
+          "balconyStartFloor": 0,
+          "basementWindows": {
+            "bays": [
+              0.16,
+              0.48,
+              0.8
+            ],
+            "centerHeight": 0.65,
+            "width": 0.95,
+            "height": 0.48
+          }
         },
         "west": {
           "bays": [
             0.1,
-            0.26,
+            0.22,
             0.42,
-            0.58,
+            0.54,
             0.74,
-            0.9
+            0.86
           ],
-          "color": "#dfe3da",
+          "color": "#e0e4dc",
           "balconyBays": [
             1,
-            4
+            3,
+            5
           ],
           "balconyColor": "#c9d4d3",
-          "panels": [
-            {
-              "u0": 0,
-              "u1": 0.18,
-              "z0": 0.03,
-              "z1": 1,
-              "color": "#becfd3"
-            },
-            {
-              "u0": 0.82,
-              "u1": 1,
-              "z0": 0.03,
-              "z1": 1,
-              "color": "#becfd3"
-            }
-          ]
+          "panels": [],
+          "bayWidths": [
+            1.65,
+            0.9,
+            1.65,
+            0.9,
+            1.65,
+            0.9
+          ],
+          "balconyStartFloor": 0
         }
-      }
+      },
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-15",
@@ -212,94 +327,143 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 16.49,
-      "floorCount": 6,
-      "firstWindowHeight": 1.55,
-      "floorRise": 2.72,
+      "floorCount": 5,
+      "firstWindowHeight": 3.0,
+      "floorRise": 3.0,
       "windowHeight": 1.3,
-      "windowWidth": 1.1,
+      "windowWidth": 1.65,
       "roofForm": "flat roof with measured rooftop forms",
       "observations": [
         "Cream upper walls, broad warm ochre/orange and muted green facade fields.",
-        "Six apparent stacked opening levels.",
-        "Salmon balcony panels in vertical stacks on side elevations."
+        "Salmon balcony panels in vertical stacks on side elevations.",
+        "Five full-size window rows and four principal columns on plot-facing and PCK-street-facing elevations; the inner two windows are wider.",
+        "Three balcony stacks on each visible side elevation. Small basement openings are distinct from the five regular floors.",
+        "A street entrance replaces the lowest right-middle opening; entry, window and balcony dimensions remain visual estimates.",
+        "The middle two columns sit in a yellow upper rectangle and salmon middle rectangle, layered over the cream/ochre/muted-green horizontal bands."
       ],
       "facades": {
         "front": {
           "bays": [
-            0.09,
-            0.22,
-            0.36,
-            0.5,
-            0.64,
-            0.78,
-            0.91
+            0.3,
+            0.435,
+            0.565,
+            0.7
           ],
-          "color": "#e7dfca",
+          "color": "#e7e4d8",
           "panels": [
             {
               "u0": 0,
               "u1": 1,
-              "z0": 0.06,
+              "z0": 0.02,
               "z1": 0.25,
               "color": "#bdc9b8"
             },
             {
               "u0": 0,
               "u1": 1,
-              "z0": 0.26,
+              "z0": 0.25,
               "z1": 0.65,
-              "color": "#d7b66c"
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.38,
+              "u1": 0.62,
+              "z0": 0.25,
+              "z1": 0.65,
+              "color": "#c8947d"
+            },
+            {
+              "u0": 0.38,
+              "u1": 0.62,
+              "z0": 0.65,
+              "z1": 1,
+              "color": "#dfc17a"
             }
+          ],
+          "bayWidths": [
+            1.1,
+            1.65,
+            1.65,
+            1.1
           ]
         },
         "rear": {
           "bays": [
-            0.09,
-            0.22,
-            0.36,
-            0.5,
-            0.64,
-            0.78,
-            0.91
+            0.3,
+            0.435,
+            0.565,
+            0.7
           ],
-          "color": "#e8dfc9",
-          "stairBay": 3,
+          "color": "#e7e4d8",
           "entrance": true,
           "panels": [
             {
               "u0": 0,
               "u1": 1,
-              "z0": 0.04,
-              "z1": 0.23,
-              "color": "#bbc8b8"
+              "z0": 0.02,
+              "z1": 0.25,
+              "color": "#bdc9b8"
             },
             {
               "u0": 0,
               "u1": 1,
-              "z0": 0.24,
+              "z0": 0.25,
               "z1": 0.65,
-              "color": "#d7b571"
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.38,
+              "u1": 0.62,
+              "z0": 0.25,
+              "z1": 0.65,
+              "color": "#c8947d"
+            },
+            {
+              "u0": 0.38,
+              "u1": 0.62,
+              "z0": 0.65,
+              "z1": 1,
+              "color": "#dfc17a"
             }
-          ]
+          ],
+          "bayWidths": [
+            1.1,
+            1.65,
+            1.65,
+            1.1
+          ],
+          "omitWindows": [
+            {
+              "floor": 0,
+              "column": 2
+            }
+          ],
+          "entranceU": 0.565,
+          "entranceBottomHeight": 0.15,
+          "entranceTopHeight": 3.55,
+          "entranceCanopy": false
         },
         "east": {
           "bays": [
             0.1,
-            0.26,
+            0.22,
             0.42,
-            0.58,
+            0.54,
             0.74,
-            0.9
+            0.86
           ],
           "color": "#e8dfc9",
           "balconyBays": [
-            0,
-            2,
+            1,
+            3,
             5
           ],
           "balconyColor": "#c99b85",
@@ -311,20 +475,39 @@
               "z1": 0.97,
               "color": "#d7b975"
             }
-          ]
+          ],
+          "bayWidths": [
+            1.65,
+            0.9,
+            1.65,
+            0.9,
+            1.65,
+            0.9
+          ],
+          "balconyStartFloor": 0,
+          "basementWindows": {
+            "bays": [
+              0.16,
+              0.48,
+              0.8
+            ],
+            "centerHeight": 0.65,
+            "width": 0.95,
+            "height": 0.48
+          }
         },
         "west": {
           "bays": [
             0.1,
-            0.26,
+            0.22,
             0.42,
-            0.58,
+            0.54,
             0.74,
-            0.9
+            0.86
           ],
           "color": "#e9e0cd",
           "balconyBays": [
-            0,
+            1,
             3,
             5
           ],
@@ -344,9 +527,20 @@
               "z1": 0.97,
               "color": "#d5b66a"
             }
-          ]
+          ],
+          "bayWidths": [
+            1.65,
+            0.9,
+            1.65,
+            0.9,
+            1.65,
+            0.9
+          ],
+          "balconyStartFloor": 0
         }
-      }
+      },
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-29",
@@ -358,170 +552,323 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 16.54,
-      "floorCount": 6,
-      "firstWindowHeight": 1.55,
-      "floorRise": 2.72,
+      "floorCount": 5,
+      "firstWindowHeight": 3.0,
+      "floorRise": 3.0,
       "windowHeight": 1.3,
-      "windowWidth": 1.1,
+      "windowWidth": 1.65,
       "roofForm": "flat roof with measured rooftop forms",
       "observations": [
         "Pale cream walls with ochre/yellow vertical fields.",
         "Repeated salmon-coloured balcony fronts.",
-        "Six apparent stacked opening levels."
+        "Five full-size window rows and four principal columns on plot-facing and PCK-street-facing elevations; the inner two windows are wider.",
+        "Three balcony stacks on each visible side elevation. Small basement openings are distinct from the five regular floors.",
+        "A street entrance replaces the lowest right-middle opening; entry, window and balcony dimensions remain visual estimates.",
+        "Ochre outer window fields, two narrow salmon vertical stripes and a slender central ochre stripe distinguish these principal elevations from PCK 5."
       ],
       "facades": {
         "front": {
           "bays": [
-            0.09,
-            0.22,
-            0.36,
-            0.5,
-            0.64,
-            0.78,
-            0.91
+            0.3,
+            0.435,
+            0.565,
+            0.7
           ],
-          "color": "#e4dcc7",
+          "color": "#e6e2d1",
           "panels": [
             {
-              "u0": 0.1,
-              "u1": 0.36,
-              "z0": 0.04,
-              "z1": 0.96,
-              "color": "#d8b570"
+              "u0": 0.25,
+              "u1": 0.395,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9b871"
             },
             {
-              "u0": 0.64,
-              "u1": 0.9,
-              "z0": 0.04,
-              "z1": 0.96,
-              "color": "#d8b570"
+              "u0": 0.605,
+              "u1": 0.75,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.36,
+              "u1": 0.4,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#c48f79"
+            },
+            {
+              "u0": 0.6,
+              "u1": 0.64,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#c48f79"
+            },
+            {
+              "u0": 0.48,
+              "u1": 0.52,
+              "z0": 0.22,
+              "z1": 1,
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.36,
+              "u1": 0.64,
+              "z0": 0.02,
+              "z1": 0.22,
+              "color": "#c48f79"
             }
+          ],
+          "bayWidths": [
+            1.1,
+            1.65,
+            1.65,
+            1.1
           ]
         },
         "rear": {
           "bays": [
-            0.09,
-            0.22,
-            0.36,
-            0.5,
-            0.64,
-            0.78,
-            0.91
+            0.3,
+            0.435,
+            0.565,
+            0.7
           ],
-          "color": "#e5dec9",
-          "stairBay": 3,
+          "color": "#e6e2d1",
           "entrance": true,
           "panels": [
             {
-              "u0": 0.12,
-              "u1": 0.88,
-              "z0": 0.04,
-              "z1": 0.96,
-              "color": "#d8b269"
+              "u0": 0.25,
+              "u1": 0.395,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.605,
+              "u1": 0.75,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.36,
+              "u1": 0.4,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#c48f79"
+            },
+            {
+              "u0": 0.6,
+              "u1": 0.64,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#c48f79"
+            },
+            {
+              "u0": 0.48,
+              "u1": 0.52,
+              "z0": 0.22,
+              "z1": 1,
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.36,
+              "u1": 0.64,
+              "z0": 0.02,
+              "z1": 0.22,
+              "color": "#c48f79"
             }
-          ]
+          ],
+          "bayWidths": [
+            1.1,
+            1.65,
+            1.65,
+            1.1
+          ],
+          "omitWindows": [
+            {
+              "floor": 0,
+              "column": 2
+            }
+          ],
+          "entranceU": 0.565,
+          "entranceBottomHeight": 0.15,
+          "entranceTopHeight": 3.55,
+          "entranceCanopy": false
         },
         "east": {
           "bays": [
             0.1,
-            0.26,
+            0.22,
             0.42,
-            0.58,
+            0.54,
             0.74,
-            0.9
+            0.86
           ],
           "color": "#e9e1ce",
           "balconyBays": [
-            0,
-            2,
+            1,
+            3,
             5
           ],
           "balconyColor": "#cda08a",
           "panels": [
             {
-              "u0": 0.12,
-              "u1": 0.3,
-              "z0": 0.03,
-              "z1": 0.98,
-              "color": "#d7bf7c"
+              "u0": 0.3,
+              "u1": 0.36,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9bf7e"
             },
             {
-              "u0": 0.68,
-              "u1": 0.86,
-              "z0": 0.03,
-              "z1": 0.98,
-              "color": "#d7bf7c"
+              "u0": 0.64,
+              "u1": 0.7,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9bf7e"
             }
-          ]
+          ],
+          "bayWidths": [
+            1.65,
+            0.9,
+            1.65,
+            0.9,
+            1.65,
+            0.9
+          ],
+          "balconyStartFloor": 0,
+          "basementWindows": {
+            "bays": [
+              0.16,
+              0.48,
+              0.8
+            ],
+            "centerHeight": 0.65,
+            "width": 0.95,
+            "height": 0.48
+          }
         },
         "west": {
           "bays": [
             0.1,
-            0.26,
+            0.22,
             0.42,
-            0.58,
+            0.54,
             0.74,
-            0.9
+            0.86
           ],
           "color": "#e8dfca",
           "balconyBays": [
-            0,
+            1,
             3,
             5
           ],
           "balconyColor": "#cea38c",
           "panels": [
             {
-              "u0": 0.34,
-              "u1": 0.66,
-              "z0": 0.03,
-              "z1": 0.98,
-              "color": "#d5b574"
+              "u0": 0.3,
+              "u1": 0.36,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9bf7e"
+            },
+            {
+              "u0": 0.64,
+              "u1": 0.7,
+              "z0": 0.02,
+              "z1": 1,
+              "color": "#d9bf7e"
             }
-          ]
+          ],
+          "bayWidths": [
+            1.65,
+            0.9,
+            1.65,
+            0.9,
+            1.65,
+            0.9
+          ],
+          "balconyStartFloor": 0
         }
-      }
+      },
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-2",
       "officialId": "ID-2261-26BC7443-248E-FAF6-E053-CA2BA8C0FAE4",
       "observedName": "Sternicza 9a · immediate east neighbour",
-      "facadeColor": "#d9d8cb",
+      "facadeColor": "#b9c1c4",
       "roofColor": "#74756e",
       "referenceIds": [
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 8.43,
-      "floorCount": 3,
-      "firstWindowHeight": 1.4,
-      "floorRise": 2.55,
+      "floorCount": 2,
+      "firstWindowHeight": 3.0,
+      "floorRise": 2.9,
       "windowHeight": 1.26,
       "windowWidth": 1.05,
       "facades": {
         "front": {
           "bays": [
-            0.18,
-            0.48,
-            0.79
+            0.12,
+            0.19,
+            0.39,
+            0.52,
+            0.66,
+            0.8
           ],
-          "color": "#d9d8cb"
+          "color": "#b9c1c4",
+          "bayWidths": [
+            0.65,
+            0.65,
+            0.75,
+            0.75,
+            0.75,
+            0.75
+          ],
+          "rowBays": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          ]
         }
       },
       "observations": [
         "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings."
+        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
+        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
+        "The upper street row has a close pair at one end and four narrow openings; only the lower pair is readable below the foliage. Other lower openings are left unresolved."
       ],
-      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph."
+      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-3",
@@ -533,31 +880,39 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 8.29,
-      "floorCount": 3,
-      "firstWindowHeight": 1.4,
-      "floorRise": 2.55,
+      "floorCount": 2,
+      "firstWindowHeight": 3.0,
+      "floorRise": 2.9,
       "windowHeight": 1.26,
       "windowWidth": 1.05,
       "facades": {
         "front": {
           "bays": [
-            0.2,
-            0.5,
-            0.8
+            0.69
           ],
-          "color": "#e4e5df"
+          "color": "#e4e5df",
+          "bayWidths": [
+            0.85
+          ]
         }
       },
       "observations": [
         "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings."
+        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
+        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
+        "Only a narrow stacked opening near one side of the street wall is readable; foliage obscures the remainder, so no evenly repeated three-column front is asserted."
       ],
-      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph."
+      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-5",
@@ -569,14 +924,17 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 8.44,
-      "floorCount": 3,
-      "firstWindowHeight": 1.4,
-      "floorRise": 2.55,
+      "floorCount": 2,
+      "firstWindowHeight": 3.0,
+      "floorRise": 2.9,
       "windowHeight": 1.26,
       "windowWidth": 1.05,
       "facades": {
@@ -586,14 +944,28 @@
             0.49,
             0.78
           ],
-          "color": "#a9a79a"
+          "color": "#a9a79a",
+          "bayWidths": [
+            1.1,
+            2.0,
+            1.0
+          ],
+          "balconyBays": [
+            0
+          ],
+          "balconyStartFloor": 0,
+          "balconyColor": "#a4a69a"
         }
       },
       "observations": [
         "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings."
+        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
+        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
+        "A side balcony/loggia stack and a wider central window group are visible; the small recess/railing dimensions remain illustrative."
       ],
-      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph."
+      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-6",
@@ -605,14 +977,17 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 8.66,
-      "floorCount": 3,
-      "firstWindowHeight": 1.4,
-      "floorRise": 2.55,
+      "floorCount": 2,
+      "firstWindowHeight": 3.0,
+      "floorRise": 2.9,
       "windowHeight": 1.26,
       "windowWidth": 1.05,
       "facades": {
@@ -622,14 +997,22 @@
             0.52,
             0.8
           ],
-          "color": "#bcbab0"
+          "color": "#bcbab0",
+          "bayWidths": [
+            1.1,
+            2.0,
+            1.0
+          ]
         }
       },
       "observations": [
         "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings."
+        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
+        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey."
       ],
-      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph."
+      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-7",
@@ -641,14 +1024,17 @@
         "user-reference-3",
         "user-reference-4",
         "user-reference-5",
-        "user-reference-6"
+        "user-reference-6",
+        "screenshot-20261122-131412",
+        "screenshot-20261122-131553",
+        "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
       "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
       "sourceHeightM": 8.44,
-      "floorCount": 3,
-      "firstWindowHeight": 1.4,
-      "floorRise": 2.55,
+      "floorCount": 2,
+      "firstWindowHeight": 3.0,
+      "floorRise": 2.9,
       "windowHeight": 1.26,
       "windowWidth": 1.05,
       "facades": {
@@ -658,14 +1044,28 @@
             0.5,
             0.8
           ],
-          "color": "#c6c3b4"
+          "color": "#c6c3b4",
+          "bayWidths": [
+            1.1,
+            2.0,
+            1.0
+          ],
+          "balconyBays": [
+            0
+          ],
+          "balconyStartFloor": 0,
+          "balconyColor": "#a4a69a"
         }
       },
       "observations": [
         "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings."
+        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
+        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
+        "A side balcony/loggia stack and a wider central window group are visible; the small recess/railing dimensions remain illustrative."
       ],
-      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph."
+      "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
+      "reviewed": "2026-11-23",
+      "firstFloorHeight": 1.9
     },
     {
       "buildingId": "building-8",
@@ -797,5 +1197,12 @@
       ],
       "roofForm": "Use measured roof detail; existing blank-wall observation preserved."
     }
+  ],
+  "reviewed": "2026-11-23",
+  "reviewNotes": [
+    "The reattached opposite-angle screenshots resolve five full-size opening rows on PCK 1, 3 and 5; the original six-level interpretation included basement openings as a regular floor.",
+    "The plot-facing and PCK-street-facing PCK walls show four principal columns, with wider inner windows; their side elevations show three balcony stacks.",
+    "The street entrance occupies the lower right-middle opening on each PCK street elevation. Unknown dimensions remain estimates; source bodies and measured roof geometry are unchanged.",
+    "Separate short basement openings are added only on the clearly visible east sides. The nearest flat-roof houses and three opposite street elevations have two main window rows."
   ]
 }
