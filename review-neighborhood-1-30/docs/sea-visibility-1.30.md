@@ -139,6 +139,23 @@ controlled by a recorded non-building surface 579 m away, with top elevation
 species. Those controlling surfaces were outside the previous 200 m model;
 using only nearby buildings would miss them.
 
+### Floor and roof height references
+
+The first-floor preset places the eye 1.65 m above the current first-floor
+setting, using the same floor datum as the room viewpoints. A zero living-floor
+offset remains zero. At the house axis and the default 1.2 m living-floor
+offset plus 3.0 m first-floor rise, this is **5.84 m eye height above original
+ground**.
+
+The roof preset is a hypothetical height comparison: the eye is placed
+1.65 m above the reconstructed roof ridge, at the selected horizontal
+location. The fitted ridge is **12.82 m ASL**, giving **12.02 m above original
+ground** at the house axis. The source field `roofTopZ = 13.34 m` is the highest
+chimney return; it must not be used as the ridge elevation. Neither preset
+establishes an accessible standing platform, a permitted construction height
+or a view through the existing house. Both default heights remain below the
+best tested distant-sea threshold.
+
 These are geometric estimates from a dated dataset. Atmospheric visibility,
 refraction, waves, seasonal foliage gaps, post-acquisition works and proposed
 renovations/planting are not included. A legal shore line and 0.5 m surface grid

@@ -806,7 +806,7 @@ try{
   }catch(error){console.error('3D view unavailable',error);settings.mode='plan';toast('3D could not start. Plan and sightline views remain available.');}
   $('loading').hidden=true;syncControls();update();
   if(profile.id==='sternicza-11'){
-    const panel=$('sea-view-panel');panel.hidden=false;
+    const panel=$('sea-view-panel');panel.hidden=false;$('sea-view-jump').hidden=false;
     panel.textContent='Loading the measured route to the sea…';
     fetch(new URL('../data/sternicza-sea-corridor.json',import.meta.url)).then(response=>{
       if(!response.ok)throw new Error('Sea corridor data could not load');return response.json();
