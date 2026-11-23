@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.30.0';
-import {furnishInterior} from './interior-furniture.js?v=1.30.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.30.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.30.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.31.0';
+import {furnishInterior} from './interior-furniture.js?v=1.31.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.31.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -133,6 +133,13 @@ export function addFlight(parent,s,plan,tools,m) {
 function makePendant(g,x,z,y,tools,m,kind) {
   const {rod,cyl,oval,box,group}=tools,h=Math.min(.53,y*.21),lampY=y-h-.09;
   cyl(g,m.frame,x,y-.024,z,.05,.05,.04);rod(g,m.frame,[x,y-.045,z],[x,lampY+.09,z],.0045);
+  if(kind==='rope-drum'){
+    const radius=.23,depth=.28;
+    for(let i=0;i<32;i++){const a=i*Math.PI/16;rod(g,m.cane||m.wood,[x+Math.cos(a)*radius,lampY-depth/2,z+Math.sin(a)*radius],[x+Math.cos(a)*radius*.91,lampY+depth/2,z+Math.sin(a)*radius*.91],.0045);}
+    for(const [yy,r]of [[lampY-depth/2,radius],[lampY+depth/2,radius*.91]]){const ring=new THREE.Mesh(new THREE.TorusGeometry(r,.006,5,32),m.wood);ring.rotation.x=Math.PI/2;ring.position.set(x,yy,z);g.add(ring);}
+    const inner=new THREE.Mesh(new THREE.CylinderGeometry(.13,.14,.22,32,1,true),m.lampShade||m.linen);inner.position.set(x,lampY,z);g.add(inner);
+    oval(g,m.glow,x,lampY,z,.12,.16,.12);return;
+  }
   if(kind==='linen-drum'){
     const shade=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.24,40,1,true),m.lampShade||m.linen);shade.position.set(x,lampY,z);g.add(shade);
     for(const yy of [lampY-.12,lampY+.12]){const ring=new THREE.Mesh(new THREE.TorusGeometry(.22,.007,6,40),m.oak);ring.rotation.x=Math.PI/2;ring.position.set(x,yy,z);g.add(ring);}
@@ -202,7 +209,15 @@ function finishFeatureWall(parent,wall,feature,height,tools,m,design) {
   if(h<.12||w<.2||kind==='none')return;
   if(kind==='wet'){box(g,m.tiles,0,h/2,depth,w,h,.018);box(g,m.bronze,0,h-.017,depth+feature.sign*.012,w,.012,.012);return;}
   const y=h/2;
-  if(kind==='beadboard'){
+  if(kind==='lime-niche'){
+    box(g,m.wall,0,y,depth,w,h,.024);
+    const span=Math.min(1.16,w*.76),centreY=Math.min(1.39,h*.57),nicheHeight=Math.min(1.16,h*.68),front=depth+feature.sign*.027;
+    tools.rounded(g,m.stone,0,centreY,front,span,nicheHeight,.035,.10);
+    tools.rounded(g,m.wall,0,centreY+.018,front+feature.sign*.021,span-.095,nicheHeight-.095,.016,.082);
+    box(g,m.stone,0,centreY-nicheHeight*.23,front+feature.sign*.055,span-.08,.042,.105);
+    const vase=cyl(g,m.ceramic,-span*.20,centreY-nicheHeight*.23+.12,front+feature.sign*.06,.042,.065,.20,24);
+    vase.userData.decorative=true;
+  }else if(kind==='beadboard'){
     const painted=m.painted||m.trim,n=Math.max(3,Math.ceil(w/.105));
     for(let i=0;i<n;i++){
       const x=-w/2+(i+.5)*w/n;box(g,painted,x,y,depth,w/n-.004,h,.022);

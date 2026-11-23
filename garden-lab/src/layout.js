@@ -1,5 +1,8 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled} from './garden-program.js?v=1.30.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.0';
+import {resortGardenFurniture} from './resort-garden.js?v=1.31.0';
+import {terraceGroundReference} from './geometry.js?v=1.31.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -12,6 +15,25 @@ export function rectCorners(rect,padding=0) {
 
 /** Low furniture only: it illustrates the proposal and is excluded from sun rays. */
 export function gardenFurniture(data,settings={}) {
+  const result=resortGardenFurniture(baseGardenFurniture(data,settings),settings,data);
+  if(!result.resort)return result;
+  const t=data.site.terrace,rear=data.site.rearMidpoint[1],depth=Number(settings.terraceDepth)||t.depth;
+  const stairs=terraceStairs({...t,y:rear},depth,terraceGroundReference(settings,data).drop,settings,data);
+  const program=gardenProgram(settings,data),pool=poolBounds(settings,data);
+  const obstacles=[data.site.house.footprint,rectCorners({x:t.x,y:rear,width:t.width,length:depth},.15)];
+  if(stairs.count)obstacles.push(rectCorners(stairs,.15));
+  if(pool)obstacles.push(rectCorners(pool,pool.coping+.12));
+  if(program.active)obstacles.push(program.sauna.footprint,program.firepit.outerFootprint,rectCorners(program.coldPlunge,.24),
+    ...(program.sauna.entrySteps||[]).map(s=>s.footprint),...(program.coldPlunge.steps||[]).map(s=>rectCorners(s,.12)));
+  if(data.site.garage&&settings.removeGarage===false)obstacles.push(data.site.garage.footprint);
+  const fits=r=>footprintFit(rectCorners(r),data.site.boundary).location==='inside'&&!obstacles.some(p=>overlapArea(rectCorners(r,.04),p)>.00001);
+  const items=result.resort.items.filter(fits);
+  // A retained building or enlarged deck may consume a proposed furniture
+  // zone. Omit that proposal consistently in both plan and rendered scene.
+  const diningVisible=(!data.site.garage||settings.removeGarage!==false)&&fits(result.dining);
+  return {...result,diningVisible,resort:{...result.resort,items}};
+}
+function baseGardenFurniture(data,settings={}) {
   const program=gardenProgram(settings,data);
   if(program.active)return program.furniture;
   if(data.site.furniture)return data.site.furniture;

@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.30.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.30.0';
+import {toWorld} from './orientation.js?v=1.31.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.31.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.
@@ -210,6 +210,10 @@ function base(kit, form, m, w,l,h,x=0,y=0) {
   if (form==='shell') {
     drum(cx,cy,h*.12,w*.63,l*.52,h*.24,m.metal);
     drum(cx,cy,h*.59,w*.34,l*.30,h*.75,m.metal);
+  } else if (form==='beach-platform') {
+    for(const fx of [.08,.92])for(const fy of [.10,.90])box(x+fx*w,y+fy*l,h*.38,.055,.055,h*.76,m.wood);
+    box(cx,cy,h*.78,w*.96,l*.96,h*.30,m.woodLight);
+    for(const fy of [.08,.92])box(cx,y+fy*l,h*.60,w*.88,.045,.035,m.wood);
   } else if (form==='coastal-crossback') {
     // An open oak frame, with visible stretchers and crossed end braces, is
     // shared by the daybed, occasional table and six individual dining chairs.
@@ -328,6 +332,11 @@ export function createStyledSideTable(style,m,r,options) {
 }
 
 export function createStyledDining(style,m,r,options) {
+  if(r.rotation){
+    const rotated=createStyledDining(style,m,{...r,x:0,y:0,z:0,width:r.length,length:r.width,rotation:0},options);
+    rotated.rotation.y=Math.PI/2;rotated.position.set(...toWorld(r.x,r.y+r.length,r.z));
+    rotated.userData.rotation=Math.PI/2;return rotated;
+  }
   const kit=assembly('styled-dining-'+style.recipe.furniture,r,{...options,upholsteryMaterials:[m.linen,m.fabricAccent??m.styleAccent]});
   const {width:w,length:l}=r,form=style.recipe.furniture;
   const composition=style.construction?.dining??'long-six',round=composition==='round-four';
@@ -405,12 +414,13 @@ export function createStyledCanopyTrim(style,m,b) {
   const h=Math.max(0,b.z-(b.fasciaBottomZ??b.z-.3));
   const form=style.recipe.canopy;
   const detailMat=m.styleAccent??m.metal;
-  if (['battens','paired','rafters','verandah'].includes(form)){
-    const spacing=form==='battens'?.18:form==='paired'?.53:form==='verandah'?.59:.67;
+  if (['battens','paired','rafters','verandah','beach-linen'].includes(form)){
+    const spacing=form==='battens'?.18:form==='paired'?.53:form==='verandah'?.59:form==='beach-linen'?.86:.67;
     for(let xx=.10;xx<w-.07;xx+=spacing){
       box(xx,l/2,-.022,form==='rafters'||form==='verandah'?.087:.043,l,.043,m.woodLight);
       if(form==='paired'&&xx+.12<w-.03)box(xx+.12,l/2,-.022,.043,l,.043,m.woodLight);
     }
+    if(form==='beach-linen')for(let yy=.14;yy<l-.08;yy+=.16)box(w/2,yy,-.047,w-.05,.11,.009,m.linen);
   }
   if(h<.001)return kit.finish();
   const band=(dz,thickness,material)=>{
@@ -438,4 +448,59 @@ export function createStyledCanopyTrim(style,m,b) {
     }
   }
   return kit.finish();
+}
+
+/** Furnished terrace modules share the same measured rectangles as the plan.
+ * Low planted vessels and table details carry no analytical screening credit. */
+export function createStyledResortPiece(style,m,r,options={}){
+  if(r.kind==='lounger')return createStyledLounger(style,m,r,options);
+  const kit=assembly('resort-'+r.id,r,{...options,upholsteryMaterials:[m.linen,m.fabricAccent??m.styleAccent]});
+  const {box,cushion,drum,bar}=kit,{width:w,length:l}=r,form=style.recipe.furniture;
+  const accent=m.fabricAccent??m.styleAccent??m.linen;
+  if(r.kind==='planter'){
+    const wide=Math.min(w,l),h=.44,leaf=m.hedge??m.wood;
+    drum(w/2,l/2,h/2,wide*.88,wide*.88,h,m.stoneLight,24);
+    drum(w/2,l/2,h-.012,wide*.76,wide*.76,.018,m.wood,24);
+    const grass=r.plant==='grass',n=options.svgMode?9:grass?27:15;
+    for(let i=0;i<n;i++){
+      const a=i*2.39996,rr=wide*(.08+.11*(i%3)/2),cx=w/2+Math.cos(a)*rr,cy=l/2+Math.sin(a)*rr;
+      const height=grass?.35+.20*(.5+.5*Math.sin(i*2.1)):.29+.18*(.5+.5*Math.sin(i*1.6));
+      const lean=grass?.085:.10;
+      bar([cx,cy,h],[cx+Math.cos(a)*lean,cy+Math.sin(a)*lean,h+height],grass?.006:.008,leaf);
+      if(!grass)for(const t of [.45,.70,.95]){
+        const px=cx+Math.cos(a)*lean*t,py=cy+Math.sin(a)*lean*t;
+        cushion(px,py,h+height*t,.085,.055,.018,leaf,2);
+      }
+    }
+  }else if(r.kind==='table'){
+    base(kit,form,m,w,l,.29);
+    if(['pebble','low-pebble','shell','runner','beach-platform'].includes(form))drum(w/2,l/2,.325,w,l,.07,m.stoneLight,28);
+    else box(w/2,l/2,.325,w,l,.07,m.woodLight);
+    // A small ceramic tray and cup make each resting place usable and legible.
+    drum(w*.49,l*.48,.368,Math.min(.23,w*.52),Math.min(.23,l*.52),.018,m.stoneLight,20);
+    drum(w*.47,l*.47,.401,.058,.058,.055,m.styleAccent??m.stoneLight,14);
+  }else{
+    const daybed=r.kind==='daybed',ottoman=r.kind==='ottoman',seatH=daybed?.28:form==='platform'||form==='low-pebble'?.31:.38;
+    base(kit,form,m,w,l,seatH);
+    const alongY=['east','west'].includes(r.back),count=(alongY?l:w)>1.35?2:1;
+    for(let i=0;i<count;i++)cushion(w*(alongY?.5:(i+.5)/count),l*(alongY?(i+.5)/count:.5),seatH+.015,
+      alongY?w*.91:w/count-.025,alongY?l/count-.025:l*.91,daybed?.14:.12,m.linen,form==='shell'?2.2:5);
+    if(!ottoman){
+      const bx=r.back==='east'?w-.065:r.back==='west'?.065:w/2;
+      const by=r.back==='south'?l-.065:r.back==='north'?.065:l/2;
+      const bw=alongY?.115:w*.96,bl=alongY?l*.96:.115;
+      const backH=daybed?.27:.34;
+      if(['weave','beach-platform','slat','bench','coastal-crossback'].includes(form)){
+        box(bx,by,seatH+backH*.52,bw*.55,bl*.97,backH,m.woodLight);
+        for(let i=0;i<count;i++)cushion(alongY?bx-(r.back==='east'?1:-1)*.08:w*(i+.5)/count,
+          alongY?l*(i+.5)/count:by+(r.back==='north'?1:-1)*.08,seatH+.12,
+          alongY?.17:w/count*.85,alongY?l/count*.85:.17,backH*.78,i%2?accent:m.linen,5);
+      }else cushion(bx,by,seatH+.09,bw,bl,backH,m.linen,form==='pebble'?2.7:5);
+      if(daybed){
+        const px=alongY?w*.65:w*.24,py=alongY?l*.24:l*.23;
+        cushion(px,py,seatH+.18,Math.min(.43,w*.34),Math.min(.40,l*.25),.08,accent,4);
+      }
+    }
+  }
+  const group=kit.finish();group.userData.resortPiece={id:r.id,kind:r.kind,back:r.back};return group;
 }

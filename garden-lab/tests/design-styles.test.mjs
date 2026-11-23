@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
 import {DEFAULT_DESIGN_STYLE, DESIGN_STYLES, getDesignStyle, designStyleSearchText} from '../src/design-styles.js';
+import {pendantLightingLayout} from '../src/pendant-layout.js';
 import {createStyledDeck,createStyledLounger,createStyledSideTable,createStyledDining,createStyledCanopyTrim} from '../src/scene-style-details.js';
 import {createGardenNightLighting} from '../src/scene-night-lights.js';
 import {createStateModel} from '../src/state.js';
@@ -21,8 +22,8 @@ const rect={x:4.1,y:8.5,z:2.4,width:.78,length:2};
 test('style IDs are stable, unique and all proposals have different architectural recipes',()=>{
   assert.equal(getDesignStyle('__proto__').id,DEFAULT_DESIGN_STYLE);
   assert.equal(getDesignStyle(null).id,DEFAULT_DESIGN_STYLE);
-  assert.equal(new Set(DESIGN_STYLES.map(s=>s.id)).size,22);
-  assert.equal(new Set(proposals.map(s=>JSON.stringify(s.recipe))).size,21);
+  assert.equal(new Set(DESIGN_STYLES.map(s=>s.id)).size,23);
+  assert.equal(new Set(proposals.map(s=>JSON.stringify(s.recipe))).size,22);
   for(const style of DESIGN_STYLES){
     assert.equal(getDesignStyle(style.id),style);
     assert.ok(Object.isFrozen(style.recipe.module)&&Object.isFrozen(style.palette));
@@ -34,7 +35,7 @@ test('style IDs are stable, unique and all proposals have different architectura
 test('Coastal is an explicit searchable choice with a different physical scheme from Baltic Dune',()=>{
   const coastal=getDesignStyle('coastal'),dune=getDesignStyle('baltic-dune');
   assert.equal(coastal.id,'coastal');assert.equal(coastal.label,'Coastal');
-  for(const query of ['coastal','seaside','beach house','hamptons','new england','cape cod'])
+  for(const query of ['coastal','seaside','hamptons','new england','cape cod'])
     assert.ok(DESIGN_STYLES.filter(style=>designStyleSearchText(style).includes(query)).includes(coastal),query);
   assert.ok(Object.isFrozen(coastal.aliases));
   for(const key of ['paving','furniture','canopy'])assert.notEqual(coastal.recipe[key],dune.recipe[key]);
@@ -107,7 +108,7 @@ test('SVG furniture has finite local cap triangles and zero fascia depth adds no
   assert.ok(createStyledCanopyTrim(getDesignStyle('hidden-bali'),materials,flat).children.length>0);
 });
 
-test('styled luminaires retain the original schedules, physical locations and independent dimmers',()=>{
+test('styled luminaires follow each composition and retain independent dimmers',()=>{
   for(const data of sites){
     const settings=createStateModel(getSiteProfile(data.site.id,data)).DEFAULTS;
     const original=createGardenNightLighting(settings,data);
@@ -115,8 +116,10 @@ test('styled luminaires retain the original schedules, physical locations and in
       for(const id of ['hidden-bali','space-age','organic-japandi','mediterranean-villa','party-club','coastal']){
         const style=getDesignStyle(id),lighting=createGardenNightLighting(settings,data,{style});
         try{
-          assert.deepEqual(lighting.fixtures,original.fixtures);
-          assert.equal(lighting.lightCount,original.lightCount);
+          const expected=pendantLightingLayout({...settings,designStyle:id},data);
+          assert.deepEqual(lighting.fixtures.filter(f=>f.channel).map(f=>f.id),[...expected.garden,...expected.hedge].map(f=>f.id));
+          assert.ok(lighting.lightCount<=original.lightCount,'Selective resort lighting stays below the original GPU budget');
+          assert.ok(expected.hedge.length<=9);
           lighting.apply({gardenStrength:0,pendantStrength:.8,hedgeStrength:0});
           for(const f of lighting.fixtures.filter(f=>f.channel)){
             const shade=lighting.group.getObjectByName(f.id+'-'+style.recipe.fixture+'-shade');
@@ -135,5 +138,17 @@ test('styled luminaires retain the original schedules, physical locations and in
         }finally{lighting.dispose();}
       }
     }finally{original.dispose();}
+  }
+});
+
+test('Beach House is a separate contemporary resort scheme, not a Coastal search alias',()=>{
+  const beach=getDesignStyle('beach-house');
+  assert.equal(beach.label,'Beach House');
+  assert.ok(designStyleSearchText(beach).includes('beach house'));
+  assert.ok(!getDesignStyle('coastal').aliases.includes('beach house'));
+  for(const other of ['coastal','baltic-dune']){
+    assert.notEqual(beach.recipe.furniture,getDesignStyle(other).recipe.furniture);
+    assert.notEqual(beach.recipe.canopy,getDesignStyle(other).recipe.canopy);
+    assert.notEqual(beach.recipe.fixture,getDesignStyle(other).recipe.fixture);
   }
 });

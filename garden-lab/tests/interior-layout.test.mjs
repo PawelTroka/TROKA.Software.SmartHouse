@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {getInteriorPlan, getInteriorGarageConflicts} from '../src/interior-plan.js';
 import {fixturePlanFrame} from '../src/interior-plan-view.js';
+import {INTERIOR_COMPOSITIONS} from '../src/interior-curation.js';
 
 const proposal=floor=>getInteriorPlan({floor,layout:'renovation'});
 const near=(a,b,tol=1e-7)=>assert.ok(Math.abs(a-b)<tol,`${a} vs ${b}`);
-const solidFixtures=plan=>plan.fixtures.filter(f=>!f.wallMounted&&!f.hostId);
+const solidFixtures=plan=>plan.fixtures.filter(f=>!f.wallMounted&&!f.hostId&&!f.nonBlocking);
 const contains=(polygon,x,z)=>{
   let inside=false;
   for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
@@ -189,4 +190,26 @@ test('registered garage bounds move the portal, lining, cars and core conflicts 
   assert.deepEqual(p.conflicts,getInteriorGarageConflicts(settings));
   assert.ok(p.conflicts.some(c=>c.id==='cellar-stair'&&c.polygon[1][0]===6.40));
   assert.throws(()=>getInteriorGarageConflicts({garageRampWidth:5.8,architecturalGarageBounds:{x0:1,x1:6}}),RangeError);
+});
+
+test('all resort arrangements retain free floor area, fixture approaches and room access',()=>{
+  const targets={ground:[[2.75,3.9],[2.4,6.6],[5.35,2],[8.1,1.1]],
+    first:[[2.10,2.0],[6.1,2.8],[9,2.2],[2.9,6.5],[2.9,8.3],[5.3,9.8],[8.1,7.98],[9.6,4.38]]};
+  for(const styleId of Object.keys(INTERIOR_COMPOSITIONS))for(const floor of ['ground','first']){
+    const plan=getInteriorPlan({floor,styleId}),items=solidFixtures(plan),reached=circulation(plan,floor==='ground'?[5.3,4.4]:[5.4,4.4]);
+    for(const [i,a] of items.entries())for(const b of items.slice(i+1)){
+      const dx=(a.width+b.width)/2-Math.abs(a.x-b.x),dz=(a.depth+b.depth)/2-Math.abs(a.z-b.z);
+      assert.ok(dx<=1e-7||dz<=1e-7,`${styleId} ${floor}: ${a.id} intersects ${b.id}`);
+    }
+    for(const point of targets[floor])assert.ok(reached(point),`${styleId} ${floor}: room route ${point} disconnected`);
+    for(const f of plan.fixtures)for(const point of f.approaches||(f.approach?[f.approach]:[]))assert.ok(reached(point),`${styleId} ${f.id}: fixture approach disconnected`);
+    for(const w of plan.walls)for(const o of w.openings.filter(o=>o.type==='door')){
+      const length=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]),ux=(w.b[0]-w.a[0])/length,uz=(w.b[1]-w.a[1])/length;
+      const end=o.hinge==='end',t=o.offset+(end?o.width:0),hx=w.a[0]+t*ux,hz=w.a[1]+t*uz,side=end?-1:1,swing=o.swing===-1?-1:1;
+      for(let i=0;i<=24;i++)for(let j=1;j<=24;j++){
+        const a=i*Math.PI/48,r=(o.width-.10)*j/24,x=hx+ux*side*Math.cos(a)*r-uz*swing*Math.sin(a)*r,z=hz+uz*side*Math.cos(a)*r+ux*swing*Math.sin(a)*r;
+        for(const f of items)assert.ok(rectDistance(x,z,f.x-f.width/2,f.z-f.depth/2,f.x+f.width/2,f.z+f.depth/2)>=.018,`${styleId} ${floor}: ${w.id} door strikes ${f.id}`);
+      }
+    }
+  }
 });

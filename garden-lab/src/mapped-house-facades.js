@@ -1,5 +1,5 @@
 // Inferred facade openings used by both the mapped-house renderer and style treatments.
-import {localRoofEnvelope, roofEdgeHeight} from './roof-envelope.js?v=1.30.0';
+import {localRoofEnvelope, roofEdgeHeight} from './roof-envelope.js?v=1.31.0';
 
 export function mappedHouseFacadeLayout(data, settings, envelope=localRoofEnvelope(data.site.house)) {
   const {ring,base}=envelope;

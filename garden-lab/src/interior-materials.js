@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface} from './material-assets.js?v=1.30.0';
-import {exteriorSurfacePixels} from './exterior-materials.js?v=1.30.0';
-import {getDesignStyle} from './design-styles.js?v=1.30.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.30.0';
+import {applyPhotographicSurface} from './material-assets.js?v=1.31.0';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.31.0';
+import {getDesignStyle} from './design-styles.js?v=1.31.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {
@@ -132,8 +132,8 @@ function artwork(palette) {
 export function interiorMaterials(styleId,{svgMode=false}={}) {
   const style=getDesignStyle(styleId), p=style.palette, current=style.id==='current', interiorRecipe=getInteriorStyleRecipe(style.id),maps=[];
   const map=t=>{maps.push(t);return t;};
-  const coastal=style.id==='coastal';
-  const woodMap=map(planks(coastal?'bleached-boards':'boards')),tileMap=map(current?mineral(true):materialSurface(interiorRecipe.wetFloor)),stoneMap=map(current?mineral(false):materialSurface(coastal?'quartz':['riviera-deco','party-club'].includes(style.id)?'marble':['hidden-bali','japandi'].includes(style.id)?'honed-stone':'travertine')),linen=map(current?weave():upholstery(interiorRecipe.upholstery));
+  const coastal=style.id==='coastal',beach=style.id==='beach-house';
+  const woodMap=map(planks(coastal||beach?'bleached-boards':'boards')),tileMap=map(current?mineral(true):materialSurface(interiorRecipe.wetFloor)),stoneMap=map(current?mineral(false):materialSurface(coastal?'quartz':['riviera-deco','party-club'].includes(style.id)?'marble':['hidden-bali','japandi','beach-house'].includes(style.id)?'honed-stone':'travertine')),linen=map(current?weave():upholstery(interiorRecipe.upholstery));
   const timberFloors=['boards','wide-boards','dark-boards','pale-boards','bleached-boards','weathered-boards','narrow-boards','herringbone','dark-parquet','deco-parquet'];
   const parquetFloor=['herringbone','dark-parquet','deco-parquet'].includes(interiorRecipe.floor);
   const floorMap=current?woodMap:map(parquetFloor?parquet(interiorRecipe.floor==='deco-parquet'):timberFloors.includes(interiorRecipe.floor)?planks(interiorRecipe.floor):materialSurface(interiorRecipe.floor));

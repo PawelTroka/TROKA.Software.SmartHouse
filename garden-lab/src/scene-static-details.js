@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.30.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.31.0';
 
 // Only the garden builder's unnamed, fixed, single-material boxes participate.
 // Named targets, glass sorting, vehicles, selectable terrain and fixture groups

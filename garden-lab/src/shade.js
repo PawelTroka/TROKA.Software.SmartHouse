@@ -3,14 +3,14 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.30.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.30.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.30.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.30.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.30.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.30.0';
-import { terraceStairs } from './layout.js?v=1.30.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.30.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.31.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.31.0';
+import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.31.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.31.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.0';
+import { terraceStairs } from './layout.js?v=1.31.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.31.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
