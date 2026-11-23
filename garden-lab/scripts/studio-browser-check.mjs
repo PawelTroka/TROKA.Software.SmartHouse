@@ -104,10 +104,19 @@ const cameraTime=()=>page.evaluate(()=>({
   date:document.querySelector('#sun-date').value,time:document.querySelector('#sun-time').value,
   observer:document.querySelector('#observer-readout').textContent,
 }));
-async function houseScope(active){
+async function houseScope(active,afterFrame=null){
   await sceneVisible();
   assert.equal(await el('#styleHouseFinish').isChecked(),active);
   assert.equal(await el('#studio-house-scope').getAttribute('data-renovated'),String(active));
+  // The controls update synchronously; performance counters are published only
+  // after the next rendered frame. Scrolling an offscreen scene into view can
+  // deliver its IntersectionObserver callback after sceneVisible's two rAFs.
+  await page.waitForFunction(({active,afterFrame})=>{
+    const d=document.querySelector('#render-diagnostics')?.dataset;if(!d)return false;
+    const parts=Number(d.houseRenovationParts),projection=Number(d.houseRenovationProjection);
+    return (afterFrame===null||Number(d.frames)>afterFrame)&&
+      (active?parts>0&&projection>0&&projection<=.14:parts===0&&projection===0);
+  },{active,afterFrame});
   const info=await stats();
   if(active){
     assert.ok(info.houseRenovationParts>0,'The rendered house has no renovation parts');
@@ -294,9 +303,11 @@ try{
   const goldenMinutes=Math.round(Math.max(0,Math.min(1439,sunsetMinutes-45)));
   const expectedTime=[Math.floor(goldenMinutes/60),goldenMinutes%60].map(n=>String(n).padStart(2,'0')).join(':');
   assert.equal(viewpoint.time,expectedTime);
-  await el('#studio-undo').click();await houseScope(true);assert.deepEqual(await cameraTime(),viewpoint);
+  const beforeUndoFrame=(await stats()).frames;
+  await el('#studio-undo').click();await houseScope(true,beforeUndoFrame);assert.deepEqual(await cameraTime(),viewpoint);
   await shot('sternicza-hidden-bali-terrace-golden-hour','#scene-host canvas');
-  await el('#studio-redo').click();await houseScope(false);assert.deepEqual(await cameraTime(),viewpoint);
+  const beforeRedoFrame=(await stats()).frames;
+  await el('#studio-redo').click();await houseScope(false,beforeRedoFrame);assert.deepEqual(await cameraTime(),viewpoint);
   report.goldenHourView=viewpoint;
   assert.equal(await el('#designStyle').inputValue(),'current');
   check('Keyboard selection applies a complete renovation. Undo and Redo of Current preserve the camera and golden-hour time');
