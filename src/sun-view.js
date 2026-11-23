@@ -1,11 +1,12 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.29.0';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.29.0';
-import {getSiteProfile} from './sites.js?v=1.29.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.29.0';
-import {treePlanMarkup} from './tree-drawing.js?v=1.29.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.29.0';
-import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.29.0';
-import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.29.0';
+import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.30.0';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.30.0';
+import {getSiteProfile} from './sites.js?v=1.30.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.30.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.30.0';
+import {treePlanMarkup} from './tree-drawing.js?v=1.30.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.30.0';
+import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.30.0';
+import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.30.0';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -85,7 +86,7 @@ export function renderSunMap(container,data,settings,sun,shade,measuredFrame=nul
   }).join('');
   const cellMarkup=shade.cells.map((cell,i)=>`<rect x="${X(cell.x-.5)}" y="${Y(cell.y-.5)}" width="${scale}" height="${scale}" fill="${colors[cell.state]||colors.disabled}" data-sun-cell="${i}"><title>${escape(`${cell.zone} · ${cell.state==='sun'?'Direct sun':cell.state==='shade'?`Shade from ${cell.blockedLabel||cell.blockedBy||'modeled geometry'}`:cell.state==='night'?'Sun below horizon':'Simulation off'}`)}</title></rect>`).join('');
   const hedges=hedgeSegments(settings,data).filter(h=>h.height>0).map(h=>`<line x1="${X(h.a[0])}" y1="${Y(h.a[1])}" x2="${X(h.b[0])}" y2="${Y(h.b[1])}" stroke="#31563f" stroke-width="${Math.max(2,.5*scale)}"/>`).join('');
-  const trees=treePlanMarkup(screeningTreeVolumes(settings,data),{X,Y,scale,subtle:true,labels:scope!=='context'&&!measured});
+  const trees=treePlanMarkup(existingCanopyVolumes({...settings,existingCanopyAnalysis:true},data),{X,Y,scale,subtle:true,labels:false})+treePlanMarkup(screeningTreeVolumes(settings,data),{X,Y,scale,subtle:true,labels:scope!=='context'&&!measured});
   const north=localSunDirection(0,0,data),cx=compact?W-42:W-61,cy=48,R=26;
   const azLen=Math.hypot(sun.direction[0],sun.direction[1])||1;
   const sx=cx+sun.direction[0]/azLen*R,sy=cy+sun.direction[1]/azLen*R;

@@ -3,16 +3,17 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.29.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.29.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.29.0';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.29.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.29.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.29.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.30.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.30.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.30.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.30.0';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.30.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.30.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.30.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.29.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.29.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.29.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.30.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.30.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.30.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -656,7 +657,7 @@ export function saunaIntersection(observer,target,settings={},data,faces=saunaOp
 export function analyzeVisibility(observer, settings = {}, data) {
   const s = settingsWithDefaults(settings), origin = point3(observer);
   const segments = hedgeSegments(s, data), rays = [], byBlock = [];
-  const trees = screeningTreeVolumes(s, data);
+  const trees = [...screeningTreeVolumes(s, data),...existingCanopyVolumes(s, data)];
   const saunaFaces=saunaOpaqueFaces(s,data);
   const privacyBoxes=privacyStructures(s,data).boxes;
   const cover=s.canopyEnabled?terraceCover(s,data):null;
@@ -701,7 +702,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       if (canopy) possible.push({ t: canopy.t, type: 'canopy', hit: canopy });
       if (buildingHit) possible.push({ t: buildingHit.t, type: 'building', hit: buildingHit });
       if (poolRim) possible.push({t:poolRim.t,type:'pool-rim',hit:poolRim});
-      if (tree) possible.push({ t: tree.t, type: 'screening-tree', hit: tree });
+      if (tree) possible.push({ t: tree.t, type: tree.type || 'screening-tree', hit: tree });
       if (sauna) possible.push({t:sauna.t,type:'sauna',hit:sauna});
       if (privacyStructure) possible.push({t:privacyStructure.t,type:'privacy-structure',hit:privacyStructure});
       const first = possible.sort((a, b) => a.t - b.t)[0];
@@ -733,5 +734,5 @@ export function analyzeVisibility(observer, settings = {}, data) {
   for (const ray of rays) if (ray.blockedBy) reasons[ray.blockedBy] = (reasons[ray.blockedBy] || 0) + 1;
   return { observer, total, visible, blocked, blockedPercent: total ? 100 * blocked / total : 0,
     byBlock, worstRequiredHedge, remainingRequiredHedge, rays, criticalRay, reasons,
-    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens, finite proposed crowns and modeled pergola/spa-screen members. Dense pergola foliage is an explicit established-planting assumption. Hedge-alone requirements ignore added trees/canopy/privacy structures. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
+    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens, finite proposed and enabled existing canopy envelopes and modeled pergola/spa-screen members. Existing stems are reconstructed and receive no numerical screening credit. Dense pergola foliage is an explicit established-planting assumption. Hedge-alone requirements ignore added trees/canopy/privacy structures. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
 }

@@ -3,10 +3,10 @@
  * Coordinates and absolute elevations match geometry.js. Dense crowns are an
  * optimistic geometric assumption, not a measured guarantee of opaque foliage.
  */
-import { TREE_CATALOG, getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.29.0';
-import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.29.0';
-import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.29.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.29.0';
+import { TREE_CATALOG, getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.30.0';
+import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.30.0';
+import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.30.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.30.0';
 
 export const MAX_SCREENING_TREES = 12;
 export const TREE_LEAF_MODES = Object.freeze(['auto','leaf-on','leaf-off']);
@@ -208,14 +208,22 @@ function trunkHit(origin,direction,volume,maxT) {
 }
 function intersectTree(origin,direction,volume,maxT) {
   if(!volume?.enabled||!volume.plantable)return null;
+  if(volume.sourceKind==='existing-canopy'){
+    if(!volume.foliageActive)return null;
+    // Cheap conservative box rejection before ellipsoid work. This keeps the
+    // hundreds of measured neighbourhood crowns inexpensive for sampled rays.
+    const radius=Math.max(volume.crownRadii[0],volume.crownRadii[1]);
+    if(!boxHit(origin.map((v,i)=>v-volume.crownCenter[i]),direction,[radius,radius,volume.crownRadii[2]],maxT))return null;
+  }
   const localOrigin=localDirection(origin.map((v,i)=>v-volume.crownCenter[i]),volume.rotationCos,volume.rotationSin);
   const localRay=localDirection(direction,volume.rotationCos,volume.rotationSin);
   const crown=volume.foliageActive?(volume.form==='panel'?boxHit:volume.form==='cone'?coneHit:ellipsoidHit)(localOrigin,localRay,volume.crownRadii,maxT):null;
-  const trunk=trunkHit(origin,direction,volume,maxT);
+  const trunk=volume.trunkRadius>0?trunkHit(origin,direction,volume,maxT):null;
   if(crown===null&&trunk===null)return null;
   const t=crown!==null&&(trunk===null||crown<=trunk)?crown:trunk,part=t===crown?'crown':'trunk';
   const p=origin.map((v,i)=>v+t*direction[i]);
-  return {id:`screening-tree-${volume.id}`,treeId:volume.id,typeId:volume.typeId,type:'screening-tree',label:volume.label,
+  const kind=volume.sourceKind==='existing-canopy'?'existing-canopy':'screening-tree';
+  return {id:`${kind}-${volume.id}`,treeId:volume.id,typeId:volume.typeId,type:kind,label:volume.label,
     t,part,x:p[0],y:p[1],z:p[2],point:p,distance:Math.hypot(...direction)*t};
 }
 
