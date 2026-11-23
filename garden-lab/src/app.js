@@ -29,7 +29,7 @@ import {applyPlanExterior,planRegistrationSummary} from './plan-exterior.js?v=1.
 import {getInteriorPlan,INTERIOR_SOURCES,INTERIOR_DIMENSIONS,INTERIOR_CHANGES} from './interior-plan.js?v=1.30.0';
 import {getHouseFloorPlan} from './house-model.js?v=1.30.0';
 import {existingVegetationSummary} from './existing-vegetation.js?v=1.30.0';
-import {mountSeaView} from './sea-view.js?v=1.30.0';
+import {mountSeaView} from './sea-view.js?v=1.30.0&rev=14959436';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
