@@ -34,9 +34,9 @@ import { gardenDimensions } from './dimensions.js?v=1.30.0';
 import { createDimensionOverlay } from './scene-dimensions.js?v=1.30.0';
 import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.30.0';
 import {existingCanopyRecords} from './existing-vegetation.js?v=1.30.0';
-import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.30.0';
-import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.30.0';
-import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.30.0';
+import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.30.0&rev=20261123-reference';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.30.0&rev=20261123-reference';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.30.0&rev=20261123-reference';
 import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.30.0';
 import {projectContextGroundUVs} from './context-ground.js?v=1.30.0';
 import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.30.0';
@@ -388,7 +388,7 @@ export function createScene(container, data, callbacks = {}) {
 
   const staticGroup = new THREE.Group(), buildingGroup = new THREE.Group(), designGroup = new THREE.Group(), markerGroup = new THREE.Group(), rayGroup = new THREE.Group(), sunGuideGroup = new THREE.Group(), sunPathGroup = new THREE.Group();
   const houseGroup = new THREE.Group(), finishesGroup = new THREE.Group(), existingVegetationGroup = new THREE.Group();
-  let vegetationSignature='',vegetationSource;
+  let vegetationSignature='',vegetationSource,vegetationBuildings;
   const reflections=svgMode?null:createPoolReflections(renderer,scene,camera,{sky,
     exclude:[markerGroup,rayGroup,sunGuideGroup],waterMaterials:[mat.water,mat.waterLight]});
   scene.add(staticGroup, buildingGroup, existingVegetationGroup, designGroup, markerGroup, rayGroup, sunGuideGroup);
@@ -687,8 +687,8 @@ export function createScene(container, data, callbacks = {}) {
 
   function syncExistingVegetation(settings){
     const signature=JSON.stringify([settings.existingVegetation,settings.existingCanopyAnalysis,settings.existingLeafMode,settings.sunDate?.slice(5,7)]);
-    if(signature===vegetationSignature&&vegetationSource===data.existingVegetation)return;
-    vegetationSignature=signature;vegetationSource=data.existingVegetation;
+    if(signature===vegetationSignature&&vegetationSource===data.existingVegetation&&vegetationBuildings===data.buildings)return;
+    vegetationSignature=signature;vegetationSource=data.existingVegetation;vegetationBuildings=data.buildings;
     removeGeometry(existingVegetationGroup);
     existingVegetationGroup.add(createExistingVegetationGroup(data,settings,{svgMode,origin:plotCentre}));
     contextRevision++;shadowBoundsDirty=true;

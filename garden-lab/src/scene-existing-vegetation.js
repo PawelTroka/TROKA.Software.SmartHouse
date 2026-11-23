@@ -1,6 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
 import {toWorld} from './orientation.js?v=1.30.0';
 import {existingCanopyRecords, existingFoliageActive} from './existing-vegetation.js?v=1.30.0';
+import {pointInPolygon} from './geometry.js?v=1.30.0';
 
 const TAU = Math.PI * 2;
 function randomFor(id) {
@@ -78,6 +79,8 @@ export function createExistingVegetationGroup(data,settings={}, {svgMode=false,o
   const records=existingCanopyRecords(data);
   root.userData.canopyCount=records.length;
   if(!records.length)return root;
+  const buildingFootprints=(data.buildings||[]).map(building=>building.footprint).filter(ring=>ring?.length>=3);
+  root.userData.suppressedStemCanopyIds=[];
   const foliageMap=svgMode?null:leafTexture();
   const foliage=new THREE.MeshStandardMaterial({color:'#ffffff',map:foliageMap,alphaTest:.42,
     alphaToCoverage:true,side:THREE.DoubleSide,roughness:.96,vertexColors:!svgMode});
@@ -97,6 +100,13 @@ export function createExistingVegetationGroup(data,settings={}, {svgMode=false,o
       // modest hue hint rather than an unlit material albedo.
       if(/^#[0-9a-f]{6}$/i.test(record.sourceColor||''))color.lerp(new THREE.Color(record.sourceColor),.18);
       batches.get(key).records.push({record,color});
+    }
+    // A real crown can overhang a building, placing its aggregate centre above
+    // a roof. Keep that observation, but do not invent wood growing through
+    // the mapped building. The current (possibly adjusted) footprints apply.
+    if(buildingFootprints.some(ring=>pointInPolygon([record.x,record.y],ring))){
+      root.userData.suppressedStemCanopyIds.push(record.id);
+      continue;
     }
     // Centres derived from canopy segmentation are not surveyed stem points.
     const c=[record.x,record.y,record.baseZ],fork=record.crownBaseZ+(record.topZ-record.crownBaseZ)*.38;
@@ -143,6 +153,7 @@ export function createExistingVegetationGroup(data,settings={}, {svgMode=false,o
     mesh.computeBoundingBox();mesh.computeBoundingSphere();root.add(mesh);
   }
   if(!batches.size)foliage.dispose();
+  if(!branches.length){bark.dispose();return root;}
   const wood=new THREE.InstancedMesh(new THREE.CylinderGeometry(.55,1,1,6,1),bark,branches.length);
   wood.name='reconstructed-existing-tree-branches';wood.castShadow=true;wood.receiveShadow=true;
   const up=new THREE.Vector3(0,1,0),a=new THREE.Vector3(),b=new THREE.Vector3();

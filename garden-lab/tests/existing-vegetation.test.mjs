@@ -17,6 +17,8 @@ const model=createStateModel(getSiteProfile('sternicza-11',site));
 const sample={site:{id:'sternicza-11'},existingVegetation:{siteId:'sternicza-11',canopies:[
   {id:'test',x:10,y:0,baseZ:2,crownBaseZ:8,topZ:14,radiusX:2,radiusY:4},
 ]}};
+const dispose=root=>{const materials=new Set();root.traverse(object=>{object.geometry?.dispose();if(object.material)materials.add(object.material);});materials.forEach(material=>material.dispose());};
+const renderedCrowns=root=>root.children.filter(mesh=>mesh.name.startsWith('existing-canopies-')).reduce((sum,mesh)=>sum+mesh.count,0);
 
 test('existing canopy extraction retains provenance and only mapped external centres',()=>{
   const records=existingCanopyRecords(data);
@@ -87,5 +89,48 @@ test('rendered canopy vertices stay within measured extents and leaf-off has no 
   const winter=createExistingVegetationGroup(sample,{existingLeafMode:'winter'});
   assert.ok(winter.getObjectByName('reconstructed-existing-tree-branches'));
   assert.equal(winter.children.some(mesh=>mesh.name.startsWith('existing-canopies-')),false);
-  for(const root of [group,winter]){const materials=new Set();root.traverse(object=>{object.geometry?.dispose();if(object.material)materials.add(object.material);});materials.forEach(material=>material.dispose());}
+  for(const root of [group,winter])dispose(root);
+});
+
+test('the ten recorded crowns over building centres retain foliage without invented roof-piercing stems',()=>{
+  const expected=[
+    'als-canopy-4759664-7267247','als-canopy-4759754-7269442','als-canopy-4759919-7267180',
+    'als-canopy-4759920-7269044','als-canopy-4759951-7267330','als-canopy-4760082-7267306',
+    'als-canopy-4761116-7270171','als-canopy-4761509-7267581','als-canopy-4761601-7267138',
+    'als-canopy-4761727-7270397',
+  ];
+  const before=JSON.stringify(data),settings={existingLeafMode:'summer'};
+  const originalVolumes=existingCanopyVolumes(settings,data);
+  for(const id of expected){
+    const canopy=nature.canopies.find(record=>record.id===id);
+    assert.ok(canopy,id);
+    const subset={...data,existingVegetation:{...nature,canopies:[canopy]}};
+    const group=createExistingVegetationGroup(subset,settings);
+    assert.equal(renderedCrowns(group),1,`${id}: measured crown remains present`);
+    assert.equal(group.getObjectByName('reconstructed-existing-tree-branches'),undefined,`${id}: no fabricated trunk through a roof`);
+    assert.deepEqual(group.userData.suppressedStemCanopyIds,[id]);
+    dispose(group);
+  }
+  const group=createExistingVegetationGroup(data,settings);
+  assert.equal(renderedCrowns(group),490,'All source crowns remain in the full neighbourhood');
+  assert.deepEqual(group.userData.suppressedStemCanopyIds,expected);
+  assert.deepEqual(existingCanopyVolumes(settings,data),originalVolumes,'Visual stem suppression has no analytical effect');
+  assert.equal(JSON.stringify(data),before,'Measured source data stays intact');
+  dispose(group);
+});
+
+test('stem exclusion includes building boundaries and follows the current footprint rather than source identity',()=>{
+  const footprint=[[8,-2],[12,-2],[12,2],[8,2],[8,-2]];
+  for(const [label,x,translated,woodExpected] of [
+    ['interior',10,false,false],['boundary',8,false,false],['outside',7.99,false,true],
+    ['moved building',10,true,true],
+  ]){
+    const canopy={...sample.existingVegetation.canopies[0],x};
+    const input={...sample,buildings:[{id:'test-building',footprint:footprint.map(([x,y])=>[x+(translated?20:0),y])}],
+      existingVegetation:{...sample.existingVegetation,canopies:[canopy]}};
+    const group=createExistingVegetationGroup(input,{existingLeafMode:'summer'});
+    assert.equal(Boolean(group.getObjectByName('reconstructed-existing-tree-branches')),woodExpected,label);
+    assert.equal(renderedCrowns(group),1,label);
+    dispose(group);
+  }
 });

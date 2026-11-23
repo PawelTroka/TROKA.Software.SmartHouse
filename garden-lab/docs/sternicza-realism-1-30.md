@@ -69,6 +69,20 @@ balcony stacks. Nearby houses have separate observed tones and approximate
 street-facing bay arrangements. The nine measured roof reconstructions add
 height variation without inventing roof ridge heights from photographs.
 
+The 23 November screenshot comparison corrects the three PCK blocks to five
+residential window rows, with small basement openings recorded separately.
+The garden/street elevations use four principal opening columns; the observed
+side elevations use three balcony stacks. Face-specific colour fields and
+entrance positions follow the visible references. These corrections change
+the finish and opening layer, not measured building heights or footprints.
+
+Ten measured canopy centres fall inside mapped building footprints. Their
+foliage remains present, but reconstructed trunks and branches are omitted at
+those centres: an overhanging crown does not establish a trunk growing through
+a roof. The exclusion follows the current building footprints when a building
+position is adjusted. The measured vegetation and numerical screening model
+remain unchanged.
+
 ## Sea-view interpretation
 
 The sea panel reports **eye height above the original local ground**, not the

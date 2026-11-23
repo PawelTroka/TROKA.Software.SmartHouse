@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {neighborhoodAppearanceData,observedBuildingAppearance,observedFacadePlacements,neighborhoodAppearanceLayout} from '../src/neighborhood-appearance.js';
+import {neighborhoodAppearanceData,observedBuildingAppearance,observedFacadePlacements,neighborhoodAppearanceLayout,appearanceFacadeEdges} from '../src/neighborhood-appearance.js';
 import {createNeighborhoodAppearanceGroup} from '../src/scene-neighborhood-appearance.js';
 import {pointInPolygon} from '../src/geometry.js';
 
@@ -13,7 +13,9 @@ test('observation source and generated browser data stay identical and record im
   const source=JSON.parse(fs.readFileSync(new URL('../data/sternicza-appearance-observations.json',import.meta.url)));
   assert.deepEqual(neighborhoodAppearanceData,source);
   assert.equal(source.profiles.length,12);
-  assert.equal(source.sources.length,6);
+  assert.equal(source.sources.length,11);
+  assert.equal(source.reviewed,'2026-11-23');
+  assert.equal(source.sources.filter(reference=>reference.filename.startsWith('Screenshot 2026-11-22')).length,5);
   for(const reference of source.sources){
     assert.match(reference.sha256,/^[0-9a-f]{64}$/);
     assert.equal(reference.acquisitionDate,null,'A screenshot supply date is not its aerial acquisition date');
@@ -33,12 +35,14 @@ test('Sternicza observation profiles cannot leak into another site with the same
   assert.equal(neighborhoodAppearanceLayout([{...pck,officialId:'different-official-id'}],data).profiles.length,0);
 });
 
-test('three observed PCK blocks use six opening levels, measured wall alignment and distinct palettes',()=>{
+test('three observed PCK blocks use five regular opening levels with separate basement slots',()=>{
   const colors=new Set();
   for(const id of ['building-9','building-15','building-29']){
     const source=building(id),before=structuredClone(source),profile=observedBuildingAppearance(source);
     const panes=observedFacadePlacements(source,origin);
-    assert.equal(new Set(panes.map(p=>p.floor)).size,6);
+    assert.equal(new Set(panes.filter(p=>!p.basement).map(p=>p.floor)).size,5);
+    assert.equal(panes.filter(p=>p.basement).length,3);
+    assert.ok(panes.filter(p=>p.basement).every(p=>p.floor===-1&&p.height<.6&&p.z-source.baseZ<1));
     assert.ok(panes.some(p=>p.balcony));
     colors.add(profile.facadeColor);
     for(const pane of panes){
@@ -50,6 +54,55 @@ test('three observed PCK blocks use six opening levels, measured wall alignment 
     assert.deepEqual(source,before,'Visual evidence never rewrites the original mass or samples');
   }
   assert.equal(colors.size,3);
+});
+
+test('opposite PCK faces reproduce four principal columns and leave the street doorway clear',()=>{
+  for(const id of ['building-9','building-15','building-29']){
+    const source=building(id),panes=observedFacadePlacements(source,origin);
+    const plotSide=panes.filter(p=>p.ny<-.8),streetSide=panes.filter(p=>p.ny>.8);
+    assert.equal(plotSide.length,20,'Five rows by four columns are visible toward Sternicza');
+    assert.equal(streetSide.length,19,'The street entrance replaces one opening in the lowest row');
+    const front=appearanceFacadeEdges(source).find(edge=>edge.direction==='front');
+    const north=front.nx*data.coordinates.xUnitEN[1]+front.ny*data.coordinates.yUnitEN[1];
+    assert.ok(north>.95,'The four-column plot face points north in the actual map, not to a balcony side');
+    for(let floor=0;floor<5;floor++){
+      const row=plotSide.filter(p=>p.floor===floor).sort((a,b)=>a.column-b.column);
+      assert.equal(row.length,4);
+      assert.ok(row[1].width>row[0].width&&row[2].width>row[3].width,'Inner openings are wider than outer openings');
+      assert.ok(row.every(p=>!p.balcony));
+    }
+    const layout=neighborhoodAppearanceLayout([source],data),door=layout.doors[0];
+    assert.equal(layout.doors.length,1);
+    assert.ok(door.ny>.8,'Entrance belongs to the PCK street elevation');
+    for(const pane of streetSide){
+      const along=Math.abs((pane.x-door.x)*door.ny-(pane.y-door.y)*door.nx);
+      const vertical=Math.abs(pane.z-door.z);
+      assert.ok(along>(pane.width+door.width)/2||vertical>(pane.height+door.height)/2,
+        'No window is painted over the entrance');
+    }
+  }
+});
+
+test('each PCK balcony side has three stacks over all five raised residential floors',()=>{
+  for(const id of ['building-9','building-15','building-29']){
+    const source=building(id),layout=neighborhoodAppearanceLayout([source],data);
+    for(const sign of [-1,1]){
+      const side=layout.balconies.filter(p=>p.nx*sign>.8);
+      assert.equal(side.length,15);
+      assert.equal(new Set(side.map(p=>p.column)).size,3);
+      assert.equal(new Set(side.map(p=>p.floor)).size,5);
+      assert.ok(side.every(p=>p.slabZ-source.baseZ>1.5),'Lowest balcony remains above the basement');
+    }
+  }
+});
+
+test('overlapping PCK paint fields have stable depth order behind window frames',()=>{
+  const pck=building('building-9'),layout=neighborhoodAppearanceLayout([pck],data);
+  for(const edge of appearanceFacadeEdges(pck)){
+    const fields=layout.panels.filter(p=>Math.abs(p.nx-edge.nx)<1e-8&&Math.abs(p.ny-edge.ny)<1e-8&&p.height>1);
+    assert.ok(fields.every(p=>p.offset<.025),'Paint stays behind the existing window-frame plane');
+    assert.equal(new Set(fields.map(p=>p.offset)).size,fields.length,'Nested colour fields must not z-fight');
+  }
 });
 
 test('reversing a mapped footprint does not mirror asymmetric observed balcony patterns',()=>{
@@ -92,6 +145,14 @@ test('partially observed street houses retain explicit generic status on unseen 
   assert.ok(panes.some(p=>p.appearanceEvidence==='user-reference-estimate'));
   assert.ok(panes.some(p=>p.appearanceEvidence==='illustrative'));
   assert.equal(observedFacadePlacements(building('building-9'),[1000,1000]).length,0);
+});
+
+test('resolved nearby street-house elevations use two main rows without manufacturing a third storey',()=>{
+  for(const id of ['building-2','building-3','building-5','building-6','building-7']){
+    const panes=observedFacadePlacements(building(id),origin).filter(p=>p.appearanceEvidence==='user-reference-estimate');
+    assert.equal(new Set(panes.map(p=>p.floor)).size,2);
+    assert.ok(panes.every(p=>p.z-building(id).baseZ>2));
+  }
 });
 
 test('appearance renderer bounds draw calls and supports the SVG fallback without instancing',()=>{

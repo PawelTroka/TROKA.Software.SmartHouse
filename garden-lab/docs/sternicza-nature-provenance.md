@@ -174,3 +174,24 @@ trunk positions, species, seasonal transparency, growth, removals or newly
 planted trees. A drawn trunk is a visual approximation. An optional dense
 canopy screening scenario should therefore remain distinct from guaranteed
 physical screening.
+
+### Review of reconstructed stems · 23 November 2026
+
+Ten aggregate centres fall inside mapped building footprints. A crown can
+overhang a roof, so its centre is not a valid place to infer a ground-rooted
+trunk. The renderer now omits the invented wood at those centres while
+retaining all 490 measured crown envelopes, their source records and their
+analytical contribution. Building boundaries count as occupied, and the
+current adjusted footprints determine the exclusion.
+
+For example, `als-canopy-4761509-7267581` has only 36 classified returns and a
+crown interval of 24.400–25.801 m ASL above `building-1698`, whose mapped top
+is 19.840 m ASL. Previously the renderer invented a trunk from 3.176 m ASL
+through that building. Removing the invented wood does not assert that the
+small recorded cluster is a verified individual tree, or discard a possible
+overhanging canopy. The retained measurements cannot settle that distinction.
+
+The same automatic exclusion is not applied to the illustrative street strip:
+its edges are not a surveyed road boundary. Street-canopy centres also need
+not coincide with real stems, and precise trunk locations still require a
+ground-level observation or a verified tree inventory match.
