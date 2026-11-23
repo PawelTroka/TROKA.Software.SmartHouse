@@ -11,6 +11,9 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const evidence=path.join(root,'test-results','studio');
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
+// Measured canopies can make SwiftShader frames slow. Extend only scene
+// scrolling/capture; functional assertions and the CI job deadline stay bounded.
+const SCENE_CAPTURE_TIMEOUT=120000;
 const report={version,checks:[],screenshots:[],styles:[],errors:[],
   sceneEvidence:'Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.'};
 const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
@@ -35,7 +38,7 @@ const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>
 const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
   [k,k==='renderer'?v:k==='motionActive'?v==='true':Number(v)])));
 const sceneVisible=async()=>{
-  await el('#scene-host').scrollIntoViewIfNeeded();
+  await el('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
   await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
     Number(document.querySelector('#render-diagnostics').dataset.frames)>0);
   await page.waitForFunction(()=>{const d=document.querySelector('#render-diagnostics').dataset;
@@ -59,8 +62,10 @@ async function details(){
 }
 async function shot(name,selector){
   const filename=name+'.png',options={path:path.join(evidence,filename),animations:'disabled',scale:'css'};
+  const sceneCapture=selector==='#scene-host canvas';
+  if(sceneCapture)options.timeout=SCENE_CAPTURE_TIMEOUT;
   const target=selector?el(selector):page;
-  if(selector)await target.scrollIntoViewIfNeeded();
+  if(selector)await target.scrollIntoViewIfNeeded(sceneCapture?{timeout:SCENE_CAPTURE_TIMEOUT}:{});
   if(selector==='#scene-host canvas')assert.equal((await stats()).renderer,'webgl',name);
   // Playwright captures overlays above the canvas, including a toast triggered
   // by the preceding download. Wait for both its class and opacity transition
@@ -164,7 +169,7 @@ async function settledInfo(){
   // Re-entering the viewport refreshes its public counters without changing
   // geometry. This also waits for the GPU to draw a complete frame on SwiftShader.
   await sceneVisible();
-  await el('#scene-host canvas').screenshot({animations:'disabled',scale:'css'});
+  await el('#scene-host canvas').screenshot({animations:'disabled',scale:'css',timeout:SCENE_CAPTURE_TIMEOUT});
   return stats();
 }
 try{
@@ -411,7 +416,7 @@ try{
     await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();
     await el('button[data-mode="orbit"]').click();await style('current');
     const originalProperty=await exportDesign();canonicalScope(originalProperty,'current');
-    const ref=await el('#scene-host canvas').screenshot({scale:'css'});
+    const ref=await el('#scene-host canvas').screenshot({scale:'css',timeout:SCENE_CAPTURE_TIMEOUT});
     await style(id);const frame=await shot(site+'-'+id,'#scene-host canvas');
     const diff=await pixelChange(ref,frame);assert.ok(diff.pixels>100,site+' pixels '+diff.pixels);
     const saved=await exportDesign();canonicalScope(saved,id);assert.equal(saved.siteId,site);assert.ok(saved.designChecks.checks.length>0);
@@ -474,6 +479,10 @@ try{
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;
+  if(page)try{report.sceneAtFailure=await el('#scene-host').evaluate(node=>({
+    bounds:node.getBoundingClientRect().toJSON(),scroll:[scrollX,scrollY],visibility:document.visibilityState,
+    diagnostics:{...document.querySelector('#render-diagnostics')?.dataset},
+  }),null,{timeout:5000});}catch{}
   if(page)try{await shot('failure');}catch{}
   console.error(report.error);
 }finally{

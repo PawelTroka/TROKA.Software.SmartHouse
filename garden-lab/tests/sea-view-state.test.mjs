@@ -1,10 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {mountSeaView} from '../src/sea-view.js';
+import {mountSeaView,seaHeightPresets} from '../src/sea-view.js';
+import {observerForPreset} from '../src/geometry.js';
+import {sterniczaRoofEnvelope} from '../src/house-roof.js';
 
 const corridor=JSON.parse(readFileSync(new URL('../data/sternicza-sea-corridor.json',import.meta.url),'utf8'));
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url),'utf8'));
+const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
+
+test('first-floor sea preset matches the standing room viewpoint and respects a zero floor offset',()=>{
+  for(const settings of [{},{floorHeight:0},{floorHeight:1.6,firstFloorRise:3.25,gardenRaise:1}]){
+    const roomEye=observerForPreset('first-street-standing',settings,data);
+    for(const observer of corridor.observers){
+      const presets=seaHeightPresets(data,settings,observer);
+      near(presets.firstFloor+observer.groundZ,roomEye.z);
+      near(presets.standing,1.65);
+    }
+  }
+  const observer=corridor.observers[0];
+  near(seaHeightPresets(data,{},observer).firstFloor-seaHeightPresets(data,{floorHeight:0},observer).firstFloor,1.2);
+});
+
+test('roof sea preset uses the reconstructed ridge rather than the highest chimney return',()=>{
+  const roof=sterniczaRoofEnvelope(data.site.house),observer=corridor.observers[0];
+  const presets=seaHeightPresets(data,{},observer);
+  near(presets.aboveRoofRidge+observer.groundZ-1.65,roof.ridgeZ);
+  assert.ok(data.site.house.roofTopZ-roof.ridgeZ>.5,'The retained highest return is a chimney cap, over half a metre above the ridge');
+  near(presets.aboveRoofRidge,12.017853252794716);
+  assert.deepEqual(seaHeightPresets({site:{}},{},observer),{standing:1.65,firstFloor:null,aboveRoofRidge:null});
+});
 
 test('persisted sea preferences survive site changes without exporting the previous site result',()=>{
   const oldStorage=globalThis.localStorage;

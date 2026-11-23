@@ -1,4 +1,6 @@
 import {evaluateSeaView,seaCameraPose,seaRayHeight,seaViewSummary,SEA_MODES} from './sea-visibility.js?v=1.30.0';
+import {DEFAULT_SETTINGS,floorElevation} from './geometry.js?v=1.30.0';
+import {sterniczaRoofEnvelope} from './house-roof.js?v=1.30.0';
 
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const metres=n=>Number.isFinite(n)?`${n.toFixed(1)} m`:'Unknown';
@@ -6,6 +8,19 @@ const approximate=n=>Number.isFinite(n)?`~${Math.round(n)} m`:'Unknown';
 const bearing=n=>`${Math.round(n)%360}°`;
 const colors={terrain:'#bcae84',building:'#a38b7d',surface:'#6d8c64',water:'#9fced3',clear:'#15767d',blocked:'#b96540'};
 const statusText=r=>r.status==='clear'?'Sea clears the recorded skyline':r.status==='blocked'?'The recorded skyline blocks this view':r.currentHorizonCovered===false?'At this height, the horizon reaches another coastline':'Full sightline not verified';
+
+/** Height references at the selected horizontal position, not accessible
+ * viewing platforms. roofTopZ contains chimney returns, so it must not be
+ * presented as the roof ridge. Keep the existing reconstructed roof and the
+ * editable floor datum shared with the rest of the simulator. */
+export function seaHeightPresets(data,settings={},observer){
+  const eyeHeight=1.65,groundZ=observer?.groundZ;
+  const firstRise=Number.isFinite(Number(settings.firstFloorRise))?Number(settings.firstFloorRise):DEFAULT_SETTINGS.firstFloorRise;
+  const firstFloorZ=Number.isFinite(data?.site?.floorReference?.z)?floorElevation(settings,data)+firstRise:null;
+  const ridgeZ=data?.site?.house?.footprint?.length?sterniczaRoofEnvelope(data.site.house).ridgeZ:null;
+  const aboveGround=z=>Number.isFinite(z)&&Number.isFinite(groundZ)?z+eyeHeight-groundZ:null;
+  return {standing:eyeHeight,firstFloor:aboveGround(firstFloorZ),aboveRoofRidge:aboveGround(ridgeZ)};
+}
 
 export function seaProfileMarkup(result){
   const {profile,observer,control}=result;
@@ -95,13 +110,12 @@ export function mountSeaView(container,{data,corridor,settings={},onCamera=null}
     const threshold=r.requiredHeightM,atHeight=Number.isFinite(threshold)?Math.ceil(threshold*2)/2:null;
     const status=statusText(r);
     const best=r.best;
-    const firstFloor=Math.max(1.65,Number(data?.site?.floorReference?.z||observer.groundZ)+Number(settings.floorHeight||1.2)+Number(settings.firstFloorRise||3.05)+1.65-observer.groundZ);
-    const roofHeight=Math.max(1.65,Number(data?.site?.house?.roofTopZ||data?.site?.house?.roofZ||12)+1.65-observer.groundZ);
+    const presets=seaHeightPresets(data,settings,observer);
     const sourceLinks=(corridor.sources||[]).map(s=>`<li><a href="${escape(s.url)}" target="_blank" rel="noopener">${escape(s.label)}</a></li>`).join('');
     container.innerHTML=`<section class="sea-tool"><header class="sea-heading"><p class="sea-eyebrow">Sternicza 11 · measured surroundings</p><h2>How high until you can see the sea?</h2><p>Raise the observer above the recorded buildings and tree canopy. The sea is beyond the front of the property; each direction follows the full land corridor to the mapped shore.</p></header>
       <div class="sea-controls"><label>Observer location<select data-sea-control="observerId">${corridor.observers.map(o=>`<option value="${o.id}" ${state.observerId===o.id?'selected':''}>${escape(o.label)}</option>`).join('')}</select></label><label>What would you like to see?<select data-sea-control="mode">${SEA_MODES.map(m=>`<option value="${m.id}" ${state.mode===m.id?'selected':''}>${escape(m.label)}</option>`).join('')}</select></label><label>Direction<select data-sea-control="profileId"><option value="best" ${state.profileId==='best'?'selected':''}>Best of the sampled directions${best?` · ${bearing(best.bearingTrue)}`:''}</option>${r.evaluated.map(e=>`<option value="${e.profile.id}" ${state.profileId===e.profile.id?'selected':''}>${bearing(e.bearingTrue)} · ${e.coverageComplete?approximate(e.requiredHeightM):'incomplete corridor'}</option>`).join('')}</select></label></div>
       <div class="sea-overview"><div class="sea-main"><div class="sea-stats"><div class="sea-stat sea-primary"><span>Required eye height above original ground</span><strong>${approximate(threshold)}</strong><small>${Number.isFinite(threshold)?`${metres(r.requiredAbsoluteZ)} absolute elevation`:`Known lower bound ${approximate(r.knownLowerBoundM)}`}</small></div><div class="sea-stat"><span>Selected direction</span><strong>${bearing(r.bearingTrue)}</strong><small>${Math.round(r.profile.shoreDistanceM)} m to mapped shoreline</small></div><div class="sea-stat"><span>Controlling obstruction</span><strong class="sea-blocker">${escape(control?.kind==='building'?'Building':control?.kind==='terrain'?'Ground / dune':'Canopy / surface')}</strong><small>${control?`${Math.round(control.distanceM)} m away · ${metres(control.topZ)} ASL`:'No recorded obstruction'}</small></div></div>
-      <div class="sea-height"><div class="sea-height-top"><label for="sea-eye-height">Observer eye height above original ground</label><output for="sea-eye-height">${metres(state.heightAboveGround)}</output></div><input id="sea-eye-height" data-sea-control="heightAboveGround" type="range" min="0.5" max="80" step="0.01" value="${state.heightAboveGround}" aria-valuetext="${metres(state.heightAboveGround)} above local ground"/><div class="sea-preset-buttons"><button data-sea-height="1.65">Standing</button><button data-sea-height="${firstFloor.toFixed(2)}">First-floor level</button><button data-sea-height="${roofHeight.toFixed(2)}">Above recorded roof ridge</button>${Number.isFinite(atHeight)?`<button class="sea-reveal" data-sea-height="${atHeight}">Go to clearing height · ${metres(atHeight)}</button>`:''}</div></div>
+      <div class="sea-height"><div class="sea-height-top"><label for="sea-eye-height">Observer eye height above original ground</label><output for="sea-eye-height">${metres(state.heightAboveGround)}</output></div><input id="sea-eye-height" data-sea-control="heightAboveGround" type="range" min="0.5" max="80" step="0.01" value="${state.heightAboveGround}" aria-valuetext="${metres(state.heightAboveGround)} above local ground"/><div class="sea-preset-buttons"><button data-sea-height="${presets.standing}">Standing</button>${Number.isFinite(presets.firstFloor)?`<button data-sea-height="${presets.firstFloor.toFixed(2)}">First-floor eye height</button>`:''}${Number.isFinite(presets.aboveRoofRidge)?`<button data-sea-height="${presets.aboveRoofRidge.toFixed(2)}">Above roof ridge · hypothetical</button>`:''}${Number.isFinite(atHeight)?`<button class="sea-reveal" data-sea-height="${atHeight}">Go to clearing height · ${metres(atHeight)}</button>`:''}</div><p class="sea-preset-note">Floor and roof presets place the eye 1.65 m above the selected floor or reconstructed ridge, at the chosen location. The roof preset is a height comparison, not an accessible viewpoint.</p></div>
       <p class="sea-status" data-status="${r.status}" role="status"><span>${r.status==='clear'?'✓':r.status==='blocked'?'↗':'?'}</span>${escape(status)}</p><p class="sea-explanation">${state.mode==='water'?'This tests a point on the water 1 km beyond the shoreline. Seeing closer water requires a steeper downward view.':'This tests the first distant water near the geometric horizon, a narrower view than seeing water just beyond the beach.'} ${control?`${escape(control.label)} controls this direction.`:''}</p>
       <label class="sea-clearance">Allowance above recorded surfaces <select data-sea-control="clearanceM">${[0,.5,1,2,3,5].map(n=>`<option value="${n}" ${state.clearanceM===n?'selected':''}>${n} m</option>`).join('')}</select></label>
       ${onCamera?'<button class="sea-preview" data-sea-camera>Preview this height in the neighbourhood</button><small class="sea-preview-note">The 3D preview covers the nearby neighbourhood. The complete profile below determines sea visibility.</small>':''}</div><div class="sea-map"><h3>Route to the sea</h3>${seaMapMarkup(corridor,r)}<p>${r.completeBearingCount} complete corridors tested · 2° bearing spacing</p></div></div>
