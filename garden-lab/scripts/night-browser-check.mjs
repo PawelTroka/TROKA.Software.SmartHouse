@@ -594,7 +594,9 @@ async function verifyBasementGarage(){
   await details('#basement-garage-controls',true);
   await page.locator('#basementGarageEnabled').check();
   await details('#basement-garage-controls',false);
-  await page.locator('button[data-mode="orbit"]').click();await page.locator('#reset-camera').click();
+  const orbitButton=page.locator('button[data-mode="orbit"]');
+  if(await orbitButton.getAttribute('aria-pressed')!=='true')await orbitButton.click();
+  await page.locator('#reset-camera').click();
   await frames();
   report.garage={candidate,forecourt,deeper,excavationPixels,posePixels,reversePixels,mobile,
     renderer:'WebGL',scenarioSaved:true,normalReloadPassed:true,shareReloadPassed:true,siteIsolationPassed:true,restoredEnabled:true};

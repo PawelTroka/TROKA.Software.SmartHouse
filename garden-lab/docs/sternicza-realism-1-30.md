@@ -76,6 +76,14 @@ side elevations use three balcony stacks. Face-specific colour fields and
 entrance positions follow the visible references. These corrections change
 the finish and opening layer, not measured building heights or footprints.
 
+The visual review also identified a roof reconstruction error at the west
+neighbour, building 4h: a single continuous surface joined the main roof to
+separate lower extensions with steep dark triangles. Separate measured roof
+patches now meet vertical wall transitions. Supported ridge and eave samples
+remain in the reconstruction, while the positions of the level changes are
+estimated between neighbouring samples. This correction is specific to 4h
+and does not replace its analytical building geometry.
+
 Ten measured canopy centres fall inside mapped building footprints. Their
 foliage remains present, but reconstructed trunks and branches are omitted at
 those centres: an overhanging crown does not establish a trunk growing through

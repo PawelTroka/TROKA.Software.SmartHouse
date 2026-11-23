@@ -35,9 +35,9 @@ import { createDimensionOverlay } from './scene-dimensions.js?v=1.30.0';
 import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.30.0';
 import {existingCanopyRecords} from './existing-vegetation.js?v=1.30.0';
 import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.30.0&rev=20261123-reference';
-import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.30.0&rev=20261123-reference';
-import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.30.0&rev=20261123-reference';
-import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.30.0';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.30.0&rev=20261123-roofs';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.30.0&rev=20261123-roofs';
+import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.30.0&rev=20261123-roofs';
 import {projectContextGroundUVs} from './context-ground.js?v=1.30.0';
 import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.30.0';
 import { createGardenNightLighting } from './scene-night-lights.js?v=1.30.0';
@@ -557,7 +557,9 @@ export function createScene(container, data, callbacks = {}) {
     body.name=`context-building-${building.id}`;
     buildingGroup.add(body);
     if (roofPts.length > 6) {
-      const roofGeometry = sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roofDetail?.edgeZ??roof,roofDetail?.edgePoints);
+      const roofGeometry = roofDetail?.roofFaces
+        ?geometryFromTriangles(roofDetail.roofFaces.map(([a,b,c])=>toWorldRoofTriangle(a,b,c)))
+        :sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roofDetail?.edgeZ??roof,roofDetail?.edgePoints);
       const roofMesh = new THREE.Mesh(roofGeometry || geometryFromTriangles([]), mat.contextRoof);
       roofMesh.castShadow = true; roofMesh.receiveShadow = true;
       buildingGroup.add(roofMesh);
