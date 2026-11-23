@@ -9,4 +9,9 @@ for(const name of ['index.html','style.css','favicon.svg','.nojekyll','src','dat
   await rm(path.join(output,name),{recursive:true,force:true});
   await cp(path.join(root,name),path.join(output,name),{recursive:true});
 }
+await mkdir(path.join(output,'docs'),{recursive:true});
+for(const name of ['sternicza-nature-provenance.md','sternicza-appearance-observations.md','sea-visibility-1.30.md','sternicza-realism-1-30.md']){
+  await cp(path.join(root,'docs',name),path.join(output,'docs',name));
+}
+await cp(path.join(root,'docs','source-evidence'),path.join(output,'docs','source-evidence'),{recursive:true});
 console.log('Static simulator built in public/');

@@ -11,6 +11,9 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const evidence=path.join(root,'test-results','studio');
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
+// Measured canopies can make SwiftShader frames slow. Extend only scene
+// scrolling/capture; functional assertions and the CI job deadline stay bounded.
+const SCENE_CAPTURE_TIMEOUT=120000;
 const report={version,checks:[],screenshots:[],styles:[],errors:[],
   sceneEvidence:'Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.'};
 const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
@@ -35,7 +38,7 @@ const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>
 const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
   [k,k==='renderer'?v:k==='motionActive'?v==='true':Number(v)])));
 const sceneVisible=async()=>{
-  await el('#scene-host').scrollIntoViewIfNeeded();
+  await el('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
   await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
     Number(document.querySelector('#render-diagnostics').dataset.frames)>0);
   await page.waitForFunction(()=>{const d=document.querySelector('#render-diagnostics').dataset;
@@ -59,8 +62,10 @@ async function details(){
 }
 async function shot(name,selector){
   const filename=name+'.png',options={path:path.join(evidence,filename),animations:'disabled',scale:'css'};
+  const sceneCapture=selector==='#scene-host canvas';
+  if(sceneCapture)options.timeout=SCENE_CAPTURE_TIMEOUT;
   const target=selector?el(selector):page;
-  if(selector)await target.scrollIntoViewIfNeeded();
+  if(selector)await target.scrollIntoViewIfNeeded(sceneCapture?{timeout:SCENE_CAPTURE_TIMEOUT}:{});
   if(selector==='#scene-host canvas')assert.equal((await stats()).renderer,'webgl',name);
   // Playwright captures overlays above the canvas, including a toast triggered
   // by the preceding download. Wait for both its class and opacity transition
@@ -99,10 +104,19 @@ const cameraTime=()=>page.evaluate(()=>({
   date:document.querySelector('#sun-date').value,time:document.querySelector('#sun-time').value,
   observer:document.querySelector('#observer-readout').textContent,
 }));
-async function houseScope(active){
+async function houseScope(active,afterFrame=null){
   await sceneVisible();
   assert.equal(await el('#styleHouseFinish').isChecked(),active);
   assert.equal(await el('#studio-house-scope').getAttribute('data-renovated'),String(active));
+  // The controls update synchronously; performance counters are published only
+  // after the next rendered frame. Scrolling an offscreen scene into view can
+  // deliver its IntersectionObserver callback after sceneVisible's two rAFs.
+  await page.waitForFunction(({active,afterFrame})=>{
+    const d=document.querySelector('#render-diagnostics')?.dataset;if(!d)return false;
+    const parts=Number(d.houseRenovationParts),projection=Number(d.houseRenovationProjection);
+    return (afterFrame===null||Number(d.frames)>afterFrame)&&
+      (active?parts>0&&projection>0&&projection<=.14:parts===0&&projection===0);
+  },{active,afterFrame});
   const info=await stats();
   if(active){
     assert.ok(info.houseRenovationParts>0,'The rendered house has no renovation parts');
@@ -164,7 +178,7 @@ async function settledInfo(){
   // Re-entering the viewport refreshes its public counters without changing
   // geometry. This also waits for the GPU to draw a complete frame on SwiftShader.
   await sceneVisible();
-  await el('#scene-host canvas').screenshot({animations:'disabled',scale:'css'});
+  await el('#scene-host canvas').screenshot({animations:'disabled',scale:'css',timeout:SCENE_CAPTURE_TIMEOUT});
   return stats();
 }
 try{
@@ -289,9 +303,11 @@ try{
   const goldenMinutes=Math.round(Math.max(0,Math.min(1439,sunsetMinutes-45)));
   const expectedTime=[Math.floor(goldenMinutes/60),goldenMinutes%60].map(n=>String(n).padStart(2,'0')).join(':');
   assert.equal(viewpoint.time,expectedTime);
-  await el('#studio-undo').click();await houseScope(true);assert.deepEqual(await cameraTime(),viewpoint);
+  const beforeUndoFrame=(await stats()).frames;
+  await el('#studio-undo').click();await houseScope(true,beforeUndoFrame);assert.deepEqual(await cameraTime(),viewpoint);
   await shot('sternicza-hidden-bali-terrace-golden-hour','#scene-host canvas');
-  await el('#studio-redo').click();await houseScope(false);assert.deepEqual(await cameraTime(),viewpoint);
+  const beforeRedoFrame=(await stats()).frames;
+  await el('#studio-redo').click();await houseScope(false,beforeRedoFrame);assert.deepEqual(await cameraTime(),viewpoint);
   report.goldenHourView=viewpoint;
   assert.equal(await el('#designStyle').inputValue(),'current');
   check('Keyboard selection applies a complete renovation. Undo and Redo of Current preserve the camera and golden-hour time');
@@ -411,7 +427,7 @@ try{
     await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();
     await el('button[data-mode="orbit"]').click();await style('current');
     const originalProperty=await exportDesign();canonicalScope(originalProperty,'current');
-    const ref=await el('#scene-host canvas').screenshot({scale:'css'});
+    const ref=await el('#scene-host canvas').screenshot({scale:'css',timeout:SCENE_CAPTURE_TIMEOUT});
     await style(id);const frame=await shot(site+'-'+id,'#scene-host canvas');
     const diff=await pixelChange(ref,frame);assert.ok(diff.pixels>100,site+' pixels '+diff.pixels);
     const saved=await exportDesign();canonicalScope(saved,id);assert.equal(saved.siteId,site);assert.ok(saved.designChecks.checks.length>0);
@@ -474,6 +490,10 @@ try{
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;
+  if(page)try{report.sceneAtFailure=await el('#scene-host').evaluate(node=>({
+    bounds:node.getBoundingClientRect().toJSON(),scroll:[scrollX,scrollY],visibility:document.visibilityState,
+    diagnostics:{...document.querySelector('#render-diagnostics')?.dataset},
+  }),null,{timeout:5000});}catch{}
   if(page)try{await shot('failure');}catch{}
   console.error(report.error);
 }finally{

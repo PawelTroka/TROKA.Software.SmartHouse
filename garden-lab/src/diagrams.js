@@ -11,18 +11,19 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.29.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.29.0';
-import {gazeDirection} from './orientation.js?v=1.29.0';
-import {localSunDirection} from './solar.js?v=1.29.0';
-import {getSiteProfile} from './sites.js?v=1.29.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.29.0';
-import {treePlanMarkup, treeSectionMarkup} from './tree-drawing.js?v=1.29.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.29.0';
-import {terraceStairs} from './layout.js?v=1.29.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.29.0';
+} from './geometry.js?v=1.30.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.30.0';
+import {gazeDirection} from './orientation.js?v=1.30.0';
+import {localSunDirection} from './solar.js?v=1.30.0';
+import {getSiteProfile} from './sites.js?v=1.30.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.30.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.30.0';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.30.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.30.0';
+import {terraceStairs} from './layout.js?v=1.30.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.30.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.29.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.30.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -174,7 +175,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
   const frame=measuredFrame||{clientWidth:(container.clientWidth||760)-(measured&&!stacked?292:26),clientHeight:measured&&stacked?360:Math.max(300,(container.clientHeight||480)-100)};
   const l = planLayout(scope, data, frame,true), {X, Y, scale, W, H} = l;
   const treeVolumes = screeningTreeVolumes(settings, data);
-  const trees = treePlanMarkup(treeVolumes, {X, Y, scale, selectedTreeId: options.selectedTreeId, interactive: true,labels:!measured});
+  const trees = treePlanMarkup(existingCanopyVolumes({...settings,existingCanopyAnalysis:true},data),{X,Y,scale,labels:false,subtle:true})+treePlanMarkup(treeVolumes, {X, Y, scale, selectedTreeId: options.selectedTreeId, interactive: true,labels:!measured});
   const site = data.site;
   const profile = getSiteProfile(site.id || 'sternicza-11', data), plot = profile.bounds;
   const middleX = (plot.minX + plot.maxX) / 2;
@@ -460,12 +461,17 @@ export function renderSection(container, data, settings, observer, analysis, mea
   if (!(D > 0)) return {ray: null};
   const direction = [(target[0] - observer.x) / D, (target[1] - observer.y) / D];
   const origin = [observer.x, observer.y];
-  const treeVolumes = screeningTreeVolumes(settings, data);
+  const treeVolumes = [...screeningTreeVolumes(settings, data),...existingCanopyVolumes(settings,data)];
   const xy = s => [observer.x + s * direction[0], observer.y + s * direction[1]];
   const reference = data.site.floorReference.z;
   const screen = ray.screen;
   const floorZ = reference + number(settings.floorHeight, 1.2);
   const minS = -2.5, maxS = D + 3.2;
+  const sectionTrees=treeVolumes.filter(v=>{
+    const widestZ=v.form==='cone'?v.crownBottomZ:(v.crownBottomZ+v.crownTopZ)/2;
+    const span=crownSliceInterval(v,origin,direction,widestZ);
+    return span&&span[1]>=minS&&span[0]<=maxS;
+  });
   const program=gardenProgram(settings,data),levels=spaLevels(settings,data);
   const spaCuts=spaSectionCuts(settings,data,origin,direction).filter(c=>c.interval[1]>minS&&c.interval[0]<maxS);
   const privacyCuts=privacySectionCuts(privacyStructures(settings,data),origin,direction).filter(c=>c.interval[1]>minS&&c.interval[0]<maxS);
@@ -482,7 +488,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   });
   const roof = settings.canopyEnabled&&cover.type!=='balcony' ? canopyBounds(settings, data) : null;
   const minimumZ = Math.min(...samples.map(p => Math.min(p.existing, p.proposed)), screen?.groundZ ?? Infinity) - 1;
-  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...coverCuts.map(c=>c.z1), ...spaCuts.map(c=>c.roofZ??c.rimZ??c.waterZ??c.floorZ), ...privacyCuts.map(c=>c.z1), ...treeVolumes.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
+  const maximumZ = Math.max(target[2], observer.z, screen?.topZ ?? -Infinity, roof?.z ?? -Infinity, ...coverCuts.map(c=>c.z1), ...spaCuts.map(c=>c.roofZ??c.rimZ??c.waterZ??c.floorZ), ...privacyCuts.map(c=>c.z1), ...sectionTrees.filter(v => v.enabled !== false).map(v => v.crownTopZ)) + 3.4;
   // Use the flex panel's actual pixel frame, not the world's aspect ratio, for
   // the viewBox. A second layout pass below measures it after the short header
   // and readouts are laid out. World metres still use one scale in both axes,
@@ -503,9 +509,9 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const existingPath = profilePath('existing');
   const block = data.buildings.find(b => b.id === ray.blockId);
   const sampleType = ray.kind === 'high-feature' ? 'high-feature return' : 'roof point';
-  const blockerLabel = ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? cover.type==='balcony'?'balcony':'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'pool-rim' ? 'pool coping or wall' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
+  const blockerLabel = ray.blockedBy === 'existing-canopy' ? 'existing canopy' : ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? cover.type==='balcony'?'balcony':'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'pool-rim' ? 'pool coping or wall' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
   const outcome = `This sampled ${sampleType} is ${ray.visible ? 'exposed' : `hidden by the ${blockerLabel}`}`;
-  const treesSvg = treeSectionMarkup(treeVolumes, {origin, direction, minS, maxS, X, Y, scale});
+  const treesSvg = treeSectionMarkup(sectionTrees, {origin, direction, minS, maxS, X, Y, scale});
   const privacySvg = privacySectionMarkup(privacyCuts,{X,Y,scale,minS,maxS});
   const coverSvg=terraceCoverSectionMarkup(coverCuts,{X,Y,scale,minS,maxS,label:`Balcony · first floor +${fmt(cover.deckTopZ-cover.floorZ,2)} m`});
   const clipped=interval=>[Math.max(minS,interval[0]),Math.min(maxS,interval[1])];

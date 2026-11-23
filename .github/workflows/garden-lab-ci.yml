@@ -184,3 +184,33 @@ jobs:
           path: garden-lab/test-results/realism/
           if-no-files-found: ignore
           retention-days: 7
+
+  neighborhood-realism:
+    name: Measured neighbourhood and sea-height browser checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: npx --no-install playwright install --with-deps chromium
+      - name: Check measured trees, sea controls and mobile layout in WebGL
+        timeout-minutes: 12
+        run: node scripts/check-neighborhood-realism.mjs
+      - name: Upload neighbourhood and sea-view evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: neighborhood-realism-evidence
+          path: garden-lab/test-results/neighborhood-realism/
+          if-no-files-found: ignore
+          retention-days: 7
