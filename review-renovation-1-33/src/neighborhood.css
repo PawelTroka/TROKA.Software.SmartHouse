@@ -1,0 +1,14 @@
+.neighborhood-controls{background:#f5f7ee;border:1px solid #d5dfca;border-radius:14px;padding:19px 22px;margin:0 0 16px;color:#314c3c}
+.neighborhood-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.neighborhood-heading h3{font-size:20px;margin:4px 0 0;letter-spacing:-.4px}
+.neighborhood-source-badge{font-size:12px;font-weight:600;white-space:nowrap;padding:7px 10px;background:#e4ecd8;border-radius:30px}
+.neighborhood-controls p{font-size:13px;line-height:1.6;margin:10px 0}
+.neighborhood-options{display:flex;align-items:center;flex-wrap:wrap;gap:14px 22px;padding:8px 0}
+.neighborhood-options label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600}
+.neighborhood-options select{font:inherit;background:#fffefa;color:#314c3c;border:1px solid #cbd6c1;border-radius:7px;padding:7px 9px}
+.neighborhood-options input{accent-color:#486641;width:15px;height:15px}
+.neighborhood-controls .neighborhood-status{font-size:12px;color:#557047;margin:4px 0 10px}
+.neighborhood-controls details{font-size:12px;border-top:1px solid #dbe3d0;padding-top:10px}
+.neighborhood-controls summary{cursor:pointer;font-weight:600}
+.neighborhood-controls a{color:#3c624a;text-underline-offset:3px}
+@media(max-width:640px){.neighborhood-controls{padding:15px}.neighborhood-heading{align-items:flex-start;flex-direction:column;gap:8px}.neighborhood-options{gap:12px}.neighborhood-options label{width:100%}.neighborhood-options select{margin-left:auto}}
