@@ -1,8 +1,8 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.30.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.30.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.31.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.31.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -28,7 +28,7 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   const converted=floor==='basement'&&settings.basementGarageEnabled===true;
   const garageFrame=converted&&data?garagePlanFrame(settings,data):null;
   // The garage is an independently selected engineering study, in both views.
-  const plan=getInteriorPlan({floor,layout:converted?'renovation':layout,garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
+  const plan=getInteriorPlan({floor,layout:converted?'renovation':layout,styleId:settings.designStyle||'current',garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
   const first=num(settings.firstFloorRise,3.05),attic=num(settings.atticRise,5.75);
   const levels={ground:0,first,attic,basement:plan.elevation};
   const previous=plan.clearHeight;

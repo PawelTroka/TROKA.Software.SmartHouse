@@ -188,19 +188,20 @@ try{
   page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
   const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
-  assert.equal(new Set(options).size,22);assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));
+  assert.equal(new Set(options).size,23);assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));assert.ok(options.includes('beach-house'));
   assert.equal(await el('#basementGarageEnabled').isChecked(),true);
   assert.equal((await settledInfo()).garageVehicles,2,'The fresh scene must contain two actual vehicles');
   await el('#style-open').click();assert.equal(await el('#style-search').evaluate(e=>e===document.activeElement),true);
   for(const query of ['Coastal','Hamptons','seaside']){
     await el('#style-search').fill(query);assert.equal(await el('[data-style-id="coastal"]').isVisible(),true,query);
   }
+  await el('#style-search').fill('Beach House');assert.equal(await el('#style-grid button:visible').count(),1);assert.equal(await el('[data-style-id="beach-house"]').isVisible(),true);
   await el('#style-search').fill('Japandi');assert.equal(await el('#style-grid button:visible').count(),2);
   await el('#style-family').selectOption('Statement');assert.equal(await el('#style-empty').isVisible(),true);
   await el('#style-search').fill('');assert.equal(await el('#style-grid button:visible').count(),4);
   await page.keyboard.press('Escape');await el('#style-dialog').waitFor({state:'hidden'});
   assert.ok(await el('#style-open').evaluate(e=>e===document.activeElement));
-  check('All 22 choices are accessible; Coastal is found by name, Hamptons or seaside, with family filtering and Escape focus return');
+  check('All 23 choices are accessible; Beach House has its own searchable entry, Coastal retains Hamptons and seaside aliases, and filtering/focus return work');
 
   await el('button[data-mode="orbit"]').click();await details();
   await el('#renderQuality').selectOption('eco');await sceneVisible();
@@ -241,19 +242,19 @@ try{
     assert.equal(await el('#basementGarageEnabled').isChecked(),true,id+' must retain the garage');
     assert.equal(info.garageVehicles,2,id+' must retain both actual vehicle groups');
     geometrySignatures.add(info.houseRenovationParts);selectedInfo.set(id,info);
-    if(['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune'].includes(id)){
+    if(['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune','beach-house','japandi'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
       const diff=await pixelChange(original,frame);
       assert.ok(diff.pixels>100,id+' changed only '+diff.pixels+' canvas pixels');
       selectedShots.set(id,frame);report.styles.push({id,diff,stats:info});
     }else report.styles.push({id,stats:info});
   }
-  for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age'],['coastal','baltic-dune']]){
+  for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age'],['coastal','baltic-dune'],['beach-house','coastal'],['beach-house','baltic-dune']]){
     assert.ok((await pixelChange(selectedShots.get(a),selectedShots.get(b))).pixels>100,a+' and '+b+' look identical');
     assert.notEqual(selectedInfo.get(a).triangles,selectedInfo.get(b).triangles,a+' and '+b+' must change actual rendered geometry');
     assert.notEqual(selectedInfo.get(a).houseRenovationParts,selectedInfo.get(b).houseRenovationParts,a+' and '+b+' must use different physical facade assemblies');
   }
-  assert.equal(geometrySignatures.size,21,'All 21 styles must change the rendered facade assemblies, not only their colours');
+  assert.equal(geometrySignatures.size,22,'All 22 styles must change the rendered facade assemblies, not only their colours');
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
   assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
@@ -261,7 +262,7 @@ try{
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check('All 21 styles have distinct facade assemblies and retain both cars; Coastal differs from Baltic Dune and Current restores the neutral dwelling');
+  check('All 22 styles have distinct facade assemblies and retain both cars; Coastal differs from Baltic Dune and Current restores the neutral dwelling');
 
   await el('#style-open').click();await el('#style-search').fill('Bali');await el('[data-style-id="hidden-bali"]').focus();
   await page.keyboard.press('Enter');await el('#style-dialog').waitFor({state:'hidden'});
@@ -366,7 +367,18 @@ try{
   report.blueHour={view:blueView,lights:blueBefore};
   check('Blue-hour renovation switching preserves the real dusk activation, garden lights, neighbouring windows and camera');
 
+  await style('beach-house');
+  assert.ok(await el('#studio-living').isVisible());
+  assert.match(await el('#studio-living-title').innerText(),/./);
+  await el('[data-studio-moment="evening"]').click();await sceneVisible();
+  await page.waitForFunction(()=>Number(document.querySelector('#viewport').dataset.nightActivation)>.5);
+  await shot('sternicza-beach-house-evening','#scene-host canvas');
+  report.beachEvening={view:await cameraTime(),lights:await nightState()};
+  check('Beach House has a living guide and a one-click evening scene with active lighting');
+
   await el('button[data-mode="orbit"]').click();await sceneVisible();
+  await el('#reset-camera').click();await sceneVisible();
+  await shot('sternicza-beach-house-evening-overview','#scene-host canvas');
   const shadowBefore=(await settledInfo()).shadowUpdates;
   await page.evaluate(()=>{
     document.querySelector('#sun-time').dispatchEvent(new Event('change',{bubbles:true}));
@@ -412,7 +424,7 @@ try{
   report.mobile=[];
   for(const width of [390,320]){
     await page.setViewportSize({width,height:844});await el('#style-open').click();
-    assert.equal(await el('#style-grid button:visible').count(),22);
+    assert.equal(await el('#style-grid button:visible').count(),23);
     const last=el('#style-grid button').last();await last.scrollIntoViewIfNeeded();
     assert.ok(await last.evaluate(e=>{const box=e.getBoundingClientRect();return box.bottom<=innerHeight+2&&box.top>=0;}));
     const measured=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,dialog:document.querySelector('#style-dialog').getBoundingClientRect().width,scroll:document.querySelector('#style-dialog').scrollWidth,client:document.querySelector('#style-dialog').clientWidth}));
@@ -421,7 +433,7 @@ try{
     await page.keyboard.press('Escape');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
   }
-  check('390 px and 320 px editor and scrollable catalogue fit all 22 choices');
+  check('390 px and 320 px editor and scrollable catalogue fit all 23 choices');
   await page.setViewportSize({width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});
   for(const [site,id] of [['korzeniowskiego-40','organic-japandi'],['nadmorska-17','party-club']]){
     await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();

@@ -1,9 +1,10 @@
 /** Decorative hanging lights use the garden's metric geometry and absolute
  * height datum. They are proposals, excluded from privacy and sunlight rays.
  * Posts support the lights independently of living thuja branches. */
-import {gardenGroundAt,terraceGroundReference,hedgeSegments,hedgeTopAt,jacuzziBounds,pointInPolygon} from './geometry.js?v=1.30.0';
-import {gardenFurniture,terraceStairs,rectCorners} from './layout.js?v=1.30.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.30.0';
+import {gardenGroundAt,terraceGroundReference,hedgeSegments,hedgeTopAt,jacuzziBounds,pointInPolygon} from './geometry.js?v=1.31.0';
+import {gardenFurniture,terraceStairs,rectCorners} from './layout.js?v=1.31.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.31.0';
+import {getResortGardenRecipe,resortTerraceLayout} from './resort-garden.js?v=1.31.0';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const mix=(a,b,t)=>a+(b-a)*t;
@@ -23,6 +24,7 @@ const rectangle=(x,y,width,length)=>rectCorners({x,y,width,length});
  */
 export function pendantLightingLayout(settings={},data){
   const result={garden:[],hedge:[],supports:[],cables:[]};
+  const resort=getResortGardenRecipe(settings);
   const boundary=data.site.boundary,terrace=data.site.terrace,rear=data.site.rearMidpoint[1];
   const depth=Number.isFinite(settings.terraceDepth)?settings.terraceDepth:terrace.depth;
   const {floorZ,drop}=terraceGroundReference(settings,data);
@@ -53,14 +55,15 @@ export function pendantLightingLayout(settings={},data){
   // A short, freestanding frame over the dining setting. Try the longer axis
   // first, then the other axis; a collision omits the frame instead of shifting
   // the garden's pool, furniture, stairs or mapped house.
-  const dining=gardenFurniture(data,settings).dining;
-  if(dining&&(!data.site.garage||settings.removeGarage!==false)){
+  const furniture=gardenFurniture(data,settings),dining=furniture.dining;
+  if(dining&&furniture.diningVisible!==false&&(!data.site.garage||settings.removeGarage!==false)){
     const centre=[dining.x+dining.width/2,dining.y+dining.length/2];
-    const axes=dining.width>=dining.length?[0,1]:[1,0];
+    const axes=dining.rotation?[1,0]:dining.width>=dining.length?[0,1]:[1,0];
     for(const axis of axes){
       const span=(axis===0?dining.width:dining.length)+.32;
       const a=[...centre],b=[...centre];a[axis]-=span/2;b[axis]+=span/2;
-      const shadePoints=[-.72,0,.72].map(offset=>{const p=[...centre];p[axis]+=offset;return p;});
+      const offsets=resort?.pendantCount===2?[-.50,.50]:[-.72,0,.72];
+      const shadePoints=offsets.map(offset=>{const p=[...centre];p[axis]+=offset;return p;});
       if(!clear(a,.16)||!clear(b,.16)||!clearLine(a,b,.08)
         ||shadePoints.some((p,i)=>!clear(p,[.25,.30,.22][i]+.06)))continue;
       const surfaceSamples=Array.from({length:11},(_,i)=>surfaceAt([mix(a[0],b[0],i/10),mix(a[1],b[1],i/10)]));
@@ -71,7 +74,7 @@ export function pendantLightingLayout(settings={},data){
         const t=i/8;return [mix(a[0],b[0],t),mix(a[1],b[1],t),frameZ-.045*Math.sin(Math.PI*t)];
       });
       result.cables.push({id:'garden-pendant-frame',zone:'garden',kind:'span',points,supportIds});
-      for(const [i,offset] of [-.72,0,.72].entries()){
+      for(const [i,offset] of offsets.entries()){
         const p=[...centre];p[axis]+=offset;
         const radius=[.25,.30,.22][i],height=[.36,.42,.33][i],groundZ=surfaceAt(p);
         const z=Math.max(...surfaceSamples)+[2.50,2.64,2.48][i];
@@ -79,6 +82,26 @@ export function pendantLightingLayout(settings={},data){
         result.garden.push({id:`garden-pendant-${i+1}`,zone:'garden',x:p[0],y:p[1],z,groundZ,hangZ,radius,height,supportIds});
       }
       break;
+    }
+  }
+
+  // A small sheltered fitting gives the terrace's coffee table its own pool
+  // of light. It hangs from an enabled canopy, never from an unsupported wire.
+  if(resort&&settings.canopyEnabled===true){
+    const composition=resortTerraceLayout(data,settings,tub,stairs);
+    const table=composition.items.find(f=>f.kind==='table');
+    if(table){
+      const x=table.x+table.width/2,y=table.y+table.length/2;
+      const ceiling=floorZ+(settings.terraceCoverType==='balcony'?(settings.firstFloorRise??3)-.25:(settings.canopyHeight??3));
+      const coverDepth=Number(settings.canopyDepth)||depth,coverWidth=Number(settings.canopyWidth)||terrace.width;
+      const coverX=terrace.x+(terrace.width-coverWidth)/2;
+      if(x>coverX+.15&&x<coverX+coverWidth-.15&&y<rear+coverDepth-.20&&ceiling-floorZ>=2.42){
+        const height=.27,z=ceiling-.23,heightBottom=z-height/2-floorZ;
+        if(heightBottom>=2.1){
+          const id='terrace-pendant-1';
+          result.garden.push({id,zone:'terrace',x,y,z,groundZ:floorZ,hangZ:ceiling-.02,radius:.17,height,supportIds:[],mountedTo:'terrace-cover'});
+        }
+      }
     }
   }
 
@@ -110,7 +133,8 @@ export function pendantLightingLayout(settings={},data){
   }
   // If a long perimeter has more than 24 candidates, sample the whole circuit
   // evenly so the cap does not leave one physical side permanently unlit.
-  const selected=candidates.length<=24?candidates:Array.from({length:24},(_,i)=>candidates[Math.floor((i+.5)*candidates.length/24)]);
+  const cap=resort?.hedgeCount??24;
+  const selected=candidates.length<=cap?candidates:Array.from({length:cap},(_,i)=>candidates[Math.floor((i+.5)*candidates.length/cap)]);
   for(const candidate of selected){
     const {post,baseZ,...fixture}=candidate,supportId=`${fixture.id}-post`;
     fixture.supportIds=[supportId];result.hedge.push(fixture);

@@ -12,7 +12,7 @@ import {terraceCoverLayout,terraceCoverIntersection} from '../src/terrace-cover.
 
 const digest=values=>createHash('sha256').update(values).digest('hex');
 const styles=DESIGN_STYLES.filter(s=>s.id!=='current');
-const base=()=>Object.fromEntries(['stone','stoneLight','wood','woodLight','metal','linen','wall','roof','plinth'].map(role=>[role,new THREE.MeshStandardMaterial()]));
+const base=()=>Object.fromEntries(['stone','stoneLight','wood','woodLight','metal','linen','wall','roof','plinth','styleAccent'].map(role=>[role,new THREE.MeshStandardMaterial()]));
 
 test('every renovation has coherent construction and furnishing specifications independent of colour',()=>{
   assert.equal(Object.keys(EXTERIOR_SURFACES).length,styles.length);
@@ -97,7 +97,14 @@ test('balcony styles change guard geometry while retaining the same clear panels
   const snapshot=JSON.stringify(layout.boxes),m=base(),shapes=new Set();
   for(const style of [getDesignStyle('current'),...styles]){
     const group=createTerraceCoverGroup(layout,m,false,style),infill=group.getObjectByName('balcony-style-infill');
-    assert.equal(group.children.length,layout.boxes.length+(infill?1:0));
+    const furniture=group.getObjectByName('balcony-resort-seating');
+    assert.equal(group.children.length,layout.boxes.length+(infill?1:0)+(furniture?1:0));
+    if(style.id==='current')assert.equal(furniture,undefined);
+    if(furniture){
+      const b=new THREE.Box3().setFromObject(furniture);
+      assert.ok(b.min.x>=layout.bounds.x0&&b.max.x<=layout.bounds.x1);
+      assert.ok(b.min.z>=layout.bounds.y0+1.4&&b.max.z<=layout.bounds.y1,'Furniture leaves the full door landing clear');
+    }
     assert.equal(JSON.stringify(layout.boxes),snapshot,'Appearance never mutates the shade/privacy model');
     for(const primitive of layout.boxes){
       const mesh=group.getObjectByName(primitive.id),b=new THREE.Box3().setFromObject(mesh);

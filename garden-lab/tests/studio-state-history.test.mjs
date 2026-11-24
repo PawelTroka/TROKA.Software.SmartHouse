@@ -109,11 +109,17 @@ test('styles never invent an installed premium or double-count base finishes',()
     const plain=estimateCosts(base,data);
     const themed=estimateCosts({...base,designStyle:'hidden-bali'},data);
     assert.equal(themed.style.status,'quote-required');assert.equal(themed.total,null);
-    assert.deepEqual(themed.knownSubtotal,plain.knownSubtotal);
+    for(const group of ['hedges','earthworks','screeningTrees','spa','privacy','basementGarage','balcony'])
+      assert.deepEqual(themed[group],plain[group],group+' is independent of movable furnishing');
+    const withoutLighting=result=>result.garden.rows.filter(row=>row.key!=='costGardenLighting');
+    assert.deepEqual(withoutLighting(themed),withoutLighting(plain),'Existing non-lighting allowances are not silently repriced');
+    const lightDelta=themed.garden.quantities.lightingFittings-plain.garden.quantities.lightingFittings;
+    assert.ok(Math.abs(themed.knownSubtotal.low-plain.knownSubtotal.low-lightDelta*700)<1e-7);
+    assert.ok(Math.abs(themed.knownSubtotal.high-plain.knownSubtotal.high-lightDelta*1500*(1+base.costContingency/100))<1e-7);
     const quoted=estimateCosts({...base,designStyle:'hidden-bali',costStyleUpgradeQuote:25000},data);
     assert.equal(quoted.style.knownBase.low,25000);
-    assert.ok(Math.abs(quoted.knownSubtotal.low-plain.knownSubtotal.low-25000)<1e-7);
-    assert.ok(Math.abs(quoted.knownSubtotal.high-plain.knownSubtotal.high-25000*(1+base.costContingency/100))<1e-7);
+    assert.ok(Math.abs(quoted.knownSubtotal.low-themed.knownSubtotal.low-25000)<1e-7);
+    assert.ok(Math.abs(quoted.knownSubtotal.high-themed.knownSubtotal.high-25000*(1+base.costContingency/100))<1e-7);
     assert.equal(estimateStyleCosts({...base,designStyle:'current',costStyleUpgradeQuote:25000}).knownBase.low,0);
     assert.equal(estimateStyleCosts({...base,designStyle:'japandi',styleHouseFinish:true}).houseFinishPreview,true);
   }

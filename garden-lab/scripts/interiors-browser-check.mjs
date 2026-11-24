@@ -5,6 +5,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
+import {getInteriorPlan} from '../src/interior-plan.js';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=path.join(root,'test-results','interiors');
@@ -150,27 +151,37 @@ try{
   const ref=await rendered('hidden-bali','dollhouse');assert.ok(ref.drawCalls>0&&ref.furnitureCount>0);assert.equal(ref.layout,'renovation');
   assert.equal(await field('apply-exterior').isDisabled(),true,'The marked terrace/balcony must be linked automatically');
   const ids=await field('style').locator('option').evaluateAll(nodes=>nodes.map(n=>n.value).filter(v=>v!=='follow'));
-  assert.equal(new Set(ids).size,22);assert.ok(ids.includes('coastal'));
+  assert.equal(new Set(ids).size,23);assert.ok(ids.includes('coastal'));assert.ok(ids.includes('beach-house'));
   const geometryCounts=new Set(),featureSets=new Set();
   for(const id of ids.filter(id=>id!=='current')){
     await field('style').selectOption(id);const s=await rendered(id,'dollhouse');
-    assert.equal(s.floor,ref.floor);assert.equal(s.layout,ref.layout);assert.equal(s.wallCount,ref.wallCount);assert.equal(s.furnitureCount,ref.furnitureCount);
+    assert.equal(s.floor,ref.floor);assert.equal(s.layout,ref.layout);assert.equal(s.wallCount,ref.wallCount);
+    const expectedPlan=getInteriorPlan({floor:s.floor,layout:s.layout,styleId:id});
+    assert.equal(s.furnitureCount,expectedPlan.fixtures.length,`${id}: rendered furniture must match its own curated plan`);
     assert.equal(s.renovationFeatures.length,3);assert.equal(s.contextSource,'shared-site-model');
     geometryCounts.add(s.triangles);featureSets.add(JSON.stringify(s.renovationFeatures));
-    const item={id,meshes:s.meshes,triangles:s.triangles,features:s.renovationFeatures};
-    if(['japandi','space-age','hidden-bali','coastal'].includes(id)){
+    const item={id,meshes:s.meshes,triangles:s.triangles,furnitureCount:s.furnitureCount,expectedFurnitureCount:expectedPlan.fixtures.length,features:s.renovationFeatures};
+    if(['japandi','space-age','hidden-bali','coastal','beach-house'].includes(id)){
       item.difference=await pixels(originalFrame,await cameraFrame());assert.ok(item.difference.changed>150,JSON.stringify(item));
       await shot('ground-'+id+'-dollhouse');
     }
     report.styles.push(item);
   }
-  assert.ok(geometryCounts.size>=11,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,21);
+  assert.ok(geometryCounts.size>=11,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,22);
   const major=report.styles.filter(s=>['hidden-bali','japandi','space-age','coastal'].includes(s.id));assert.equal(new Set(major.map(s=>s.triangles)).size,4);
   assert.notEqual(report.styles.find(s=>s.id==='coastal').triangles,report.styles.find(s=>s.id==='baltic-dune').triangles,'Coastal is a distinct physical interior, not another name for Baltic Dune');
+  for(const id of ['coastal','baltic-dune'])assert.notEqual(report.styles.find(s=>s.id==='beach-house').triangles,report.styles.find(s=>s.id===id).triangles,'Beach House has its own physical furniture and composition');
   await field('style').selectOption('current');await rendered('current','dollhouse');
   report.restoration=await pixels(originalFrame,await cameraFrame());assert.ok(report.restoration.fraction<.004,JSON.stringify(report.restoration));
-  check('All 21 renovations have physical features and varied rendered geometry; Coastal is distinct from Baltic Dune, and Current restores the original layout/image');
+  check('All 22 renovations have physical features and varied rendered geometry; Beach House, Coastal and Baltic Dune are distinct, and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
+  await field('style').selectOption('beach-house');await field('floor').selectOption('ground');await field('room').selectOption('lounge');
+  await field('enter').click();const beach=await rendered('beach-house','room');
+  assert.equal(beach.floor,'ground');assert.equal(beach.roomId,'lounge');assert.equal(beach.layout,'renovation');
+  assert.equal(beach.contextSource,'shared-site-model');assert.ok(beach.eyeHeight>1.1&&beach.eyeHeight<2.1);
+  await shot('ground-beach-house-living-eye-level','#interior-host [data-iw="canvas"] canvas');
+  check('Beach House living-room entry renders the curated lounge at eye level with the shared house and garden context');
+  await chooseView('dollhouse');await rendered('beach-house','dollhouse');
   await field('style').selectOption('japandi');await field('floor').selectOption('first');await field('room').selectOption('master');
   await field('enter').click();const eye=await rendered('japandi','room');assert.equal(eye.roomId,'master');assert.ok(eye.eyeHeight>1.1&&eye.eyeHeight<2.1);
   assert.equal(eye.contextSource,'shared-site-model');

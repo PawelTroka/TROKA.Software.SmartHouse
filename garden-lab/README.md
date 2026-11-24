@@ -4,6 +4,14 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 **[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.30.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.30.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.30.0)**
 
+## Coordinated resort living · 1.31.0
+
+The 22 renovation choices now include **Beach House** and rearrange indoor and outdoor furniture as complete living compositions. Lounge groups, dining, bedroom reading corners, balcony seating and shaded lamps follow each style. **Current design** retains the original arrangement. Beach House is a separate contemporary scheme with pale timber, sand tones, linen and sea-glass accents; Coastal keeps its white weatherboards and Hamptons character, while Baltic Dune uses weathered boards and canvas.
+
+Garden light is concentrated around occupied spaces with a quieter perimeter. Use **Garden evening** to preview the lighting after sunset, and expand the short living guide for the selected design. The plan and 3D views share movable-furniture positions. Saved styles, the two-car garage, mapped surroundings and the sea-height study remain available.
+
+[Design decisions and validation](docs/resort-living-1.31.md) · [Architectural references](docs/design-style-research.md)
+
 ## Measured neighbourhood and sea views · 1.30.0
 
 Sternicza now includes **490 surrounding canopy and shrub groups**, derived from classified GUGiK laser returns acquired on **2024-10-01**. Crown positions, elevations and extents follow the scan; individual stems, branches and leaves are reconstructed. Separate municipal inventory records are retained without assigning unverified species to grouped crowns. Summer, winter and date-based foliage controls allow comparisons, and existing crowns can participate in privacy and sunlight calculations without entering the planting budget.

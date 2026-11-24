@@ -1,9 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.30.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.30.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.30.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.30.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.30.0';
+import {toWorld} from './orientation.js?v=1.31.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.31.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.31.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.31.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.31.0';
+import {getResortGardenRecipe} from './resort-garden.js?v=1.31.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -12,6 +13,8 @@ const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&
  * geometry supplies every position and level; the lights do not move trees,
  * change mapped buildings, or receive geometric screening credit. */
 export function createGardenNightLighting(settings,data,{svgMode=false,style=null}={}){
+  settings=style?{...settings,designStyle:style.id}:settings;
+  const resort=getResortGardenRecipe(settings);
   const group=new THREE.Group();group.name='proposed-garden-night-lighting';
   const fixtures=[],lights=[],emitters=[],haloMaterials=[];
   const materials=new Set(),geometries=new Set();
@@ -66,7 +69,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
     mesh(new THREE.CylinderGeometry(.055,.065,.47,8),body,name,x,y,z+.235);
     mesh(new THREE.CylinderGeometry(.12,.12,.045,12),body,`${name}-shield`,x,y,z+.48);
     emitter(x,y,z+.435,.055);halo(x,y,z+.435,warm,.28);
-    light('point',`${name}-light`,x,y,z+.43,warm,8.5,4.6);
+    light('point',`${name}-light`,x,y,z+.43,warm,8.5*(resort?.light[0]??1),resort?3.2:4.6);
     fixtures.push({kind:'shielded-path-light',x,y,z:z+.47});
   };
   const bounds=boundsOf(data.site.boundary),centre=[(bounds.minX+bounds.maxX)/2,(bounds.minY+bounds.maxY)/2];
@@ -76,7 +79,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
     (program.sauna&&pointInPolygon([x,y],program.sauna.footprint));
   // Keep the GPU light budget bounded when experimenting with many specimens.
   // The first three enabled trees receive a real, narrow uplight each.
-  for(const [i,tree] of (settings.screeningTrees||[]).filter(t=>t.enabled!==false).slice(0,3).entries()){
+  for(const [i,tree] of (settings.screeningTrees||[]).filter(t=>t.enabled!==false).slice(0,resort?.treeCount??3).entries()){
     const angle=Math.atan2(centre[1]-tree.y,centre[0]-tree.x),distance=Math.min(1.5,Math.max(.8,tree.crownWidth*.35));
     let position=null;
     for(const turn of [0,.5,-.5,1,-1,Math.PI]){
@@ -89,7 +92,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
     const target=[tree.x,tree.y,treeZ+Math.max(2,tree.height*.63)];
     fixture.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),point(...target).sub(fixture.position).normalize());
     emitter(x,y,z+.205,.065);halo(x,y,z+.205,warm,.32);
-    light('spot',`tree-uplight-beam-${i+1}`,x,y,z+.21,warm,200,Math.max(12,tree.height+3),target,true);
+    light('spot',`tree-uplight-beam-${i+1}`,x,y,z+.21,warm,200*(resort?.light[0]??1),Math.max(12,tree.height+3),target,true);
     fixtures.push({kind:'tree-uplight',treeId:tree.id,x,y,z:z+.21});
   }
   const furniture=gardenFurniture(data,settings);
@@ -100,7 +103,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   const {floorZ,drop}=terraceGroundReference(settings,data),stairs=terraceStairs({...terrace,y:rear},depth,drop,settings,data);
   const stripX=stairs.count?stairs.x+stairs.width/2:terrace.x+terrace.width/2,stripWidth=stairs.count?stairs.width*.82:Math.min(3,terrace.width*.6),stripY=rear+depth+.035;
   const strip=mesh(new THREE.BoxGeometry(stripWidth,.025,.035),warmGlow,'terrace-step-led',stripX,stripY,floorZ-.065);emitters.push({mesh:strip,channel:'garden'});
-  light('point','terrace-step-light',stripX,stripY+.08,floorZ-.07,warm,17,5.5);
+  light('point','terrace-step-light',stripX,stripY+.08,floorZ-.07,warm,17*(resort?.light[0]??1),resort?3.8:5.5);
   fixtures.push({kind:'terrace-step-strip',x:stripX,y:stripY,z:floorZ-.065});
   // Wall-mounted submerged pool points. Their colour washes the basin and
   // water materials; they are visual proposals, not product photometry.
@@ -129,7 +132,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   // Every shade also shows warm transmitted light. Separate materials retain
   // independent dimmers, including in the simplified SVG renderer.
   const shadeEmission=new THREE.Color(palette?.light??'#ffc781');
-  const shadeColor=fixtureForm==='orb' ? palette.fabric : palette?.accent??'#b59969';
+  const shadeColor=['orb','linen'].includes(fixtureForm) ? palette.fabric : palette?.accent??'#b59969';
   const shadeMaterials=Object.fromEntries(['pendant','hedge'].map(channel=>[channel,
     makeMaterial({color:shadeColor,roughness:palette ? .86 : .92,metalness:0,side:THREE.DoubleSide,emissiveIntensity:0})]));
   const cordMaterial=makeMaterial({color:palette?.frame??'#3d4034',roughness:.9,metalness:.1});
@@ -200,16 +203,17 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
       mesh(new THREE.CylinderGeometry(.035,.045,.055,8),body,`${fixture.id}-socket`,x,y,z+height*.35);
       const diffuser=emitter(x,y,z-height*.1,radius*.61,glow,channel);
       diffuser.name=`${fixture.id}-glowing-core`;diffuser.scale.y=height/(radius*1.8);
-      halo(x,y,z-height*.1,color,channel==='pendant'?radius*2.5:.60,channel);
+      halo(x,y,z-height*.1,color,channel==='pendant'?radius*2.5:resort?.42:.60,channel);
       if(channel==='pendant'){
-        const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,40,5.5,[x,y,fixture.groundZ],false,channel);
-        if(pendantLight){pendantLight.angle=1.02;pendantLight.penumbra=.75;}
-      }else light('point',`${fixture.id}-light`,x,y,z-height*.1,color,72,6,null,false,channel);
+        const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,40*(resort?.light[1]??1),resort?4.4:5.5,[x,y,fixture.groundZ],false,channel);
+        if(pendantLight){pendantLight.angle=resort?.86:1.02;pendantLight.penumbra=.75;}
+      }else light('point',`${fixture.id}-light`,x,y,z-height*.1,color,72*(resort?.light[2]??1),resort?3.8:6,null,false,channel);
       fixtures.push({...fixture,kind:channel==='pendant'?'garden-pendant':'hedge-pendant',channel});
     }
   }
   group.userData.fixtureSchedule=fixtures;
   group.userData.pendantLayout=pendantLayout;
+  group.userData.resortLightRecipe=resort;
   let applied={garden:-1,pendant:-1,hedge:-1};
   const bounded=value=>Math.max(0,Math.min(1,Number.isFinite(value)?value:0));
   const apply=(strength)=>{
@@ -240,6 +244,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
 // lantern uses four sides; the other fittings read as spun or moulded forms.
 function createFormedShade(form,radius,height,svgMode){
   const profiles={
+    linen:[[.84,.49],[.86,.45],[.90,-.41],[.88,-.46]],
     saucer:[[.15,.49],[.32,.27],[1,.08],[.97,.01],[.34,.08]],
     tube:[[.22,.49],[.44,.43],[.44,-.29],[.40,-.33]],
     lantern:[[.10,.49],[.88,.30],[.87,.21],[.72,-.33],[.54,-.45]],

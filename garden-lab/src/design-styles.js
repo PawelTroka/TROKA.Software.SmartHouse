@@ -1,6 +1,6 @@
 // Garden concepts use stable IDs in saved settings and share links. Finishes and
 // ornamental modules have no authority over site measurements, planting or prices.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.30.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.31.0';
 export const DEFAULT_DESIGN_STYLE = 'current';
 
 // House finishes are applied to the owner's facade only.
@@ -17,6 +17,7 @@ const exterior = {
   'space-age': ['#e2e7e4', '#88959b', '#687a83'],
   'party-club': ['#aa9e9a', '#504a50', '#4a424b'],
   'baltic-dune': ['#d5cec0', '#7b7e73', '#73827b'],
+  'beach-house': ['#e6dfd0', '#8b918b', '#bda989'],
   coastal: ['#e6e9e2', '#77858b', '#f6f3e9'],
   'gdansk-brick': ['#b28772', '#795c4d', '#4d5146'],
   'danish-midcentury': ['#cebda3', '#71675b', '#866445'],
@@ -45,6 +46,7 @@ const houseRenovations = {
   'space-age': renovation('flutes', .15, 'stepped', 1, 'Fluted facade fields across both storeys, stepped chrome surrounds, zinc roofing, terrazzo and round pedestal dining.'),
   'party-club': renovation('flutes', .11, 'fine', 2, 'Charred upper walls and lower piers, close graphite fluting, twin facade bands, dark basalt paving and a U-shaped upholstered dining banquette.'),
   'baltic-dune': renovation('lap', .14, 'cap', 0, 'Silvered upper-storey boards, sandy mineral walls, zinc roofing, canvas sling furniture and an open six-seat dining table.'),
+  'beach-house': renovation('paired', .30, 'timber', 0, 'Pale paired timber screens, sand-coloured mineral walls, deep oak window casings and a quiet zinc roof frame the sheltered beach-house terrace.'),
   coastal: renovation('weatherboard', .185, 'coastal', 0, 'Painted lapped weatherboards across both storeys, white projecting casings and louvred shutters, a zinc roof, crossed verandah guards and pale-oak outdoor furniture.'),
   'gdansk-brick': renovation('brick', .12, 'soldier', 0, 'Clinker wall finishes, coursed base and masonry piers, soldier lintels, terracotta roofing and six-seat trestle dining.'),
   'danish-midcentury': renovation('battens', .18, 'timber', 1, 'Teak upper-storey fins and window casings, one horizontal belt, limestone paving and an oval table on tapered timber legs.'),
@@ -127,7 +129,13 @@ export const DESIGN_STYLES = Object.freeze([
     '#d4c4a5 #f1eee3 #c3ae8b #f0eee4 #f5f0e4 #7094a4 #ffe0b5',
     ['boards', 2.65, .185, 'coastal-crossback', 'verandah', 'lantern'],
     ['Whitewashed oak boards', 'Cross-back chairs, plank dining table and linen daybed', 'Open rafters and crossed verandah frieze', 'White framed lanterns'],
-    '', ['seaside', 'beach house', 'coastal house', 'Hamptons', 'New England', 'Cape Cod']),
+    '', ['seaside', 'coastal house', 'Hamptons', 'New England', 'Cape Cod']),
+  concept('beach-house', 'Beach House', 'Retreats', 'An easy barefoot retreat: a shared linen daybed, pale timber, sand-coloured stone and quiet sea-glass accents, softened by warm shaded light.',
+    '#d9c9ae #f3ebdb #c1a880 #6d776c #f7f1e5 #8faea6 #ffdeb1',
+    ['boards', 2.8, .24, 'beach-platform', 'beach-linen', 'linen'],
+    ['Wide bleached timber boards', 'Low linen daybed and relaxed timber lounge', 'Pale rafters with soft linen bands', 'Shaded linen pendants and low warm lanterns'],
+    'Outdoor fabrics and sheltered linen details need weather-rated specifications; fitted furniture is separately quoted.',
+    ['beach house', 'barefoot', 'sea glass', 'seaglass', 'contemporary coastal']),
   concept('gdansk-brick', 'Gdańsk Brick Courtyard', 'Courtyards', 'Small red clinker courses and dark metal frames echo the material contrasts of the Gdańsk waterfront.',
     '#a3644d #b88b71 #80654e #464843 #dfd2b5 #687762 #ffcb85',
     ['running', .245, .12, 'trestle', 'girder', 'lantern'],

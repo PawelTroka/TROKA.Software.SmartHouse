@@ -1,8 +1,8 @@
-import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.30.0';
-import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.30.0';
-import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.30.0';
-import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.30.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.30.0';
+import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.31.0';
+import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.31.0';
+import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.31.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.31.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -140,7 +140,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function loadScene() {
     if (scene || sceneLoad || sceneError) return;
     const token = generation;
-    sceneLoad = import('./scene-interior.js?v=1.30.0').then(({createInteriorScene}) => {
+    sceneLoad = import('./scene-interior.js?v=1.31.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
         getExteriorContext,

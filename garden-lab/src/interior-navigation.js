@@ -1,5 +1,5 @@
-import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.30.0';
-import {atticHeadroomAt} from './interior-plan.js?v=1.30.0';
+import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.31.0';
+import {atticHeadroomAt} from './interior-plan.js?v=1.31.0';
 
 const RADIUS=.16;
 function distanceToSegment(x,z,a,b) {
@@ -27,7 +27,7 @@ export function walkGeometry(plan) {
     if(plan.floor==='attic'&&atticHeadroomAt(z)<1.69)return false;
     if(solids.some(s=>distanceToSegment(x,z,s.a,s.b)<r+s.r))return false;
     for(const polygon of obstructions)for(let i=0;i<polygon.length;i++)if(distanceToSegment(x,z,polygon[i],polygon[(i+1)%polygon.length])<r)return false;
-    if(withFurniture)for(const f of plan.fixtures||[]){if(f.hostId)continue;
+    if(withFurniture)for(const f of plan.fixtures||[]){if(f.hostId||f.nonBlocking||f.wallMounted)continue;
       const dx=x-f.x,dz=z-f.z,a=f.rotation||0,c=Math.cos(a),s=Math.sin(a),lx=dx*c-dz*s,lz=dx*s+dz*c;
       if(Math.abs(lx)<f.width/2+r&&Math.abs(lz)<f.depth/2+r)return false;
       if(f.kind==='diningTable'&&Math.abs(lx)<f.width/2+.08&&Math.abs(lz)<f.depth/2+.49+r)return false;
@@ -41,7 +41,7 @@ export function walkGeometry(plan) {
 /** Choose an eye point inside the chosen (possibly concave) room, outside
  * fixtures and stair wells. Aim across its furniture rather than into a wall. */
 export function roomPose(plan,room,clear,showFurniture=true) {
-  const b=ringBounds(room.polygon),fixture=(plan.fixtures||[]).filter(f=>f.roomId===room.id).sort((a,b)=>b.width*b.depth-a.width*a.depth)[0];
+  const b=ringBounds(room.polygon),fixture=(plan.fixtures||[]).filter(f=>f.roomId===room.id&&!f.nonBlocking&&!f.hostId&&!f.wallMounted).sort((a,b)=>b.width*b.depth-a.width*a.depth)[0];
   const focus=fixture&&showFurniture?[fixture.x*.58+b.x*.42,fixture.z*.58+b.z*.42]:[b.x,b.z];
   let best=null,score=-Infinity;const samples=20;
   for(let i=0;i<samples;i++)for(let j=0;j<samples;j++){

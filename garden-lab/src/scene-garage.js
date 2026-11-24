@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.30.0';
-import {CYBERSTER_AWD,garageProfileAt,garageVehiclePose} from './garage-ramp.js?v=1.30.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.31.0';
+import {CYBERSTER_AWD,garageProfileAt,garageVehiclePose} from './garage-ramp.js?v=1.31.0';
 
 const EPS=1e-9;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring||[];

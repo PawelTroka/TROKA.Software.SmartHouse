@@ -1,12 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js?v=1.30.0';
-import {buildArchitecture} from './interior-architecture.js?v=1.30.0';
-import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.30.0';
-import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.30.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.30.0';
-import {renderBudget} from './render-quality.js?v=1.30.0';
-import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.30.0';
-import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.30.0';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.31.0';
+import {buildArchitecture} from './interior-architecture.js?v=1.31.0';
+import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.31.0';
+import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.31.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.31.0';
+import {renderBudget} from './render-quality.js?v=1.31.0';
+import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.31.0';
+import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.31.0';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.31.0';
 
 const walkKeys=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
 const DEFAULTS={view:'dollhouse',styleId:'current',roomId:null,showChanges:false,showFurniture:true,showCeiling:true};
@@ -29,7 +30,7 @@ export function createInteriorScene(container,callbacks={}) {
   const lamp=new THREE.PointLight(0xffd39a,0,8,2);world.add(lamp);
   const shadowMat=new THREE.ShadowMaterial({opacity:.145,depthWrite:false}),shadow=new THREE.Mesh(new THREE.PlaneGeometry(130,130),shadowMat);shadow.rotation.x=-Math.PI/2;shadow.receiveShadow=true;world.add(shadow);
   const abort=new AbortController(),listen=(node,e,fn,options={})=>node.addEventListener(e,fn,{...options,signal:abort.signal});
-  let plan,state={...DEFAULTS},model,finishes,clear,context,contextKey='',raf=0,visible=true,disposed=false,dirtyShadow=true,lastTime=0;
+  let plan,state={...DEFAULTS},model,finishes,taskLighting,clear,context,contextKey='',raf=0,visible=true,disposed=false,dirtyShadow=true,lastTime=0;
   let yaw=0,pitch=0,eye=1.57,down=null,drag=null,drawn=0,meshCount=0,activeStyle='',sizeW=0,sizeH=0;
   let interacting=false,interactionTimer=0,sizeRatio=0,sizeQuality='',sizeInteracting=false;
   const unsubscribeSurfaceAssets=onSurfaceAssetsChanged(request);
@@ -82,6 +83,14 @@ export function createInteriorScene(container,callbacks={}) {
     }
     camera.position.copy(center).addScaledVector(dir,distance*1.075);orbit.update();
   }
+  function updateRoomFill(){
+    if(state.view!=='room'||!taskLighting?.count)return;
+    // Keep a small indoor fill for readable materials; the seated-height
+    // lamps, not a permanent bright ceiling point, set the evening scene.
+    const strength=state.showFurniture?(context?.lighting?.interiorLightStrength??.12):0;
+    const day=Math.min(1,Math.max(0,(context?.lighting?.sunIntensity??2.35)/2.35));
+    lamp.intensity=1.35*day+.25*strength;
+  }
   function home(){
     if(!plan||!model)return;keys.clear();
     if(state.view==='room'){
@@ -89,7 +98,7 @@ export function createInteriorScene(container,callbacks={}) {
       yaw=pose.yaw;pitch=pose.pitch;eye=pose.eye;camera.position.set(pose.x,plan.elevation+eye,pose.z);camera.fov=70;camera.updateProjectionMatrix();orient();
       const b=ringBounds(room.polygon);lamp.position.set(b.x,plan.elevation+Math.min(plan.clearHeight-.17,2.23),b.z);lamp.intensity=plan.floor==='basement'?9:6;
     }else{fitDollhouse();lamp.intensity=0;}
-    dirtyShadow=true;request();
+    updateRoomFill();dirtyShadow=true;request();
   }
   function resize(){
     if(disposed)return;const rect=container.getBoundingClientRect(),w=Math.round(rect.width),h=Math.round(rect.height);if(!w||!h)return;
@@ -111,6 +120,7 @@ export function createInteriorScene(container,callbacks={}) {
     if(changedModel){model?.dispose();if(!finishes||activeStyle!==state.styleId){finishes?.dispose();finishes=interiorMaterials(state.styleId);activeStyle=state.styleId;}
       const localPlan=callbacks.getExteriorContext?{...plan,outdoor:plan.outdoor.filter(p=>p.kind==='landing'),fixtures:sharedRoom?plan.fixtures.filter(f=>f.kind!=='car'):plan.fixtures}:plan;
       model=buildArchitecture(localPlan,{...state,showOutdoor:true,showExterior:true,showStairs:!sharedRoom},tools,finishes);world.add(model.root);projectArchitecturalMaterialUVs(model.root);clear=walkGeometry(plan);meshCount=0;model.root.traverse(o=>{if(o.isMesh)meshCount++;});
+      taskLighting?.dispose();taskLighting=createInteriorTaskLights((plan.interiorLights||[]).map(s=>({...s,elevation:plan.elevation})),finishes.style.palette.light);world.add(taskLighting.root);
       sun.target.position.set(plan.envelope.width/2,plan.elevation,3);sun.position.copy(sun.target.position).add(new THREE.Vector3(-7.5,12,-6.5));
       const lowest=Math.min(-.24,...(plan.stairs||[]).filter(s=>s.to===plan.floor).map(s=>-s.rise));shadow.position.set(plan.envelope.width/2,plan.elevation+lowest-.075,plan.envelope.depth/2);dirtyShadow=true;
     }
@@ -127,6 +137,8 @@ export function createInteriorScene(container,callbacks={}) {
     }
     if(context?.lighting){const l=context.lighting;sun.color.setHex(l.sunColor);sun.intensity=l.sunIntensity;sky.color.setHex(l.skyColor);sky.groundColor.setHex(l.groundColor);sky.intensity=l.ambientIntensity*(state.view==='room'?.52:1);
       sun.position.copy(sun.target.position).add(new THREE.Vector3(...l.sunDirection).multiplyScalar(20));}
+    const taskStrength=state.showFurniture?(context?.lighting?.interiorLightStrength??.12):0;
+    taskLighting?.update(taskStrength);if(finishes)setInteriorLampMaterials(finishes,taskStrength);
     // Indoor diffuse fill is bounded; otherwise the exterior sky illuminates
     // every enclosed surface equally and erases material shape and contact.
     const indoor=state.view==='room',environmentMaterials=new Set();
@@ -139,6 +151,7 @@ export function createInteriorScene(container,callbacks={}) {
     canvas.style.cursor=room?'crosshair':'grab';resize();
     if(changedPlan||old.view!==state.view||(room&&old.roomId!==state.roomId))home();
     else if(old.showFurniture!==state.showFurniture||old.showCeiling!==state.showCeiling)dirtyShadow=true;
+    updateRoomFill();
     request();
   }
   orbit.addEventListener('change',()=>{if(orbit.enabled){navigationChanged();request();}});
@@ -156,6 +169,6 @@ export function createInteriorScene(container,callbacks={}) {
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(container);listen(window,'resize',resize);
   function setVisible(value){visible=!!value;if(visible){resize();request();}else{keys.clear();drag=down=null;clearTimeout(interactionTimer);interactionTimer=0;interacting=false;cancelAnimationFrame(raf);raf=0;lastTime=0;}}
   return {update,home,resize,setVisible,getDiagnostics(){const render=presentation.sceneInfo||renderer.info.render;return {available:!disposed,visible,interacting,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:render.calls,triangles:render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye,contextSource:context?.source||null,contextKey,renovationFeatures:finishes?.interiorRecipe?.features||[],...presentation.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};},
-    dispose(){if(disposed)return;disposed=true;unsubscribeSurfaceAssets();cancelAnimationFrame(raf);clearTimeout(interactionTimer);abort.abort();observer?.disconnect();orbit.dispose();model?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();presentation.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
+    dispose(){if(disposed)return;disposed=true;unsubscribeSurfaceAssets();cancelAnimationFrame(raf);clearTimeout(interactionTimer);abort.abort();observer?.disconnect();orbit.dispose();model?.dispose();taskLighting?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();presentation.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
   };
 }

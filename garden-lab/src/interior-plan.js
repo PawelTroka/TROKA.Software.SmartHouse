@@ -1,8 +1,9 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.30.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.30.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.30.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.31.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.31.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.31.0';
+import {curateInteriorPlan} from './interior-curation.js?v=1.31.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -408,7 +409,7 @@ function atticPlan(){
       'A folding stair is drawn on the floor below. No attic room partitions or habitable area are documented. The front bay roof detail and exact truss spacing are inferred.'],
   };
 }
-export function getInteriorPlan({floor='ground',layout='renovation',garageVariant='cellar',garageSettings={}}={}){
+export function getInteriorPlan({floor='ground',layout='renovation',styleId='current',garageVariant='cellar',garageSettings={}}={}){
   if(!INTERIOR_FLOORS.includes(floor))throw new RangeError('Unknown interior floor: '+floor);
   if(!INTERIOR_LAYOUTS.includes(layout))throw new RangeError('Unknown interior layout: '+layout);
   const proposed=layout==='renovation';
@@ -423,5 +424,5 @@ export function getInteriorPlan({floor='ground',layout='renovation',garageVarian
     roof:{...roof},...INTERIOR_DIMENSIONS.levels[floor],conflicts:[],...detail};
   plan.walls=plan.walls.map(w=>({...w,height:w.height??plan.clearHeight}));
   plan.removedWalls=plan.removedWalls.map(w=>({...w,height:w.height??INTERIOR_DIMENSIONS.levels[floor].clearHeight,status:'removed'}));
-  return plan;
+  return curateInteriorPlan(plan,styleId);
 }
