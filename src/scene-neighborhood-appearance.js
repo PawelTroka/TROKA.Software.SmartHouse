@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.32.0';
-import {neighborhoodAppearanceLayout} from './neighborhood-appearance.js?v=1.32.0&rev=20261124-pavilion';
+import {toWorld} from './orientation.js?v=1.32.1';
+import {neighborhoodAppearanceLayout} from './neighborhood-appearance.js?v=1.32.1';
 
 const transient=material=>{material.userData.transient=true;return material;};
 
@@ -10,6 +10,10 @@ export function createNeighborhoodAppearanceGroup(buildings,data,{origin=data?.s
   const layout=neighborhoodAppearanceLayout(buildings,data,{origin,distanceLimit:svgMode?105:175});
   const group=new THREE.Group();group.name='observed-neighborhood-appearance';
   group.userData.appearanceProfiles=layout.profiles;
+  group.userData.balconyCounts=layout.balconies.reduce((counts,balcony)=>{
+    const key=`${balcony.buildingId}:${balcony.facadeDirection}:${balcony.type}`;
+    counts[key]=(counts[key]||0)+1;return counts;
+  },{});
   group.userData.evidence='User-supplied oblique imagery; facade geometry and colours are visual estimates.';
   const renderMaterial=parameters=>transient(svgMode?new THREE.MeshBasicMaterial({...parameters}):new THREE.MeshStandardMaterial({roughness:.88,metalness:0,...parameters}));
   const paint=renderMaterial({color:'#ffffff'}),metal=renderMaterial({color:'#62675f'}),slab=renderMaterial({color:'#bfc0b4'});
@@ -60,6 +64,15 @@ export function createNeighborhoodAppearanceGroup(buildings,data,{origin=data?.s
   batch(layout.entryCanopies,paint,false,'observed-entry-canopies');
   const slabs=[],fronts=[],rails=[],returns=[];
   for(const balcony of layout.balconies){
+    if(balcony.type==='recessed'){
+      // The reference shows a guard within the facade opening, not a projecting
+      // slab. The dark aperture is in the existing shared colour-field batch.
+      fronts.push({...balcony,z:balcony.balconyFloorZ+balcony.railHeight/2,width:balcony.width-.08,
+        height:balcony.railHeight,depth:.045,offset:.075});
+      rails.push({...balcony,z:balcony.balconyFloorZ+balcony.railHeight+.03,width:balcony.width,
+        height:.035,depth:.035,offset:.095,color:null});
+      continue;
+    }
     const base={...balcony,z:balcony.slabZ,width:balcony.width,height:.12,depth:balcony.depth,offset:balcony.depth/2,color:null};
     slabs.push(base);
     fronts.push({...balcony,z:balcony.slabZ+.12+balcony.railHeight/2,width:balcony.width-.08,height:balcony.railHeight,depth:.045,offset:balcony.depth-.04});

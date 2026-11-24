@@ -1,10 +1,10 @@
 /** Decorative hanging lights use the garden's metric geometry and absolute
  * height datum. They are proposals, excluded from privacy and sunlight rays.
  * Posts support the lights independently of living thuja branches. */
-import {gardenGroundAt,terraceGroundReference,hedgeSegments,hedgeTopAt,jacuzziBounds,pointInPolygon} from './geometry.js?v=1.32.0';
-import {gardenFurniture,terraceStairs,rectCorners} from './layout.js?v=1.32.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.32.0';
-import {getResortGardenRecipe,resortTerraceLayout} from './resort-garden.js?v=1.32.0';
+import {gardenGroundAt,terraceGroundReference,hedgeSegments,hedgeTopAt,jacuzziBounds,pointInPolygon} from './geometry.js?v=1.32.1';
+import {gardenFurniture,terraceStairs,rectCorners} from './layout.js?v=1.32.1';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.32.1';
+import {getResortGardenRecipe,resortTerraceLayout} from './resort-garden.js?v=1.32.1';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const mix=(a,b,t)=>a+(b-a)*t;

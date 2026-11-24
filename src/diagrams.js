@@ -11,21 +11,21 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.32.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.32.0';
-import {gazeDirection} from './orientation.js?v=1.32.0';
-import {localSunDirection} from './solar.js?v=1.32.0';
-import {getSiteProfile} from './sites.js?v=1.32.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.32.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.32.0';
-import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.32.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.32.0';
-import {terraceStairs,gardenFurniture} from './layout.js?v=1.32.0';
-import {resortTerraceLayout} from './resort-garden.js?v=1.32.0';
-import {getDesignStyle} from './design-styles.js?v=1.32.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.32.0';
+} from './geometry.js?v=1.32.1';
+import {neighborhoodBounds} from './neighborhood.js?v=1.32.1';
+import {gazeDirection} from './orientation.js?v=1.32.1';
+import {localSunDirection} from './solar.js?v=1.32.1';
+import {getSiteProfile} from './sites.js?v=1.32.1';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.32.1';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.32.1';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.32.1';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.32.1';
+import {terraceStairs,gardenFurniture} from './layout.js?v=1.32.1';
+import {resortTerraceLayout} from './resort-garden.js?v=1.32.1';
+import {getDesignStyle} from './design-styles.js?v=1.32.1';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.32.1';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.32.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.32.1';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',

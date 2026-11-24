@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.32.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.32.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.32.1';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.32.1';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.

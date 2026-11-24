@@ -1,0 +1,33 @@
+{
+  "version": "1.32.1",
+  "sourceHead": "e52fbbfff00e2a9d409e89b41978df74a9968bde",
+  "sourceMerge": "c9baf4f59a7cfd0afe5651f0eaefcb484fe3fd10",
+  "sourceTree": "3730e4fe617dba92f7d221d7748cfe0ccc710a56",
+  "runtimeFilesVerified": 199,
+  "runtimeMismatches": [],
+  "runtimeManifest": "runtime-files.json",
+  "unitTests": 785,
+  "unitFailures": 0,
+  "staticBuild": "passed",
+  "diffCheck": "passed",
+  "priorAccuracyWorkflow": {
+    "runId": 45395833462,
+    "sourceHead": "6ca9c3f90a2e4155e07aa50e9b6de3a214e3cf20",
+    "conclusion": "success",
+    "jobs": 8
+  },
+  "priorPavilionWorkflow": {
+    "runId": 45403716133,
+    "sourceHead": "5ca6301ce7181fe4eda66564828fc576b89fce63",
+    "conclusion": "success",
+    "jobs": 9
+  },
+  "integrationWorkflow": {
+    "runId": 45503322939,
+    "sourceHead": "e52fbbfff00e2a9d409e89b41978df74a9968bde",
+    "statusAtPublication": "in_progress"
+  },
+  "previousProductionVersion": "1.32.0",
+  "releasePurpose": "Publish the user-approved surrounding-building accuracy fixes with the optional pavilion feature preserved.",
+  "preservedReviewDirectories": true
+}

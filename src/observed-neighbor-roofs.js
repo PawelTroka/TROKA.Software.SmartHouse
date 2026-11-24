@@ -1,5 +1,6 @@
-import {localRoofEnvelope,roofEdgeHeight} from './roof-envelope.js?v=1.32.0';
-import {reconstructSteppedRoof,transformRoofPatches} from './observed-roof-patches.js?v=1.32.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.32.1';
+import {localRoofEnvelope,roofEdgeHeight} from './roof-envelope.js?v=1.32.1';
+import {reconstructSteppedRoof,transformRoofPatches} from './observed-roof-patches.js?v=1.32.1';
 
 const cache=new WeakMap();
 const finite=(value,fallback=0)=>Number.isFinite(value)?value:fallback;
@@ -48,10 +49,11 @@ export function filterNeighborRoofSamples(points,baseZ){
     method:dominantFlat?'dominant flat roof; raised fixture returns omitted':'supported sloping and stepped roof surface'};
 }
 
-/** A rendering-only roof and wall envelope from the optional measured extract.
+/** A source-supported roof and wall envelope from the optional measured extract.
  * The local wall top follows the same boundary vertices as the triangulated
  * roof, including gables and lower wings. A uniform median-height prism is not
- * retained underneath it. Analytical building fields are never rewritten. */
+ * retained underneath it. Rendering, local privacy and sunlight consume the same
+ * envelope; source building fields and target samples are never rewritten. */
 export function visualNeighborRoof(building,data){
   const source=data?.neighborRoofObservations;
   if(!building?.officialId||!source?.buildings)return null;
@@ -74,7 +76,7 @@ export function visualNeighborRoof(building,data){
   // The supported lower roofs at 4h are disconnected from the main gables.
   // A continuous height field wrongly draped dark roof triangles down their
   // several-metre wall steps. Keep this evidence-specific correction separate
-  // from the shared triangulator and the unmodified analytical building mass.
+  // from the shared triangulator and the immutable source building record.
   if(building.officialId==='ID-2261-26BC7443-6C90-FAF6-E053-CA2BA8C0FAE4'){
     const nativePoint=p=>[p[0]-dx,p[1]-dy,baseZ+(p[2]-baseZ)/scale];
     const nativeBuilding={footprint:ring.map(p=>[p[0]-dx,p[1]-dy]),baseZ};
@@ -83,7 +85,7 @@ export function visualNeighborRoof(building,data){
       const patched=transformRoofPatches(reconstructed,{dx,dy,scale,baseZ});
       const value={...patched,officialId:building.officialId,sourceId:observation.sourceId,acquired:observation.acquired,
         sampleCount:patched.roofPoints.length,excludedCount:points.length-patched.roofPoints.length,
-        meaning:'4h source-supported separate roof patches. Step positions are estimated within recorded return gaps; low-extension plane fits and near-edge interpolation regularize the seam. Main roof samples and supported high returns remain. Visual reconstruction, not surveyed roof topology.'};
+        meaning:'4h source-supported separate roof patches. Step positions are estimated within recorded return gaps; low-extension plane fits and near-edge interpolation regularize the seam. Main roof samples and supported high returns remain. Reconstructed local visual/occlusion envelope, not surveyed roof topology.'};
       cache.set(building,{source,value});return value;
     }
   }
@@ -91,10 +93,11 @@ export function visualNeighborRoof(building,data){
   const zs=envelope.boundary.map(p=>p[2]),sorted=zs.slice().sort((a,b)=>a-b);
   const value={roofPoints,edgeZ:quantile(sorted,.5),wallTopZ:Math.min(...zs),
     edgePoints:envelope.boundary,wallFaces:envelope.wallFaces,edges:envelope.edges,
+    roofFaces:sampledRoofFaces(envelope.ring,roofPoints,quantile(sorted,.5),envelope.boundary),
     minZ:Math.min(...roofPoints.map(p=>p[2]),...zs),maxZ:Math.max(...roofPoints.map(p=>p[2]),...zs),
     officialId:building.officialId,sourceId:observation.sourceId,acquired:observation.acquired,
     sampleCount:roofPoints.length,excludedCount:points.length-roofPoints.length,method:filtered.method,
-    meaning:'Sparse 2024 class-6 roof returns with a locally interpolated wall/roof seam; visual reconstruction, not surveyed roof topology. Isolated returns and raised fixtures on dominant flat roofs are omitted.'};
+    meaning:'Sparse 2024 class-6 roof returns with a locally interpolated wall/roof seam; reconstructed local visual/occlusion envelope, not surveyed roof topology. Isolated returns and raised fixtures on dominant flat roofs are omitted.'};
   cache.set(building,{source,value});return value;
 }
 
