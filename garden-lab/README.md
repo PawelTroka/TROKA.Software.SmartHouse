@@ -2,7 +2,15 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.32.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.32.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.32.1)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.32.1)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.1)**
+
+## Surrounding-building accuracy · 1.32.1
+
+The 24 November accuracy follow-up uses the reconstructed neighbouring roofs and walls for **3D rendering, local privacy and sunlight rays**. This removes the former mismatch between a visible ridge/lower wing and an analytical median-height prism. PCK 1, 3 and 5 now have distinct flat decks, central pyramidal skylights and six chimney stacks, with measured top heights and estimated fixture extents. The separate optional high-feature samples retain their existing control.
+
+Observed openings are registered once across a complete elevation, including mapped walls split into short segments. The garden-facing 9a and 13a façades gain their observed grouped windows and projecting balconies/recessed loggia; generic side windows use the same floor datum. PCK 5's side colours now use the visible horizontal fields. The opposite 5/7 upper terrace and recessed back-wall arrangement remain unresolved instead of adding a door above a measured low roof. The [appearance record](docs/sternicza-appearance-observations.md) identifies these limits.
+
+The fixes apply on top of the coordinated resort and optional pavilion releases below. Original measured footprints, roof returns and official building identities remain intact. Dense façade inspection follows the resolved wall surfaces.
 
 ## Optional corner pavilion · 1.32.0
 
@@ -12,7 +20,7 @@ The PCK3 comparison retains the same alternative garden in both cases and remove
 
 **No permitted building height is established.** Official city queries found no covering current MPZP in the queried layers. The revised draft general plan shows 12 m in zone 649SW at this corner, but remains a draft and does not grant permission for this pavilion. The complete pavilion project is a separate quote-only budget item. Internal stairs and detailed rooms remain undesigned.
 
-[Open the pavilion study](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.0#v=28&site=sternicza-11&pavilionEnabled=true&designStyle=beach-house&mode=orbit&showDimensions=false) · [Study, planning sources and comparison results](docs/corner-pavilion-study-1.32.md)
+[Open the pavilion study](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.1#v=28&site=sternicza-11&pavilionEnabled=true&designStyle=beach-house&mode=orbit&showDimensions=false) · [Study, planning sources and comparison results](docs/corner-pavilion-study-1.32.md)
 
 ## Coordinated resort living · 1.31.0
 
@@ -26,7 +34,7 @@ Garden light is concentrated around occupied spaces with a quieter perimeter. Us
 
 Sternicza now includes **490 surrounding canopy and shrub groups**, derived from classified GUGiK laser returns acquired on **2024-10-01**. Crown positions, elevations and extents follow the scan; individual stems, branches and leaves are reconstructed. Separate municipal inventory records are retained without assigning unverified species to grouped crowns. Summer, winter and date-based foliage controls allow comparisons, and existing crowns can participate in privacy and sunlight calculations without entering the planting budget.
 
-Twelve neighbouring buildings have reference-informed façade colours, window arrangements and selected balcony/entrance details. Nine additional roofs use measured building returns for visual silhouettes. Ground-return colour adds registered surface variation where observations exist. Other façades, hidden elevations and branch topology remain approximate; the source notes distinguish measured geometry from reconstruction.
+Twelve neighbouring buildings have reference-informed façade colours, window arrangements and selected balcony/entrance details. Nine additional roofs use measured building returns for their resolved silhouettes and local obstruction geometry. Ground-return colour adds registered surface variation where observations exist. Other façades, hidden elevations and branch topology remain approximate; the source notes distinguish measured geometry from reconstruction.
 
 The 23 November reference review corrects PCK 1, 3 and 5 to **five residential window rows**, four principal columns on the garden/street faces and three balcony stacks on the observed side elevations. Small basement openings are separate from the residential floors. The blue/mint and yellow fields on PCK 3, horizontal colour bands on PCK 5 and yellow/salmon fields on PCK 1 now follow the supplied views more closely. Measured crown groups overhanging buildings retain their foliage, with unsupported trunks through roofs omitted.
 
@@ -768,13 +776,13 @@ Choose a date from **2000–2100** and a time of day. The initial view is **21 J
 
 Sun position uses NOAA/Meeus equations at the selected property's coordinates: **54.405452° N, 18.6312142° E** for Sternicza and **54.4075710° N, 18.6301101° E** for Korzeniowskiego. The mapped EPSG:2180 orientation is corrected for meridian convergence: the rear axes point approximately **203.131° true** and **28.051° true**, respectively. Azimuth is clockwise from true north; elevation is above the level geometric horizon. Independent NREL SPA comparisons validate the seasonal solar direction. General method references and the original Sternicza calibration are recorded in [`data/solar-sources.json`](data/solar-sources.json); each active dataset supplies its own location and frame.
 
-The shade calculation traces rays toward the sun from outdoor surface samples on a **1 m grid**. It accounts for mapped surrounding-building bodies, sampled apartment roofs where available, the house and retained-garage roof meshes at fixed source elevations, opaque hedge/bed screens, the raised terrace with its jacuzzi opening, the proposed canopy, finite added screening-tree crowns and trunks, and the supplied local terrain with garden fill. Building height/distance overrides, garage removal, hedge edits and surface-level changes feed the same comparison geometry. The model does not calculate sunlight through living-room windows or indoor illumination.
+The shade calculation traces rays toward the sun from outdoor surface samples on a **1 m grid**. It accounts for surrounding buildings using the shared rendered roof/wall envelope where reconstructed and the mapped fallback elsewhere, the house and retained-garage roof meshes at fixed source elevations, opaque hedge/bed screens, the raised terrace with its jacuzzi opening, the proposed canopy, finite added screening-tree crowns and trunks, optional measured existing-canopy envelopes, and the supplied local terrain with garden fill. Building height/distance overrides, garage removal, hedge edits and surface-level changes feed the same comparison geometry. The model does not calculate sunlight through living-room windows or indoor illumination.
 
 The garden, terrace, jacuzzi, pool and front-area percentages are the **fraction of outdoor sample centres receiving direct sun at the selected instant**. They approximate surface coverage and can change in steps near shadow edges. They do not represent irradiance, weather, cumulative daily sunlight hours, thermal comfort or plant growth. Night is shown separately from architectural shade. Sunrise, solar noon and sunset describe the astronomical day; sunrise/sunset use the conventional −0.833° apparent horizon, while shadow rays use the geometric sun centre above 0°. Buildings and trees can delay the property's actual direct sun.
 
 Pool and jacuzzi receivers use their flat rendered water levels rather than the varying terrain beneath them. The jacuzzi zone samples its inset, rounded water footprint on the same 1 m grid, so only a few samples describe this small surface; their counts are shown. Pool terrain is excavated from the rendered and numerical ground; the jacuzzi opening is removed from the terrace occluder. Local terrain is sampled only inside the supplied crop.
 
-Hedges are treated as opaque screens, not as measured foliage. Existing tree crowns, decorative planting/furniture/water rims, isolated unverified roof features, distant terrain horizon, cloud cover and diffuse/reflected light are excluded from the numerical result. Source roof detail and proposed geometry remain approximate; 3D shadow-map resolution and visual decoration can also produce small differences from the sampled shade map. The result is a planning comparison, not a surveyed solar-access assessment.
+Hedges are treated as opaque screens, not as measured foliage. Decorative planting/furniture/water rims, optional isolated high-feature samples, distant terrain horizon, cloud cover and diffuse/reflected light are excluded from the numerical sunlight result. Existing measured crowns participate only when the existing-canopy analysis control is enabled. Source roof detail and proposed geometry remain approximate; 3D shadow-map resolution and visual decoration can also produce small differences from the sampled shade map. The result is a planning comparison, not a surveyed solar-access assessment.
 
 ## 3D appearance
 
@@ -801,7 +809,7 @@ required top elevation = (1 − r) × E + r × B
 required hedge height = required top elevation − planting-ground elevation
 ```
 
-The engine intersects finite hedge segments, finite tree crowns and trunks, the canopy roof and front/side fascia, and approximate surrounding-building prisms. The required rear hedge metric ignores canopy and tree protection, but retains occlusion from mapped surrounding buildings. It refers to new planting ground, or original ground when existing hedge tops are held fixed.
+The engine intersects finite hedge segments, finite tree crowns and trunks, the canopy roof and front/side fascia, and the resolved surrounding-building roof/wall envelopes. Buildings without a supported roof reconstruction retain their approximate mapped prisms. The required rear hedge metric ignores canopy and tree protection, but retains occlusion from mapped surrounding buildings. It refers to new planting ground, or original ground when existing hedge tops are held fixed.
 
 **Raising the garden is distinct from raising the hedge beds.** The house floor and terrace stay fixed. A garden observer moves with garden fill; a living-room observer does not. New planting rises with the soil only when the corresponding switch is enabled. Adding soil never lifts retained foliage. The terrain model applies uniform fill within the rear-garden area; retaining structures, drainage, soil settling and construction feasibility are outside scope.
 

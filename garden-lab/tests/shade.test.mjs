@@ -98,7 +98,7 @@ test('design geometry is reused across time changes and rebuilt for building ove
   assert.notEqual(prepareSunGeometry({...settings,hedgeRear:6},realData),a);
   const adjusted=applyBuildingOverrides(realData,{b9HeightDelta:3,b9DistanceDelta:5});
   const changed=prepareSunGeometry(settings,adjusted),oldBlock=a.occluders.find(o=>o.id==='building-9'),newBlock=changed.occluders.find(o=>o.id==='building-9');
-  assert.notEqual(changed,a);assert.ok(newBlock.top>oldBlock.top);assert.notDeepEqual(newBlock.footprint,oldBlock.footprint);
+  assert.notEqual(changed,a);assert.ok(newBlock.bounds.max[2]>oldBlock.bounds.max[2]);assert.notDeepEqual(newBlock.bounds.min.slice(0,2),oldBlock.bounds.min.slice(0,2));
 });
 
 test('sampled roof triangulation retains elevations above the body and outdoor counts reconcile',()=>{

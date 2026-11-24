@@ -347,7 +347,8 @@
         "Five full-size window rows and four principal columns on plot-facing and PCK-street-facing elevations; the inner two windows are wider.",
         "Three balcony stacks on each visible side elevation. Small basement openings are distinct from the five regular floors.",
         "A street entrance replaces the lowest right-middle opening; entry, window and balcony dimensions remain visual estimates.",
-        "The middle two columns sit in a yellow upper rectangle and salmon middle rectangle, layered over the cream/ochre/muted-green horizontal bands."
+        "The middle two columns sit in a yellow upper rectangle and salmon middle rectangle, layered over the cream/ochre/muted-green horizontal bands.",
+        "Both balcony elevations also have the cream/ochre/muted-green horizontal fields and central yellow-upper/salmon-middle rectangles, visible from the original 113.34 and 289.83 degree views; these are not uniform vertical yellow stripes."
       ],
       "facades": {
         "front": {
@@ -460,7 +461,7 @@
             0.74,
             0.86
           ],
-          "color": "#e8dfc9",
+          "color": "#e7e4d8",
           "balconyBays": [
             1,
             3,
@@ -469,11 +470,32 @@
           "balconyColor": "#c99b85",
           "panels": [
             {
+              "u0": 0,
+              "u1": 1,
+              "z0": 0.02,
+              "z1": 0.25,
+              "color": "#bdc9b8"
+            },
+            {
+              "u0": 0,
+              "u1": 1,
+              "z0": 0.25,
+              "z1": 0.65,
+              "color": "#d9b871"
+            },
+            {
               "u0": 0.34,
               "u1": 0.68,
-              "z0": 0.04,
-              "z1": 0.97,
-              "color": "#d7b975"
+              "z0": 0.25,
+              "z1": 0.65,
+              "color": "#c8947d"
+            },
+            {
+              "u0": 0.34,
+              "u1": 0.68,
+              "z0": 0.65,
+              "z1": 1,
+              "color": "#dfc17a"
             }
           ],
           "bayWidths": [
@@ -505,7 +527,7 @@
             0.74,
             0.86
           ],
-          "color": "#e9e0cd",
+          "color": "#e7e4d8",
           "balconyBays": [
             1,
             3,
@@ -514,18 +536,32 @@
           "balconyColor": "#cb9e87",
           "panels": [
             {
-              "u0": 0.12,
-              "u1": 0.28,
-              "z0": 0.04,
-              "z1": 0.97,
-              "color": "#d5b66a"
+              "u0": 0,
+              "u1": 1,
+              "z0": 0.02,
+              "z1": 0.25,
+              "color": "#bdc9b8"
             },
             {
-              "u0": 0.72,
-              "u1": 0.88,
-              "z0": 0.04,
-              "z1": 0.97,
-              "color": "#d5b66a"
+              "u0": 0,
+              "u1": 1,
+              "z0": 0.25,
+              "z1": 0.65,
+              "color": "#d9b871"
+            },
+            {
+              "u0": 0.34,
+              "u1": 0.68,
+              "z0": 0.25,
+              "z1": 0.65,
+              "color": "#c8947d"
+            },
+            {
+              "u0": 0.34,
+              "u1": 0.68,
+              "z0": 0.65,
+              "z1": 1,
+              "color": "#dfc17a"
             }
           ],
           "bayWidths": [
@@ -539,7 +575,7 @@
           "balconyStartFloor": 0
         }
       },
-      "reviewed": "2026-11-23",
+      "reviewed": "2026-11-24",
       "firstFloorHeight": 1.9
     },
     {
@@ -818,7 +854,7 @@
         "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
-      "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
+      "windowLayoutConfidence": "Main opening groups and balcony locations are visible in complementary views; exact dimensions, pane subdivisions and concealed openings are not surveyed.",
       "sourceHeightM": 8.43,
       "floorCount": 2,
       "firstWindowHeight": 3.0,
@@ -858,16 +894,53 @@
               5
             ]
           ]
+        },
+        "rear": {
+          "bays": [
+            0.2,
+            0.5,
+            0.8
+          ],
+          "bayWidths": [
+            2.1,
+            1.35,
+            2.1
+          ],
+          "bayMullions": [
+            2,
+            1,
+            2
+          ],
+          "color": "#b9c1c4",
+          "balconies": [
+            {
+              "column": 1,
+              "floors": [
+                0,
+                1
+              ],
+              "width": 3.4,
+              "depth": 0.9,
+              "type": "projecting",
+              "railHeight": 0.85,
+              "color": "#c5c5b6",
+              "openingHeight": 2.1
+            }
+          ],
+          "referenceIds": [
+            "user-reference-4"
+          ]
         }
       },
       "observations": [
-        "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
-        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
-        "The upper street row has a close pair at one end and four narrow openings; only the lower pair is readable below the foliage. Other lower openings are left unresolved."
+        "The street-facing wall has a close pair at one end of the upper row and four narrower openings; only the lower pair is readable through foliage.",
+        "The opposite, garden-facing elevation has two main rows with broad outer window groups and a central balcony/terrace-access group with pale projecting guards.",
+        "The garden-facing groups are observed in the 26.86 degree view, looking from PCK street toward Sternicza; they must not be mirrored onto the street front.",
+        "Window-group widths, pane subdivisions and balcony dimensions are visual estimates. Lower basement and other foliage-hidden openings are unresolved and are not another full-size storey.",
+        "Other concealed elevations retain illustrative openings on the same two-floor datum."
       ],
       "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
-      "reviewed": "2026-11-23",
+      "reviewed": "2026-11-24",
       "firstFloorHeight": 1.9
     },
     {
@@ -886,7 +959,7 @@
         "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
-      "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
+      "windowLayoutConfidence": "Main garden-facing groups and the upper loggia are visible; exact recess depth, dimensions and obscured openings are not surveyed.",
       "sourceHeightM": 8.29,
       "floorCount": 2,
       "firstWindowHeight": 3.0,
@@ -902,16 +975,58 @@
           "bayWidths": [
             0.85
           ]
+        },
+        "rear": {
+          "bays": [
+            0.25,
+            0.7
+          ],
+          "bayWidths": [
+            1.65,
+            1.5
+          ],
+          "bayMullions": [
+            1,
+            1
+          ],
+          "rowBays": [
+            [
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "color": "#e4e5df",
+          "balconies": [
+            {
+              "column": 1,
+              "floors": [
+                1
+              ],
+              "width": 3.25,
+              "depth": 0.6,
+              "type": "recessed",
+              "railHeight": 0.85,
+              "color": "#d9dcd6",
+              "openingHeight": 2.1
+            }
+          ],
+          "referenceIds": [
+            "user-reference-4"
+          ]
         }
       },
       "observations": [
-        "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
-        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
-        "Only a narrow stacked opening near one side of the street wall is readable; foliage obscures the remainder, so no evenly repeated three-column front is asserted."
+        "Only a narrow stacked opening is readable on the partly screened street front; that sparse front observation is retained.",
+        "The garden-facing elevation has a left window group on each main floor and a broad shaded upper-right loggia with a pale guard. The lower-right area is obscured and is left unresolved.",
+        "The upper loggia is rendered as a flush recessed-looking opening and guard, not a projecting apartment-block balcony; its depth and hidden construction are estimates.",
+        "The two offset rear wall segments share one observed elevation layout, so the left window stack and right loggia are each placed once on their actual mapped wall.",
+        "There are two main window rows above a lower basement zone; concealed basement openings are not promoted to a third full-size storey."
       ],
       "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
-      "reviewed": "2026-11-23",
+      "reviewed": "2026-11-24",
       "firstFloorHeight": 1.9
     },
     {
@@ -930,7 +1045,7 @@
         "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
-      "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
+      "windowLayoutConfidence": "The main groups and lower recessed side opening are visible; exact dimensions are not surveyed, and the upper terrace/door relationship and concealed openings remain unresolved.",
       "sourceHeightM": 8.44,
       "floorCount": 2,
       "firstWindowHeight": 3.0,
@@ -940,31 +1055,61 @@
       "facades": {
         "rear": {
           "bays": [
-            0.2,
+            0.14,
             0.49,
             0.78
           ],
           "color": "#a9a79a",
           "bayWidths": [
-            1.1,
-            2.0,
-            1.0
+            1.4,
+            2.15,
+            0.9
           ],
-          "balconyBays": [
+          "bayMullions": [
+            1,
+            2,
             0
           ],
-          "balconyStartFloor": 0,
-          "balconyColor": "#a4a69a"
+          "balconies": [
+            {
+              "column": 0,
+              "floors": [
+                0
+              ],
+              "width": 2,
+              "depth": 0.65,
+              "type": "recessed",
+              "railHeight": 0.85,
+              "color": "#b5b6aa",
+              "openingHeight": 2.1
+            }
+          ],
+          "referenceIds": [
+            "user-reference-4"
+          ],
+          "rowBays": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ]
         }
       },
       "observations": [
-        "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
-        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
-        "A side balcony/loggia stack and a wider central window group are visible; the small recess/railing dimensions remain illustrative."
+        "The Sternicza-facing main elevation has two window rows above the lower basement/garage zone.",
+        "A lower recessed side opening/guard, a broad central window group and narrower openings to the other side are visible; the grouped window is not a row of equal-width slits.",
+        "The narrow stepped wing has a measured low top that may be the open upper-terrace slab. The upper door/recess lies behind it and cannot be placed on the low front wall without floating above the measured surface.",
+        "Only the supported lower loggia opening and guard are rendered on that wing. The upper terrace guard and recessed door remain unresolved; the measured wall is not raised to manufacture another opening.",
+        "The entire elevation is registered once across the mapped wall segments. Window widths, pane divisions and recess/guard dimensions remain visual estimates.",
+        "Other concealed elevations retain illustrative openings on the same two-floor datum. Basement and foliage-hidden openings are unresolved."
       ],
       "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
-      "reviewed": "2026-11-23",
+      "reviewed": "2026-11-24",
       "firstFloorHeight": 1.9
     },
     {
@@ -1002,16 +1147,22 @@
             1.1,
             2.0,
             1.0
+          ],
+          "bayMullions": [
+            1,
+            2,
+            0
           ]
         }
       },
       "observations": [
         "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
         "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
-        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey."
+        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
+        "The wider central opening is shown as a grouped window with internal divisions, rather than clipped to the width of its narrower neighbours; the pane divisions are approximate."
       ],
       "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
-      "reviewed": "2026-11-23",
+      "reviewed": "2026-11-24",
       "firstFloorHeight": 1.9
     },
     {
@@ -1030,7 +1181,7 @@
         "screenshot-20261122-131737"
       ],
       "confidence": "visual estimate",
-      "windowLayoutConfidence": "Approximate repeated bay layout interpreted from supplied oblique images; dimensions and hidden openings are not surveyed.",
+      "windowLayoutConfidence": "The main groups and lower recessed side opening are visible; exact dimensions are not surveyed, and the upper terrace/door relationship and concealed openings remain unresolved.",
       "sourceHeightM": 8.44,
       "floorCount": 2,
       "firstWindowHeight": 3.0,
@@ -1040,31 +1191,61 @@
       "facades": {
         "rear": {
           "bays": [
-            0.2,
+            0.14,
             0.5,
             0.8
           ],
           "color": "#c6c3b4",
           "bayWidths": [
-            1.1,
-            2.0,
-            1.0
+            1.4,
+            2.15,
+            0.9
           ],
-          "balconyBays": [
+          "bayMullions": [
+            1,
+            2,
             0
           ],
-          "balconyStartFloor": 0,
-          "balconyColor": "#a4a69a"
+          "balconies": [
+            {
+              "column": 0,
+              "floors": [
+                0
+              ],
+              "width": 2,
+              "depth": 0.65,
+              "type": "recessed",
+              "railHeight": 0.85,
+              "color": "#b5b6aa",
+              "openingHeight": 2.1
+            }
+          ],
+          "referenceIds": [
+            "user-reference-4"
+          ],
+          "rowBays": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ]
         }
       },
       "observations": [
-        "Distinct light/grey rendered street-house facade and repeated pale-framed openings visible in the supplied images.",
-        "Only the street-facing bay pattern is interpreted; concealed elevations retain illustrative openings.",
-        "Two regular main-storey window rows are resolved on the visible street elevation. Low basement openings and foliage-hidden openings are not treated as an additional full-size storey.",
-        "A side balcony/loggia stack and a wider central window group are visible; the small recess/railing dimensions remain illustrative."
+        "The Sternicza-facing main elevation has two window rows above the lower basement/garage zone.",
+        "A lower recessed side opening/guard, a broad central window group and narrower openings to the other side are visible; the grouped window is not a row of equal-width slits.",
+        "The narrow stepped wing has a measured low top that may be the open upper-terrace slab. The upper door/recess lies behind it and cannot be placed on the low front wall without floating above the measured surface.",
+        "Only the supported lower loggia opening and guard are rendered on that wing. The upper terrace guard and recessed door remain unresolved; the measured wall is not raised to manufacture another opening.",
+        "The entire elevation is registered once across the mapped wall segments. Window widths, pane divisions and recess/guard dimensions remain visual estimates.",
+        "Other concealed elevations retain illustrative openings on the same two-floor datum. Basement and foliage-hidden openings are unresolved."
       ],
       "roofForm": "Use measured roof detail when available; never infer a ridge from a facade photograph.",
-      "reviewed": "2026-11-23",
+      "reviewed": "2026-11-24",
       "firstFloorHeight": 1.9
     },
     {
@@ -1179,8 +1360,8 @@
       "buildingId": "building-4",
       "officialId": "ID-2261-26BC7443-6C90-FAF6-E053-CA2BA8C0FAE4",
       "observedName": "Neighbour 4h · recorded blank garden wall",
-      "facadeColor": "#d6d1c5",
-      "roofColor": "#74756e",
+      "facadeColor": "#dedcc0",
+      "roofColor": "#5b606b",
       "referenceIds": [
         "user-reference-3",
         "user-reference-4",
@@ -1192,10 +1373,12 @@
       "sourceHeightM": 10.13,
       "facades": {},
       "observations": [
-        "Existing user observation establishes that the garden-facing wall has no windows.",
-        "Only overall neutral facade finish is approximated; the recorded blank wall always wins."
+        "The user observation and the original 289.83 degree view both establish the blank garden-facing gable wall.",
+        "The visible wall is pale cream/yellow and the steep intersecting roof is dark slate/blue-grey; exact colour values are visual estimates.",
+        "The measured stepped roof reconstruction and recorded blank-wall edges remain authoritative. No new openings are inferred on the garden wall."
       ],
-      "roofForm": "Use measured roof detail; existing blank-wall observation preserved."
+      "roofForm": "Use measured roof detail; existing blank-wall observation preserved.",
+      "reviewed": "2026-11-24"
     }
   ],
   "reviewed": "2026-11-23",

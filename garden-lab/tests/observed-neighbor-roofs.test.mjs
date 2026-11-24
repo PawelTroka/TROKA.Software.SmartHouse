@@ -40,7 +40,7 @@ test('all nine optional neighbor roofs close exactly against their own wall and 
       assert.ok(roof.wallFaces.some(face=>face.some(v=>vertexKey(v)===vertexKey(p))));
     }
   }
-  assert.equal(JSON.stringify(data.buildings),original,'Measured source bodies and all analytical samples remain byte-identical');
+  assert.equal(JSON.stringify(data.buildings),original,'Measured source records and all target samples remain byte-identical');
 });
 
 test('4h keeps two measured lower roofs separate from the main roof with vertical facade steps',()=>{
@@ -70,7 +70,7 @@ test('4h keeps two measured lower roofs separate from the main roof with vertica
     assert.ok(Math.abs(patch.roofFaces.reduce((sum,face)=>sum+area(face),0)-area(patch.ring))<1e-6);
     if(patch.nativePlane){assert.ok(patch.nativePlane.rmse<.15);assert.ok(patch.nativePlane.maxResidual<.3);}
   }
-  assert.deepEqual(source,before,'Patch reconstruction does not change the measured analytical body');
+  assert.deepEqual(source,before,'Patch reconstruction does not change the measured source record');
 });
 
 test('4h stepped roof and walls share every non-ground edge without T-junctions',()=>{
@@ -133,7 +133,7 @@ test('isolated tall returns do not create invented antennas, while supported low
   assert.equal(filterNeighborRoofSamples(points,2).points.length,25);
 });
 
-test('rendering-only roof reconstruction follows translated and scaled body variants',()=>{
+test('shared roof reconstruction follows translated and scaled body variants',()=>{
   const source=building('building-8'),dx=6,dy=-7,scaleZ=1.3;
   const shifted={...source,footprint:source.footprint.map(([x,y])=>[x+dx,y+dy]),
     roofZ:source.baseZ+(source.roofZ-source.baseZ)*scaleZ,adjustment:{dx,dy,scaleZ}};
@@ -156,5 +156,10 @@ test('windows and finish overlays cannot protrude through measured lower roof wi
   }
   const finishes=neighborhoodAppearanceLayout([source],data);
   assert.equal(finishes.parapets.length,0,'No uniform old LoD1 roof coping floats through the new roof');
-  assert.ok(finishes.panels.every(panel=>panel.height<=.38),'The actual wall mesh supplies colour; only the low plinth overlay remains');
+  assert.ok(finishes.panels.every(panel=>panel.height<=.38||panel.balcony&&panel.balconySpec?.type==='recessed'),
+    'The actual wall mesh supplies colour; tall finish panels are supported recessed loggia apertures only');
+  for(const panel of finishes.panels.filter(panel=>panel.height>.38))for(const u of [-.5,0,.5]){
+    assert.ok(panel.z+panel.height/2<visualNeighborWallHeightAt(roof,panel.x+panel.ny*panel.width*u,panel.y-panel.nx*panel.width*u),
+      'A recessed loggia aperture must remain below the measured wall top');
+  }
 });
