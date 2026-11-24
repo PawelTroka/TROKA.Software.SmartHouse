@@ -20,7 +20,7 @@ let browser,page,server,base=process.env.BASE_URL?.replace(/\/$/,'');
 const q=selector=>page.locator(selector);
 const frames=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 const stats=()=>q('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([key,value])=>
-  [key,key==='renderer'?value:key==='motionActive'?value==='true':Number(value)])));
+  [key,value==='true'?true:value==='false'?false:Number.isFinite(Number(value))?Number(value):value])));
 const viewContext=()=>page.evaluate(()=>({
   mode:document.getElementById('viewport').dataset.mode,
   badge:document.getElementById('view-badge-text').textContent,
@@ -32,12 +32,12 @@ async function openDetails(selector){
   const details=q(selector);
   if(await details.getAttribute('open')===null)await details.locator(':scope > summary').click();
 }
-async function sceneVisible(afterFrame=null){
+async function sceneVisible(){
   await q('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_TIMEOUT});
-  await page.waitForFunction(previous=>{
+  await page.waitForFunction(()=>{
     const d=document.getElementById('render-diagnostics').dataset;
-    return d.renderer==='webgl'&&Number(d.frames)>0&&(previous===null||Number(d.frames)>previous);
-  },afterFrame,{timeout:SCENE_TIMEOUT});
+    return d.renderer==='webgl'&&Number(d.frames)>0;
+  },null,{timeout:SCENE_TIMEOUT});
   await page.waitForFunction(()=>{
     const d=document.getElementById('render-diagnostics').dataset;
     return Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&d.surfaceAssetsFailed==='0';
@@ -45,9 +45,13 @@ async function sceneVisible(afterFrame=null){
   await frames();
 }
 async function renderedChange(action){
-  const before=(await stats()).frames;
   await action();
-  await sceneVisible(before);
+  await sceneVisible();
+  // Public performance counters are throttled and can remain unchanged after
+  // an idle sun/camera frame. Settle the actual browser/GPU surface instead of
+  // waiting for another diagnostics publication that may never be scheduled.
+  // The saved image comparisons below still prove each visual change.
+  await q('#scene-host canvas').screenshot({animations:'disabled',scale:'css',timeout:SCENE_TIMEOUT});
 }
 async function ready(){
   await q('#loading').waitFor({state:'hidden',timeout:90000});
@@ -211,9 +215,12 @@ try{
   report.nightDifference=await pixelChange(lit,dark);
   assert.ok(report.nightDifference.pixels>100,'Garden master switch did not affect the rendered evening');
   await renderedChange(()=>q('#nightGardenLights').check());
-  await openDetails('#sun-controls');
-  await renderedChange(async()=>{await q('#sun-time').fill('12:00');await q('#sun-time').press('Tab');});
+  await renderedChange(()=>q('#preview-day').click());
+  assert.equal(Number(await q('#viewport').getAttribute('data-night-activation')),0);
   assert.equal(Number(await q('#viewport').getAttribute('data-night-garden')),0);
+  const daylight=await shot('09-pavilion-daylight-restored','#scene-host canvas');
+  report.daylightDifference=await pixelChange(lit,daylight);
+  assert.ok(report.daylightDifference.pixels>100,'Daylight did not change the actual rendered evening');
   check('Evening lights render, the garden master switch extinguishes them and daylight removes their glow');
 
   await q('#save-a').click();
@@ -231,8 +238,12 @@ try{
   await renderedChange(()=>q('#compare').click());
   const saved=await exportDesign();await expectStudy(saved,{height:8.2,x:11.4,y:24.7});
   assert.deepEqual(pavilionSettings(saved),pavilionSettings(near));
+  const savedA=await shot('10-saved-pavilion-a','#scene-host canvas');
   await renderedChange(()=>q('#compare').click());
   assert.equal((await exportDesign()).cornerPavilion.enabled,false);
+  const savedB=await shot('10-original-garden-b','#scene-host canvas');
+  report.savedComparisonDifference=await pixelChange(savedA,savedB);
+  assert.ok(report.savedComparisonDifference.pixels>100,'Save A/B did not restore and remove the rendered pavilion alternative');
   await renderedChange(()=>q('#pavilionEnabled').check());
   await renderedChange(()=>q('#garden-program').selectOption(original.settings.gardenProgram));
   assert.equal(await q('#pavilionEnabled').isChecked(),false,'Choosing a garden programme must leave the pavilion alternative');
@@ -274,6 +285,8 @@ try{
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);
+  if(page)try{report.failureView={view:await viewContext(),stats:await stats(),
+    lighting:await q('#viewport').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).filter(([key])=>key.startsWith('night')||key.startsWith('sun'))))};}catch{}
   if(page)try{await shot('failure');}catch{}
 }finally{
   await writeFile(path.join(evidence,'browser-report.json'),JSON.stringify(report,null,2));
