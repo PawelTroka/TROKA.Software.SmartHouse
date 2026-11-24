@@ -1,0 +1,75 @@
+{
+  "version": "1.32.0",
+  "sourceHead": "5ca6301ce7181fe4eda66564828fc576b89fce63",
+  "sourceMerge": "7a81424b0ed64eda032db3a4116fc7caa0fa7fbc",
+  "sourceTree": "3e5cf04ef1771b9a48a45fca2b996fbfd12fb4d7",
+  "runtimeTree": "1bce8e8c47d277e6ec10cc6f80bbddfd6e9d4831",
+  "runtimeFilesVerified": 195,
+  "runtimeMismatches": [],
+  "unitTests": 767,
+  "workflow": {
+    "runId": 45403716133,
+    "conclusion": "success",
+    "attempt": 2,
+    "jobs": [
+      {
+        "id": 138489837526,
+        "name": "Interior layouts, materials and mobile walkthrough",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489838331,
+        "name": "WebGL regression · garage",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489839692,
+        "name": "Architectural rendering comparison",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489840405,
+        "name": "Corner pavilion alternatives and mobile checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489841375,
+        "name": "WebGL regression · sternicza",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489848695,
+        "name": "Geometry, build and WebGL browser checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489930167,
+        "name": "Measured neighbourhood and sea-height browser checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489934556,
+        "name": "WebGL regression · nadmorska",
+        "conclusion": "success"
+      },
+      {
+        "id": 138489940920,
+        "name": "Design studio, rendering and mobile checks",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "pavilionEvidence": {
+    "artifactId": 14925630178,
+    "sha256": "1b96cf430ffa1b34fe27260474b2ca37ede32437329f56962db677abfaabcf12",
+    "browserErrors": [],
+    "screenshotCount": 16
+  },
+  "study": {
+    "physicalSha256": "7be4342a65f08860a9380f35b42a2b0d46e11e99dea91b04163df8d1bf6529d0",
+    "daylight": "pavilion/daylight-summary.md",
+    "planningStatus": "No permitted height established"
+  },
+  "previousProductionVersion": "1.31.0",
+  "releasePurpose": "Publish the user-approved resort redesign with optional PCK3-screening pavilion alternatives."
+}

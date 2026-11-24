@@ -1,0 +1,2369 @@
+{
+  "sourceHead": "5ca6301ce7181fe4eda66564828fc576b89fce63",
+  "packageVersion": "1.32.0",
+  "inputs": [
+    {
+      "file": "garden-lab/data/site-data.json",
+      "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+    },
+    {
+      "file": "garden-lab/data/sternicza-surrounding-nature.json",
+      "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+    },
+    {
+      "file": "garden-lab/data/sternicza-neighbor-roofs.json",
+      "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+    },
+    {
+      "file": "garden-lab/data/sternicza-ground-colour.json",
+      "sha256": "a97710f6e38c00af8faef25c9276eda16bc020a48c870f0ec01738ea0c3e655e"
+    }
+  ],
+  "settingsBase": {
+    "interiorEnabled": false,
+    "interiorLayout": "renovation",
+    "interiorFloor": "ground",
+    "interiorStyle": "follow",
+    "interiorView": "dollhouse",
+    "interiorRoomId": "",
+    "interiorFurniture": true,
+    "interiorChanges": false,
+    "planExteriorApplied": true,
+    "costSpacing": 0.8,
+    "costTreePriceRear": 0,
+    "costTreePriceLeft": 0,
+    "costTreePriceRight": 0,
+    "costTreePriceFront": 0,
+    "costPriceFactor": 100,
+    "costPlantingRate": 75,
+    "costHedgeDelivery": 1000,
+    "costHedgeEquipment": 0,
+    "costScreeningPlanting": 0,
+    "costScreeningAnchoring": 0,
+    "costScreeningDelivery": 0,
+    "costScreeningCrane": 0,
+    "costScreeningEstablishment": 0,
+    "costSpaPool": 0,
+    "costSpaJacuzzi": 0,
+    "costSpaSauna": 0,
+    "costSpaColdPlunge": 0,
+    "costSpaFirepit": 0,
+    "costGardenTerrace": 0,
+    "costGardenPaving": 0,
+    "costGardenFurniture": 0,
+    "costGardenPlanting": 0,
+    "costGardenLawn": 0,
+    "costGardenIrrigation": 0,
+    "costGardenLighting": 0,
+    "costGardenUtilities": 0,
+    "costGardenDemolition": 0,
+    "costGardenDesign": 0,
+    "costGardenCanopy": 0,
+    "costBalconyQuote": 0,
+    "costStyleUpgradeQuote": 0,
+    "costPavilionQuote": 0,
+    "costPrivacyPergolaQuote": 0,
+    "costSpaScreenQuote": 0,
+    "costBasementGarageQuote": 0,
+    "costAreaOverride": 0,
+    "costBedWidth": 1,
+    "costTopsoilDepth": 0.15,
+    "costLooseFactor": 1.2,
+    "costFillRate": 75,
+    "costTopsoilRate": 110,
+    "costEarthworkRate": 50,
+    "costTruckCapacity": 10,
+    "costSoilDelivery": 500,
+    "costRetainingAllowance": 8000,
+    "costDrainageAllowance": 3000,
+    "costAccessAllowance": 1500,
+    "costContingency": 20,
+    "buyNewThujas": true,
+    "costUsePlanningAllowances": true,
+    "sunEnabled": true,
+    "sunDate": "2026-06-21",
+    "sunMinutes": 720,
+    "nightGardenLights": true,
+    "nightPendantLights": true,
+    "nightHedgeLights": true,
+    "nightWindowLights": true,
+    "nightGardenIntensity": 75,
+    "nightPendantIntensity": 80,
+    "nightHedgeIntensity": 85,
+    "nightWindowActivity": 70,
+    "nightWindowIntensity": 60,
+    "privacyPergolaHeight": 5,
+    "privacyPergolaWidth": 5,
+    "privacyPergolaDepth": 2,
+    "privacyPergolaX": 10.5,
+    "privacyPergolaY": 23.5,
+    "spaScreenHeight": 2.2,
+    "spaScreenWidth": 3.6,
+    "spaScreenReturn": 1.5,
+    "spaScreenGap": 0.65,
+    "privacyPergolaEnabled": false,
+    "privacyPergolaFoliage": false,
+    "spaScreensEnabled": false,
+    "pavilionEnabled": true,
+    "pavilionHeight": 6.5,
+    "pavilionWidth": 5,
+    "pavilionDepth": 5.8,
+    "pavilionX": 12.2,
+    "pavilionY": 29,
+    "garageClearHeight": 2.3,
+    "garageSlabThickness": 0.3,
+    "garageExtraDepth": 0,
+    "garageSpaces": 2,
+    "garageRampWidth": 5.8,
+    "garageInsideRun": 2,
+    "garageBottomApron": 0.4,
+    "garageMaxGrade": 25,
+    "garageClearanceMm": 105.6,
+    "garageReserveMm": 30,
+    "garageProgress": 40,
+    "basementGarageEnabled": true,
+    "garageReverse": false,
+    "hedgeRear": 4,
+    "hedgeLeft": 4,
+    "hedgeRight": 4,
+    "hedgeFront": 4,
+    "gardenRaise": 0.5,
+    "bedRaise": 0,
+    "terraceWidth": 10.77,
+    "terraceDepth": 4,
+    "canopyDepth": 4,
+    "canopyHeight": 3,
+    "fasciaDepth": 0.3,
+    "canopyWidth": 10.77,
+    "floorHeight": 1.2,
+    "firstFloorRise": 3.05,
+    "atticRise": 5.75,
+    "eyeHeight": 1.2,
+    "poolEyeAboveWater": 0.15,
+    "poolFreeboard": 0.1,
+    "hedgeInset": 0.5,
+    "observerX": 9.6091676564,
+    "observerY": 30,
+    "lookYaw": 0,
+    "lookPitch": 0,
+    "b9HeightDelta": 0,
+    "b9DistanceDelta": 0,
+    "b15HeightDelta": 0,
+    "b15DistanceDelta": 0,
+    "b29HeightDelta": 0,
+    "b29DistanceDelta": 0,
+    "b31HeightDelta": 0,
+    "b31DistanceDelta": 0,
+    "b53HeightDelta": 0,
+    "b53DistanceDelta": 0,
+    "preset": "sofa",
+    "mode": "orbit",
+    "raiseNewHedges": true,
+    "canopyEnabled": true,
+    "removeGarage": true,
+    "showRays": false,
+    "showDimensions": true,
+    "includeHighFeatures": false,
+    "linkedHedges": false,
+    "hedgeFullPerimeter": true,
+    "sunPathVisible": false,
+    "jacuzziOverflow": true,
+    "screeningTrees": [
+      {
+        "id": "tree-1",
+        "typeId": "thuja-excelsa-9m",
+        "x": 19.3,
+        "y": 30.2,
+        "height": 9,
+        "crownBase": 0.3,
+        "crownWidth": 2,
+        "crownDepth": 2,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "tree-2",
+        "typeId": "thuja-excelsa-9m",
+        "x": 13.8,
+        "y": 35.8,
+        "height": 9,
+        "crownBase": 0.3,
+        "crownWidth": 2,
+        "crownDepth": 2,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "tree-3",
+        "typeId": "thuja-excelsa-9m",
+        "x": 18.45,
+        "y": 35.57,
+        "height": 9,
+        "crownBase": 0.3,
+        "crownWidth": 2,
+        "crownDepth": 2,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      }
+    ],
+    "treeLeafMode": "auto",
+    "existingVegetation": true,
+    "existingCanopyAnalysis": true,
+    "existingLeafMode": "auto",
+    "gardenProgram": "spa-pool-grove",
+    "terraceCoverType": "balcony",
+    "designStyle": "beach-house",
+    "styleHouseFinish": true,
+    "renderQuality": "auto",
+    "sceneMotion": false,
+    "siteId": "sternicza-11"
+  },
+  "setup": "The same data loading, state sanitization, first style adoption and applyPlanExterior(applyBuildingOverrides(...)) path as the live app. Both heights keep the pavilion enabled and retain the same alternative garden, mapped vegetation, proposed planting, house renovation, hedges and pool. Auto foliage gives summer crowns in June and the existing model leaf-off treatment in December. Heights are above the lowest original terrain corner.",
+  "scope": "Snapshot direct-sun visibility at outdoor sample receivers, not irradiance, sunshine hours, indoor daylight or a regulatory insolation assessment.",
+  "placements": [
+    {
+      "id": "rear-east",
+      "label": "Rear/east corner · nearer PCK3",
+      "settings": {
+        "pavilionX": 12.2,
+        "pavilionY": 29,
+        "pavilionWidth": 5,
+        "pavilionDepth": 5.8
+      },
+      "moments": [
+        {
+          "date": "2026-06-21",
+          "localTime": "09:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 9.02102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T07:00:00.000Z",
+                "azimuth": 102.97062466362132,
+                "elevation": 38.006038767909075,
+                "direction": [
+                  0.7755892138604271,
+                  -0.13899658555812736,
+                  0.6157445253890179
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 89,
+                  "shaded": 177,
+                  "total": 266,
+                  "percent": 33.45864661654135
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "pool": {
+                  "sunlit": 29,
+                  "shaded": 3,
+                  "total": 32,
+                  "percent": 90.625
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 89,
+                  "shaded": 177,
+                  "total": 266,
+                  "percent": 33.45864661654135
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 29,
+                  "shaded": 3,
+                  "total": 32,
+                  "percent": 90.625
+                },
+                "front": {
+                  "sunlit": 80,
+                  "shaded": 173,
+                  "total": 253,
+                  "percent": 31.620553359683797
+                },
+                "firepit": {
+                  "sunlit": 1,
+                  "shaded": 7,
+                  "total": 8,
+                  "percent": 12.5
+                },
+                "coldPlunge": {
+                  "sunlit": 1,
+                  "shaded": 1,
+                  "total": 2,
+                  "percent": 50
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.52102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T07:00:00.000Z",
+                "azimuth": 102.97062466362132,
+                "elevation": 38.006038767909075,
+                "direction": [
+                  0.7755892138604271,
+                  -0.13899658555812736,
+                  0.6157445253890179
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 84,
+                  "shaded": 182,
+                  "total": 266,
+                  "percent": 31.57894736842105
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "pool": {
+                  "sunlit": 24,
+                  "shaded": 8,
+                  "total": 32,
+                  "percent": 75
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 84,
+                  "shaded": 182,
+                  "total": 266,
+                  "percent": 31.57894736842105
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 24,
+                  "shaded": 8,
+                  "total": 32,
+                  "percent": 75
+                },
+                "front": {
+                  "sunlit": 80,
+                  "shaded": 173,
+                  "total": 253,
+                  "percent": 31.620553359683797
+                },
+                "firepit": {
+                  "sunlit": 1,
+                  "shaded": 7,
+                  "total": 8,
+                  "percent": 12.5
+                },
+                "coldPlunge": {
+                  "sunlit": 1,
+                  "shaded": 1,
+                  "total": 2,
+                  "percent": 50
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 89,
+              "highSunlit": 84,
+              "netSunlit": -5,
+              "percentagePoints": -1.8796992481202999,
+              "lost": 5,
+              "gained": 0,
+              "changed": [
+                {
+                  "x": 3.5,
+                  "y": 33.5,
+                  "z": 2.9895148544908636,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-window-mullion",
+                  "highLabel": "Pavilion west window-mullion"
+                },
+                {
+                  "x": 4.5,
+                  "y": 33.5,
+                  "z": 2.981266001807325,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 3.5,
+                  "y": 34.5,
+                  "z": 3.0361571480555902,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 4.5,
+                  "y": 34.5,
+                  "z": 3.0233074839367733,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 4.5,
+                  "y": 35.5,
+                  "z": 3.0947434266340257,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                }
+              ]
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 14,
+              "highSunlit": 14,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 29,
+              "highSunlit": 24,
+              "netSunlit": -5,
+              "percentagePoints": -15.625,
+              "lost": 5,
+              "gained": 0,
+              "changed": [
+                {
+                  "x": 4.5,
+                  "y": 30.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-front-floor-1-near-pier",
+                  "highLabel": "Pavilion front near-pier"
+                },
+                {
+                  "x": 3.5,
+                  "y": 31.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 4.5,
+                  "y": 31.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 3.5,
+                  "y": 32.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 4.5,
+                  "y": 32.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "localTime": "12:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 9.02102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T10:00:00.000Z",
+                "azimuth": 159.35151298607923,
+                "elevation": 57.793933701609674,
+                "direction": [
+                  0.36875081583889413,
+                  0.3848057295240752,
+                  0.8461367421070864
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 134,
+                  "shaded": 132,
+                  "total": 266,
+                  "percent": 50.37593984962406
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 134,
+                  "shaded": 132,
+                  "total": 266,
+                  "percent": 50.37593984962406
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "jacuzzi": {
+                  "sunlit": 2,
+                  "shaded": 2,
+                  "total": 4,
+                  "percent": 50
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                },
+                "front": {
+                  "sunlit": 137,
+                  "shaded": 116,
+                  "total": 253,
+                  "percent": 54.1501976284585
+                },
+                "firepit": {
+                  "sunlit": 5,
+                  "shaded": 3,
+                  "total": 8,
+                  "percent": 62.5
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.52102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T10:00:00.000Z",
+                "azimuth": 159.35151298607923,
+                "elevation": 57.793933701609674,
+                "direction": [
+                  0.36875081583889413,
+                  0.3848057295240752,
+                  0.8461367421070864
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 131,
+                  "shaded": 135,
+                  "total": 266,
+                  "percent": 49.24812030075188
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 131,
+                  "shaded": 135,
+                  "total": 266,
+                  "percent": 49.24812030075188
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "jacuzzi": {
+                  "sunlit": 2,
+                  "shaded": 2,
+                  "total": 4,
+                  "percent": 50
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                },
+                "front": {
+                  "sunlit": 137,
+                  "shaded": 116,
+                  "total": 253,
+                  "percent": 54.1501976284585
+                },
+                "firepit": {
+                  "sunlit": 4,
+                  "shaded": 4,
+                  "total": 8,
+                  "percent": 50
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 134,
+              "highSunlit": 131,
+              "netSunlit": -3,
+              "percentagePoints": -1.127819548872182,
+              "lost": 3,
+              "gained": 0,
+              "changed": [
+                {
+                  "x": 9.5,
+                  "y": 26.5,
+                  "z": 2.896790274264058,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-near-pier",
+                  "highLabel": "Pavilion west near-pier"
+                },
+                {
+                  "x": 9.5,
+                  "y": 27.5,
+                  "z": 2.894568958330231,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 9.5,
+                  "y": 28.5,
+                  "z": 2.9429426923061306,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                }
+              ]
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 11,
+              "highSunlit": 11,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 32,
+              "highSunlit": 32,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "localTime": "18:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 9.02102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T16:00:00.000Z",
+                "azimuth": 274.9966240724113,
+                "elevation": 25.65493102946233,
+                "direction": [
+                  -0.8566437716774934,
+                  0.28056301615782064,
+                  0.43295016157819477
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 13,
+                  "shaded": 253,
+                  "total": 266,
+                  "percent": 4.887218045112782
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 13,
+                  "shaded": 253,
+                  "total": 266,
+                  "percent": 4.887218045112782
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 63,
+                  "shaded": 190,
+                  "total": 253,
+                  "percent": 24.90118577075099
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.52102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T16:00:00.000Z",
+                "azimuth": 274.9966240724113,
+                "elevation": 25.65493102946233,
+                "direction": [
+                  -0.8566437716774934,
+                  0.28056301615782064,
+                  0.43295016157819477
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 13,
+                  "shaded": 253,
+                  "total": 266,
+                  "percent": 4.887218045112782
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 13,
+                  "shaded": 253,
+                  "total": 266,
+                  "percent": 4.887218045112782
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 63,
+                  "shaded": 190,
+                  "total": 253,
+                  "percent": 24.90118577075099
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 13,
+              "highSunlit": 13,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 13,
+              "highSunlit": 13,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 0,
+              "highSunlit": 0,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            }
+          }
+        },
+        {
+          "date": "2026-12-21",
+          "localTime": "12:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 9.02102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-12-21T11:00:00.000Z",
+                "azimuth": 183.86253470633338,
+                "elevation": 12.076606412185958,
+                "direction": [
+                  0.3226913856976498,
+                  0.9230912984033903,
+                  0.20921932130774512
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 0,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 5,
+                  "shaded": 248,
+                  "total": 253,
+                  "percent": 1.9762845849802373
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.52102964516563,
+              "floorZ": 3.5836576117067542,
+              "storeys": 2,
+              "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-12-21T11:00:00.000Z",
+                "azimuth": 183.86253470633338,
+                "elevation": 12.076606412185958,
+                "direction": [
+                  0.3226913856976498,
+                  0.9230912984033903,
+                  0.20921932130774512
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 0,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 5,
+                  "shaded": 248,
+                  "total": 253,
+                  "percent": 1.9762845849802373
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 1,
+              "highSunlit": 1,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 2,
+              "highSunlit": 2,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 0,
+              "highSunlit": 0,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            }
+          }
+        }
+      ],
+      "receiverHash": "d16ad939e27efb0f1526210a83dfdcc9427737ca42b3d0d3d01a7385b8f40072"
+    },
+    {
+      "id": "near-garage",
+      "label": "Near the former outdoor garage",
+      "settings": {
+        "pavilionX": 11.4,
+        "pavilionY": 24.7,
+        "pavilionWidth": 5.8,
+        "pavilionDepth": 5.2
+      },
+      "moments": [
+        {
+          "date": "2026-06-21",
+          "localTime": "09:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 8.91939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T07:00:00.000Z",
+                "azimuth": 102.97062466362132,
+                "elevation": 38.006038767909075,
+                "direction": [
+                  0.7755892138604271,
+                  -0.13899658555812736,
+                  0.6157445253890179
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 80,
+                  "shaded": 186,
+                  "total": 266,
+                  "percent": 30.075187969924812
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "pool": {
+                  "sunlit": 22,
+                  "shaded": 10,
+                  "total": 32,
+                  "percent": 68.75
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 80,
+                  "shaded": 186,
+                  "total": 266,
+                  "percent": 30.075187969924812
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 22,
+                  "shaded": 10,
+                  "total": 32,
+                  "percent": 68.75
+                },
+                "front": {
+                  "sunlit": 80,
+                  "shaded": 173,
+                  "total": 253,
+                  "percent": 31.620553359683797
+                },
+                "firepit": {
+                  "sunlit": 2,
+                  "shaded": 6,
+                  "total": 8,
+                  "percent": 25
+                },
+                "coldPlunge": {
+                  "sunlit": 1,
+                  "shaded": 1,
+                  "total": 2,
+                  "percent": 50
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.41939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T07:00:00.000Z",
+                "azimuth": 102.97062466362132,
+                "elevation": 38.006038767909075,
+                "direction": [
+                  0.7755892138604271,
+                  -0.13899658555812736,
+                  0.6157445253890179
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 79,
+                  "shaded": 187,
+                  "total": 266,
+                  "percent": 29.69924812030075
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "pool": {
+                  "sunlit": 8,
+                  "shaded": 24,
+                  "total": 32,
+                  "percent": 25
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 79,
+                  "shaded": 187,
+                  "total": 266,
+                  "percent": 29.69924812030075
+                },
+                "terrace": {
+                  "sunlit": 14,
+                  "shaded": 26,
+                  "total": 40,
+                  "percent": 35
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 8,
+                  "shaded": 24,
+                  "total": 32,
+                  "percent": 25
+                },
+                "front": {
+                  "sunlit": 80,
+                  "shaded": 173,
+                  "total": 253,
+                  "percent": 31.620553359683797
+                },
+                "firepit": {
+                  "sunlit": 2,
+                  "shaded": 6,
+                  "total": 8,
+                  "percent": 25
+                },
+                "coldPlunge": {
+                  "sunlit": 1,
+                  "shaded": 1,
+                  "total": 2,
+                  "percent": 50
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 80,
+              "highSunlit": 79,
+              "netSunlit": -1,
+              "percentagePoints": -0.3759398496240607,
+              "lost": 1,
+              "gained": 0,
+              "changed": [
+                {
+                  "x": 6.5,
+                  "y": 31.5,
+                  "z": 2.9345580559673268,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-rear-wall",
+                  "highLabel": "Pavilion rear opaque wall"
+                }
+              ]
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 14,
+              "highSunlit": 14,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 22,
+              "highSunlit": 8,
+              "netSunlit": -14,
+              "percentagePoints": -43.75,
+              "lost": 14,
+              "gained": 0,
+              "changed": [
+                {
+                  "x": 2.5,
+                  "y": 26.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-front-floor-1-near-pier",
+                  "highLabel": "Pavilion front near-pier"
+                },
+                {
+                  "x": 3.5,
+                  "y": 26.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-near-pier",
+                  "highLabel": "Pavilion west near-pier"
+                },
+                {
+                  "x": 2.5,
+                  "y": 27.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 3.5,
+                  "y": 27.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 2.5,
+                  "y": 28.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 3.5,
+                  "y": 28.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 2.5,
+                  "y": 29.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 3.5,
+                  "y": 29.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 2.5,
+                  "y": 30.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 3.5,
+                  "y": 30.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-roof",
+                  "highLabel": "Pavilion roof"
+                },
+                {
+                  "x": 2.5,
+                  "y": 31.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-rear-wall",
+                  "highLabel": "Pavilion rear opaque wall"
+                },
+                {
+                  "x": 3.5,
+                  "y": 31.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-rear-wall",
+                  "highLabel": "Pavilion rear opaque wall"
+                },
+                {
+                  "x": 4.5,
+                  "y": 31.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-rear-wall",
+                  "highLabel": "Pavilion rear opaque wall"
+                },
+                {
+                  "x": 5.5,
+                  "y": 31.5,
+                  "z": 3.144186471433566,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-rear-wall",
+                  "highLabel": "Pavilion rear opaque wall"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "localTime": "12:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 8.91939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T10:00:00.000Z",
+                "azimuth": 159.35151298607923,
+                "elevation": 57.793933701609674,
+                "direction": [
+                  0.36875081583889413,
+                  0.3848057295240752,
+                  0.8461367421070864
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 125,
+                  "shaded": 141,
+                  "total": 266,
+                  "percent": 46.99248120300752
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 125,
+                  "shaded": 141,
+                  "total": 266,
+                  "percent": 46.99248120300752
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "jacuzzi": {
+                  "sunlit": 2,
+                  "shaded": 2,
+                  "total": 4,
+                  "percent": 50
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                },
+                "front": {
+                  "sunlit": 137,
+                  "shaded": 116,
+                  "total": 253,
+                  "percent": 54.1501976284585
+                },
+                "firepit": {
+                  "sunlit": 6,
+                  "shaded": 2,
+                  "total": 8,
+                  "percent": 75
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.41939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T10:00:00.000Z",
+                "azimuth": 159.35151298607923,
+                "elevation": 57.793933701609674,
+                "direction": [
+                  0.36875081583889413,
+                  0.3848057295240752,
+                  0.8461367421070864
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 120,
+                  "shaded": 146,
+                  "total": 266,
+                  "percent": 45.11278195488722
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 120,
+                  "shaded": 146,
+                  "total": 266,
+                  "percent": 45.11278195488722
+                },
+                "terrace": {
+                  "sunlit": 11,
+                  "shaded": 29,
+                  "total": 40,
+                  "percent": 27.500000000000004
+                },
+                "jacuzzi": {
+                  "sunlit": 2,
+                  "shaded": 2,
+                  "total": 4,
+                  "percent": 50
+                },
+                "pool": {
+                  "sunlit": 32,
+                  "shaded": 0,
+                  "total": 32,
+                  "percent": 100
+                },
+                "front": {
+                  "sunlit": 137,
+                  "shaded": 116,
+                  "total": 253,
+                  "percent": 54.1501976284585
+                },
+                "firepit": {
+                  "sunlit": 6,
+                  "shaded": 2,
+                  "total": 8,
+                  "percent": 75
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 125,
+              "highSunlit": 120,
+              "netSunlit": -5,
+              "percentagePoints": -1.8796992481203034,
+              "lost": 5,
+              "gained": 0,
+              "changed": [
+                {
+                  "x": 8.5,
+                  "y": 22.5,
+                  "z": 3.4884200920496067,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 8.5,
+                  "y": 23.5,
+                  "z": 3.041004858915738,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 8.5,
+                  "y": 24.5,
+                  "z": 2.8626424585086343,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 8.5,
+                  "y": 25.5,
+                  "z": 2.8747262387414727,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-head",
+                  "highLabel": "Pavilion west head"
+                },
+                {
+                  "x": 8.5,
+                  "y": 26.5,
+                  "z": 2.8552017790632505,
+                  "change": "lost",
+                  "lowBlocker": null,
+                  "lowLabel": null,
+                  "highBlocker": "pavilion-west-floor-1-far-pier",
+                  "highLabel": "Pavilion west far-pier"
+                }
+              ]
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 11,
+              "highSunlit": 11,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 32,
+              "highSunlit": 32,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            }
+          }
+        },
+        {
+          "date": "2026-06-21",
+          "localTime": "18:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 8.91939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T16:00:00.000Z",
+                "azimuth": 274.9966240724113,
+                "elevation": 25.65493102946233,
+                "direction": [
+                  -0.8566437716774934,
+                  0.28056301615782064,
+                  0.43295016157819477
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 10,
+                  "shaded": 256,
+                  "total": 266,
+                  "percent": 3.7593984962406015
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 10,
+                  "shaded": 256,
+                  "total": 266,
+                  "percent": 3.7593984962406015
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 63,
+                  "shaded": 190,
+                  "total": 253,
+                  "percent": 24.90118577075099
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.41939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-06-21T16:00:00.000Z",
+                "azimuth": 274.9966240724113,
+                "elevation": 25.65493102946233,
+                "direction": [
+                  -0.8566437716774934,
+                  0.28056301615782064,
+                  0.43295016157819477
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 490,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 10,
+                  "shaded": 256,
+                  "total": 266,
+                  "percent": 3.7593984962406015
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 10,
+                  "shaded": 256,
+                  "total": 266,
+                  "percent": 3.7593984962406015
+                },
+                "terrace": {
+                  "sunlit": 13,
+                  "shaded": 27,
+                  "total": 40,
+                  "percent": 32.5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 63,
+                  "shaded": 190,
+                  "total": 253,
+                  "percent": 24.90118577075099
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 10,
+              "highSunlit": 10,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 13,
+              "highSunlit": 13,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 0,
+              "highSunlit": 0,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            }
+          }
+        },
+        {
+          "date": "2026-12-21",
+          "localTime": "12:00",
+          "heights": [
+            {
+              "height": 6.5,
+              "roofZ": 8.91939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-12-21T11:00:00.000Z",
+                "azimuth": 183.86253470633338,
+                "elevation": 12.076606412185958,
+                "direction": [
+                  0.3226913856976498,
+                  0.9230912984033903,
+                  0.20921932130774512
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 0,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 5,
+                  "shaded": 248,
+                  "total": 253,
+                  "percent": 1.9762845849802373
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            },
+            {
+              "height": 8,
+              "roofZ": 10.41939651015917,
+              "floorZ": 3.3334815075130195,
+              "storeys": 2,
+              "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36",
+              "solar": {
+                "timeZone": "Europe/Warsaw",
+                "utcISO": "2026-12-21T11:00:00.000Z",
+                "azimuth": 183.86253470633338,
+                "elevation": 12.076606412185958,
+                "direction": [
+                  0.3226913856976498,
+                  0.9230912984033903,
+                  0.20921932130774512
+                ]
+              },
+              "vegetation": {
+                "available": true,
+                "count": 490,
+                "shown": true,
+                "includedInAnalysis": true,
+                "leafOnCount": 0,
+                "acquisition": "2024-10-01",
+                "maxHeight": 31.035000000000004,
+                "note": "Measured canopy locations and heights; grouped crowns can contain more than one tree. Branches and stems are reconstructed. Species are unknown unless linked to a municipal inventory record. Dense leaf-on envelopes approximate shade and screening; leaf-off envelopes receive no opaque-foliage credit."
+              },
+              "zones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                }
+              },
+              "allZones": {
+                "garden": {
+                  "sunlit": 1,
+                  "shaded": 265,
+                  "total": 266,
+                  "percent": 0.37593984962406013
+                },
+                "terrace": {
+                  "sunlit": 2,
+                  "shaded": 38,
+                  "total": 40,
+                  "percent": 5
+                },
+                "jacuzzi": {
+                  "sunlit": 0,
+                  "shaded": 4,
+                  "total": 4,
+                  "percent": 0
+                },
+                "pool": {
+                  "sunlit": 0,
+                  "shaded": 32,
+                  "total": 32,
+                  "percent": 0
+                },
+                "front": {
+                  "sunlit": 5,
+                  "shaded": 248,
+                  "total": 253,
+                  "percent": 1.9762845849802373
+                },
+                "firepit": {
+                  "sunlit": 0,
+                  "shaded": 8,
+                  "total": 8,
+                  "percent": 0
+                },
+                "coldPlunge": {
+                  "sunlit": 0,
+                  "shaded": 2,
+                  "total": 2,
+                  "percent": 0
+                }
+              }
+            }
+          ],
+          "differences": {
+            "garden": {
+              "total": 266,
+              "lowSunlit": 1,
+              "highSunlit": 1,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "terrace": {
+              "total": 40,
+              "lowSunlit": 2,
+              "highSunlit": 2,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            },
+            "pool": {
+              "total": 32,
+              "lowSunlit": 0,
+              "highSunlit": 0,
+              "netSunlit": 0,
+              "percentagePoints": 0,
+              "lost": 0,
+              "gained": 0,
+              "changed": []
+            }
+          }
+        }
+      ],
+      "receiverHash": "3f0f09b3ebbab433c986d9abf1096c0c59e63563f80cd784756a0e4005945b36"
+    }
+  ],
+  "modelNote": "Direct sun on a 1 m outdoor sample grid; pool edge samples use the centre of each clipped water portion. Includes local terrain sampled every 0.5 m along each ray and finite dense proposed and enabled measured existing canopy envelopes. Deciduous auto foliage is May–October, an approximate comparison assumption. Unmapped vegetation, reconstructed existing stems, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.",
+  "method": "Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees and measured existing canopy envelopes with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.",
+  "limitations": "No weather, diffuse/reflected light, glass transmission losses, unmapped vegetation, reconstructed existing stems, decorative planting/movable furniture, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Roof interpolation, missing-roof fallbacks and foliage permeability remain simplified."
+}

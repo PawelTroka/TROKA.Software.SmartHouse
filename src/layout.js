@@ -1,8 +1,8 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.0';
-import {resortGardenFurniture} from './resort-garden.js?v=1.31.0';
-import {terraceGroundReference} from './geometry.js?v=1.31.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.32.0';
+import {resortGardenFurniture} from './resort-garden.js?v=1.32.0';
+import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.32.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.32.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -26,6 +26,8 @@ export function gardenFurniture(data,settings={}) {
   if(program.active)obstacles.push(program.sauna.footprint,program.firepit.outerFootprint,rectCorners(program.coldPlunge,.24),
     ...(program.sauna.entrySteps||[]).map(s=>s.footprint),...(program.coldPlunge.steps||[]).map(s=>rectCorners(s,.12)));
   if(data.site.garage&&settings.removeGarage===false)obstacles.push(data.site.garage.footprint);
+  const pavilion=privacyStructures(settings,data).pavilion;
+  if(pavilion?.enabled)obstacles.push(pavilion.footprint,...(pavilion.footprints||[]).filter(f=>f.id!=='corner-pavilion').map(f=>rectCorners(f)));
   const fits=r=>footprintFit(rectCorners(r),data.site.boundary).location==='inside'&&!obstacles.some(p=>overlapArea(rectCorners(r,.04),p)>.00001);
   const items=result.resort.items.filter(fits);
   // A retained building or enlarged deck may consume a proposed furniture

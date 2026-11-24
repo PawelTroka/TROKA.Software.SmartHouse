@@ -1,0 +1,702 @@
+{
+  "version": "1.32.0",
+  "checks": [
+    "The optional 6.5 m pavilion renders, moves the pool west, retains planting and agrees with its live PCK3 readout",
+    "Height presets rebuild actual WebGL geometry and update the modelled roof level and analysis",
+    "Both placements, numeric height, plan footprint, entrance and living-room viewpoint stay in sync",
+    "Evening lights render, the garden master switch extinguishes them and daylight removes their glow",
+    "Switching off restores original pool/spa dimensions and planting; Save A/B and the garden selector preserve or exit the alternative correctly",
+    "Shared URLs and a local saved-design reload retain pavilion dimensions, placement, height and Beach House style",
+    "Open pavilion controls fit 390 px and 320 px screens without horizontal overflow"
+  ],
+  "screenshots": [
+    "01-original-garden-orbit.png",
+    "02-rear-corner-6-5m-orbit.png",
+    "03-rear-corner-10m-orbit.png",
+    "04-near-house-10m-orbit.png",
+    "04-near-house-8-2m-orbit.png",
+    "05-pavilion-study-panel.png",
+    "06-alternative-plan.png",
+    "07-living-room-eye.png",
+    "08-pavilion-garden-evening.png",
+    "09-garden-light-master-off.png",
+    "09-pavilion-daylight-restored.png",
+    "10-original-garden-restored.png",
+    "10-saved-pavilion-a.png",
+    "10-original-garden-b.png",
+    "11-mobile-390-pavilion.png",
+    "11-mobile-320-pavilion.png"
+  ],
+  "errors": [],
+  "sceneEvidence": "Scene screenshots and pixel comparisons require real WebGL diagnostics. Plan, controls and mobile captures document the editor. These checks do not establish permitted height or construction feasibility.",
+  "original": {
+    "stats": {
+      "frames": 6,
+      "shadowUpdates": 2,
+      "calls": 892,
+      "triangles": 1448615,
+      "geometries": 852,
+      "textures": 77,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "houseRenovationParts": 913,
+      "houseRenovationProjection": 0.14,
+      "garageVehicles": 2,
+      "renderer": "webgl",
+      "motionActive": false,
+      "contactShading": false,
+      "interacting": false,
+      "toneMapping": "AgX",
+      "poolReflections": false,
+      "surfaceAssetsRequested": 18,
+      "surfaceAssetsLoaded": 18,
+      "surfaceAssetsFailed": 0
+    },
+    "programme": "spa-pool-grove",
+    "view": {
+      "mode": "orbit",
+      "badge": "Living room · seated",
+      "date": "2026-06-21",
+      "time": "12:00",
+      "style": "beach-house"
+    }
+  },
+  "enableDifference": {
+    "pixels": 18932,
+    "fraction": 0.04587662841191067
+  },
+  "rear": {
+    "enabled": true,
+    "valid": true,
+    "observer": {
+      "label": "Living room · seated",
+      "x": 9.608610661552147,
+      "y": 15.617475217542932,
+      "z": 4.83755850309423
+    },
+    "dimensions": {
+      "x": 12.2,
+      "y": 29,
+      "width": 5,
+      "depth": 5.8,
+      "area": 29,
+      "height": 6.5,
+      "originalGroundZ": 2.52102964516563,
+      "roofZ": 9.02102964516563,
+      "floorZ": 3.5836576117067542,
+      "storeys": 2,
+      "minimumHeadroom": 2.468686016729438,
+      "heightDatum": "Lowest original terrain corner; proposed fill does not raise the roof"
+    },
+    "clearances": {
+      "boundary": 3.1031963508966407,
+      "rear": 3.13324348821661,
+      "east": 3.1031963508966407,
+      "house": 10.861348013602434
+    },
+    "fit": {
+      "areaM2": 29,
+      "insideM2": 28.999999999999986,
+      "outsideM2": 1.4210854715202004e-14,
+      "location": "inside"
+    },
+    "footprintFits": [
+      {
+        "id": "corner-pavilion",
+        "areaM2": 29,
+        "insideM2": 28.999999999999986,
+        "outsideM2": 1.4210854715202004e-14,
+        "location": "inside"
+      },
+      {
+        "id": "pavilion-entry-landing",
+        "areaM2": 1.67999999999995,
+        "insideM2": 1.67999999999995,
+        "outsideM2": 0,
+        "location": "inside"
+      },
+      {
+        "id": "pavilion-entry-step-1",
+        "areaM2": 0.4479999999999791,
+        "insideM2": 0.4479999999999791,
+        "outsideM2": 0,
+        "location": "inside"
+      },
+      {
+        "id": "pavilion-entry-step-2",
+        "areaM2": 0.4480000000000359,
+        "insideM2": 0.4480000000000005,
+        "outsideM2": 3.5416114485542494e-14,
+        "location": "inside"
+      }
+    ],
+    "conflicts": [],
+    "treeConflicts": [
+      {
+        "id": "tree-2",
+        "trunk": false,
+        "crown": "contact"
+      }
+    ],
+    "entryApproachClear": true,
+    "comparison": {
+      "before": {
+        "total": 420,
+        "blocked": 418,
+        "percent": 99.52380952380952
+      },
+      "after": {
+        "total": 420,
+        "blocked": 420,
+        "percent": 100
+      },
+      "roofBefore": {
+        "total": 365,
+        "blocked": 365,
+        "percent": 100
+      },
+      "roofAfter": {
+        "total": 365,
+        "blocked": 365,
+        "percent": 100
+      },
+      "pavilionOnly": {
+        "total": 420,
+        "blocked": 19,
+        "percent": 4.523809523809524
+      },
+      "pavilionRoofOnly": {
+        "total": 365,
+        "blocked": 0,
+        "percent": 0
+      }
+    },
+    "envelope": {
+      "status": "ok",
+      "total": 365,
+      "intercepted": 235,
+      "missed": 130,
+      "planCoveragePercent": 64.38356164383562,
+      "requiredHeightForIntercepted": 9.604861286412916,
+      "requiredHeightForAll": null,
+      "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+    },
+    "warnings": [
+      "Proposed tree tree-2 has a modelled crown touching the pavilion. Allow space for growth, pruning and building maintenance; the model does not check root clearance."
+    ],
+    "planning": {
+      "checked": "2026-11-24",
+      "status": "unverified",
+      "parcels": [
+        "226101_1.0034.400",
+        "226101_1.0034.401"
+      ],
+      "currentPlan": "No covering MPZP found in the queried official city layers; obtain a property-specific confirmation and any existing WZ decision.",
+      "draft": {
+        "zone": "649SW",
+        "height": 12,
+        "coveragePercent": 30,
+        "biologicallyActivePercent": 50,
+        "inForce": false
+      },
+      "source": "https://bip.brg.gda.pl/plan-ogolny-miasta-gdanska",
+      "note": "Draft general-plan parameters are not permission for this building. Its use, WZ route, siting, fire separation and neighbouring daylight require project review."
+    },
+    "method": "Unweighted PCK3 target-point sightlines from the selected eye. Baseline retains the alternative pool, spa layout, trees and other structures; it removes only pavilion construction. Glass stays transparent. The separate envelope calculation is an ideal geometric limit, not a legal or whole-building-screening guarantee."
+  },
+  "heightRendering": {
+    "before": {
+      "frames": 8,
+      "shadowUpdates": 3,
+      "calls": 888,
+      "triangles": 1447439,
+      "geometries": 849,
+      "textures": 77,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "houseRenovationParts": 913,
+      "houseRenovationProjection": 0.14,
+      "garageVehicles": 2,
+      "renderer": "webgl",
+      "motionActive": false,
+      "contactShading": false,
+      "interacting": false,
+      "toneMapping": "AgX",
+      "poolReflections": false,
+      "surfaceAssetsRequested": 18,
+      "surfaceAssetsLoaded": 18,
+      "surfaceAssetsFailed": 0
+    },
+    "after": {
+      "frames": 10,
+      "shadowUpdates": 4,
+      "calls": 888,
+      "triangles": 1447623,
+      "geometries": 849,
+      "textures": 77,
+      "pixelRatio": 1,
+      "bufferWidth": 832,
+      "bufferHeight": 495,
+      "shadowSize": 1024,
+      "houseRenovationParts": 913,
+      "houseRenovationProjection": 0.14,
+      "garageVehicles": 2,
+      "renderer": "webgl",
+      "motionActive": false,
+      "contactShading": false,
+      "interacting": false,
+      "toneMapping": "AgX",
+      "poolReflections": false,
+      "surfaceAssetsRequested": 18,
+      "surfaceAssetsLoaded": 18,
+      "surfaceAssetsFailed": 0
+    },
+    "beforeView": {
+      "mode": "orbit",
+      "badge": "Living room · seated",
+      "date": "2026-06-21",
+      "time": "12:00",
+      "style": "beach-house"
+    },
+    "afterView": {
+      "mode": "orbit",
+      "badge": "Living room · seated",
+      "date": "2026-06-21",
+      "time": "12:00",
+      "style": "beach-house"
+    },
+    "beforeRoof": {
+      "x": 12.2,
+      "y": 29,
+      "width": 5,
+      "depth": 5.8,
+      "area": 29,
+      "height": 6.5,
+      "originalGroundZ": 2.52102964516563,
+      "roofZ": 9.02102964516563,
+      "floorZ": 3.5836576117067542,
+      "storeys": 2,
+      "minimumHeadroom": 2.468686016729438,
+      "heightDatum": "Lowest original terrain corner; proposed fill does not raise the roof"
+    },
+    "afterRoof": {
+      "x": 12.2,
+      "y": 29,
+      "width": 5,
+      "depth": 5.8,
+      "area": 29,
+      "height": 10,
+      "originalGroundZ": 2.52102964516563,
+      "roofZ": 12.52102964516563,
+      "floorZ": 3.5836576117067542,
+      "storeys": 3,
+      "minimumHeadroom": 2.7591240111529576,
+      "heightDatum": "Lowest original terrain corner; proposed fill does not raise the roof"
+    },
+    "changedSettings": [
+      "pavilionHeight"
+    ]
+  },
+  "heightDifference": {
+    "pixels": 10660,
+    "fraction": 0.025831653225806453
+  },
+  "placementDifference": {
+    "pixels": 18966,
+    "fraction": 0.045959018300248136
+  },
+  "numericHeightDifference": {
+    "pixels": 4089,
+    "fraction": 0.009908595688585608
+  },
+  "near": {
+    "enabled": true,
+    "valid": true,
+    "observer": {
+      "label": "Living room · seated",
+      "x": 9.608610661552147,
+      "y": 15.617475217542932,
+      "z": 4.83755850309423
+    },
+    "dimensions": {
+      "x": 11.4,
+      "y": 24.7,
+      "width": 5.8,
+      "depth": 5.2,
+      "area": 30.16,
+      "height": 8.2,
+      "originalGroundZ": 2.4193965101591717,
+      "roofZ": 10.61939651015917,
+      "floorZ": 3.3334815075130195,
+      "storeys": 2,
+      "minimumHeadroom": 3.392957501323076,
+      "heightDatum": "Lowest original terrain corner; proposed fill does not raise the roof"
+    },
+    "clearances": {
+      "boundary": 3.102899216054727,
+      "rear": 8.032571608554319,
+      "east": 3.102899216054727,
+      "house": 6.561348013602434
+    },
+    "fit": {
+      "areaM2": 30.159999999999968,
+      "insideM2": 30.159999999999968,
+      "outsideM2": 0,
+      "location": "inside"
+    },
+    "footprintFits": [
+      {
+        "id": "corner-pavilion",
+        "areaM2": 30.159999999999968,
+        "insideM2": 30.159999999999968,
+        "outsideM2": 0,
+        "location": "inside"
+      },
+      {
+        "id": "pavilion-entry-landing",
+        "areaM2": 1.67999999999995,
+        "insideM2": 1.67999999999995,
+        "outsideM2": 0,
+        "location": "inside"
+      },
+      {
+        "id": "pavilion-entry-step-1",
+        "areaM2": 0.4480000000000359,
+        "insideM2": 0.4480000000000005,
+        "outsideM2": 3.5416114485542494e-14,
+        "location": "inside"
+      }
+    ],
+    "conflicts": [],
+    "treeConflicts": [],
+    "entryApproachClear": true,
+    "comparison": {
+      "before": {
+        "total": 420,
+        "blocked": 418,
+        "percent": 99.52380952380952
+      },
+      "after": {
+        "total": 420,
+        "blocked": 420,
+        "percent": 100
+      },
+      "roofBefore": {
+        "total": 365,
+        "blocked": 365,
+        "percent": 100
+      },
+      "roofAfter": {
+        "total": 365,
+        "blocked": 365,
+        "percent": 100
+      },
+      "pavilionOnly": {
+        "total": 420,
+        "blocked": 394,
+        "percent": 93.80952380952381
+      },
+      "pavilionRoofOnly": {
+        "total": 365,
+        "blocked": 354,
+        "percent": 96.98630136986301
+      }
+    },
+    "envelope": {
+      "status": "ok",
+      "total": 365,
+      "intercepted": 354,
+      "missed": 11,
+      "planCoveragePercent": 96.98630136986301,
+      "requiredHeightForIntercepted": 7.499528092609803,
+      "requiredHeightForAll": null,
+      "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+    },
+    "warnings": [],
+    "planning": {
+      "checked": "2026-11-24",
+      "status": "unverified",
+      "parcels": [
+        "226101_1.0034.400",
+        "226101_1.0034.401"
+      ],
+      "currentPlan": "No covering MPZP found in the queried official city layers; obtain a property-specific confirmation and any existing WZ decision.",
+      "draft": {
+        "zone": "649SW",
+        "height": 12,
+        "coveragePercent": 30,
+        "biologicallyActivePercent": 50,
+        "inForce": false
+      },
+      "source": "https://bip.brg.gda.pl/plan-ogolny-miasta-gdanska",
+      "note": "Draft general-plan parameters are not permission for this building. Its use, WZ route, siting, fire separation and neighbouring daylight require project review."
+    },
+    "method": "Unweighted PCK3 target-point sightlines from the selected eye. Baseline retains the alternative pool, spa layout, trees and other structures; it removes only pavilion construction. Glass stays transparent. The separate envelope calculation is an ideal geometric limit, not a legal or whole-building-screening guarantee."
+  },
+  "nightDifference": {
+    "pixels": 19572,
+    "fraction": 0.047427496898263026
+  },
+  "daylightDifference": {
+    "pixels": 401245,
+    "fraction": 0.9723097278225806
+  },
+  "restoredStats": {
+    "frames": 24,
+    "shadowUpdates": 8,
+    "calls": 892,
+    "triangles": 1448615,
+    "geometries": 878,
+    "textures": 77,
+    "pixelRatio": 1,
+    "bufferWidth": 832,
+    "bufferHeight": 495,
+    "shadowSize": 1024,
+    "houseRenovationParts": 913,
+    "houseRenovationProjection": 0.14,
+    "garageVehicles": 2,
+    "renderer": "webgl",
+    "motionActive": false,
+    "contactShading": false,
+    "interacting": false,
+    "toneMapping": "AgX",
+    "poolReflections": false,
+    "surfaceAssetsRequested": 18,
+    "surfaceAssetsLoaded": 18,
+    "surfaceAssetsFailed": 0
+  },
+  "savedComparisonDifference": {
+    "pixels": 26271,
+    "fraction": 0.06366072813275435
+  },
+  "sharedHash": "#v=28&site=sternicza-11&interiorLayout=renovation&planExteriorApplied=true&sunMinutes=767&pavilionEnabled=true&pavilionHeight=8.2&pavilionWidth=5.8&pavilionDepth=5.2&pavilionX=11.4&pavilionY=24.7&basementGarageEnabled=true&terraceWidth=10.77&canopyWidth=10.77&showDimensions=false&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22tree-1%22%2C%22typeId%22%3A%22thuja-excelsa-9m%22%2C%22x%22%3A19.3%2C%22y%22%3A30.2%2C%22height%22%3A9%2C%22crownBase%22%3A0.3%2C%22crownWidth%22%3A2%2C%22crownDepth%22%3A2%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22tree-2%22%2C%22typeId%22%3A%22thuja-excelsa-9m%22%2C%22x%22%3A13.8%2C%22y%22%3A35.8%2C%22height%22%3A9%2C%22crownBase%22%3A0.3%2C%22crownWidth%22%3A2%2C%22crownDepth%22%3A2%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22tree-3%22%2C%22typeId%22%3A%22thuja-excelsa-9m%22%2C%22x%22%3A18.45%2C%22y%22%3A35.57%2C%22height%22%3A9%2C%22crownBase%22%3A0.3%2C%22crownWidth%22%3A2%2C%22crownDepth%22%3A2%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&gardenProgram=spa-pool-grove&terraceCoverType=balcony&designStyle=beach-house&styleHouseFinish=true&renderQuality=eco",
+  "mobile": [
+    {
+      "viewport": 390,
+      "width": 390,
+      "controls": [
+        {
+          "id": "pavilionEnabled",
+          "left": 322,
+          "right": 353
+        },
+        {
+          "id": "Rear cornerBeside the garden · nearer PCK3",
+          "left": 37,
+          "right": 191.5
+        },
+        {
+          "id": "Former garage areaCloser to the house and terrace",
+          "left": 198.5,
+          "right": 353
+        },
+        {
+          "id": "6.5 m study",
+          "left": 37,
+          "right": 192
+        },
+        {
+          "id": "8 m study",
+          "left": 198,
+          "right": 353
+        },
+        {
+          "id": "10 m study",
+          "left": 37,
+          "right": 192
+        },
+        {
+          "id": "12 m study",
+          "left": 198,
+          "right": 353
+        },
+        {
+          "id": "pavilionHeight-value",
+          "left": 292.65625,
+          "right": 335.65625
+        },
+        {
+          "id": "pavilionHeight",
+          "left": 37,
+          "right": 353
+        },
+        {
+          "id": "pavilionWidth-value",
+          "left": 292.65625,
+          "right": 335.65625
+        },
+        {
+          "id": "pavilionWidth",
+          "left": 37,
+          "right": 353
+        },
+        {
+          "id": "pavilionDepth-value",
+          "left": 292.65625,
+          "right": 335.65625
+        },
+        {
+          "id": "pavilionDepth",
+          "left": 37,
+          "right": 353
+        },
+        {
+          "id": "pavilionX-value",
+          "left": 292.65625,
+          "right": 335.65625
+        },
+        {
+          "id": "pavilionX",
+          "left": 37,
+          "right": 353
+        },
+        {
+          "id": "pavilionY-value",
+          "left": 292.65625,
+          "right": 335.65625
+        },
+        {
+          "id": "pavilionY",
+          "left": 37,
+          "right": 353
+        },
+        {
+          "id": "Living room",
+          "left": 37,
+          "right": 192
+        },
+        {
+          "id": "Terrace",
+          "left": 198,
+          "right": 353
+        },
+        {
+          "id": "Garden",
+          "left": 37,
+          "right": 192
+        },
+        {
+          "id": "Pool",
+          "left": 198,
+          "right": 353
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "width": 320,
+      "controls": [
+        {
+          "id": "pavilionEnabled",
+          "left": 252,
+          "right": 283
+        },
+        {
+          "id": "Rear cornerBeside the garden · nearer PCK3",
+          "left": 37,
+          "right": 156.5
+        },
+        {
+          "id": "Former garage areaCloser to the house and terrace",
+          "left": 163.5,
+          "right": 283
+        },
+        {
+          "id": "6.5 m study",
+          "left": 37,
+          "right": 157
+        },
+        {
+          "id": "8 m study",
+          "left": 163,
+          "right": 283
+        },
+        {
+          "id": "10 m study",
+          "left": 37,
+          "right": 157
+        },
+        {
+          "id": "12 m study",
+          "left": 163,
+          "right": 283
+        },
+        {
+          "id": "pavilionHeight-value",
+          "left": 222.65625,
+          "right": 265.65625
+        },
+        {
+          "id": "pavilionHeight",
+          "left": 37,
+          "right": 283
+        },
+        {
+          "id": "pavilionWidth-value",
+          "left": 222.65625,
+          "right": 265.65625
+        },
+        {
+          "id": "pavilionWidth",
+          "left": 37,
+          "right": 283
+        },
+        {
+          "id": "pavilionDepth-value",
+          "left": 222.65625,
+          "right": 265.65625
+        },
+        {
+          "id": "pavilionDepth",
+          "left": 37,
+          "right": 283
+        },
+        {
+          "id": "pavilionX-value",
+          "left": 222.65625,
+          "right": 265.65625
+        },
+        {
+          "id": "pavilionX",
+          "left": 37,
+          "right": 283
+        },
+        {
+          "id": "pavilionY-value",
+          "left": 222.65625,
+          "right": 265.65625
+        },
+        {
+          "id": "pavilionY",
+          "left": 37,
+          "right": 283
+        },
+        {
+          "id": "Living room",
+          "left": 37,
+          "right": 157
+        },
+        {
+          "id": "Terrace",
+          "left": 163,
+          "right": 283
+        },
+        {
+          "id": "Garden",
+          "left": 37,
+          "right": 157
+        },
+        {
+          "id": "Pool",
+          "left": 163,
+          "right": 283
+        }
+      ]
+    }
+  ],
+  "status": "passed"
+}

@@ -4,14 +4,15 @@
  * Dense foliage is an explicit ideal established-planting comparison, never an
  * assumption that newly planted climbers provide an opaque wall immediately.
  */
-import {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.31.0';
-export {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.31.0';
+import {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.32.0';
+import {cornerPavilionLayout,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.32.0';
+export {PRIVACY_DEFAULTS} from './privacy-options.js?v=1.32.0';
 const EPS=1e-8;
 const number=(value,fallback)=>typeof value==='number'&&Number.isFinite(value)?value:fallback;
 const limit=(value,fallback,low,high)=>Math.max(low,Math.min(high,number(value,fallback)));
 const point=value=>Array.isArray(value)?value:[value.x,value.y,value.z];
 
-export const PRIVACY_GEOMETRY_KEYS=Object.freeze(Object.keys(PRIVACY_DEFAULTS));
+export const PRIVACY_GEOMETRY_KEYS=Object.freeze([...Object.keys(PRIVACY_DEFAULTS),...Object.keys(PAVILION_DEFAULTS)]);
 
 /**
  * The supplied ground/floor references avoid a geometry-module import cycle.
@@ -97,6 +98,11 @@ export function privacyStructureLayout(settings={},data,context){
     // merely to the panel centreline used by the placement control.
     if(gap-.045<.6-EPS||returnLength>EPS&&x1-.045-tub.x1<.6-EPS)result.warnings.push('Spa screens enter the 0.6 m service zone. Use removable panels and retain maintenance access.');
   }
+  const pavilion=cornerPavilionLayout(settings,data,context);
+  result.pavilion=pavilion;
+  result.boxes.push(...pavilion.boxes);
+  result.footprints.push(...pavilion.footprints);
+  result.warnings.push(...pavilion.warnings);
   result.enabled=result.boxes.length>0;
   return result;
 }
