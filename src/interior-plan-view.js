@@ -107,8 +107,12 @@ function fixtureDrawing(f) {
     shape += rect(x+.07,y+.08,w-.14,Math.min(d*.23,.42),.065) + line(x,y+d*.35,-x,y+d*.35,'');
   } else if (f.shape === 'U') {
     shape = rect(x,y,w,d*.25) + rect(x,-y-d*.25,w,d*.25) + rect(x,y+d*.25,w*.32,d*.5);
-  } else if (/sofa|couch|bench/.test(kind)) {
+  } else if (/sofa|couch|bench|armchair/.test(kind)) {
     shape += rect(x+w*.08,y+d*.19,w*.84,d*.7,.07);
+  } else if (kind==='rug') {
+    shape=rect(x,y,w,d,.09)+`<rect x="${n(x+.08)}" y="${n(y+.08)}" width="${n(w-.16)}" height="${n(d-.16)}" rx=".05" fill="none" stroke-dasharray=".04 .05"/>`;
+  } else if (kind==='floorlamp'||kind==='tablelamp') {
+    shape=`<circle cx="0" cy="0" r="${n(Math.min(w,d)*.46)}"/>`+line(-w*.18,-d*.18,w*.18,d*.18,'')+line(-w*.18,d*.18,w*.18,-d*.18,'');
   } else if (/dining|table/.test(kind)) {
     shape = rect(x,y,w,d,.12);
   } else if (kind==='hottub') {
@@ -148,13 +152,13 @@ function fixtureDrawing(f) {
     shape+=rect(x,y,w,d*.15,.025);
   } else if(kind==='spastep') {
     shape+=line(x,0,-x,0,'');
-  } else if (/wardrobe|cabinet|counter|shelf|kitchen|closet/.test(kind)) {
+  } else if (/wardrobe|cabinet|counter|shelf|kitchen|closet|console/.test(kind)) {
     shape += line(x+w/2,y,x+w/2,-y,'');
     shape += line(-w*.30,d*.40,w*.30,d*.40,'');
   } else if (/car/.test(kind)) {
     shape += rect(x+w*.1,y+d*.24,w*.8,d*.48,.11);
   }
-  return `<g class="iw-fixture" data-iw-fixture="${esc(f.id)}" transform="translate(${n(f.x)} ${n(f.z)}) rotate(${n(-rotation*180/Math.PI)})"><title>${esc(f.label || kind)}</title>${shape}</g>`;
+  return `<g class="iw-fixture${kind==='rug'?' iw-rug':''}"${kind==='rug'?' opacity=".38"':''} data-iw-fixture="${esc(f.id)}" transform="translate(${n(f.x)} ${n(f.z)}) rotate(${n(-rotation*180/Math.PI)})"><title>${esc(f.label || kind)}</title>${shape}</g>`;
 }
 
 function stairDrawing(stair, idx) {

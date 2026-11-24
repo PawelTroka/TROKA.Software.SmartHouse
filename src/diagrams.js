@@ -11,19 +11,21 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.30.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.30.0';
-import {gazeDirection} from './orientation.js?v=1.30.0';
-import {localSunDirection} from './solar.js?v=1.30.0';
-import {getSiteProfile} from './sites.js?v=1.30.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.30.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.30.0';
-import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.30.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.30.0';
-import {terraceStairs} from './layout.js?v=1.30.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.30.0';
+} from './geometry.js?v=1.31.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.31.0';
+import {gazeDirection} from './orientation.js?v=1.31.0';
+import {localSunDirection} from './solar.js?v=1.31.0';
+import {getSiteProfile} from './sites.js?v=1.31.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.31.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.0';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.31.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.31.0';
+import {terraceStairs,gardenFurniture} from './layout.js?v=1.31.0';
+import {resortTerraceLayout} from './resort-garden.js?v=1.31.0';
+import {getDesignStyle} from './design-styles.js?v=1.31.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.31.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.30.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.31.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -38,6 +40,29 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
 const number = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
 const fmt = (v, digits = 1) => Number.isFinite(v) ? v.toFixed(digits) : '—';
 const distance = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+
+/** Movable pieces use the same positions as the rendered garden. */
+export function resortFurniturePlanMarkup(data,settings,{X,Y,scale}){
+  const style=getDesignStyle(settings.designStyle);
+  if(style.id==='current')return '';
+  const terrace=data.site.terrace,depth=number(settings.terraceDepth,terrace.depth);
+  const stairs=terraceStairs(terrace,depth,terraceGroundReference(settings,data).drop,settings,data);
+  const tub=jacuzziBounds(settings,data),garden=gardenFurniture(data,settings);
+  const composition=tub?resortTerraceLayout(data,settings,tub,stairs):{items:[]};
+  const pieces=[...composition.items,...(garden.resort?.items||[])];
+  if(settings.removeGarage!==false&&garden.diningVisible!==false&&garden.dining)pieces.push({...garden.dining,id:'garden-dining',kind:'dining'});
+  const p=style.palette;
+  const markup=pieces.map(piece=>{
+    const {id,kind,x,y,width,length}=piece;
+    if(![x,y,width,length].every(Number.isFinite)||width<=0||length<=0)return '';
+    const title=`${kind.replaceAll('-',' ')} · ${fmt(width,2)} × ${fmt(length,2)} m`;
+    if(kind==='planter')return `<g data-design-furniture="${esc(id)}"><title>${esc(title)}</title><circle cx="${X(x+width/2)}" cy="${Y(y+length/2)}" r="${Math.min(width,length)*scale/2}" fill="#778568" stroke="${p.wood}" stroke-width="1"/></g>`;
+    const surface=kind==='table'||kind==='dining'?p.wood:p.fabric;
+    const inner=kind==='dining'?`<rect x="${X(x+width*.18)}" y="${Y(y+length*.25)}" width="${width*scale*.64}" height="${length*scale*.5}" rx="${scale*.12}" fill="${p.surface}" stroke="${p.frame}" stroke-width=".7"/>`:'';
+    return `<g data-design-furniture="${esc(id)}"><title>${esc(title)}</title><rect x="${X(x)}" y="${Y(y)}" width="${width*scale}" height="${length*scale}" rx="${scale*.09}" fill="${surface}" fill-opacity=".92" stroke="${p.frame}" stroke-width=".8"/>${inner}</g>`;
+  }).join('');
+  return `<g data-resort-plan="${style.id}" pointer-events="none">${markup}</g>`;
+}
 
 function pointInPolygon(point, polygon) {
   let inside = false;
@@ -268,6 +293,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${frontOpenings}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
         ${terraceCoverPlanMarkup(cover,{X,Y,scale,labels:detail&&!measured})}
+        ${detail?resortFurniturePlanMarkup(data,settings,{X,Y,scale}):''}
         ${privacyPlanMarkup(privacy,{X,Y,scale,labels:detail&&!measured})}
         <polygon points="${polys(cone)}" fill="${C.observer}" opacity=".18"/>
         ${rays}

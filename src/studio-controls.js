@@ -1,5 +1,6 @@
-import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.30.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.30.0';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.31.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.0';
+import {getResortDesignIntent} from './resort-design-intents.js?v=1.31.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
@@ -27,6 +28,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
   const dialog=$('style-dialog'),grid=$('style-grid'),search=$('style-search'),family=$('style-family');
   const selector=$('designStyle'),status=$('style-status');
   let lastTrigger=null,stats=null,renderedStyle=null;
+  $('style-catalogue-description').textContent=`Explore ${DESIGN_STYLES.filter(style=>style.id!=='current').length} complete designs for your home and garden, plus the original house.`;
   for(const style of DESIGN_STYLES){const option=text('option',style.label);option.value=style.id;selector.append(option);}
   for(const value of [...new Set(DESIGN_STYLES.map(style=>style.family))]){const option=text('option',value);option.value=value;family.append(option);}
   const cards=new Map();
@@ -36,7 +38,8 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
     button.append(materialBoard(style));
     const body=document.createElement('span');body.className='style-card-body';
     body.append(text('span',style.family,'style-family'),text('strong',style.label),text('span',style.description,'style-card-description'));
-    body.append(text('span',style.renovation?`Inside · ${getInteriorStyleRecipe(style.id).features.join(' · ')}. Outside · ${style.renovation.description}`:'Original house · no renovation.','style-card-renovation'));
+    const intent=getResortDesignIntent(style.id);
+    body.append(text('span',intent?.headline||(style.renovation?'A complete house and garden design.':'Original house · no renovation.'),'style-card-renovation'));
     button.append(body);button.addEventListener('click',()=>{choose(style.id);dialog.close();});grid.append(button);cards.set(style.id,button);
   }
   function filter(){
@@ -44,7 +47,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
     for(const style of DESIGN_STYLES){const show=(!family.value||family.value===style.family)&&designStyleSearchText(style).includes(query);cards.get(style.id).hidden=!show;if(show)count++;}
     $('style-result-count').textContent=`${count} ${count===1?'design':'designs'}`;$('style-empty').hidden=count!==0;
   }
-  function choose(id){onChange({designStyle:id,styleHouseFinish:id!=='current'});status.textContent=id==='current'?'Current house restored with its original layout.':`${getDesignStyle(id).label} applied to the house, furniture and garden.`;}
+  function choose(id){onChange({designStyle:id,styleHouseFinish:id!=='current'});status.textContent=id==='current'?'Current house restored with its original layout.':`${getDesignStyle(id).label} applied to the rooms, garden seating, furniture and evening lighting.`;}
   function open(event){lastTrigger=event?.currentTarget||$('style-open');search.value='';family.value='';filter();dialog.showModal();search.focus();}
   $('style-open').addEventListener('click',open);
   $('style-close').addEventListener('click',()=>dialog.close());
@@ -69,6 +72,12 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
       renderedStyle=style.id;
       $('studio-style-family').textContent=style.family;
       $('studio-style-description').textContent=style.description;
+      const intent=getResortDesignIntent(style.id);
+      $('studio-living').hidden=style.id==='current';
+      $('studio-living-title').textContent=intent?.headline||'Life at home';
+      $('studio-living-details').replaceChildren(...[['Retreat',intent?.retreat],['Gather',intent?.gathering],['After dark',intent?.evening]].filter(([,value])=>value).map(([label,value])=>{
+        const item=document.createElement('div');item.append(text('dt',label),text('dd',value));return item;
+      }));
       $('studio-swatches').replaceChildren(...style.swatches.map(color=>{const e=document.createElement('i');e.style.backgroundColor=color;e.setAttribute('aria-hidden','true');return e;}));
       $('studio-finishes').replaceChildren(...Object.entries(style.finishes).map(([key,value])=>{const item=document.createElement('div');item.append(text('dt',key==='surface'?'Ground finish':key==='canopy'?'Cover details':key==='lighting'?'Lighting':'Furniture'),text('dd',value));return item;}));
       $('studio-bespoke').textContent=style.bespoke||'Finish recipes illustrate a design direction. Select material specifications and installed quotes before budgeting a renovation.';

@@ -1,6 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.30.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.30.0';
+import {toWorld} from './orientation.js?v=1.31.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.31.0';
+import {resortBalconyLayout} from './resort-garden.js?v=1.31.0';
+import {createStyledResortPiece} from './scene-style-details.js?v=1.31.0';
 
 // Decorative infill stays within the guard envelope, with the original glass
 // and structural rail/post boxes retained. It does not earn opaque-screen or
@@ -99,5 +101,12 @@ export function createTerraceCoverGroup(layout,materials,svgMode=false,style=nul
     group.add(mesh);
   }
   addGuardInfill(group,layout,materials,recipe);
+  const furniture=resortBalconyLayout(layout,style);
+  if(furniture.length){
+    const seating=new THREE.Group();seating.name='balcony-resort-seating';
+    seating.userData.resortLayout=furniture;
+    for(const piece of furniture)seating.add(createStyledResortPiece(style,materials,{...piece,z:layout.deckTopZ},{svgMode}));
+    group.add(seating);
+  }
   return group;
 }
