@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "6ca9c3f90a2e4155e07aa50e9b6de3a214e3cf20",
+  "version": "1.31.1",
+  "revision": "20261124-building-accuracy",
+  "observedDate": "2026-11-24",
+  "preview": "https://paweltroka.github.io/TROKA.Software.SmartHouse/review-neighborhood-1-31-1/?site=sternicza-11",
+  "screenshot": {
+    "file": "pck3-roof-and-facade.jpg",
+    "gitBlob": "07c100ca14a7ccd44935bf96ad92d3abfe20d310",
+    "width": 1329,
+    "height": 870,
+    "method": "Live Brave WebGL screenshot through the browser extension; cropped to the scene and its controls.",
+    "renderQuality": "eco",
+    "existingCanopiesVisible": false,
+    "note": "Existing crowns were hidden temporarily to inspect the building shapes and restored before leaving the review tab."
+  },
+  "checks": {
+    "unitTestsPassed": 768,
+    "staticBuild": "passed",
+    "liveRenderer": "webgl",
+    "resolvedBuildingEnvelopes": 12,
+    "pckRooflightsPerBlock": 1,
+    "pckChimneysPerBlock": 6,
+    "liveSurfaceAssetFailures": 0
+  }
+}
