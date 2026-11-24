@@ -99,7 +99,9 @@ export function createStudioControls({getSettings,onChange,onMoment,onInspect,on
     stats=value;if(!value)return;
     const host=$('render-diagnostics');
     for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','shadowSize','houseRenovationParts','houseRenovationProjection','houseOpeningCount','gardenKitchens','gardenPlantingBeds','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
+    host.dataset.renderedStyle=value.renderedStyle||'pending';
     host.dataset.gardenScheme=value.gardenScheme||'manual';host.dataset.windowPattern=value.windowPattern||'original';
+    for(const key of ['drawEnabled','canvasIntersecting','presentationVisible','renderPending'])host.dataset[key]=String(Boolean(value[key]));
     host.dataset.renderer=value.rendererType;host.dataset.motionActive=String(Boolean(value.motionActive));
     host.dataset.contactShading=String(Boolean(value.contactShading));
     host.dataset.interacting=String(Boolean(value.interacting));
