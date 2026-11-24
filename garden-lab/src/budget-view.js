@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.31.1';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.31.1';
+import {getSiteProfile} from './sites.js?v=1.32.1';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.32.1';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;

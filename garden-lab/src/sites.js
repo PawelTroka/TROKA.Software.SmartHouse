@@ -1,5 +1,5 @@
-import {getBuildingTargets} from './buildings.js?v=1.31.1';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.31.1';
+import {getBuildingTargets} from './buildings.js?v=1.32.1';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.32.1';
 
 export const DEFAULT_SITE_ID = 'sternicza-11';
 export const SITE_OPTIONS = Object.freeze([

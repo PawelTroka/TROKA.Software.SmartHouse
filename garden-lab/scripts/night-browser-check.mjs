@@ -266,7 +266,10 @@ async function pngScreenshot(name){
 }
 async function chooseProperty(id){
   await Promise.all([
-    page.waitForURL(url=>url.searchParams.get('site')===id&&!url.hash,{waitUntil:'domcontentloaded'}),
+    // Loading the next mapped property can exceed Playwright's 30 s default
+    // on software-rendered CI runners. Keep the URL/hash assertion and the
+    // full readiness checks below, with the same 60 s allowance as initial load.
+    page.waitForURL(url=>url.searchParams.get('site')===id&&!url.hash,{waitUntil:'domcontentloaded',timeout:60000}),
     page.locator('#site-select').selectOption(id),
   ]);
   await waitReady();

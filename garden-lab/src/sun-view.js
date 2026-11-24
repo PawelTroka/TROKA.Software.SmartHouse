@@ -1,12 +1,12 @@
-import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.31.1';
-import {formatSolarTime,localSunDirection} from './solar.js?v=1.31.1';
-import {getSiteProfile} from './sites.js?v=1.31.1';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.31.1';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.1';
-import {treePlanMarkup} from './tree-drawing.js?v=1.31.1';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.31.1';
-import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.31.1';
-import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.31.1';
+import {hedgeSegments,canopyBounds,jacuzziBounds,privacyStructures,terraceCover} from './geometry.js?v=1.32.1';
+import {formatSolarTime,localSunDirection} from './solar.js?v=1.32.1';
+import {getSiteProfile} from './sites.js?v=1.32.1';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.32.1';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.32.1';
+import {treePlanMarkup} from './tree-drawing.js?v=1.32.1';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.32.1';
+import {spaPlanMarkup,privacyPlanMarkup,terraceCoverPlanMarkup} from './diagrams.js?v=1.32.1';
+import {gardenDimensions,dimensionsForScope,nearbyDimensionBuildings,dimensionPlanMarkup,dimensionScheduleMarkup} from './dimensions.js?v=1.32.1';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

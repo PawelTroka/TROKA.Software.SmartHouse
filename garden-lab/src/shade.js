@@ -3,16 +3,16 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.31.1';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.31.1';
-import { localRoofEnvelope } from './roof-envelope.js?v=1.31.1';
-import {sampledRoofFaces} from './roof-mesh.js?v=1.31.1';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.31.1';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.31.1';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.1';
-import { terraceStairs } from './layout.js?v=1.31.1';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.31.1';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.32.1';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.32.1';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.32.1';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.32.1';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.32.1';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.32.1';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.32.1';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.32.1';
+import { terraceStairs } from './layout.js?v=1.32.1';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.32.1';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -122,7 +122,7 @@ function gableFaces(ring,eaves,ridge,axis='x') {
   return [[a,d,f],[a,f,e],[e,f,c],[e,c,b],[a,e,b],[d,c,f]];
 }
 
-export {sampledRoofFaces} from './roof-mesh.js?v=1.31.1';
+export {sampledRoofFaces} from './roof-mesh.js?v=1.32.1';
 
 const contextOccluderCache=new WeakMap();
 
@@ -167,7 +167,7 @@ function spaOccluders(settings,data) {
     {x:c.x,y:c.y+r,width:r,length:c.length-2*r},
     {x:c.x+c.width-r,y:c.y+r,width:r,length:c.length-2*r},
   ])slab('cold-plunge-rim','Cold-plunge basin rim',wall,cz.bottomZ,cz.rimZ);
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)){
+  if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)){
     const pad=c.pad??.18;
     for(const strip of [
       {x:c.x-pad,y:c.y-pad,width:c.width+2*pad,length:pad},
@@ -287,6 +287,7 @@ function makeReceivers(settings,data,size=1){
   const tubWater=tub?.waterBounds;
   const program=gardenProgram(settings,data),levels=spaLevels(settings,data),poolZ=levels.pool?.waterZ||0;
   const sauna=program.sauna,firepit=program.firepit,cold=program.coldPlunge;
+  const pavilion=privacyStructures(settings,data).pavilion;
   const coldWater=cold?rectBounds(cold,cold.rim):null;
   const floor=floorElevation(settings,data),segments=hedgeSegments(settings,data),cells=[];
   const stairs=t?terraceStairs(t,num(settings.terraceDepth,t.depth),terraceGroundReference(settings,data).drop,settings,data):null;
@@ -295,6 +296,7 @@ function makeReceivers(settings,data,size=1){
       if(!pointInPolygon([x,y],ring)||site.house?.footprint&&pointInPolygon([x,y],site.house.footprint))continue;
       if(settings.removeGarage===false&&site.garage?.footprint&&pointInPolygon([x,y],site.garage.footprint))continue;
       if(sauna&&pointInPolygon([x,y],sauna.footprint))continue; // enclosed floor is not outdoor garden
+      if(pavilion?.enabled&&pointInPolygon([x,y],pavilion.footprint))continue;
       const inPit=firepit&&rectContains(x,y,rectBounds(firepit));
       const pitStep=inPit&&levels.firepit.steps.find(r=>rectContains(x,y,rectBounds(r)));
       if(inPit&&!pitStep&&(!rectContains(x,y,rectBounds(firepit,firepit.wallThickness))||[...firepit.seats,firepit.table].some(r=>rectContains(x,y,rectBounds(r)))))continue;
@@ -304,7 +306,7 @@ function makeReceivers(settings,data,size=1){
       let z=zone==='jacuzzi'?tub.waterZ:zone==='terrace'?floor:zone==='pool'?poolZ:zone==='coldPlunge'?levels.coldPlunge.waterZ:zone==='firepit'?(pitStep?.topZ??levels.firepit.floorZ):bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
       if(zone==='garden'&&p&&rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
       if(zone==='garden'&&program.active){
-        if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
+        if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
         const step=levels.coldPlunge.steps.find(r=>rectContains(x,y,rectBounds(r)));
         if(step)z=step.topZ;
         const saunaStep=levels.sauna.entrySteps?.find(r=>pointInPolygon([x,y],r.footprint));
@@ -313,6 +315,10 @@ function makeReceivers(settings,data,size=1){
       if(zone==='garden'&&stairs?.count&&rectContains(x,y,rectBounds(stairs))){
         const i=Math.min(stairs.count-1,Math.floor((y-stairs.y)/.29));
         z=floor-stairs.drop*i/stairs.count;
+      }
+      if(zone==='garden'&&pavilion?.enabled){
+        const entry=pavilion.boxes.filter(b=>b.part==='entry'&&rectContains(x,y,b));
+        if(entry.length)z=Math.max(z,...entry.map(b=>b.z1));
       }
       // A pool can have boundaries on half-metre grid centres. A ray from
       // that exact zero-area edge hits its 2 cm coping lip and incorrectly

@@ -1,6 +1,6 @@
-import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.31.1';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.1';
-import {getResortDesignIntent} from './resort-design-intents.js?v=1.31.1';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.32.1';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.32.1';
+import {getResortDesignIntent} from './resort-design-intents.js?v=1.32.1';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};

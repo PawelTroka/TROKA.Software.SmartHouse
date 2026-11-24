@@ -3,18 +3,19 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.31.1';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.1';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.1';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.1';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.31.1';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.31.1';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.31.1';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.32.1';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.32.1';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.32.1';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.32.1';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.32.1';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.32.1';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.32.1';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.32.1';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.31.1';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.31.1';
-import {houseWindowAnchor} from './house-appearance.js?v=1.31.1';
-import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.31.1';
+import {garagePlanFrame} from './garage-ramp.js?v=1.32.1';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.32.1';
+import {houseWindowAnchor} from './house-appearance.js?v=1.32.1';
+import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.32.1';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -25,6 +26,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   includeHighFeatures: false,
   screeningTrees: Object.freeze([]), treeLeafMode: 'auto',
   ...PRIVACY_DEFAULTS,
+  ...PAVILION_DEFAULTS,
 });
 
 const EPS = 1e-8;
@@ -124,7 +126,7 @@ export function spaLevels(settings={},data){
   }
   const result={active:program.active,pool,sauna:null,firepit:null,coldPlunge:null};
   if(!program.active)return result;
-  const edge=['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
+  const edge=['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
   const highest=r=>Math.max(...r.footprint.map(q=>gardenGroundAt(q[0],q[1],settings,data)));
   const sa=program.sauna,sr=edge?padGradeRange(sa.footprint,settings,data):null,sg=sr?.high??highest(sa),sf=sg+sa.floorOffset;
   result.sauna={groundZ:sg,floorZ:sf,roofZ:sf+sa.height};
@@ -194,8 +196,8 @@ export function saunaOpaqueFaces(settings={},data){
 export function spaLayoutWarnings(settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return [];
   const warnings=[];
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&number(settings.bedRaise)>0){
+  if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id))warnings.push('Near-boundary positions show conceptual clearances only. The sauna footprint and siting require project approval.');
+  if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&number(settings.bedRaise)>0){
     // The illustrated hedge beds taper inward over 0.85m, as in the sunlight
     // receiver/terrain model. Close-set structures need a retaining detail if
     // that added soil reaches above their finished pad or coping.
@@ -237,7 +239,7 @@ export function spaSurfaceAt(x,y,settings={},data){
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
   const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
   if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
-  if(['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)){
+  if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)){
     const plungeStep=levels.coldPlunge.steps.find(step=>withinRect(x,y,step));
     if(plungeStep)return {surface:'plunge-entry',groundZ:plungeStep.topZ};
   }
@@ -260,7 +262,7 @@ export function terraceGroundReference(settings = {}, data) {
 
 /** Right means looking from the house into the garden: the low-x edge. */
 export function jacuzziBounds(settings = {}, data) {
-  const compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(settings.gardenProgram)&&spaEnabled(settings,data);
+  const compact=(settings.pavilionEnabled===true||['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(settings.gardenProgram))&&spaEnabled(settings,data);
   const depth = number(settings.terraceDepth, 4.2), size = compact?2.3:2.2;
   const spa=spaEnabled(settings,data);
   const infinity=spa&&(!compact||settings.jacuzziOverflow===true);
@@ -538,6 +540,7 @@ export function terraceCover(settings={},data){
 export function privacyStructures(settings={},data){
   const result=privacyStructureLayout(settings,data,{
     floorZ:floorElevation(settings,data),groundAt:(x,y)=>gardenGroundAt(x,y,settings,data),jacuzzi:jacuzziBounds(settings,data),
+    terrainAt:(x,y)=>terrainAt(x,y,data),
   });
   if(!result.enabled)return result;
   const corners=box=>[[box.x0,box.y0],[box.x1,box.y0],[box.x1,box.y1],[box.x0,box.y1]];
@@ -549,7 +552,7 @@ export function privacyStructures(settings={},data){
     const overlaps=obstacles.filter(([,obstacle])=>rectanglesOverlap(footprint,obstacle)).map(([label])=>label);
     if(overlaps.length)result.warnings.push(`${footprint.label} footprint overlaps the ${overlaps.join(', ')}. Check the layout and supports.`);
   }
-  const physicalBoxes=result.boxes.filter(box=>box.part==='post'||box.part==='screen'||box.part==='foliage');
+  const physicalBoxes=result.boxes.filter(box=>box.group==='pavilion'||box.part==='post'||box.part==='screen'||box.part==='foliage');
   if(data.site.house?.footprint&&physicalBoxes.some(box=>overlapArea(corners(box),data.site.house.footprint)>1e-8))result.warnings.push('A privacy support or panel overlaps the house footprint. Check its position.');
   if(settings.removeGarage===false&&data.site.garage?.footprint&&physicalBoxes.some(box=>overlapArea(corners(box),data.site.garage.footprint)>1e-8))result.warnings.push('A privacy support or panel overlaps the retained garage. Check its position.');
   return result;
@@ -658,12 +661,12 @@ export function saunaIntersection(observer,target,settings={},data,faces=saunaOp
  * Percent is an unweighted sampled-ray metric from ONE eye, not visible area.
  * Back-facing/LoD1 self-hidden facade samples are excluded from the denominator.
  */
-export function analyzeVisibility(observer, settings = {}, data) {
+export function analyzeVisibility(observer, settings = {}, data, options = {}) {
   const s = settingsWithDefaults(settings), origin = point3(observer);
   const segments = hedgeSegments(s, data), rays = [], byBlock = [];
   const trees = [...screeningTreeVolumes(s, data),...existingCanopyVolumes(s, data)];
   const saunaFaces=saunaOpaqueFaces(s,data);
-  const privacyBoxes=privacyStructures(s,data).boxes;
+  const privacyBoxes=privacyStructures(s,data).boxes.filter(box=>!options.excludePavilion||box.group!=='pavilion');
   const cover=s.canopyEnabled?terraceCover(s,data):null;
   const pool=poolBounds(s,data),poolLevel=pool?spaLevels(s,data).pool:null;
   const poolEdges=poolEdgeBoxes(pool,poolLevel);

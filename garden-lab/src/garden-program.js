@@ -1,8 +1,9 @@
 /** Proposed garden objects, in the mapped local metre frame. No height model. */
+import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.32.1';
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){
-  return ['spa','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(settings.gardenProgram)&&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
+  return (pavilionAlternativeEnabled(settings,data)||['spa','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(settings.gardenProgram))&&(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11';
 }
 
 export function poolBounds(settings={},data){
@@ -13,7 +14,7 @@ export function poolBounds(settings={},data){
   // eastern trunk and immediately ahead of the two rear pines. The 1 m minimum
   // is a conceptual trunk-centre to finished-coping allowance, not a certified
   // root-ball, excavation or maintenance clearance. Historical pools stay fixed.
-  const pool=spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
+  const pool=pavilionAlternativeEnabled(settings,data)?{x:2,y:25,width:3.5,length:8}:spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
     y:poolGrove?26.30:aligned||screened?19.5:24.5,width:3.5,length:poolGrove?8:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;
   const copingRise=.075;
@@ -26,7 +27,7 @@ export function poolBounds(settings={},data){
 export function gardenProgram(settings={},data){
   const active=spaEnabled(settings,data),pool=poolBounds(settings,data);
   if(!active)return {active:false,id:'classic',pool,sauna:null,firepit:null,coldPlunge:null,furniture:null};
-  const poolGrove=settings.gardenProgram==='spa-pool-grove',corner=settings.gardenProgram==='spa-corner',aligned=poolGrove||corner||settings.gardenProgram==='spa-aligned',grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened',compact=aligned||grove||screened||settings.gardenProgram==='spa-compact',edge=compact||settings.gardenProgram==='spa-edge';
+  const pavilion=pavilionAlternativeEnabled(settings,data),poolGrove=settings.gardenProgram==='spa-pool-grove',corner=settings.gardenProgram==='spa-corner',aligned=poolGrove||corner||settings.gardenProgram==='spa-aligned',grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened',compact=pavilion||aligned||grove||screened||settings.gardenProgram==='spa-compact',edge=compact||settings.gardenProgram==='spa-edge';
   // These are geometric maintenance gaps to the mapped parcel, not certified
   // planning setbacks. The rear band east of the plunge remains available for
   // screening trees; pool coping retains a narrow east-side maintenance route.
@@ -81,7 +82,7 @@ export function gardenProgram(settings={},data){
   sauna.heater=compact?{x:x+1.4,y:y+.3,width:.55,length:.55,height:.85}:{x:x+1.1,y:y+.65,width:.65,length:.65,height:.85};
   sauna.viewpoint={x:x+(compact?1.75:2.2),y:y+(compact?1.95:3.45),eyeHeight:1.6,lookAt:[10.2,24.3]};
 
-  const firepit={id:'firepit',label:'Sunken fire lounge',x:8.4,y:26.8,width:4.4,length:4.4,
+  const firepit={id:'firepit',label:'Sunken fire lounge',x:pavilion?6.8:8.4,y:pavilion?29.4:26.8,width:4.4,length:4.4,
     depth:.6,floorDepth:.6,wallThickness:.18,seatHeight:.43,copingOverhang:.08};
   firepit.anchor=centre(firepit);firepit.footprint=rectRing(firepit);
   // Union envelope of the excavated room and the rendered U-shaped coping.
@@ -104,9 +105,9 @@ export function gardenProgram(settings={},data){
   coldPlunge.steps=edge?Array.from({length:5},(_,i)=>({x:coldPlunge.x,y:coldPlunge.y-(5-i)*.3,width:1,length:.3})):
     [{x:8.3,y:32.6,width:1,length:.3,height:.25},
       {x:8.3,y:32.9,width:1,length:.3,height:.5}];
-  const furniture={loungers:[[12.3,22.7],[13.4,22.7]],
-    dining:{x:3.6,y:24.4,width:3.8,length:3.4},
-    path:edge?[[6.7,29.5],[6.4,31.2],[5.8,32.8]]:
+  const furniture={loungers:pavilion?[[9.7,35],[10.8,35]]:[[12.3,22.7],[13.4,22.7]],
+    dining:{x:pavilion?6.5:3.6,y:pavilion?24.2:24.4,width:3.8,length:3.4},
+    path:pavilion?[]:edge?[[6.7,29.5],[6.4,31.2],[5.8,32.8]]:
       [[7.1,29.5],[8.1,31.5],[11.3,32.6],[11.5,34.3]]};
-  return {active:true,id:poolGrove?'spa-pool-grove':corner?'spa-corner':aligned?'spa-aligned':grove?'spa-grove':screened?'spa-screened':compact?'spa-compact':edge?'spa-edge':'spa',pool,sauna,firepit,coldPlunge,furniture};
+  return {active:true,id:pavilion?'spa-pavilion':poolGrove?'spa-pool-grove':corner?'spa-corner':aligned?'spa-aligned':grove?'spa-grove':screened?'spa-screened':compact?'spa-compact':edge?'spa-edge':'spa',pool,sauna,firepit,coldPlunge,furniture};
 }

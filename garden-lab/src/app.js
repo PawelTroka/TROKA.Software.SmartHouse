@@ -1,35 +1,36 @@
-import {createStateModel,STATE_VERSION} from './state.js?v=1.31.1';
-import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.31.1';
-import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.31.1';
-import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.31.1';
-import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.31.1';
-import {createTreeControls} from './tree-controls.js?v=1.31.1';
-import {createPrivacyControls} from './privacy-controls.js?v=1.31.1';
-import {createGarageControls} from './garage-controls.js?v=1.31.1';
-import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures,terraceCover} from './geometry.js?v=1.31.1';
-import {renderPlan,renderSection} from './diagrams.js?v=1.31.1';
-import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.31.1';
-import {analyzeSunlight} from './shade.js?v=1.31.1';
-import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.31.1';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.31.1';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.31.1';
-import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.31.1';
-import {gardenDimensions} from './dimensions.js?v=1.31.1';
-import {UPPER_FLOOR_PRESETS,upperFloorPreset} from './viewpoints.js?v=1.31.1';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.31.1';
-import {houseRenovationSummary} from './house-renovation.js?v=1.31.1';
-import {renderNightReadouts} from './night-view.js?v=1.31.1';
-import {getDesignStyle} from './design-styles.js?v=1.31.1';
-import {createStudioControls} from './studio-controls.js?v=1.31.1';
-import {createDesignHistory} from './design-history.js?v=1.31.1';
-import {evaluateDesignChecks} from './design-checks.js?v=1.31.1';
-import {renderDesignReview} from './design-review.js?v=1.31.1';
-import {changePresentationSettings} from './studio-state.js?v=1.31.1';
-import {applyPlanExterior,planRegistrationSummary} from './plan-exterior.js?v=1.31.1';
-import {getInteriorPlan,INTERIOR_SOURCES,INTERIOR_DIMENSIONS,INTERIOR_CHANGES} from './interior-plan.js?v=1.31.1';
-import {getHouseFloorPlan} from './house-model.js?v=1.31.1';
-import {existingVegetationSummary} from './existing-vegetation.js?v=1.31.1';
-import {mountSeaView} from './sea-view.js?v=1.31.1';
+import {createStateModel,STATE_VERSION} from './state.js?v=1.32.1';
+import {SITE_OPTIONS,DEFAULT_SITE_ID,resolveSiteId,getSiteProfile} from './sites.js?v=1.32.1';
+import {COST_FIELDS,COST_DEFAULTS,estimateCosts} from './costs.js?v=1.32.1';
+import {buildingFields,getBuildingTargets,buildingAssumptions,applyBuildingOverrides} from './buildings.js?v=1.32.1';
+import {renderBudget,renderPriceSources,renderTreePriceSources,renderGardenPriceSources} from './budget-view.js?v=1.32.1';
+import {createTreeControls} from './tree-controls.js?v=1.32.1';
+import {createPrivacyControls} from './privacy-controls.js?v=1.32.1';
+import {createPavilionControls} from './pavilion-controls.js?v=1.32.1';
+import {createGarageControls} from './garage-controls.js?v=1.32.1';
+import {observerForPreset,analyzeVisibility,terraceGroundReference,spaLayoutWarnings,jacuzziBounds,frontHedgeLayout,boundaryAccessLayout,hedgeSegments,privacyStructures,terraceCover} from './geometry.js?v=1.32.1';
+import {renderPlan,renderSection} from './diagrams.js?v=1.32.1';
+import {sunForSettings,sanitizeSolarDate} from './solar.js?v=1.32.1';
+import {analyzeSunlight} from './shade.js?v=1.32.1';
+import {renderSunReadouts,renderSunMap} from './sun-view.js?v=1.32.1';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.32.1';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.32.1';
+import {PICTURED_TREES,matchesPicturedTrees,applyPicturedTrees,matchesExcelsaTrees,applyExcelsaTrees} from './reference-planting.js?v=1.32.1';
+import {gardenDimensions} from './dimensions.js?v=1.32.1';
+import {UPPER_FLOOR_PRESETS,upperFloorPreset} from './viewpoints.js?v=1.32.1';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.32.1';
+import {houseRenovationSummary} from './house-renovation.js?v=1.32.1';
+import {renderNightReadouts} from './night-view.js?v=1.32.1';
+import {getDesignStyle} from './design-styles.js?v=1.32.1';
+import {createStudioControls} from './studio-controls.js?v=1.32.1';
+import {createDesignHistory} from './design-history.js?v=1.32.1';
+import {evaluateDesignChecks} from './design-checks.js?v=1.32.1';
+import {renderDesignReview} from './design-review.js?v=1.32.1';
+import {changePresentationSettings} from './studio-state.js?v=1.32.1';
+import {applyPlanExterior,planRegistrationSummary} from './plan-exterior.js?v=1.32.1';
+import {getInteriorPlan,INTERIOR_SOURCES,INTERIOR_DIMENSIONS,INTERIOR_CHANGES} from './interior-plan.js?v=1.32.1';
+import {getHouseFloorPlan} from './house-model.js?v=1.32.1';
+import {existingVegetationSummary} from './existing-vegetation.js?v=1.32.1';
+import {mountSeaView} from './sea-view.js?v=1.32.1';
 
 const $=id=>document.getElementById(id);
 const selectedSiteId=resolveSiteId(location.search,location.hash);
@@ -108,7 +109,7 @@ const openedSharedDesign=hasSharedDesign(location.hash);
 let settings=openedSharedDesign?decodeState(location.hash):readSaved();
 if(openedSharedDesign)openedDesign='Opened linked design';
 if(!profile.hasGarage)settings.removeGarage=true;
-let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls,privacyControls,garageControls,studioControls,designChecks,seaView,seaCorridor,seaSettingsSignature;
+let data,scene,observer,analysis,costEstimate,updateTimer,toastTimer,lastSceneMode,sun,shade,sunPlayback,treeControls,privacyControls,pavilionControls,garageControls,studioControls,designChecks,seaView,seaCorridor,seaSettingsSignature;
 const designHistory=createDesignHistory(settings);
 let garageViewActive=false;
 let interiorWorkspace,interiorWorkspacePromise;
@@ -305,11 +306,13 @@ function syncControls(){
   const styleQuoteField=document.querySelector('[data-field="costStyleUpgradeQuote"]');
   if(styleQuoteField)styleQuoteField.hidden=settings.designStyle==='current';
   const program=gardenProgram(settings,baseData),spa=program.active;
+  const pavilion=program.id==='spa-pavilion';
   const poolGrove=settings.gardenProgram==='spa-pool-grove',corner=settings.gardenProgram==='spa-corner',aligned=settings.gardenProgram==='spa-aligned',grove=settings.gardenProgram==='spa-grove',screened=settings.gardenProgram==='spa-screened';
-  const compact=poolGrove||corner||aligned||grove||screened||settings.gardenProgram==='spa-compact',tub=jacuzziBounds(settings,baseData),pool=poolBounds(settings,baseData);
+  const compact=pavilion||poolGrove||corner||aligned||grove||screened||settings.gardenProgram==='spa-compact',tub=jacuzziBounds(settings,baseData),pool=poolBounds(settings,baseData);
   const edge=settings.gardenProgram==='spa-edge';
   $('garden-program-wrap').hidden=profile.id!=='sternicza-11';
-  $('garden-program').value=settings.gardenProgram;
+  $('pavilion-program-option').hidden=!pavilion;
+  $('garden-program').value=pavilion?'spa-pavilion':settings.gardenProgram;
   $('pictured-tree-controls').hidden=profile.id!=='sternicza-11';
   const pictureMatched=matchesPicturedTrees(settings),excelsaMatched=matchesExcelsaTrees(settings);
   $('pictured-tree-status').textContent=excelsaMatched?'Latest planting · three 9 m Excelsa, with 2 m crowns at the pictured positions.':pictureMatched?'Original pine reference · three 10 m pines at the pictured positions.':`${openedDesign} · ${(settings.screeningTrees||[]).length} trees in your current comparison.`;
@@ -317,7 +320,9 @@ function syncControls(){
   $('pictured-tree-status').dataset.planting=excelsaMatched?'excelsa':pictureMatched?'reference-pines':'custom';
   $('pictured-tree-status').classList.remove('different');
   $('pictured-tree-coordinates').innerHTML=PICTURED_TREES.map((tree,index)=>`<tr><th scope="row">T${index+1}</th><td>${fmt(tree.x,2)}</td><td>${fmt(tree.y,2)}</td><td>${fmt(tree.height,1)}</td></tr>`).join('');
-  $('garden-program-note').textContent=poolGrove
+  $('garden-program-note').textContent=pavilion
+    ?'Pavilion alternative: 3.5 × 8 m pool on the west side, dining near the terrace, fire lounge in the central garden and resting places beside the rear plunge. The selected planting is retained. Open Corner pavilion alternative to change its location and height; switching it off restores the previous garden programme. Choosing another programme here also leaves the pavilion alternative.'
+    :poolGrove
     ?`${fmt(pool.width,1)} × ${fmt(pool.length,1)} m pool beside the rear-left/east planting. The latest default has three 9 m Excelsa with 2 m crowns: one alongside the pool and two along the rear boundary. Use a planting scenario to compare species at these same positions, or replace trees in Screening trees to keep your own positions. Current tree heights: ${(settings.screeningTrees||[]).filter(tree=>tree.enabled).map(tree=>`${fmt(tree.height,1)} m`).join(' · ')||'none'}. Crown overhang and trunk-to-coping distances remain visible in Plan. Full-perimeter thujas cover all four edges, with front access openings. Compare the actual PCK3 result at each viewpoint.`
     :corner
     ?`Previous starting layout: three pines in a 2.8 × 3.9 m rear-left/east group, with the nearest pair 2.50 m apart. Its default uses 10 m height and 6 m crowns inside the plot; actual specimens need confirmation. Custom tree positions and sizes are shown in Plan. PCK3 remains partly visible, especially from the jacuzzi. Full-perimeter thujas screen all four edges with the front access openings clear.`
@@ -409,6 +414,7 @@ function syncControls(){
   syncBuildingControls();
   treeControls?.sync();
   privacyControls?.sync();
+  pavilionControls?.sync();
   garageControls?.sync();
   $('compare').disabled=!comparisonA;
   $('compare-mobile').disabled=!comparisonA;
@@ -515,6 +521,7 @@ function update(){
   costEstimate=estimateCosts(settings,data);
   renderBudget(costEstimate,settings,data);
   privacyControls?.render();
+  pavilionControls?.render();
   garageControls?.render();
   const cover=terraceCover(settings,data);
   const registeredHouse=Boolean(data.site.house?.architecturalModel);
@@ -577,7 +584,7 @@ async function syncInteriorWorkspace(){
   $('interior-open').setAttribute('aria-expanded',String(enabled));
   if(!enabled){interiorWorkspace?.setVisible(false);return;}
   if(!interiorWorkspace){
-    if(!interiorWorkspacePromise)interiorWorkspacePromise=import('./interior-workspace.js?v=1.31.1').then(({createInteriorWorkspace})=>{
+    if(!interiorWorkspacePromise)interiorWorkspacePromise=import('./interior-workspace.js?v=1.32.1').then(({createInteriorWorkspace})=>{
       interiorWorkspace=createInteriorWorkspace($('interior-host'),{settings,onChange:changeInterior,onClose:()=>changeInterior({interiorEnabled:false}),onStatus:toast,getData:()=>data,getExteriorContext:(floor,view)=>scene?.createInteriorContext?.(floor,view),getContextKey:()=>scene?.getInteriorContextKey?.()||''});
       return interiorWorkspace;
     }).catch(error=>{console.error('Interior workspace unavailable',error);interiorWorkspacePromise=null;changeInterior({interiorEnabled:false});toast('Interiors could not load. Please refresh and try again.');});
@@ -655,6 +662,24 @@ privacyControls=createPrivacyControls({
   getObserver:()=>observerForPreset(settings.preset,settings,data||baseData),getAnalysis:()=>analysis,
   notify:toast,
   onChange:patch=>{stopSunPlayback();settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;syncControls();update();},
+  onView:preset=>{
+    const initial=observerForPreset(preset,{...settings,eyeHeight:undefined},data||baseData);
+    settings=sanitizeState({...settings,preset,eyeHeight:initial.eyeHeight,lookYaw:initial.defaultLookYaw??0,lookPitch:initial.defaultLookPitch??0,mode:'eye'});
+    showingA=false;comparisonB=null;syncControls();update();
+  },
+});
+
+pavilionControls=createPavilionControls({
+  getSettings:()=>settings,getData:()=>data||baseData,
+  getObserver:()=>observerForPreset(settings.preset,settings,data||baseData),getAnalysis:()=>analysis,
+  notify:toast,
+  onChange:patch=>{
+    stopSunPlayback();settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+    // The garden alternative should be visible when enabled from the default
+    // front-garage overview. Preserve any other camera chosen by the user.
+    if(patch.pavilionEnabled&&garageViewActive&&settings.mode==='orbit'){garageViewActive=false;lastSceneMode=null;}
+    syncControls();update();
+  },
   onView:preset=>{
     const initial=observerForPreset(preset,{...settings,eyeHeight:undefined},data||baseData);
     settings=sanitizeState({...settings,preset,eyeHeight:initial.eyeHeight,lookYaw:initial.defaultLookYaw??0,lookPitch:initial.defaultLookPitch??0,mode:'eye'});
@@ -756,7 +781,7 @@ $('apply-pictured-trees').addEventListener('click',()=>applyReferencePlanting(fa
 $('garden-program').addEventListener('change',e=>{
   stopSunPlayback();
   const planting=getScreeningLayouts(profile.id,settings.gardenProgram).find(item=>matchesScenario(item.id,settings));
-  settings=sanitizeState({...settings,gardenProgram:e.target.value});
+  settings=sanitizeState({...settings,gardenProgram:e.target.value,pavilionEnabled:false});
   if(planting){
     const layouts=getScreeningLayouts(profile.id,settings.gardenProgram);
     settings=scenarioState(layouts.some(item=>item.id===planting.id)?planting.id:'default',settings);
@@ -779,7 +804,7 @@ $('export').addEventListener('click',()=>{
   // A range input can still have a scheduled geometry/budget update. Export one
   // coherent snapshot of the latest settings and their derived calculations.
   clearTimeout(updateTimer);update();
-  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,existingNature:profile.id===DEFAULT_SITE_ID?{...existingVegetationSummary(baseData,settings),sources:baseData.existingVegetation?.sources||[],limitations:baseData.existingVegetation?.limitations||[]}:null,seaView:seaView?.exportSummary?.()??null,designPresentation:{...getDesignStyle(settings.designStyle),houseFinishPreview:settings.styleHouseFinish,houseRenovation:houseRenovationSummary(data,settings,getDesignStyle(settings.designStyle)),scope:'Complete coordinated renovation: furniture forms, interior architecture, materials, facades and garden finishes. Current restores the original drawing layout. Both viewers share the same house, openings, decks and actual garden context. Structural feasibility and installed costs still require project-specific verification.'},designChecks,dimensions:gardenDimensions({...settings,showDimensions:true},data),interiors:profile.id===DEFAULT_SITE_ID?{sources:INTERIOR_SOURCES,dimensions:INTERIOR_DIMENSIONS,changes:INTERIOR_CHANGES,registration:planRegistrationSummary(data),selected:getHouseFloorPlan({floor:settings.interiorFloor,settings,data}),floors:Object.fromEntries(['basement','ground','first','attic'].map(floor=>[floor,getHouseFloorPlan({floor,settings,data})])),style:settings.designStyle,note:'Drawing reconstruction and annotated renovation proposal. The photographs may predate the current house; geometry, structural removals and equipment loads require verification.'}:null,privacyStructures:(()=>{const layout=privacyStructures(settings,data);return {footprints:layout.footprints,warnings:layout.warnings,foliageAssumption:settings.privacyPergolaEnabled&&settings.privacyPergolaFoliage?'Ideal dense established planting on two pergola sides':'No opaque pergola foliage'};})(),basementGarage:garageControls?.exportSummary()??null,terraceCover:(()=>{const c=terraceCover(settings,data);return {type:c.type,enabled:c.enabled,bounds:c.bounds,area:c.deckArea,deckTopZ:c.deckTopZ,undersideZ:c.undersideZ,minimumCoveredHeight:c.minimumCoveredHeight,guardHeight:c.guardHeight,access:c.access,accesses:c.accesses||[],accessFits:c.type!=='balcony'||(c.accessFits??Boolean(houseAppearanceLayout(data,settings).balconyDoor)),warnings:c.warnings,assumptions:c.assumptions};})(),costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
+  const content={schemaVersion:STATE_VERSION,project:`${profile.label} · Garden Lab`,siteId:profile.id,site:{address:profile.address,parcels:baseData.site.parcels,coordinates:baseData.coordinates,sources:baseData.sources,limitations:baseData.limitations},exportedAt:new Date().toISOString(),settings,existingNature:profile.id===DEFAULT_SITE_ID?{...existingVegetationSummary(baseData,settings),sources:baseData.existingVegetation?.sources||[],limitations:baseData.existingVegetation?.limitations||[]}:null,seaView:seaView?.exportSummary?.()??null,designPresentation:{...getDesignStyle(settings.designStyle),houseFinishPreview:settings.styleHouseFinish,houseRenovation:houseRenovationSummary(data,settings,getDesignStyle(settings.designStyle)),scope:'Complete coordinated renovation: furniture forms, interior architecture, materials, facades and garden finishes. Current restores the original drawing layout. Both viewers share the same house, openings, decks and actual garden context. Structural feasibility and installed costs still require project-specific verification.'},designChecks,dimensions:gardenDimensions({...settings,showDimensions:true},data),interiors:profile.id===DEFAULT_SITE_ID?{sources:INTERIOR_SOURCES,dimensions:INTERIOR_DIMENSIONS,changes:INTERIOR_CHANGES,registration:planRegistrationSummary(data),selected:getHouseFloorPlan({floor:settings.interiorFloor,settings,data}),floors:Object.fromEntries(['basement','ground','first','attic'].map(floor=>[floor,getHouseFloorPlan({floor,settings,data})])),style:settings.designStyle,note:'Drawing reconstruction and annotated renovation proposal. The photographs may predate the current house; geometry, structural removals and equipment loads require verification.'}:null,cornerPavilion:pavilionControls?.exportSummary()??null,privacyStructures:(()=>{const layout=privacyStructures(settings,data);return {footprints:layout.footprints,warnings:layout.warnings,foliageAssumption:settings.privacyPergolaEnabled&&settings.privacyPergolaFoliage?'Ideal dense established planting on two pergola sides':'No opaque pergola foliage'};})(),basementGarage:garageControls?.exportSummary()??null,terraceCover:(()=>{const c=terraceCover(settings,data);return {type:c.type,enabled:c.enabled,bounds:c.bounds,area:c.deckArea,deckTopZ:c.deckTopZ,undersideZ:c.undersideZ,minimumCoveredHeight:c.minimumCoveredHeight,guardHeight:c.guardHeight,access:c.access,accesses:c.accesses||[],accessFits:c.type!=='balcony'||(c.accessFits??Boolean(houseAppearanceLayout(data,settings).balconyDoor)),warnings:c.warnings,assumptions:c.assumptions};})(),costEstimate,solar:sun?{date:sun.date,requestedMinutes:sun.minutes,resolvedMinutes:sun.resolvedMinutes,utcISO:sun.utcISO,timeZone:sun.timeZone,latitude:sun.latitude,longitude:sun.longitude,timeNote:sun.timeNote,azimuth:sun.azimuth,elevation:sun.elevation,sunriseMinutes:sun.sunriseMinutes,sunsetMinutes:sun.sunsetMinutes}:null,sunlight:shade?{status:shade.status,cellSize:shade.cellSize,zones:shade.zones,method:shade.method,limitations:shade.limitations}:null,buildingAdjustments:baseData?buildingAssumptions(baseData,settings).filter(b=>b.active):[],summary:analysis?{observer,visible:analysis.visible,total:analysis.total,blockedPercent:analysis.blockedPercent,worstRequiredHedge:analysis.worstRequiredHedge}:null,note:'A sampled planning model, not a survey, sunlight-hours study or whole-property privacy guarantee.'};
   const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`${profile.id}-scenario.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Scenario exported');
 });
 $('about-open').addEventListener('click',()=>$('about').showModal());
@@ -799,7 +824,7 @@ try{
   fetch(new URL('../data/tree-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Tree price sources unavailable');return r.json();}).then(renderTreePriceSources).catch(()=>{$('tree-price-date').textContent='Supplier references are available in each tree preset.';});
   fetch(new URL('../data/garden-budget-sources.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Garden price sources unavailable');return r.json();}).then(renderGardenPriceSources).catch(()=>{$('garden-price-date').textContent='Garden supplier references and estimate assumptions are documented in the repository.';});
   try{
-    const {createScene}=await import('./scene.js?v=1.31.1');
+    const {createScene}=await import('./scene.js?v=1.32.1');
     scene=createScene($('scene-host'),data,{onPerformanceInfo:stats=>studioControls?.performanceInfo(stats),onPick:moveObserver,onCameraChange:angles=>{if(angles){if(Number.isFinite(angles.lookYaw))settings.lookYaw=angles.lookYaw;if(Number.isFinite(angles.lookPitch))settings.lookPitch=angles.lookPitch;syncLookDirections();}}});
     if(scene.rendererType==='svg'){$('sun-renderer-note').hidden=false;$('sun-renderer-note').textContent='This browser uses the lightweight 3D view. Night surface lighting and cast shadows need WebGL; simplified glowing windows and fixture markers remain available. Open Sun & shade for calculated shadows.';}
     if(scene.available===false){settings.mode='plan';toast('3D is unavailable in this browser. Plan and sightline views still work.');}
@@ -815,7 +840,7 @@ try{
       seaSettingsSignature=JSON.stringify([settings.floorHeight,settings.firstFloorRise]);
     }).catch(()=>{panel.textContent='The sea-view data could not load. Refresh to retry. The neighbourhood model remains available.';});
   }
-  if(settings.basementGarageEnabled&&settings.mode==='orbit')focusGarageCamera();
+  if(settings.basementGarageEnabled&&!settings.pavilionEnabled&&settings.mode==='orbit')focusGarageCamera();
 }catch(error){
   console.error(error);$('loading').replaceChildren();const heading=document.createElement('strong');heading.textContent='The site model could not load.';const note=document.createElement('span');note.textContent='Refresh the page to retry. If running locally, serve the folder over HTTP.';$('loading').append(heading,note);
 }

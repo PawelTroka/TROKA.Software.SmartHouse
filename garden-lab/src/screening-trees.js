@@ -3,10 +3,10 @@
  * Coordinates and absolute elevations match geometry.js. Dense crowns are an
  * optimistic geometric assumption, not a measured guarantee of opaque foliage.
  */
-import { TREE_CATALOG, getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.31.1';
-import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.31.1';
-import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.31.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.1';
+import { TREE_CATALOG, getTreeType, screeningTreeLabel } from './tree-catalog.js?v=1.32.1';
+import { gardenGroundAt, pointInPolygon, segmentIntersection, terraceGroundReference, analyzeVisibility } from './geometry.js?v=1.32.1';
+import { terraceStairs, rectCorners, boundsOf } from './layout.js?v=1.32.1';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.32.1';
 
 export const MAX_SCREENING_TREES = 12;
 export const TREE_LEAF_MODES = Object.freeze(['auto','leaf-on','leaf-off']);

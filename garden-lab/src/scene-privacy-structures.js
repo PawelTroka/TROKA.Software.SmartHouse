@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.31.1';
+import {toWorld} from './orientation.js?v=1.32.1';
+import {createCornerPavilionGroup} from './scene-corner-pavilion.js?v=1.32.1';
 
 /** Draw the same finite members and panels used by the ray calculations.
  * The model supplies foliage only when dense coverage is explicitly selected;
@@ -8,6 +9,9 @@ export function createPrivacyStructureGroup(structures, materials) {
   const group=new THREE.Group();
   group.name='privacy-structures';
   for(const primitive of structures?.boxes||[]) {
+    // The optional pavilion uses these same boxes, batched by its coordinated
+    // finish, plus clear panes. Do not draw a duplicate generic timber body.
+    if(primitive.group==='pavilion'&&structures.pavilion?.enabled)continue;
     const {x0,x1,y0,y1,z0,z1}=primitive;
     if(![x0,x1,y0,y1,z0,z1].every(Number.isFinite)||x1<=x0||y1<=y0||z1<=z0)continue;
     const material=primitive.part==='foliage' ? materials.hedge
@@ -22,5 +26,6 @@ export function createPrivacyStructureGroup(structures, materials) {
     mesh.userData.privacyStructure={id:primitive.id,group:primitive.group,part:primitive.part};
     group.add(mesh);
   }
+  if(structures?.pavilion?.enabled)group.add(createCornerPavilionGroup(structures.pavilion,materials));
   return group;
 }

@@ -216,3 +216,33 @@ jobs:
           path: garden-lab/test-results/neighborhood-realism/
           if-no-files-found: ignore
           retention-days: 7
+
+  corner-pavilion:
+    name: Corner pavilion alternatives and mobile checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: npx --no-install playwright install --with-deps chromium
+      - name: Compare pavilion placements, heights, persistence and mobile controls
+        timeout-minutes: 14
+        run: node scripts/pavilion-browser-check.mjs
+      - name: Upload pavilion evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: corner-pavilion-evidence
+          path: garden-lab/test-results/pavilion/
+          if-no-files-found: ignore
+          retention-days: 7

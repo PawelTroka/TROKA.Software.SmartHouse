@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.js';
-import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.31.1';
-import {interiorMaterials} from './interior-materials.js?v=1.31.1';
-import {modelTools,batchGroup} from './interior-geometry.js?v=1.31.1';
-import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.31.1';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.31.1';
-import {addHouseRenovation} from './scene-house-renovation.js?v=1.31.1';
-import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.31.1';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.31.1';
-import {getDesignStyle} from './design-styles.js?v=1.31.1';
-import {toWorldTriangle} from './orientation.js?v=1.31.1';
-import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.31.1';
+import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.32.1';
+import {interiorMaterials} from './interior-materials.js?v=1.32.1';
+import {modelTools,batchGroup} from './interior-geometry.js?v=1.32.1';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.32.1';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.32.1';
+import {addHouseRenovation} from './scene-house-renovation.js?v=1.32.1';
+import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.32.1';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.32.1';
+import {getDesignStyle} from './design-styles.js?v=1.32.1';
+import {toWorldTriangle} from './orientation.js?v=1.32.1';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.32.1';
 
 /** Same architecture/furniture builder as the interior viewer, with all four
  * floors assembled in the site frame. No placeholder furniture or facade holes. */

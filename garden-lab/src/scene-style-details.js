@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.31.1';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.31.1';
+import {toWorld} from './orientation.js?v=1.32.1';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.32.1';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.

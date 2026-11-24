@@ -2,15 +2,25 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.31.1)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.31.1)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.31.1)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.32.1)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.32.1)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.1)**
 
-## Surrounding-building accuracy · 1.31.1
+## Surrounding-building accuracy · 1.32.1
 
 The 24 November accuracy follow-up uses the reconstructed neighbouring roofs and walls for **3D rendering, local privacy and sunlight rays**. This removes the former mismatch between a visible ridge/lower wing and an analytical median-height prism. PCK 1, 3 and 5 now have distinct flat decks, central pyramidal skylights and six chimney stacks, with measured top heights and estimated fixture extents. The separate optional high-feature samples retain their existing control.
 
 Observed openings are registered once across a complete elevation, including mapped walls split into short segments. The garden-facing 9a and 13a façades gain their observed grouped windows and projecting balconies/recessed loggia; generic side windows use the same floor datum. PCK 5's side colours now use the visible horizontal fields. The opposite 5/7 upper terrace and recessed back-wall arrangement remain unresolved instead of adding a door above a measured low roof. The [appearance record](docs/sternicza-appearance-observations.md) identifies these limits.
 
-The fixes apply on top of the coordinated resort release below. Original measured footprints, roof returns and official building identities remain intact. Dense façade inspection follows the resolved wall surfaces.
+The fixes apply on top of the coordinated resort and optional pavilion releases below. Original measured footprints, roof returns and official building identities remain intact. Dense façade inspection follows the resolved wall surfaces.
+
+## Optional corner pavilion · 1.32.0
+
+Sternicza has an **off-by-default pavilion alternative** with rear/east-corner and former-garage placements. Enabling it moves the pool west and rearranges dining, fire lounge and resting places. Turning it off restores the previous garden programme. Compare 6.5, 8, 10 and 12 m height studies from the same eye, with transparent glass and the actual finite walls, roof and floor slabs included in privacy and shade calculations.
+
+The PCK3 comparison retains the same alternative garden in both cases and removes only pavilion construction from its baseline. Percentages describe sampled sightlines, not visible façade area. The separate roof-envelope diagnostic identifies rays passing beside the footprint; more height cannot block those rays. Roof height is measured from original terrain, independent of proposed garden fill.
+
+**No permitted building height is established.** Official city queries found no covering current MPZP in the queried layers. The revised draft general plan shows 12 m in zone 649SW at this corner, but remains a draft and does not grant permission for this pavilion. The complete pavilion project is a separate quote-only budget item. Internal stairs and detailed rooms remain undesigned.
+
+[Open the pavilion study](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.1#v=28&site=sternicza-11&pavilionEnabled=true&designStyle=beach-house&mode=orbit&showDimensions=false) · [Study, planning sources and comparison results](docs/corner-pavilion-study-1.32.md)
 
 ## Coordinated resort living · 1.31.0
 

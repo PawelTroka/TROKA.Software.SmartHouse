@@ -1,9 +1,9 @@
-import {closestBoundary} from './dimensions.js?v=1.31.1';
-import {footprintFit, overlapArea} from './footprint-fit.js?v=1.31.1';
-import {gardenProgram} from './garden-program.js?v=1.31.1';
-import {garageLayout} from './garage-ramp.js?v=1.31.1';
-import {gardenGroundAt, jacuzziBounds, privacyStructures, spaLevels, terraceCover, terraceGroundReference, terrainAt} from './geometry.js?v=1.31.1';
-import {rectCorners, terraceStairs} from './layout.js?v=1.31.1';
+import {closestBoundary} from './dimensions.js?v=1.32.1';
+import {footprintFit, overlapArea} from './footprint-fit.js?v=1.32.1';
+import {gardenProgram} from './garden-program.js?v=1.32.1';
+import {garageLayout} from './garage-ramp.js?v=1.32.1';
+import {gardenGroundAt, jacuzziBounds, privacyStructures, spaLevels, terraceCover, terraceGroundReference, terrainAt} from './geometry.js?v=1.32.1';
+import {rectCorners, terraceStairs} from './layout.js?v=1.32.1';
 
 const boxRing = b => [[b.x0,b.y0],[b.x1,b.y0],[b.x1,b.y1],[b.x0,b.y1]];
 const areaLabel = v => v < .01 ? 'less than 0.01 m²' : `${v.toFixed(2)} m²`;
@@ -29,6 +29,7 @@ function siteFeatures(settings, data, program, stairs, tub, cover, structures) {
     if(rings.length)items.push(feature(group,label,rings));
   }
   items.push(feature('tub','Jacuzzi shell',[boxRing(tub)]));
+  if(structures.pavilion?.enabled)items.push(feature('pavilion','Pavilion and entry',structures.pavilion.footprints.map(f=>rectCorners(f))));
   return items;
 }
 
