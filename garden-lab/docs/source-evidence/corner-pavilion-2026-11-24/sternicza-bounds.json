@@ -1,0 +1,327 @@
+{
+  "queryUrl": "https://geogdansk.pl/server/rest/services/WUiA/MPZP_NA_WMS/MapServer/1/query?f=json&geometry=%7B%22rings%22%3A+%5B%5B%5B476064.831756033%2C+726902.760579949%5D%2C+%5B476083.477007224%2C+726894.680132194%5D%2C+%5B476071.997650043%2C+726868.237330145%5D%2C+%5B476068.411497858%2C+726859.922715501%5D%2C+%5B476049.880342341%2C+726867.59176273%5D%2C+%5B476053.437225993%2C+726875.956766203%5D%2C+%5B476054.923818833%2C+726879.293865758%5D%2C+%5B476064.831756033%2C+726902.760579949%5D%5D%5D%2C+%22spatialReference%22%3A+%7B%22wkid%22%3A+2180%7D%7D&geometryType=esriGeometryPolygon&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=false",
+  "input": {
+    "rings": [
+      [
+        [
+          476064.831756033,
+          726902.760579949
+        ],
+        [
+          476083.477007224,
+          726894.680132194
+        ],
+        [
+          476071.997650043,
+          726868.237330145
+        ],
+        [
+          476068.411497858,
+          726859.922715501
+        ],
+        [
+          476049.880342341,
+          726867.59176273
+        ],
+        [
+          476053.437225993,
+          726875.956766203
+        ],
+        [
+          476054.923818833,
+          726879.293865758
+        ],
+        [
+          476064.831756033,
+          726902.760579949
+        ]
+      ]
+    ],
+    "spatialReference": {
+      "wkid": 2180
+    }
+  },
+  "response": {
+    "displayFieldName": "id",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "id": "ID",
+      "NR_MPZP": "NR MPZP",
+      "NAZWA": "NAZWA",
+      "SKALA": "SKALA",
+      "PRZYSTAPIENIE_NR_UCHW": "PRZYSTĄPIENIE NR UCHWAŁY",
+      "PRZYSTAPIENIE_OD": "PRZYSTĄPIENIE OD",
+      "PRZYSTAPIENIE_DO": "PRZYSTĄPIENIE DO",
+      "UCHWALA": "UCHWAŁA",
+      "UCHWALA_ORGAN_UCHW": "UCHWAŁA ORGAN UCHWALAJĄCY",
+      "UCHWALA_OD": "UCHWAŁA OD",
+      "UCHWALA_DO": "UCHWAŁA DO",
+      "DZIENNIK": "DZIENNIK",
+      "ORGAN_PUBLIKUJACY": "ORGAN PUBLIKUJĄCY",
+      "WAZNE_OD": "WAŻNE OD",
+      "WAZNE_DO": "WAŻNE DO",
+      "RASTER": "RASTER",
+      "LEGENDA": "LEGENDA",
+      "GMINA": "GMINA",
+      "RADA": "RADA",
+      "ZMIANA": "ZMIANA",
+      "FOLDER": "FOLDER",
+      "DOTYCZY": "DOTYCZY",
+      "TEKST_UCHW": "TEKST UCHWAŁY",
+      "RYS_UCHW": "RYSUNEK UCHWAŁY",
+      "LINK": "LINK",
+      "ADNOTACJE": "ADNOTACJE",
+      "APP_GML": "APP GML",
+      "TRYB": "TRYB",
+      "POW_METR_2": "POW. METR 2",
+      "STATUS": "STATUS",
+      "Shape.STArea()": "Shape.STArea()",
+      "Shape.STLength()": "Shape.STLength()",
+      "PRZYSTAPIENIE_DATA": "DATA PRZYSTĄPIENIA",
+      "UCHWALA_DATA": "DATA UCHWALENIA",
+      "UCHWALA_LINK": "LINK DO UCHWAŁY",
+      "RYSUNEK_LINK": "LINK DO RYSUNKU",
+      "LEGENDA_LINK": "LINK DO LEGENDY",
+      "DATA_WEJSCIA_W_ZYCIE": "DATA WEJŚCIA W ŻYCIE"
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "id",
+        "type": "esriFieldTypeInteger",
+        "alias": "ID"
+      },
+      {
+        "name": "NR_MPZP",
+        "type": "esriFieldTypeString",
+        "alias": "NR MPZP",
+        "length": 50
+      },
+      {
+        "name": "NAZWA",
+        "type": "esriFieldTypeString",
+        "alias": "NAZWA",
+        "length": 500
+      },
+      {
+        "name": "SKALA",
+        "type": "esriFieldTypeString",
+        "alias": "SKALA",
+        "length": 50
+      },
+      {
+        "name": "PRZYSTAPIENIE_NR_UCHW",
+        "type": "esriFieldTypeString",
+        "alias": "PRZYSTĄPIENIE NR UCHWAŁY",
+        "length": 120
+      },
+      {
+        "name": "PRZYSTAPIENIE_OD",
+        "type": "esriFieldTypeDate",
+        "alias": "PRZYSTĄPIENIE OD",
+        "length": 8
+      },
+      {
+        "name": "PRZYSTAPIENIE_DO",
+        "type": "esriFieldTypeDate",
+        "alias": "PRZYSTĄPIENIE DO",
+        "length": 8
+      },
+      {
+        "name": "UCHWALA",
+        "type": "esriFieldTypeString",
+        "alias": "UCHWAŁA",
+        "length": 50
+      },
+      {
+        "name": "UCHWALA_ORGAN_UCHW",
+        "type": "esriFieldTypeString",
+        "alias": "UCHWAŁA ORGAN UCHWALAJĄCY",
+        "length": 255
+      },
+      {
+        "name": "UCHWALA_OD",
+        "type": "esriFieldTypeDate",
+        "alias": "UCHWAŁA OD",
+        "length": 8
+      },
+      {
+        "name": "UCHWALA_DO",
+        "type": "esriFieldTypeDate",
+        "alias": "UCHWAŁA DO",
+        "length": 8
+      },
+      {
+        "name": "DZIENNIK",
+        "type": "esriFieldTypeString",
+        "alias": "DZIENNIK",
+        "length": 255
+      },
+      {
+        "name": "ORGAN_PUBLIKUJACY",
+        "type": "esriFieldTypeString",
+        "alias": "ORGAN PUBLIKUJĄCY",
+        "length": 255
+      },
+      {
+        "name": "WAZNE_OD",
+        "type": "esriFieldTypeDate",
+        "alias": "WAŻNE OD",
+        "length": 8
+      },
+      {
+        "name": "WAZNE_DO",
+        "type": "esriFieldTypeDate",
+        "alias": "WAŻNE DO",
+        "length": 8
+      },
+      {
+        "name": "RASTER",
+        "type": "esriFieldTypeString",
+        "alias": "RASTER",
+        "length": 255
+      },
+      {
+        "name": "LEGENDA",
+        "type": "esriFieldTypeString",
+        "alias": "LEGENDA",
+        "length": 50
+      },
+      {
+        "name": "GMINA",
+        "type": "esriFieldTypeString",
+        "alias": "GMINA",
+        "length": 50
+      },
+      {
+        "name": "RADA",
+        "type": "esriFieldTypeString",
+        "alias": "RADA",
+        "length": 120
+      },
+      {
+        "name": "ZMIANA",
+        "type": "esriFieldTypeString",
+        "alias": "ZMIANA",
+        "length": 500
+      },
+      {
+        "name": "FOLDER",
+        "type": "esriFieldTypeString",
+        "alias": "FOLDER",
+        "length": 50
+      },
+      {
+        "name": "DOTYCZY",
+        "type": "esriFieldTypeString",
+        "alias": "DOTYCZY",
+        "length": 50
+      },
+      {
+        "name": "TEKST_UCHW",
+        "type": "esriFieldTypeString",
+        "alias": "TEKST UCHWAŁY",
+        "length": 120
+      },
+      {
+        "name": "RYS_UCHW",
+        "type": "esriFieldTypeString",
+        "alias": "RYSUNEK UCHWAŁY",
+        "length": 50
+      },
+      {
+        "name": "LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK",
+        "length": 255
+      },
+      {
+        "name": "ADNOTACJE",
+        "type": "esriFieldTypeString",
+        "alias": "ADNOTACJE",
+        "length": 500
+      },
+      {
+        "name": "APP_GML",
+        "type": "esriFieldTypeString",
+        "alias": "APP GML",
+        "length": 255
+      },
+      {
+        "name": "TRYB",
+        "type": "esriFieldTypeString",
+        "alias": "TRYB",
+        "length": 255
+      },
+      {
+        "name": "POW_METR_2",
+        "type": "esriFieldTypeDouble",
+        "alias": "POW. METR 2"
+      },
+      {
+        "name": "STATUS",
+        "type": "esriFieldTypeString",
+        "alias": "STATUS",
+        "length": 100
+      },
+      {
+        "name": "Shape.STArea()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STArea()"
+      },
+      {
+        "name": "Shape.STLength()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STLength()"
+      },
+      {
+        "name": "PRZYSTAPIENIE_DATA",
+        "type": "esriFieldTypeDate",
+        "alias": "DATA PRZYSTĄPIENIA",
+        "length": 8
+      },
+      {
+        "name": "UCHWALA_DATA",
+        "type": "esriFieldTypeDate",
+        "alias": "DATA UCHWALENIA",
+        "length": 8
+      },
+      {
+        "name": "UCHWALA_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK DO UCHWAŁY",
+        "length": 500
+      },
+      {
+        "name": "RYSUNEK_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK DO RYSUNKU",
+        "length": 500
+      },
+      {
+        "name": "LEGENDA_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK DO LEGENDY",
+        "length": 500
+      },
+      {
+        "name": "DATA_WEJSCIA_W_ZYCIE",
+        "type": "esriFieldTypeDate",
+        "alias": "DATA WEJŚCIA W ŻYCIE",
+        "length": 8
+      }
+    ],
+    "features": []
+  },
+  "headers": {
+    "cache-control": "must-revalidate,max-age=0,public",
+    "content-length": "4351",
+    "content-type": "application/json; charset=UTF-8",
+    "etag": "\"c0d3f723\"",
+    "date": "Tue, 24 Nov 2026 12:27:49 GMT"
+  }
+}

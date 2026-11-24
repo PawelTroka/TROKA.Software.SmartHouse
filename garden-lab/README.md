@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.30.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.30.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.30.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.32.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.32.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.0)**
+
+## Optional corner pavilion · 1.32.0
+
+Sternicza has an **off-by-default pavilion alternative** with rear/east-corner and former-garage placements. Enabling it moves the pool west and rearranges dining, fire lounge and resting places. Turning it off restores the previous garden programme. Compare 6.5, 8, 10 and 12 m height studies from the same eye, with transparent glass and the actual finite walls, roof and floor slabs included in privacy and shade calculations.
+
+The PCK3 comparison retains the same alternative garden in both cases and removes only pavilion construction from its baseline. Percentages describe sampled sightlines, not visible façade area. The separate roof-envelope diagnostic identifies rays passing beside the footprint; more height cannot block those rays. Roof height is measured from original terrain, independent of proposed garden fill.
+
+**No permitted building height is established.** Official city queries found no covering current MPZP in the queried layers. The revised draft general plan shows 12 m in zone 649SW at this corner, but remains a draft and does not grant permission for this pavilion. The complete pavilion project is a separate quote-only budget item. Internal stairs and detailed rooms remain undesigned.
+
+[Open the pavilion study](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.0#v=28&site=sternicza-11&pavilionEnabled=true&designStyle=beach-house&mode=orbit&showDimensions=false) · [Study, planning sources and comparison results](docs/corner-pavilion-study-1.32.md)
 
 ## Coordinated resort living · 1.31.0
 

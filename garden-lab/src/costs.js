@@ -3,14 +3,15 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover } from './geometry.js?v=1.31.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.31.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.31.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.31.0';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.31.0';
-import { getDesignStyle } from './design-styles.js?v=1.31.0';
-import { upgradeSingleCarGarage } from './garage-options.js?v=1.31.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.32.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.32.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.32.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.32.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.32.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.32.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.32.0';
+import { getDesignStyle } from './design-styles.js?v=1.32.0';
+import { upgradeSingleCarGarage } from './garage-options.js?v=1.32.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -46,6 +47,7 @@ export const COST_FIELDS = Object.freeze({
   ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','Complete line quote override. 0 uses the itemised planning allowance when enabled, otherwise needs a quote for active work. Optional canopy / demolition apply only when selected.'),group:'cost-garden'}])),
   costBalconyQuote: {...field('First-floor balcony · full installed quote',0,0,5000000,1000,'PLN','Complete balcony project quote including survey, design, structure, foundations, supports, deck finish, waterproofing, drainage, guards and proposed first-floor access door. 0 is unquoted and excluded, even with planning allowances enabled. Replaces the canopy price while balcony mode is selected.'),group:'cost-garden'},
   costStyleUpgradeQuote: {...field('Selected style · additional upgrade quote',0,0,5000000,1000,'PLN','Additional installed cost ABOVE the existing base finish, furniture and lighting lines. Do not enter a whole package twice. Include the proposed house cladding, trim and finish work when house renovation is on. 0 leaves this style-specific upgrade unquoted; no style premium is invented. Reconfirm when changing styles or house renovation scope.'),group:'cost-garden'},
+  costPavilionQuote: {...field('Corner pavilion · full project quote',0,0,10000000,1000,'PLN','Complete pavilion project including planning, survey, design, foundations, structure, glazing, internal access, finishes, services and tax. Garage removal uses its existing separate line. 0 is unquoted and excluded from the known subtotal.'),group:'cost-privacy'},
   ...Object.fromEntries([
     ['costPrivacyPergolaQuote','Garden pergola · full installed price'],
     ['costSpaScreenQuote','Spa side screens · full installed price'],
@@ -167,7 +169,7 @@ const quantityCache = new WeakMap();
 /** Areas on the mapped plan, before soil-depth and delivery multipliers. */
 export function gardenQuantities(settings, data) {
   const c = costSettings(settings);
-  const signature = JSON.stringify([settings.gardenProgram,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
+  const signature = JSON.stringify([settings.gardenProgram,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
     settings.hedgeInset ?? 0, c.costBedWidth, ...['Rear', 'Left', 'Right', 'Front'].map(side => positive(settings[`hedge${side}`] ?? (side==='Front'?0:2.5)) > 0)]);
   // data.site survives building sensitivity overrides, so cost geometry is reused.
   const cached = quantityCache.get(data.site);
@@ -180,6 +182,8 @@ export function gardenQuantities(settings, data) {
   if(pool)exclusions.push(rectangle(pool.x, pool.y, pool.width, pool.length));
   if (settings.removeGarage === false && data.site.garage?.footprint) exclusions.push(data.site.garage.footprint);
   if(program.active)for(const item of [program.sauna,program.firepit,program.coldPlunge])exclusions.push(item.footprint);
+  const pavilion=privacyStructures(settings,data).pavilion;
+  if(pavilion?.enabled)exclusions.push(pavilion.footprint);
   const rearGrossArea = polygonArea(rear), excludedArea = unionAreaInside(rear, exclusions);
   const automaticArea = Math.max(0, rearGrossArea - excludedArea);
   const segments = hedgeSegments(settings, data);
@@ -247,6 +251,9 @@ export function estimateStyleCosts(settings) {
 export function estimatePrivacyCosts(settings,data) {
   const c=costSettings(settings),rows=[];
   if((data.site.id||settings.siteId||'sternicza-11')==='sternicza-11'){
+    if(settings.pavilionEnabled===true)rows.push(installedLine(c,'costPavilionQuote',null,
+      `${settings.pavilionWidth??5} × ${settings.pavilionDepth??5.8} m corner pavilion · ${settings.pavilionHeight??6.5} m height study`,
+      'Whole pavilion project: planning, survey, structure, foundations, internal stair/access design, glazing, finishes, services and tax. No market price or permission is assumed. Detached-garage demolition remains in its separate line. Reconfirm the quote after changing position, size or height.'));
     if(settings.privacyPergolaEnabled===true)rows.push(installedLine(c,'costPrivacyPergolaQuote',null,
       'Selected internal garden pergola',
       'Structure, foundations, anchoring, selected planting and installation. Excludes the separately priced terrace canopy. Reconfirm the quote after changing dimensions or planting.'));
@@ -280,7 +287,7 @@ export function estimateBalconyCosts(settings,data) {
 export function estimateSpaCosts(settings,data) {
   const program=gardenProgram(settings,data),c=costSettings(settings),nadmorska=data.site.id==='nadmorska-17',enabled=program.active||nadmorska;
   if(!enabled)return installationGroup(false,[],c);
-  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
+  const tub=jacuzziBounds(settings,data),pool=poolBounds(settings,data),compact=['spa-pavilion','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id);
   if(nadmorska){
     const rows=[];
     if(pool)rows.push(installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · ${(pool.width*pool.length).toFixed(1)} m² · 1 proposed pool`,
@@ -291,9 +298,9 @@ export function estimateSpaCosts(settings,data) {
     rows.push(jacuzzi);
     return installationGroup(true,rows,c,{overflow:false,scopeId:'pool-and-jacuzzi',scopeLabel:'Pool and jacuzzi · installed scope'});
   }
-  const revisedPoolQuote=program.id==='spa-pool-grove'?(c.costSpaPool>0
+  const revisedPoolQuote=['spa-pavilion','spa-pool-grove'].includes(program.id)?(c.costSpaPool>0
     ?' Confirm that the entered quote covers the revised pool position and dimensions.'
-    :' The relocated, longer pool needs a project quotation. The existing whole-pool planning range is retained until that quotation is available.') : '';
+    :' The relocated pool needs a project quotation. The existing whole-pool planning range is retained until that quotation is available.') : '';
   const rows=[
     installedLine(c,'costSpaPool',scaledRange(RATES.pool),`${pool.width.toFixed(1)} × ${pool.length.toFixed(1)} m water · ${(pool.width*pool.length).toFixed(1)} m² · 1 installed pool`,
       `Shell, filtration, heating, cover, excavation and disposal, base, coping, delivery, local connections and commissioning. 8 × 3 m catalog packages are a reference, not a quote for this ${pool.width.toFixed(1)} m pool.${revisedPoolQuote}`,['pool']),
@@ -313,7 +320,7 @@ export function estimateSpaCosts(settings,data) {
 /** Finishes and enabling work; no plant supply, spa objects or bulk fill repeated. */
 export function estimateGardenCosts(settings,data,quantities=gardenQuantities(settings,data)) {
   const c=costSettings(settings),program=gardenProgram(settings,data),nadmorska=data.site.id==='nadmorska-17';
-  const enabled=nadmorska||['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)||c.costUsePlanningAllowances||
+  const enabled=nadmorska||['spa-pavilion','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)||c.costUsePlanningAllowances||
     Object.entries(COST_FIELDS).some(([key,f])=>f.group==='cost-garden'&&key!=='costBalconyQuote'&&c[key]>0);
   if(!enabled)return installationGroup(false,[],c,{quantities:{}});
   const terrace=data.site.terrace,tub=jacuzziBounds(settings,data);
@@ -327,6 +334,8 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
     rectangle(terrace.x,rearY,terrace.width,positive(settings.terraceDepth??terrace.depth))];
   if(pool){baseExclusions.push(rectangle(pool.x,pool.y,pool.width,pool.length));extra.push(rectangle(pool.x-pool.coping,pool.y-pool.coping,pool.width+2*pool.coping,pool.length+2*pool.coping));}
   if(settings.removeGarage===false&&data.site.garage?.footprint)baseExclusions.push(data.site.garage.footprint);
+  const pavilion=privacyStructures(settings,data).pavilion;
+  if(pavilion?.enabled){baseExclusions.push(pavilion.footprint);for(const f of pavilion.footprints.filter(f=>f.id!=='corner-pavilion'))extra.push(rectangle(f.x,f.y,f.width,f.length));}
   if(program.active){
     for(const item of [program.sauna,program.firepit,program.coldPlunge])baseExclusions.push(item.footprint);
     extra.push(program.firepit.outerFootprint,...(program.sauna.entrySteps||[]).map(step=>step.footprint),
