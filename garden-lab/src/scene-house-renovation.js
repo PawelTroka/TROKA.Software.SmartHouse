@@ -1,12 +1,12 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.32.1';
-import {facadePoint} from './house-appearance.js?v=1.32.1';
-import {houseRenovationParts,summarizeHouseRenovation} from './house-renovation.js?v=1.32.1';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.32.1';
+import {toWorld} from './orientation.js?v=1.33.0';
+import {facadePoint} from './house-appearance.js?v=1.33.0';
+import {houseRenovationParts,summarizeHouseRenovation} from './house-renovation.js?v=1.33.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.33.0';
 
 const flatSvgDetails=new Set(['brick','stone','panels','soldier-lintel','shutter-louvre']);
 
-/** A single mesh for the shallow, solid facade fittings, including their returns. */
+/** Batched physical cladding, deep reveals and sun heads, including returns. */
 export function addHouseRenovation(parent,layout,style,{svgMode=false}={}){
   const parts=houseRenovationParts(layout,style);
   if(!parts.length)return null;

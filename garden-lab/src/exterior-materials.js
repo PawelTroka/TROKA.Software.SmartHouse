@@ -1,12 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface, MATERIAL_ASSETS} from './material-assets.js?v=1.32.1';
+import {applyPhotographicSurface} from './material-assets.js?v=1.33.0';
+import {getMaterialForFinish} from './material-catalogue.js?v=1.33.0';
 
 // Finish specifications describe construction, grain and reflectance. They are
 // independent of palette colours and keep the original/current materials intact.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.32.1';
-export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.32.1';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.33.0';
+export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.33.0';
 const woodTypes=new Set(['oak','ash','walnut','teak','cedar','silvered-wood','charred-wood','reclaimed-wood','weatherboard','whitewashed-oak','painted-wood','painted-weatherboard']);
-const fabricTypes=new Set(['linen','woven','boucle','canvas','velvet','vinyl']);
+const fabricTypes=new Set(['linen','washed-linen','woven','boucle','canvas','velvet','vinyl','leather','wool','fine']);
 const metalTypes=new Set(['bronze','brass','anodized','chrome','painted-steel','blackened-steel','zinc','standing-seam']);
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
 const fract=v=>v-Math.floor(v);
@@ -49,6 +50,7 @@ export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
       tone=.94+(warp+weft)*(kind==='woven'?.035:.013)+grit*.25;
       if(kind==='boucle'){const loops=wave(u*13+wave(u*7,v*5)*.2,v*17);h+=loops*.07;tone+=loops*.035;}
       if(kind==='vinyl'){h=.5+grit*.18;tone=.96+grit*.12;}
+      if(kind==='leather'){const pores=wave(u*37+wave(u*7,v*13)*.15,v*41);h=.5+pores*.025+grit*.2;tone=.93+pores*.025;}
       if(kind==='velvet'){h=.5+grit*.25;tone=.91+wave(u*5,v*3)*.04;}
     }else if(['terracotta','clinker','terracotta-roof','slate'].includes(kind)){
       const nx=kind==='clinker'?5:kind==='terracotta'?3:7,ny=kind==='terracotta'?3:kind==='clinker'?10:6;
@@ -57,6 +59,22 @@ export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
       h=seam?.22:.56+grit*.8;tone=seam?.72:.88+tile*.10+grit*.4;warm=kind==='slate'?0:.03;
       if(kind==='terracotta-roof'){h+=Math.sin(pu*Math.PI)*.18;tone+=Math.sin(pu*Math.PI)*.06;}
       if(kind==='slate'){h+=wave(u*31,v*19)*.04;tone+=wave(u*7,v*13)*.05;}
+    }else if(['zellige','mosaic','porcelain-tile','encaustic'].includes(kind)){
+      const count=kind==='encaustic'?4:kind==='porcelain-tile'?2:8;
+      const fu=fract(u*count),fv=fract(v*count),joint=seams&&(fu<.025||fv<.025);
+      const tile=hash(Math.floor(u*count),Math.floor(v*count));
+      h=joint?.24:.54+grit*(kind==='zellige'?.6:.14)+(kind==='zellige'?(tile-.5)*.035:0);
+      tone=joint?.72:.95+grit*.16+(kind==='zellige'?(tile-.5)*.07:0);
+    }else if(kind==='penny-tile'){
+      const row=Math.round(v*8/(Math.sqrt(3)/2)),col=Math.round(u*8-(row%2)*.5);
+      const distance=Math.hypot(u*8-col-(row%2)*.5,v*8-row*Math.sqrt(3)/2);
+      h=distance<.447?.53+.04*Math.sqrt(Math.max(0,1-(distance/.447)**2)):.23;
+      tone=distance<.447?.98+grit*.08:.72;
+    }else if(kind==='riverstone'){
+      const row=Math.round(v*6.75),col=Math.round(u*6.75-(row%2)*.45);
+      const dx=u*6.75-col-(row%2)*.45,dy=(v*6.75-row)/.7,distance=Math.hypot(dx,dy);
+      h=distance<.43?.48+.23*Math.sqrt(Math.max(0,1-(distance/.43)**2)):.21;
+      tone=distance<.43?.82+hash(col,row)*.14:.68;
     }else if(kind==='terrazzo'){
       const a=hash(Math.floor(u*47),Math.floor(v*47)),chip=a>.80;
       h=.5+grit*.15;tone=chip?.70+hash(Math.floor(u*47),4)*.2:.96+grit*.15;warm=chip?(a-.9)*.2:0;
@@ -121,6 +139,16 @@ export function exteriorFinishForRole(style,role){
   return 'smooth-render';
 }
 
+/** finishDeckBox expresses U/V in board modules. Cancel that normalization
+ * before applying the measured photograph scale; a 10 cm grain stays 10 cm.
+ * Veneer scans run along U, whereas the old procedural grain ran along V. */
+export function exteriorPhotographicMapping(style,role,spec){
+  if(role!=='deck'||!style?.recipe?.module)return {metric:true};
+  const [length,width]=style.recipe.module,wood=woodTypes.has(exteriorFinishForRole(style,role));
+  if(wood&&spec.grainAxis==='u')return {metric:false,repeat:[length/spec.meters[0],8*width/spec.meters[1]],rotation:Math.PI/2};
+  return {metric:false,repeat:wood?[8*width/spec.meters[0],length/spec.meters[1]]:[length/spec.meters[0],8*width/spec.meters[1]]};
+}
+
 /** Mutate an already-owned material, preserving its colour and transparency.
  * All generated maps are released on material.dispose(), including replacements. */
 export function applyExteriorSurface(material,style,role,{svgMode=false,seams=role!=='deck'}={}){
@@ -134,20 +162,21 @@ export function applyExteriorSurface(material,style,role,{svgMode=false,seams=ro
   if(!svgMode){
     // The terrace renderer supplies metre-registered paving/board joints. Its
     // colour map must not paint a second, contradictory grid over that bond.
-    const photographed=woodTypes.has(finish)&&!['charred-wood','painted-wood','painted-weatherboard'].includes(finish)?'wood':
-      ['linen','woven','canvas'].includes(finish)?'linen':
-      ['sand-render','smooth-render','limewash','clay-render'].includes(finish)?'plaster':null;
-    const repeat=role==='deck'&&photographed==='wood'&&style?.recipe?.module?
-      [8*style.recipe.module[1]/MATERIAL_ASSETS.wood.meters[0],style.recipe.module[0]/MATERIAL_ASSETS.wood.meters[1]]:undefined;
-    const photographic=photographed?applyPhotographicSurface(material,photographed,{repeat,metric:role!=='deck',
-      normalStrength:photographed==='plaster'?(finish==='smooth-render'?.1:.4):photographed==='linen'?.48:.55}):null;
+    const specimen=getMaterialForFinish(finish,{seams:seams&&(!woodTypes.has(finish)||['wall','houseWall','plaster'].includes(role))});
+    const photographic=specimen&&!specimen.proceduralBond?applyPhotographicSurface(material,specimen.asset,{
+      ...exteriorPhotographicMapping(style,role,specimen),colorMode:specimen.colorMode,
+      normalStrength:specimen.normalStrength}):null;
     if(photographic)own(material,photographic);
     else{
       const {size,color,normals,roughness}=exteriorSurfacePixels(finish,256,{seams});
       const map=dataTexture(color,size,true),normal=dataTexture(normals,size),rough=dataTexture(roughness,size);
       own(material,[map,normal,rough]);material.map=map;material.normalMap=normal;material.roughnessMap=rough;
       material.bumpMap=null;material.normalScale=new THREE.Vector2(metal?.24:fabric?.28:.60,metal?.24:fabric?.28:.60);
+      material.userData.metricTexture=role!=='deck';
     }
+  }
+  if(woodTypes.has(finish)&&['wood','woodLight','timber','door','frame','houseFrame'].includes(role)){
+    material.userData.woodGrainAxis=getMaterialForFinish(finish,{seams:false})?.grainAxis;
   }
   material.userData.exteriorFinish=finish;material.userData.exteriorRole=role;material.needsUpdate=true;
   return material;

@@ -1,13 +1,14 @@
-// Shallow, additive facade treatments in wall-local metres. The renderers use
-// these same window and entry records for the underlying house.
-import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.32.1';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.32.1';
-import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.32.1';
-import {roofEdgeHeight} from './roof-envelope.js?v=1.32.1';
-import {garageLayout} from './garage-ramp.js?v=1.32.1';
-import {terrainAt} from './geometry.js?v=1.32.1';
-import {getDesignStyle} from './design-styles.js?v=1.32.1';
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.32.1';
+// Surface finishes and architectural reveals in wall-local metres. The same
+// altered aperture records cut the actual house walls in both viewers.
+import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.33.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.33.0';
+import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.33.0';
+import {roofEdgeHeight} from './roof-envelope.js?v=1.33.0';
+import {garageLayout} from './garage-ramp.js?v=1.33.0';
+import {terrainAt} from './geometry.js?v=1.33.0';
+import {getDesignStyle} from './design-styles.js?v=1.33.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.33.0';
+import {getRenovationArchitecture,renovationArchitecturalParts} from './renovation-architecture.js?v=1.33.0';
 
 function minimumRoof(edge,lo,hi){
   const roof=edge.roofEdge;
@@ -251,6 +252,7 @@ export function houseRenovationParts(layout,style){
     }
   }
   for(const bay of bays)cladding({...bay,courseOrigin:layout.floorZ},recipe,bay.place);
+  parts.push(...renovationArchitecturalParts(layout,style.id));
   return parts;
 }
 
@@ -260,7 +262,7 @@ export function summarizeHouseRenovation(parts,style){
     trimmedOpeningCount:new Set(parts.map(p=>p.openingId).filter(Boolean)).size,
     claddingAreaM2:parts.filter(p=>p.kind==='cladding-backing').reduce((sum,p)=>sum+(p.hi-p.lo)*(p.top-p.bottom),0),
     maxProjectionM:parts.reduce((max,p)=>Math.max(max,p.depth),0),coverage:getExteriorSurfaceSpec(style)?.coverage??'none',
-    surfaceSpecification:getExteriorSurfaceSpec(style)};
+    surfaceSpecification:getExteriorSurfaceSpec(style),architecture:getRenovationArchitecture(style?.id)};
 }
 
 export function houseRenovationSummary(data,settings,style=getDesignStyle(settings.designStyle)){

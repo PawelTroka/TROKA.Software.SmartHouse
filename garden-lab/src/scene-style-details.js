@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.32.1';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.32.1';
+import {toWorld} from './orientation.js?v=1.33.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.33.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.
@@ -457,7 +457,28 @@ export function createStyledResortPiece(style,m,r,options={}){
   const kit=assembly('resort-'+r.id,r,{...options,upholsteryMaterials:[m.linen,m.fabricAccent??m.styleAccent]});
   const {box,cushion,drum,bar}=kit,{width:w,length:l}=r,form=style.recipe.furniture;
   const accent=m.fabricAccent??m.styleAccent??m.linen;
-  if(r.kind==='planter'){
+  if(r.kind==='kitchen'){
+    const mineral=['pebble','low-pebble','block','shell','deco'].includes(form);
+    box(w/2,l/2,.44,w-.06,l-.04,.80,mineral?m.stone:m.wood);
+    box(w/2,l/2,.875,w,l,.075,m.stoneLight);
+    box(w/2,l/2,.055,w-.18,l-.12,.11,m.metal);
+    const doors=Math.max(3,Math.round(w/.58));
+    for(let i=0;i<doors;i++){
+      const cx=(i+.5)*w/doors;
+      box(cx,.012,.47,w/doors-.026,.023,.65,mineral?m.stoneLight:m.woodLight);
+      if(['weave','beach-platform','platform','bench','slat'].includes(form)){
+        for(let k=0;k<6;k++)box(cx-w/doors*.40+k*w/doors*.16,-.005,.47,.022,.023,.61,m.wood);
+      }else box(cx+w/doors*.28,-.010,.64,.014,.027,.13,m.metal);
+    }
+    // Inset sink and grill, kept within the counter's actual footprint.
+    box(w*.25,l*.50,.919,Math.min(.52,w*.2),l*.61,.014,m.metal);
+    box(w*.25,l*.50,.923,Math.min(.43,w*.17),l*.48,.009,m.dark??m.metal);
+    bar([w*.25,l*.83,.91],[w*.25,l*.83,1.16],.016,m.metal);
+    bar([w*.25,l*.83,1.16],[w*.25,l*.57,1.16],.016,m.metal);
+    box(w*.70,l*.5,.925,.62,l*.67,.036,m.metal);
+    for(let i=0;i<9;i++)box(w*.70-.26+i*.065,l*.5,.948,.012,l*.57,.012,m.stoneLight);
+    for(let i=0;i<3;i++)drum(w*.70-.17+i*.17,.025,.805,.034,.034,.028,m.metal,12);
+  }else if(r.kind==='planter'){
     const wide=Math.min(w,l),h=.44,leaf=m.hedge??m.wood;
     drum(w/2,l/2,h/2,wide*.88,wide*.88,h,m.stoneLight,24);
     drum(w/2,l/2,h-.012,wide*.76,wide*.76,.018,m.wood,24);

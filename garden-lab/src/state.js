@@ -1,20 +1,20 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.32.1';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.32.1';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.32.1';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.32.1';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.32.1';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.32.1';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.32.1';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.32.1';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.32.1';
-import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.32.1';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.32.1';
-import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.32.1';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.33.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.33.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.33.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.33.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.33.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.33.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.33.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.33.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.33.0';
+import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.33.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.33.0';
+import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.33.0';
 
-import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.32.1';
-import {changePresentationSettings} from './studio-state.js?v=1.32.1';
+import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.33.0';
+import {changePresentationSettings} from './studio-state.js?v=1.33.0';
 
-export const STATE_VERSION = 28;
+export const STATE_VERSION = 29;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -114,7 +114,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
   const DEFAULTS=Object.freeze({...INTERIOR_DEFAULTS,...COST_DEFAULTS,...SOLAR_DEFAULTS,...NIGHT_DEFAULTS,...PRIVACY_DEFAULTS,...PAVILION_DEFAULTS,...GARAGE_DEFAULTS,...Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k,v.value])),
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
-    screeningTrees:Object.freeze([]),treeLeafMode:'auto',existingVegetation:siteId===DEFAULT_SITE_ID,existingCanopyAnalysis:siteId===DEFAULT_SITE_ID,existingLeafMode:'auto',gardenProgram:'classic',terraceCoverType:'canopy',designStyle:DEFAULT_DESIGN_STYLE,styleHouseFinish:false,renderQuality:'auto',sceneMotion:false,...profile.defaults,siteId});
+    screeningTrees:Object.freeze([]),treeLeafMode:'auto',existingVegetation:siteId===DEFAULT_SITE_ID,existingCanopyAnalysis:siteId===DEFAULT_SITE_ID,existingLeafMode:'auto',gardenProgram:'classic',terraceCoverType:'canopy',designStyle:DEFAULT_DESIGN_STYLE,styleHouseFinish:false,styleGardenLayout:true,renderQuality:'auto',sceneMotion:false,...profile.defaults,siteId});
   // The new drawings update fresh floor levels; sparse old links retain their own assumptions.
   const V25_DEFAULTS=Object.freeze({...DEFAULTS,firstFloorRise:3,atticRise:6,garageSlabThickness:.25});
   // Read the published v22 defaults before upgrading the garage capacity.
@@ -245,6 +245,9 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     }
     next.interiorStyle='follow';next.interiorLayout=next.designStyle===DEFAULT_DESIGN_STYLE?'existing':'renovation';
     next.planExteriorApplied=siteId===DEFAULT_SITE_ID&&next.designStyle!==DEFAULT_DESIGN_STYLE;
+    // Older saved proposals keep their chosen pool and excavation locations.
+    // Selecting a new renovation explicitly adopts its coordinated garden.
+    if(version<29)next.styleGardenLayout=false;
     return next;
   }
   function encodeState(state) {

@@ -1,0 +1,141 @@
+{
+  "sourceSets": 32,
+  "registeredSamples": 41,
+  "uniquePbrBytes": 42584704,
+  "baselineGardenBytes": 8441301,
+  "scope": "JPEG transfer before HTTP compression, unique URLs; interior includes every optional slot, while runtime requests only materials attached to the model. Baseline garden files are shared and cached.",
+  "styles": [
+    {
+      "style": "organic-modern",
+      "exteriorBytes": 6332284,
+      "interiorAllSlotsUpperBoundBytes": 13381380,
+      "combinedNewBytes": 10545011
+    },
+    {
+      "style": "hidden-bali",
+      "exteriorBytes": 7193762,
+      "interiorAllSlotsUpperBoundBytes": 9393140,
+      "combinedNewBytes": 8149856
+    },
+    {
+      "style": "mediterranean-villa",
+      "exteriorBytes": 7366214,
+      "interiorAllSlotsUpperBoundBytes": 12930676,
+      "combinedNewBytes": 9572168
+    },
+    {
+      "style": "modern-minimal",
+      "exteriorBytes": 5351896,
+      "interiorAllSlotsUpperBoundBytes": 10394219,
+      "combinedNewBytes": 7557850
+    },
+    {
+      "style": "scandinavian",
+      "exteriorBytes": 5337094,
+      "interiorAllSlotsUpperBoundBytes": 11267959,
+      "combinedNewBytes": 9984871
+    },
+    {
+      "style": "japandi",
+      "exteriorBytes": 7120334,
+      "interiorAllSlotsUpperBoundBytes": 10074745,
+      "combinedNewBytes": 8064160
+    },
+    {
+      "style": "organic-scandinavian",
+      "exteriorBytes": 5323034,
+      "interiorAllSlotsUpperBoundBytes": 17363263,
+      "combinedNewBytes": 15294195
+    },
+    {
+      "style": "organic-japandi",
+      "exteriorBytes": 6432310,
+      "interiorAllSlotsUpperBoundBytes": 14132351,
+      "combinedNewBytes": 12121766
+    },
+    {
+      "style": "space-age",
+      "exteriorBytes": 4661497,
+      "interiorAllSlotsUpperBoundBytes": 10347471,
+      "combinedNewBytes": 9703820
+    },
+    {
+      "style": "party-club",
+      "exteriorBytes": 3958607,
+      "interiorAllSlotsUpperBoundBytes": 13623614,
+      "combinedNewBytes": 13284947
+    },
+    {
+      "style": "baltic-dune",
+      "exteriorBytes": 5558440,
+      "interiorAllSlotsUpperBoundBytes": 10186910,
+      "combinedNewBytes": 8117842
+    },
+    {
+      "style": "coastal",
+      "exteriorBytes": 4461163,
+      "interiorAllSlotsUpperBoundBytes": 9323774,
+      "combinedNewBytes": 7254706
+    },
+    {
+      "style": "beach-house",
+      "exteriorBytes": 6310880,
+      "interiorAllSlotsUpperBoundBytes": 10091075,
+      "combinedNewBytes": 7254706
+    },
+    {
+      "style": "gdansk-brick",
+      "exteriorBytes": 6871550,
+      "interiorAllSlotsUpperBoundBytes": 16090743,
+      "combinedNewBytes": 14576403
+    },
+    {
+      "style": "danish-midcentury",
+      "exteriorBytes": 5947714,
+      "interiorAllSlotsUpperBoundBytes": 15139306,
+      "combinedNewBytes": 13082506
+    },
+    {
+      "style": "finnish-sauna",
+      "exteriorBytes": 4884340,
+      "interiorAllSlotsUpperBoundBytes": 11878428,
+      "combinedNewBytes": 9809360
+    },
+    {
+      "style": "riviera-deco",
+      "exteriorBytes": 4763486,
+      "interiorAllSlotsUpperBoundBytes": 14367660,
+      "combinedNewBytes": 12703206
+    },
+    {
+      "style": "arts-and-crafts",
+      "exteriorBytes": 8230020,
+      "interiorAllSlotsUpperBoundBytes": 13015457,
+      "combinedNewBytes": 9184689
+    },
+    {
+      "style": "palm-springs",
+      "exteriorBytes": 6360645,
+      "interiorAllSlotsUpperBoundBytes": 11177594,
+      "combinedNewBytes": 8566599
+    },
+    {
+      "style": "desert-modern",
+      "exteriorBytes": 5257484,
+      "interiorAllSlotsUpperBoundBytes": 11346105,
+      "combinedNewBytes": 8509736
+    },
+    {
+      "style": "alpine-lodge",
+      "exteriorBytes": 6364020,
+      "interiorAllSlotsUpperBoundBytes": 15294281,
+      "combinedNewBytes": 14050997
+    },
+    {
+      "style": "industrial-loft",
+      "exteriorBytes": 3784878,
+      "interiorAllSlotsUpperBoundBytes": 11531440,
+      "combinedNewBytes": 9526259
+    }
+  ]
+}

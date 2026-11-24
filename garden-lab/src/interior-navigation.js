@@ -1,5 +1,5 @@
-import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.32.1';
-import {atticHeadroomAt} from './interior-plan.js?v=1.32.1';
+import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.33.0';
+import {atticHeadroomAt} from './interior-plan.js?v=1.33.0';
 
 const RADIUS=.16;
 function distanceToSegment(x,z,a,b) {

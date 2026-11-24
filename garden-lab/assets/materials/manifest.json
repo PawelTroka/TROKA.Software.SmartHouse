@@ -1,5 +1,5 @@
 {
-  "provider": "Poly Haven",
+  "provider": "Poly Haven and ambientCG",
   "downloaded": "2026-11-20",
   "assets": [
     {
@@ -326,6 +326,3088 @@
         0.0996638,
         0.0288337
       ]
+    },
+    {
+      "id": "white_plaster_02",
+      "name": "White Plaster 02",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/white_plaster_02",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "white_plaster_02_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/white_plaster_02/white_plaster_02_diff_1k.jpg",
+          "md5": "a50db914a6ef8f010f0c225c4b5649b7",
+          "sha256": "9542214616b67a77e583e352f18a8a01da1dcb5906d91dd1775181150b9b25c2",
+          "bytes": 503717,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "7b10c2686bcfd76d1f309a20fd06b57e",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 527219,
+            "sourceMd5": "7b10c2686bcfd76d1f309a20fd06b57e",
+            "sourceSha256": "a1ebbe091bd1ae93d2abd5de8d69f9003a8d0ee6532bcf9a87c2492c97051f23",
+            "meanAbsoluteError8Bit": 0.9063
+          }
+        },
+        "nor_gl": {
+          "file": "white_plaster_02_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/white_plaster_02/white_plaster_02_nor_gl_1k.jpg",
+          "md5": "4eba769d35e8c56fff2e5b5f45edcb52",
+          "sha256": "505517c23cd05440305550f7de3a3057181ec6dc38a7a32fe362e9dc41b2e0cd",
+          "bytes": 623157,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "55fc03203ebf1dc703a380fde93ff502",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 652310,
+            "sourceMd5": "55fc03203ebf1dc703a380fde93ff502",
+            "sourceSha256": "eb572ca3630d5bfde72e2601b1f02412da23ca005cd19384dced8690be4cb783",
+            "meanAbsoluteError8Bit": 0.9986,
+            "normalAngularErrorP95Degrees": 1.8524
+          }
+        },
+        "Rough": {
+          "file": "white_plaster_02_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/white_plaster_02/white_plaster_02_rough_1k.jpg",
+          "md5": "a5b34f9ddfe25877292b1ad71be66b2b",
+          "sha256": "2f3393d48b168b6238d14ab1dd0d174c4d894196901a2ca67550d557b86606af",
+          "bytes": 278043,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "8b28f263360b8c4ddbdc4f7c650c4eeb",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 295900,
+            "sourceMd5": "8b28f263360b8c4ddbdc4f7c650c4eeb",
+            "sourceSha256": "4ff1fe957cd161b07f721fe6c28a9459c8c2e8ec65627a26c16e483a07c80d85",
+            "meanAbsoluteError8Bit": 0.4528
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.271983979,
+        0.24610399,
+        0.198541027
+      ],
+      "linearAlbedoStd": [
+        0.049675374,
+        0.046058487,
+        0.040705349
+      ]
+    },
+    {
+      "id": "clay_plaster",
+      "name": "Clay Plaster",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/clay_plaster",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalSizeMeters": [
+        1.9999996423721313,
+        1.9999996423721313
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "clay_plaster_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/clay_plaster/clay_plaster_diff_1k.jpg",
+          "md5": "85623d6e5a9ab66f0f5b574185467e28",
+          "sha256": "9f31f15fd5b7e6f622c28ba669aa304ebc30dff974de04a329fedcb0f0ac9c97",
+          "bytes": 126409,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "aab6ac83dcf134a370279825de143c26",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 354209,
+            "sourceMd5": "aab6ac83dcf134a370279825de143c26",
+            "sourceSha256": "82e43c68bddebb55a18577ae3cb0d01c02c23f086d342a854ff8a174d9f4fd73",
+            "meanAbsoluteError8Bit": 0.7529
+          }
+        },
+        "nor_gl": {
+          "file": "clay_plaster_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/clay_plaster/clay_plaster_nor_gl_1k.jpg",
+          "md5": "6490242f6f97868044a0729728d379be",
+          "sha256": "61c4ff88ccf5e32e4b406d7f59f3c607666e742463db90c9061f8f3c2e9956c7",
+          "bytes": 434624,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "82e9cc526a00b3b8fddf7e43c40bdb38",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 784921,
+            "sourceMd5": "82e9cc526a00b3b8fddf7e43c40bdb38",
+            "sourceSha256": "359f814292005ab16be86807678a4a51e8256a87c282ebf5f5333ce18c428fba",
+            "meanAbsoluteError8Bit": 1.6287,
+            "normalAngularErrorP95Degrees": 2.7173
+          }
+        },
+        "Rough": {
+          "file": "clay_plaster_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/clay_plaster/clay_plaster_rough_1k.jpg",
+          "md5": "4d213a42696d20ff55c5d87960c151a1",
+          "sha256": "7241f64d86f85a0231d6051f98543243ded072ac7166073757c29cded1c632b2",
+          "bytes": 134456,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "d46fdc82c0538d0905281a761c63d9cf",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 345709,
+            "sourceMd5": "d46fdc82c0538d0905281a761c63d9cf",
+            "sourceSha256": "e91a6238456b54a82dbf2c025e0b046851c90e7e772fe2affd26a46b243ce7b7",
+            "meanAbsoluteError8Bit": 0.7058
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.16929896,
+        0.102287996,
+        0.044980781
+      ],
+      "linearAlbedoStd": [
+        0.007689519,
+        0.005073502,
+        0.00299839
+      ]
+    },
+    {
+      "id": "oak_veneer_02",
+      "name": "Oak Veneer 02",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/oak_veneer_02",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "oak_veneer_02_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_02/oak_veneer_02_diff_1k.jpg",
+          "md5": "ed7fafb8bff336da3142d229c558bbcd",
+          "sha256": "d998c7eba4c840244b25f5954201a33450e19583ec5af619a349ac5d8b38d771",
+          "bytes": 295906,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "895eda215c5d808bbc42041b498a856c",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 586151,
+            "sourceMd5": "895eda215c5d808bbc42041b498a856c",
+            "sourceSha256": "69410573a965898d455f389ede7c0de5709de33430ad489786e5ba70b3e7ba81",
+            "meanAbsoluteError8Bit": 1.3258
+          }
+        },
+        "nor_gl": {
+          "file": "oak_veneer_02_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_02/oak_veneer_02_nor_gl_1k.jpg",
+          "md5": "73bafe1bec0bc9af954d87fa72caad47",
+          "sha256": "8de86482da180a1a040194a1c556e6e98d9c523fe0511f07381331601d099d14",
+          "bytes": 106102,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "18eb5cfc641f6ae9b169f53e89e1230c",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 306086,
+            "sourceMd5": "18eb5cfc641f6ae9b169f53e89e1230c",
+            "sourceSha256": "4e5444b3fa1f3456891ca06e9f8978f7f303cadaf36cd4041da8e207be7202ce",
+            "meanAbsoluteError8Bit": 0.666,
+            "normalAngularErrorP95Degrees": 1.276
+          }
+        },
+        "Rough": {
+          "file": "oak_veneer_02_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_02/oak_veneer_02_rough_1k.jpg",
+          "md5": "a60076f24c3d7fb1e5389270ca437929",
+          "sha256": "4ca203827eb9b0a7cdd4dcf75dcf028b20b387769778fb92f4e9950416b28ccb",
+          "bytes": 455485,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "bec1b2deb8bbef15a03b4a50b7453867",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 767259,
+            "sourceMd5": "bec1b2deb8bbef15a03b4a50b7453867",
+            "sourceSha256": "e9d438b6d00db37cbf4745cc7ff3b59ee29fd7cc75ce6396356dd004a84d2e43",
+            "meanAbsoluteError8Bit": 1.7712
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.71513227,
+        0.485303742,
+        0.300816844
+      ],
+      "linearAlbedoStd": [
+        0.039616077,
+        0.03288627,
+        0.025506299
+      ]
+    },
+    {
+      "id": "natural_walnut_veneer",
+      "name": "Natural Walnut Veneer",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/natural_walnut_veneer",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "natural_walnut_veneer_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/natural_walnut_veneer/natural_walnut_veneer_diff_1k.jpg",
+          "md5": "8d7b97bd19d10d7f2239a40ae2f781ed",
+          "sha256": "14d981c7ffc54278a3cc64570d60a7803c1f3f77cdc46c1870efb4b70e12dad8",
+          "bytes": 345224,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "b9dd8a10990c388322b2b2ca15824b8a",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 633330,
+            "sourceMd5": "b9dd8a10990c388322b2b2ca15824b8a",
+            "sourceSha256": "41fe45f6457bddd4d97627bc610d2980d91683bc521c9692a6c4f2a6a3b05efd",
+            "meanAbsoluteError8Bit": 1.338
+          }
+        },
+        "nor_gl": {
+          "file": "natural_walnut_veneer_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/natural_walnut_veneer/natural_walnut_veneer_nor_gl_1k.jpg",
+          "md5": "a1740e950aa956a69dee36a5f4306837",
+          "sha256": "d7dabca470a153b8bab4cfda55311335e33a56fc2d94771ed1ded0cb136387db",
+          "bytes": 204864,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "985fe886f38aeb2fa3580a5c0294f81a",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 441987,
+            "sourceMd5": "985fe886f38aeb2fa3580a5c0294f81a",
+            "sourceSha256": "da621d3c7e96740313b459a034a30f46271d91a9dcad0c0c657a1485e32d336b",
+            "meanAbsoluteError8Bit": 0.8306,
+            "normalAngularErrorP95Degrees": 1.4201
+          }
+        },
+        "Rough": {
+          "file": "natural_walnut_veneer_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/natural_walnut_veneer/natural_walnut_veneer_rough_1k.jpg",
+          "md5": "3506d0dee94f012af69837c8164a9340",
+          "sha256": "fc5b031769125c17398c31c467669b3d008dd429bd6b1cac0722ec088cc329b8",
+          "bytes": 291075,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "d88bc3c533ed61d6737ad75454c9b61f",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 568696,
+            "sourceMd5": "d88bc3c533ed61d6737ad75454c9b61f",
+            "sourceSha256": "a5c7353aa7886a383b04506145548f9d2ffb9753c3d0b6cf52d972c18e5578d9",
+            "meanAbsoluteError8Bit": 1.3958
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.251379121,
+        0.212464604,
+        0.172449699
+      ],
+      "linearAlbedoStd": [
+        0.049827603,
+        0.050956128,
+        0.046668954
+      ]
+    },
+    {
+      "id": "teak_veneer",
+      "name": "Teak Veneer",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/teak_veneer",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "teak_veneer_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/teak_veneer/teak_veneer_diff_1k.jpg",
+          "md5": "dc7db85356cd915a66a60c5e790738f9",
+          "sha256": "e00d78393d28fa2f78b48a3133f81f16cfd2757dad882df09592218ad874e755",
+          "bytes": 322926,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "0ca1914271448bcec9989ccaf46ea6b8",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 612194,
+            "sourceMd5": "0ca1914271448bcec9989ccaf46ea6b8",
+            "sourceSha256": "ba501180029ec8804e430177e4d67446da23a3be4d5dbad94a498de070324275",
+            "meanAbsoluteError8Bit": 1.3536
+          }
+        },
+        "nor_gl": {
+          "file": "teak_veneer_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/teak_veneer/teak_veneer_nor_gl_1k.jpg",
+          "md5": "2672fcbda53853c4aae87d191f858125",
+          "sha256": "ae5b6cb111922e232962692ccfa72fcd393d943ace6cca176e3a98692055c344",
+          "bytes": 173460,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "7c7d3c362775233d89523b44e5771c73",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 410625,
+            "sourceMd5": "7c7d3c362775233d89523b44e5771c73",
+            "sourceSha256": "e2cd5aa363feea0bb1fd5c682f9b28c9810def07621915a413a834fafd57c851",
+            "meanAbsoluteError8Bit": 0.816,
+            "normalAngularErrorP95Degrees": 1.4197
+          }
+        },
+        "Rough": {
+          "file": "teak_veneer_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/teak_veneer/teak_veneer_rough_1k.jpg",
+          "md5": "303dcb390edb7753a54c546264f97e14",
+          "sha256": "feea432cf2860b53150f591d675cd5b3bb4e3e6e7d27b09a6ee8e010a7d3a866",
+          "bytes": 430473,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "bc875070660548e52189959794f23f1b",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 731629,
+            "sourceMd5": "bc875070660548e52189959794f23f1b",
+            "sourceSha256": "cb8a09ae509a4c89df998fc14e1deb0c623615bf2f480af78d561d8536972db0",
+            "meanAbsoluteError8Bit": 1.7717
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.433250583,
+        0.2242116,
+        0.095139536
+      ],
+      "linearAlbedoStd": [
+        0.0518882,
+        0.029547112,
+        0.013443504
+      ]
+    },
+    {
+      "id": "ash_veneer",
+      "name": "Ash Veneer",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/ash_veneer",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "ash_veneer_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_diff_1k.jpg",
+          "md5": "4197ff71100e8dd204015fe621d6ebdd",
+          "sha256": "01576fa3e8bd5c28e7731654e532d0467e3b673a79d174a027c52804de834802",
+          "bytes": 301907,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "5be48b4be87620998cfaee5a4281169d",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 592273,
+            "sourceMd5": "5be48b4be87620998cfaee5a4281169d",
+            "sourceSha256": "13fd87c8b0a5cc1d4e408fb75b3eb629417ea6b1aaf1672b5adf993640486673",
+            "meanAbsoluteError8Bit": 1.3279
+          }
+        },
+        "nor_gl": {
+          "file": "ash_veneer_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_nor_gl_1k.jpg",
+          "md5": "7536eabf4681b4be4616c296a4b15171",
+          "sha256": "8f35ed25204d4ab7fec61148857dade5616f23a3045d25c9ea65ff11b53f15e1",
+          "bytes": 166647,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "6986a1e827968726d996b76d77f3a2ac",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 397524,
+            "sourceMd5": "6986a1e827968726d996b76d77f3a2ac",
+            "sourceSha256": "824898e187fb1d701b36a898ecd736a0464f49fa46233a35592e1ed9348e7fc4",
+            "meanAbsoluteError8Bit": 0.7972,
+            "normalAngularErrorP95Degrees": 1.3742
+          }
+        },
+        "Rough": {
+          "file": "ash_veneer_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_rough_1k.jpg",
+          "md5": "8e34a49f064921fa5dac89a58a53d938",
+          "sha256": "4f293051600c0eb049335ccbb15ecb38fd0aebbdb2d5be5dbc65d9f75dea0c09",
+          "bytes": 478890,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "175ba23d74984b0cfb1d9eac636cc255",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 797439,
+            "sourceMd5": "175ba23d74984b0cfb1d9eac636cc255",
+            "sourceSha256": "0857c5e1db0c265d1d04c9451041f55b78cc7613d44caf42c7c9cd449e72d835",
+            "meanAbsoluteError8Bit": 1.7924
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.413580144,
+        0.298395505,
+        0.205748004
+      ],
+      "linearAlbedoStd": [
+        0.041892616,
+        0.034687797,
+        0.027785166
+      ]
+    },
+    {
+      "id": "japanese_cedar_planks",
+      "name": "Japanese Cedar Planks",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/japanese_cedar_planks",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Charlotte Baglioni": "Scanning",
+        "Rico Cilliers": "Processing "
+      },
+      "physicalSizeMeters": [
+        1.130000114440918,
+        1.130000114440918
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "japanese_cedar_planks_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/japanese_cedar_planks/japanese_cedar_planks_diff_1k.jpg",
+          "md5": "19cc5ad4311bfea92a5d069621d3d7df",
+          "sha256": "ba37e3d9e62137010953457089f6852f25c506e09b9c11fd320df69111e7da84",
+          "bytes": 400427,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "a88e63ae003679e2d356807c57363eaf",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 704030,
+            "sourceMd5": "a88e63ae003679e2d356807c57363eaf",
+            "sourceSha256": "cce8e8c5e5e6ba7956a6edf9fa6121c57fa2bfab0ebd672951bede9e053cbec4",
+            "meanAbsoluteError8Bit": 1.4685
+          }
+        },
+        "nor_gl": {
+          "file": "japanese_cedar_planks_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/japanese_cedar_planks/japanese_cedar_planks_nor_gl_1k.jpg",
+          "md5": "078397d90cc67d1dca41676d06cfbf79",
+          "sha256": "63ac04f90289de48ec248c4a139f6fd3588016d4d70f5ea7b1172f7be72989ea",
+          "bytes": 396449,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "e6cecd3314e91a66318d65c33173560b",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 745514,
+            "sourceMd5": "e6cecd3314e91a66318d65c33173560b",
+            "sourceSha256": "2537ec9d8589caf8a89ef4e733d015318030d9ee9e2c2fdfa1471154770ebbea",
+            "meanAbsoluteError8Bit": 1.7982,
+            "normalAngularErrorP95Degrees": 2.9541
+          }
+        },
+        "Rough": {
+          "file": "japanese_cedar_planks_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/japanese_cedar_planks/japanese_cedar_planks_rough_1k.jpg",
+          "md5": "cabd799498fa350cb5aa455df223c411",
+          "sha256": "dbb6bb2d46a37ddf2e43390f7a256ede819c2b54f7ff6b07fa8f5f6d8c460338",
+          "bytes": 386677,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "735506fd095892c4882398db1b98847b",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 679485,
+            "sourceMd5": "735506fd095892c4882398db1b98847b",
+            "sourceSha256": "494826e6d014fd7098eed24ff8b342ea8b3c83281e290ac5c2eacef4c9f3a424",
+            "meanAbsoluteError8Bit": 1.6945
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.421657285,
+        0.124832383,
+        0.003813083
+      ],
+      "linearAlbedoStd": [
+        0.104673642,
+        0.039553777,
+        0.004014479
+      ]
+    },
+    {
+      "id": "wood_planks_grey",
+      "name": "Wood Planks Grey",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/wood_planks_grey",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        1.5,
+        1.5000001192092896
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "wood_planks_grey_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_grey/wood_planks_grey_diff_1k.jpg",
+          "md5": "8f8376a1aeee60dfdf6df6b921d160d8",
+          "sha256": "b776223d9a6d0b26ef4ca3ddbe88e8cf52b618fdd534c590f0c9eb1206048343",
+          "bytes": 297010,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "f2b4a70fed329c13850917c5f2d1498c",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 228279,
+            "sourceMd5": "f2b4a70fed329c13850917c5f2d1498c",
+            "sourceSha256": "d758be23e8fe7bfbd73bc4ab257cfd59406e1835f6557c12a67cd4fdb15de0d8",
+            "meanAbsoluteError8Bit": 0.5765
+          }
+        },
+        "nor_gl": {
+          "file": "wood_planks_grey_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_grey/wood_planks_grey_nor_gl_1k.jpg",
+          "md5": "7fbc800a33d34e35b87c72d652cd1555",
+          "sha256": "d28cb0243ca14610b713ab4b06d47935c352c3dd270f7328146766ecb46066ee",
+          "bytes": 261550,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "fe633ea606ac22b732d4204a7fa52b03",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 157419,
+            "sourceMd5": "fe633ea606ac22b732d4204a7fa52b03",
+            "sourceSha256": "5e570e57d688b016b217b9e8e0592f9a8b3364406e22bf6cd775da990452bdb6",
+            "meanAbsoluteError8Bit": 0.5927,
+            "normalAngularErrorP95Degrees": 1.0788
+          }
+        },
+        "Rough": {
+          "file": "wood_planks_grey_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_grey/wood_planks_grey_rough_1k.jpg",
+          "md5": "1b53a41405a397ebb1db8c996487638c",
+          "sha256": "2997ee0b8c0e8de1678e953b922cb2e6ae13192513aec4ef21e2733b5c79de2c",
+          "bytes": 227420,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "eb620bf4c075153d9272de00f1bf7633",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 186804,
+            "sourceMd5": "eb620bf4c075153d9272de00f1bf7633",
+            "sourceSha256": "ef640502cec94bd2b6500e252891a778a7a721be16b5536d4efc9fe4d99b12aa",
+            "meanAbsoluteError8Bit": 0.4493
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.063705999,
+        0.060671682,
+        0.053101286
+      ],
+      "linearAlbedoStd": [
+        0.023498337,
+        0.022769569,
+        0.021533748
+      ]
+    },
+    {
+      "id": "wood_textured_concrete",
+      "name": "Wood Textured Concrete",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/wood_textured_concrete",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalSizeMeters": [
+        1.8000000715255737,
+        1.8000000715255737
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "wood_textured_concrete_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_textured_concrete/wood_textured_concrete_diff_1k.jpg",
+          "md5": "3635827a435f280fed02a7a465daa4e8",
+          "sha256": "c3377ed35d27d34eb4143f32be16b8e5b9606181ad67577e59fe5a12c174b834",
+          "bytes": 309651,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "670f233ec7dd3361a1efede0fa610d83",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 589387,
+            "sourceMd5": "670f233ec7dd3361a1efede0fa610d83",
+            "sourceSha256": "fa62e11dd49db7d73ab7b6582bbe312318cecba709350bc28e9f8ba8286d352f",
+            "meanAbsoluteError8Bit": 1.346
+          }
+        },
+        "nor_gl": {
+          "file": "wood_textured_concrete_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_textured_concrete/wood_textured_concrete_nor_gl_1k.jpg",
+          "md5": "812ecd2aaa9b9725d16ab97adc9e65ed",
+          "sha256": "f178280510bbc16033098d7212738beb4394af41add23368f41c7f003c086baa",
+          "bytes": 355402,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "0de39637d416d61dd21b937d455de9e9",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 702495,
+            "sourceMd5": "0de39637d416d61dd21b937d455de9e9",
+            "sourceSha256": "a5c0d55ba71d4da35b469cc816f5d58e98627b080c62515925d6f35f44448e0e",
+            "meanAbsoluteError8Bit": 1.4967,
+            "normalAngularErrorP95Degrees": 2.617
+          }
+        },
+        "Rough": {
+          "file": "wood_textured_concrete_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_textured_concrete/wood_textured_concrete_rough_1k.jpg",
+          "md5": "b831cd9e6e13cb8596ddba2eac441354",
+          "sha256": "7a9412e1c3992e30f27dc827f5e2b25a880f5972e116fb41649955d0711ba837",
+          "bytes": 166135,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "2b0a1ff7ca76c7cc4017ff82c72f8713",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 394808,
+            "sourceMd5": "2b0a1ff7ca76c7cc4017ff82c72f8713",
+            "sourceSha256": "42e9f0116b73de76804801576d92e05f8c47b4ab664ccd0059e6947330b4455a",
+            "meanAbsoluteError8Bit": 0.8566
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.177387485,
+        0.14343607,
+        0.102607587
+      ],
+      "linearAlbedoStd": [
+        0.023745823,
+        0.01904824,
+        0.014851764
+      ]
+    },
+    {
+      "id": "red_brick_03",
+      "name": "Red Brick 03",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/red_brick_03",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "red_brick_03_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_diff_1k.jpg",
+          "md5": "1b2cb2f8ce21d9f895b3f36df7bc3945",
+          "sha256": "a0e330278e9fa910842e643a47ae26d65726fbccff4a225a8b8ae1cea2bf1d01",
+          "bytes": 663373,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "d157c6d6dd774762b4269927a87fe9b5",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 694500,
+            "sourceMd5": "d157c6d6dd774762b4269927a87fe9b5",
+            "sourceSha256": "9c58254c099b2d211478f50a427fcdde622af24249ff2e94da41fb836f8c857f",
+            "meanAbsoluteError8Bit": 1.1563
+          }
+        },
+        "nor_gl": {
+          "file": "red_brick_03_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_nor_gl_1k.jpg",
+          "md5": "3fe74c456db23a6110a4c369692302d7",
+          "sha256": "d358f34d4eb87fd04073eb6676672a62d00cfc3633ccead637353648c4be14e2",
+          "bytes": 921173,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "e89ce432d9160edb7c902f901756865f",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 955430,
+            "sourceMd5": "e89ce432d9160edb7c902f901756865f",
+            "sourceSha256": "9bfd45e24720d851017c1e1678b70219c72239b2ac6b25e11d57d458bdab8503",
+            "meanAbsoluteError8Bit": 1.4152,
+            "normalAngularErrorP95Degrees": 2.642
+          }
+        },
+        "Rough": {
+          "file": "red_brick_03_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_rough_1k.jpg",
+          "md5": "84e13ba9e7b8eb0f32ce17dba81d8b2f",
+          "sha256": "e35367b94762ec199ef00f1ed6db4181a36c498deaeadd8ea90f9afdd6db64b8",
+          "bytes": 271113,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "8f16439361c5fe27f9df03be279ce8c9",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 286623,
+            "sourceMd5": "8f16439361c5fe27f9df03be279ce8c9",
+            "sourceSha256": "cd865623c1422926848024e877103e9dfe857b2ca8221fce49264b74c9ff48b1",
+            "meanAbsoluteError8Bit": 0.3824
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.154969581,
+        0.099686889,
+        0.083160239
+      ],
+      "linearAlbedoStd": [
+        0.074245424,
+        0.074902932,
+        0.071244929
+      ]
+    },
+    {
+      "id": "terracotta_floor_tiles",
+      "name": "Terracotta Floor Tiles",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/terracotta_floor_tiles",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalSizeMeters": [
+        2.0799999237060547,
+        2.0799999237060547
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "terracotta_floor_tiles_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terracotta_floor_tiles/terracotta_floor_tiles_diff_1k.jpg",
+          "md5": "d2f001470a5f7c64032e296c1c9a2be0",
+          "sha256": "cdf23a9e8a4a926c1c135db03b9467b1323ea82bb6e9fa7aa2a24a0cb848f49b",
+          "bytes": 330112,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "06cc0f29e2a61115580fe147140c0201",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 649304,
+            "sourceMd5": "06cc0f29e2a61115580fe147140c0201",
+            "sourceSha256": "966ff423065e4a4ce9490864fba61fdb491985d4a2c60eb2b85181c7e7edcd5d",
+            "meanAbsoluteError8Bit": 1.4418
+          }
+        },
+        "nor_gl": {
+          "file": "terracotta_floor_tiles_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terracotta_floor_tiles/terracotta_floor_tiles_nor_gl_1k.jpg",
+          "md5": "b7bf7a964f6a0d53f0120e148ef39c7d",
+          "sha256": "640c961d9ad1f02599767430d4b6a554690d876fb0bf29a53eafa050afb61f34",
+          "bytes": 276534,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "727399912c20adf49b87078c21af8071",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 593169,
+            "sourceMd5": "727399912c20adf49b87078c21af8071",
+            "sourceSha256": "7d9a6935951f3b2c1f6ae372dd512969dd5c7c27efbbfe6941ed3ec1b7da9758",
+            "meanAbsoluteError8Bit": 1.2608,
+            "normalAngularErrorP95Degrees": 2.1551
+          }
+        },
+        "Rough": {
+          "file": "terracotta_floor_tiles_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terracotta_floor_tiles/terracotta_floor_tiles_rough_1k.jpg",
+          "md5": "74c1ef81d0a0d620f26fdb4a0a65f8a4",
+          "sha256": "fcf5ef43a9258887806baffb6ca1654dc1b4dee162db903f01a05c7793c76079",
+          "bytes": 345479,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "029c0915fc7cc0e59a426cdbaeac81b3",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 626503,
+            "sourceMd5": "029c0915fc7cc0e59a426cdbaeac81b3",
+            "sourceSha256": "df263e7205e36a6249db10e85f4d55b93b3f6793871fc79d2d10531433de109e",
+            "meanAbsoluteError8Bit": 1.6364
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.075804033,
+        0.020329669,
+        0.010339882
+      ],
+      "linearAlbedoStd": [
+        0.020332567,
+        0.004230758,
+        0.002050529
+      ]
+    },
+    {
+      "id": "terrazzo_tiles",
+      "name": "Terrazzo Tiles",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/terrazzo_tiles",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalSizeMeters": [
+        2.0,
+        2.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "terrazzo_tiles_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terrazzo_tiles/terrazzo_tiles_diff_1k.jpg",
+          "md5": "58644c4c7b9cd0c9ff203ff641f99b0c",
+          "sha256": "eb7d5c3c0e2743e0cbbb58bea82d05b3138527dce66f9724d76fa94b1d689a52",
+          "bytes": 713553,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "12c27a579c2ed49de854b8a86e33647b",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1166107,
+            "sourceMd5": "12c27a579c2ed49de854b8a86e33647b",
+            "sourceSha256": "462e3e719cda0472a33152523cf5ca2fc660e1c5869348be1609ba3dca12a2ef",
+            "meanAbsoluteError8Bit": 2.0712
+          }
+        },
+        "nor_gl": {
+          "file": "terrazzo_tiles_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terrazzo_tiles/terrazzo_tiles_nor_gl_1k.jpg",
+          "md5": "c7d789d85207f43c13cbfebe303de97b",
+          "sha256": "d309535e60d4747225869be1aed33e9fb4f917424cdfb8843d781ff1455bdd35",
+          "bytes": 38181,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "a5f6d05f27db4151227535bdbc82c048",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 77954,
+            "sourceMd5": "a5f6d05f27db4151227535bdbc82c048",
+            "sourceSha256": "56bbe2d960b47ddb2dc538be2953a1ad07083b017cdada1cdc7958421a6cfcd9",
+            "meanAbsoluteError8Bit": 0.1268,
+            "normalAngularErrorP95Degrees": 0.6355
+          }
+        },
+        "Rough": {
+          "file": "terrazzo_tiles_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terrazzo_tiles/terrazzo_tiles_rough_1k.jpg",
+          "md5": "034a53b6246d1873149d61fb0cd7d90d",
+          "sha256": "3d9840339f71cfb39c0995709b7e8e4f1ac7aa4860698d73ae0fd99462899b28",
+          "bytes": 194807,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "e34bfd2f4fee1b2b9f310a71588aad17",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 459022,
+            "sourceMd5": "e34bfd2f4fee1b2b9f310a71588aad17",
+            "sourceSha256": "cf0cb8525674adeb7da551ed1846c8c4edfd0377a35c6fe94d5f1cb2142c6152",
+            "meanAbsoluteError8Bit": 1.1528
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.256288808,
+        0.158783219,
+        0.101103448
+      ],
+      "linearAlbedoStd": [
+        0.075883344,
+        0.064135546,
+        0.049891889
+      ]
+    },
+    {
+      "id": "roof_slates_03",
+      "name": "Roof Slates 03",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/roof_slates_03",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        3.0,
+        3.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "roof_slates_03_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/roof_slates_03/roof_slates_03_diff_1k.jpg",
+          "md5": "c5b254e82f216ded0da77a19695ab787",
+          "sha256": "fe510acd0726c8ba661787a8f5ae424af15127b5e67a82d91662ec9c2732d4fb",
+          "bytes": 369086,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "b416c53d9720ff8b057631ccc6331bf3",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 654296,
+            "sourceMd5": "b416c53d9720ff8b057631ccc6331bf3",
+            "sourceSha256": "ad7caff0fae22a67c2429021129840d3d9247ec4370bafadc2c031e1693fe8a9",
+            "meanAbsoluteError8Bit": 1.3548
+          }
+        },
+        "nor_gl": {
+          "file": "roof_slates_03_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/roof_slates_03/roof_slates_03_nor_gl_1k.jpg",
+          "md5": "e307d019e4cd0c1ffb217b67df8cdb76",
+          "sha256": "2eed8c8d30b030b79498aa867ef30e5ed77fe01d91641f9347c6ba07e927027c",
+          "bytes": 452441,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "bc28f302d4f9345ba462e19436aed93a",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 788841,
+            "sourceMd5": "bc28f302d4f9345ba462e19436aed93a",
+            "sourceSha256": "0eb010215ea6e2de800adf6cf86fd5fb9e9a24b0d12d1297bb4b8d56b205c87d",
+            "meanAbsoluteError8Bit": 1.4852,
+            "normalAngularErrorP95Degrees": 2.733
+          }
+        },
+        "Rough": {
+          "file": "roof_slates_03_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/roof_slates_03/roof_slates_03_rough_1k.jpg",
+          "md5": "d846c91d14e73593c3986f3c8fe5a525",
+          "sha256": "d4ea15d731b140b13e1d44adbc17a0e8a9dea04808996b4219c8d174f37a763f",
+          "bytes": 4257,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "a9d3cec6ba6480e9aa18817d391a53d4",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 12644,
+            "sourceMd5": "a9d3cec6ba6480e9aa18817d391a53d4",
+            "sourceSha256": "7c0ba13dd4695647e2ac6fd0dbceb457497ce853d879a1d1d860a6301832bf8f",
+            "meanAbsoluteError8Bit": 0.0
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.169764424,
+        0.16324943,
+        0.143831447
+      ],
+      "linearAlbedoStd": [
+        0.059710479,
+        0.058130171,
+        0.053491442
+      ]
+    },
+    {
+      "id": "slate_floor",
+      "name": "Slate Floor",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/slate_floor",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalSizeMeters": [
+        2.2899999618530273,
+        2.2900002002716064
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "slate_floor_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/slate_floor/slate_floor_diff_1k.jpg",
+          "md5": "fd8d71007bee7334faa5d1688baa6bb4",
+          "sha256": "a359bb812222107072026630bcda77bd4327198078591186bdc5721e9dbd318f",
+          "bytes": 377232,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "33760bd0e0668f1ff92086a6cd9c38af",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 707276,
+            "sourceMd5": "33760bd0e0668f1ff92086a6cd9c38af",
+            "sourceSha256": "ca47f5ba941cca29af7c7c16f7c6e7a8ba9dbdeb440e26c7a166d2f3bae9ace5",
+            "meanAbsoluteError8Bit": 1.6165
+          }
+        },
+        "nor_gl": {
+          "file": "slate_floor_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/slate_floor/slate_floor_nor_gl_1k.jpg",
+          "md5": "3ba94522a66a6ed67d64ee2b26043e1b",
+          "sha256": "a4ac1f28cd6467360a1b666fce8f8357532828274e28c7b15c9ecbd878a0ca39",
+          "bytes": 462467,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "254a48926b0bbc6cf2266586e943e90e",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 812262,
+            "sourceMd5": "254a48926b0bbc6cf2266586e943e90e",
+            "sourceSha256": "428be8ac8b4a389624eacfce2072754536949eca4323e7fd6ab0a5b5eb49ed7c",
+            "meanAbsoluteError8Bit": 1.664,
+            "normalAngularErrorP95Degrees": 2.7684
+          }
+        },
+        "Rough": {
+          "file": "slate_floor_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/slate_floor/slate_floor_rough_1k.jpg",
+          "md5": "d3fe5ac8acd913390afde0093c6742d0",
+          "sha256": "a49fdf63a6e92ac5468a66246547541eaa8ff33822d952d8c572654dc906de89",
+          "bytes": 474450,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "829bae26caaeb4a7a8bee3905cff5270",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 802557,
+            "sourceMd5": "829bae26caaeb4a7a8bee3905cff5270",
+            "sourceSha256": "795037d7945b75410cbfc4a8af9088a53ec0efdff7eacf53701da22c16298b42",
+            "meanAbsoluteError8Bit": 1.7715
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.023931338,
+        0.013287662,
+        0.013395113
+      ],
+      "linearAlbedoStd": [
+        0.009205297,
+        0.005845514,
+        0.004533542
+      ]
+    },
+    {
+      "id": "wool_boucle",
+      "name": "Wool Boucle",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/wool_boucle",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "colormass": "Photography",
+        "Rico Cilliers": "Processing"
+      },
+      "physicalSizeMeters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "wool_boucle_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_diff_1k.jpg",
+          "md5": "bac9e37c7ba4dee0bb8c35476d2f769d",
+          "sha256": "0f95e6cb6b0757f924f034ed512dcf0ede782a5b703a08082d37e0b9d315b291",
+          "bytes": 810842,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1269,
+          "providerMd5": "e3d4b30b5f36d4763f9bd2f2e8d92f8e",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1284379,
+            "sourceMd5": "e3d4b30b5f36d4763f9bd2f2e8d92f8e",
+            "sourceSha256": "fee39653b3c78efe89636508f2c10ceb38ecb10c0d735ae8dd4e9935cf26540e",
+            "meanAbsoluteError8Bit": 1.927
+          }
+        },
+        "nor_gl": {
+          "file": "wool_boucle_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_nor_gl_1k.jpg",
+          "md5": "202117b1923bb54771c45c225f46b7e2",
+          "sha256": "7b91b0897c7e8585e2513bdd865aa26d597392e723e45aae2ec7fb00aa2e413f",
+          "bytes": 795359,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1269,
+          "providerMd5": "6a413f9a1aa70ab3bb4fede917cf8a64",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1266355,
+            "sourceMd5": "6a413f9a1aa70ab3bb4fede917cf8a64",
+            "sourceSha256": "2cc13a2be4d0bb942a59a86d613665c0d24ff201560daa4d841cee597af0c752",
+            "meanAbsoluteError8Bit": 1.9233,
+            "normalAngularErrorP95Degrees": 3.0732
+          }
+        },
+        "Rough": {
+          "file": "wool_boucle_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_rough_1k.jpg",
+          "md5": "077fe387a5136861f5f75e16182cada5",
+          "sha256": "00940e4840ecd09cf55ff92e4ad89ccf759c025635bc8e6837ba6add8f8f1d64",
+          "bytes": 772746,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1269,
+          "providerMd5": "48bfe3aac53735ada81add2f1054a3f5",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 1272361,
+            "sourceMd5": "48bfe3aac53735ada81add2f1054a3f5",
+            "sourceSha256": "f09f24bd26378b03bb798d4b75010ac8cc0fd1e4b858959e97e6d8d74fa3f6d8",
+            "meanAbsoluteError8Bit": 1.8196
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.243629331,
+        0.205607095,
+        0.165467547
+      ],
+      "linearAlbedoStd": [
+        0.21457311,
+        0.184582006,
+        0.157154648
+      ]
+    },
+    {
+      "id": "brown_leather",
+      "name": "Brown Leather",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/brown_leather",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        0.4000000059604645,
+        0.40000003576278687
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "brown_leather_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_albedo_1k.jpg",
+          "md5": "b32c410ed6ae3545e38463e794e54408",
+          "sha256": "7d7a4fc9144510de6b4b9675aaa8f1bc9f44c2e28a95dd3cc0cd90ea3c3203fa",
+          "bytes": 478000,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "080b3bf1372766ff2c7ff121ed07b5e8",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 503348,
+            "sourceMd5": "080b3bf1372766ff2c7ff121ed07b5e8",
+            "sourceSha256": "7e9e1d6566d1fd91d4ceb4966c4820361e85d53a7a828b6bab3b2a093a876cd1",
+            "meanAbsoluteError8Bit": 0.7404
+          }
+        },
+        "nor_gl": {
+          "file": "brown_leather_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_nor_gl_1k.jpg",
+          "md5": "6f34bbb1e8e67dc4fee37528faaefc53",
+          "sha256": "05e1847260653ccfd793a73fd89d960bb81e0b37180323465e7bbae1f0d8e892",
+          "bytes": 831448,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "b63ae0121a415c23d74eed0b07fc6065",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 863280,
+            "sourceMd5": "b63ae0121a415c23d74eed0b07fc6065",
+            "sourceSha256": "506a0b7650c2dea285e247f26ed2d0d6ec38fc10dd584359f0d203e9c082236d",
+            "meanAbsoluteError8Bit": 1.3113,
+            "normalAngularErrorP95Degrees": 2.3426
+          }
+        },
+        "Rough": {
+          "file": "brown_leather_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_rough_1k.jpg",
+          "md5": "425bc689ffe3ed29c09e847c6c5cfe17",
+          "sha256": "c33584f92b3b1cded5d0011323d80a73d9ac6fd08b573758c4e161c6d9cd0b0c",
+          "bytes": 657896,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "0f3a0148c8d2d25fbeca67e64e79bca0",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 686142,
+            "sourceMd5": "0f3a0148c8d2d25fbeca67e64e79bca0",
+            "sourceSha256": "f9739ef2da2e3d17b9ec253f5042f61b10dc10f3ae28f6cf6491650d3d1b0ca3",
+            "meanAbsoluteError8Bit": 1.2553
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.08317227,
+        0.027435006,
+        0.005635808
+      ],
+      "linearAlbedoStd": [
+        0.017699536,
+        0.008926934,
+        0.003458118
+      ]
+    },
+    {
+      "id": "oak_wood_planks",
+      "name": "Oak Wood Planks",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/oak_wood_planks",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalSizeMeters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "oak_wood_planks_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_wood_planks/oak_wood_planks_diff_1k.jpg",
+          "md5": "8dcd067b9df0323ce261cfdc17da8434",
+          "sha256": "47caf927dd4ad598af52e3e233b5ab376526b67d32519f0c4a849ead0a184790",
+          "bytes": 388239,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "e9e25ac7abcc482f73214fda23e2de25",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 696814,
+            "sourceMd5": "e9e25ac7abcc482f73214fda23e2de25",
+            "sourceSha256": "f715ed3e4346e94f971ef8dd61221ff6cc774886c20f65381e01e1dc0bb0a634",
+            "meanAbsoluteError8Bit": 1.4527
+          }
+        },
+        "nor_gl": {
+          "file": "oak_wood_planks_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_wood_planks/oak_wood_planks_nor_gl_1k.jpg",
+          "md5": "41f6dad6174b19473bdb68035a096b3a",
+          "sha256": "a0a07460e93b9a46c952e93ce1b3096fec0ff04d7c7d5b902996b729a8e859b6",
+          "bytes": 138342,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "6a71c23551887b77b29623bb871aefbf",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 392213,
+            "sourceMd5": "6a71c23551887b77b29623bb871aefbf",
+            "sourceSha256": "b4272cb2818f8f33f2620a2dc093c962f34920e9d485a4e132eb6d69de1ba950",
+            "meanAbsoluteError8Bit": 0.8515,
+            "normalAngularErrorP95Degrees": 1.4323
+          }
+        },
+        "Rough": {
+          "file": "oak_wood_planks_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_wood_planks/oak_wood_planks_rough_1k.jpg",
+          "md5": "106f3b66e855e0b8f5602966239725a5",
+          "sha256": "a9ad3c245c2fda0414f662aa52c5791390cc24771e83dac2ac0bef40437dd3a2",
+          "bytes": 510325,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "3609ef0a3155ae90b69395431bf8cec1",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 845590,
+            "sourceMd5": "3609ef0a3155ae90b69395431bf8cec1",
+            "sourceSha256": "10ced559145df3c537bf1ccef6dc767ef6c47e134c21a9650bab261fa95ecacf",
+            "meanAbsoluteError8Bit": 1.8088
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.364530517,
+        0.181086411,
+        0.088571597
+      ],
+      "linearAlbedoStd": [
+        0.056326865,
+        0.032364533,
+        0.017249686
+      ]
+    },
+    {
+      "id": "herringbone_parquet",
+      "name": "Herringbone Parquet",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/herringbone_parquet",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Jenelle van Heerden": "Processing",
+        "Sergej Majboroda": "Photography"
+      },
+      "physicalSizeMeters": [
+        3.4000000953674316,
+        3.4000000953674316
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "herringbone_parquet_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/herringbone_parquet/herringbone_parquet_diff_2k.jpg",
+          "md5": "2a04ecb85e36fe5fe0a6a68bb790901b",
+          "sha256": "384be288876ef52c41e351ede9f178398cd2f30b6ef4fe6506f112ff57734200",
+          "bytes": 2082039,
+          "sourceResolution": "2K",
+          "colorSpace": "sRGB",
+          "width": 2048,
+          "height": 2048,
+          "providerMd5": "db8d7a22c17c38b62e536839f52ba037",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 3482793,
+            "sourceMd5": "db8d7a22c17c38b62e536839f52ba037",
+            "sourceSha256": "8305c12adf1da61f4d267611948bfdc9293c9b9915da64e41cc1ab68c0167ff1",
+            "meanAbsoluteError8Bit": 1.9573
+          }
+        },
+        "nor_gl": {
+          "file": "herringbone_parquet_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/herringbone_parquet/herringbone_parquet_nor_gl_2k.jpg",
+          "md5": "3aca56d3ad2c94e368c5112e06f7a5c3",
+          "sha256": "d0f0ea8c8e9d7113c7d5ceba6ad4aade0a92f8777605da98bfbc75c0f5167868",
+          "bytes": 711125,
+          "sourceResolution": "2K",
+          "colorSpace": "linear",
+          "width": 2048,
+          "height": 2048,
+          "providerMd5": "644ab77a483d74d0d1e8db9f9650566d",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1854683,
+            "sourceMd5": "644ab77a483d74d0d1e8db9f9650566d",
+            "sourceSha256": "8891325197ab8a77689506118fade7bc812944a03bcce47b802e4b8742e590cd",
+            "meanAbsoluteError8Bit": 0.963,
+            "normalAngularErrorP95Degrees": 1.9058
+          }
+        },
+        "Rough": {
+          "file": "herringbone_parquet_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/herringbone_parquet/herringbone_parquet_rough_2k.jpg",
+          "md5": "335d3361dbb8b0f5b901fc95dedd337c",
+          "sha256": "88871bc698d64a17a96cc9e5b48b05b07d5c48ae4bfc7fe099ca8d3673fed360",
+          "bytes": 1189133,
+          "sourceResolution": "2K",
+          "colorSpace": "linear",
+          "width": 2048,
+          "height": 2048,
+          "providerMd5": "0662da93037a89dc2341dfa66602ce31",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 2285252,
+            "sourceMd5": "0662da93037a89dc2341dfa66602ce31",
+            "sourceSha256": "9fd86e1c5bff348625bab72091d7ea2fa80d197f8e4a5452b378ce8ae0abd9e5",
+            "meanAbsoluteError8Bit": 1.6433
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.2955139,
+        0.16407188,
+        0.075592788
+      ],
+      "linearAlbedoStd": [
+        0.066176615,
+        0.037948757,
+        0.017804273
+      ]
+    },
+    {
+      "id": "clay_roof_tiles_02",
+      "name": "Clay Roof Tiles 02",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalSizeMeters": [
+        2.5,
+        2.5
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "clay_roof_tiles_02_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/clay_roof_tiles_02/clay_roof_tiles_02_diff_1k.jpg",
+          "md5": "c40ba6db5895bad48fb9d119b48c0ad7",
+          "sha256": "60c842b42c5b3ee7ee1a13c2824fb1375f9891e600be7654a6998d9266d8064c",
+          "bytes": 548185,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "43c45fa3ac4c68ffb28aa813cec32608",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 903929,
+            "sourceMd5": "43c45fa3ac4c68ffb28aa813cec32608",
+            "sourceSha256": "227a062b38b170e02c27eaa513dae45dc8bc893a62cbd8d0c08e2c32b381fc25",
+            "meanAbsoluteError8Bit": 1.8068
+          }
+        },
+        "nor_gl": {
+          "file": "clay_roof_tiles_02_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/clay_roof_tiles_02/clay_roof_tiles_02_nor_gl_1k.jpg",
+          "md5": "c903812fb406d4c1ca96ab184f169114",
+          "sha256": "4af4cbda9f4acf56e4d26a84befa37546efa6d0d2422f5f8a0aae9c35e90083b",
+          "bytes": 619727,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "9e24ddc6fbf048291f8e24bfb1f16e6d",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 990101,
+            "sourceMd5": "9e24ddc6fbf048291f8e24bfb1f16e6d",
+            "sourceSha256": "1548d3ebce335a4590d9e421556c4189a7b63852c793a568c71b9e533f8b62d5",
+            "meanAbsoluteError8Bit": 1.9867,
+            "normalAngularErrorP95Degrees": 3.2183
+          }
+        },
+        "Rough": {
+          "file": "clay_roof_tiles_02_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/clay_roof_tiles_02/clay_roof_tiles_02_rough_1k.jpg",
+          "md5": "cd3d949870337c7ca85d448101db96dd",
+          "sha256": "69d9377fefb33fb579b06ecf3f0411bd2df74dd16cb297732f47b141e351089d",
+          "bytes": 136851,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "f26a67aa20fbdcb7b70b85ccf4153245",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 341520,
+            "sourceMd5": "f26a67aa20fbdcb7b70b85ccf4153245",
+            "sourceSha256": "6d7596c4f3644ac50237381aeadf58f9b68a6dddeb66b6eef4f64462dcbbf82f",
+            "meanAbsoluteError8Bit": 0.6522
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.310785019,
+        0.086441129,
+        0.026872072
+      ],
+      "linearAlbedoStd": [
+        0.159047799,
+        0.042534837,
+        0.015805871
+      ]
+    },
+    {
+      "id": "red_sandstone_tiles",
+      "name": "Red Sandstone Tiles",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/red_sandstone_tiles",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalSizeMeters": [
+        2.050408124923706,
+        2.050410032272339
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "red_sandstone_tiles_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_tiles/red_sandstone_tiles_diff_1k.jpg",
+          "md5": "db952031eb40a126102aacd018ce6e71",
+          "sha256": "d57a7548aacb7c74e07476af87fee3fb1b5f41e6711d4b2c4dc118a076bb9ef4",
+          "bytes": 282246,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "ef7c353fc97ceb0999bb93c985c2136e",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 562635,
+            "sourceMd5": "ef7c353fc97ceb0999bb93c985c2136e",
+            "sourceSha256": "5f60643cab96b48baa78e44b8179db4b89d171172acdaf0fea23242d052db196",
+            "meanAbsoluteError8Bit": 1.3439
+          }
+        },
+        "nor_gl": {
+          "file": "red_sandstone_tiles_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_tiles/red_sandstone_tiles_nor_gl_1k.jpg",
+          "md5": "ebd74c9f067c8239592e1f6583c6c428",
+          "sha256": "37c4e88f7ed796e74feade4c15041a82370d379dd4cae1d3ade5e6a8c1ea9604",
+          "bytes": 464601,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "9f496baf5520305ee95ea1039eb6daba",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 821699,
+            "sourceMd5": "9f496baf5520305ee95ea1039eb6daba",
+            "sourceSha256": "43239e898e5889aa30880c8087cbedd0bd77e8f3a3401075b8ed2ffd02eb46ec",
+            "meanAbsoluteError8Bit": 1.6268,
+            "normalAngularErrorP95Degrees": 2.8248
+          }
+        },
+        "Rough": {
+          "file": "red_sandstone_tiles_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_tiles/red_sandstone_tiles_rough_1k.jpg",
+          "md5": "e0fe4676c4f717c5aeaa068cd86f35c5",
+          "sha256": "710baaaa92062ca95e3c5d7450a208bbcc8279280973f30e36e646a0cc1cd72b",
+          "bytes": 70539,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "providerMd5": "d722a4bb62563f8628fc762ab2b810af",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 226849,
+            "sourceMd5": "d722a4bb62563f8628fc762ab2b810af",
+            "sourceSha256": "c1fd3e89f7823af59c5f601ffc8196898e2dee18323f0bc07d29109f2c6309a7",
+            "meanAbsoluteError8Bit": 0.4012
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.044291141,
+        0.035152336,
+        0.028764067
+      ],
+      "linearAlbedoStd": [
+        0.013155962,
+        0.008715561,
+        0.006163659
+      ]
+    },
+    {
+      "id": "Travertine003",
+      "name": "Travertine 003",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/a/Travertine003",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "authors": {
+        "Lennart Demes / ambientCG": "All"
+      },
+      "technique": "surface-fully-procedural",
+      "physicalSizeMeters": [
+        1.2,
+        1.2
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "Travertine003_diffuse.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Travertine003_2K-JPG.zip",
+          "md5": "d17288a39dbe2d3ba2a210b23db085ec",
+          "sha256": "3523f44ea60cf74433bb5c1f44db889caf8430ce04ea631c25e499ab2e68a5ea",
+          "bytes": 1467523,
+          "sourceResolution": "2K",
+          "colorSpace": "sRGB",
+          "width": 2048,
+          "height": 2048,
+          "archiveMember": "Travertine003_2K-JPG_Color.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 4262956,
+            "sourceMd5": "700ac34edd8d1d5ffde7ebab053accea",
+            "sourceSha256": "0e2df1b51ffb04d788c66f46276cdb757836998dda4c11dab7cd80be2f894eb7",
+            "meanAbsoluteError8Bit": 1.4952
+          }
+        },
+        "nor_gl": {
+          "file": "Travertine003_nor_gl.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Travertine003_2K-JPG.zip",
+          "md5": "fba167fcb77e0dd572d2964f45c0c592",
+          "sha256": "1a94925336a2e7fe4ba93fa7c7df7dbffe8b8b2b16024dcac277b410ab2c539c",
+          "bytes": 88397,
+          "sourceResolution": "2K",
+          "colorSpace": "linear",
+          "width": 2048,
+          "height": 2048,
+          "archiveMember": "Travertine003_2K-JPG_NormalGL.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1304727,
+            "sourceMd5": "ea60552f99ccfcc405675c21c6064fab",
+            "sourceSha256": "22bbf14ea4817b33bfd3bb77d816f692a8bbe1e99fcfc7ee6373fdcac4f8ace8",
+            "meanAbsoluteError8Bit": 0.3126,
+            "normalAngularErrorP95Degrees": 0.638
+          }
+        },
+        "Rough": {
+          "file": "Travertine003_rough.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Travertine003_2K-JPG.zip",
+          "md5": "e14b1214850b0cbb74147700f88a1ab5",
+          "sha256": "5a8741212e041d23c4e3fb2e58e042be38be746e319677f2be5239df2f88286e",
+          "bytes": 310582,
+          "sourceResolution": "2K",
+          "colorSpace": "linear",
+          "width": 2048,
+          "height": 2048,
+          "archiveMember": "Travertine003_2K-JPG_Roughness.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 929731,
+            "sourceMd5": "bde672caee0faface60bf626b0e6f910",
+            "sourceSha256": "da92337a47ab7b0df5e07b71915ae09113e5289478bed3b628e6575543f6bca5",
+            "meanAbsoluteError8Bit": 0.373
+          }
+        }
+      },
+      "archive": {
+        "url": "https://ambientcg.com/get?file=Travertine003_2K-JPG.zip",
+        "bytes": 9500311,
+        "sha256": "d243549811632f125948fbbcf14b3cb84c52ebb3d87dd64bfe9cdc3f468de8b8"
+      },
+      "linearAlbedoMean": [
+        0.360162757,
+        0.272844939,
+        0.189429474
+      ],
+      "linearAlbedoStd": [
+        0.074144336,
+        0.0655152,
+        0.060442691
+      ]
+    },
+    {
+      "id": "Tiles139",
+      "name": "Tiles 139",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/a/Tiles139",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "authors": {
+        "Lennart Demes / ambientCG": "All"
+      },
+      "technique": "surface-procedural-bitmap-elements",
+      "physicalSizeMeters": [
+        2.0,
+        2.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "Tiles139_diffuse.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+          "md5": "b657d5f4df97156781556a7efcb6caef",
+          "sha256": "fce21084bf4a240382038676c40dfc60c960751a619ca3eff0165b8886defa47",
+          "bytes": 365925,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Tiles139_1K-JPG_Color.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1118671,
+            "sourceMd5": "9a34189d2654f3565d48cbac5365c664",
+            "sourceSha256": "0cf149289117110beea32b4e2e8d2b402d758edefbd1ca1987173fdaffca651b",
+            "meanAbsoluteError8Bit": 1.5467
+          }
+        },
+        "nor_gl": {
+          "file": "Tiles139_nor_gl.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+          "md5": "0126ad8698ce88bbdd69daa4ccc52def",
+          "sha256": "09b97e9ee9bbdf8b582d71b5a5b6ff36a57d47218678ad3c3c63e71e2c9e2f62",
+          "bytes": 113937,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Tiles139_1K-JPG_NormalGL.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 645030,
+            "sourceMd5": "86d32b847f85be17959cfd7580a5f253",
+            "sourceSha256": "0e569d9e44bd3eb7ca2b79ee343c37cdd1a2adead0f25a69dc6b2fce79dbe7c4",
+            "meanAbsoluteError8Bit": 0.6774,
+            "normalAngularErrorP95Degrees": 1.4319
+          }
+        },
+        "Rough": {
+          "file": "Tiles139_rough.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+          "md5": "cfb7d86e6cfd58bc29ac0967a9026fb8",
+          "sha256": "0aa427ffb9c8aa4c91cccfd39af704e2857cecf226b3da2d2ba3caa763c57d51",
+          "bytes": 287439,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Tiles139_1K-JPG_Roughness.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 577266,
+            "sourceMd5": "e58d79c682d804de8972f3e8b86d559c",
+            "sourceSha256": "2b1d09518bd6baf4f36a2109f5c811fe740e2dbc597f552861fae0a27fe361c1",
+            "meanAbsoluteError8Bit": 1.3604
+          }
+        }
+      },
+      "archive": {
+        "url": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+        "bytes": 4845239,
+        "sha256": "0ac4f6e094874948027a1477ad4b9e4986d48ccede608ae59874672ab46265db"
+      },
+      "linearAlbedoMean": [
+        0.458059646,
+        0.350918878,
+        0.254899937
+      ],
+      "linearAlbedoStd": [
+        0.075128013,
+        0.062640462,
+        0.051767617
+      ]
+    },
+    {
+      "id": "Concrete034",
+      "name": "Concrete 034",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/a/Concrete034",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "authors": {
+        "Lennart Demes / ambientCG": "All"
+      },
+      "technique": "surface-approximated",
+      "physicalSizeMeters": [
+        1.1,
+        0.55
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "Concrete034_diffuse.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Concrete034_1K-JPG.zip",
+          "md5": "66a547962ec60c17b0f180a24a9cb1ef",
+          "sha256": "def2a47419bdc4b08e2e668746baf9a109e57eef15e09971818288265758e88d",
+          "bytes": 126659,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 512,
+          "archiveMember": "Concrete034_1K-JPG_Color.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 269501,
+            "sourceMd5": "20c8e5acca91cf7df35073a41761e49b",
+            "sourceSha256": "8ceb9186d990b31fce785e06fdc6974c160f1d27c43f6160266f164deba713aa",
+            "meanAbsoluteError8Bit": 1.2637
+          }
+        },
+        "nor_gl": {
+          "file": "Concrete034_nor_gl.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Concrete034_1K-JPG.zip",
+          "md5": "8c51af0acc63daa056fa9d4439a3364b",
+          "sha256": "6b2418241a3b07bb13e1e330d5d593493d7755b603988cf0ee28093444d6020a",
+          "bytes": 386461,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 512,
+          "archiveMember": "Concrete034_1K-JPG_NormalGL.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 96,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 821681,
+            "sourceMd5": "ec2834a531a0b3320eddf1beb9899b2d",
+            "sourceSha256": "e509eb9dfa978e780fbebfd2acacc2ce158b5b7ced722ddc0759039dd51e18ca",
+            "meanAbsoluteError8Bit": 2.0836,
+            "normalAngularErrorP95Degrees": 3.1549
+          }
+        },
+        "Rough": {
+          "file": "Concrete034_rough.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Concrete034_1K-JPG.zip",
+          "md5": "f2968aedbe1d9ae746d9b76bf9f1d54b",
+          "sha256": "9e4707936a94c61725882f9f86f29332bbe341990e9bd6959466d97327154334",
+          "bytes": 93256,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 512,
+          "archiveMember": "Concrete034_1K-JPG_Roughness.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 217708,
+            "sourceMd5": "75dc921efe95d1968d844cf0a1005b66",
+            "sourceSha256": "a4a9e39857a19afd23a778e5abf44fcdf6bd7f93918f1cf6878b41933e553511",
+            "meanAbsoluteError8Bit": 0.7387
+          }
+        }
+      },
+      "archive": {
+        "url": "https://ambientcg.com/get?file=Concrete034_1K-JPG.zip",
+        "bytes": 3657575,
+        "sha256": "5839d284d94ffb8d2a56df742ec522b13dd311c52dbd42b8fd33f0409ceedb81"
+      },
+      "scaleBasis": "provider dimensions",
+      "linearAlbedoMean": [
+        0.48181789,
+        0.48181789,
+        0.48181789
+      ],
+      "linearAlbedoStd": [
+        0.031854538,
+        0.031854538,
+        0.031854538
+      ]
+    },
+    {
+      "id": "velour_velvet",
+      "name": "Velour Velvet",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/velour_velvet",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "colormass": "Photography",
+        "Rico Cilliers": "Processing"
+      },
+      "physicalSizeMeters": [
+        0.28422817052147237,
+        0.273499995470047
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "velour_velvet_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/velour_velvet/velour_velvet_diff_1k.jpg",
+          "md5": "72fef0e0acd451419712ca41e33a4cf7",
+          "sha256": "8df0edf51ab3d2966775ab8ef6d41fedd5e5bc00ccf6beda93a387b4db33f3a6",
+          "bytes": 408605,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 985,
+          "providerMd5": "fa3a7ef3606bf7591b8f8577992e7228",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 735556,
+            "sourceMd5": "fa3a7ef3606bf7591b8f8577992e7228",
+            "sourceSha256": "e6e92d808b3456deb892ff17905f3b44717fcfbcbce9fcf03ad7abcabda799df",
+            "meanAbsoluteError8Bit": 1.8523
+          }
+        },
+        "nor_gl": {
+          "file": "velour_velvet_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/velour_velvet/velour_velvet_nor_gl_1k.jpg",
+          "md5": "f02de7bd1affdd9cad697fd0b4ba616f",
+          "sha256": "46b1f0fd3e0a57baca8e2f7f5333e16551a38b55fba19d26e50e66ac085dfd05",
+          "bytes": 367089,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 985,
+          "providerMd5": "41009a399cb4d45e44636a515cd4c8c8",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 695985,
+            "sourceMd5": "41009a399cb4d45e44636a515cd4c8c8",
+            "sourceSha256": "046c92c48c1cb36656d394addf21dea9582f563479b73f2c0b16f356128e872b",
+            "meanAbsoluteError8Bit": 1.3429,
+            "normalAngularErrorP95Degrees": 2.2441
+          }
+        },
+        "Rough": {
+          "file": "velour_velvet_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/velour_velvet/velour_velvet_rough_1k.jpg",
+          "md5": "8479e8e5676c2e0ce80857629018cf89",
+          "sha256": "2c64bfe23192e72481732fe1d9c8ef815c0d7cab7f651b2543025635853f9373",
+          "bytes": 569797,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 985,
+          "providerMd5": "fac679bf7a69501a7402d832667fbc06",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 943960,
+            "sourceMd5": "fac679bf7a69501a7402d832667fbc06",
+            "sourceSha256": "82b6f22e9a225af76dc8960dab3ed4a936ad8a8061e9272137c3367af2970952",
+            "meanAbsoluteError8Bit": 1.8213
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.421803869,
+        0.026902231,
+        0.063742489
+      ],
+      "linearAlbedoStd": [
+        0.02912514,
+        0.006782533,
+        0.010144286
+      ]
+    },
+    {
+      "id": "Porcelain001",
+      "name": "Porcelain 001",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/a/Porcelain001",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "authors": {
+        "Lennart Demes / ambientCG": "All"
+      },
+      "technique": "surface-fully-procedural",
+      "physicalSizeMeters": [
+        1.0,
+        1.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "Porcelain001_diffuse.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Porcelain001_1K-JPG.zip",
+          "md5": "651c00b342e700307809f0d2e6399010",
+          "sha256": "6088820a6c15720d63f5819bad5e0b9e1bb71e0af46f8650891af495b1302616",
+          "bytes": 23407,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Porcelain001_1K-JPG_Color.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 41884,
+            "sourceMd5": "f81cf557716c700f47e63352027e0df4",
+            "sourceSha256": "a691a2aafaf8daf15a72e09ebd939acaaf1f0b62f92a5b373e97b5d6b1d27c95",
+            "meanAbsoluteError8Bit": 0.0471
+          }
+        },
+        "nor_gl": {
+          "file": "Porcelain001_nor_gl.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Porcelain001_1K-JPG.zip",
+          "md5": "c4fbce6f7892c33ef5f9fb28cff4e127",
+          "sha256": "9a779a10bcbd4b169ac6d97d014966c398820c2a096e41f4a58db6b5857a527c",
+          "bytes": 18731,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Porcelain001_1K-JPG_NormalGL.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 338364,
+            "sourceMd5": "d65523f934da855ac521cbb78abdaa34",
+            "sourceSha256": "0cedb482e7a2c5e3098852aa47c2ab72eba24bdc56aa6c412863a776ec745654",
+            "meanAbsoluteError8Bit": 0.3268,
+            "normalAngularErrorP95Degrees": 0.638
+          }
+        },
+        "Rough": {
+          "file": "Porcelain001_rough.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Porcelain001_1K-JPG.zip",
+          "md5": "ff28b6721c6567878497577a90347737",
+          "sha256": "df6e48fe713c01b8602a83af821831187b3045c3f4a634c5465c191b85eb1a53",
+          "bytes": 121028,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Porcelain001_1K-JPG_Roughness.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 312516,
+            "sourceMd5": "6a45c9b76cb9c63ed260b8d026b84125",
+            "sourceSha256": "5f54e6e6772c9576bd1d6b3dc7eacd2fd7c2f7790564913b73481f1f4b4995a5",
+            "meanAbsoluteError8Bit": 0.5002
+          }
+        }
+      },
+      "archive": {
+        "url": "https://ambientcg.com/get?file=Porcelain001_1K-JPG.zip",
+        "bytes": 3109136,
+        "sha256": "4fb7c0386261da4f4fe5865866fa958f0f396554456f03e09d75ae9db590bb0f"
+      },
+      "scaleBasis": "authored representative scale; provider does not specify dimensions",
+      "linearAlbedoMean": [
+        0.946979335,
+        0.946979335,
+        0.946979335
+      ],
+      "linearAlbedoStd": [
+        0.001995164,
+        0.001995164,
+        0.001995164
+      ]
+    },
+    {
+      "id": "Marble012",
+      "name": "Marble 012",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/a/Marble012",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "authors": {
+        "Lennart Demes / ambientCG": "All"
+      },
+      "technique": "surface-fully-procedural",
+      "physicalSizeMeters": [
+        2.0,
+        2.0
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "Marble012_diffuse.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Marble012_1K-JPG.zip",
+          "md5": "ee884422ee1b8c2fdad905dcbec67657",
+          "sha256": "8b211b6d4667fd6fcd54ba19c51364d6ba4a0c851f5a6546f1a50c3e50524b13",
+          "bytes": 512229,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Marble012_1K-JPG_Color.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1220876,
+            "sourceMd5": "805a32d69cd83da7f280e0becd4ed9db",
+            "sourceSha256": "a34b55c889c6b3819d2c351b6409bfd0baf0a0a55b073441850627dfebcdcd1e",
+            "meanAbsoluteError8Bit": 1.9818
+          }
+        },
+        "nor_gl": {
+          "file": "Marble012_nor_gl.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Marble012_1K-JPG.zip",
+          "md5": "71f89f39cd05355ed72037e6c26206a2",
+          "sha256": "fac95f139eb8e6a1a67d9c1e336e9897d81b26b0a852d3fc216f62c04bfd68b6",
+          "bytes": 16674,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Marble012_1K-JPG_NormalGL.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 342955,
+            "sourceMd5": "7899d19090e6c78165e4a89f7cbb2706",
+            "sourceSha256": "2e9a56525ffbb7e80854b19985a5c921f91192698ea337f4834192479ba0063b",
+            "meanAbsoluteError8Bit": 0.3326,
+            "normalAngularErrorP95Degrees": 0.638
+          }
+        },
+        "Rough": {
+          "file": "Marble012_rough.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Marble012_1K-JPG.zip",
+          "md5": "98f74c824a00e329dcc47bca9e18efa0",
+          "sha256": "1a7140a5630ede63c283b5367794f5d491f5c8a45c29aa1623635d6484e6d8e9",
+          "bytes": 252699,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "archiveMember": "Marble012_1K-JPG_Roughness.jpg",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 535814,
+            "sourceMd5": "41124e18d47823656e5ef47dce2f8a59",
+            "sourceSha256": "f7afd636d6cca0b470549959c514976186df58ac1013016b6c3919910a6d3a04",
+            "meanAbsoluteError8Bit": 1.1201
+          }
+        }
+      },
+      "archive": {
+        "url": "https://ambientcg.com/get?file=Marble012_1K-JPG.zip",
+        "bytes": 4672904,
+        "sha256": "b04384c6d49ce73baeb70db7ea4abfe9948fc9b74b9fd92c3766970662bf2c43"
+      },
+      "scaleBasis": "authored representative scale; provider does not specify dimensions",
+      "linearAlbedoMean": [
+        0.420374181,
+        0.425491691,
+        0.473587244
+      ],
+      "linearAlbedoStd": [
+        0.08387569,
+        0.083599832,
+        0.087208997
+      ]
+    },
+    {
+      "id": "red_brick_03_unit",
+      "name": "Red Brick 03 \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/red_brick_03",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        0.1689453125,
+        0.037109375
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "red_brick_03_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_diff_1k.jpg",
+          "md5": "d09f82d0b5f9edc741e2909c7c9ffc38",
+          "sha256": "865504ebb0b3767802aab584166bd13184250d3a65b71928ca9031ec7834f6d5",
+          "bytes": 6218,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 173,
+          "height": 38,
+          "derivedFromFile": "red_brick_03_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "red_brick_03_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_nor_gl_1k.jpg",
+          "md5": "75d23bf423f3bfaf12de8a9ff9c356c8",
+          "sha256": "ce4b9bcc4a408170207a2899130545bbd7284c3e81ff732388ce3f5d71fe36de",
+          "bytes": 7901,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 173,
+          "height": 38,
+          "derivedFromFile": "red_brick_03_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "red_brick_03_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_rough_1k.jpg",
+          "md5": "bab4b2e101da8e84442239b136d1f024",
+          "sha256": "2ad3b5fe4783a82bf2337cdf0658a460d133d10714ed622000ab5bc6a8ea487c",
+          "bytes": 3147,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 173,
+          "height": 38,
+          "derivedFromFile": "red_brick_03_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.168687817,
+        0.086873169,
+        0.072602941
+      ],
+      "linearAlbedoStd": [
+        0.048312112,
+        0.032708582,
+        0.029074905
+      ],
+      "derivedFrom": "red_brick_03",
+      "cropPixels": [
+        315,
+        170,
+        488,
+        208
+      ]
+    },
+    {
+      "id": "terracotta_floor_tiles_unit",
+      "name": "Terracotta Floor Tiles \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/terracotta_floor_tiles",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalSizeMeters": [
+        0.17874999344348907,
+        0.1746874935925007
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "terracotta_floor_tiles_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terracotta_floor_tiles/terracotta_floor_tiles_diff_1k.jpg",
+          "md5": "431674d6b328dc96f5bbf0fd497e5d94",
+          "sha256": "745ff0886922fc75c0988a6e115c73153216ca1db0e08578b2a41b122fb3772e",
+          "bytes": 3699,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 88,
+          "height": 86,
+          "derivedFromFile": "terracotta_floor_tiles_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "terracotta_floor_tiles_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terracotta_floor_tiles/terracotta_floor_tiles_nor_gl_1k.jpg",
+          "md5": "6e58461d51a21079c3a635b04e7b26ed",
+          "sha256": "132c441f4609ec5e3e1e694d9edac0e0db13c0d104cb40a993d5e847ae1eb6e5",
+          "bytes": 3031,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 88,
+          "height": 86,
+          "derivedFromFile": "terracotta_floor_tiles_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "terracotta_floor_tiles_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terracotta_floor_tiles/terracotta_floor_tiles_rough_1k.jpg",
+          "md5": "7a33a1c9cb8523dc7a54856a83c8997b",
+          "sha256": "41ae4437cadcef8dceafa33992ab284f8a83e1b108a29eb4fe0583af9c9300a8",
+          "bytes": 3817,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 88,
+          "height": 86,
+          "derivedFromFile": "terracotta_floor_tiles_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.083282406,
+        0.022122769,
+        0.009572
+      ],
+      "linearAlbedoStd": [
+        0.009140816,
+        0.002949091,
+        0.001730065
+      ],
+      "derivedFrom": "terracotta_floor_tiles",
+      "cropPixels": [
+        240,
+        242,
+        328,
+        328
+      ]
+    },
+    {
+      "id": "terrazzo_tiles_unit",
+      "name": "Terrazzo Tiles \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/terrazzo_tiles",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalSizeMeters": [
+        0.83984375,
+        0.83984375
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "terrazzo_tiles_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terrazzo_tiles/terrazzo_tiles_diff_1k.jpg",
+          "md5": "796cd2f9fc5349ea04f265c865008c81",
+          "sha256": "95e8d96a56ba8cd24126954e81af50dd40a5ce786e56d2c633ab931e245d53b0",
+          "bytes": 163553,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 430,
+          "height": 430,
+          "derivedFromFile": "terrazzo_tiles_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "terrazzo_tiles_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terrazzo_tiles/terrazzo_tiles_nor_gl_1k.jpg",
+          "md5": "7827b6710dab0f76cd4677a6108dcf07",
+          "sha256": "759ae0c8cf915fa624e679c45d7d3fc5116e4a2da99b68ce6de6106af12d6a8c",
+          "bytes": 12063,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 430,
+          "height": 430,
+          "derivedFromFile": "terrazzo_tiles_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "terrazzo_tiles_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terrazzo_tiles/terrazzo_tiles_rough_1k.jpg",
+          "md5": "83ee6bca55927debcf10735c9495366f",
+          "sha256": "b3e941c4521982e1362e3e13f1f0d271447acd9b86121a35ca27f8a958a3b303",
+          "bytes": 49758,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 430,
+          "height": 430,
+          "derivedFromFile": "terrazzo_tiles_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.257230043,
+        0.160545556,
+        0.102964479
+      ],
+      "linearAlbedoStd": [
+        0.089553348,
+        0.07490231,
+        0.058370856
+      ],
+      "derivedFrom": "terrazzo_tiles",
+      "cropPixels": [
+        40,
+        40,
+        470,
+        470
+      ]
+    },
+    {
+      "id": "Tiles139_unit",
+      "name": "Tiles 139 \u2014 mortar-free unit sample",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/a/Tiles139",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "authors": {
+        "Lennart Demes / ambientCG": "All"
+      },
+      "technique": "surface-procedural-bitmap-elements",
+      "physicalSizeMeters": [
+        0.1953125,
+        0.1953125
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "Tiles139_unit_diffuse.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+          "md5": "003c19b48a36a609e32ccfa9f06f981e",
+          "sha256": "6adc33cb0f7d46ec5107e0ae75eda92a21b7cfb18b5f5d590f6d321cff3776c5",
+          "bytes": 5444,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 100,
+          "height": 100,
+          "derivedFromFile": "Tiles139_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "Tiles139_unit_nor_gl.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+          "md5": "d1ca4536c65f87bb1d6f9f58e98236c9",
+          "sha256": "905e83112a41643661950e8e86c8ab136981127787a531b019853d5ff5824289",
+          "bytes": 2014,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 100,
+          "height": 100,
+          "derivedFromFile": "Tiles139_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "Tiles139_unit_rough.jpg",
+          "sourceUrl": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+          "md5": "17ae54715ba70f98bbf12e7abe6e1a91",
+          "sha256": "73aad38e9f09804ded8d1f33f5106cf4b22575d38c2e81fb335688a9730cb620",
+          "bytes": 4810,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 100,
+          "height": 100,
+          "derivedFromFile": "Tiles139_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "archive": {
+        "url": "https://ambientcg.com/get?file=Tiles139_1K-JPG.zip",
+        "bytes": 4845239,
+        "sha256": "0ac4f6e094874948027a1477ad4b9e4986d48ccede608ae59874672ab46265db"
+      },
+      "linearAlbedoMean": [
+        0.49363071,
+        0.382141217,
+        0.27814645
+      ],
+      "linearAlbedoStd": [
+        0.052119157,
+        0.041092444,
+        0.03040029
+      ],
+      "derivedFrom": "Tiles139",
+      "cropPixels": [
+        15,
+        15,
+        115,
+        115
+      ]
+    },
+    {
+      "id": "slate_floor_unit",
+      "name": "Slate Floor \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/slate_floor",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalSizeMeters": [
+        0.25717773009091616,
+        0.17890626564621925
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "slate_floor_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/slate_floor/slate_floor_diff_1k.jpg",
+          "md5": "cdff69776696d8ea0810c3e94bf01451",
+          "sha256": "bdc1fa914a735556cabc05d99ccba9a35a345121ab82bd3175d4306a5e5d7c48",
+          "bytes": 5300,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 115,
+          "height": 80,
+          "derivedFromFile": "slate_floor_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "slate_floor_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/slate_floor/slate_floor_nor_gl_1k.jpg",
+          "md5": "292b14941d19b9f25318d379b317d5af",
+          "sha256": "e5a183765bf5bb276d038831bc2baf8ff81c716d443eca313c5d123d247a485b",
+          "bytes": 6827,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 115,
+          "height": 80,
+          "derivedFromFile": "slate_floor_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "slate_floor_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/slate_floor/slate_floor_rough_1k.jpg",
+          "md5": "47b769c9c2fb701d5919524938cb864c",
+          "sha256": "c2f46f733c7c7ba75b6575ee75f05b21d3375375d0bfd408561e51a444ad828b",
+          "bytes": 6170,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 115,
+          "height": 80,
+          "derivedFromFile": "slate_floor_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.024165354,
+        0.013559446,
+        0.013679869
+      ],
+      "linearAlbedoStd": [
+        0.007158805,
+        0.004668956,
+        0.004354979
+      ],
+      "derivedFrom": "slate_floor",
+      "cropPixels": [
+        420,
+        350,
+        535,
+        430
+      ]
+    },
+    {
+      "id": "red_sandstone_tiles_unit",
+      "name": "Red Sandstone Tiles \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/red_sandstone_tiles",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalSizeMeters": [
+        0.5206114379689097,
+        0.3804471739567816
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "red_sandstone_tiles_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_tiles/red_sandstone_tiles_diff_1k.jpg",
+          "md5": "7f809a08be3b606e4853680bfd7310ab",
+          "sha256": "7568b040055fcd1766c016ff9dc9e378d7b0856afced254c557ca4058ba46cf2",
+          "bytes": 24298,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 260,
+          "height": 190,
+          "derivedFromFile": "red_sandstone_tiles_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "red_sandstone_tiles_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_tiles/red_sandstone_tiles_nor_gl_1k.jpg",
+          "md5": "e994e303081ad5625e66367c41dc6adf",
+          "sha256": "d7ea262c3d1b16e28a480b34ff9dddc2651d4895be2df218947bef8b4695ecba",
+          "bytes": 34535,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 260,
+          "height": 190,
+          "derivedFromFile": "red_sandstone_tiles_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "red_sandstone_tiles_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_tiles/red_sandstone_tiles_rough_1k.jpg",
+          "md5": "bce236104f62c96fe6b008ab4b975da1",
+          "sha256": "b39f32bc5a7231dfcc13167d569883f99981366eb7f6cbd26da9edee48dc5fc4",
+          "bytes": 8244,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 260,
+          "height": 190,
+          "derivedFromFile": "red_sandstone_tiles_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.06066909,
+        0.04515734,
+        0.034304579
+      ],
+      "linearAlbedoStd": [
+        0.015024625,
+        0.010703856,
+        0.008163439
+      ],
+      "derivedFrom": "red_sandstone_tiles",
+      "cropPixels": [
+        70,
+        60,
+        330,
+        250
+      ]
+    },
+    {
+      "id": "japanese_cedar_planks_unit",
+      "name": "Japanese Cedar Planks \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/japanese_cedar_planks",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Charlotte Baglioni": "Scanning",
+        "Rico Cilliers": "Processing "
+      },
+      "physicalSizeMeters": [
+        0.06400391273200512,
+        1.0483399499207735
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "japanese_cedar_planks_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/japanese_cedar_planks/japanese_cedar_planks_diff_1k.jpg",
+          "md5": "30e1b6432ee1def47dd9f6511cb40eee",
+          "sha256": "92c3b4c2cfd1f5b21e5bcfdd8d04aa9944ee079da2dee2536fd17fe2688f6ee4",
+          "bytes": 29168,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 58,
+          "height": 950,
+          "derivedFromFile": "japanese_cedar_planks_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "japanese_cedar_planks_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/japanese_cedar_planks/japanese_cedar_planks_nor_gl_1k.jpg",
+          "md5": "cc2f4e512961064bbedccf6f958956f7",
+          "sha256": "5a22b58ef3f5fc74915aab29093f71186fe52ceda6a6aea6d536daa7c4d7c547",
+          "bytes": 38113,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 58,
+          "height": 950,
+          "derivedFromFile": "japanese_cedar_planks_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "japanese_cedar_planks_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/japanese_cedar_planks/japanese_cedar_planks_rough_1k.jpg",
+          "md5": "5f22218c75487287e590c40ab99b2be5",
+          "sha256": "068d31c567f02617a889d10603409ffa02a61ab704150fa75b2abe08c0860a89",
+          "bytes": 29836,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 58,
+          "height": 950,
+          "derivedFromFile": "japanese_cedar_planks_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.484807486,
+        0.144417562,
+        0.006487799
+      ],
+      "linearAlbedoStd": [
+        0.057896963,
+        0.031824057,
+        0.005354221
+      ],
+      "derivedFrom": "japanese_cedar_planks",
+      "cropPixels": [
+        448,
+        40,
+        506,
+        990
+      ]
+    },
+    {
+      "id": "wood_planks_grey_unit",
+      "name": "Wood Planks Grey \u2014 mortar-free unit sample",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/wood_planks_grey",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalSizeMeters": [
+        0.12890625,
+        1.442871208419092
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "wood_planks_grey_unit_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_grey/wood_planks_grey_diff_1k.jpg",
+          "md5": "fa86a029794294bae35aa7186951d60b",
+          "sha256": "7556bf0911cf414fbc0c12e5e7d3ddff91a6db9a7650ed07515526f9d8b525c8",
+          "bytes": 44231,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 88,
+          "height": 985,
+          "derivedFromFile": "wood_planks_grey_diffuse.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "nor_gl": {
+          "file": "wood_planks_grey_unit_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_grey/wood_planks_grey_nor_gl_1k.jpg",
+          "md5": "db8bb6f4c731710713555d657316e52d",
+          "sha256": "caa953cb262d77d505c099a524e1fdc523ca5dd508aab094579c17b062554bb9",
+          "bytes": 37317,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 88,
+          "height": 985,
+          "derivedFromFile": "wood_planks_grey_nor_gl.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        },
+        "Rough": {
+          "file": "wood_planks_grey_unit_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_grey/wood_planks_grey_rough_1k.jpg",
+          "md5": "129e47f8395ce750222c77e68b692d30",
+          "sha256": "31a54ddf508cc9575cff5b36691c5bfa6f4cd26aef36839a345761384c08afaf",
+          "bytes": 35773,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 88,
+          "height": 985,
+          "derivedFromFile": "wood_planks_grey_rough.jpg",
+          "derivation": "crop inside one material unit; periodic boundary correction; no resampling"
+        }
+      },
+      "linearAlbedoMean": [
+        0.066431517,
+        0.064506492,
+        0.056649488
+      ],
+      "linearAlbedoStd": [
+        0.026245286,
+        0.02547754,
+        0.022959713
+      ],
+      "derivedFrom": "wood_planks_grey",
+      "cropPixels": [
+        235,
+        15,
+        323,
+        1000
+      ]
+    },
+    {
+      "id": "wool_boucle_undyed",
+      "name": "Looped wool \u2014 undyed study",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/wool_boucle",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "colormass": "Photography",
+        "Rico Cilliers": "Processing"
+      },
+      "physicalSizeMeters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "maps": {
+        "Diffuse": {
+          "file": "wool_boucle_undyed_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_diff_1k.jpg",
+          "md5": "9159af52e6b24ff274b5b4f6d8ec7873",
+          "sha256": "009db46d3641df8b271804987ac4a410b46e7cf814ae8236ef44fdda05fa5704",
+          "bytes": 635267,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1269,
+          "derivedFromFile": "wool_boucle_diffuse.jpg",
+          "derivation": "remove yarn dye with periodic 1.4 px Gaussian local luminance normalization in linear light; original loop normal and roughness maps unchanged"
+        },
+        "nor_gl": {
+          "file": "wool_boucle_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_nor_gl_1k.jpg",
+          "md5": "202117b1923bb54771c45c225f46b7e2",
+          "sha256": "7b91b0897c7e8585e2513bdd865aa26d597392e723e45aae2ec7fb00aa2e413f",
+          "bytes": 795359,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1269,
+          "providerMd5": "6a413f9a1aa70ab3bb4fede917cf8a64",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1266355,
+            "sourceMd5": "6a413f9a1aa70ab3bb4fede917cf8a64",
+            "sourceSha256": "2cc13a2be4d0bb942a59a86d613665c0d24ff201560daa4d841cee597af0c752",
+            "meanAbsoluteError8Bit": 1.9233,
+            "normalAngularErrorP95Degrees": 3.0732
+          }
+        },
+        "Rough": {
+          "file": "wool_boucle_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_rough_1k.jpg",
+          "md5": "077fe387a5136861f5f75e16182cada5",
+          "sha256": "00940e4840ecd09cf55ff92e4ad89ccf759c025635bc8e6837ba6add8f8f1d64",
+          "bytes": 772746,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1269,
+          "providerMd5": "48bfe3aac53735ada81add2f1054a3f5",
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 1272361,
+            "sourceMd5": "48bfe3aac53735ada81add2f1054a3f5",
+            "sourceSha256": "f09f24bd26378b03bb798d4b75010ac8cc0fd1e4b858959e97e6d8d74fa3f6d8",
+            "meanAbsoluteError8Bit": 1.8196
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.594916695,
+        0.594916695,
+        0.594916695
+      ],
+      "linearAlbedoStd": [
+        0.06621456,
+        0.06621456,
+        0.06621456
+      ],
+      "derivedFrom": "wool_boucle"
     }
-  ]
+  ],
+  "updated": "2026-11-24",
+  "provenance": "Original provider albedo, OpenGL normal and roughness maps. Source archives/checksums and measured physical dimensions retained; see renovation-materials.md for finish selection and in-renderer tinting.",
+  "derivativeNotes": "New source maps use quality-94 JPEG delivery with source hashes and measured compression error retained; the six baseline sets are unchanged. Mortar-free unit samples preserve source texel density. Boucle dye removal keeps the original measured normal/roughness structure. All operations are recorded per map."
 }

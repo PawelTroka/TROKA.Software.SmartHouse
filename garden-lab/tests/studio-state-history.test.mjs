@@ -14,7 +14,7 @@ const models=SITE_OPTIONS.map(site=>{
 });
 
 test('all style recipes, house scope and quality survive shared links on all three properties',()=>{
-  assert.equal(STATE_VERSION,28);
+  assert.equal(STATE_VERSION,29);
   for(const {model} of models)for(const style of DESIGN_STYLES){
     const original=model.sanitizeState({...changePresentationSettings(model.DEFAULTS,{designStyle:style.id}),
       renderQuality:'eco',sceneMotion:true,costStyleUpgradeQuote:24900,poolFreeboard:.12});
@@ -105,12 +105,12 @@ test('view changes do not erase redo; a new design branches and history has a ha
 
 test('styles never invent an installed premium or double-count base finishes',()=>{
   for(const {data,model} of models){
-    const base=model.sanitizeState({...model.DEFAULTS,costUsePlanningAllowances:true});
+    const base=model.sanitizeState({...model.DEFAULTS,costUsePlanningAllowances:true,styleGardenLayout:false});
     const plain=estimateCosts(base,data);
     const themed=estimateCosts({...base,designStyle:'hidden-bali'},data);
     assert.equal(themed.style.status,'quote-required');assert.equal(themed.total,null);
     for(const group of ['hedges','earthworks','screeningTrees','spa','privacy','basementGarage','balcony'])
-      assert.deepEqual(themed[group],plain[group],group+' is independent of movable furnishing');
+      assert.deepEqual(themed[group],plain[group],group+' keeps its quantities when style garden layout is disabled');
     const withoutLighting=result=>result.garden.rows.filter(row=>row.key!=='costGardenLighting');
     assert.deepEqual(withoutLighting(themed),withoutLighting(plain),'Existing non-lighting allowances are not silently repriced');
     const lightDelta=themed.garden.quantities.lightingFittings-plain.garden.quantities.lightingFittings;

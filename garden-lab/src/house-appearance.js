@@ -7,9 +7,10 @@
  * are explicitly proposed alterations. Keep this file free of Three / DOM so
  * window viewpoints can use the same aperture coordinates as the renderer.
  */
-import {getInteriorPlan} from './interior-plan.js?v=1.32.1';
-import {sharedHouseFacades} from './house-model.js?v=1.32.1';
-import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.32.1';
+import {getInteriorPlan} from './interior-plan.js?v=1.33.0';
+import {sharedHouseFacades} from './house-model.js?v=1.33.0';
+import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.33.0';
+import {renovateFacadeOpenings} from './renovation-architecture.js?v=1.33.0';
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const xyz=p=>Array.isArray(p)?p:[p.x,p.y,p.z];
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring||[];
@@ -120,10 +121,10 @@ export function houseAppearanceLayout(data,settings={},options={}){
     const centre=(peak[0]-side.a[0])*side.direction[0]+(peak[1]-side.a[1])*side.direction[1];
     atticWindow={id:'side-attic-triangle',edgeIndex:side.index,centre,lo:centre-.42,hi:centre+.42,z:peak[2]-1.18,height:.78};
   }
-  return {supported:true,ring,edges,front,rear,windows,door,rearBays,balconyDoor,portal,entryAccess,atticWindow,
+  return renovateFacadeOpenings({supported:true,ring,edges,front,rear,windows,door,rearBays,balconyDoor,portal,entryAccess,atticWindow,
     baseZ,floorZ,firstFloorZ,plinthTopZ:floorZ-.045,
     roof:{samples,eavesZ,ridgeZ:roofEnvelope.ridgeZ,source:house.source,shape:'source-fitted-main-and-inferred-cross-gable',envelope:roofEnvelope},
-    notes:HOUSE_APPEARANCE_NOTES};
+    notes:HOUSE_APPEARANCE_NOTES},{styleId:settings.designStyle||'current',atticFloorZ:floorZ+num(settings.atticRise,5.75)});
 }
 
 /** Real rendered aperture anchor for the first-floor window-plane presets. */

@@ -184,7 +184,7 @@ test('old links and v6 local saves keep both properties unchanged and never acqu
   }
   const data=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json',import.meta.url)));
   const model=createStateModel(getSiteProfile('korzeniowskiego-40',data));
-  const saved={...model.DEFAULTS,poolFreeboard:.02,garageSlabThickness:.25,hedgeLeft:7,hedgeRight:2.5,floorHeight:1.8,lookYaw:42,sunDate:'2026-12-21'};
+  const saved={...model.DEFAULTS,styleGardenLayout:false,poolFreeboard:.02,garageSlabThickness:.25,hedgeLeft:7,hedgeRight:2.5,floorHeight:1.8,lookYaw:42,sunDate:'2026-12-21'};
   const restored=model.migrateSavedState(saved,6);
   assert.deepEqual(restored,saved);assert.deepEqual(restored.screeningTrees,[]);
   const next={...restored,screeningTrees:[tree('austrian-pine-medium',{x:14,y:26})]};

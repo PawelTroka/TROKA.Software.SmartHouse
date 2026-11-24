@@ -201,7 +201,17 @@ test('all resort arrangements retain free floor area, fixture approaches and roo
       const dx=(a.width+b.width)/2-Math.abs(a.x-b.x),dz=(a.depth+b.depth)/2-Math.abs(a.z-b.z);
       assert.ok(dx<=1e-7||dz<=1e-7,`${styleId} ${floor}: ${a.id} intersects ${b.id}`);
     }
-    for(const point of targets[floor])assert.ok(reached(point),`${styleId} ${floor}: room route ${point} disconnected`);
+    const roomTargets=targets[floor].map(point=>point.slice());
+    if(floor==='ground'){
+      const island=plan.fixtures.find(f=>f.id==='kitchen-island'),table=plan.fixtures.find(f=>f.id==='kitchen-worktable');
+      // The destination follows the usable side of the new preparation area;
+      // the old kitchen centre is now inside the proposed island itself.
+      if(island)roomTargets[1]=[island.x+island.width/2+.45,island.z];
+      else if(table)roomTargets[1]=[table.x,table.z-table.depth/2-.45];
+    }else if(plan.furnishingConcept?.office==='floating'){
+      const chair=plan.fixtures.find(f=>f.id==='office-chair');roomTargets[1]=[chair.x-chair.width/2-.35,chair.z];
+    }
+    for(const point of roomTargets)assert.ok(reached(point),`${styleId} ${floor}: room route ${point} disconnected`);
     for(const f of plan.fixtures)for(const point of f.approaches||(f.approach?[f.approach]:[]))assert.ok(reached(point),`${styleId} ${f.id}: fixture approach disconnected`);
     for(const w of plan.walls)for(const o of w.openings.filter(o=>o.type==='door')){
       const length=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]),ux=(w.b[0]-w.a[0])/length,uz=(w.b[1]-w.a[1])/length;

@@ -161,24 +161,27 @@ test('actual house mesh leaves the two-car aperture open across its full width a
   mesh.geometry.dispose();for(const material of mesh.material)material.dispose();
 });
 
-test('current and disabled house treatments restore original surfaces and add no objects',()=>{
+test('Current restores the house, while the finish toggle preserves selected architectural openings',()=>{
   const {data,model}=sites[0],base=model.DEFAULTS;
   const original=createPhotoHouseGroup(data,base,{terrainAt});
   const originalPalette=original.children.map(m=>[m.name,m.material?.color?.getHex(),m.geometry?.attributes.position.count]);
-  const cases=[
-    [{...base,designStyle:'current',styleHouseFinish:true},{}],
-    [{...base,designStyle:'hidden-bali',styleHouseFinish:false},{}],
-    [{...base,designStyle:'hidden-bali',styleHouseFinish:true},{style:null}],
-  ];
-  for(const [settings,options] of cases){
-    const restored=createPhotoHouseGroup(data,settings,{terrainAt,...options});
-    assert.equal(restored.getObjectByName('house-renovation'),undefined);
-    assert.deepEqual(restored.children.map(m=>[m.name,m.material?.color?.getHex(),m.geometry?.attributes.position.count]),originalPalette);
-  }
+  const restored=createPhotoHouseGroup(data,{...base,designStyle:'current',styleHouseFinish:true},{terrainAt});
+  assert.equal(restored.getObjectByName('house-renovation'),undefined);
+  assert.deepEqual(restored.children.map(m=>[m.name,m.material?.color?.getHex(),m.geometry?.attributes.position.count]),originalPalette);
   const styled=createPhotoHouseGroup(data,{...base,designStyle:'hidden-bali',styleHouseFinish:true},{terrainAt});
   assert.ok(styled.getObjectByName('house-renovation'));
   assert.notEqual(styled.getObjectByName('house-wall-0-plaster').material.color.getHex(),original.getObjectByName('house-wall-0-plaster').material.color.getHex());
-  for(const name of ['house-measured-terracotta-roof','house-wall-0-plaster','front-living-west-glass','house-entrance-door']){
-    assert.deepEqual(styled.getObjectByName(name).geometry.attributes.position.array,original.getObjectByName(name).geometry.attributes.position.array);
+  assert.deepEqual(styled.getObjectByName('house-measured-terracotta-roof').geometry.attributes.position.array,original.getObjectByName('house-measured-terracotta-roof').geometry.attributes.position.array);
+  for(const name of ['house-wall-0-plaster','front-living-west-glass','house-entrance-door']){
+    assert.notDeepEqual(styled.getObjectByName(name).geometry.attributes.position.array,original.getObjectByName(name).geometry.attributes.position.array);
+  }
+  for(const [settings,options]of [
+    [{...base,designStyle:'hidden-bali',styleHouseFinish:false},{}],
+    [{...base,designStyle:'hidden-bali',styleHouseFinish:true},{style:null}],
+  ]){
+    const plain=createPhotoHouseGroup(data,settings,{terrainAt,...options});
+    assert.equal(plain.getObjectByName('house-renovation'),undefined);
+    assert.deepEqual(plain.userData.houseAppearance.windows,styled.userData.houseAppearance.windows);
+    assert.equal(plain.getObjectByName('house-wall-0-plaster').material.color.getHex(),original.getObjectByName('house-wall-0-plaster').material.color.getHex());
   }
 });

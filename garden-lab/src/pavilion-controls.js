@@ -1,5 +1,5 @@
-import {PAVILION_PLACEMENTS} from './corner-pavilion.js?v=1.32.1';
-import {pavilionStudy} from './pavilion-study.js?v=1.32.1';
+import {PAVILION_PLACEMENTS} from './corner-pavilion.js?v=1.33.0';
+import {pavilionStudy} from './pavilion-study.js?v=1.33.0';
 const $=id=>document.getElementById(id);
 const fmt=(n,d=1)=>Number.isFinite(n)?n.toFixed(d):'—';
 
