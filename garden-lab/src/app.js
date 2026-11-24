@@ -673,7 +673,13 @@ pavilionControls=createPavilionControls({
   getSettings:()=>settings,getData:()=>data||baseData,
   getObserver:()=>observerForPreset(settings.preset,settings,data||baseData),getAnalysis:()=>analysis,
   notify:toast,
-  onChange:patch=>{stopSunPlayback();settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;syncControls();update();},
+  onChange:patch=>{
+    stopSunPlayback();settings=sanitizeState({...settings,...patch});showingA=false;comparisonB=null;
+    // The garden alternative should be visible when enabled from the default
+    // front-garage overview. Preserve any other camera chosen by the user.
+    if(patch.pavilionEnabled&&garageViewActive&&settings.mode==='orbit'){garageViewActive=false;lastSceneMode=null;}
+    syncControls();update();
+  },
   onView:preset=>{
     const initial=observerForPreset(preset,{...settings,eyeHeight:undefined},data||baseData);
     settings=sanitizeState({...settings,preset,eyeHeight:initial.eyeHeight,lookYaw:initial.defaultLookYaw??0,lookPitch:initial.defaultLookPitch??0,mode:'eye'});
@@ -834,7 +840,7 @@ try{
       seaSettingsSignature=JSON.stringify([settings.floorHeight,settings.firstFloorRise]);
     }).catch(()=>{panel.textContent='The sea-view data could not load. Refresh to retry. The neighbourhood model remains available.';});
   }
-  if(settings.basementGarageEnabled&&settings.mode==='orbit')focusGarageCamera();
+  if(settings.basementGarageEnabled&&!settings.pavilionEnabled&&settings.mode==='orbit')focusGarageCamera();
 }catch(error){
   console.error(error);$('loading').replaceChildren();const heading=document.createElement('strong');heading.textContent='The site model could not load.';const note=document.createElement('span');note.textContent='Refresh the page to retry. If running locally, serve the folder over HTTP.';$('loading').append(heading,note);
 }

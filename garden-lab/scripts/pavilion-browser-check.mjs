@@ -21,6 +21,12 @@ const q=selector=>page.locator(selector);
 const frames=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 const stats=()=>q('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([key,value])=>
   [key,key==='renderer'?value:key==='motionActive'?value==='true':Number(value)])));
+const viewContext=()=>page.evaluate(()=>({
+  mode:document.getElementById('viewport').dataset.mode,
+  badge:document.getElementById('view-badge-text').textContent,
+  date:document.getElementById('sun-date').value,time:document.getElementById('sun-time').value,
+  style:document.getElementById('designStyle').value,
+}));
 
 async function openDetails(selector){
   const details=q(selector);
@@ -129,12 +135,18 @@ try{
     sunEnabled:'true',sunDate:'2026-06-21',sunMinutes:'720',showDimensions:'false'});
   await page.goto(base+'/?site=sternicza-11#'+initial,{waitUntil:'domcontentloaded'});await ready();
   await renderedChange(()=>q('#designStyle').selectOption('beach-house'));
+  // Fresh designs may start in the dedicated basement-ramp close-up. The rear
+  // building is outside that view, even though the public mode is "orbit".
+  // Reset through the real control before recording the fixed garden camera.
+  await renderedChange(()=>q('#reset-camera').click());
+  assert.equal((await viewContext()).mode,'orbit');
+  assert.doesNotMatch((await viewContext()).badge,/basement garage/i);
   await openDetails('#corner-pavilion-panel');
   assert.equal(await q('#pavilionEnabled').isChecked(),false);
   assert.equal(await q('#pavilion-settings').isVisible(),false);
   const original=await exportDesign();assert.equal(original.cornerPavilion.enabled,false);
   const baseline=await shot('01-original-garden-orbit','#scene-host canvas');
-  report.original={stats:await stats(),programme:original.settings.gardenProgram};
+  report.original={stats:await stats(),programme:original.settings.gardenProgram,view:await viewContext()};
 
   await renderedChange(()=>q('#pavilionEnabled').check());
   const rear=await exportDesign();await expectStudy(rear,{height:6.5,x:12.2,y:29,width:5,depth:5.8});
@@ -147,10 +159,15 @@ try{
   report.rear=rear.cornerPavilion;
   check('The optional 6.5 m pavilion renders, moves the pool west, retains planting and agrees with its live PCK3 readout');
 
-  const lowStats=await stats();
+  const lowStats=await stats(),lowView=await viewContext();
   await renderedChange(()=>q('[data-pavilion-height="10"]').click());
   const high=await exportDesign();await expectStudy(high,{height:10,x:12.2,y:29});
   const highFrame=await shot('03-rear-corner-10m-orbit','#scene-host canvas');
+  report.heightRendering={before:lowStats,after:await stats(),beforeView:lowView,afterView:await viewContext(),
+    beforeRoof:rear.cornerPavilion.dimensions,afterRoof:high.cornerPavilion.dimensions,
+    changedSettings:Object.keys(high.settings).filter(key=>JSON.stringify(high.settings[key])!==JSON.stringify(rear.settings[key])).sort()};
+  assert.deepEqual(report.heightRendering.changedSettings,['pavilionHeight'],'Height comparison must change only the pavilion height');
+  assert.deepEqual(report.heightRendering.afterView,lowView,'Height comparison must retain its garden camera, style and solar moment');
   report.heightDifference=await pixelChange(rearFrame,highFrame);
   assert.ok(report.heightDifference.pixels>100,'Height control did not change actual rendered geometry');
   assert.notEqual((await stats()).triangles,lowStats.triangles,'Storey change did not rebuild rendered construction');
@@ -158,13 +175,17 @@ try{
   check('Height presets rebuild actual WebGL geometry and update the modelled roof level and analysis');
 
   await renderedChange(()=>q('[data-pavilion-placement="near-garage"]').click());
+  const moved=await exportDesign();await expectStudy(moved,{height:10,x:11.4,y:24.7,width:5.8,depth:5.2});
+  const movedFrame=await shot('04-near-house-10m-orbit','#scene-host canvas');
+  report.placementDifference=await pixelChange(highFrame,movedFrame);
+  assert.ok(report.placementDifference.pixels>100,'Placement control did not move the actual rendered building');
   await renderedChange(async()=>{await q('#pavilionHeight-value').fill('8.2');await q('#pavilionHeight-value').press('Tab');});
   assert.equal(await q('#pavilionHeight').inputValue(),'8.2');
   const near=await exportDesign();await expectStudy(near,{height:8.2,x:11.4,y:24.7,width:5.8,depth:5.2});
   assert.equal(await q('[data-pavilion-placement="near-garage"]').getAttribute('aria-pressed'),'true');
   const nearFrame=await shot('04-near-house-8-2m-orbit','#scene-host canvas');
-  report.placementDifference=await pixelChange(highFrame,nearFrame);
-  assert.ok(report.placementDifference.pixels>100,'Placement and numeric height edits did not change the rendered building');
+  report.numericHeightDifference=await pixelChange(movedFrame,nearFrame);
+  assert.ok(report.numericHeightDifference.pixels>100,'Numeric height edit did not change the actual rendered building');
   report.near=near.cornerPavilion;
   await shot('05-pavilion-study-panel','#corner-pavilion-panel');
   await q('button[data-mode="plan"]').click();
@@ -224,11 +245,13 @@ try{
   await page.waitForFunction(()=>location.hash.includes('pavilionEnabled=true')&&location.hash.includes('pavilionHeight=8.2'));
   const shared=page.url();
   await page.reload({waitUntil:'domcontentloaded'});await ready();
+  assert.doesNotMatch((await viewContext()).badge,/basement garage/i,'A shared pavilion study must open at the garden');
   const sharedDesign=await exportDesign();
   assert.deepEqual(pavilionSettings(sharedDesign),pavilionSettings(beforeShare));
   assert.equal(sharedDesign.settings.designStyle,'beach-house');
   await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));
   await page.reload({waitUntil:'domcontentloaded'});await ready();
+  assert.doesNotMatch((await viewContext()).badge,/basement garage/i,'A saved pavilion study must open at the garden');
   assert.deepEqual(pavilionSettings(await exportDesign()),pavilionSettings(beforeShare));
   report.sharedHash=new URL(shared).hash;
   check('Shared URLs and a local saved-design reload retain pavilion dimensions, placement, height and Beach House style');
