@@ -13,6 +13,7 @@ import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.33.0';
 import { sampledRoofFaces } from './roof-mesh.js?v=1.33.0';
 import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.33.0';
 import { renderBudget } from './render-quality.js?v=1.33.0';
+import {latestIntersectionEntry} from './render-visibility.js?v=1.33.0';
 import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.33.0';
 import { createHedgeVegetation } from './scene-vegetation.js?v=1.33.0';
 import { createPoolReflections } from './scene-reflections.js?v=1.33.0';
@@ -416,7 +417,7 @@ export function createScene(container, data, callbacks = {}) {
   let frameCount = 0, shadowUpdates = 0, motionFps = 24, lastMotionTime = 0, waveTime = 0;
   let lastInfoTime = -Infinity, statusChanged = true, lastSunPose = '', lastVehiclePose = '';
   let designMaterials = mat, dimensionsVisible, solarSignature='', guidePath=null;
-  let finishSignature='', houseFinishSignature='';
+  let finishSignature='', houseFinishSignature='', renderedStyle=null;
   let reflectiveMaterials=[], skyRadiance=1;
   let shadowBoundsDirty=true,shadowCameraDirty=true,shadowReceiverPoints=[],shadowCasterPoints=[];
   let sunPathSignature='',previousSunPath=null;
@@ -1347,9 +1348,10 @@ export function createScene(container, data, callbacks = {}) {
     const openings=(sharedHouseModel?.layout||houseGroup.userData.facadeSummary)?.windows||[];
     const garden=finishesGroup.getObjectByName('renovation-garden-details')?.userData;
     return {rendererType,quality,interacting,pixelRatio:svgMode?1:lastPixelRatio,
+      drawEnabled:canDraw(),canvasIntersecting:intersecting,presentationVisible,renderPending,
       bufferWidth:svgMode?lastWidth:renderer.domElement.width,
       bufferHeight:svgMode?lastHeight:renderer.domElement.height,
-      shadowSize:svgMode?0:sun.shadow.mapSize.x,frames:frameCount,shadowUpdates,
+      shadowSize:svgMode?0:sun.shadow.mapSize.x,frames:frameCount,shadowUpdates,renderedStyle,
       calls:render?.calls??null,triangles:render?.triangles??null,
       houseRenovationParts:renovation?.partCount??0,
       houseRenovationProjection:renovation?.maxProjectionM??0,
@@ -1379,7 +1381,9 @@ export function createScene(container, data, callbacks = {}) {
     }else lastMotionTime=0;
     if(sky)sky.position.copy(camera.position);
     reflections?.render({quality,width:lastWidth,height:lastHeight,interacting,visible:canDraw(),revision:contextRevision+':'+solarSignature});
-    if(presentation)presentation.render();else renderer.render(scene,camera);frameCount++;
+    if(presentation)presentation.render();else renderer.render(scene,camera);
+    // A rebuild or visibility callback alone does not replace the visible frame.
+    renderedStyle=finishSignature||null;frameCount++;
     renderLabels();dimensionOverlay.render(camera,lastWidth,lastHeight,mode);
     if(statusChanged||now-lastInfoTime>=1000){
       lastInfoTime=now;statusChanged=false;callbacks.onPerformanceInfo?.(getPerformanceInfo());
@@ -1467,13 +1471,14 @@ export function createScene(container, data, callbacks = {}) {
    * Changing the design does not reset this camera or the selected daylight. */
   function setDesignInspection(kind='house'){
     setView('orbit');
-    if(kind==='garden')return true;
+    if(kind==='garden'){callbacks.onPerformanceInfo?.(getPerformanceInfo());return true;}
     const bounds=boundsOf(data.site.house.footprint),width=bounds.maxX-bounds.minX,depth=bounds.maxY-bounds.minY;
     const floor=data.site.floorReference.z+num(currentSettings.floorHeight,1.7);
     const cx=(bounds.minX+bounds.maxX)/2;
     camera.position.copy(point(Math.max(plot.minX+1.2,bounds.minX-width*.48),bounds.maxY+depth*1.25,floor+Math.max(width,depth)*.82));
     controls.target.copy(point(cx,bounds.maxY-depth*.3,floor+3.25));
-    camera.fov=44;camera.lookAt(controls.target);camera.updateProjectionMatrix();controls.update();requestRender();return true;
+    camera.fov=44;camera.lookAt(controls.target);camera.updateProjectionMatrix();controls.update();requestRender();
+    callbacks.onPerformanceInfo?.(getPerformanceInfo());return true;
   }
 
   /** Scrubbing the car moves one rigid group, without rebuilding the garden or
@@ -1638,8 +1643,9 @@ export function createScene(container, data, callbacks = {}) {
   renderer.domElement.addEventListener('wheel',wheel,{passive:false});
   document.addEventListener('visibilitychange',visibilityChanged);
   reducedMotion.addEventListener('change',visibilityChanged);
-  const visibilityObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(([entry])=>{
-    if(intersecting!==entry.isIntersecting){intersecting=entry.isIntersecting;visibilityChanged();}
+  const visibilityObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
+    const entry=latestIntersectionEntry(entries,container);
+    if(entry&&intersecting!==entry.isIntersecting){intersecting=entry.isIntersecting;visibilityChanged();}
   }):null;
   visibilityObserver?.observe(container);
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(container);

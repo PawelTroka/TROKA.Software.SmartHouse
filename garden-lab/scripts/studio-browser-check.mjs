@@ -52,9 +52,16 @@ async function ready(){
   await sceneVisible();
 }
 async function style(id){
+  const previousFrame=(await stats()).frames,changed=await el('#designStyle').inputValue()!==id;
   await el('#designStyle').selectOption(id);
   await page.waitForFunction(value=>document.querySelector('#design-studio').dataset.style===value,id);
   await sceneVisible();
+  // The controls can change before an offscreen scene draws. Re-selecting the
+  // same style may leave a resting scene unchanged, but its frame must match.
+  await page.waitForFunction(({id,previousFrame,changed})=>{
+    const d=document.querySelector('#render-diagnostics').dataset;
+    return d.renderedStyle===id&&(!changed||Number(d.frames)>previousFrame);
+  },{id,previousFrame,changed});
 }
 async function details(){
   const node=el('.studio-details');
@@ -106,17 +113,18 @@ const cameraTime=()=>page.evaluate(()=>({
 }));
 async function houseScope(active,afterFrame=null){
   await sceneVisible();
+  const styleId=await el('#designStyle').inputValue();
   assert.equal(await el('#styleHouseFinish').isChecked(),active);
   assert.equal(await el('#studio-house-scope').getAttribute('data-renovated'),String(active));
   // The controls update synchronously; performance counters are published only
   // after the next rendered frame. Scrolling an offscreen scene into view can
   // deliver its IntersectionObserver callback after sceneVisible's two rAFs.
-  await page.waitForFunction(({active,afterFrame})=>{
+  await page.waitForFunction(({active,afterFrame,styleId})=>{
     const d=document.querySelector('#render-diagnostics')?.dataset;if(!d)return false;
     const parts=Number(d.houseRenovationParts),projection=Number(d.houseRenovationProjection);
-    return (afterFrame===null||Number(d.frames)>afterFrame)&&
+    return d.renderedStyle===styleId&&(afterFrame===null||Number(d.frames)>afterFrame)&&
       (active?parts>0&&projection>0&&projection<=.400001:parts===0&&projection===0);
-  },{active,afterFrame});
+  },{active,afterFrame,styleId});
   const info=await stats();
   if(active){
     assert.ok(info.houseRenovationParts>0,'The rendered house has no renovation parts');
