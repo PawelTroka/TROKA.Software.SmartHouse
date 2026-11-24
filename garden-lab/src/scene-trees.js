@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.31.0';
-import {createFoliageMaterial} from './scene-vegetation.js?v=1.31.0';
+import {toWorld} from './orientation.js?v=1.31.1';
+import {createFoliageMaterial} from './scene-vegetation.js?v=1.31.1';
 
 const point = (x, y, z) => new THREE.Vector3(...toWorld(x, y, z));
 

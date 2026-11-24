@@ -1,9 +1,9 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.31.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.31.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.31.0';
-import {curateInteriorPlan} from './interior-curation.js?v=1.31.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.31.1';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.31.1';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.31.1';
+import {curateInteriorPlan} from './interior-curation.js?v=1.31.1';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];

@@ -119,6 +119,22 @@ try{
   assert.equal(await el('#existingLeafMode').inputValue(),'summer');
   await neighborhoodStatus(`^${expectedCanopies} leafy crowns shown`);
   report.initialDiagnostics=await diagnostics();
+  const facadeCounts=JSON.parse(report.initialDiagnostics.contextFacades||'{}');
+  const balconyCounts=JSON.parse(report.initialDiagnostics.contextBalconies||'{}');
+  const envelopes=JSON.parse(report.initialDiagnostics.contextEnvelopes||'{}');
+  for(const floor of [0,1,2])assert.equal(facadeCounts[`building-8:front:${floor}`],3,'Segmented front must render its observed bays once');
+  for(const floor of [0,1])assert.equal(facadeCounts[`building-2:rear:${floor}`],3,'9a grouped garden openings must reach the window batch');
+  assert.equal(facadeCounts['building-3:rear:0'],1);
+  assert.equal(facadeCounts['building-3:rear:1'],2);
+  assert.equal(balconyCounts['building-2:rear:projecting'],2);
+  assert.equal(balconyCounts['building-3:rear:recessed'],1);
+  for(const id of ['building-9','building-15','building-29']){
+    assert.equal(envelopes[id]?.features.pyramid,1,'PCK central rooflight must be a separate rendered feature');
+    assert.equal(envelopes[id]?.features.chimney,6,'All six observed chimney stacks must reach the scene');
+  }
+  assert.equal(Object.keys(envelopes).length,12,'Nine measured house roofs and three PCK roofs use resolved scene envelopes');
+  report.correctedBuildingGeometry={facadeCounts,balconyCounts,envelopes};
+  check('Corrected house openings, balconies and all twelve resolved roof envelopes reach the active WebGL scene');
   const summer=await capture('sternicza-neighborhood-leaf-on');
   check('Sternicza loads real WebGL, photographic assets, 490 measured canopy groups and all neighbourhood controls');
 

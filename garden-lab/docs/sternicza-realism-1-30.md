@@ -17,7 +17,8 @@ replica or a surveyed record of every tree, window and building detail.
 | **490 surrounding vegetation groups** | **440 canopy and 50 shrub-sized aggregates**, derived from 1,268,778 classified GUGiK returns within 200 m. These are groups of sampled vegetation, not 490 individually located trunks. | Dense leaf-on crown envelopes can participate in the optional existing-canopy screening scenario. Reconstructed stems receive no analytical screening credit. |
 | **20 municipal tree inventory records** | Actual public Gdańsk records with position, species, status and supplied circumference/planting dates. Heights and crown widths are absent from this inventory. | Kept separate from LiDAR crowns; proximity alone does not transfer a species or a recent planting to an older measured canopy. |
 | **Sampled ground colours** | A 256 × 256 RGBA image at 2 m resolution, derived from 3,791,876 class-2 ground returns. Upper vegetation, buildings and the editable property are masked. | Visual only. It does not affect terrain levels or sightline calculations. |
-| **Nine measured neighbour roof extracts** | At most 150 class-6 roof samples per building, with filtered sparse surface reconstruction for sloping roofs, lower wings and the wall/roof seam. | Visual only. Existing analytical building records and LoD1 values remain intact. |
+| **Nine measured neighbour roof extracts** | At most 150 class-6 roof samples per building, with filtered sparse surface reconstruction for sloping roofs, lower wings and the wall/roof seam. | The resolved envelope is shared by the renderer, local privacy rays and sunlight calculations. Original source records and LoD1 values remain intact as provenance. |
+| **Three PCK roof assemblies** | Flat decks, a central pyramidal skylight and six separate chimney stacks per block, reconstructed from measured return clusters and the supplied oblique views. Fixture plan extents and framing remain estimates. | The same resolved deck and fixture surfaces obstruct local privacy and sunlight rays. Separate optional high-feature samples retain their existing sensitivity control. |
 | **Twelve building appearance profiles** | Distinct broad colour fields, opening rhythms, stairwell windows, balconies and entrance details interpreted from the supplied reference views. | Visual only. Profiles are estimates, not an exact opening survey; the recorded blank garden wall has priority. |
 | **Sea-view height tool** | A complete historical surface/terrain profile to an official shoreline, with separate finite-water and distant-horizon questions. | A separate geometric calculation with explicit coverage checks, a shared height datum and a user-adjustable clearance allowance. |
 
@@ -66,7 +67,7 @@ cells after masking; unobserved regions use the context material.
 Neighbouring façades now distinguish the cream/blue, ochre and muted green
 fields visible on the PCK blocks, with their apparent opening levels and
 balcony stacks. Nearby houses have separate observed tones and approximate
-street-facing bay arrangements. The nine measured roof reconstructions add
+street- and garden-facing bay arrangements. The nine measured roof reconstructions add
 height variation without inventing roof ridge heights from photographs.
 
 The 23 November screenshot comparison corrects the three PCK blocks to five
@@ -81,8 +82,31 @@ neighbour, building 4h: a single continuous surface joined the main roof to
 separate lower extensions with steep dark triangles. Separate measured roof
 patches now meet vertical wall transitions. Supported ridge and eave samples
 remain in the reconstruction, while the positions of the level changes are
-estimated between neighbouring samples. This correction is specific to 4h
-and does not replace its analytical building geometry.
+estimated between neighbouring samples. The 24 November follow-up makes the
+resolved roofs and walls the common local obstruction geometry for rendering,
+privacy and sunlight. A second median-height prism is no longer retained under
+a measured lower wing. Buildings without a supported reconstruction keep their
+existing LoD1 fallback; the editable house and garage retain their dedicated
+geometry. The separate sea-corridor calculation continues to use its measured
+surface raster.
+
+The same follow-up registers a façade profile across its complete facing
+elevation, including cadastral subdivisions and parallel walls at setbacks.
+Short mapped edges no longer discard the observed openings or restart the bay
+pattern. Generic and observed sides share the same house floor datum. Broad
+grouped windows, the garden balconies at 9a, the recessed garden loggia at 13a,
+and PCK 5's horizontal side colour fields follow the supplied views. The upper
+terrace/back-wall arrangement at opposite 5/7 remains unresolved; a door is not
+drawn floating above its measured low wing.
+
+On PCK 1, 3 and 5, a continuous triangulation through rooftop returns previously
+joined separate chimneys and the central skylight into broad dark mounds. Each
+roof now has a flat deck and separate reconstructed features. Their top heights
+are bounded by the corresponding source clusters. Small unclassified returns
+already present in the roof samples are represented separately with an explicit
+estimated thickness, rather than widening the roof surface around them. These
+are distinct from the optional, higher PCK 3 feature samples, which remain off
+by default. Neither raw roof returns nor source target samples are rewritten.
 
 Ten measured canopy centres fall inside mapped building footprints. Their
 foliage remains present, but reconstructed trunks and branches are omitted at

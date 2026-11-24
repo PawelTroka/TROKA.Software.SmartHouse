@@ -1,50 +1,52 @@
 import * as THREE from '../vendor/three.module.js';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=1.31.0';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=1.31.1';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.31.0';
-import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.31.0';
-import {houseModelFrame} from './house-model.js?v=1.31.0';
-import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.31.0';
-import { addHouseRenovation } from './scene-house-renovation.js?v=1.31.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.31.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.31.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.31.0';
-import { sampledRoofFaces } from './shade.js?v=1.31.0';
-import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.31.0';
-import { renderBudget } from './render-quality.js?v=1.31.0';
-import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.31.0';
-import { createHedgeVegetation } from './scene-vegetation.js?v=1.31.0';
-import { createPoolReflections } from './scene-reflections.js?v=1.31.0';
-import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.31.0';
-import { getDesignStyle } from './design-styles.js?v=1.31.0';
-import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.31.0';
-import { resortTerraceLayout } from './resort-garden.js?v=1.31.0';
-import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.31.0';
-import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.31.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.31.0';
-import { getSiteProfile } from './sites.js?v=1.31.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.31.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.31.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.31.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.31.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.31.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.31.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.31.0';
-import { gardenDimensions } from './dimensions.js?v=1.31.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.31.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.31.0';
-import {existingCanopyRecords} from './existing-vegetation.js?v=1.31.0';
-import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.31.0&rev=20261123-reference';
-import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.31.0&rev=20261124-resort';
-import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.31.0&rev=20261124-resort';
-import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.31.0&rev=20261124-resort';
-import {projectContextGroundUVs} from './context-ground.js?v=1.31.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.31.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.31.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.31.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.31.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.31.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.31.1';
+import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.31.1';
+import {houseModelFrame} from './house-model.js?v=1.31.1';
+import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.31.1';
+import { addHouseRenovation } from './scene-house-renovation.js?v=1.31.1';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.31.1';
+import { entranceAccessLayout } from './entrance-access.js?v=1.31.1';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.31.1';
+import { sampledRoofFaces } from './roof-mesh.js?v=1.31.1';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.31.1';
+import { renderBudget } from './render-quality.js?v=1.31.1';
+import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.31.1';
+import { createHedgeVegetation } from './scene-vegetation.js?v=1.31.1';
+import { createPoolReflections } from './scene-reflections.js?v=1.31.1';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.31.1';
+import { getDesignStyle } from './design-styles.js?v=1.31.1';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.31.1';
+import { resortTerraceLayout } from './resort-garden.js?v=1.31.1';
+import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.31.1';
+import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.31.1';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.31.1';
+import { getSiteProfile } from './sites.js?v=1.31.1';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.31.1';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.31.1';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.31.1';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.31.1';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.1';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.31.1';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.31.1';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.31.1';
+import { gardenDimensions } from './dimensions.js?v=1.31.1';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.31.1';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.31.1';
+import {existingCanopyRecords} from './existing-vegetation.js?v=1.31.1';
+import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.31.1';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.31.1';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.31.1';
+import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.31.1';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.31.1';
+import {createContextRoofFeatures} from './scene-context-roof.js?v=1.31.1';
+import {projectContextGroundUVs} from './context-ground.js?v=1.31.1';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.31.1';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.31.1';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.31.1';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.31.1';
+import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.31.1';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -546,7 +548,13 @@ export function createScene(container, data, callbacks = {}) {
     const c = centroid(ring), target = building.kind === 'target';
     const base = num(building.baseZ, contextGrade(...c)), roof = num(building.roofZ, base + 7);
     if(roof<=base)return;
-    const roofDetail=visualNeighborRoof(building,data);
+    const roofDetail=contextBuildingEnvelope(building,data);
+    if(roofDetail)contextDetails.envelopes[building.id]={
+      wallTriangles:roofDetail.wallFaces.length,roofTriangles:roofDetail.roofFaces.length,
+      features:(roofDetail.features||[]).reduce((counts,feature)=>{
+        counts[feature.kind]=(counts[feature.kind]||0)+1;return counts;
+      },{}),
+    };
     const roofPts = (roofDetail?.roofPoints||building.roofPoints || []).map(xyz).filter(p => p.length >= 3 && Number.isFinite(p[2]));
     const roofMax = Math.max(roof, ...roofPts.map(p => p[2]));
     const facadeMaterial = (target ? mat.target : mat.context).clone();
@@ -559,11 +567,16 @@ export function createScene(container, data, callbacks = {}) {
     buildingGroup.add(body);
     if (roofPts.length > 6) {
       const roofGeometry = roofDetail?.roofFaces
-        ?geometryFromTriangles(roofDetail.roofFaces.map(([a,b,c])=>toWorldRoofTriangle(a,b,c)))
+        ?geometryFromTriangles((roofDetail.surfaceFaces||roofDetail.roofFaces).map(([a,b,c])=>toWorldRoofTriangle(a,b,c)))
         :sampledRoofGeometry(ring,roofPts.filter((p,i)=>!svgMode||i%3===0),roofDetail?.edgeZ??roof,roofDetail?.edgePoints);
-      const roofMesh = new THREE.Mesh(roofGeometry || geometryFromTriangles([]), mat.contextRoof);
+      const roofMaterial=mat.contextRoof.clone();
+      roofMaterial.color.set(observedBuildingAppearance(building)?.roofColor||mat.contextRoof.color);
+      roofMaterial.userData.transient=true;
+      const roofMesh = new THREE.Mesh(roofGeometry || geometryFromTriangles([]), roofMaterial);
+      roofMesh.name=`context-building-${building.id}-roof`;
       roofMesh.castShadow = true; roofMesh.receiveShadow = true;
       buildingGroup.add(roofMesh);
+      if(roofDetail?.features?.length)buildingGroup.add(createContextRoofFeatures(roofDetail,roofMaterial));
     } else {
       // LoD1 tops remain flat at the source height; an invented pitched roof
       // would change both the visible skyline and the user's privacy judgement.
@@ -592,10 +605,14 @@ export function createScene(container, data, callbacks = {}) {
       roofs.name='context-mapped-flat-roofs';roofs.castShadow=true;roofs.receiveShadow=true;buildingGroup.add(roofs);
     }
     const windows=contextDetails.windows;
+    for(const pane of windows)if(pane.appearanceEvidence==='user-reference-estimate'){
+      const key=`${pane.buildingId}:${pane.facadeDirection}:${pane.floor}`;
+      contextDetails.facades[key]=(contextDetails.facades[key]||0)+1;
+    }
     if(svgMode){
       // Merge simple fallback apertures, rather than creating thousands of SVG
       // mesh objects. Both panes and pale frames follow the mapped wall normal.
-      const subset=windows.filter((_,i)=>i%2===0);
+      const subset=windows.filter((pane,i)=>pane.appearanceEvidence==='user-reference-estimate'||i%2===0);
       if(subset.length){buildingGroup.add(new THREE.Mesh(geometryFromTriangles(windowQuadTriangles(subset,true)),mat.windowFrame));buildingGroup.add(new THREE.Mesh(geometryFromTriangles(windowQuadTriangles(subset,false)),mat.contextWindow));}
       nightWindowPlacements=subset;
       nightWindowMesh=new THREE.Mesh(geometryFromTriangles([]),mat.nightWindow);nightWindowMesh.name='context-lit-window-panes';buildingGroup.add(nightWindowMesh);
@@ -622,10 +639,19 @@ export function createScene(container, data, callbacks = {}) {
     if(nightWindowMesh){nightWindowMesh.receiveShadow=false;nightWindowMesh.frustumCulled=false;}
     batch(windows.map(p=>({...p,width:p.width+.14,height:p.height+.14,offset:.025})),mat.windowFrame,true,'context-window-frames');
     const near=windows.filter(p=>p.detailed);
-    batch(near.flatMap(p=>[
-      {...p,width:.035,depth:.035,offset:.067},
-      {...p,z:p.z+p.height*.16,height:.032,depth:.035,offset:.067},
-    ]),mat.windowFrame,false,'context-window-mullions');
+    batch(near.flatMap(p=>{
+      if(Number.isInteger(p.mullions)){
+        const count=Math.max(0,Math.min(6,p.mullions));
+        return Array.from({length:count},(_,i)=>{
+          const shift=p.width*((i+1)/(count+1)-.5);
+          return {...p,x:p.x+p.ny*shift,y:p.y-p.nx*shift,width:.035,depth:.035,offset:.067};
+        });
+      }
+      return [
+        {...p,width:.035,depth:.035,offset:.067},
+        {...p,z:p.z+p.height*.16,height:.032,depth:.035,offset:.067},
+      ];
+    }),mat.windowFrame,false,'context-window-mullions');
     batch(near.map(p=>({...p,width:p.width+.18,height:.065,depth:.21,z:p.z-p.height/2-.06,offset:.085})),mat.stoneLight,false,'context-window-sills');
     batch(contextDetails.roofEdges,mat.metal,false,'context-roof-edges');
     batch(contextDetails.plinths,mat.plinth,false,'context-foundation-finishes');
@@ -634,13 +660,14 @@ export function createScene(container, data, callbacks = {}) {
   function rebuildContextBuildings() {
     removeGeometry(buildingGroup);
     nightWindowMesh=null;nightWindowPlacements=[];nightWindowSignature='';
-    contextDetails={windows:[],roofs:[],roofEdges:[],plinths:[]};
+    contextDetails={windows:[],roofs:[],roofEdges:[],plinths:[],facades:{},envelopes:{},balconies:{}};
     for (let i = labels.length - 1; i >= 0; i--) {
       if (labels[i].kind === 'target') { labels[i].element.remove(); labels.splice(i, 1); }
     }
     (data.buildings || []).filter(b => b.id !== data.site.house.id && b.id !== data.site.garage?.id && b.kind!=='house' && b.kind!=='garage').forEach(addContextBuilding);
     flushContextDetails();
-    buildingGroup.add(createNeighborhoodAppearanceGroup(data.buildings,data,{origin:plotCentre,svgMode}));
+    const appearance=createNeighborhoodAppearanceGroup(data.buildings,data,{origin:plotCentre,svgMode});
+    buildingGroup.add(appearance);contextDetails.balconies=appearance.userData.balconyCounts;
     applyNightLighting(lastSolar,currentSettings);
     shadowBoundsDirty=true;
   }
@@ -1318,6 +1345,7 @@ export function createScene(container, data, callbacks = {}) {
       houseRenovationParts:renovation?.partCount??0,
       houseRenovationProjection:renovation?.maxProjectionM??0,
       garageVehicles:garageScene?.group.children.filter(child=>child.visible&&child.userData.vehicle).length??0,
+      contextFacades:contextDetails?.facades||{},contextBalconies:contextDetails?.balconies||{},contextEnvelopes:contextDetails?.envelopes||{},
       geometries:memory?.geometries??null,textures:memory?.textures??null,motionActive:motionActive(),
       ...presentation?.getDiagnostics(),...reflections?.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};
   }

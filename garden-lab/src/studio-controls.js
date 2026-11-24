@@ -1,6 +1,6 @@
-import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.31.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.0';
-import {getResortDesignIntent} from './resort-design-intents.js?v=1.31.0';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.31.1';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.1';
+import {getResortDesignIntent} from './resort-design-intents.js?v=1.31.1';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
@@ -97,6 +97,9 @@ export function createStudioControls({getSettings,onChange,onMoment,onUndo,onRed
     host.dataset.surfaceAssetsRequested=String(value.surfaceAssets?.requested||0);
     host.dataset.surfaceAssetsLoaded=String(value.surfaceAssets?.loaded||0);
     host.dataset.surfaceAssetsFailed=String(value.surfaceAssets?.failed?.length||0);
+    // Counts come from the actual scene batches, so browser acceptance can
+    // verify corrected elevations and resolved roofs without a second model.
+    for(const key of ['contextFacades','contextBalconies','contextEnvelopes'])host.dataset[key]=JSON.stringify(value[key]||{});
     $('render-quality-status').textContent=value.rendererType==='webgl'?`${value.quality==='eco'?'Eco':value.quality==='high'?'High detail':'Automatic'} · ${Number(value.pixelRatio||1).toFixed(2)}× display scale`:'Lightweight renderer';
     $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.bufferWidth||0} × ${value.bufferHeight||0} drawing buffer${value.contactShading?' · Contact shading':''}`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';
     $('render-motion-status').textContent=getSettings().sceneMotion?(value.motionActive?'Gentle water movement is active.':'Motion pauses while the scene is hidden, in a diagram, or when reduced motion is preferred.'):'The scene rests between interactions.';

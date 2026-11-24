@@ -1,8 +1,8 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.0';
-import {resortGardenFurniture} from './resort-garden.js?v=1.31.0';
-import {terraceGroundReference} from './geometry.js?v=1.31.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.1';
+import {resortGardenFurniture} from './resort-garden.js?v=1.31.1';
+import {terraceGroundReference} from './geometry.js?v=1.31.1';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.1';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};

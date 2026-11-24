@@ -3,17 +3,18 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.31.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.0';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.31.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.31.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.31.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.31.1';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.1';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.31.1';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.31.1';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.31.1';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.31.1';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.31.1';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.31.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.31.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.31.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.31.1';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.31.1';
+import {houseWindowAnchor} from './house-appearance.js?v=1.31.1';
+import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.31.1';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -611,8 +612,11 @@ function intersectsBuildingBounds(a,b,building){
   return true;
 }
 
-/** Finite LoD1 building prism; excludes the eye and the target endpoint. */
-export function buildingIntersection(observer, target, building) {
+/** Finite building hit; resolved neighbouring roofs replace their LoD1 prism.
+ * Without a resolved envelope the source LoD1 remains the explicit fallback. */
+export function buildingIntersection(observer, target, building, data) {
+  const envelope=data&&contextBuildingEnvelope(building,data);
+  if(envelope)return contextEnvelopeIntersection(observer,target,envelope);
   const e = point3(observer), b = point3(target), hits = [];
   if(!intersectsBuildingBounds(e,b,building))return null;
   const poly = building.footprint;
@@ -681,7 +685,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       // its artificial flat top, just centimetres inside the footprint.
       // Keeping every sampled roof return is intentionally conservative.
       const isFacade = i >= block.roofSampleCount && i < block.samples.length;
-      if (isFacade && buildingIntersection(origin, target, block)) continue;
+      if (isFacade && buildingIntersection(origin, target, block, data)) continue;
       const distance = Math.hypot(target[0] - origin[0], target[1] - origin[1]);
       if (distance < EPS) continue;
       const screen = screenOnRay(origin, target, s, data, segments);
@@ -694,7 +698,7 @@ export function analyzeVisibility(observer, settings = {}, data) {
       let buildingHit = null;
       for (const other of blockers) {
         if (other.id === block.id) continue;
-        const hit = buildingIntersection(origin, target, other);
+        const hit = buildingIntersection(origin, target, other, data);
         if (hit && (!buildingHit || hit.t < buildingHit.t)) buildingHit = hit;
       }
       const possible = [];

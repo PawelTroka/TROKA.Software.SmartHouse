@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface} from './material-assets.js?v=1.31.0';
-import {exteriorSurfacePixels} from './exterior-materials.js?v=1.31.0';
-import {getDesignStyle} from './design-styles.js?v=1.31.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.0';
+import {applyPhotographicSurface} from './material-assets.js?v=1.31.1';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.31.1';
+import {getDesignStyle} from './design-styles.js?v=1.31.1';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.31.1';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {

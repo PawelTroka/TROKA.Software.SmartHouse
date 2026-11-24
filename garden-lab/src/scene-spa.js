@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.31.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.31.0';
+import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.31.1';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.31.1';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const ringOpen=ring=>ring.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring;

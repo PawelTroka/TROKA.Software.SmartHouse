@@ -3,14 +3,16 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.31.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.31.0';
-import { localRoofEnvelope, constrainRoofEdges } from './roof-envelope.js?v=1.31.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.31.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.0';
-import { terraceStairs } from './layout.js?v=1.31.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.31.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.31.1';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.31.1';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.31.1';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.31.1';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.31.1';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.31.1';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.31.1';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.31.1';
+import { terraceStairs } from './layout.js?v=1.31.1';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.31.1';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -120,48 +122,7 @@ function gableFaces(ring,eaves,ridge,axis='x') {
   return [[a,d,f],[a,f,e],[e,f,c],[e,c,b],[a,e,b],[d,c,f]];
 }
 
-// Same planar Delaunay construction as the rendered sampled apartment roofs.
-// Kept pure: no WebGL/DOM requirement for the shade map or numerical tests.
-const localRoofFaceCache=new WeakMap();
-export function sampledRoofFaces(ring,samples,edgeZ,edgePoints=null) {
-  const cached=edgePoints&&localRoofFaceCache.get(edgePoints);
-  if(cached&&cached.ring===ring&&cached.samples===samples&&cached.edgeZ===edgeZ)return cached.faces;
-  const unique=new Map();
-  [...samples,...(edgePoints||openRing(ring).map(p=>[...p,edgeZ]))].forEach(p=>{
-    const key=`${p[0].toFixed(3)}:${p[1].toFixed(3)}`;
-    if(!unique.has(key)||unique.get(key)[2]<p[2])unique.set(key,p);
-  });
-  // A local envelope supplies shared wall/roof seam vertices. At coincident
-  // plan coordinates they take precedence so no vertical cracks are introduced.
-  if(edgePoints)for(const p of edgePoints)unique.set(`${p[0].toFixed(3)}:${p[1].toFixed(3)}`,p);
-  const points=[...unique.values()],count=points.length;
-  if(count<3)return [];
-  const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),span=Math.max(x1-x0,y1-y0)*8,cx=(x0+x1)/2,cy=(y0+y1)/2;
-  points.push([cx-span,cy-span,edgeZ],[cx,cy+span,edgeZ],[cx+span,cy-span,edgeZ]);
-  const triangle=(a,b,c)=>{
-    const p=points[a],q=points[b],r=points[c],d=2*(p[0]*(q[1]-r[1])+q[0]*(r[1]-p[1])+r[0]*(p[1]-q[1]));
-    if(Math.abs(d)<1e-10)return null;
-    const p2=p[0]**2+p[1]**2,q2=q[0]**2+q[1]**2,r2=r[0]**2+r[1]**2;
-    const x=(p2*(q[1]-r[1])+q2*(r[1]-p[1])+r2*(p[1]-q[1]))/d,y=(p2*(r[0]-q[0])+q2*(p[0]-r[0])+r2*(q[0]-p[0]))/d;
-    return {a,b,c,x,y,r2:(x-p[0])**2+(y-p[1])**2};
-  };
-  let triangles=[triangle(count,count+1,count+2)];
-  for(let i=0;i<count;i++){
-    const p=points[i],edges=new Map(),kept=[];
-    for(const t of triangles){
-      if((p[0]-t.x)**2+(p[1]-t.y)**2<=t.r2+1e-8){
-        for(const [a,b]of[[t.a,t.b],[t.b,t.c],[t.c,t.a]]){const key=a<b?`${a}:${b}`:`${b}:${a}`;if(edges.has(key))edges.delete(key);else edges.set(key,[a,b]);}
-      }else kept.push(t);
-    }
-    for(const [a,b]of edges.values()){const t=triangle(a,b,i);if(t)kept.push(t);}
-    triangles=kept;
-  }
-  let indices=triangles.filter(t=>t.a<count&&t.b<count&&t.c<count).map(t=>[t.a,t.b,t.c]);
-  if(edgePoints)indices=constrainRoofEdges(indices,points.slice(0,count),edgePoints);
-  const faces=indices.filter(([a,b,c])=>pointInPolygon([(points[a][0]+points[b][0]+points[c][0])/3,(points[a][1]+points[b][1]+points[c][1])/3],ring)).map(t=>t.map(i=>points[i]));
-  if(edgePoints)localRoofFaceCache.set(edgePoints,{ring,samples,edgeZ,faces});
-  return faces;
-}
+export {sampledRoofFaces} from './roof-mesh.js?v=1.31.1';
 
 const contextOccluderCache=new WeakMap();
 
@@ -228,6 +189,8 @@ function makeOccluders(settings,data) {
     context=[];
     for(const b of data.buildings||[]){
       if(b.id===house?.id||b.id===garage?.id||b.kind==='house'||b.kind==='garage')continue;
+      const resolved=contextBuildingEnvelope(b,data);
+      if(resolved){context.push(resolved);continue;}
       const roof=Math.max(num(b.baseZ)+2,num(b.roofZ,num(b.baseZ)+7));
       const body=prism(b.id,b.label||b.id,b.footprint,num(b.baseZ),roof);if(body)context.push(body);
       const roofPoints=(b.roofPoints||[]).map(point).filter(p=>p.length>=3&&p.every(Number.isFinite));
@@ -436,6 +399,6 @@ export function analyzeSunlight(settings,data,sun){
   for(const zone of Object.values(zones))zone.percent=daylight&&zone.total?zone.sunlit/zone.total*100:null;
   return {status,isDaylight:daylight,cells,zones,cellSize:geometry.cellSize,direction:sun?.direction||null,
     modelNote:'Direct sun on a 1 m outdoor sample grid; pool edge samples use the centre of each clipped water portion. Includes local terrain sampled every 0.5 m along each ray and finite dense proposed and enabled measured existing canopy envelopes. Deciduous auto foliage is May–October, an approximate comparison assumption. Unmapped vegetation, reconstructed existing stems, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
-    method:'Direct-sun visibility at 1 m outdoor sample centres, using mapped building bodies and sampled roofs, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees and measured existing canopy envelopes with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
-    limitations:'No weather, diffuse/reflected light, glass transmission losses, unmapped vegetation, reconstructed existing stems, decorative planting/movable furniture, isolated unverified high roof returns, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Roof interpolation, missing-roof fallbacks and foliage permeability remain simplified.'};
+    method:'Direct-sun visibility at 1 m outdoor sample centres, using shared resolved neighbouring roof/wall envelopes where supported and mapped LoD1 bodies otherwise, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees and measured existing canopy envelopes with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
+    limitations:'No weather, diffuse/reflected light, glass transmission losses, unmapped vegetation, reconstructed existing stems, decorative planting/movable furniture, separately classified optional unverified high-feature targets, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Rooftop fixture extents, sparse roof interpolation, missing-roof fallbacks and foliage permeability remain estimates.'};
 }

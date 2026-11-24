@@ -1,13 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js?v=1.31.0';
-import {buildArchitecture} from './interior-architecture.js?v=1.31.0';
-import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.31.0';
-import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.31.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.31.0';
-import {renderBudget} from './render-quality.js?v=1.31.0';
-import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.31.0';
-import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.31.0';
-import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.31.0';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.31.1';
+import {buildArchitecture} from './interior-architecture.js?v=1.31.1';
+import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.31.1';
+import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.31.1';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.31.1';
+import {renderBudget} from './render-quality.js?v=1.31.1';
+import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.31.1';
+import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.31.1';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.31.1';
 
 const walkKeys=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
 const DEFAULTS={view:'dollhouse',styleId:'current',roomId:null,showChanges:false,showFurniture:true,showCeiling:true};
