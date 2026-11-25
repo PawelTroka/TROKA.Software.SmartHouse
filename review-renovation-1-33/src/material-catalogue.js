@@ -3,6 +3,8 @@
 import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.33.0';
 import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.33.0';
 import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.33.0';
+import {getDesignStyle} from './design-styles.js?v=1.33.0';
+import {STYLE_MATERIAL_SWATCHES} from './style-material-swatches.js?v=1.33.0';
 export {MATERIAL_ASSETS};
 
 const finish=(asset,label,options={})=>Object.freeze({asset,label,...options});
@@ -81,16 +83,23 @@ export function getInteriorMaterialFinishes(styleId){
 
 /** Four actual samples per style; optional `interior` gives indoor materials.
  * Stable plain records keep the catalogue independent from WebGL and image IO. */
-export function getStyleMaterialSamples(styleOrId,{interior=false}={}){
-  const id=typeof styleOrId==='string'?styleOrId:styleOrId?.id;
+export function getStyleMaterialSamples(styleOrId,{interior=false,calibrated=true}={}){
+  const id=getDesignStyle(typeof styleOrId==='string'?styleOrId:styleOrId?.id).id;
   const exterior=getExteriorSurfaceSpec(id),inside=getInteriorMaterialFinishes(id);
-  if(!exterior)return [['wall','plaster'],['wood','wood'],['floor','floor'],['fabric','linen']].map(([role,key])=>{
+  const decorate=sample=>{
+    if(!calibrated)return sample;
+    const preview=STYLE_MATERIAL_SWATCHES[`${id}/${interior?'interior':'exterior'}/${sample.role}`];
+    if(!preview)throw new Error(`Missing calibrated material preview: ${id}/${sample.role}`);
+    return {...sample,sourceUrl:sample.url,url:new URL('../assets/materials/style-swatches/'+preview.file,import.meta.url).href,
+      calibrated:true,colorMode:preview.colorMode,pigment:preview.pigment};
+  };
+  if(!exterior)return [['wall','plaster'],['wood','wood'],['floor',interior?'floor':'stone'],['fabric','linen']].map(([role,key])=>{
     const spec=MATERIAL_ASSETS[key];return {role,finish:'current',asset:key,...spec,
       url:new URL('../assets/materials/'+(spec.preview||spec.files.diffuse),import.meta.url).href};
-  });
+  }).map(decorate);
   const choices=interior?inside:{wall:exterior.wall,wood:exterior.wood,floor:exterior.paving,fabric:exterior.fabric};
   return ['wall','wood','floor','fabric'].map(role=>{
     const selection=getMaterialForFinish(choices[role],{seams:role!=='wood'&&!(role==='floor'&&!interior)});
     return {role,...selection,finish:choices[role],label:selection?.label||choices[role].replaceAll('-',' ')};
-  });
+  }).map(decorate);
 }

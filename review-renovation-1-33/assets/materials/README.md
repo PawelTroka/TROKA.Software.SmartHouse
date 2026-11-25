@@ -43,7 +43,7 @@ Sources are [Poly Haven](https://polyhaven.com/license) and [ambientCG](https://
 
 ## Delivery and fidelity
 
-The full unique PBR library is approximately **42.6 MB**. New downloads are delivered as quality-94 JPEGs with 4:4:4 colour; roughness stores the green channel as grayscale. The unusually sensitive Concrete 034 normal uses quality 96. Every compressed normal has a measured 95th-percentile angular error below 4 degrees relative to its verified source; every channel's mean error is below 3/255. The original six baseline triplets retain their original bytes and calibration. Small catalogue previews total approximately **455 KB**, so browsing all concepts does not preload the full texture library.
+The full unique PBR library is approximately **42.6 MB**. New downloads are delivered as quality-94 JPEGs with 4:4:4 colour; roughness stores the green channel as grayscale. The unusually sensitive Concrete 034 normal uses quality 96. Every compressed normal has a measured 95th-percentile angular error below 4 degrees relative to its verified source; every channel's mean error is below 3/255. The original six baseline triplets retain their original bytes and calibration. Colour-calibrated catalogue previews total **1.142 MB** across 118 deduplicated 256 px JPEGs for 184 style/role samples. They are generated from the production material colours and map treatment, so linen, velvet and painted finishes match their selected palettes. Separate source-reference previews total approximately 455 KB. Browsing the cards does not preload full PBR sets.
 
 Most source maps are 1K. The 2K travertine and herringbone parquet preserve the larger vein and parquet fields used on prominent interior surfaces. Non-square provider maps retain their aspect ratios, including linen, wool and concrete. Unit crops retain source texel density and are never enlarged into fake 1K textures.
 
@@ -70,8 +70,9 @@ The complete per-style conservative transfer inventory is in [material-transfer-
 ```sh
 python scripts/vendor-renovation-materials.py
 python scripts/prepare-material-catalogue.py
+node scripts/prepare-style-material-swatches.mjs
 node scripts/material-transfer-report.mjs
-node --test tests/photographic-materials.test.mjs tests/exterior-materials.test.mjs tests/renovation-materials.test.mjs
+node --test tests/photographic-materials.test.mjs tests/exterior-materials.test.mjs tests/renovation-materials.test.mjs tests/style-material-swatches.test.mjs
 ```
 
 The download script uses each provider's documented public API with an identifying User-Agent. The preparation script preserves provenance while generating delivery compression, unit crops, previews and `src/material-asset-data.js`. Tests exercise checksum integrity, finish identity, all style samples, unit selection, physical UV scale/orientation, deferred loading, live-clone ownership, decoded-cache limits and quantified delivery error.

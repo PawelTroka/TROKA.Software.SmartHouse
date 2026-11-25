@@ -12,7 +12,7 @@ See the [source library and provenance](../assets/materials/README.md) and [deli
 
 ## Conservative per-style transfer
 
-These are unique JPEG URL bytes, in decimal MB. Interior numbers include all optional material dictionary slots; runtime deferral excludes slots absent from the model. New combined bytes exclude the shared 8.44 MB baseline garden cache. Catalogue swatches together are under 0.46 MB.
+These are unique JPEG URL bytes, in decimal MB. Interior numbers include all optional material dictionary slots; runtime deferral excludes slots absent from the model. New combined bytes exclude the shared 8.44 MB baseline garden cache. The colour-calibrated catalogue has 184 style/role samples deduplicated to 118 JPEGs, totalling 1.142 MB. The 0.455 MB source-reference previews remain separate and are not used for style-card colours.
 
 | Style | Exterior MB | Interior upper bound MB | New combined MB |
 | --- | ---: | ---: | ---: |
@@ -44,3 +44,11 @@ These are unique JPEG URL bytes, in decimal MB. Interior numbers include all opt
 The focused tests check actual material records and texture lifecycle behavior, not source-code text matching. Deferred-load tests build a real Three mesh and run the production UV traversal. They verify that absent finishes request nothing, used finishes activate, a second renderer's live clone survives disposal, and idle source storage remains bounded. UV tests verify actual metre spans for horizontal/vertical wood members and module-normalized deck surfaces. The provenance test verifies every shipped channel's hashes and sizes. Compression tests check measured source-to-delivery normal-angle and byte errors.
 
 The low-resolution reference board is an inspection aid made from the delivered PBR assets, not a render or a photograph of the house. In-app scenes remain the appropriate place to compare colour, sheen and construction at scale.
+
+## Colour-accurate catalogue samples
+
+`node scripts/prepare-style-material-swatches.mjs` generates the catalogue JPEGs offline. It instantiates the production interior materials and exterior finish applicator, capturing the actual calibrated pigment, actual source map and colour mode for each role. This includes the interior wall/floor blends and the dark/bleached timber overrides. Current's exterior floor uses the existing stone paving; its indoor floor remains timber. Current's baseline colours are read from their scene declarations.
+
+The generator uses the production `photographicReflectance` function in linear light, reproduces the renderer's 8-bit texture upload, multiplies the captured pigment, and applies linear mip filtering before JPEG output. Native wood and stone retain their source colour. Dyed linen, velvet, painted timber and other palette-treated surfaces acquire the selected material colour. Painted weatherboards use their actual procedural colour map. No browser per-pixel processing is needed. These images represent unlit material albedo; scene lighting, shadows and sheen still affect the final rendered appearance.
+
+All previews are 256 × 256, quality-86 JPEG with full 4:4:4 colour. The 184 interior/exterior role samples share 118 unique files (1,142,142 bytes). The manifest under `assets/materials/style-swatches/` records source, pigment, colour mode, hashes and statistics. The generated `src/style-material-swatches.js` maps each style/role to its immutable image. Tests compare every cached record with the actual production materials, check that ivory/aqua/plum fabrics no longer show the source blue/red dye, and verify every delivered JPEG hash.
