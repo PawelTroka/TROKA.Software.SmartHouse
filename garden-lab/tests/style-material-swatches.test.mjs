@@ -18,7 +18,11 @@ test('every cached style swatch matches the actual production pigment, source an
       const record=byKey.get(`${style.id}/${interior?'interior':'exterior'}/${material.role}`);
       assert.ok(record);assert.equal(record.sourceId,material.sourceId);
       assert.equal(record.sourceFile,material.sourceFile);assert.equal(record.colorMode,material.colorMode);
-      assert.deepEqual(record.pigment,material.pigment,record.key);
+      // Linear-light conversions can differ by one floating-point rounding
+      // step across runtimes; keep the tolerance far below an 8-bit colour step.
+      assert.equal(record.pigment.length,material.pigment.length,record.key);
+      for(const [channel,value] of material.pigment.entries())
+        assert.ok(Math.abs(record.pigment[channel]-value)<=1e-12,`${record.key} pigment channel ${channel}`);
       assert.equal(samples[index].calibrated,true);assert.equal(samples[index].url,new URL(record.file,folder).href);
     }
   }
