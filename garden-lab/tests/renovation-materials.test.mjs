@@ -20,7 +20,7 @@ test('every baseline/renovation catalogue role resolves to a compact self-hosted
     }
   }
   let bytes=0;for(const url of unique){const file=await stat(new URL(url));assert.ok(file.size<90_000);bytes+=file.size;}
-  assert.ok(bytes<1_000_000,'Browsing all style cards must not download the full-resolution albedo library');
+  assert.ok(bytes<2_000_000,'Browsing all colour-calibrated style cards must not download the full-resolution albedo library');
 });
 
 test('finish identity selects genuine material families and geometry joints get matching mortar-free samples',()=>{

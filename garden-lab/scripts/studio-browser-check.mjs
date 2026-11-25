@@ -8,13 +8,16 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const evidence=path.join(root,'test-results','studio');
+const scenarioGroup=process.env.STUDIO_SCENARIO_GROUP||'all';
+if(!['all','styles','controls','properties'].includes(scenarioGroup))throw new Error('Unknown STUDIO_SCENARIO_GROUP: '+scenarioGroup);
+const runsGroup=group=>scenarioGroup==='all'||scenarioGroup===group;
+const evidence=path.join(root,'test-results','studio',...(scenarioGroup==='all'?[]:[scenarioGroup]));
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
 // Measured canopies can make SwiftShader frames slow. Extend only scene
 // scrolling/capture; functional assertions and the CI job deadline stay bounded.
 const SCENE_CAPTURE_TIMEOUT=120000;
-const report={version,checks:[],screenshots:[],styles:[],errors:[],
+const report={version,group:scenarioGroup,checks:[],screenshots:[],styles:[],errors:[],
   sceneEvidence:'Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.'};
 const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
 let page,server,browser,base=process.env.BASE_URL?.replace(/\/$/,'');
@@ -195,6 +198,8 @@ try{
   const ctx=await browser.newContext({viewport:{width:1280,height:900},deviceScaleFactor:1.5,reducedMotion:'reduce',acceptDownloads:true});
   page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
+  let before;
+  if(runsGroup('styles')){
   const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
   assert.equal(new Set(options).size,23);assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));assert.ok(options.includes('beach-house'));
   assert.equal(await el('#basementGarageEnabled').isChecked(),true);
@@ -241,7 +246,7 @@ try{
   // Establish the neutral baseline after adopting the editable deck dimensions.
   // Current restores the house, while independent garden dimensions stay editable.
   await style('hidden-bali');await style('current');
-  const before=await exportDesign();
+  before=await exportDesign();
   await el('[data-studio-inspect="house"]').click();
   await el('[data-studio-moment="noon"]').first().click();
   await sceneVisible();
@@ -282,6 +287,20 @@ try{
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
   check('All 22 styles have distinct physical window proposals, six fitted garden arrangements and outdoor kitchens; both cars remain and Current restores the neutral dwelling');
+  }
+
+  if(runsGroup('controls')){
+    if(!runsGroup('styles')){
+      // Recreate the adopted neutral state used by the serial suite through
+      // the public controls, without running the independent 22-style sweep.
+      await el('button[data-mode="orbit"]').click();await details();
+      await el('#renderQuality').selectOption('eco');
+      if(await el('#showDimensions').isChecked())await el('#showDimensions').uncheck();
+      await style('hidden-bali');await style('current');
+      before=await exportDesign();
+      await el('[data-studio-inspect="house"]').click();
+      await el('[data-studio-moment="noon"]').first().click();await sceneVisible();
+    }
 
   await el('#style-open').click();await el('#style-search').fill('Bali');await el('[data-style-id="hidden-bali"]').focus();
   await page.keyboard.press('Enter');await el('#style-dialog').waitFor({state:'hidden'});
@@ -439,6 +458,18 @@ try{
   }else{report.hiddenCheck='native browser visibilitychange';assert.ok(lifecycle.some(sample=>sample.hidden&&sample.motion==='false'));}
   await sceneVisible();await expectMotion(true);await el('#sceneMotion').uncheck();await expectMotion(false);
   report.visibilitySamples=lifecycle;check('Reduced motion, diagram/offscreen pauses and '+report.hiddenCheck);
+  }
+
+  if(runsGroup('properties')){
+    if(!runsGroup('controls')){
+      // Mobile and mapped-property checks need the same styled editor state,
+      // but do not depend on the history/lifecycle assertions that precede it.
+      await el('button[data-mode="orbit"]').click();await details();
+      await el('#renderQuality').selectOption('eco');
+      if(await el('#showDimensions').isChecked())await el('#showDimensions').uncheck();
+      await style('beach-house');
+      await el('[data-studio-moment="evening"]').click();await sceneVisible();
+    }
 
   report.mobile=[];
   for(const width of [390,320]){
@@ -518,6 +549,7 @@ try{
   await shot('sternicza-coastal-two-car-garage','#scene-host canvas');
   report.coastalGarage={vehicles:(await stats()).garageVehicles,parkingSpaces:2,style:coastalGarage.settings.designStyle};
   check('The final Coastal exterior renders two vehicles and exports the same two-car basement');
+  }
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;

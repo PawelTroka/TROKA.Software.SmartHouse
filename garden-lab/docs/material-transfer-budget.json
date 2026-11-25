@@ -3,6 +3,10 @@
   "registeredSamples": 41,
   "uniquePbrBytes": 42584704,
   "baselineGardenBytes": 8441301,
+  "calibratedCatalogueBytes": 1142142,
+  "calibratedCatalogueFiles": 118,
+  "calibratedCatalogueSamples": 184,
+  "sourceReferencePreviewBytes": 454874,
   "scope": "JPEG transfer before HTTP compression, unique URLs; interior includes every optional slot, while runtime requests only materials attached to the model. Baseline garden files are shared and cached.",
   "styles": [
     {

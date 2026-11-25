@@ -11,7 +11,7 @@ The renovation catalogue now changes the architecture and use of the retained ho
 | Interiors | Living and dining compositions, furniture forms, joinery, beds, office orientation and three kitchen arrangements change. The kitchen can use a freestanding worktable, an island or a galley while retaining the existing wet-service perimeter. |
 | Garden | Six fitted arrangements position the pool, sunken fire lounge, dining, resting groups, paths, planted beds and an outdoor cooking counter. Each style supplies its corresponding furniture and materials. |
 | Materials | Separate photographic colour, normal and roughness maps represent the selected material. Natural wood and stone retain their original variation; painted finishes and upholstery take the design palette. |
-| Comparison | House details, Garden overview and Daylight give repeatable inspection views. A style change preserves the chosen camera and light. The catalogue and expanded finish panel show small samples from the actual material families. |
+| Comparison | House details, Garden overview and Daylight give repeatable inspection views. A style change preserves the chosen camera and light. The catalogue and expanded finish panel show photographic samples calibrated to the material and colour used by each design. |
 
 ## Retained building and shared geometry
 
@@ -48,3 +48,5 @@ Style upgrades remain quote-only. The upgrade scope now explicitly includes repl
 The release includes focused checks for all 22 physical window patterns across shared, photo and mapped house models; exact inside/outside aperture agreement; retained envelope and access constraints; garden fit and shared analytical geometry; saved-state migration; furnishing circulation; photographic channel provenance, physical scale and texture disposal.
 
 The browser regression exercises all 23 choices with real WebGL, checks that distinct window patterns and all six garden arrangements render, verifies Current restoration and bounded resources, and retains the existing garage, mobile, lighting, history and shared-link checks. Release evidence records the exact deployed source and build hashes.
+
+Completed frames identify the style actually drawn, so a changed control alone cannot satisfy a comparison check. The visibility handler consumes the newest queued canvas observation, including rapid offscreen-to-onscreen transitions when moving between the catalogue and model. A focused regression covers both visibility directions and queued entries for other elements.
