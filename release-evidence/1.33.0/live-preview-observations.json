@@ -1,0 +1,68 @@
+{
+  "version": "1.33.0",
+  "preview": "https://paweltroka.github.io/TROKA.Software.SmartHouse/review-renovation-1-33/?site=sternicza-11",
+  "visibilityFixSourceCommit": "823e04930003832214417a321452bc83113e2c7f",
+  "renderedChecks": [
+    {
+      "selected": "hidden-bali",
+      "rendered": "hidden-bali",
+      "frames": 7,
+      "loadedMaps": 42,
+      "drawEnabled": true
+    },
+    {
+      "selected": "beach-house",
+      "rendered": "beach-house",
+      "frames": 12,
+      "loadedMaps": 43,
+      "requestedMaps": 43,
+      "garden": "Boardwalk and barefoot lounge"
+    },
+    {
+      "selected": "space-age",
+      "rendered": "space-age",
+      "frames": 20,
+      "loadedMaps": 55,
+      "requestedMaps": 55,
+      "failedMaps": 0,
+      "garden": "Pool club and evening dining",
+      "outdoorKitchens": 1,
+      "plantingBeds": 1
+    },
+    {
+      "selected": "current",
+      "rendered": "current",
+      "frames": 25,
+      "renovationParts": 0,
+      "openings": 25,
+      "garden": "manual",
+      "failedMaps": 0
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "bali-dining-room.jpg",
+      "bytes": 226794,
+      "sha256": "d15a1bb6cdbab13864b40e3499dc434b592927273530151b3f42d5c5a5f337ba",
+      "gitBlob": "c4d66b49e767ac3a6b5758f19e2023976abde48e"
+    },
+    {
+      "file": "bali-garden.jpg",
+      "bytes": 155345,
+      "sha256": "1e040f2ab272f4564865ef7266410ac484fb97e7f06f31548be08a13fbd0b226",
+      "gitBlob": "c541742c6cc32d89b3aa313c4046693399067b16"
+    },
+    {
+      "file": "beach-house-exterior.jpg",
+      "bytes": 143134,
+      "sha256": "c57903740a3b17dd0227c848cd4c84b1ecfbc93b8c1734fe80c02d71bbf204af",
+      "gitBlob": "6ec1d62207516c8e7668bc0aa7c4fa916c395e25"
+    },
+    {
+      "file": "space-age-exterior.jpg",
+      "bytes": 143368,
+      "sha256": "1c17df88669aa27907354c8cb33b043dc2a38dd3e51cbf40815a3730421a3ada",
+      "gitBlob": "cfbec5d9b12b60ef54135ba790410bc2265f1f06"
+    }
+  ]
+}

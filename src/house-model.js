@@ -1,8 +1,9 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.32.1';
-import {garagePlanFrame} from './garage-ramp.js?v=1.32.1';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.33.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.33.0';
+import {renovatePlanOpenings} from './renovation-architecture.js?v=1.33.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -61,16 +62,17 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
     if(floor==='first'&&settings.canopyEnabled&&settings.terraceCoverType==='balcony')plan.outdoor.push(platform('balcony',num(settings.canopyWidth,10.77),num(settings.canopyDepth,4)));
   }
   plan.modelSource='shared-house';
-  return plan;
+  return renovatePlanOpenings(plan,{styleId:settings.designStyle||'current'});
 }
 
 /** Storey-specific facades. The same aperture dimensions cut the 3D walls and
  * locate viewpoints, balcony doors, and renovation cladding. */
 export function sharedHouseFacades(data,settings={}){
-  const frame=houseModelFrame(data,settings),edges=[],windows=[];let door=null,portal=null;
+  const frame=houseModelFrame(data,settings),edges=[],windows=[];let door=null,portal=null,architectureProposal=null;
   if(!frame)return null;
   for(const floor of ['basement','ground','first']){
     const plan=getHouseFloorPlan({floor,settings,data});
+    architectureProposal=plan.architectureProposal||architectureProposal;
     for(const wall of plan.walls.filter(w=>w.exterior)){
       const dx=wall.b[0]-wall.a[0],dz=wall.b[1]-wall.a[1],length=Math.hypot(dx,dz),axis=[dx/length,dz/length];
       let outward=[axis[1],-axis[0]],mid=[(wall.a[0]+wall.b[0])/2,(wall.a[1]+wall.b[1])/2];
@@ -86,8 +88,9 @@ export function sharedHouseFacades(data,settings={}){
       for(const [i,o]of wall.openings.entries()){
         const centre=o.offset+o.width/2,z=baseZ+(o.sill||0),position=[a[0]+direction[0]*centre,a[1]+direction[1]*centre,z];
         const id=o.type==='hst'?`rear-hst-${i}`:o.type==='balcony-door'?`rear-balcony-room-${i}`:`${floor}-${wall.id}-${i}`;
-        const record={id,edgeIndex:index,centre,width:o.width,z,height:o.height,source:plan.layout==='renovation'?'annotated-plan-renovation':'archived-plan',
-          panes:o.type==='hst'?4:2,level:floor==='ground'?'living':floor,kind:o.type,position,outward:outer.slice(),lo:o.offset,hi:o.offset+o.width};
+        const record={id,edgeIndex:index,centre,width:o.width,z,height:o.height,source:o.source||(plan.layout==='renovation'?'annotated-plan-renovation':'archived-plan'),
+          panes:o.panes??(o.type==='hst'?4:2),level:floor==='ground'?'living':floor,kind:o.type,position,outward:outer.slice(),lo:o.offset,hi:o.offset+o.width,
+          ...(o.architectureStyle?{architectureStyle:o.architectureStyle,transoms:o.transoms,frameWidth:o.frameWidth,glazing:o.glazing,operation:o.operation,privacy:o.privacy,roomId:o.roomId}:{} )};
         if(o.type==='garage-door')portal=record;
         else if(floor==='ground'&&o.type==='door'&&wall.id==='street-facade')door=record;
         else if(['window','hst','balcony-door'].includes(o.type))windows.push(record);
@@ -95,5 +98,6 @@ export function sharedHouseFacades(data,settings={}){
     }
   }
   const front=edges.find(e=>e.id==='ground-street-facade'),rear=edges.find(e=>e.floor==='ground'&&/garden/.test(e.id));
-  return{frame,edges,windows,front,rear,door,portal,rearBays:windows.filter(w=>w.kind==='hst'),balconyDoor:windows.find(w=>w.kind==='balcony-door')||null};
+  return{frame,edges,windows,front,rear,door,portal,rearBays:windows.filter(w=>w.kind==='hst'),balconyDoor:windows.find(w=>w.kind==='balcony-door')||null,
+    ...(architectureProposal?{architectureProposal}:{})};
 }

@@ -1,0 +1,111 @@
+{
+  "version": "1.33.0",
+  "sourceCommit": "f4a8dae264511e8d481a1cf3fd3df6e105235358",
+  "sourceHead": "d8fb519e709c58ffe5056b18e3f1bf0f99108284",
+  "sourceTree": "f9aee6e44d08f78064caccbb7a5e0e7daa8c3f14",
+  "buildTree": "9217987132d1abda6d925eb025e3696bfcc12951",
+  "applicationFiles": 474,
+  "applicationBytes": 51688372,
+  "preparedAtUTC": "2026-11-25T00:43:41.814118+00:00",
+  "unitTests": {
+    "passed": 821,
+    "failed": 0,
+    "skipped": 0
+  },
+  "ci": {
+    "runId": 45516729249,
+    "url": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/45516729249",
+    "head": "d8fb519e709c58ffe5056b18e3f1bf0f99108284",
+    "conclusion": "success",
+    "attempt": 2,
+    "jobs": [
+      {
+        "name": "Geometry, build and WebGL browser checks",
+        "id": 138885865416,
+        "conclusion": "success"
+      },
+      {
+        "name": "Design studio \u00b7 styles",
+        "id": 138885925259,
+        "conclusion": "success"
+      },
+      {
+        "name": "Measured neighbourhood and sea-height browser checks",
+        "id": 138885922593,
+        "conclusion": "success"
+      },
+      {
+        "name": "Corner pavilion alternatives and mobile checks",
+        "id": 138885910483,
+        "conclusion": "success"
+      },
+      {
+        "name": "WebGL regression \u00b7 sternicza",
+        "id": 138885863491,
+        "conclusion": "success"
+      },
+      {
+        "name": "WebGL regression \u00b7 garage",
+        "id": 138885865134,
+        "conclusion": "success"
+      },
+      {
+        "name": "Architectural rendering comparison",
+        "id": 138885908591,
+        "conclusion": "success"
+      },
+      {
+        "name": "WebGL regression \u00b7 nadmorska",
+        "id": 138885866554,
+        "conclusion": "success"
+      },
+      {
+        "name": "Interior layouts, materials and mobile walkthrough",
+        "id": 138885918912,
+        "conclusion": "success"
+      },
+      {
+        "name": "Design studio \u00b7 properties",
+        "id": 138885866112,
+        "conclusion": "success"
+      },
+      {
+        "name": "Design studio \u00b7 controls",
+        "id": 138885865758,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "releaseScope": {
+    "renovationStyles": 22,
+    "originalBaseline": true,
+    "gardenArrangements": 6,
+    "photographicSourceSets": 32,
+    "calibratedMaterialSamples": 184,
+    "uniqueCatalogueImages": 118
+  },
+  "manualReview": {
+    "styles": [
+      "hidden-bali",
+      "mediterranean-villa",
+      "beach-house",
+      "space-age",
+      "current"
+    ],
+    "views": [
+      "house details",
+      "garden overview",
+      "ground-floor dollhouse",
+      "dining room"
+    ],
+    "observations": "live-preview-observations.json",
+    "note": "Representative rendered scenes were reviewed before the final static catalogue calibration. Final material colours were checked against production pigments; final browser automation validates the combined source."
+  },
+  "previewHTTPVerification": {
+    "pagesCommit": "983ef841a8ae01fc075169d3af071df264d7752b",
+    "files": 9,
+    "allHashesMatch": true
+  },
+  "preservedReviewDirectories": 26,
+  "publicationNote": "The immutable build and tested source are recorded here. Exact Pages deployment, archive preservation and live production byte checks are verified after publication."
+}

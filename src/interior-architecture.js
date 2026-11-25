@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.32.1';
-import {furnishInterior} from './interior-furniture.js?v=1.32.1';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.32.1';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.32.1';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.33.0';
+import {furnishInterior} from './interior-furniture.js?v=1.33.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.33.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.33.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -50,18 +50,31 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
     const left=o.offset,right=Math.min(len,o.offset+o.width),bottom=o.sill||0,top=Math.min(bottom+o.height,height),w=right-left,h=top-bottom;
     if(w<.04||h<.04||o.type==='passage')continue;
     const full=bottom+o.height<=height+.001, glazed=['window','hst','balcony-door'].includes(o.type),frame=glazed?m.frame:design?.cabinet==='louvred'?(m.painted||m.trim):m.oak;
-    for(const x of [left+.021,right-.021])box(g,frame,x,bottom+h/2,0,.042,h,glazed?.087:th+.027);
-    if(full)box(g,frame,left+w/2,top-.023,0,w,.046,glazed?.088:th+.028);
+    const frameWidth=glazed?Math.max(.022,Math.min(.12,o.frameWidth??.042)):.042;
+    const headWidth=o.architectureStyle?frameWidth:.046,sillWidth=o.architectureStyle?frameWidth:.05;
+    for(const x of [left+frameWidth/2,right-frameWidth/2])box(g,frame,x,bottom+h/2,0,frameWidth,h,glazed?.087:th+.027);
+    if(full)box(g,frame,left+w/2,top-headWidth/2,0,w,headWidth,glazed?.088:th+.028);
     if(glazed){
-      box(g,frame,left+w/2,bottom+.025,0,w,.05,.098);
+      box(g,frame,left+w/2,bottom+sillWidth/2,0,w,sillWidth,.098);
       if(o.type==='window')box(g,m.stone,left+w/2,bottom-.014,0,w+.072,.039,th+.127);
-      const panels=o.type==='hst'?Math.max(2,Math.round(w/1.66)):(w>1.05?2:1),module=w/panels;
+      const originalPanels=o.type==='hst'?Math.max(2,Math.round(w/1.66)):(w>1.05?2:1);
+      const panels=o.architectureStyle?Math.max(1,Math.min(10,o.panes??originalPanels)):originalPanels,module=w/panels;
+      const glass=o.glazing==='privacy'?(m.privacyGlass||m.glass):m.glass;
       for(let i=0;i<panels;i++){
-        if(i>0)box(g,frame,left+module*i,bottom+h/2,0,.045,h,.081);
-        if(o.type==='hst' && i===Math.floor(panels/2)-1)continue;
-        box(g,m.glass,left+(i+.5)*module,bottom+h/2,0,Math.max(.01,module-.042),h-.035,.009);
+        if(i>0)box(g,frame,left+module*i,bottom+h/2,0,o.architectureStyle?frameWidth:.045,h,.081);
+        if(!o.architectureStyle&&o.type==='hst'&&i===Math.floor(panels/2)-1)continue;
+        box(g,glass,left+(i+.5)*module,bottom+h/2,0,Math.max(.01,module-frameWidth),h-(o.architectureStyle?frameWidth:.035),.009);
       }
-      if(o.type==='window'&&h>1.04)box(g,frame,left+w/2,bottom+h*.71,0,w,.029,.062);
+      if(Number.isInteger(o.transoms)){
+        for(let row=1;row<=o.transoms;row++)box(g,frame,left+w/2,bottom+h*row/(o.transoms+1),0,w,Math.max(.022,frameWidth*.72),.062);
+      }else if(o.type==='window'&&h>1.04)box(g,frame,left+w/2,bottom+h*.71,0,w,.029,.062);
+      if(o.architectureStyle&&['hst','balcony-door'].includes(o.type)){
+        // Properly sized pull handles and a flush track make the selected
+        // sliding/French door construction legible from either viewer.
+        box(g,m.dark,left+w/2,bottom+.010,0,w,.018,.12);
+        const handleX=left+module-frameWidth*1.5;
+        box(g,frame,handleX,bottom+Math.min(1.05,h*.48),.065,.018,.22,.022);
+      }
     }else if(o.type==='garage-door'){
       // Draw the raised door overhead, keeping the entry and sightline open.
       if(full){box(g,m.steel,left+w/2,top-.07,-.35,w,.095,.65);}

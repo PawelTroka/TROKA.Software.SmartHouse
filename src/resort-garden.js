@@ -1,6 +1,6 @@
 /** Movable furnishings and decorative light compositions. These are design
  * proposals, never replacements for surveyed geometry or screening volumes. */
-import {canopySupportBounds} from './geometry.js?v=1.32.1';
+import {canopySupportBounds} from './geometry.js?v=1.33.0';
 const recipe=(terrace,garden,diningTurn,shift,hedgeCount,pendantCount,treeCount,light,plant)=>Object.freeze({
   terrace,garden,diningTurn,shift:Object.freeze(shift),hedgeCount,pendantCount,treeCount,
   light:Object.freeze(light),plant,
