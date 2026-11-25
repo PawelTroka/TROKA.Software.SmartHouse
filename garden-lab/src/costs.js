@@ -3,15 +3,15 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.32.1';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.32.1';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.32.1';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.32.1';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.32.1';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.32.1';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.32.1';
-import { getDesignStyle } from './design-styles.js?v=1.32.1';
-import { upgradeSingleCarGarage } from './garage-options.js?v=1.32.1';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.33.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.33.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.33.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.33.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.33.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.33.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.33.0';
+import { getDesignStyle } from './design-styles.js?v=1.33.0';
+import { upgradeSingleCarGarage } from './garage-options.js?v=1.33.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -169,7 +169,7 @@ const quantityCache = new WeakMap();
 /** Areas on the mapped plan, before soil-depth and delivery multipliers. */
 export function gardenQuantities(settings, data) {
   const c = costSettings(settings);
-  const signature = JSON.stringify([settings.gardenProgram,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
+  const signature = JSON.stringify([settings.gardenProgram,settings.designStyle,settings.styleGardenLayout,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
     settings.hedgeInset ?? 0, c.costBedWidth, ...['Rear', 'Left', 'Right', 'Front'].map(side => positive(settings[`hedge${side}`] ?? (side==='Front'?0:2.5)) > 0)]);
   // data.site survives building sensitivity overrides, so cost geometry is reused.
   const cached = quantityCache.get(data.site);
@@ -243,7 +243,7 @@ export function estimateStyleCosts(settings) {
   const c=costSettings(settings),style=getDesignStyle(settings.designStyle),enabled=style.id!=='current',rows=[];
   if(enabled)rows.push(installedLine(c,'costStyleUpgradeQuote',null,
     `${style.label}${settings.styleHouseFinish?' · garden and house renovation':' · garden finishes'}`,
-    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include the house cladding, window trim and finish work only when house renovation is enabled. Reconfirm scope and applicable tax after changing the style; zero is unquoted.'));
+    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include the proposed replacement glazing, enlarged or repositioned openings and structural supports, facade build-up, interior joinery and fittings when house renovation is enabled. Include the selected outdoor kitchen, cooking equipment, utility connections, planted beds and resting platforms in the garden upgrade. Reconfirm scope and applicable tax after changing the style or its garden arrangement; zero is unquoted.'));
   return installationGroup(enabled,rows,c,{planningEnabled:false,quoteOnly:true,styleId:style.id,houseFinishPreview:enabled&&settings.styleHouseFinish===true,houseRenovationIncluded:enabled&&settings.styleHouseFinish===true});
 }
 
@@ -298,7 +298,7 @@ export function estimateSpaCosts(settings,data) {
     rows.push(jacuzzi);
     return installationGroup(true,rows,c,{overflow:false,scopeId:'pool-and-jacuzzi',scopeLabel:'Pool and jacuzzi · installed scope'});
   }
-  const revisedPoolQuote=['spa-pavilion','spa-pool-grove'].includes(program.id)?(c.costSpaPool>0
+  const revisedPoolQuote=(program.renovation||['spa-pavilion','spa-pool-grove'].includes(program.id))?(c.costSpaPool>0
     ?' Confirm that the entered quote covers the revised pool position and dimensions.'
     :' The relocated pool needs a project quotation. The existing whole-pool planning range is retained until that quotation is available.') : '';
   const rows=[

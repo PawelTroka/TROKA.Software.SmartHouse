@@ -1,11 +1,11 @@
-import {analyzeVisibility,privacyStructures,pointInPolygon,terraceGroundReference} from './geometry.js?v=1.32.1';
-import {pavilionRoofEnvelopeStudy} from './corner-pavilion.js?v=1.32.1';
-import {firstPrivacyIntersection} from './privacy-structures.js?v=1.32.1';
-import {closestBoundary,closestFootprints} from './dimensions.js?v=1.32.1';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.32.1';
-import {rectCorners,terraceStairs} from './layout.js?v=1.32.1';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.32.1';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.32.1';
+import {analyzeVisibility,privacyStructures,pointInPolygon,terraceGroundReference} from './geometry.js?v=1.33.0';
+import {pavilionRoofEnvelopeStudy} from './corner-pavilion.js?v=1.33.0';
+import {firstPrivacyIntersection} from './privacy-structures.js?v=1.33.0';
+import {closestBoundary,closestFootprints} from './dimensions.js?v=1.33.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.33.0';
+import {rectCorners,terraceStairs} from './layout.js?v=1.33.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.33.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.33.0';
 
 export const PAVILION_PLANNING=Object.freeze({
   checked:'2026-11-24',status:'unverified',parcels:['226101_1.0034.400','226101_1.0034.401'],

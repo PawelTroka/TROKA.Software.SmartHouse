@@ -7,6 +7,7 @@ import {getSiteProfile} from '../src/sites.js';
 import {applyPlanExterior} from '../src/plan-exterior.js';
 import {getHouseFloorPlan} from '../src/house-model.js';
 import {getInteriorPlan} from '../src/interior-plan.js';
+import {getDesignStyle} from '../src/design-styles.js';
 import {createSharedHouseModel,cloneOwnedScene} from '../src/scene-house-model.js';
 import {interiorMaterials} from '../src/interior-materials.js';
 import {buildArchitecture} from '../src/interior-architecture.js';
@@ -80,6 +81,21 @@ test('the historical entry retains landing wings at the top of both external sta
       assert.ok(ray.intersectObject(ground,true).length>0,`The entry landing wing at drawing x=${x} is absent`);
     }
   }finally{model?.dispose();if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+
+test('the shared exterior finish toggle removes cladding while preserving the selected real apertures and furnishings',()=>{
+  const previous=globalThis.document;globalThis.document=canvasDocument();let styled,plain;
+  try{
+    const data=applyPlanExterior(source,settings);styled=createSharedHouseModel(data,settings,{terrainAt});
+    plain=createSharedHouseModel(data,{...settings,styleHouseFinish:false},{terrainAt});
+    assert.ok(styled.root.getObjectByName('house-renovation'));
+    assert.equal(plain.root.getObjectByName('house-renovation'),undefined);
+    assert.deepEqual(plain.layout.windows,styled.layout.windows,'The preview checkbox cannot restore a different wall-opening layout');
+    const current=getDesignStyle('current').palette;
+    assert.equal(plain.root.getObjectByName('shared-house-gables').material.color.getHex(),new THREE.Color(current.houseWall).getHex());
+    assert.equal(plain.root.getObjectByName('house-measured-terracotta-roof').material.color.getHex(),new THREE.Color(current.houseRoof).getHex());
+    for(const floor of ['ground','first'])assert.deepEqual(vertices(plain.root.getObjectByName('shared-house-floor-'+floor)),vertices(styled.root.getObjectByName('shared-house-floor-'+floor)));
+  }finally{plain?.dispose();styled?.dispose();if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
 
 test('context clones omit only the active floor and own all GPU resources independently',()=>{

@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.32.1';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.32.1';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.33.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.33.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
@@ -490,7 +490,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'chair':chair(g,0,0,0,w,d);break;
       case 'bed':bed(g,w,d,f);break;
       case 'kitchen':case 'counter':kitchen(g,f,w,d);break;
-      case 'console':kitchen(g,f,w,d);books(g,w*.25,(f.height||.72)+.03,0,.27);plant(g,w*.05,(f.height||.72)+.03,0,.12);break;
+      case 'console':{if(f.variant==='worktable'){const h=f.height||.89;rounded(g,m.stone,0,h,0,w,.055,d,.018);legs(g,w*.83,d*.73,h-.04,.035,m.wood,.012);box(g,m.wood,0,.16,0,w*.83,.048,d*.72);}else{kitchen(g,f,w,d);books(g,w*.25,(f.height||.72)+.03,0,.27);plant(g,w*.05,(f.height||.72)+.03,0,.12);}break;}
       case 'storage':case 'wardrobe':kitchen(g,f,w,d,true);break;
       case 'basin':case 'tub':case 'hotTub':case 'bidet':case 'shower':case 'wc':case 'toilet':case 'sink':bathroom(g,f,w,d);break;
       case 'spaStep':{const h=f.height||.32;box(g,m.wood,0,h*.25,d*.25,w,h*.50,d*.50);box(g,m.wood,0,h*.50,-d*.25,w,h,d*.50);for(const z of [-d*.25,d*.25])for(let i=0;i<4;i++)box(g,m.frame,0,z<0?h+.003:h*.50+.003,z-d*.19+i*d*.12,w*.92,.006,.012);break;}

@@ -63,8 +63,13 @@ test('marked outdoor dimensions share the registered house and preserve its sour
   assert.equal(applyPlanExterior(data,settings),applied,'Avoid rebuilding the world on unrelated interior updates');
   assert.equal(cover.deckArea,43.08);assert.equal(cover.depth,4);
   const doors=facade.windows.filter(w=>w.id.startsWith('rear-balcony-room-'));
-  assert.equal(doors.length,3);assert.ok(doors.every(d=>d.width===1.2&&d.height===2.25));
-  assert.equal(facade.rearBays.length,1);assert.equal(facade.rearBays[0].width,9.97);
+  const first=getHouseFloorPlan({floor:'first',settings,data:applied}),ground=getHouseFloorPlan({floor:'ground',settings,data:applied});
+  const planDoors=first.walls.find(w=>w.id==='balcony-facade').openings;
+  assert.equal(doors.length,3);
+  assert.deepEqual(doors.map(d=>[d.width,d.height,d.lo]),planDoors.map(d=>[d.width,d.height,d.offset]));
+  assert.ok(doors.every(d=>d.width>1.2&&d.height>2.25),'The selected renovation enlarges actual apertures in both viewers');
+  const planGarden=ground.walls.find(w=>w.id==='garden-hst').openings;
+  assert.deepEqual(facade.rearBays.map(w=>[w.width,w.height,w.lo]),planGarden.map(w=>[w.width,w.height,w.offset]));
   assert.ok(doors[0].position[0]>doors[2].position[0],'Garden-up paper orientation reverses site horizontal coordinates');
   const registration=planRegistrationSummary(data);
   assert.ok(registration.mapped.mainWidth>11&&registration.mapped.mainWidth<11.02);

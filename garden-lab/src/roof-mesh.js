@@ -1,5 +1,5 @@
 /** Pure sampled roof triangulation shared by rendering and local ray geometry. */
-import {constrainRoofEdges} from './roof-envelope.js?v=1.32.1';
+import {constrainRoofEdges} from './roof-envelope.js?v=1.33.0';
 const EPS=1e-8;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):(ring||[]).slice();
 function pointInPolygon(point,ring){

@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
+import {projectArchitecturalMaterialUVs} from './material-assets.js?v=1.33.0';
 
 const EPS = 1e-7;
 const cross = (a, b, p) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]);
@@ -84,13 +85,19 @@ export function wallPanels(wall, height=wall.height) {
 // surfaces, keeping wall cutaways and transparent panes independently switchable.
 export function batchGroup(group) {
   group.updateWorldMatrix(true,true);
+  // Resolve timber fibres while each leg, rail and board still has its own
+  // axis. The combined furniture bounds cannot recover those directions.
+  let memberGrain=false;
+  group.traverse(mesh=>{if(mesh.isMesh&&mesh.material?.userData.woodGrainAxis)memberGrain=true;});
+  if(memberGrain)projectArchitecturalMaterialUVs(group);
   const inverse = group.matrixWorld.clone().invert(), batches = new Map(), geometries = new Set();
   const normalMatrix=new THREE.Matrix3(), v = new THREE.Vector3();
   group.traverse(mesh => {
     if (!mesh.isMesh) return;
     const geo=mesh.geometry, mat=mesh.material, key=mat.uuid;
-    if (!batches.has(key)) batches.set(key,{mat,pos:[],norm:[],uv:[],ids:[]});
+    if (!batches.has(key)) batches.set(key,{mat,pos:[],norm:[],uv:[],ids:[],metric:true});
     const batch=batches.get(key), matrix=new THREE.Matrix4().multiplyMatrices(inverse,mesh.matrixWorld);
+    batch.metric=batch.metric&&geo.userData.architecturalMetricUVs===true;
     normalMatrix.getNormalMatrix(matrix);
     const count=geo.attributes.position.count, offset=batch.pos.length/3;
     for(let i=0;i<count;i++) {
@@ -102,9 +109,10 @@ export function batchGroup(group) {
     geometries.add(geo);
   });
   group.clear();
-  for(const {mat,pos,norm,uv,ids} of batches.values()) {
+  for(const {mat,pos,norm,uv,ids,metric} of batches.values()) {
     const geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
     geo.setAttribute('normal',new THREE.Float32BufferAttribute(norm,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(ids);geo.computeBoundingSphere();
+    if(metric)geo.userData.architecturalMetricUVs=true;
     const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=!mat.transparent;mesh.receiveShadow=true; group.add(mesh);
   }
   for(const geo of geometries) if(!geo.userData.sharedPrimitive) geo.dispose();

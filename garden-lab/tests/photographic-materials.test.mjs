@@ -11,23 +11,24 @@ import {exteriorSurfacePixels} from '../src/exterior-materials.js';
 test('all photographic PBR channels match the vendored provenance manifest',async()=>{
   const folder=new URL('../assets/materials/',import.meta.url);
   const manifest=JSON.parse(await readFile(new URL('manifest.json',folder),'utf8'));
-  assert.equal(manifest.assets.length,6);
-  let total=0;
+  assert.ok(manifest.assets.filter(a=>!a.derivedFrom).length>=30);
+  let total=0;const counted=new Set();
   for(const asset of manifest.assets){
     assert.equal(asset.license,'CC0-1.0');assert.ok(asset.authors&&Object.keys(asset.authors).length);
-    assert.ok(asset.physicalSizeMeters.every(size=>size>.1&&size<5));
+    assert.ok(asset.physicalSizeMeters.every(size=>size>.02&&size<5));
     const spec=Object.values(MATERIAL_ASSETS).find(s=>s.id===asset.id);assert.ok(spec);
     for(const [i,value] of spec.meters.entries())assert.ok(Math.abs(value-asset.physicalSizeMeters[i])<1e-6);
     for(const [channel,entry] of Object.entries(asset.maps)){
-      const bytes=await readFile(new URL(entry.file,folder));total+=bytes.length;
+      const bytes=await readFile(new URL(entry.file,folder));if(!counted.has(entry.file)){total+=bytes.length;counted.add(entry.file);}
       assert.equal(bytes.length,entry.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),entry.sha256);
       assert.equal(createHash('md5').update(bytes).digest('hex'),entry.md5);
       assert.equal(entry.colorSpace,channel==='Diffuse'?'sRGB':'linear');
-      assert.equal(entry.width,1024);assert.ok(entry.height>=1024&&entry.height<=1030,'Provider 1K linen retains its measured non-square aspect');
+      assert.ok(entry.width>=32&&entry.width<=2048);assert.ok(entry.height>=32&&entry.height<=2048,'Provider aspect ratio and cropped unit texel density are retained');
+      assert.equal(bytes[0],0xff);assert.equal(bytes[1],0xd8,'The self-hosted maps are actual JPEG files');
       assert.deepEqual(spec.pixels,[entry.width,entry.height],'Placeholder storage must match every shipped map before its first GPU upload');
     }
   }
-  assert.ok(total<11_000_000,'The entire six-material download has a fixed browser asset budget');
+  assert.ok(total<75_000_000,'Curated complete library has a fixed static budget; a scene loads only used maps');
 });
 
 test('pending photographs and live clones keep their immutable GPU dimensions when loading completes',async()=>{
@@ -84,7 +85,8 @@ test('photographic dark detail survives palette calibration while highlight refl
     const mean=photographicReflectance(spec.mean,name);
     const bright=photographicReflectance(spec.mean.map(v=>Math.min(1,v*2)),name);
     assert.ok(dark.every(v=>v>0&&v<.3),`${name} must retain dark pores/grain instead of a pale texture floor`);
-    assert.ok(mean.every(v=>Math.abs(v-.8)<1e-12),`${name} must remove the scan's original base dye`);
+    if(spec.colorMode==='natural')assert.deepEqual(mean,spec.mean,`${name} must retain natural albedo rather than flattening it to white`);
+    else assert.ok(mean.every(v=>Math.abs(v-.8)<1e-12),`${name} must remove the scan's original base dye`);
     assert.ok(bright.every((v,i)=>v>mean[i]&&v<=1),`${name} must retain highlights without impossible diffuse reflectance`);
     assert.deepEqual(photographicReflectance([0,0,0],name),[0,0,0]);
   }

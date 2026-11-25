@@ -11,21 +11,21 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.32.1';
-import {neighborhoodBounds} from './neighborhood.js?v=1.32.1';
-import {gazeDirection} from './orientation.js?v=1.32.1';
-import {localSunDirection} from './solar.js?v=1.32.1';
-import {getSiteProfile} from './sites.js?v=1.32.1';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.32.1';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.32.1';
-import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.32.1';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.32.1';
-import {terraceStairs,gardenFurniture} from './layout.js?v=1.32.1';
-import {resortTerraceLayout} from './resort-garden.js?v=1.32.1';
-import {getDesignStyle} from './design-styles.js?v=1.32.1';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.32.1';
+} from './geometry.js?v=1.33.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.33.0';
+import {gazeDirection} from './orientation.js?v=1.33.0';
+import {localSunDirection} from './solar.js?v=1.33.0';
+import {getSiteProfile} from './sites.js?v=1.33.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.33.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.33.0';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.33.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.33.0';
+import {terraceStairs,gardenFurniture} from './layout.js?v=1.33.0';
+import {resortTerraceLayout} from './resort-garden.js?v=1.33.0';
+import {getDesignStyle} from './design-styles.js?v=1.33.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.33.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.32.1';
+import {garagePlanFrame} from './garage-ramp.js?v=1.33.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -49,7 +49,7 @@ export function resortFurniturePlanMarkup(data,settings,{X,Y,scale}){
   const stairs=terraceStairs(terrace,depth,terraceGroundReference(settings,data).drop,settings,data);
   const tub=jacuzziBounds(settings,data),garden=gardenFurniture(data,settings);
   const composition=tub?resortTerraceLayout(data,settings,tub,stairs):{items:[]};
-  const pieces=[...composition.items,...(garden.resort?.items||[])];
+  const pieces=[...(garden.resort?.pads||[]).map(p=>({...p,kind:'deck'})),...(garden.resort?.beds||[]).map(p=>({...p,kind:'planting bed'})),...composition.items,...(garden.resort?.items||[]),...(garden.resort?.kitchen?[garden.resort.kitchen]:[])];
   if(settings.removeGarage!==false&&garden.diningVisible!==false&&garden.dining)pieces.push({...garden.dining,id:'garden-dining',kind:'dining'});
   const p=style.palette;
   const markup=pieces.map(piece=>{
@@ -57,7 +57,7 @@ export function resortFurniturePlanMarkup(data,settings,{X,Y,scale}){
     if(![x,y,width,length].every(Number.isFinite)||width<=0||length<=0)return '';
     const title=`${kind.replaceAll('-',' ')} · ${fmt(width,2)} × ${fmt(length,2)} m`;
     if(kind==='planter')return `<g data-design-furniture="${esc(id)}"><title>${esc(title)}</title><circle cx="${X(x+width/2)}" cy="${Y(y+length/2)}" r="${Math.min(width,length)*scale/2}" fill="#778568" stroke="${p.wood}" stroke-width="1"/></g>`;
-    const surface=kind==='table'||kind==='dining'?p.wood:p.fabric;
+    const surface=kind==='planting bed'?'#788565':kind==='deck'?p.surface:kind==='kitchen'?p.edge:kind==='table'||kind==='dining'?p.wood:p.fabric;
     const inner=kind==='dining'?`<rect x="${X(x+width*.18)}" y="${Y(y+length*.25)}" width="${width*scale*.64}" height="${length*scale*.5}" rx="${scale*.12}" fill="${p.surface}" stroke="${p.frame}" stroke-width=".7"/>`:'';
     return `<g data-design-furniture="${esc(id)}"><title>${esc(title)}</title><rect x="${X(x)}" y="${Y(y)}" width="${width*scale}" height="${length*scale}" rx="${scale*.09}" fill="${surface}" fill-opacity=".92" stroke="${p.frame}" stroke-width=".8"/>${inner}</g>`;
   }).join('');

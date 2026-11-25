@@ -7,6 +7,7 @@ export function changePresentationSettings(current,patch){
   if(patch.interiorLayout==='existing'||patch.styleHouseFinish===false)next.designStyle='current';
   if(patch.interiorLayout==='renovation'&&next.designStyle==='current')next.designStyle='hidden-bali';
   const proposed=next.designStyle&&next.designStyle!=='current';
+  if(proposed&&next.designStyle!==current.designStyle&&!Object.hasOwn(patch,'styleGardenLayout'))next.styleGardenLayout=true;
   next.styleHouseFinish=Boolean(proposed);next.interiorStyle='follow';
   next.interiorLayout=proposed?'renovation':'existing';
   const sternicza=!next.siteId||next.siteId==='sternicza-11';
@@ -16,6 +17,6 @@ export function changePresentationSettings(current,patch){
   }else if(!proposed&&current.planExteriorApplied){
     next.planExteriorApplied=false;next.canopyEnabled=false;
   }
-  if(next.designStyle!==current.designStyle||next.styleHouseFinish!==current.styleHouseFinish)next.costStyleUpgradeQuote=0;
+  if(next.designStyle!==current.designStyle||next.styleHouseFinish!==current.styleHouseFinish||next.styleGardenLayout!==current.styleGardenLayout)next.costStyleUpgradeQuote=0;
   return next;
 }

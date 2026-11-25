@@ -5,7 +5,7 @@ import {COST_DEFAULTS,COST_FIELDS,estimateCosts,estimateGardenCosts,estimateBalc
 import {renderBudget} from '../src/budget-view.js';
 import {terraceCover} from '../src/geometry.js';
 import {applyPlanExterior} from '../src/plan-exterior.js';
-import {houseAppearanceLayout} from '../src/house-appearance.js';
+import {houseAppearanceLayout,facadePoint} from '../src/house-appearance.js';
 import {terraceCoverLayout} from '../src/terrace-cover.js';
 import {gardenDimensions,dimensionScheduleMarkup} from '../src/dimensions.js';
 import {terraceCoverPlanMarkup,terraceCoverSectionCuts,terraceCoverSectionMarkup,renderPlan,renderSection} from '../src/diagrams.js';
@@ -142,9 +142,16 @@ test('linked garden plan shows each actual doorway and tracks missing balcony la
   }
   const narrow=terraceCoverLayout({...s,canopyWidth:4},applied,{floorZ});
   assert.equal(narrow.accessFits,false);
-  assert.deepEqual(narrow.accesses.map(d=>d.fitsDeck),[false,false,false]);
   const partial=terraceCoverLayout({...s,canopyWidth:6},applied,{floorZ});
-  assert.deepEqual(partial.accesses.map(d=>d.fitsDeck),[true,true,false]);
+  for(const candidate of [full,narrow,partial]){
+    const expected=doors.map(door=>{
+      const edge=facade.edges[door.edgeIndex],ends=[door.lo,door.hi].map(x=>facadePoint(edge,x,door.z));
+      return ends.every(([x,y,z])=>x>=candidate.bounds.x0-1e-7&&x<=candidate.bounds.x1+1e-7&&Math.abs(y-candidate.bounds.y0)<.05&&Math.abs(z-candidate.deckTopZ)<1e-7);
+    });
+    assert.deepEqual(candidate.accesses.map(a=>a.fitsDeck),expected,'Deck support must include both actual enlarged doorway jambs');
+    assert.equal(candidate.accessFits,expected.length===3&&expected.every(Boolean));
+  }
+  assert.ok(partial.accesses.some(a=>a.fitsDeck)&&partial.accesses.some(a=>!a.fitsDeck));
   assert.equal(partial.accessFits,false);
   assert.ok(narrow.warnings.some(w=>w.includes('Master bedroom')&&w.includes('Guest bedroom I')));
   const svg=terraceCoverPlanMarkup(narrow,{X:x=>x,Y:y=>y,scale:1});

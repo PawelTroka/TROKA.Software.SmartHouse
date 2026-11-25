@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.32.1)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.32.1)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.32.1)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.33.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.33.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.33.0)**
+
+## Substantial renovation designs · 1.33.0
+
+All 22 renovation styles now change **actual window openings, glazing patterns, facade depth, room furnishings and garden arrangements**. The retained footprint, roof, storeys, stairs, mapped surroundings and original Current baseline stay consistent. Six fitted garden layouts coordinate the pool, dining, sunken lounge, resting places, planting and outdoor kitchen. Three kitchen programmes and a room-facing office option accompany the styled furniture.
+
+A catalogue of **32 photographic PBR source materials** replaces broad reuse of generic textures. Timber, stone, plaster, brick, roof coverings and upholstery use their own colour, normal and roughness maps, with physical scale, natural grain and material-specific response. Small photographic samples appear in the style catalogue and the expanded finishes panel. **House details**, **Garden overview** and **Daylight** make comparisons easier while style changes preserve the camera and lighting.
+
+Old saved gardens remain recoverable under schema 29. The style garden arrangement can be switched off, and the pavilion study keeps its own arrangement when active. Renovation pricing remains quote-only, including the proposed glazing, supporting work, joinery and garden kitchen.
+
+[Open the renovated Beach House](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.33.0#v=29&site=sternicza-11&designStyle=beach-house&styleGardenLayout=true&pavilionEnabled=false&mode=orbit&showDimensions=false) · [Scope and verification](docs/renovation-depth-1.33.md) · [Materials, provenance and delivery](docs/renovation-materials.md)
 
 ## Surrounding-building accuracy · 1.32.1
 

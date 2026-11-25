@@ -122,7 +122,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,28);
+ assert.equal(STATE_VERSION,29);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -215,7 +215,7 @@ test('v5 physical side labels and state retain left/east and right/west without 
  assert.equal(FIELDS.hedgeRight.label,'Right hedge · west');
  const current={...DEFAULTS,poolFreeboard:.02,garageSlabThickness:.25,basementGarageEnabled:false,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
  assert.deepEqual(decodeState(encodeState(current)),current);
- assert.deepEqual(migrateSavedState(current,5),current);
+ assert.deepEqual(migrateSavedState(current,5),{...current,styleGardenLayout:false});
  assert.equal(decodeState('#v=5&hedgeLeft=3').hedgeRight,4);
  assert.equal(decodeState('#v=5&lookYaw=25').lookYaw,25);
 });

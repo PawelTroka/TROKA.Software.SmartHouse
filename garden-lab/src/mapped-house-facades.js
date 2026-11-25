@@ -1,5 +1,31 @@
 // Inferred facade openings used by both the mapped-house renderer and style treatments.
-import {localRoofEnvelope, roofEdgeHeight} from './roof-envelope.js?v=1.32.1';
+import {localRoofEnvelope, roofEdgeHeight} from './roof-envelope.js?v=1.33.0';
+import {renovateFacadeOpenings,getRenovationArchitecture,minimumFacadeRoof} from './renovation-architecture.js?v=1.33.0';
+
+// A survey may subdivide one straight wall into several cadastral edges. The
+// architectural rhythm belongs to the full elevation; tiny segments must not
+// repeat the whole window pattern. Keep every original roof knot when merging.
+function wholeFacadeEdges(source){
+  const aligned=(a,b)=>Math.abs(a.direction[0]*b.direction[1]-a.direction[1]*b.direction[0])<1e-7&&a.direction[0]*b.direction[0]+a.direction[1]*b.direction[1]>1-1e-7;
+  const start=source.findIndex((e,i)=>!aligned(source[(i+source.length-1)%source.length],e));
+  if(start<0)return source;
+  const groups=[];
+  for(let i=0;i<source.length;i++){
+    const edge=source[(start+i)%source.length],last=groups.at(-1);
+    if(last&&aligned(last.at(-1),edge))last.push(edge);else groups.push([edge]);
+  }
+  return groups.map((group,index)=>{
+    const first=group[0],last=group.at(-1),length=group.reduce((n,e)=>n+e.length,0),points=[],fractions=[];let distance=0;
+    for(const edge of group){
+      for(const [i,p]of edge.roofEdge.points.entries()){
+        if(points.length&&i===0)continue;
+        points.push(p);fractions.push((distance+edge.length*(edge.roofEdge.fractions?.[i]??i/(edge.roofEdge.points.length-1)))/length);
+      }
+      distance+=edge.length;
+    }
+    return {...first,index,b:last.b,length,sourceEdgeIndices:group.map(e=>e.index),roofEdge:{index,length,points,fractions}};
+  });
+}
 
 export function mappedHouseFacadeLayout(data, settings, envelope=localRoofEnvelope(data.site.house)) {
   const {ring,base}=envelope;
@@ -8,11 +34,13 @@ export function mappedHouseFacadeLayout(data, settings, envelope=localRoofEnvelo
     const b=ring[(i+1)%ring.length];
     return sum+a[0]*b[1]-b[0]*a[1];
   },0))||1;
-  const edges=ring.map((a,index)=>{
+  const sourceEdges=ring.map((a,index)=>{
     const b=ring[(index+1)%ring.length],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
     const direction=length?[dx/length,dy/length]:[0,0];
     return {index,a,b,length,direction,outward:[winding*direction[1],-winding*direction[0]],roofEdge:envelope.edges[index]};
   });
+  const proposed=Boolean(getRenovationArchitecture(settings.designStyle));
+  const edges=proposed?wholeFacadeEdges(sourceEdges):sourceEdges;
   const rearEdge=data.site.house.rearEdge||data.site.rearEdge;
   const distance=({a,b})=>rearEdge?Math.hypot(a[0]+b[0]-rearEdge[0][0]-rearEdge[1][0],a[1]+b[1]-rearEdge[0][1]-rearEdge[1][1]):-(a[1]+b[1]);
   const rear=edges.reduce((best,edge)=>distance(edge)<distance(best)?edge:best);
@@ -33,7 +61,7 @@ export function mappedHouseFacadeLayout(data, settings, envelope=localRoofEnvelo
       for(let j=0;j<count;j++){
         const u=(j+.5)/count,half=Math.min(.72/length,.35/count);
         const lo=u-half-.06/length,hi=u+half+.06/length;
-        const roofMin=Math.min(roofEdgeHeight(roofEdge,lo),roofEdgeHeight(roofEdge,hi),
+        const roofMin=proposed?minimumFacadeRoof(edge,lo*length,hi*length):Math.min(roofEdgeHeight(roofEdge,lo),roofEdgeHeight(roofEdge,hi),
           ...heights.filter((_,k)=>k/(heights.length-1)>lo&&k/(heights.length-1)<hi));
         if(z+1.56>=roofMin-.1) continue;
         // Store the outer frame edges. The existing glass is inset by 60 mm.
@@ -41,5 +69,5 @@ export function mappedHouseFacadeLayout(data, settings, envelope=localRoofEnvelo
       }
     }
   }
-  return {edges,rear,windows,baseZ:base,floorZ};
+  return renovateFacadeOpenings({edges,rear,windows,baseZ:base,floorZ},{styleId:settings.designStyle||'current'});
 }

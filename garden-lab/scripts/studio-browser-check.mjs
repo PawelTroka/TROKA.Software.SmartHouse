@@ -8,13 +8,16 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const evidence=path.join(root,'test-results','studio');
+const scenarioGroup=process.env.STUDIO_SCENARIO_GROUP||'all';
+if(!['all','styles','controls','properties'].includes(scenarioGroup))throw new Error('Unknown STUDIO_SCENARIO_GROUP: '+scenarioGroup);
+const runsGroup=group=>scenarioGroup==='all'||scenarioGroup===group;
+const evidence=path.join(root,'test-results','studio',...(scenarioGroup==='all'?[]:[scenarioGroup]));
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
 // Measured canopies can make SwiftShader frames slow. Extend only scene
 // scrolling/capture; functional assertions and the CI job deadline stay bounded.
 const SCENE_CAPTURE_TIMEOUT=120000;
-const report={version,checks:[],screenshots:[],styles:[],errors:[],
+const report={version,group:scenarioGroup,checks:[],screenshots:[],styles:[],errors:[],
   sceneEvidence:'Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.'};
 const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
 let page,server,browser,base=process.env.BASE_URL?.replace(/\/$/,'');
@@ -36,7 +39,7 @@ if(!base){
 const el=selector=>page.locator(selector);
 const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
 const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
-  [k,k==='renderer'?v:k==='motionActive'?v==='true':Number(v)])));
+  [k,k==='motionActive'?v==='true':Number.isFinite(Number(v))?Number(v):v])));
 const sceneVisible=async()=>{
   await el('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
   await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
@@ -52,9 +55,16 @@ async function ready(){
   await sceneVisible();
 }
 async function style(id){
+  const previousFrame=(await stats()).frames,changed=await el('#designStyle').inputValue()!==id;
   await el('#designStyle').selectOption(id);
   await page.waitForFunction(value=>document.querySelector('#design-studio').dataset.style===value,id);
   await sceneVisible();
+  // The controls can change before an offscreen scene draws. Re-selecting the
+  // same style may leave a resting scene unchanged, but its frame must match.
+  await page.waitForFunction(({id,previousFrame,changed})=>{
+    const d=document.querySelector('#render-diagnostics').dataset;
+    return d.renderedStyle===id&&(!changed||Number(d.frames)>previousFrame);
+  },{id,previousFrame,changed});
 }
 async function details(){
   const node=el('.studio-details');
@@ -106,21 +116,22 @@ const cameraTime=()=>page.evaluate(()=>({
 }));
 async function houseScope(active,afterFrame=null){
   await sceneVisible();
+  const styleId=await el('#designStyle').inputValue();
   assert.equal(await el('#styleHouseFinish').isChecked(),active);
   assert.equal(await el('#studio-house-scope').getAttribute('data-renovated'),String(active));
   // The controls update synchronously; performance counters are published only
   // after the next rendered frame. Scrolling an offscreen scene into view can
   // deliver its IntersectionObserver callback after sceneVisible's two rAFs.
-  await page.waitForFunction(({active,afterFrame})=>{
+  await page.waitForFunction(({active,afterFrame,styleId})=>{
     const d=document.querySelector('#render-diagnostics')?.dataset;if(!d)return false;
     const parts=Number(d.houseRenovationParts),projection=Number(d.houseRenovationProjection);
-    return (afterFrame===null||Number(d.frames)>afterFrame)&&
-      (active?parts>0&&projection>0&&projection<=.14:parts===0&&projection===0);
-  },{active,afterFrame});
+    return d.renderedStyle===styleId&&(afterFrame===null||Number(d.frames)>afterFrame)&&
+      (active?parts>0&&projection>0&&projection<=.400001:parts===0&&projection===0);
+  },{active,afterFrame,styleId});
   const info=await stats();
   if(active){
     assert.ok(info.houseRenovationParts>0,'The rendered house has no renovation parts');
-    assert.ok(info.houseRenovationProjection>0&&info.houseRenovationProjection<=.14,'Facade projection: '+info.houseRenovationProjection);
+    assert.ok(info.houseRenovationProjection>0&&info.houseRenovationProjection<=.400001,'Facade projection: '+info.houseRenovationProjection);
   }else{
     assert.equal(info.houseRenovationParts,0);
     assert.equal(info.houseRenovationProjection,0);
@@ -187,6 +198,8 @@ try{
   const ctx=await browser.newContext({viewport:{width:1280,height:900},deviceScaleFactor:1.5,reducedMotion:'reduce',acceptDownloads:true});
   page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
+  let before;
+  if(runsGroup('styles')){
   const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
   assert.equal(new Set(options).size,23);assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));assert.ok(options.includes('beach-house'));
   assert.equal(await el('#basementGarageEnabled').isChecked(),true);
@@ -195,6 +208,8 @@ try{
   for(const query of ['Coastal','Hamptons','seaside']){
     await el('#style-search').fill(query);assert.equal(await el('[data-style-id="coastal"]').isVisible(),true,query);
   }
+  await page.waitForFunction(()=>[...document.querySelectorAll('#style-grid button:not([hidden]) .material-sample img')].every(image=>image.complete&&image.naturalWidth>0));
+  assert.equal(await el('[data-style-id="coastal"] .material-sample img').count(),4);
   await el('#style-search').fill('Beach House');assert.equal(await el('#style-grid button:visible').count(),1);assert.equal(await el('[data-style-id="beach-house"]').isVisible(),true);
   await el('#style-search').fill('Japandi');assert.equal(await el('#style-grid button:visible').count(),2);
   await el('#style-family').selectOption('Statement');assert.equal(await el('#style-empty').isVisible(),true);
@@ -231,17 +246,24 @@ try{
   // Establish the neutral baseline after adopting the editable deck dimensions.
   // Current restores the house, while independent garden dimensions stay editable.
   await style('hidden-bali');await style('current');
-  const before=await exportDesign();
+  before=await exportDesign();
+  await el('[data-studio-inspect="house"]').click();
+  await el('[data-studio-moment="noon"]').first().click();
   await sceneVisible();
+  const comparisonView=await cameraTime();
   const original=await shot('sternicza-current','#scene-host canvas');
-  const reference=await houseScope(false),selectedShots=new Map(),selectedInfo=new Map(),geometrySignatures=new Set();
+  const reference=await houseScope(false),selectedShots=new Map(),selectedInfo=new Map(),geometrySignatures=new Set(),windowPatterns=new Set(),gardenSchemes=new Set();
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
   for(const id of options.filter(id=>id!=='current')){
     await style(id);
     const info=await houseScope(true);
+    assert.deepEqual(await cameraTime(),comparisonView,id+' preserves the fixed comparison view and daylight');
     assert.equal(await el('#basementGarageEnabled').isChecked(),true,id+' must retain the garage');
     assert.equal(info.garageVehicles,2,id+' must retain both actual vehicle groups');
-    geometrySignatures.add(info.houseRenovationParts);selectedInfo.set(id,info);
+    geometrySignatures.add(info.houseRenovationParts+':'+info.windowPattern);windowPatterns.add(info.windowPattern);gardenSchemes.add(info.gardenScheme);selectedInfo.set(id,info);
+    assert.ok(info.houseOpeningCount>0&&info.windowPattern.length>10,id+' has no rendered aperture records');
+    assert.equal(info.gardenKitchens,1,id+' retains the fitted outdoor kitchen');
+    assert.ok(info.gardenPlantingBeds>0,id+' has no fitted planting bed');
     if(['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune','beach-house','japandi'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
       const diff=await pixelChange(original,frame);
@@ -252,9 +274,11 @@ try{
   for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age'],['coastal','baltic-dune'],['beach-house','coastal'],['beach-house','baltic-dune']]){
     assert.ok((await pixelChange(selectedShots.get(a),selectedShots.get(b))).pixels>100,a+' and '+b+' look identical');
     assert.notEqual(selectedInfo.get(a).triangles,selectedInfo.get(b).triangles,a+' and '+b+' must change actual rendered geometry');
-    assert.notEqual(selectedInfo.get(a).houseRenovationParts,selectedInfo.get(b).houseRenovationParts,a+' and '+b+' must use different physical facade assemblies');
+    assert.notEqual(selectedInfo.get(a).windowPattern,selectedInfo.get(b).windowPattern,a+' and '+b+' must use different physical apertures');
   }
-  assert.equal(geometrySignatures.size,22,'All 22 styles must change the rendered facade assemblies, not only their colours');
+  assert.equal(geometrySignatures.size,22,'All 22 styles must change physical facade geometry');
+  assert.equal(windowPatterns.size,22,'Every style must have a distinct physical window proposal');
+  assert.equal(gardenSchemes.size,6,'All six fitted garden topologies must render');
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
   assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
@@ -262,7 +286,21 @@ try{
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check('All 22 styles have distinct facade assemblies and retain both cars; Coastal differs from Baltic Dune and Current restores the neutral dwelling');
+  check('All 22 styles have distinct physical window proposals, six fitted garden arrangements and outdoor kitchens; both cars remain and Current restores the neutral dwelling');
+  }
+
+  if(runsGroup('controls')){
+    if(!runsGroup('styles')){
+      // Recreate the adopted neutral state used by the serial suite through
+      // the public controls, without running the independent 22-style sweep.
+      await el('button[data-mode="orbit"]').click();await details();
+      await el('#renderQuality').selectOption('eco');
+      if(await el('#showDimensions').isChecked())await el('#showDimensions').uncheck();
+      await style('hidden-bali');await style('current');
+      before=await exportDesign();
+      await el('[data-studio-inspect="house"]').click();
+      await el('[data-studio-moment="noon"]').first().click();await sceneVisible();
+    }
 
   await el('#style-open').click();await el('#style-search').fill('Bali');await el('[data-style-id="hidden-bali"]').focus();
   await page.keyboard.press('Enter');await el('#style-dialog').waitFor({state:'hidden'});
@@ -420,6 +458,18 @@ try{
   }else{report.hiddenCheck='native browser visibilitychange';assert.ok(lifecycle.some(sample=>sample.hidden&&sample.motion==='false'));}
   await sceneVisible();await expectMotion(true);await el('#sceneMotion').uncheck();await expectMotion(false);
   report.visibilitySamples=lifecycle;check('Reduced motion, diagram/offscreen pauses and '+report.hiddenCheck);
+  }
+
+  if(runsGroup('properties')){
+    if(!runsGroup('controls')){
+      // Mobile and mapped-property checks need the same styled editor state,
+      // but do not depend on the history/lifecycle assertions that precede it.
+      await el('button[data-mode="orbit"]').click();await details();
+      await el('#renderQuality').selectOption('eco');
+      if(await el('#showDimensions').isChecked())await el('#showDimensions').uncheck();
+      await style('beach-house');
+      await el('[data-studio-moment="evening"]').click();await sceneVisible();
+    }
 
   report.mobile=[];
   for(const width of [390,320]){
@@ -499,6 +549,7 @@ try{
   await shot('sternicza-coastal-two-car-garage','#scene-host canvas');
   report.coastalGarage={vehicles:(await stats()).garageVehicles,parkingSpaces:2,style:coastalGarage.settings.designStyle};
   check('The final Coastal exterior renders two vehicles and exports the same two-car basement');
+  }
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;

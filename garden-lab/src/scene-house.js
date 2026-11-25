@@ -1,10 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.32.1';
-import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.32.1';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.32.1';
-import {addHouseRenovation} from './scene-house-renovation.js?v=1.32.1';
-import {getDesignStyle} from './design-styles.js?v=1.32.1';
-import {entranceAccessLayout} from './entrance-access.js?v=1.32.1';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.33.0';
+import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.33.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.33.0';
+import {addHouseRenovation} from './scene-house-renovation.js?v=1.33.0';
+import {getDesignStyle} from './design-styles.js?v=1.33.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.33.0';
 
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const quad=(a,b,c,d)=>[toWorldTriangle(a,b,c),toWorldTriangle(a,c,d)];
@@ -92,13 +92,16 @@ function facade(group,edge,layout,palette){
 }
 
 function window(group,edge,w,palette){
-  const frame=w.kind==='hst'?palette.hstFrame:palette.frame,thickness=w.kind==='hst'?.045:.07;
+  const frame=w.kind==='hst'?palette.hstFrame:palette.frame,thickness=w.frameWidth??(w.kind==='hst'?.045:.07);
   const offset=.034,z0=w.z,z1=w.z+w.height;
-  panel(group,`${w.id}-glass`,edge,w.lo+thickness,w.hi-thickness,z0+thickness,z1-thickness,offset,w.kind==='hst'?palette.hstGlass:palette.glass);
+  panel(group,`${w.id}-glass`,edge,w.lo+thickness,w.hi-thickness,z0+thickness,z1-thickness,offset,w.glazing==='privacy'?palette.privacyGlass:w.kind==='hst'?palette.hstGlass:palette.glass);
   for(const [lo,hi]of [[w.lo,w.lo+thickness],[w.hi-thickness,w.hi]])panel(group,`${w.id}-jamb`,edge,lo,hi,z0,z1,.058,frame);
   for(const [bottom,top]of [[z0,z0+thickness],[z1-thickness,z1]])panel(group,`${w.id}-head-sill`,edge,w.lo,w.hi,bottom,top,.058,frame);
   for(let i=1;i<w.panes;i++){
     const x=w.lo+w.width*i/w.panes;panel(group,`${w.id}-mullion-${i}`,edge,x-thickness*.4,x+thickness*.4,z0,z1,.061,frame);
+  }
+  for(let i=1;i<=(w.transoms||0);i++){
+    const z=z0+w.height*i/(w.transoms+1);panel(group,`${w.id}-transom-${i}`,edge,w.lo,w.hi,z-thickness*.35,z+thickness*.35,.062,frame);
   }
   if(w.kind!=='hst'){
     // Projecting pale sill and shadowed reveal make the photographed white
@@ -200,6 +203,7 @@ export function createPhotoHouseGroup(data,settings={},options={}){
     roof:material('#965c48',null,{roughness:.9}),fascia:material('#654331',null),frame:material('#f6f3e8',null),
     reveal:material('#d6cfbe',null),glass:material('#6d9094',null,{roughness:.22,metalness:.12}),
     hstGlass:material('#a4c8c4',null,{transparent:true,opacity:.13,depthWrite:false,roughness:.12}),
+    privacyGlass:material('#d3dfdc',null,{transparent:true,opacity:.86,roughness:.78,metalness:0}),
     hstFrame:material('#343d39',null),entrance:material('#463226',null),door:material('#694533',shared.wood),
     rail:material('#303834',null,{roughness:.55,metalness:.35}),floor:material('#c9c2b0',shared.stone),
     linen:material('#e8dfcd',shared.linen),timber:material('#b58a60',shared.woodLight),
