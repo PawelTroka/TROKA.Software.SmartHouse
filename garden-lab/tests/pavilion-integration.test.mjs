@@ -20,7 +20,9 @@ const source=JSON.parse(readFileSync(new URL('../data/site-data.json',import.met
 // Retain every physical context building; sample only PCK3 for these checks.
 source.buildings=source.buildings.map(b=>b.id!=='building-9'&&b.kind==='target'?{...b,kind:'context'}:b);
 const model=createStateModel(getSiteProfile('sternicza-11',source));
-const defaults=model.DEFAULTS;
+// This published pavilion comparison used its narrower compatible planting.
+// The new broad-pine garden is tested separately below, including its repair.
+const defaults=model.decodeState('v=29&site=sternicza-11');
 const emptyAnalysis={byBlock:[],rays:[]};
 const close=(a,b,label)=>assert.ok(Math.abs(a-b)<1e-7,`${label}: ${a} vs ${b}`);
 const fixture=(placement=PAVILION_PLACEMENTS[0],patch={})=>{
@@ -34,6 +36,17 @@ const obstacles=(settings,data)=>{
     ...(steps.count?[rectCorners(steps)]:[]),rectCorners(p.pool,p.pool.coping),p.sauna.footprint,p.firepit.outerFootprint,
     rectCorners(p.coldPlunge,p.coldPlunge.pad),...p.sauna.entrySteps.map(s=>s.footprint),...p.coldPlunge.steps.map(s=>rectCorners(s))];
 };
+
+test('new broad-pine garden reports pavilion collisions and the explicit Excelsa prescription resolves them',()=>{
+  for(const placement of PAVILION_PLACEMENTS){
+    const s={...model.DEFAULTS,...placement.settings,pavilionEnabled:true},data=applyPlanExterior(source,s);
+    const report=pavilionStudy(observerForPreset('terrace',s,data),s,data,emptyAnalysis);
+    assert.equal(report.valid,false,'Broad crowns are never silently shrunk or ignored');
+    assert.ok(report.treeConflicts.some(t=>t.crown==='overlap'||t.trunk));
+    const fixed={...s,screeningTrees:defaults.screeningTrees};
+    assert.equal(pavilionStudy(observerForPreset('terrace',fixed,data),fixed,data,emptyAnalysis).valid,true);
+  }
+});
 
 test('pavilion opt-in derives its garden without overwriting any saved garden programme or tree layout',()=>{
   assert.equal(defaults.pavilionEnabled,false);

@@ -5,7 +5,7 @@ import {createStateModel,STATE_VERSION} from '../src/state.js';
 import {getSiteProfile,resolveSiteId} from '../src/sites.js';
 import {createScreeningTree,screeningTreeVolumes} from '../src/screening-trees.js';
 import {getTreeType} from '../src/tree-catalog.js';
-import {getScreeningLayouts,STERNICZA_STRATEGIC_TREES,STERNICZA_EXCELSA_TREES,STERNICZA_REFERENCE_POOL_TREES} from '../src/screening-layouts.js';
+import {getScreeningLayouts,STERNICZA_STRATEGIC_TREES,STERNICZA_EXCELSA_TREES,STERNICZA_REFERENCE_POOL_TREES,STERNICZA_SUMMER_TREES} from '../src/screening-layouts.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
 
 const sterniczaData=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
@@ -13,21 +13,22 @@ const korzData=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json'
 const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
-test('fresh Sternicza starts with three 9 m Excelsa at the pictured positions while Korzeniowskiego stays tree-free',()=>{
+test('fresh Sternicza restores Austrian pines at calculated boundary positions while Korzeniowskiego stays tree-free',()=>{
   assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-pool-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
-  assert.deepEqual(sternicza.DEFAULTS.screeningTrees,STERNICZA_EXCELSA_TREES);
-  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[19.3,30.2],[13.8,35.8],[18.45,35.57]]);
-  assert.ok(sternicza.DEFAULTS.screeningTrees.every(t=>t.typeId==='thuja-excelsa-9m'&&t.height===9&&t.crownWidth===2&&t.crownDepth===2));
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees,STERNICZA_SUMMER_TREES);
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[18,35],[14,36],[18,28]]);
+  assert.ok(sternicza.DEFAULTS.screeningTrees.every(t=>t.typeId==='austrian-pine-tall'&&t.height===9.5&&t.crownWidth===5&&t.crownDepth===5));
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
   assert.deepEqual(sternicza.sanitizeState().screeningTrees,sternicza.DEFAULTS.screeningTrees);
   assert.deepEqual(sternicza.sanitizeState({screeningTrees:[]}).screeningTrees,[]);
   const volumes=screeningTreeVolumes(sternicza.DEFAULTS,sterniczaData);
   assert.ok(volumes.every(volume=>volume.plantable),'Every default trunk must have a valid planting position');
-  assert.ok(volumes.every(volume=>volume.crownInside),'The narrower default crowns fit inside the modeled boundary at the same trunk positions');
-  const defaultLayout=getScreeningLayouts('sternicza-11')[0];
-  assert.match(defaultLayout.note,/28,500 PLN/);
-  assert.match(defaultLayout.note,/narrow tapered crowns leave more visible gaps/i);
+  assert.ok(volumes.some(volume=>!volume.crownInside),'Broad edge crowns retain explicit overhang warnings');
+  const defaultLayout=getScreeningLayouts('sternicza-11','summer')[0];
+  assert.match(defaultLayout.note,/species-specific east\/rear boundary search/);
+  assert.match(defaultLayout.note,/overhang/i);
+  assert.deepEqual(sternicza.decodeState('v=29&site=sternicza-11').screeningTrees,STERNICZA_EXCELSA_TREES);
   const reference=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='reference-pines');
   assert.deepEqual(reference.trees,STERNICZA_REFERENCE_POOL_TREES,'Original pine geometry remains an explicit comparison');
   assert.match(reference.note,/overhang/i);
@@ -49,7 +50,7 @@ test('v7 shared trees and saved A retain independent geometry, quotes and season
   for(const model of [sternicza,korz]){
     const custom=createScreeningTree('broad-hornbeam',{id:'my-old-tree',x:14,y:26});
     Object.assign(custom,{crownWidth:3.2,crownDepth:2.4,rotation:37,unitPrice:24149,enabled:false});
-    const publishedDefaults={...model.DEFAULTS,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,terraceCoverType:'canopy',
+    const publishedDefaults={...model.DEFAULTS,sceneMotion:false,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,terraceCoverType:'canopy',
       ...(model.DEFAULTS.siteId==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
       nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55};
     const saved={...publishedDefaults,hedgeFullPerimeter:false,hedgeFront:0,gardenProgram:'classic',screeningTrees:[custom],treeLeafMode:'leaf-off',hedgeLeft:2.8,hedgeRight:5.2,
@@ -110,7 +111,7 @@ test('each programme chooses its own planting layouts while preserving the compa
   const edge=sternicza.DEFAULTS;
   assert.equal(spa.gardenProgram,'spa');
   assert.deepEqual(spa.screeningTrees.map(t=>[t.x,t.y,t.height]),[[17,35.3,9.5],[13.3,35.3,9.5],[16.6,22.1,5.5]],'The v9 spa retains its published planting');
-  for(const current of [old,spa,edge])for(const layout of getScreeningLayouts('sternicza-11',current.gardenProgram)){
+  for(const current of [old,spa,edge])for(const layout of getScreeningLayouts('sternicza-11',current.gardenProgram,current)){
     const next=sternicza.scenarioState(layout.id,{...current,floorHeight:1.8,sunDate:'2026-12-21',costSpaSauna:85400});
     assert.equal(next.gardenProgram,current.gardenProgram);
     assert.deepEqual(next.screeningTrees,layout.trees);
@@ -154,7 +155,7 @@ test('Korzeniowskiego ignores the Sternicza spa programme across fresh, historic
 });
 
 test('named planting layouts restore compatible garden assumptions while keeping the user comparison context',()=>{
-  const current={...sternicza.DEFAULTS,hedgeRear:9,gardenRaise:.1,bedRaise:.3,terraceDepth:6,removeGarage:false,canopyEnabled:true,
+  const current={...sternicza.decodeState('v=29&site=sternicza-11'),hedgeRear:9,gardenRaise:.1,bedRaise:.3,terraceDepth:6,removeGarage:false,canopyEnabled:true,
     floorHeight:1.8,preset:'jacuzzi',lookYaw:21,sunDate:'2026-12-21',sunMinutes:904,costScreeningPlanting:1150,b9HeightDelta:2,b9DistanceDelta:3};
   for(const {id:name} of getScreeningLayouts('sternicza-11',current.gardenProgram)){
     const next=sternicza.scenarioState(name,current);
@@ -200,9 +201,10 @@ test('priced tree comparisons keep identical trunk positions and site geometry w
     'serbian-spruce-7m':'serbian-spruce-7m','austrian-pine-debruyn-8-9m':'austrian-pine-debruyn-8-9m','nordmann-fir-11m':'nordmann-fir-11m'};
   assert.deepEqual(getScreeningLayouts('sternicza-11').map(layout=>layout.id),[...Object.keys(types),'hedges-only']);
   const expectedPositions=[[19.3,30.2],[13.8,35.8],[18.45,35.57]];
-  const baseProgram=gardenProgram(sternicza.DEFAULTS,sterniczaData);
+  const historical=sternicza.decodeState('v=29&site=sternicza-11');
+  const baseProgram=gardenProgram(historical,sterniczaData);
   for(const[id,typeId]of Object.entries(types)){
-    const next=sternicza.scenarioState(id);
+    const next=sternicza.scenarioState(id,historical);
     assert.deepEqual(next.screeningTrees.map(t=>[t.x,t.y]),expectedPositions,id);
     assert.ok(next.screeningTrees.every(t=>t.typeId===typeId),id);
     assert.deepEqual(gardenProgram(next,sterniczaData),baseProgram,`${id}: changing trees preserves the complete spa programme`);

@@ -9,14 +9,15 @@ const additions=['nightPendantLights','nightHedgeLights','nightPendantIntensity'
 const previousPendantDefaults={nightPendantLights:true,nightHedgeLights:true,nightPendantIntensity:65,nightHedgeIntensity:55};
 const withoutAdditions=state=>Object.fromEntries(Object.entries(state).filter(([key])=>!additions.includes(key)));
 const night={enabled:true,elevation:-12};
-const values={...NIGHT_DEFAULTS,sunEnabled:true};
+const values={...NIGHT_DEFAULTS,sunEnabled:true,nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85};
 
 for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40','korzeniowskiego-40.json'],['nadmorska-17','nadmorska-17.json']]){
   const data=JSON.parse(readFileSync(new URL('../data/'+file,import.meta.url)));
   const model=createStateModel(getSiteProfile(id,data));
   const publishedDefaults=Object.freeze({...model.DEFAULTS,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
+    hstOpen:0,summerPoolLayout:false,jacuzziCentered:false,sceneMotion:false,
     ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
-    terraceCoverType:'canopy',nightWindowActivity:35,...previousPendantDefaults});
+    terraceCoverType:'canopy',nightGardenIntensity:75,nightWindowActivity:35,...previousPendantDefaults});
   test(id+': existing version-19 saved and shared designs retain their published pendant defaults without moving the design',()=>{
     const original=model.sanitizeState({...publishedDefaults,hedgeRear:5.1,hedgeLeft:3.7,gardenRaise:.35,
       terraceDepth:4.5,floorHeight:1.9,preset:'first-street-standing',lookYaw:90,nightGardenLights:false,

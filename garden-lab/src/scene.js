@@ -1,55 +1,58 @@
 import * as THREE from '../vendor/three.module.js';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=1.33.0';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=1.34.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.33.0';
-import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.33.0';
-import {houseModelFrame} from './house-model.js?v=1.33.0';
-import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.33.0';
-import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.33.0';
-import { addHouseRenovation } from './scene-house-renovation.js?v=1.33.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.33.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.33.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.33.0';
-import { sampledRoofFaces } from './roof-mesh.js?v=1.33.0';
-import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.33.0';
-import { renderBudget } from './render-quality.js?v=1.33.0';
-import {latestIntersectionEntry} from './render-visibility.js?v=1.33.0';
-import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.33.0';
-import { createHedgeVegetation } from './scene-vegetation.js?v=1.33.0';
-import { createPoolReflections } from './scene-reflections.js?v=1.33.0';
-import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.33.0';
-import { getDesignStyle } from './design-styles.js?v=1.33.0';
-import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.33.0';
-import { createRenovationGardenDetails } from './scene-renovation-garden.js?v=1.33.0';
-import { resortTerraceLayout } from './resort-garden.js?v=1.33.0';
-import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.33.0';
-import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.33.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.33.0';
-import { getSiteProfile } from './sites.js?v=1.33.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.33.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.33.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.33.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.33.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.33.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.33.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.33.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.33.0';
-import { gardenDimensions } from './dimensions.js?v=1.33.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.33.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.33.0';
-import {existingCanopyRecords} from './existing-vegetation.js?v=1.33.0';
-import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.33.0';
-import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.33.0';
-import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.33.0';
-import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.33.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.33.0';
-import {createContextRoofFeatures} from './scene-context-roof.js?v=1.33.0';
-import {projectContextGroundUVs} from './context-ground.js?v=1.33.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.33.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.33.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.33.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.33.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.33.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.34.0';
+import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.34.0';
+import {houseModelFrame} from './house-model.js?v=1.34.0';
+import {createWalkNavigation} from './house-walk.js?v=1.34.0';
+import {updateHstOpening} from './interior-architecture.js?v=1.34.0';
+import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.34.0';
+import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.34.0';
+import { addHouseRenovation } from './scene-house-renovation.js?v=1.34.0';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.34.0';
+import { entranceAccessLayout } from './entrance-access.js?v=1.34.0';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.34.0';
+import { sampledRoofFaces } from './roof-mesh.js?v=1.34.0';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.34.0';
+import { renderBudget } from './render-quality.js?v=1.34.0';
+import {latestIntersectionEntry} from './render-visibility.js?v=1.34.0';
+import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.34.0';
+import { createHedgeVegetation } from './scene-vegetation.js?v=1.34.0';
+import { createPoolReflections } from './scene-reflections.js?v=1.34.0';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.34.0';
+import { getDesignStyle } from './design-styles.js?v=1.34.0';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.34.0';
+import { createRenovationGardenDetails } from './scene-renovation-garden.js?v=1.34.0';
+import { resortTerraceLayout } from './resort-garden.js?v=1.34.0';
+import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.34.0';
+import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.34.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.34.0';
+import { getSiteProfile } from './sites.js?v=1.34.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.34.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.34.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.34.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.34.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.34.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.34.0';
+import {createJacuzziEffects} from './scene-jacuzzi-effects.js?v=1.34.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.34.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.34.0';
+import { gardenDimensions } from './dimensions.js?v=1.34.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.34.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.34.0';
+import {existingCanopyRecords} from './existing-vegetation.js?v=1.34.0';
+import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.34.0';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.34.0';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.34.0';
+import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.34.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.34.0';
+import {createContextRoofFeatures} from './scene-context-roof.js?v=1.34.0';
+import {projectContextGroundUVs} from './context-ground.js?v=1.34.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.34.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.34.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.34.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.34.0';
+import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.34.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -423,6 +426,20 @@ export function createScene(container, data, callbacks = {}) {
   let sunPathSignature='',previousSunPath=null;
   let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
   let garageScene=null,currentGarageLayout=null,sharedHouseModel=null,contextRevision=0;
+  let jacuzziEffects=null;
+  let walkModel=null,walkPose=null,lastWalkTime=0,lastWalkNotice=0,walkFast=false;
+  const walkKeys=new Set();
+  const keyDirections=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
+  const walkPad=document.createElement('div');walkPad.className='walk-pad';walkPad.hidden=true;walkPad.setAttribute('aria-label','Walk controls');
+  for(const [direction,label,glyph,column,row]of [['forward','Walk forward','↑',2,1],['left','Step left','←',1,2],['back','Step back','↓',2,2],['right','Step right','→',3,2]]){
+    const button=document.createElement('button');button.type='button';button.textContent=glyph;button.setAttribute('aria-label',label);
+    button.style.gridColumn=column;button.style.gridRow=row;
+    button.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();button.setPointerCapture(event.pointerId);walkKeys.add(direction);requestRender();});
+    for(const event of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(event,()=>walkKeys.delete(direction));
+    button.addEventListener('click',event=>{if(event.detail===0){stepWalk(direction==='right'?1:direction==='left'?-1:0,direction==='forward'?1:direction==='back'?-1:0,.28);requestRender();}});
+    walkPad.append(button);
+  }
+  container.append(walkPad);
   const unsubscribeSurfaceAssets=onSurfaceAssetsChanged(()=>{statusChanged=true;reflections?.invalidate();requestRender();});
 
   const box = (group, x, y, z, width, depth, height, material, cast = true, svgOrder = 0) => {
@@ -734,7 +751,7 @@ export function createScene(container, data, callbacks = {}) {
     const h=data.site.house,envelope=localRoofEnvelope(h),{ring,samples,base}=envelope;
     const layout=mappedHouseFacadeLayout(data,settings,envelope),floor=layout.floorZ;
     group.userData.facadeSummary={windows:layout.windows};
-    const proposedFacade=createRenovationFacadeGroup(layout,mat);if(proposedFacade)group.add(proposedFacade);
+    const proposedFacade=createRenovationFacadeGroup(layout,mat,settings);if(proposedFacade)group.add(proposedFacade);
     for(const wall of layout.edges){
       const {index:i,length:len,roofEdge:edge,a,b,outward}=wall;
       if(len<.0001)continue;
@@ -935,6 +952,8 @@ export function createScene(container, data, callbacks = {}) {
       tubWater=roundedSlab(terraceGroup,w.x0,w.y0,jacuzzi.waterZ-.015,w.x1-w.x0,w.y1-w.y0,.015,.14,mat.waterLight,0,false);
     }
     tubWater.name='jacuzzi-water';
+    jacuzziEffects=createJacuzziEffects(jacuzzi,{svgMode,mood:settings.jacuzziMood||'aurora'});
+    terraceGroup.add(jacuzziEffects.group);
     if(jacuzzi.seatCentres){
       for(const [i,[sx,sy]] of jacuzzi.seatCentres.entries()){
         const seat=roundedSlab(terraceGroup,sx-.23,sy-.23,floor-.43,.46,.46,.10,.13,mat.stoneLight);
@@ -1125,6 +1144,7 @@ export function createScene(container, data, callbacks = {}) {
 
   function rebuildFinishes(settings,style,rebuildHouse) {
     gardenNight?.dispose();
+    jacuzziEffects=null;
     removeGeometry(finishesGroup);
     if(rebuildHouse){sharedHouseModel?.dispose();sharedHouseModel=null;removeGeometry(houseGroup);}
     disposeProposedMaterials(designMaterials,mat);
@@ -1213,6 +1233,7 @@ export function createScene(container, data, callbacks = {}) {
     const night=nightLightingState(solar,settings);
     const changed=gardenNight?.apply(night);
     sharedHouseModel?.updateLighting?.(night.gardenStrength);
+    jacuzziEffects?.update(waveTime,night.gardenStrength,motionActive());
     if(changed&&renderer.shadowMap)renderer.shadowMap.needsUpdate=true;
     if(nightWindowMesh){
       const signature=String(night.windowActivity);
@@ -1311,7 +1332,7 @@ export function createScene(container, data, callbacks = {}) {
     line(markerGroup,[[observer.x,observer.y,ground+.03],[observer.x,observer.y,observer.z]],'#d4a64e');
     const disc=new THREE.Mesh(new THREE.RingGeometry(.24,.36,32),mat.gold);
     disc.rotation.x=-Math.PI/2;disc.position.copy(point(observer.x,observer.y,ground+.045));markerGroup.add(disc);
-    markerGroup.visible=mode!=='eye';
+    markerGroup.visible=!firstPerson();
     if(settings.showRays&&analysis?.rays?.length){
       const sample=analysis.rays.filter((_,i)=>i%Math.max(1,Math.ceil(analysis.rays.length/70))===0);
       if(analysis.criticalRay&&!sample.includes(analysis.criticalRay))sample.push(analysis.criticalRay);
@@ -1330,7 +1351,7 @@ export function createScene(container, data, callbacks = {}) {
     for(const l of labels){
       projected.copy(l.position).project(camera);
       direction.copy(l.position).sub(camera.position);
-      const hidden=currentSettings.showLabels===false||mode==='eye'||projected.z>1||projected.z< -1||direction.dot(cameraForward)<0||Math.abs(projected.x)>1.2||Math.abs(projected.y)>1.2;
+      const hidden=currentSettings.showLabels===false||firstPerson()||projected.z>1||projected.z< -1||direction.dot(cameraForward)<0||Math.abs(projected.x)>1.2||Math.abs(projected.y)>1.2;
       l.element.hidden=hidden;
       if(!hidden){l.element.style.left=`${(projected.x*.5+.5)*lastWidth}px`;l.element.style.top=`${(-projected.y*.5+.5)*lastHeight}px`;}
     }
@@ -1341,6 +1362,50 @@ export function createScene(container, data, callbacks = {}) {
   }
   function motionActive() {
     return Boolean(motion && !svgMode && !reducedMotion.matches && mode!=='plan' && canDraw());
+  }
+  const firstPerson=()=>mode==='eye'||mode==='walk';
+  function notifyWalk(force=false){
+    if(!walkPose)return;
+    const now=performance.now();if(!force&&now-lastWalkNotice<160)return;lastWalkNotice=now;
+    const room=walkModel?.plans[walkPose.floor]?.rooms.find(r=>r.id===walkPose.roomId);
+    renderer.domElement.dataset.walkFloor=walkPose.floor||'garden';
+    renderer.domElement.dataset.walkPosition=walkPose.position.map(v=>v.toFixed(3)).join(',');
+    callbacks.onWalkState?.({...walkPose,roomName:room?.name||room?.label||null});
+  }
+  function applyWalkPose(pose){
+    if(!pose)return false;walkPose=pose;
+    if(pose.direction){
+      const d=pose.direction,l=Math.hypot(...d)||1;
+      eyeYaw=Math.atan2(-d[0],d[2])*180/Math.PI;eyePitch=Math.asin(Math.max(-1,Math.min(1,d[1]/l)))*180/Math.PI;
+    }
+    camera.position.fromArray(pose.position);
+    camera.lookAt(camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch))));
+    notifyWalk(true);requestRender();return true;
+  }
+  function startWalk({floor,roomId,position}={}){
+    walkModel??=createWalkNavigation(data,currentSettings);
+    const gardenX=data.site.terrace.x+data.site.terrace.width*.85;
+    const gardenY=data.site.rearMidpoint[1]+num(currentSettings.terraceDepth,4)+1.8;
+    const preferred=position||(floor==='garden'
+      ?toWorld(gardenX,gardenY,gardenGroundAt(gardenX,gardenY,currentSettings,data)+1.57)
+      :currentObserver&&toWorld(currentObserver.x,currentObserver.y,currentObserver.z));
+    const pose=floor&&floor!=='garden'?walkModel.spawnFloor(floor,roomId):walkModel.spawnGarden(preferred);
+    if(!pose)return false;
+    mode='walk';walkKeys.clear();lastWalkTime=0;controls.enabled=false;markerGroup.visible=false;walkPad.hidden=false;
+    camera.fov=eyeFov=65;camera.near=.035;camera.up.set(0,1,0);camera.updateProjectionMatrix();
+    renderer.domElement.setAttribute('aria-label','Walk through the house and garden. Use WASD or arrow keys to move; drag to look.');
+    applyWalkPose(pose);renderer.domElement.focus({preventScroll:true});return true;
+  }
+  function stepWalk(right,forward,distance){
+    if(mode!=='walk'||!walkModel||!walkPose||!(distance>0))return;
+    const norm=Math.hypot(right,forward);if(!norm)return;
+    const yaw=eyeYaw*Math.PI/180;
+    const delta=[(-Math.sin(yaw)*forward-Math.cos(yaw)*right)/norm*distance,0,
+      (Math.cos(yaw)*forward-Math.sin(yaw)*right)/norm*distance];
+    walkPose=walkModel.move(walkPose.position,delta,{eyeHeight:walkPose.eyeHeight});
+    camera.position.fromArray(walkPose.position);
+    camera.lookAt(camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch))));
+    cameraInteraction();notifyWalk();
   }
   function getPerformanceInfo(){
     const render=presentation?.sceneInfo||renderer.info?.render, memory=renderer.info?.memory;
@@ -1361,10 +1426,17 @@ export function createScene(container, data, callbacks = {}) {
       garageVehicles:garageScene?.group.children.filter(child=>child.visible&&child.userData.vehicle).length??0,
       contextFacades:contextDetails?.facades||{},contextBalconies:contextDetails?.balconies||{},contextEnvelopes:contextDetails?.envelopes||{},
       geometries:memory?.geometries??null,textures:memory?.textures??null,motionActive:motionActive(),
+      walk:mode==='walk'?{...walkPose,...walkModel?.getDiagnostics()}:null,
       ...presentation?.getDiagnostics(),...reflections?.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};
   }
   function renderNow(now) {
     renderPending=false;frameHandle=0;if(!canDraw())return;
+    const walking=mode==='walk'&&walkKeys.size>0;
+    if(walking){
+      const dt=lastWalkTime?Math.min(.25,(now-lastWalkTime)/1000):1/60;
+      stepWalk(Number(walkKeys.has('right'))-Number(walkKeys.has('left')),Number(walkKeys.has('forward'))-Number(walkKeys.has('back')),dt*(walkFast?2.7:1.65));
+    }
+    lastWalkTime=walking?now:0;
     if(!svgMode&&shadowBoundsDirty){
       refreshShadowBounds();renderer.shadowMap.needsUpdate=true;
     }
@@ -1379,6 +1451,7 @@ export function createScene(container, data, callbacks = {}) {
       lastMotionTime=now;
       textures.waterNormal.offset.set((waveTime*.033)%1,(waveTime*.017)%1);
     }else lastMotionTime=0;
+    jacuzziEffects?.update(waveTime,nightLightingState(lastSolar,currentSettings).gardenStrength,animate);
     if(sky)sky.position.copy(camera.position);
     reflections?.render({quality,width:lastWidth,height:lastHeight,interacting,visible:canDraw(),revision:contextRevision+':'+solarSignature});
     if(presentation)presentation.render();else renderer.render(scene,camera);
@@ -1391,6 +1464,7 @@ export function createScene(container, data, callbacks = {}) {
     if(animate&&!motionTimer)motionTimer=setTimeout(()=>{
       motionTimer=0;if(motionActive())requestRender();
     },1000/motionFps);
+    if(walking)requestRender();
   }
   function requestRender() {
     if(!renderPending&&canDraw()){renderPending=true;frameHandle=requestAnimationFrame(renderNow);}
@@ -1399,6 +1473,7 @@ export function createScene(container, data, callbacks = {}) {
     clearTimeout(motionTimer);motionTimer=0;lastMotionTime=0;statusChanged=true;
     if(canDraw())requestRender();
     else {
+      walkKeys.clear();lastWalkTime=0;
       cancelAnimationFrame(frameHandle);frameHandle=0;renderPending=false;
       callbacks.onPerformanceInfo?.(getPerformanceInfo());
     }
@@ -1429,6 +1504,7 @@ export function createScene(container, data, callbacks = {}) {
   controls.addEventListener('end',cameraInteraction);
 
   function orientEye() {
+    if(mode==='walk'&&walkPose){camera.position.fromArray(walkPose.position);camera.lookAt(camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch))));requestRender();return;}
     if(!currentObserver)return;
     camera.position.copy(point(currentObserver.x,currentObserver.y,currentObserver.z));
     const target=camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch)));
@@ -1436,10 +1512,16 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   function setView(nextMode,observer=currentObserver,settings=currentSettings) {
-    const previous=mode;mode=['orbit','eye','plan'].includes(nextMode)?nextMode:'orbit';
+    const previous=mode;mode=['orbit','eye','walk','plan'].includes(nextMode)?nextMode:'orbit';
     currentObserver=observer||currentObserver;currentSettings=settings||currentSettings;
-    controls.enabled=mode!=='eye';controls.enableRotate=mode==='orbit';controls.enablePan=mode!=='eye';
-    markerGroup.visible=mode!=='eye';camera.up.set(0,1,0);
+    walkKeys.clear();lastWalkTime=0;walkPad.hidden=mode!=='walk';
+    controls.enabled=!firstPerson();controls.enableRotate=mode==='orbit';controls.enablePan=!firstPerson();
+    markerGroup.visible=!firstPerson();camera.up.set(0,1,0);
+    if(mode==='walk'){
+      if(previous==='walk'&&walkPose){orientEye();return;}
+      eyeYaw=num(settings.lookYaw);eyePitch=num(settings.lookPitch);
+      startWalk();return;
+    }
     if(mode==='eye'){
       eyeFov=num(settings.fov,eyeFov);camera.fov=eyeFov;camera.near=.04;
       if(previous!=='eye'){eyeYaw=num(settings.lookYaw);eyePitch=num(settings.lookPitch);}
@@ -1491,8 +1573,21 @@ export function createScene(container, data, callbacks = {}) {
     if(nextPose===lastVehiclePose)return;
     lastVehiclePose=nextPose;
     garageScene.setVehiclePose(garageVehiclePose(currentGarageLayout,progress,settings.garageReverse===true));
+    walkModel?.updateVehicles(currentSettings);
     contextRevision++;
     shadowBoundsDirty=true;requestRender();
+  }
+
+  /** Slider ticks move only the existing leaves and their collision spans. */
+  function updateHstPreview(settings=currentSettings){
+    currentSettings={...currentSettings,hstOpen:settings.hstOpen};
+    const changed=sharedHouseModel?updateHstOpening(sharedHouseModel.root,currentSettings):0;
+    walkModel?.updateHst(currentSettings);
+    if(mode==='walk'&&walkPose&&!walkModel?.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30})){
+      applyWalkPose(walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden());
+    }
+    if(changed){contextRevision++;shadowBoundsDirty=true;requestRender();}
+    return changed;
   }
 
   function update(settings,observer,analysis,activeData=data) {
@@ -1506,7 +1601,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
     syncExistingVegetation(settings);
-    const signature=JSON.stringify([...['gardenProgram','designStyle','styleGardenLayout','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
+    const signature=JSON.stringify([...['summerPoolLayout','poolSunbedSides','jacuzziCentered','jacuzziMood','gardenProgram','designStyle','styleGardenLayout','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
       'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageSpaces','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     const rebuilt=signature!==designSignature;
     if(rebuilt){designSignature=signature;rebuildDesign(settings);}
@@ -1520,6 +1615,14 @@ export function createScene(container, data, callbacks = {}) {
       rebuildFinishes(settings,style,houseChanged);
       finishSignature=style.id;houseFinishSignature=nextHouseFinish;
     }
+    if(!walkModel||finishesChanged){
+      walkModel=createWalkNavigation(data,settings);
+      if(mode==='walk'&&walkPose){
+        const retained=walkModel.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30});
+        applyWalkPose(retained||walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden(walkPose.position));
+      }
+    }
+    updateHstPreview(settings);
     if(finishesChanged&&!svgMode){projectArchitecturalMaterialUVs(scene);reflections?.setSurface(scene.getObjectByName('pool-water'));}
     if(finishesChanged||dimensionsVisible!==settings.showDimensions){
       dimensionsVisible=settings.showDimensions;
@@ -1586,7 +1689,8 @@ export function createScene(container, data, callbacks = {}) {
   const eyePointers=new Map();
   function pointerDown(event){
     if(event.button!==0&&event.pointerType!=='touch')return;
-    if(mode==='eye'){
+    if(firstPerson())renderer.domElement.focus({preventScroll:true});
+    if(firstPerson()){
       eyePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
       renderer.domElement.setPointerCapture(event.pointerId);
       if(eyePointers.size>=2){const p=[...eyePointers.values()];pinchDistance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y);pinchFov=eyeFov;dragged=true;return;}
@@ -1595,7 +1699,7 @@ export function createScene(container, data, callbacks = {}) {
   }
   function pointerMove(event){
     if(pointerStart||eyePointers.size)cameraInteraction();
-    if(mode==='eye'&&eyePointers.has(event.pointerId)){
+    if(firstPerson()&&eyePointers.has(event.pointerId)){
       eyePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
       if(eyePointers.size>=2){
         const p=[...eyePointers.values()],distance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y);
@@ -1605,7 +1709,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     if(!pointerStart||event.pointerId!==pointerStart.id)return;
     if(Math.hypot(event.clientX-pointerStart.x,event.clientY-pointerStart.y)>5)dragged=true;
-    if(mode==='eye'&&pointerLast){
+    if(firstPerson()&&pointerLast){
       eyeYaw-=(event.clientX-pointerLast.x)*.13;eyePitch=Math.max(-65,Math.min(65,eyePitch+(event.clientY-pointerLast.y)*.13));
       pointerLast={x:event.clientX,y:event.clientY};orientEye();
     }
@@ -1622,17 +1726,30 @@ export function createScene(container, data, callbacks = {}) {
       const hit=raycaster.intersectObjects(terrainMeshes,false)[0];
       if(hit){const [x,y]=fromWorld(hit.point.x,hit.point.y,hit.point.z),p={x,y};if(contains(p.x,p.y,data.site.boundary))callbacks.onPick(p);}
     }
-    if(mode==='eye'&&dragged)callbacks.onCameraChange?.({lookYaw:eyeYaw,lookPitch:eyePitch});
+    if(firstPerson()&&dragged)callbacks.onCameraChange?.({lookYaw:eyeYaw,lookPitch:eyePitch});
     pointerStart=null;pointerLast=null;
   }
   function keyDown(event){
+    if(mode==='walk'){
+      if(event.code==='ShiftLeft'||event.code==='ShiftRight'){walkFast=true;return;}
+      const direction=keyDirections.get(event.code);
+      if(direction){event.preventDefault();walkKeys.add(direction);requestRender();return;}
+      if(event.key==='Escape'){event.preventDefault();walkKeys.clear();callbacks.onExitWalk?.();return;}
+      return;
+    }
     if(mode!=='eye')return;
     const amount=event.shiftKey?8:3;
     if(event.key==='ArrowLeft')eyeYaw-=amount;else if(event.key==='ArrowRight')eyeYaw+=amount;else if(event.key==='ArrowUp')eyePitch=Math.min(65,eyePitch+amount);else if(event.key==='ArrowDown')eyePitch=Math.max(-65,eyePitch-amount);else return;
     event.preventDefault();orientEye();callbacks.onCameraChange?.({lookYaw:eyeYaw,lookPitch:eyePitch});
   }
+  function keyUp(event){
+    const direction=keyDirections.get(event.code);if(direction)walkKeys.delete(direction);
+    if(event.code==='ShiftLeft'||event.code==='ShiftRight')walkFast=false;
+    if(mode==='walk'&&!walkKeys.size){lastWalkTime=0;notifyWalk(true);}
+  }
+  function stopWalking(){walkKeys.clear();lastWalkTime=0;walkFast=false;}
   function wheel(event){
-    if(mode!=='eye')return;
+    if(!firstPerson())return;
     event.preventDefault();cameraInteraction();eyeFov=Math.max(35,Math.min(95,eyeFov+event.deltaY*.02));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();
   }
   renderer.domElement.addEventListener('pointerdown',pointerDown);
@@ -1640,6 +1757,9 @@ export function createScene(container, data, callbacks = {}) {
   renderer.domElement.addEventListener('pointerup',pointerUp);
   renderer.domElement.addEventListener('pointercancel',pointerUp);
   renderer.domElement.addEventListener('keydown',keyDown);
+  window.addEventListener('keyup',keyUp);
+  window.addEventListener('blur',stopWalking);
+  renderer.domElement.addEventListener('blur',stopWalking);
   renderer.domElement.addEventListener('wheel',wheel,{passive:false});
   document.addEventListener('visibilitychange',visibilityChanged);
   reducedMotion.addEventListener('change',visibilityChanged);
@@ -1656,6 +1776,7 @@ export function createScene(container, data, callbacks = {}) {
     cancelAnimationFrame(frameHandle);clearTimeout(motionTimer);clearTimeout(interactionTimer);
     document.removeEventListener('visibilitychange',visibilityChanged);
     reducedMotion.removeEventListener('change',visibilityChanged);
+    window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',stopWalking);renderer.domElement.removeEventListener('blur',stopWalking);walkPad.remove();
     dimensionOverlay.dispose();sharedHouseModel?.dispose();sharedHouseModel=null;
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const geometries=new Set(),materials=new Set([...Object.values(mat),...Object.values(designMaterials)]);
@@ -1689,5 +1810,5 @@ export function createScene(container, data, callbacks = {}) {
       lighting:{sunDirection:direction.toArray(),sunColor:sun.color.getHex(),sunIntensity:sun.intensity,skyColor:ambient.color.getHex(),groundColor:ambient.groundColor.getHex(),ambientIntensity:ambient.intensity,interiorLightStrength:nightLightingState(lastSolar,currentSettings).gardenStrength,background:scene.background?.isColor?scene.background.getHex():0xb9cdd1}};
   }
   const getInteriorContextKey=()=>`${contextRevision}:${solarSignature}`;
-  return {available:true,rendererType,update,updateSun,setView,setGarageView,setDesignInspection,updateGaragePreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
+  return {available:true,rendererType,update,updateSun,setView,startWalk,setGarageView,setDesignInspection,updateGaragePreview,updateHstPreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getWalkState:()=>walkPose&&({...walkPose,position:walkPose.position.slice()}),getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
 }

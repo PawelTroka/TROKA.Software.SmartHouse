@@ -286,7 +286,7 @@ async function verifyPendantLighting(){
   };
   assert.equal(await page.locator('#nightPendantLights').isChecked(),true);
   assert.equal(await page.locator('#nightHedgeLights').isChecked(),true);
-  assert.equal(original.pendants,80);assert.equal(original.hedge,85);
+  assert.equal(original.pendants,65);assert.equal(original.hedge,30);
   assert.equal(original.windowActivity,70);
   await page.locator('#share').click();
   const designWithoutLighting=()=>Object.fromEntries([...new URLSearchParams(new URL(page.url()).hash.slice(1))]
@@ -394,16 +394,19 @@ async function verifyHedgeSurfaceLighting(){
   await setNumber('nightHedgeIntensity-value',25);
   await waitLight('nightHedge','positive');
   const low=await scenePngScreenshot('nadmorska-hedge-isolated-low');
-  await setNumber('nightHedgeIntensity-value',original.hedge);
+  // Exercise the same wide dimmer range even though the new cosy default is
+  // lower. Restore the user's original value after the isolated comparison.
+  const highPercent=85;
+  await setNumber('nightHedgeIntensity-value',highPercent);
   const on=await scenePngScreenshot('nadmorska-hedge-isolated-on');
   const lowSurface=await hedgeSurfaceDifference(off,low),surface=await hedgeSurfaceDifference(off,on);
   for(const patch of surface.patches)assert.ok(patch.brightenedPixels>20,
     'Hedge light must illuminate foliage/ground beyond the fitting at '+patch.id+': '+JSON.stringify(patch));
   const sumGain=result=>result.patches.reduce((sum,patch)=>sum+patch.brightnessGain,0);
   assert.ok(sumGain(surface)>sumGain(lowSurface)*1.1,
-    'Hedge dimmer must visibly increase surface illumination from 25% to '+original.hedge+'%: '+JSON.stringify({lowSurface,surface}));
+    'Hedge dimmer must visibly increase surface illumination from 25% to '+highPercent+'%: '+JSON.stringify({lowSurface,surface}));
   const outsideLimits={meanPositiveLumaGain:.5,brightenedPixelFraction:.01,lumaPixelThreshold:3};
-  for(const [percent,result] of [[25,lowSurface],[original.hedge,surface]]){
+  for(const [percent,result] of [[25,lowSurface],[highPercent,surface]]){
     for(const patch of result.outsidePatches){
       assert.ok(patch.meanPositiveLumaGain<=outsideLimits.meanPositiveLumaGain&&
         patch.brightenedPixels<=patch.pixels*outsideLimits.brightenedPixelFraction,
@@ -412,14 +415,15 @@ async function verifyHedgeSurfaceLighting(){
   }
   const isolated=await lightState();
   assert.equal(isolated.garden,0);assert.equal(isolated.pendants,0);assert.equal(isolated.windows,0);
-  assert.ok(Math.abs(isolated.hedge-original.hedge/100)<.002);
+  assert.ok(Math.abs(isolated.hedge-highPercent/100)<.002);
   assert.equal(await page.locator('#observer-readout').innerText(),observer);
   await page.locator('#nightPendantLights').setChecked(original.pendantOn);
   await page.locator('#nightHedgeLights').setChecked(original.hedgeOn);
   await page.locator('#nightWindowLights').setChecked(original.windowsOn);
   await setNumber('nightGardenIntensity-value',original.garden);
+  await setNumber('nightHedgeIntensity-value',original.hedge);
   assert.deepEqual(await lightState(),originalLights,'Isolated hedge verification restores every lighting channel');
-  report.nadmorska.hedgeSurfaceLighting={lowPercent:25,highPercent:original.hedge,lowSurface,surface,outsideLimits,
+  report.nadmorska.hedgeSurfaceLighting={lowPercent:25,highPercent,lowSurface,surface,outsideLimits,
     isolated,restored:await lightState(),allOtherLightsOff:true};
   check('Isolated hedge lanterns light foliage and ground by formerly unlit fixtures, respond to the dimmer and restore all channels');
   check('At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged');
@@ -656,6 +660,8 @@ async function verifyPrivacyScreening(){
   assert.equal(pergola.before,baseline.before);
   assert.ok(pergola.after>pergola.before,'Established pergola planting must improve terrace coverage');
   assert.equal(await page.locator('#privacyPergolaFoliage').isChecked(),true);
+  assert.equal(await page.locator('#privacy-layout-warning').isVisible(),true);
+  assert.match(await page.locator('#privacy-layout-warning').innerText(),/Garden pergola footprint overlaps the pool and coping/);
   await page.locator('#privacyPergolaFoliage').uncheck();
   await page.waitForFunction(planted=>Number(document.querySelector('#privacy-result')?.dataset.after)<planted,pergola.after);
   const bare=await result();

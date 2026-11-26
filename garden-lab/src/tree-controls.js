@@ -1,9 +1,9 @@
-import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.33.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.33.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.33.0';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.33.0';
-import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.33.0';
-import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.33.0';
+import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.34.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.34.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.34.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.34.0';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.34.0';
+import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.34.0';
 
 const treeLabel = screeningTreeLabel;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
@@ -57,7 +57,11 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     option.value = type.id; option.textContent = `${type.label} · ${money(type.pricePLN)}${type.taxBasis==='net'?' net':''}`;
     $('tree-type').append(option);
   }
-  $('tree-type').value = 'thuja-excelsa-9m';
+  $('tree-type').value = (getSettings().screeningTrees||[])[0]?.typeId||'austrian-pine-tall';
+  const speciesLabel=document.querySelector('label[for="tree-type"]');
+  const speciesNote=document.createElement('p');speciesNote.className='muted';
+  speciesNote.textContent='Changing species applies its calculated boundary positions to all three trees. Individual placement remains editable.';
+  $('tree-type').after(speciesNote);
 
   function selectedTree() { return (getSettings().screeningTrees || []).find(tree => tree.id === selectedId); }
   function changeTrees(trees) {
@@ -117,13 +121,18 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     notify(`${added} screening tree${added === 1 ? '' : 's'} added. Compare the eye-level view, plan and shade.`);
   }
 
-  $('tree-type').addEventListener('change', () => showStock(getTreeType($('tree-type').value), $('tree-stock-preview')));
+  $('tree-type').addEventListener('change', () => {
+    showStock(getTreeType($('tree-type').value), $('tree-stock-preview'));
+    const state=getSettings();
+    if(state.siteId==='sternicza-11'&&state.summerPoolLayout===true&&!state.pavilionEnabled&&(state.screeningTrees||[]).length===3)replaceSpecies(true);
+  });
   function replaceSpecies(all) {
     const trees=getSettings().screeningTrees||[], type=getTreeType($('tree-type').value);
     if(!type||!trees.length||(!all&&!selectedTree()))return;
     placing=false;suggestion='';
-    changeTrees(replaceTreeSpecies(trees,type.id,all?null:selectedId));
-    notify(`${all?`${trees.length} trees`:'Selected tree'} changed to ${type.label.split(' · ')[0]}. Positions kept; listed height, crown defaults and price reference applied.`);
+    const state=getSettings(),optimized=all&&trees.length===3&&state.siteId==='sternicza-11'&&state.summerPoolLayout===true&&!state.pavilionEnabled;
+    changeTrees(replaceTreeSpecies(trees,type.id,all?null:selectedId,{siteId:state.siteId,optimized}));
+    notify(`${all?`${trees.length} trees`:'Selected tree'} changed to ${type.label.split(' · ')[0]}. ${optimized?'Species-specific boundary positions applied automatically.':'Positions kept.'} Listed height, crown defaults and price reference applied.`);
   }
   $('tree-replace-selected').addEventListener('click',()=>replaceSpecies(false));
   $('tree-replace-all').addEventListener('click',()=>replaceSpecies(true));
@@ -172,6 +181,11 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
 
   function sync() {
     const state=getSettings(), data=getData(), trees=state.screeningTrees || [];
+    const quickSpecies=state.siteId==='sternicza-11'&&state.summerPoolLayout===true&&!state.pavilionEnabled&&trees.length===3;
+    speciesNote.hidden=!quickSpecies;
+    if(speciesLabel)speciesLabel.textContent=quickSpecies?'Three screening trees · species':'Tree species & nursery price';
+    if(quickSpecies&&new Set(trees.map(t=>t.typeId)).size===1&&document.activeElement!==$('tree-type'))$('tree-type').value=trees[0].typeId;
+    $('tree-replace-all').textContent=quickSpecies?'Restore species placement':'Replace all trees';
     const targets=surroundingBuildings(data);
     const targetKey=targets.map(building=>`${building.id}:${building.label}`).join('|');
     if(targetSignature!==targetKey) {

@@ -118,7 +118,7 @@ test('styled luminaires follow each composition and retain independent dimmers',
         try{
           const expected=pendantLightingLayout({...settings,designStyle:id},data);
           assert.deepEqual(lighting.fixtures.filter(f=>f.channel).map(f=>f.id),[...expected.garden,...expected.hedge].map(f=>f.id));
-          assert.ok(lighting.lightCount<=original.lightCount,'Selective resort lighting stays below the original GPU budget');
+          assert.ok(lighting.lightCount<=31,'Dining and path strings stay below the established 39-light GPU budget');
           assert.ok(expected.hedge.length<=9);
           lighting.apply({gardenStrength:0,pendantStrength:.8,hedgeStrength:0});
           for(const f of lighting.fixtures.filter(f=>f.channel)){

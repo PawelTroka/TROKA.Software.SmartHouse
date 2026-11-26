@@ -100,7 +100,7 @@ test('all shared exterior records match actual interior holes while retaining wa
         const entry=plan.walls.find(w=>w.id==='street-facade').openings.find(o=>o.type==='door');
         const previous=original.walls.find(w=>w.id==='street-facade').openings.find(o=>o.type==='door');
         near(entry.offset+entry.width/2,previous.offset+previous.width/2);assert.equal(entry.sill,0);
-        assert.equal(plan.walls.find(w=>w.id==='garden-hst').openings.length,getRenovationArchitecture(designStyle).gardenBays);
+        const hst=plan.walls.find(w=>w.id==='garden-hst');assert.equal(hst.openings.length,1);assert.equal(hst.openings[0].panes,3);near(hst.openings[0].offset,.03);near(hst.openings[0].width,Math.hypot(hst.b[0]-hst.a[0],hst.b[1]-hst.a[1])-.06);
       }
       assert.deepEqual(plan.stairs.map(s=>[s.id,s.from,s.to]),original.stairs.map(s=>[s.id,s.from,s.to]));
     }
@@ -139,7 +139,7 @@ test('photo and mapped proposals remain inside the roof and wall, including extr
     for(const layout of [houseAppearanceLayout(source,state),mappedHouseFacadeLayout(nadmorska,state)]){
       for(const o of [...layout.windows,layout.door].filter(Boolean)){
         const edge=layout.edges[o.edgeIndex];
-        assert.ok(o.lo>=.1&&o.hi<=edge.length-.1&&o.hi>o.lo);
+        assert.ok(o.lo>=(o.kind==='hst'?.029:.1)&&o.hi<=edge.length-(o.kind==='hst'?.029:.1)&&o.hi>o.lo);
         assert.ok(o.z>=layout.baseZ-1e-7&&o.height>0);
         assert.ok(o.z+o.height<minimumFacadeRoof(edge,o.lo,o.hi)-.08,'Aperture crosses the retained roof');
         for(const other of layout.windows.filter(w=>w!==o&&w.edgeIndex===o.edgeIndex))

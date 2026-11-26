@@ -14,12 +14,12 @@ const v14Coordinates=[[13,34.1],[14.2,32.5],[17.6,34.9]];
 const v15Coordinates=[[17,26.8],[14.4,28.4],[12.6,32.7]];
 const v16Coordinates=[[17.3,31],[14.8,31.1],[14.5,34.9]];
 
-test('fresh v18 designs use the current planting layout and thujas on every plot side',()=>{
-  assert.equal(STATE_VERSION,29);
+test('fresh and historical designs keep their respective planting with thujas on every plot side',()=>{
+  assert.equal(STATE_VERSION,30);
   for(const fresh of [model.sanitizeState(),model.decodeState('v=18&site=sternicza-11'),model.migrateSavedState({siteId:'sternicza-11'},18)]){
     assert.equal(fresh.hedgeFullPerimeter,true);
     assert.equal(fresh.gardenProgram,currentDefault.settings.gardenProgram);
-    assert.deepEqual(fresh.screeningTrees,currentDefault.trees);
+    assert.deepEqual(fresh.screeningTrees,getScreeningLayouts('sternicza-11',fresh.gardenProgram,fresh).find(layout=>layout.id==='default').trees);
     for(const key of ['hedgeFront','hedgeLeft','hedgeRight','hedgeRear'])assert.equal(fresh[key],4);
     const spans=hedgeSegments(fresh,data);
     for(const side of ['left','right'])assert.ok(spans.some(s=>s.side===side&&Math.min(s.a[1],s.b[1])<1),'Side hedges reach the street');

@@ -125,18 +125,19 @@ test('batched solids project outwards, have front-facing normals, and render in 
     const parent=new THREE.Group(),mesh=addHouseRenovation(parent,layout,style);
     const position=mesh.geometry.attributes.position,normal=mesh.geometry.attributes.normal;
     assert.equal(parent.children.length,1);
-    assert.equal(position.count,parts.length*30); // front plus four returns per solid
+    assert.equal(position.count,parts.length*54); // front, four highlight bevels and four returns
     assert.ok(mesh.material.every(m=>m.userData.transient&&m.vertexColors&&m.map&&m.normalMap));
     assert.ok(mesh.geometry.groups.length<=6,'Facade finishes are batched, never one draw per board');
     const ordered=[...new Set(parts.map(p=>p.finish))].flatMap(finish=>parts.filter(p=>p.finish===finish));
     for(const [i,p] of ordered.entries()){
-      const edge=layout.edges[p.edgeIndex],j=i*30;
+      const edge=layout.edges[p.edgeIndex],j=i*54;
       near(normal.getX(j),edge.outward[0],1e-4);near(normal.getY(j),0);near(normal.getZ(j),edge.outward[1],1e-4);
-      for(let k=j;k<j+30;k++){
+      for(let k=j;k<j+54;k++){
         const x=position.getX(k)-edge.a[0],y=position.getZ(k)-edge.a[1],z=position.getY(k);
         const d=x*edge.direction[0]+y*edge.direction[1],offset=x*edge.outward[0]+y*edge.outward[1];
         assert.ok(d>=p.lo-2e-5&&d<=p.hi+2e-5&&z>=p.bottom-2e-5&&z<=p.top+2e-5);
-        near(offset,k<j+6?p.depth:(offset>.0081?p.depth:.008));
+        assert.ok(offset>=.008-2e-5&&offset<=p.depth+2e-5,'Bevels retain the construction envelope');
+        if(k<j+6)near(offset,p.depth);
       }
     }
     const svg=addHouseRenovation(new THREE.Group(),layout,style,{svgMode:true});

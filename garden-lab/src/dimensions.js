@@ -3,11 +3,11 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {footprintFit} from './footprint-fit.js?v=1.33.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.33.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.33.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.33.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.33.0';
+import {footprintFit} from './footprint-fit.js?v=1.34.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.34.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.34.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.34.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.34.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -194,7 +194,7 @@ export function gardenDimensions(settings={},data){
       planText:`${label} ${formatDimension(Math.abs(top-bottom))}`,planAnchor:[b.x1-.3,planY],sceneText:null,priority:3});
     vertical('floor-level','floorLevel',floorZ,cover.deckTopZ,'deck above terrace',b.y0+.5);
     vertical('clear-below','clearBelow',floorZ,cover.undersideZ,'clear below deck',b.y0+.9);
-    vertical('beam-clearance','headroom',floorZ,floorZ+cover.minimumCoveredHeight,'clear below beam',b.y0+1.3);
+    vertical('beam-clearance','headroom',floorZ,floorZ+cover.minimumCoveredHeight,'clear headroom',b.y0+1.3);
     vertical('deck-thickness','thickness',cover.undersideZ,cover.deckTopZ,'deck thickness',b.y0+1.7);
     vertical('guard-height','guardHeight',cover.deckTopZ,cover.deckTopZ+cover.guardHeight,'guard height',b.y0+2.1);
     for(let i=1;i<cover.supports.length;i++){
@@ -428,7 +428,7 @@ export function dimensionScheduleMarkup(records){
     const width=g.records.find(r=>r.kind==='width'),length=g.records.find(r=>r.kind==='length');
     const footprint=width&&length?`<span class="dimension-footprint"><span data-dimension-record="${esc(width.id)}" title="${esc(width.description)}">${width.value.toFixed(2)}</span> × <span data-dimension-record="${esc(length.id)}" title="${esc(length.description)}">${length.value.toFixed(2)}</span> m</span>`:'';
     const details=g.records.filter(r=>!footprint||(r!==width&&r!==length)).map(r=>{
-      const prefix=r.detailLabel?`${r.detailLabel} `:r.kind==='floorLevel'?'deck above terrace ':r.kind==='clearBelow'?'under deck ':r.kind==='headroom'?'under beam ':r.kind==='thickness'?'deck thickness ':r.kind==='guardHeight'?'guard ':r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':r.kind==='clearStem'?'clear stem ':r.kind==='area'?'area ':r.kind==='wall'?`wall ${r.id.split('-').at(-1)} `:r.kind==='plantedLength'?`span ${r.id.split('-').at(-1)} `:'';
+      const prefix=r.detailLabel?`${r.detailLabel} `:r.kind==='floorLevel'?'deck above terrace ':r.kind==='clearBelow'?'under deck ':r.kind==='headroom'?'clear headroom ':r.kind==='thickness'?'deck thickness ':r.kind==='guardHeight'?'guard ':r.id==='terrace-drop'&&r.b[2]<r.a[2]?'garden above deck ':r.kind==='height'?(g.feature==='cold-plunge'?'rim ':'h '):r.kind==='waterDepth'?'water ':r.kind==='drop'?'drop ':r.kind==='rise'?'entry rise ':r.kind==='clearStem'?'clear stem ':r.kind==='area'?'area ':r.kind==='wall'?`wall ${r.id.split('-').at(-1)} `:r.kind==='plantedLength'?`span ${r.id.split('-').at(-1)} `:'';
       return `<span class="dimension-detail">${prefix}${value(r)}</span>`;
     }).join('<span class="dimension-separator"> · </span>');
     return `<li data-dimension-group="${esc(g.key)}"><span class="dimension-key ${g.type==='gap'?'dimension-key-gap':''}">${esc(g.key)}</span><div><div class="dimension-row-heading"><strong>${esc(g.label)}</strong>${footprint}</div>${details?`<div class="dimension-row-values">${details}</div>`:''}</div></li>`;

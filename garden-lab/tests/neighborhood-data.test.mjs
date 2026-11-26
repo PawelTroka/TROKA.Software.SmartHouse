@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {footprintCentroid} from '../src/buildings.js';
 import {pointInPolygon,observerForPreset} from '../src/geometry.js';
 import {analyzeFacadeVisibility} from '../src/facade-visibility.js';
-import {DEFAULTS} from '../src/state.js';
+import {DEFAULTS,decodeState} from '../src/state.js';
 
 const data=JSON.parse(fs.readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const source=JSON.parse(fs.readFileSync(new URL('../data/sternicza-neighborhood-source.json',import.meta.url)));
@@ -124,7 +124,7 @@ test('separate context terrain covers surrounding bodies without replacing analy
 });
 
 test('expanded context leaves the independently audited PCK3 facade result unchanged',()=>{
-  const settings={...DEFAULTS,canopyEnabled:false,terraceDepth:4.2,jacuzziOverflow:false,gardenProgram:'spa-aligned',screeningTrees:[[17,26.8],[14.4,28.4],[12.6,32.7]].map(([x,y],i)=>({
+  const settings={...decodeState('v=29&site=sternicza-11'),canopyEnabled:false,terraceDepth:4.2,jacuzziOverflow:false,gardenProgram:'spa-aligned',screeningTrees:[[17,26.8],[14.4,28.4],[12.6,32.7]].map(([x,y],i)=>({
     id:`pine-${i+1}`,typeId:'austrian-pine-tall',x,y,height:9.5,crownBase:2.5,crownWidth:5,crownDepth:5,
     rotation:0,enabled:true,unitPrice:0}))};
   const eye=observerForPreset('sofa',settings,data),result=analyzeFacadeVisibility(eye,'building-9',settings,data);

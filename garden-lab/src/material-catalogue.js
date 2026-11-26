@@ -1,10 +1,10 @@
 // DOM-free material selection used by the scene and the comparison catalogue.
 // These are representative renovation finishes, not photos of the existing house.
-import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.33.0';
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.33.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.33.0';
-import {getDesignStyle} from './design-styles.js?v=1.33.0';
-import {STYLE_MATERIAL_SWATCHES} from './style-material-swatches.js?v=1.33.0';
+import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.34.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.34.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.34.0';
+import {getDesignStyle} from './design-styles.js?v=1.34.0';
+import {STYLE_MATERIAL_SWATCHES} from './style-material-swatches.js?v=1.34.0';
 export {MATERIAL_ASSETS};
 
 const finish=(asset,label,options={})=>Object.freeze({asset,label,...options});

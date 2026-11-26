@@ -43,7 +43,7 @@ test('explicit property identity survives share links and legacy links select on
 test('stored designs, comparisons and fresh defaults remain isolated by property',()=>{
   const model=createStateModel(getSiteProfile('korzeniowskiego-40',otherSite()));
   const saved={...model.DEFAULTS,styleGardenLayout:false,poolFreeboard:.02,garageSlabThickness:.25,hedgeRear:5.7,hedgeLeft:3,hedgeRight:6,gardenRaise:.3};
-  assert.deepEqual(model.migrateSavedState(saved,6),saved);
+  assert.deepEqual(model.migrateSavedState(saved,6),{...saved,sceneMotion:false});
   assert.deepEqual(model.migrateSavedState({...saved,siteId:'sternicza-11'},6),model.DEFAULTS);
   assert.deepEqual(model.migrateSavedState({hedgeRear:14,linkedHedges:true},5),model.DEFAULTS);
   assert.deepEqual(model.migrateSavedState({...saved,siteId:undefined},6),model.DEFAULTS);

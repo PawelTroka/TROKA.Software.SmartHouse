@@ -44,12 +44,12 @@ test('balcony deck and access follow the first floor, independently of canopy he
   const layout=make({canopyHeight:5.8});
   near(layout.deckTopZ,13);near(layout.access.z,13);near(layout.access.y,20);
   near(layout.deckThickness,.25);near(layout.deckArea,34);
-  near(layout.clearBelow,2.75);near(layout.minimumCoveredHeight,2.51);
+  near(layout.clearBelow,2.75);near(layout.minimumCoveredHeight,2.75);
   const slab=layout.boxes.find(box=>box.part==='slab');
   near(slab.z0,12.75);near(slab.z1,13);
   const changed=make({firstFloorRise:3.4},{groundAt:()=>9});
   near(changed.deckTopZ,13.4);near(changed.access.z,13.4);
-  near(changed.supports[0].z0,9);near(changed.supports[1].z0,10);near(changed.supports[2].z0,9);
+  assert.deepEqual(changed.supports,[]);assert.equal(changed.supportSystem,'cantilever');
   assert.equal(layout.access.proposed,true);
 });
 
@@ -74,42 +74,33 @@ test('the proposed guards have finite members and clear glazing gives no opaque 
   assert.equal(terraceCoverIntersection([x,y-.5,railZ],[x,y+.5,railZ],layout)?.part,'rail');
 });
 
-test('rays meet the actual balcony slab and posts without extending them into invisible screens',()=>{
+test('rays meet the actual slab but the terrace below has no structural columns or downstand beam',()=>{
   const layout=make(),x=(layout.bounds.x0+layout.bounds.x1)/2,y=layout.bounds.y0+1;
   assert.equal(terraceCoverIntersection([x,y,11],[x,y,15],layout)?.part,'slab');
   assert.equal(terraceCoverIntersection([layout.bounds.x1+2,y,11],[layout.bounds.x1+2,y,15],layout),null);
-  const post=layout.supports[1],px=(post.x0+post.x1)/2,py=(post.y0+post.y1)/2,pz=(post.z0+post.z1)/2;
-  assert.equal(terraceCoverIntersection([px,py-.5,pz],[px,py+.5,pz],layout)?.part,'post');
-  assert.equal(terraceCoverIntersection([px+.5,py-.5,pz],[px+.5,py+.5,pz],layout),null);
+  for(let px=layout.bounds.x0;px<=layout.bounds.x1;px+=.13)
+    assert.equal(terraceCoverIntersection([px,layout.bounds.y1-.5,11],[px,layout.bounds.y1+.5,11],layout),null);
   assert.equal(terraceCoverIntersection([x,y,11],[x,y,15],make({canopyEnabled:false})),null);
 });
 
-test('Sternicza balcony supports reach real ground, clear the spa service zone, and remain under the beam',()=>{
+test('Sternicza covers keep the spa and its service zone column-free in both modes',()=>{
   const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
-  const settings={...base,gardenProgram:'spa-pool-grove',gardenRaise:.5,floorHeight:1.2,jacuzziOverflow:true};
-  const floorZ=floorElevation(settings,data),jacuzzi=jacuzziBounds(settings,data);
-  const layout=terraceCoverLayout(settings,data,{floorZ,jacuzzi,groundAt:(x,y)=>gardenGroundAt(x,y,settings,data)});
-  assert.equal(layout.supports.length,3);
-  assert.deepEqual(layout.warnings,[]);
-  assert.ok(layout.assumptions.some(text=>text.includes('jacuzzi service zone')));
-  const beam=layout.boxes.find(box=>box.part==='beam');
-  for(const [index,post]of layout.supports.entries()){
-    assert.equal(overlaps(post,jacuzzi),false);assert.equal(overlaps(post,jacuzzi.serviceAccess),false);
-    assert.ok(post.x0>=beam.x0-1e-8&&post.x1<=beam.x1+1e-8);
-    near(post.z1,beam.z0);
-    const x=(post.x0+post.x1)/2,y=(post.y0+post.y1)/2;
-    near(post.z0,index===1?floorZ:gardenGroundAt(x,y,settings,data));
+  for(const terraceCoverType of ['canopy','balcony'])for(const jacuzziCentered of [false,true]){
+    const settings={...base,terraceCoverType,jacuzziCentered,gardenProgram:'spa-pool-grove',gardenRaise:.5,floorHeight:1.2,jacuzziOverflow:true};
+    const floorZ=floorElevation(settings,data),jacuzzi=jacuzziBounds(settings,data);
+    const layout=terraceCoverLayout(settings,data,{floorZ,jacuzzi,groundAt:(x,y)=>gardenGroundAt(x,y,settings,data)});
+    assert.equal(layout.supportSystem,'cantilever');assert.deepEqual(layout.supports,[]);
+    assert.ok(!layout.boxes.some(b=>['post','beam','outrigger'].includes(b.part)));
+    assert.ok(layout.assumptions.some(text=>text.includes('cantilever')));
+    assert.ok(layout.assumptions.some(text=>/engineer|structural design/.test(text)));
   }
 });
 
-test('an overextended or low balcony reports the concrete geometry conflict',()=>{
+test('an overextended or low balcony still reports its actual geometry conflict',()=>{
   const wide=make({canopyWidth:34});
   assert.ok(wide.warnings.some(text=>text.includes('outside the mapped plot')));
   const low=make({firstFloorRise:2.4});
   assert.ok(low.warnings.some(text=>text.includes('less than 2.20 m')));
-  const post=make().supports[1];
-  const collision=make({}, {jacuzzi:{x0:post.x0-.1,x1:post.x1+.1,y0:post.y0-.1,y1:post.y1+.1}});
-  assert.ok(collision.warnings.some(text=>text.includes('overlaps the jacuzzi')));
 });
 
 test('rendered balcony and canopy members preserve exact analytical extents and glass casts no solid shadow',()=>{

@@ -36,6 +36,31 @@ async function shot(name,selector){
   report.screenshots.push(file);
 }
 async function cameraFrame(){return field('canvas').locator('canvas').screenshot({scale:'css',animations:'disabled'});}
+const walkCanvas=()=>q('#scene-host canvas');
+async function walking(floor){
+  await q('#interior-host').waitFor({state:'hidden'});
+  await page.waitForFunction(floor=>{
+    const canvas=document.querySelector('#scene-host canvas'),d=document.querySelector('#render-diagnostics')?.dataset;
+    const onRequestedLevel=canvas?.dataset.walkFloor===floor||(floor==='garden'&&canvas?.dataset.walkFloor==='ground');
+    return onRequestedLevel&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&
+      Number(d.triangles)>0&&Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&Number(d.surfaceAssetsFailed)===0;
+  },floor,{timeout:30000});
+  assert.equal(await q('[data-mode="walk"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await q('#walk-location').inputValue(),floor);
+  assert.match(await walkCanvas().getAttribute('aria-label'),/WASD or arrow keys/);
+  return walkCanvas().evaluate(canvas=>({floor:canvas.dataset.walkFloor,position:canvas.dataset.walkPosition.split(',').map(Number)}));
+}
+async function openInteriors(){await q('#interior-open').click();await ready();}
+async function stepWithKeys(){
+  let distance=0;
+  for(const key of ['a','ArrowUp','d','ArrowDown']){
+    const before=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);
+    await walkCanvas().focus();await page.keyboard.down(key);await page.waitForTimeout(280);await page.keyboard.up(key);
+    const after=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);
+    distance+=Math.hypot(after[0]-before[0],after[2]-before[2]);
+  }
+  assert.ok(distance>.08,`WASD / arrow input moved only ${distance} m`);return distance;
+}
 async function pixels(a,b){
   return page.evaluate(async pair=>{
     const decode=async str=>{const img=new Image();img.src='data:image/png;base64,'+str;await img.decode();const c=new OffscreenCanvas(img.width,img.height),ctx=c.getContext('2d');ctx.drawImage(img,0,0);return ctx.getImageData(0,0,c.width,c.height);};
@@ -176,26 +201,34 @@ try{
   check('All 22 renovations have physical features and varied rendered geometry; Beach House, Coastal and Baltic Dune are distinct, and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
   await field('style').selectOption('beach-house');await field('floor').selectOption('ground');await field('room').selectOption('lounge');
-  await field('enter').click();const beach=await rendered('beach-house','room');
-  assert.equal(beach.floor,'ground');assert.equal(beach.roomId,'lounge');assert.equal(beach.layout,'renovation');
-  assert.equal(beach.contextSource,'shared-site-model');assert.ok(beach.eyeHeight>1.1&&beach.eyeHeight<2.1);
-  await shot('ground-beach-house-living-eye-level','#interior-host [data-iw="canvas"] canvas');
-  check('Beach House living-room entry renders the curated lounge at eye level with the shared house and garden context');
-  await chooseView('dollhouse');await rendered('beach-house','dollhouse');
+  await field('enter').click();const beach=await walking('ground');
+  assert.match(await q('#walk-status').textContent(),/Living room/);
+  assert.equal(await q('#workspace').evaluate(node=>node.inert),false);
+  assert.equal(await field('canvas').locator('canvas').count(),0,'The room handoff releases the separate interior WebGL context');
+  await shot('ground-beach-house-living-walk','#scene-host canvas');
+  report.walking={ground:beach,keyboardDistance:await stepWithKeys()};
+  check('Room entry opens the full house-and-garden walker, releases the room renderer and responds to WASD and arrow keys');
+  await openInteriors();await chooseView('dollhouse');await rendered('beach-house','dollhouse');
   await field('style').selectOption('japandi');await field('floor').selectOption('first');await field('room').selectOption('master');
-  await field('enter').click();const eye=await rendered('japandi','room');assert.equal(eye.roomId,'master');assert.ok(eye.eyeHeight>1.1&&eye.eyeHeight<2.1);
-  assert.equal(eye.contextSource,'shared-site-model');
+  await field('enter').click();const eye=await walking('first');assert.match(await q('#walk-status').textContent(),/Main bedroom|Master|Bedroom/i);
+  assert.ok(eye.position[1]>beach.position[1]+2.5);
   await shot('first-floor-master-eye-level');
-  await field('room').selectOption('spa-bath');const spa=await rendered('japandi','room');assert.equal(spa.roomId,'spa-bath');
-  await shot('first-floor-hydro-spa-eye-level');
-  await chooseView('dollhouse');await rendered('japandi','dollhouse');await shot('first-floor-japandi-dollhouse');
+  await openInteriors();await field('room').selectOption('spa-bath');await chooseView('room');const spa=await walking('first');
+  assert.notDeepEqual(spa.position,eye.position);await shot('first-floor-hydromassage-bath-walk','#scene-host canvas');
+  await openInteriors();await chooseView('dollhouse');await rendered('japandi','dollhouse');await shot('first-floor-japandi-dollhouse');
   await field('floor').selectOption('ground');await field('room').selectOption('bathroom');await chooseView('room');
-  const bath=await rendered('japandi','room');assert.equal(bath.roomId,'bathroom');await shot('ground-soaking-bath-eye-level');
-  await field('floor').selectOption('first');
-  await field('room').selectOption('office');const office=await rendered('japandi','room');assert.equal(office.roomId,'office');assert.notDeepEqual(office.camera,eye.camera);
-  const parked=office.frames,background=await q('#render-diagnostics').getAttribute('data-frames');
+  await walking('ground');assert.match(await q('#walk-status').textContent(),/bathroom/i);await shot('ground-soaking-bath-eye-level');
+  for(const floor of ['basement','attic','first','ground','garden']){
+    await q('#walk-location').selectOption(floor);await q('#walk-start').click();
+    report.walking[floor]=await walking(floor);
+  }
+  assert.ok(report.walking.attic.position[1]>report.walking.first.position[1]+2.4);
+  assert.ok(report.walking.basement.position[1]<report.walking.ground.position[1]-1.5);
+  check('The walking location control reaches basement, living floor, first floor, attic and garden in the same visible scene');
+  await openInteriors();await field('floor').selectOption('first');await field('room').selectOption('office');await chooseView('dollhouse');
+  const office=await rendered('japandi','dollhouse'),parked=office.frames,background=await q('#render-diagnostics').getAttribute('data-frames');
   await page.waitForTimeout(240);assert.equal((await info()).scene.frames,parked);assert.equal(await q('#render-diagnostics').getAttribute('data-frames'),background);
-  check('Room entry and room changes move the camera, furniture toggles affect rendered content and both renderers stop when idle');
+  check('Returning to the dollhouse preserves the selected floor, releases walking input and leaves both renderers idle');
   await field('changes').check();await field('room').selectOption('master');await field('furniture').uncheck();
   const saved=await appState();await q('#save-a').click();await chooseLayout('existing');await q('#compare').click();assert.deepEqual(await appState(),saved);
   await q('#compare').click();assert.equal((await appState()).layout,'existing');await q('#compare').click();assert.deepEqual(await appState(),saved);
@@ -212,11 +245,11 @@ try{
   const ground=exported.interiors.floors.ground.fixtures,upper=exported.interiors.floors.first.fixtures,find=(items,kind)=>items.filter(f=>f.kind===kind);
   assert.equal(find(ground,'tub').length,1);assert.equal(find(ground,'tub')[0].variant,'soaking');assert.equal(find(ground,'hotTub').length,0);
   assert.equal(find(ground,'basin').length,1);assert.equal(find(ground,'basin')[0].basins,2);assert.equal(find(ground,'bidet').length,1);assert.equal(find(ground,'toilet').length,1);assert.equal(find(ground,'shower').length,1);
-  assert.equal(find(upper,'hotTub').length,1);assert.equal(find(upper,'tub').length,0);assert.equal(find(upper,'bidet').length,0);
-  const hotTub=find(upper,'hotTub')[0];for(const key of ['jets','lights','hydromassage'])assert.equal(hotTub[key],true);assert.equal(hotTub.width,2.05);assert.equal(hotTub.depth,1.80);
+  assert.equal(find(upper,'hotTub').length,0);assert.equal(find(upper,'tub').length,1);assert.equal(find(upper,'bidet').length,0);
+  const hydroBath=find(upper,'tub')[0];for(const key of ['jets','hydromassage'])assert.equal(hydroBath[key],true);assert.equal(hydroBath.lights,false);assert.equal(hydroBath.variant,'whirlpool');assert.equal(hydroBath.width,.90);assert.equal(hydroBath.depth,1.80);assert.equal(hydroBath.height,.62);
   assert.equal(find(upper,'basin').length,1);assert.equal(find(upper,'basin')[0].basins,1);assert.equal(find(upper,'shower')[0].heads,2);assert.equal(find(upper,'toilet').length,1);
   report.bathrooms={ground:ground.filter(f=>f.roomId==='bathroom').map(f=>f.kind),first:upper.filter(f=>f.roomId==='spa-bath').map(f=>f.kind)};
-  check('Exports contain the ground soaking tub/dual vanity/bidet and one upper hydro spa/single basin/two-person shower; both views share the 4 m balcony and all 3 doors');
+  check('Exports contain the ground soaking bath and a compact 0.90 × 1.80 m upstairs hydromassage bath; both views share the 4 m balcony and all 3 doors');
   await q('#canopyDepth-value').fill('3.2');await q('#canopyDepth-value').press('Tab');
   const edited=await exportDesign();assertBalconyShared(edited,3.2);
   await q('#interior-open').click();await ready();assert.equal(await field('apply-exterior').isDisabled(),false);
@@ -227,13 +260,24 @@ try{
 
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready();
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();
-  await field('style').selectOption('hidden-bali');await field('furniture').check();await field('hide-settings').click();
+  await field('style').selectOption('hidden-bali');await field('furniture').check();await field('room').selectOption('lounge');await field('hide-settings').click();
   assert.equal(await field('floor').inputValue(),'ground');assert.equal((await appState()).style,'hidden-bali');
   const size=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth,drawing:Math.round(document.querySelector('.iw-drawing').getBoundingClientRect().height),host:document.querySelector('#interior-host').getBoundingClientRect().bottom,height:innerHeight}));
   assert.ok(size.width<=size.screen+1&&size.drawing>260&&size.host<=size.height+1,JSON.stringify(size));report.mobile=size;
   await shot('mobile-floor-plan');await chooseView('dollhouse');await rendered('hidden-bali','dollhouse');await shot('mobile-dollhouse');
-  await field('close').click();await q('#interior-host').waitFor({state:'hidden'});
-  check('390 px mobile controls, room inspector and both plan and WebGL views fit the viewport');
+  await chooseView('room');await walking('ground');
+  const pad=q('#scene-host .walk-pad');assert.equal(await pad.isVisible(),true);assert.equal(await pad.locator('button').count(),4);
+  let padDistance=0;
+  for(const label of ['Walk forward','Step left','Step back','Step right']){
+    const button=pad.getByRole('button',{name:label,exact:true}),bounds=await button.boundingBox();assert.ok(bounds);
+    assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390&&bounds.height>=40,'Walk controls must fit the narrow screen with usable touch targets');
+    const before=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);
+    await page.mouse.move(bounds.x+bounds.width/2,bounds.y+bounds.height/2);await page.mouse.down();await page.waitForTimeout(350);await page.mouse.up();
+    const after=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);padDistance+=Math.hypot(after[0]-before[0],after[2]-before[2]);
+  }
+  assert.ok(padDistance>.08,`On-screen walking controls moved only ${padDistance} m`);report.mobile.padDistance=padDistance;
+  await shot('mobile-house-garden-walk');
+  check('390 px plan, dollhouse and unified walk fit the viewport; all four on-screen movement buttons are reachable and move the camera');
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);if(page)try{await shot('failure');}catch{}}
 finally{await writeFile(path.join(output,'browser-report.json'),JSON.stringify(report,null,2));await browser?.close();if(server)await new Promise(resolve=>server.close(resolve));console.log('INTERIOR_RESULT '+report.status);}

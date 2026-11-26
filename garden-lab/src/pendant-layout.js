@@ -1,10 +1,10 @@
 /** Decorative hanging lights use the garden's metric geometry and absolute
  * height datum. They are proposals, excluded from privacy and sunlight rays.
  * Posts support the lights independently of living thuja branches. */
-import {gardenGroundAt,terraceGroundReference,hedgeSegments,hedgeTopAt,jacuzziBounds,pointInPolygon} from './geometry.js?v=1.33.0';
-import {gardenFurniture,terraceStairs,rectCorners} from './layout.js?v=1.33.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.33.0';
-import {getResortGardenRecipe,resortTerraceLayout} from './resort-garden.js?v=1.33.0';
+import {gardenGroundAt,terraceGroundReference,hedgeSegments,hedgeTopAt,jacuzziBounds,pointInPolygon} from './geometry.js?v=1.34.0';
+import {gardenFurniture,terraceStairs,rectCorners} from './layout.js?v=1.34.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.34.0';
+import {getResortGardenRecipe,resortTerraceLayout} from './resort-garden.js?v=1.34.0';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const mix=(a,b,t)=>a+(b-a)*t;
@@ -67,18 +67,18 @@ export function pendantLightingLayout(settings={},data){
       if(!clear(a,.16)||!clear(b,.16)||!clearLine(a,b,.08)
         ||shadePoints.some((p,i)=>!clear(p,[.25,.30,.22][i]+.06)))continue;
       const surfaceSamples=Array.from({length:11},(_,i)=>surfaceAt([mix(a[0],b[0],i/10),mix(a[1],b[1],i/10)]));
-      const frameZ=Math.max(...surfaceSamples)+3.12;
+      const frameZ=Math.max(...surfaceSamples)+3.20;
       const supportIds=['garden-pendant-post-1','garden-pendant-post-2'];
       for(const [i,p] of [a,b].entries())result.supports.push({id:supportIds[i],zone:'garden',x:p[0],y:p[1],baseZ:surfaceAt(p),topZ:frameZ});
       const points=Array.from({length:9},(_,i)=>{
-        const t=i/8;return [mix(a[0],b[0],t),mix(a[1],b[1],t),frameZ-.045*Math.sin(Math.PI*t)];
+        const t=i/8;return [mix(a[0],b[0],t),mix(a[1],b[1],t),frameZ-.22*Math.sin(Math.PI*t)];
       });
       result.cables.push({id:'garden-pendant-frame',zone:'garden',kind:'span',points,supportIds});
       for(const [i,offset] of offsets.entries()){
         const p=[...centre];p[axis]+=offset;
         const radius=[.25,.30,.22][i],height=[.36,.42,.33][i],groundZ=surfaceAt(p);
-        const z=Math.max(...surfaceSamples)+[2.50,2.64,2.48][i];
-        const t=(offset+span/2)/span,hangZ=frameZ-.045*Math.sin(Math.PI*t);
+        const z=Math.max(...surfaceSamples)+[2.45,2.43,2.48][i];
+        const t=(offset+span/2)/span,hangZ=frameZ-.22*Math.sin(Math.PI*t);
         result.garden.push({id:`garden-pendant-${i+1}`,zone:'garden',x:p[0],y:p[1],z,groundZ,hangZ,radius,height,supportIds});
       }
       break;
@@ -102,6 +102,51 @@ export function pendantLightingLayout(settings={},data){
           result.garden.push({id,zone:'terrace',x,y,z,groundZ:floorZ,hangZ:ceiling-.02,radius:.17,height,supportIds:[],mountedTo:'terrace-cover'});
         }
       }
+    }
+  }
+
+
+  // Short, gently sagging pendant strings follow the actual walking route.
+  // Their slim supports sit outside its 1.2 m corridor; the cables can cross
+  // overhead, but neither cables nor fittings bridge a pool, entrance or spa.
+  // Each span has its own two independent supports, never a tree/hedge anchor.
+  const path=furniture.path||[];
+  let pathSpans=0;
+  const routes=path.flatMap((a,index)=>path.slice(index+1,Math.min(path.length,index+4)).map((b,j)=>({a,b,start:index,end:index+j+1})))
+    .filter(r=>distance(r.a,r.b)>=2.6&&distance(r.a,r.b)<=8)
+    .sort((a,b)=>(a.end-a.start)-(b.end-b.start)||distance(b.a,b.b)-distance(a.a,a.b));
+  const covered=[];
+  for(const route of routes){
+    if(pathSpans>=2)break;
+    if(covered.some(r=>route.start<r.end&&route.end>r.start))continue;
+    const a0=route.a,b0=route.b;
+    const routeLength=distance(a0,b0);
+    if(routeLength<2.6||routeLength>8.0||a0[1]<rear+depth+.50||b0[1]<rear+depth+.50)continue;
+    const normal=[-(b0[1]-a0[1])/routeLength,(b0[0]-a0[0])/routeLength];
+    let selectedSpan=null;
+    for(const [offsetA,offsetB]of [[.78,-.78],[-.78,.78],[.78,.78],[-.78,-.78],[1.02,1.02],[-1.02,-1.02]]){
+      const a=a0.map((v,i)=>v+normal[i]*offsetA),b=b0.map((v,i)=>v+normal[i]*offsetB);
+      if(!clear(a,.17)||!clear(b,.17)||!clearLine(a,b,.18))continue;
+      const routeClear=p=>path.slice(1).every((end,i)=>segmentDistance(p,path[i],end)>=.62);
+      if(!routeClear(a)||!routeClear(b))continue;
+      if(result.supports.some(s=>Math.min(distance(a,[s.x,s.y]),distance(b,[s.x,s.y]))<.45))continue;
+      selectedSpan={a,b};break;
+    }
+    if(!selectedSpan)continue;
+    covered.push(route);
+    const {a,b}=selectedSpan,span=distance(a,b),sag=Math.min(.36,span*.065);
+    const samples=Array.from({length:17},(_,i)=>surfaceAt([mix(a[0],b[0],i/16),mix(a[1],b[1],i/16)]));
+    const top=Math.max(...samples)+3.18,id=`path-string-${++pathSpans}`;
+    const supportIds=[id+'-start',id+'-end'];
+    for(const [i,p]of [a,b].entries())result.supports.push({id:supportIds[i],zone:'path',x:p[0],y:p[1],baseZ:surfaceAt(p),topZ:top});
+    const cableAt=t=>top-sag*4*t*(1-t);
+    result.cables.push({id,zone:'path',kind:'festoon',supportIds,
+      points:Array.from({length:17},(_,i)=>{const t=i/16;return [mix(a[0],b[0],t),mix(a[1],b[1],t),cableAt(t)];})});
+    const count=Math.max(2,Math.min(4,Math.round(span/1.55)));
+    for(let i=0;i<count;i++){
+      const t=(i+1)/(count+1),x=mix(a[0],b[0],t),y=mix(a[1],b[1],t);
+      const height=.25+(i%2)*.035,radius=.13+(i%2)*.015,hangZ=cableAt(t),z=hangZ-.16-height/2;
+      result.garden.push({id:`${id}-pendant-${i+1}`,zone:'path',x,y,z,groundZ:surfaceAt([x,y]),hangZ,radius,height,supportIds});
     }
   }
 
@@ -131,9 +176,9 @@ export function pendantLightingLayout(settings={},data){
         x:p[0],y:p[1],z,groundZ,hangZ,radius,height,post,baseZ});
     }
   }
-  // If a long perimeter has more than 24 candidates, sample the whole circuit
-  // evenly so the cap does not leave one physical side permanently unlit.
-  const cap=resort?.hedgeCount??24;
+  // Limit the perimeter to eight restrained accents, sampling the circuit
+  // evenly so no side becomes an overlit row of garden streetlamps.
+  const cap=Math.min(resort?.hedgeCount??8,8);
   const selected=candidates.length<=cap?candidates:Array.from({length:cap},(_,i)=>candidates[Math.floor((i+.5)*candidates.length/cap)]);
   for(const candidate of selected){
     const {post,baseZ,...fixture}=candidate,supportId=`${fixture.id}-post`;

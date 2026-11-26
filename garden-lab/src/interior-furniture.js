@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.33.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.33.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.34.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.34.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
@@ -317,7 +317,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
     const angle=Math.atan2(f.front[0],f.front[1]);return Math.abs(f.front[0])>.5?[group(g,0,0,0,angle),d,w]:[group(g,0,0,0,angle),w,d];
   }
   function kitchen(g,f,w,d,tall=false) {
-    [g,w,d]=faceFront(g,f,w,d);const h=tall?1.95:(f.height||.9);
+    [g,w,d]=faceFront(g,f,w,d);const h=tall?(f.height||1.95):(f.height||.9);
     if(renovated){
       const kind=design.cabinet,body=kind==='louvred'?painted:['cane','slatted','shoji','midcentury','framed'].includes(kind)?m.wood:kind==='steel'?m.frame:kind==='gloss'?m.lacquer||m.cabinet:m.cabinet;
       box(g,m.frame,0,.06,-.012,w*.94,.12,d*.88);
@@ -378,7 +378,11 @@ export function furnishInterior(parent,plan,tools,finishes) {
     if(f.kind==='tub') {
       const height=f.height||.55;bowl(g,w,d,height,0,renovated&&['organic-modern','desert-modern','organic-japandi'].includes(design.id)?m.stone:m.ceramic);const sign=d>w?1:0;
       const tap=group(g,sign?0:-w*.4,0,sign?-d*.41:0,sign?0:Math.PI/2);faucet(tap,0,height-.04,0,.16);
-      if(f.variant==='whirlpool')for(let i=0;i<8;i++){const a=i*Math.PI/4;oval(g,m.steel,w*.39*Math.sin(a),.43,d*.39*Math.cos(a),.029,.026,.029);}
+      if(f.variant==='whirlpool'){
+        for(let i=0;i<6;i++){const a=i*Math.PI/3;oval(g,m.steel,w*.36*Math.sin(a),height*.59,d*.36*Math.cos(a),.019,.017,.019);}
+        oval(g,m.spaWater||m.water,0,height*.69,0,w*.72,.008,d*.72);
+        for(const x of [-.045,.045])cyl(g,m.steel,x,height-.015,-d*.42,.017,.017,.012,12);
+      }
     }else if(f.kind==='hotTub') {
       const h=f.height||.86,wall=.12,iw=w-2*wall,id=d-2*wall;
       rounded(g,m.frame,0,.08,0,w*.98,.16,d*.98,.035);
@@ -473,7 +477,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
   }
   for(const f of plan.fixtures||[]) {
     let w=f.width,d=f.depth;if(!(w>0&&d>0))continue;
-    let g=group(parent,f.x,0,f.z,f.rotation||0);
+    let g=group(parent,f.x,f.kind==='wallCabinet'?(f.baseHeight||0):0,f.z,f.rotation||0);
     g.userData.fixtureId=f.id;g.userData.fixtureKind=f.kind;g.userData.interiorRecipe=design.id;
     if(['desk','chair','armchair','fridge','nightstand','mirror','spaStep','bookcase'].includes(f.kind)&&f.front)[g,w,d]=faceFront(g,f,w,d);
     else if(f.kind==='desk'&&d>w){g=group(g,0,0,0,Math.PI/2);[w,d]=[d,w];}
@@ -491,7 +495,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'bed':bed(g,w,d,f);break;
       case 'kitchen':case 'counter':kitchen(g,f,w,d);break;
       case 'console':{if(f.variant==='worktable'){const h=f.height||.89;rounded(g,m.stone,0,h,0,w,.055,d,.018);legs(g,w*.83,d*.73,h-.04,.035,m.wood,.012);box(g,m.wood,0,.16,0,w*.83,.048,d*.72);}else{kitchen(g,f,w,d);books(g,w*.25,(f.height||.72)+.03,0,.27);plant(g,w*.05,(f.height||.72)+.03,0,.12);}break;}
-      case 'storage':case 'wardrobe':kitchen(g,f,w,d,true);break;
+      case 'wallCabinet':case 'storage':case 'wardrobe':kitchen(g,f,w,d,true);break;
       case 'basin':case 'tub':case 'hotTub':case 'bidet':case 'shower':case 'wc':case 'toilet':case 'sink':bathroom(g,f,w,d);break;
       case 'spaStep':{const h=f.height||.32;box(g,m.wood,0,h*.25,d*.25,w,h*.50,d*.50);box(g,m.wood,0,h*.50,-d*.25,w,h,d*.50);for(const z of [-d*.25,d*.25])for(let i=0;i<4;i++)box(g,m.frame,0,z<0?h+.003:h*.50+.003,z-d*.19+i*d*.12,w*.92,.006,.012);break;}
       case 'nightstand':{const h=f.height||.52;if(renovated&&['taper','woven','slatted','midcentury','cane'].includes(design.cabinet))legs(g,w*.72,d*.68,.18,.022,m.wood,.012);rounded(g,design.cabinet==='louvred'?painted:m.wood,0,h*.60,0,w,h*.74,d,.024);rounded(g,m.stone,0,h,0,w,.035,d,.012);box(g,design.cabinet==='louvred'?painted:m.cabinet,0,h*.67,d*.51,w*.91,h*.37,.018);if(renovated&&design.cabinet==='cane')weavePanel(g,0,h*.67,d*.525,w*.80,h*.26);else if(renovated&&design.cabinet==='louvred')louvrePanel(g,0,h*.66,d*.525,w*.80,h*.26);else box(g,m.bronze,0,h*.75,d*.54,w*.21,.011,.015);books(g,0,h+.02,0,w*.53);break;}

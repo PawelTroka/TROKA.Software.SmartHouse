@@ -21,7 +21,8 @@ const distanceToLine=(p,a,b)=>{
 
 for(const {data,settings} of sites)test(`${data.site.id||'sternicza-11'}: pendants fit the real garden and active hedge sides`,()=>{
   const before=JSON.stringify({data,settings}),layout=pendantLightingLayout(settings,data);
-  assert.equal(layout.garden.length,3);
+  assert.equal(layout.garden.filter(f=>f.zone==='garden').length,3);
+  assert.ok(layout.garden.length<=12);
   assert.ok(layout.hedge.length>=5&&layout.hedge.length<=24);
   assert.equal(new Set([...layout.garden,...layout.hedge].map(f=>f.id)).size,layout.garden.length+layout.hedge.length);
   const supported=new Map(layout.supports.map(s=>[s.id,s]));
@@ -38,7 +39,7 @@ for(const {data,settings} of sites)test(`${data.site.id||'sternicza-11'}: pendan
     assert.ok(!blocked.some(ring=>pointInPolygon([fixture.x,fixture.y],ring)),fixture.id+' obstructs an existing object');
     assert.ok(fixture.hangZ>fixture.z+fixture.height/2,fixture.id+' needs a positive hanging cord');
     assert.ok(fixture.supportIds.every(id=>supported.has(id)));
-    if(fixture.zone==='garden')assert.ok(fixture.z-fixture.height/2-fixture.groundZ>=2.1,fixture.id+' head clearance');
+    if(fixture.zone==='garden'||fixture.zone==='path')assert.ok(fixture.z-fixture.height/2-fixture.groundZ>=2.1,fixture.id+' head clearance');
     else assert.ok(fixture.z-fixture.groundZ>=2.0&&fixture.z-fixture.groundZ<2.8,fixture.id+' inner hedge mounting height');
   }
   for(const support of layout.supports){
@@ -109,9 +110,9 @@ test('turning lights off retains the installed fixtures, while an obstructed din
 
 test('retaining the garage omits dining pendants with the dining furniture and keeps valid hedge lanterns',()=>{
   const {data,settings}=sites[0],layout=pendantLightingLayout({...settings,removeGarage:false},data);
-  assert.equal(layout.garden.length,0);
-  assert.ok(layout.supports.every(s=>s.zone==='hedge'),'The hidden dining setting has no pendant supports');
-  assert.ok(layout.cables.every(c=>c.zone==='hedge'),'The hidden dining setting has no hanging frame');
+  assert.equal(layout.garden.filter(f=>f.zone==='garden').length,0);
+  assert.ok(layout.supports.every(s=>s.zone!=='garden'),'The hidden dining setting has no pendant supports');
+  assert.ok(layout.cables.every(c=>c.zone!=='garden'),'The hidden dining setting has no hanging frame');
   assert.ok(layout.hedge.length>0);
   for(const fixture of [...layout.hedge,...layout.supports]){
     assert.ok(pointInPolygon([fixture.x,fixture.y],data.site.boundary),fixture.id);

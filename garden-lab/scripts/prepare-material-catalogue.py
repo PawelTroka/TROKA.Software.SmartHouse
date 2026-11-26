@@ -44,6 +44,7 @@ for record in records.values():
             entry['deliveryCompression']['normalAngularErrorP95Degrees']=round(float(np.percentile(np.degrees(np.arccos(np.clip(cosine,-1,1))),95)),4)
         entry.update(bytes=len(delivered),md5=hashlib.md5(delivered).hexdigest(),sha256=hashlib.sha256(delivered).hexdigest())
 ALIASES={
+    'pine-bark':'pine_bark',
     'wood':'fine_grained_wood','grass':'grass_ground','linen':'rough_linen',
     'plaster':'white_stucco','stone':'marble_01','floor':'wood_floor_worn',
     'plaster-fine':'white_plaster_02','clay-plaster':'clay_plaster','oak':'oak_veneer_02',

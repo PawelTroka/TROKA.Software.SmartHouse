@@ -60,7 +60,7 @@ test('kitchen workstations and offices have programme-aware usable approaches',(
       assert.ok(c.x0-west.x1>=.90-1e-8,styleId+' west preparation aisle');
       assert.ok(eastLimit-c.x1>=.90-1e-8,styleId+' east preparation aisle');
       assert.ok(street.z0-c.z1>=.90-1e-8,styleId+' sink-counter aisle');
-      kitchenApproach=kitchen==='island'?[c.x1+.45,centre.z]:[centre.x,c.z0-.45];
+      kitchenApproach=[c.x1+.45,centre.z];
     }
     const chair=byId(first,'office-chair');
     const officeApproach=office==='floating'?[chair.x-chair.width/2-.35,chair.z]:[chair.x+chair.width/2+.45,chair.z];

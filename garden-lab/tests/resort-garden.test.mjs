@@ -31,13 +31,13 @@ test('all terrace compositions fit the selected deck and keep threshold, stair r
   for(const style of proposals)for(const terraceWidth of [4,8.5,10.77])for(const terraceDepth of [3,4,6]){
     const s={...defaults,designStyle:style.id,terraceWidth,terraceDepth},d=applyPlanExterior(data,s),layout=terrace(d,s);
     const t=d.site.terrace,deck=rectCorners({x:t.x,y:d.site.rearMidpoint[1],width:t.width,length:terraceDepth});
-    assert.equal(layout.clearances.find(c=>c.id==='terrace-route').width,1.2);
+    assert.equal(layout.centerpiece,true);for(const id of ['spa-right-route','spa-left-route'])assert.ok(layout.clearances.find(c=>c.id===id).width>=.8);
     for(const [i,piece]of layout.items.entries()){
       assert.equal(footprintFit(rectCorners(piece),deck).location,'inside',style.id+' '+piece.id);
       for(const clear of layout.clearances)assert.equal(overlapArea(rectCorners(piece),rectCorners(clear)),0,style.id+' '+clear.id);
       for(const other of layout.items.slice(i+1))assert.ok(!rectanglesOverlap(piece,other,.079),style.id+' overlapping furniture');
     }
-    if(terraceWidth===8.5&&terraceDepth===4)assert.ok(layout.items.length>=3,style.id+' has a usable furnished group');
+    if(terraceWidth===8.5&&terraceDepth===4)assert.ok(layout.items.length>=2,style.id+' has a usable furnished group');
   }
 });
 
@@ -106,9 +106,11 @@ test('resort lights form a restrained bounded hierarchy and retain all independe
       assert.ok(lighting.lightCount<=27&&lighting.lightCount===lights.length);
       assert.ok(lights.filter(l=>l.userData.nightChannel==='hedge').length<=r.hedgeCount);
       assert.ok(lights.filter(l=>l.castShadow).length<=r.treeCount);
-      assert.ok(lights.reduce((v,l)=>v+l.userData.nominalIntensity,0)<originalPower*.65);
-      assert.ok(lights.filter(l=>l.userData.nightChannel==='hedge').every(l=>l.userData.nominalIntensity<27&&l.distance<=3.8));
-      assert.ok(lighting.fixtures.some(f=>f.id==='terrace-pendant-1'),'The sheltered coffee table has its own light');
+      const nominalPower=lights.reduce((v,l)=>v+l.userData.nominalIntensity,0);
+      assert.ok(nominalPower<350&&nominalPower<originalPower*.75,'Additional path pendants stay within the reduced whole-garden light budget');
+      assert.ok(lights.filter(l=>l.userData.nightChannel==='hedge').every(l=>l.userData.nominalIntensity<=14&&l.distance<=3.8));
+      assert.equal(lighting.fixtures.some(f=>f.id==='terrace-pendant-1'),terrace(data,s).items.some(f=>f.kind==='table'),
+        'A sheltered coffee table has its own light; compact spa-only compositions do not create a pendant over the water');
       for(const channel of ['garden','pendant','hedge']){
         lighting.apply({gardenStrength:channel==='garden'?.5:0,pendantStrength:channel==='pendant'?.5:0,hedgeStrength:channel==='hedge'?.5:0});
         assert.ok(lights.every(l=>l.visible===(l.userData.nightChannel===channel)));

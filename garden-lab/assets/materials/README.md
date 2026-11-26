@@ -1,6 +1,6 @@
 # Material reference library
 
-The library contains **32 CC0 source PBR sets** and **nine documented derivatives**: eight mortar-free unit samples and an undyed bouclé study. The original six baseline sets remain byte-for-byte unchanged. These are representative renovation finishes, not photographs or measurements of Sternicza 11.
+The library contains **33 CC0 source PBR sets** and **nine documented derivatives**: eight mortar-free unit samples and an undyed bouclé study. The original six baseline sets remain byte-for-byte unchanged. These are representative renovation finishes and a scanned pine-bark surface, not photographs or measurements of Sternicza 11. Pine Bark is applied in its natural colour with separate OpenGL normal and roughness maps; cylindrical stem coordinates preserve the two-metre scan scale.
 
 Sources are [Poly Haven](https://polyhaven.com/license) and [ambientCG](https://docs.ambientcg.com/license/). Both licenses permit redistribution and modification. The application serves its own files and makes no runtime calls to either provider. `manifest.json` records each author, source/download URL, original checksums, delivered checksums, dimensions, physical size, derivation, and measured compression error. Poly Haven API dimensions are millimetres; ambientCG dimensions are centimetres. Marble 012 and Porcelain 001 have explicitly authored repeat sizes because their provider gives no physical dimensions.
 
@@ -8,6 +8,7 @@ Sources are [Poly Haven](https://polyhaven.com/license) and [ambientCG](https://
 
 | Source material | Authors | Source resolution | Physical repeat |
 | --- | --- | --- | --- |
+| [Pine Bark](https://polyhaven.com/a/pine_bark) | Dimitrios Savva | 1K | 2.000 × 2.000 m |
 | [Fine Grained Wood](https://polyhaven.com/a/fine_grained_wood) | Rob Tuytel | 1K | 0.600 × 0.600 m |
 | [Grass Ground](https://polyhaven.com/a/grass_ground) | Charlotte Baglioni | 1K | 2.510 × 2.510 m |
 | [Rough Linen](https://polyhaven.com/a/rough_linen) | colormass, Rico Cilliers | 1K | 0.271 × 0.271 m |
@@ -43,7 +44,7 @@ Sources are [Poly Haven](https://polyhaven.com/license) and [ambientCG](https://
 
 ## Delivery and fidelity
 
-The full unique PBR library is approximately **42.6 MB**. New downloads are delivered as quality-94 JPEGs with 4:4:4 colour; roughness stores the green channel as grayscale. The unusually sensitive Concrete 034 normal uses quality 96. Every compressed normal has a measured 95th-percentile angular error below 4 degrees relative to its verified source; every channel's mean error is below 3/255. The original six baseline triplets retain their original bytes and calibration. Colour-calibrated catalogue previews total **1.142 MB** across 118 deduplicated 256 px JPEGs for 184 style/role samples. They are generated from the production material colours and map treatment, so linen, velvet and painted finishes match their selected palettes. Separate source-reference previews total approximately 455 KB. Browsing the cards does not preload full PBR sets.
+The full unique PBR library is approximately **44.1 MB**. New downloads are delivered as quality-94 JPEGs with 4:4:4 colour; roughness stores the green channel as grayscale. The unusually sensitive Concrete 034 normal uses quality 96. Every compressed normal has a measured 95th-percentile angular error below 4 degrees relative to its verified source; every channel's mean error is below 3/255. The original six baseline triplets retain their original bytes and calibration. Pine Bark was added in 1.34; its three channels add approximately 1.5 MB and are included in the baseline garden transfer budget. Colour-calibrated catalogue previews total **1.146 MB** across 119 deduplicated 256 px JPEGs for 184 style/role samples. They are generated from the production material colours and map treatment, so linen, velvet and painted finishes match their selected palettes. Separate source-reference previews total approximately 476 KB. Browsing the cards does not preload full PBR sets.
 
 Most source maps are 1K. The 2K travertine and herringbone parquet preserve the larger vein and parquet fields used on prominent interior surfaces. Non-square provider maps retain their aspect ratios, including linen, wool and concrete. Unit crops retain source texel density and are never enlarged into fake 1K textures.
 
@@ -63,7 +64,7 @@ The sources include photographed/scanned surfaces and authored PBR materials. Th
 
 The scene owns texture handles; decoded source pixels are shared across handles and renderers. Disposal removes a handle and clears its bitmap reference without invalidating live clones. Unused decoded source data is bounded to **48 MiB**, with least-recently-used idle entries released first. Active sources are never evicted. Optional interior slots are deferred until their material is attached to the built model; the existing architectural UV traversal activates only those materials. Replacement maps are disposed with their owning scene/material.
 
-The complete per-style conservative transfer inventory is in [material-transfer-budget.json](../../docs/material-transfer-budget.json). Exterior selections use 3.8–8.3 MB. All optional interior slots together use 9.3–17.4 MB; actual models can use less because unused slots never load. A combined interior/exterior concept adds 7.3–15.3 MB of unique new URLs beyond the shared 8.44 MB baseline garden files. HTTP/browser caching shares downloads between views and revisited styles.
+The complete per-style conservative transfer inventory is in [material-transfer-budget.json](../../docs/material-transfer-budget.json). Exterior selections use 3.8–8.3 MB. All optional interior slots together use 9.3–17.4 MB; actual models can use less because unused slots never load. A combined interior/exterior concept adds 7.3–15.3 MB of unique new URLs beyond the shared 9.94 MB baseline garden files. HTTP/browser caching shares downloads between views and revisited styles.
 
 ## Reproduce and verify
 

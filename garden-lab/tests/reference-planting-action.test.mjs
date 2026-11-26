@@ -20,7 +20,7 @@ test('applying the pictured trees preserves pool, hedge, eye, budget and matchin
 
 test('the status checks visible geometry, independently of IDs, ordering and quote amounts',()=>{
   const reference={...DEFAULTS,screeningTrees:PICTURED_TREES};
-  assert.equal(matchesPicturedTrees(DEFAULTS),false,'The new narrow Excelsa default is distinct from the original pine reference');
+  assert.equal(matchesPicturedTrees(DEFAULTS),false,'Optimized boundary pines are distinct from the original pictured positions');
   assert.equal(matchesPicturedTrees(reference),true);
   const same={...reference,screeningTrees:[...PICTURED_TREES].reverse().map((tree,index)=>({...tree,id:`custom-${index}`,unitPrice:12345,rotation:45}))};
   assert.equal(matchesPicturedTrees(same),true,'Rotating a circular crown does not change the pictured footprint');
@@ -32,7 +32,7 @@ test('the status checks visible geometry, independently of IDs, ordering and quo
 
 test('restoring the original pines from Excelsa retains the design and discards incompatible species quotes',()=>{
   const current={...DEFAULTS,hedgeLeft:5.1,gardenRaise:.3,costSpaPool:180000,
-    screeningTrees:DEFAULTS.screeningTrees.map(tree=>({...tree,unitPrice:9800}))};
+    screeningTrees:EXCELSA_TREES.map(tree=>({...tree,unitPrice:9800}))};
   const restored=applyPicturedTrees(current);
   assert.equal(matchesPicturedTrees(restored),true);
   assert.deepEqual(restored.screeningTrees,PICTURED_TREES);
@@ -55,7 +55,8 @@ test('the Excelsa action replaces legacy pine prices while retaining the design 
   const old=decodeState('#v=17&site=sternicza-11&hedgeRear=3.7&costSpaPool=190000');
   old.screeningTrees=old.screeningTrees.map(tree=>({...tree,unitPrice:61000}));
   const before=structuredClone(old),next=applyExcelsaTrees(old);
-  assert.equal(matchesExcelsaTrees(DEFAULTS),true);
+  assert.equal(matchesExcelsaTrees(DEFAULTS),false);
+  assert.equal(matchesExcelsaTrees(decodeState('#v=29&site=sternicza-11')),true);
   assert.equal(matchesExcelsaTrees(next),true);assert.equal(matchesPicturedTrees(next),false);
   assert.deepEqual(next.screeningTrees,EXCELSA_TREES);
   for(const key of Object.keys(old).filter(key=>key!=='screeningTrees'))assert.deepEqual(next[key],before[key],key);

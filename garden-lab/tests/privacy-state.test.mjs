@@ -53,7 +53,7 @@ test('current shares and JSON save/reload retain every privacy dimension, switch
 
 test('v20 sparse and custom designs never acquire privacy structures, even with unknown true flags',()=>{
   // The historical terrace and canopy predate the basement garage proposal.
-  const historical={...custom,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,jacuzziOverflow:false,terraceCoverType:'canopy'};
+  const historical={...custom,nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85,sceneMotion:false,summerPoolLayout:false,jacuzziCentered:false,hstOpen:0,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,jacuzziOverflow:false,terraceCoverType:'canopy'};
   const previous=without(historical,privacyKeys),original=clone(previous);
   const shared=new URLSearchParams(model.encodeState(historical));
   shared.set('v','20');
@@ -73,7 +73,7 @@ test('v20 sparse and custom designs never acquire privacy structures, even with 
   assert.deepEqual(previous,original,'Migration must not change the stored input');
   for(const restored of [model.decodeState('v=20&site=sternicza-11'),model.migrateSavedState({siteId:'sternicza-11'},20)]){
     for(const key of flags)assert.equal(restored[key],false,key);
-    assert.deepEqual(restored.screeningTrees,model.DEFAULTS.screeningTrees);
+    assert.deepEqual(restored.screeningTrees,model.decodeState('v=29&site=sternicza-11').screeningTrees);
   }
 });
 

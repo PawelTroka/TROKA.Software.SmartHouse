@@ -63,7 +63,7 @@ test('fresh garden envelopes are contained and the retained garage exposes its s
 
 test('finished footprints identify true obstacles and preserve intended joins',()=>{
   const {data,s}=sternicza;
-  const retained=evaluateDesignChecks({...s,removeGarage:false},data);
+  const retained=evaluateDesignChecks({...s,summerPoolLayout:false,jacuzziCentered:false,removeGarage:false},data);
   assert.match(retained.checks.find(c=>c.id==='pool-garage').detail,/9.76 m²/);
   assert.match(retained.checks.find(c=>c.id==='terrace-garage').detail,/0.58 m²/);
   // The garage existing elsewhere must not trigger the old blanket warning.
@@ -81,38 +81,24 @@ test('finished footprints identify true obstacles and preserve intended joins',(
   assert.match(dimensionScheduleMarkup(dimensions),/outside parcel/);
 });
 
-test('the canopy keeps its 34 m² roof and a clear service band, with identical member rectangles across output paths',()=>{
-  const {data,s}=sternicza,layout=terraceCover(s,data),tub=jacuzziBounds(s,data);
-  const posts=canopySupportBounds(s,data),shadows=prepareSunGeometry(s,data).occluders.filter(o=>o.id==='canopy-post');
+test('the column-free canopy keeps its roof extent without invisible posts in any output',()=>{
+  const {data,s}=sternicza,layout=terraceCover(s,data);
+  const posts=canopySupportBounds(s,data),shadows=prepareSunGeometry(s,data).occluders;
   const plan=terraceCoverPlanMarkup(layout,{X:x=>x,Y:y=>y,scale:1});
   const material=new THREE.MeshBasicMaterial(),mesh=createTerraceCoverGroup(layout,{wood:material,metal:material,stone:material});
-  near(layout.width,8.5);near(layout.depth,4);near(layout.undersideZ-layout.floorZ,3);
-  near(layout.deckArea,34);near(layout.relocatedSupport.extensionM,.60);
-  assert.equal(posts.length,2);assert.equal(shadows.length,2);
-  for(const [i,p] of posts.entries()){
-    near(overlapArea(ringOf(p),ringOf(tub)),0);near(overlapArea(ringOf(p),ringOf(tub.serviceAccess)),0);
-    near(shadows[i].base,p.z0);near(shadows[i].top,p.z1);
-    near(overlapArea(shadows[i].footprint,ringOf(p)),.01);
-    assert.ok(plan.includes('data-cover-id="'+p.id+'"'));
-    assert.ok(plan.includes('x="'+p.x0+'" y="'+p.y0+'"'));
-    const m=mesh.getObjectByName(p.id),centre=toWorld((p.x0+p.x1)/2,(p.y0+p.y1)/2,(p.z0+p.z1)/2);
-    assert.deepEqual(m.position.toArray(),centre);near(m.geometry.parameters.width,.1);
+  near(layout.width,8.5);near(layout.depth,4);near(layout.undersideZ-layout.floorZ,3);near(layout.deckArea,34);
+  assert.equal(layout.supportSystem,'cantilever');assert.deepEqual(posts,[]);
+  assert.ok(!shadows.some(o=>o.id==='canopy-post'||o.id.includes('outrigger')));
+  assert.doesNotMatch(plan,/data-terrace-cover-part="post"/);
+  for(const b of layout.boxes){
+    const m=mesh.getObjectByName(b.id);assert.ok(m);
+    const bounds=new THREE.Box3().setFromObject(m);
+    near(bounds.min.x,b.x0,1e-6);near(bounds.max.x,b.x1,1e-6);
+    near(bounds.min.y,b.z0,1e-6);near(bounds.max.y,b.z1,1e-6);
+    near(bounds.min.z,b.y0,1e-6);near(bounds.max.z,b.y1,1e-6);
   }
-  near(tub.serviceAccess.x0-posts[0].x1,.05);
-  const beam=layout.boxes.find(b=>b.part==='outrigger');
-  near(beam.z0,posts[0].z1);near(beam.x0,posts[0].x0);
-  assert.ok(beam.x1>layout.bounds.x0);
-  assert.ok(plan.includes('data-cover-id="'+beam.id+'"'));
-  assert.ok(prepareSunGeometry(s,data).occluders.some(o=>o.id===beam.id));
-  assert.ok(mesh.getObjectByName(beam.id));
-  const x=beam.x0+.15,y=(beam.y0+beam.y1)/2;
-  assert.equal(canopyIntersection([x,y,beam.z0-.2],[x,y,beam.z1+.2],s,data)?.id,beam.id);
-  assert.equal(footprintFit(ringOf(beam),data.site.boundary).location,'inside');
-  near(posts[0].z0,gardenGroundAt((posts[0].x0+posts[0].x1)/2,(posts[0].y0+posts[0].y1)/2,s,data));
-  assert.ok(ids(s,data).includes('canopy-support'));
-  assert.ok(!ids({...s,terraceCoverType:'balcony'},data).includes('canopy-support'));
-  for(const child of mesh.children)child.geometry.dispose();
-  material.dispose();
+  assert.ok(!ids(s,data).includes('canopy-support'));
+  for(const child of mesh.children)child.geometry.dispose();material.dispose();
 });
 
 test('all pool options use the true coping grade envelope, depth, swimmer eye and sun receiver',()=>{

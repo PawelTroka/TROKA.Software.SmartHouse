@@ -1,8 +1,8 @@
-import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.33.0';
-import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.33.0';
-import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.33.0';
-import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.33.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.33.0';
+import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.34.0';
+import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.34.0';
+import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.34.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.34.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.34.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -34,7 +34,7 @@ function numberCell(text, tag = 'td') {
   const cell = document.createElement(tag); cell.textContent = text; return cell;
 }
 
-export function createInteriorWorkspace(container, {settings:initial = {}, onChange, onClose, onStatus,getData,getExteriorContext,getContextKey} = {}) {
+export function createInteriorWorkspace(container, {settings:initial = {}, onChange, onClose, onStatus,onWalk,getData,getExteriorContext,getContextKey} = {}) {
   container.classList.add('iw-workspace');
   container.setAttribute('aria-label','Sternicza 11 interior studio');
   container.setAttribute('role','region');
@@ -90,7 +90,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   let state = initial, visible = false, disposed = false, inspectorOpen = false;
   let plan, planKey = '', schedulePlan, drawnPlan = '', lastSceneKey = '', renderedView = 'plan';
   let room, style, scene, sceneLoad, sceneError = '', generation = 0;
-  let returnFocus, drawnRevision = 0;
+  let returnFocus, drawnRevision = 0, walkHandoffPending=false;
   let planBounds, centre, zoom = 1, pan, suppressClick = false;
   function positionPlan() {
     if (!planBounds) return;
@@ -140,7 +140,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function loadScene() {
     if (scene || sceneLoad || sceneError) return;
     const token = generation;
-    sceneLoad = import('./scene-interior.js?v=1.33.0').then(({createInteriorScene}) => {
+    sceneLoad = import('./scene-interior.js?v=1.34.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
         getExteriorContext,
@@ -167,6 +167,10 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function renderStage() {
     if (!visible || !plan) return;
     const view = state.interiorView || 'dollhouse';
+    if(view==='room'&&onWalk){
+      if(!walkHandoffPending){walkHandoffPending=true;queueMicrotask(()=>{walkHandoffPending=false;if(visible&&!disposed)onWalk({floor:plan.floor,roomId:room?.id});});}
+      return;
+    }
     const actual3d = view !== 'plan' && Boolean(scene) && !sceneError;
     renderedView = actual3d ? view : 'plan';
     q('canvas').hidden = view === 'plan' || Boolean(sceneError);
@@ -176,7 +180,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     q('drawing').dataset.renderedView = renderedView;
     Object.assign(container.dataset,{floor:plan.floor,layout:plan.layout,style:style.id,room:room?.id || '',view:renderedView});
     q('legend').hidden = !(state.interiorChanges && plan.layout === 'renovation');
-    q('instructions').textContent = renderedView === 'plan' ? 'Select a numbered room to inspect its area.' : renderedView === 'room' ? 'Drag to look around. Use the arrows to move. Windows look into your garden model.' : 'Drag to orbit. Scroll or pinch to zoom. Select a room to inspect it.';
+    q('instructions').textContent = renderedView === 'plan' ? 'Select a numbered room to inspect its area.' : renderedView === 'room' ? 'Drag to look around. WASD or the arrows walk through the house and garden; the stairs connect every level.' : 'Drag to orbit. Scroll or pinch to zoom. Select a room to inspect it.';
     if (!actual3d) drawPlan();
     if (view === 'plan') {
       scene?.setVisible(false); lastSceneKey = '';
@@ -302,14 +306,14 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
       patch({interiorLayout:layout,interiorRoomId:correspondingRoom(room,next.rooms)?.id || ''});
       return;
     }
-    if (target.dataset.view) {patch({interiorView:target.dataset.view}); return;}
+    if (target.dataset.view) {if(target.dataset.view==='room'&&onWalk)onWalk({floor:plan.floor,roomId:room?.id});else patch({interiorView:target.dataset.view}); return;}
     const selected = target.dataset.iwRoom || target.dataset.scheduleRoom;
     if (selected) {patch({interiorRoomId:selected}); if (target.dataset.scheduleRoom && mobile()) showInspector(false); return;}
     switch (target.dataset.iw) {
       case 'close': onClose?.(); break;
       case 'settings': showInspector(!inspectorOpen); break;
       case 'hide-settings': showInspector(false); break;
-      case 'enter': patch({interiorView:'room',interiorRoomId:room?.id || ''}); break;
+      case 'enter': if(onWalk)onWalk({floor:plan.floor,roomId:room?.id});else patch({interiorView:'room',interiorRoomId:room?.id || ''}); break;
       case 'home': scene?.home(); break;
       case 'zoom-in': zoom = Math.min(3,zoom+.5); positionPlan(); break;
       case 'zoom-out': zoom = Math.max(1,zoom-.5); positionPlan(); break;
