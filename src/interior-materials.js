@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.34.0';
-import {exteriorSurfacePixels} from './exterior-materials.js?v=1.34.0';
-import {getDesignStyle} from './design-styles.js?v=1.34.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.34.0';
-import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.34.0';
+import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.35.0';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.35.0';
+import {getDesignStyle} from './design-styles.js?v=1.35.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.35.0';
+import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.35.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {
@@ -149,7 +149,7 @@ export function interiorMaterials(styleId,{svgMode=false}={}) {
     boards:make(current?'#c9a47b':mix(p.wood,'#ddc3a0',interiorRecipe.floor==='dark-boards'?.11:.30),.69,{map:floorMap,...(!current?{bumpMap:floorMap,bumpScale:.006}:{})}),tiles:make(mix(p.surface,'#e7e3d7',.27),['zellige','marble','mosaic'].includes(interiorRecipe.wetFloor)?.27:.63,{map:tileMap,...(!current?{bumpMap:tileMap,bumpScale:interiorRecipe.wetFloor==='riverstone'?.018:.006}:{})}),
     stone:make(coastal?'#f1eee4':mix(p.edge,'#e6ded0',.27),coastal?.36:interiorRecipe.wetFloor==='marble'?.28:.58,{map:stoneMap,...(!current?{bumpMap:stoneMap,bumpScale:.004}:{})}),slate:make(mix(p.frame,'#a5aaa1',.34),.84,{map:tileMap}),
     frame:make(p.frame,.48,{metalness:.15}),dark:make('#303938',.4),blackGlass:make('#182628',.17,{metalness:.42}),steel:make('#bcbab0',.27,{metalness:.73}),bronze:make('#a18356',.32,{metalness:.62}),
-    cabinet:make(current?'#9b9d87':mix(p.accent,p.edge,.4),interiorRecipe.cabinet==='gloss'?.20:.51),fabric:physical(p.fabric,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:interiorRecipe.upholstery==='boucle'?.012:.004}:{})}),accent:physical(p.accent,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:.004}:{})}),
+    cabinet:physical(current?'#9b9d87':mix(p.accent,p.edge,.4),interiorRecipe.cabinet==='gloss'?.20:.51),fabric:physical(p.fabric,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:interiorRecipe.upholstery==='boucle'?.012:.004}:{})}),accent:physical(p.accent,fabricRoughness,{map:linen,...(!current?{bumpMap:linen,bumpScale:.004}:{})}),
     linen:physical('#f5ecdb',.93,{map:linen}),duvet:physical(mix(p.fabric,p.accent,.21),.92,{map:linen}),rug:make(mix(p.edge,p.accent,.15),.99,{map:map(weave(true))}),
     painted:make('#f5f4eb',.58,coastal?{map:wallMap,bumpMap:wallMap,bumpScale:.002}:{}),lampShade:make('#f4eddb',.92,{map:linen,side:THREE.DoubleSide,emissive:'#e8dec7',emissiveIntensity:.08}),
     ceramic:physical('#fcf9eb',.2,{metalness:0,clearcoat:.22,clearcoatRoughness:.12}),water:make('#a8c6bf',.12,{metalness:.17}),glass:physical('#eef8f7',.06,{transparent:true,opacity:.14,depthWrite:false,metalness:0,ior:1.5,reflectivity:.5,side:THREE.DoubleSide}),
@@ -216,6 +216,21 @@ export function interiorMaterials(styleId,{svgMode=false}={}) {
     for(const material of [m.wood,m.oak]){
       surface(material,finishes.wood,{seams:false});
       material.userData.woodGrainAxis=getMaterialForFinish(finishes.wood,{seams:false})?.grainAxis;
+    }
+    // Veneer fronts use the same measured wood finish as the joinery. Keep
+    // painted fronts quiet, with a restrained coating instead of noisy grain.
+    const timberCabinet=['fluted','slatted','shoji','midcentury','louvred'].includes(interiorRecipe.cabinet);
+    if(timberCabinet){
+      m.cabinet.color.copy(m.wood.color);
+      surface(m.cabinet,finishes.wood,{seams:false,normalStrength:.18});
+      m.cabinet.userData.woodGrainAxis=m.wood.userData.woodGrainAxis;
+      m.cabinet.clearcoat=.12;m.cabinet.clearcoatRoughness=.48;
+    }else if(interiorRecipe.cabinet==='gloss'){
+      m.cabinet.clearcoat=.7;m.cabinet.clearcoatRoughness=.16;
+    }else if(interiorRecipe.cabinet==='steel'){
+      m.cabinet.color.copy(m.steel.color);m.cabinet.metalness=.78;m.cabinet.roughness=.34;
+    }else{
+      m.cabinet.clearcoat=.06;m.cabinet.clearcoatRoughness=.65;
     }
     const floorOptions=['dark-boards','dark-parquet','bleached-boards','pale-boards','deco-parquet'].includes(interiorRecipe.floor)?{colorMode:'palette'}:{};
     surface(m.floor||m.boards,finishes.floor,floorOptions);

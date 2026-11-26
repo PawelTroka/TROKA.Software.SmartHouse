@@ -1,6 +1,6 @@
 /** Undo design edits without moving the camera, changing daylight or replaying a
  * garage preview. A bounded session history is independent of saved A/B designs. */
-export const VIEW_ONLY_KEYS=Object.freeze(['mode','preset','observerX','observerY','eyeHeight','poolEyeAboveWater','lookYaw','lookPitch','sunDate','sunMinutes','sunEnabled','sunPathVisible','showDimensions','showRays','garageProgress','garageReverse','renderQuality','sceneMotion']);
+export const VIEW_ONLY_KEYS=Object.freeze(['mode','preset','observerX','observerY','eyeHeight','poolEyeAboveWater','lookYaw','lookPitch','walkNavigation','sunDate','sunMinutes','sunEnabled','sunPathVisible','showDimensions','showRays','garageProgress','garageReverse','renderQuality','sceneMotion']);
 const copy=value=>JSON.parse(JSON.stringify(value));
 const ignored=new Set(VIEW_ONLY_KEYS);
 const fingerprint=value=>JSON.stringify(Object.fromEntries(Object.keys(value).filter(key=>!ignored.has(key)).sort().map(key=>[key,value[key]])));

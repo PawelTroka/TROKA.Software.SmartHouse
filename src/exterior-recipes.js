@@ -1,5 +1,6 @@
 // Architectural and furniture recipes shared by all interior/exterior renderers.
 // Pure data: importing style choices never creates a WebGL renderer or loads images.
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const spec=(wall,roof,wood,paving,fabric,metal,coverage,dining,guard,gable='mineral')=>Object.freeze({wall,roof,wood,paving,fabric,metal,coverage,dining,guard,gable});
 export const EXTERIOR_SURFACES=Object.freeze({
   'organic-modern':spec('limewash','standing-seam','oak','travertine','boucle','bronze','stone-volumes','oval-six','glass'),
@@ -24,6 +25,7 @@ export const EXTERIOR_SURFACES=Object.freeze({
   'desert-modern':spec('clay-render','zinc','walnut','sandstone','canvas','bronze','mineral-base','low-banquette','glass'),
   'alpine-lodge':spec('sand-render','slate','cedar','cedar','woven','blackened-steel','upper-and-piers','long-six','horizontal-timber','continue'),
   'industrial-loft':spec('board-concrete','standing-seam','reclaimed-wood','board-concrete','canvas','blackened-steel','all-panels','long-six','steel-pickets'),
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,spec(...style.surfaces)])),
 });
 export const getExteriorSurfaceSpec=style=>EXTERIOR_SURFACES[typeof style==='string'?style:style?.id]??null;
 

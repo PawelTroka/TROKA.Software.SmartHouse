@@ -1,58 +1,59 @@
 import * as THREE from '../vendor/three.module.js';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=1.34.0';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=1.35.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.34.0';
-import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.34.0';
-import {houseModelFrame} from './house-model.js?v=1.34.0';
-import {createWalkNavigation} from './house-walk.js?v=1.34.0';
-import {updateHstOpening} from './interior-architecture.js?v=1.34.0';
-import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.34.0';
-import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.34.0';
-import { addHouseRenovation } from './scene-house-renovation.js?v=1.34.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.34.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.34.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.34.0';
-import { sampledRoofFaces } from './roof-mesh.js?v=1.34.0';
-import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.34.0';
-import { renderBudget } from './render-quality.js?v=1.34.0';
-import {latestIntersectionEntry} from './render-visibility.js?v=1.34.0';
-import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.34.0';
-import { createHedgeVegetation } from './scene-vegetation.js?v=1.34.0';
-import { createPoolReflections } from './scene-reflections.js?v=1.34.0';
-import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.34.0';
-import { getDesignStyle } from './design-styles.js?v=1.34.0';
-import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.34.0';
-import { createRenovationGardenDetails } from './scene-renovation-garden.js?v=1.34.0';
-import { resortTerraceLayout } from './resort-garden.js?v=1.34.0';
-import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.34.0';
-import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.34.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.34.0';
-import { getSiteProfile } from './sites.js?v=1.34.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.34.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.34.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.34.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.34.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.34.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.34.0';
-import {createJacuzziEffects} from './scene-jacuzzi-effects.js?v=1.34.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.34.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.34.0';
-import { gardenDimensions } from './dimensions.js?v=1.34.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.34.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.34.0';
-import {existingCanopyRecords} from './existing-vegetation.js?v=1.34.0';
-import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.34.0';
-import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.34.0';
-import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.34.0';
-import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.34.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.34.0';
-import {createContextRoofFeatures} from './scene-context-roof.js?v=1.34.0';
-import {projectContextGroundUVs} from './context-ground.js?v=1.34.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.34.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.34.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.34.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.34.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.34.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.35.0';
+import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.35.0';
+import {houseModelFrame} from './house-model.js?v=1.35.0';
+import {createWalkNavigation} from './house-walk.js?v=1.35.0';
+import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds,smoothWalkElevation} from './walk-motion.js?v=1.35.0';
+import {updateHstOpening} from './interior-architecture.js?v=1.35.0';
+import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.35.0';
+import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.35.0';
+import { addHouseRenovation } from './scene-house-renovation.js?v=1.35.0';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.35.0';
+import { entranceAccessLayout } from './entrance-access.js?v=1.35.0';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.35.0';
+import { sampledRoofFaces } from './roof-mesh.js?v=1.35.0';
+import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.35.0';
+import { renderBudget } from './render-quality.js?v=1.35.0';
+import {latestIntersectionEntry} from './render-visibility.js?v=1.35.0';
+import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.35.0';
+import { createHedgeVegetation } from './scene-vegetation.js?v=1.35.0';
+import { createPoolReflections } from './scene-reflections.js?v=1.35.0';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.35.0';
+import { getDesignStyle } from './design-styles.js?v=1.35.0';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.35.0';
+import { createRenovationGardenDetails } from './scene-renovation-garden.js?v=1.35.0';
+import { resortTerraceLayout } from './resort-garden.js?v=1.35.0';
+import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.35.0';
+import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.35.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.35.0';
+import { getSiteProfile } from './sites.js?v=1.35.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.35.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.35.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.35.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.35.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.35.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.35.0';
+import {createJacuzziEffects} from './scene-jacuzzi-effects.js?v=1.35.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.35.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.35.0';
+import { gardenDimensions } from './dimensions.js?v=1.35.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.35.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.35.0';
+import {existingCanopyRecords} from './existing-vegetation.js?v=1.35.0';
+import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.35.0';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.35.0';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.35.0';
+import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.35.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.35.0';
+import {createContextRoofFeatures} from './scene-context-roof.js?v=1.35.0';
+import {projectContextGroundUVs} from './context-ground.js?v=1.35.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.35.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.35.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.35.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.35.0';
+import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.35.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -427,19 +428,31 @@ export function createScene(container, data, callbacks = {}) {
   let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
   let garageScene=null,currentGarageLayout=null,sharedHouseModel=null,contextRevision=0;
   let jacuzziEffects=null;
-  let walkModel=null,walkPose=null,lastWalkTime=0,lastWalkNotice=0,walkFast=false;
+  let walkModel=null,walkPose=null,lastWalkTime=0,lastWalkNotice=0,walkFast=false,walkFloating=false,walkSettling=false;
   const walkKeys=new Set();
-  const keyDirections=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
+  const keyDirections=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right'],['KeyE','up'],['PageUp','up'],['KeyQ','down'],['PageDown','down']]);
   const walkPad=document.createElement('div');walkPad.className='walk-pad';walkPad.hidden=true;walkPad.setAttribute('aria-label','Walk controls');
   for(const [direction,label,glyph,column,row]of [['forward','Walk forward','↑',2,1],['left','Step left','←',1,2],['back','Step back','↓',2,2],['right','Step right','→',3,2]]){
     const button=document.createElement('button');button.type='button';button.textContent=glyph;button.setAttribute('aria-label',label);
     button.style.gridColumn=column;button.style.gridRow=row;
-    button.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();button.setPointerCapture(event.pointerId);walkKeys.add(direction);requestRender();});
-    for(const event of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(event,()=>walkKeys.delete(direction));
+    button.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();button.setPointerCapture(event.pointerId);walkKeys.add(direction);cameraInteraction();});
+    for(const event of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(event,()=>{walkKeys.delete(direction);cameraInteraction();});
     button.addEventListener('click',event=>{if(event.detail===0){stepWalk(direction==='right'?1:direction==='left'?-1:0,direction==='forward'?1:direction==='back'?-1:0,.28);requestRender();}});
     walkPad.append(button);
   }
   container.append(walkPad);
+  const walkElevationPad=document.createElement('div');walkElevationPad.className='walk-elevation-pad';walkElevationPad.hidden=true;walkElevationPad.setAttribute('aria-label','Free exploration height');
+  for(const [direction,label,glyph]of [['up','Rise (E)','↑ Rise'],['down','Lower (Q)','↓ Lower'],['follow','Follow ground (R)','↧ Ground']]){
+    const button=document.createElement('button');button.type='button';button.textContent=glyph;button.dataset.walkElevation=direction;button.setAttribute('aria-label',label);button.title=label;
+    if(direction==='follow')button.addEventListener('click',followWalkGround);
+    else{
+      button.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();button.setPointerCapture(event.pointerId);walkKeys.add(direction);cameraInteraction();});
+      for(const event of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(event,()=>{walkKeys.delete(direction);cameraInteraction();});
+      button.addEventListener('click',event=>{if(event.detail===0){stepWalk(0,0,.24,direction==='up'?1:-1);requestRender();}});
+    }
+    walkElevationPad.append(button);
+  }
+  container.append(walkElevationPad);
   const unsubscribeSurfaceAssets=onSurfaceAssetsChanged(()=>{statusChanged=true;reflections?.invalidate();requestRender();});
 
   const box = (group, x, y, z, width, depth, height, material, cast = true, svgOrder = 0) => {
@@ -1364,13 +1377,30 @@ export function createScene(container, data, callbacks = {}) {
     return Boolean(motion && !svgMode && !reducedMotion.matches && mode!=='plan' && canDraw());
   }
   const firstPerson=()=>mode==='eye'||mode==='walk';
+  const walkNavigation=()=>currentSettings.walkNavigation==='physical'?'physical':'free';
+  function syncWalkControls(){
+    walkPad.hidden=mode!=='walk';walkElevationPad.hidden=mode!=='walk'||walkNavigation()!=='free';
+    const groundButton=walkElevationPad.querySelector('[data-walk-elevation="follow"]');
+    groundButton.setAttribute('aria-pressed',String(!walkFloating));
+  }
+  function orientWalkCamera(){
+    camera.rotation.order='YXZ';camera.rotation.y=-(Math.PI+eyeYaw*Math.PI/180);
+    camera.rotation.x=eyePitch*Math.PI/180;camera.rotation.z=0;
+  }
   function notifyWalk(force=false){
     if(!walkPose)return;
     const now=performance.now();if(!force&&now-lastWalkNotice<160)return;lastWalkNotice=now;
     const room=walkModel?.plans[walkPose.floor]?.rooms.find(r=>r.id===walkPose.roomId);
     renderer.domElement.dataset.walkFloor=walkPose.floor||'garden';
     renderer.domElement.dataset.walkPosition=walkPose.position.map(v=>v.toFixed(3)).join(',');
-    callbacks.onWalkState?.({...walkPose,roomName:room?.name||room?.label||null});
+    renderer.domElement.dataset.walkNavigation=walkNavigation();
+    renderer.domElement.dataset.walkFloating=String(walkFloating);
+    renderer.domElement.dataset.walkSwimming=String(!!walkPose.swimming&&!walkFloating);
+    renderer.domElement.dataset.walkAltitude=camera.position.y.toFixed(3);
+    renderer.domElement.dataset.walkYaw=eyeYaw.toFixed(4);
+    renderer.domElement.dataset.walkPitch=eyePitch.toFixed(4);
+    renderer.domElement.dataset.walkFov=String(camera.fov);
+    callbacks.onWalkState?.({...walkPose,navigation:walkNavigation(),floating:walkFloating,altitude:camera.position.y,roomName:room?.name||room?.label||null});
   }
   function applyWalkPose(pose){
     if(!pose)return false;walkPose=pose;
@@ -1379,7 +1409,7 @@ export function createScene(container, data, callbacks = {}) {
       eyeYaw=Math.atan2(-d[0],d[2])*180/Math.PI;eyePitch=Math.asin(Math.max(-1,Math.min(1,d[1]/l)))*180/Math.PI;
     }
     camera.position.fromArray(pose.position);
-    camera.lookAt(camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch))));
+    walkFloating=!!pose.floating;walkSettling=false;orientWalkCamera();syncWalkControls();
     notifyWalk(true);requestRender();return true;
   }
   function startWalk({floor,roomId,position}={}){
@@ -1389,22 +1419,44 @@ export function createScene(container, data, callbacks = {}) {
     const preferred=position||(floor==='garden'
       ?toWorld(gardenX,gardenY,gardenGroundAt(gardenX,gardenY,currentSettings,data)+1.57)
       :currentObserver&&toWorld(currentObserver.x,currentObserver.y,currentObserver.z));
-    const pose=floor&&floor!=='garden'?walkModel.spawnFloor(floor,roomId):walkModel.spawnGarden(preferred);
+    let pose=floor&&floor!=='garden'?walkModel.spawnFloor(floor,roomId):walkNavigation()==='free'&&preferred
+      ?walkModel.locateFree(preferred,{floorHint:floor==='garden'?'garden':undefined}):walkModel.spawnGarden(preferred);
     if(!pose)return false;
-    mode='walk';walkKeys.clear();lastWalkTime=0;controls.enabled=false;markerGroup.visible=false;walkPad.hidden=false;
-    camera.fov=eyeFov=65;camera.near=.035;camera.up.set(0,1,0);camera.updateProjectionMatrix();
-    renderer.domElement.setAttribute('aria-label','Walk through the house and garden. Use WASD or arrow keys to move; drag to look.');
+    if(walkNavigation()==='free')pose={...walkModel.locateFree(pose.position,{eyeHeight:pose.eyeHeight,floorHint:pose.floor}),direction:pose.direction};
+    mode='walk';walkKeys.clear();lastWalkTime=0;walkFast=false;walkFloating=false;controls.enabled=false;markerGroup.visible=false;
+    camera.fov=eyeFov=WALK_COMFORT.fov;camera.near=.035;camera.up.set(0,1,0);camera.updateProjectionMatrix();
+    renderer.domElement.setAttribute('aria-label','Walk through the house and garden. WASD or arrows move; drag to look. In free exploration, E rises, Q lowers and R follows the ground.');
     applyWalkPose(pose);renderer.domElement.focus({preventScroll:true});return true;
   }
-  function stepWalk(right,forward,distance){
+  function setWalkNavigation(value){
+    currentSettings={...currentSettings,walkNavigation:value==='physical'?'physical':'free'};
+    walkKeys.delete('up');walkKeys.delete('down');walkFloating=false;
+    if(mode==='walk'&&walkPose){
+      const options={eyeHeight:walkPose.eyeHeight,floorHint:walkPose.floor};
+      const pose=walkNavigation()==='free'?walkModel.locateFree(walkPose.position,options):
+        walkModel.locate(walkPose.position,{...options,maxDistance:.30})||walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden(walkPose.position);
+      if(pose){walkPose=pose;walkSettling=true;camera.position.x=pose.position[0];camera.position.z=pose.position[2];}
+      cameraInteraction();notifyWalk(true);
+    }
+    syncWalkControls();return walkNavigation();
+  }
+  function followWalkGround(){
+    if(mode!=='walk'||!walkPose||walkNavigation()!=='free')return false;
+    walkPose=walkModel.locateFree(camera.position.toArray(),{eyeHeight:walkPose.eyeHeight,floorHint:walkFloating?undefined:walkPose.floor});
+    walkFloating=false;walkSettling=true;syncWalkControls();cameraInteraction();notifyWalk(true);return true;
+  }
+  function stepWalk(right,forward,distance,vertical=0){
     if(mode!=='walk'||!walkModel||!walkPose||!(distance>0))return;
-    const norm=Math.hypot(right,forward);if(!norm)return;
-    const yaw=eyeYaw*Math.PI/180;
-    const delta=[(-Math.sin(yaw)*forward-Math.cos(yaw)*right)/norm*distance,0,
-      (Math.cos(yaw)*forward-Math.sin(yaw)*right)/norm*distance];
-    walkPose=walkModel.move(walkPose.position,delta,{eyeHeight:walkPose.eyeHeight});
-    camera.position.fromArray(walkPose.position);
-    camera.lookAt(camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch))));
+    const free=walkNavigation()==='free';vertical=free?vertical:0;
+    if(!right&&!forward&&!vertical)return;
+    if(vertical&&!walkFloating){walkPose.position[1]=camera.position.y;walkFloating=true;syncWalkControls();}
+    const delta=walkDelta(right,forward,distance,Math.PI+eyeYaw*Math.PI/180,vertical);
+    const options={eyeHeight:walkPose.eyeHeight,floorHint:walkPose.floor,floating:walkFloating};
+    walkPose=free?walkModel.moveFree(walkPose.position,delta,options):walkModel.move(walkPose.position,delta,options);
+    camera.position.x=walkPose.position[0];camera.position.z=walkPose.position[2];
+    if(walkFloating)camera.position.y=walkPose.position[1];
+    walkSettling=Math.abs(camera.position.y-walkPose.position[1])>.0005;
+    orientWalkCamera();
     cameraInteraction();notifyWalk();
   }
   function getPerformanceInfo(){
@@ -1426,17 +1478,23 @@ export function createScene(container, data, callbacks = {}) {
       garageVehicles:garageScene?.group.children.filter(child=>child.visible&&child.userData.vehicle).length??0,
       contextFacades:contextDetails?.facades||{},contextBalconies:contextDetails?.balconies||{},contextEnvelopes:contextDetails?.envelopes||{},
       geometries:memory?.geometries??null,textures:memory?.textures??null,motionActive:motionActive(),
-      walk:mode==='walk'?{...walkPose,...walkModel?.getDiagnostics()}:null,
+      walk:mode==='walk'?{...walkPose,navigation:walkNavigation(),floating:walkFloating,altitude:camera.position.y,cameraPosition:camera.position.toArray(),settling:walkSettling,comfort:WALK_COMFORT,...walkModel?.getDiagnostics()}:null,
       ...presentation?.getDiagnostics(),...reflections?.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};
   }
   function renderNow(now) {
     renderPending=false;frameHandle=0;if(!canDraw())return;
     const walking=mode==='walk'&&walkKeys.size>0;
+    const walkDt=walkFrameSeconds(now,lastWalkTime);
     if(walking){
-      const dt=lastWalkTime?Math.min(.25,(now-lastWalkTime)/1000):1/60;
-      stepWalk(Number(walkKeys.has('right'))-Number(walkKeys.has('left')),Number(walkKeys.has('forward'))-Number(walkKeys.has('back')),dt*(walkFast?2.7:1.65));
+      stepWalk(Number(walkKeys.has('right'))-Number(walkKeys.has('left')),Number(walkKeys.has('forward'))-Number(walkKeys.has('back')),walkDt*(walkFast?WALK_COMFORT.fastSpeed:WALK_COMFORT.speed),Number(walkKeys.has('up'))-Number(walkKeys.has('down')));
     }
-    lastWalkTime=walking?now:0;
+    if(mode==='walk'&&walkPose&&walkSettling){
+      camera.position.y=smoothWalkElevation(camera.position.y,walkPose.position[1],walkDt);
+      walkSettling=Math.abs(camera.position.y-walkPose.position[1])>.0005;
+      if(!walkSettling)camera.position.y=walkPose.position[1];
+      cameraInteraction();notifyWalk(!walkSettling);
+    }
+    lastWalkTime=walking||walkSettling?now:0;
     if(!svgMode&&shadowBoundsDirty){
       refreshShadowBounds();renderer.shadowMap.needsUpdate=true;
     }
@@ -1464,7 +1522,7 @@ export function createScene(container, data, callbacks = {}) {
     if(animate&&!motionTimer)motionTimer=setTimeout(()=>{
       motionTimer=0;if(motionActive())requestRender();
     },1000/motionFps);
-    if(walking)requestRender();
+    if(walking||walkSettling)requestRender();
   }
   function requestRender() {
     if(!renderPending&&canDraw()){renderPending=true;frameHandle=requestAnimationFrame(renderNow);}
@@ -1473,7 +1531,7 @@ export function createScene(container, data, callbacks = {}) {
     clearTimeout(motionTimer);motionTimer=0;lastMotionTime=0;statusChanged=true;
     if(canDraw())requestRender();
     else {
-      walkKeys.clear();lastWalkTime=0;
+      stopWalking();
       cancelAnimationFrame(frameHandle);frameHandle=0;renderPending=false;
       callbacks.onPerformanceInfo?.(getPerformanceInfo());
     }
@@ -1491,11 +1549,21 @@ export function createScene(container, data, callbacks = {}) {
     if(!motion){waveTime=0;textures?.waterNormal.offset.set(0,0);}
     resize();visibilityChanged();
   }
+  function finishCameraInteraction(){
+    interactionTimer=0;
+    // A slow frame is not a pause in navigation. Keep the same render target
+    // and post-processing profile until every held input and height transition
+    // finishes, rather than restoring expensive effects between slow frames.
+    if(canDraw()&&(walkKeys.size||walkSettling||pointerStart||eyePointers.size)){
+      interactionTimer=setTimeout(finishCameraInteraction,180);return;
+    }
+    interacting=false;statusChanged=true;resize();requestRender();
+  }
   function cameraInteraction(){
     if(!svgMode&&canDraw()){
       if(!interacting){interacting=true;statusChanged=true;resize();}
       clearTimeout(interactionTimer);
-      interactionTimer=setTimeout(()=>{interacting=false;statusChanged=true;resize();requestRender();},180);
+      interactionTimer=setTimeout(finishCameraInteraction,180);
     }
     requestRender();
   }
@@ -1504,7 +1572,7 @@ export function createScene(container, data, callbacks = {}) {
   controls.addEventListener('end',cameraInteraction);
 
   function orientEye() {
-    if(mode==='walk'&&walkPose){camera.position.fromArray(walkPose.position);camera.lookAt(camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch))));requestRender();return;}
+    if(mode==='walk'&&walkPose){orientWalkCamera();notifyWalk(true);requestRender();return;}
     if(!currentObserver)return;
     camera.position.copy(point(currentObserver.x,currentObserver.y,currentObserver.z));
     const target=camera.position.clone().add(point(...gazeDirection(eyeYaw,eyePitch)));
@@ -1514,7 +1582,7 @@ export function createScene(container, data, callbacks = {}) {
   function setView(nextMode,observer=currentObserver,settings=currentSettings) {
     const previous=mode;mode=['orbit','eye','walk','plan'].includes(nextMode)?nextMode:'orbit';
     currentObserver=observer||currentObserver;currentSettings=settings||currentSettings;
-    walkKeys.clear();lastWalkTime=0;walkPad.hidden=mode!=='walk';
+    walkKeys.clear();lastWalkTime=0;if(mode!=='walk')walkSettling=false;syncWalkControls();
     controls.enabled=!firstPerson();controls.enableRotate=mode==='orbit';controls.enablePan=!firstPerson();
     markerGroup.visible=!firstPerson();camera.up.set(0,1,0);
     if(mode==='walk'){
@@ -1583,7 +1651,7 @@ export function createScene(container, data, callbacks = {}) {
     currentSettings={...currentSettings,hstOpen:settings.hstOpen};
     const changed=sharedHouseModel?updateHstOpening(sharedHouseModel.root,currentSettings):0;
     walkModel?.updateHst(currentSettings);
-    if(mode==='walk'&&walkPose&&!walkModel?.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30})){
+    if(mode==='walk'&&walkNavigation()==='physical'&&walkPose&&!walkModel?.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30})){
       applyWalkPose(walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden());
     }
     if(changed){contextRevision++;shadowBoundsDirty=true;requestRender();}
@@ -1591,6 +1659,7 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   function update(settings,observer,analysis,activeData=data) {
+    const previousNavigation=walkNavigation();
     if(activeData!==data){
       data=activeData;
       gardenLightBoundary?.setBoundary(data.site.boundary);
@@ -1618,10 +1687,12 @@ export function createScene(container, data, callbacks = {}) {
     if(!walkModel||finishesChanged){
       walkModel=createWalkNavigation(data,settings);
       if(mode==='walk'&&walkPose){
-        const retained=walkModel.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30});
+        const retained=walkNavigation()==='free'?walkModel.locateFree(walkPose.position,{eyeHeight:walkPose.eyeHeight,floorHint:walkPose.floor,floating:walkFloating}):
+          walkModel.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30});
         applyWalkPose(retained||walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden(walkPose.position));
       }
     }
+    if(previousNavigation!==walkNavigation())setWalkNavigation(walkNavigation());
     updateHstPreview(settings);
     if(finishesChanged&&!svgMode){projectArchitecturalMaterialUVs(scene);reflections?.setSurface(scene.getObjectByName('pool-water'));}
     if(finishesChanged||dimensionsVisible!==settings.showDimensions){
@@ -1693,6 +1764,7 @@ export function createScene(container, data, callbacks = {}) {
     if(firstPerson()){
       eyePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
       renderer.domElement.setPointerCapture(event.pointerId);
+      cameraInteraction();
       if(eyePointers.size>=2){const p=[...eyePointers.values()];pinchDistance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y);pinchFov=eyeFov;dragged=true;return;}
     }
     pointerStart={x:event.clientX,y:event.clientY,id:event.pointerId};pointerLast={x:event.clientX,y:event.clientY};dragged=false;
@@ -1703,14 +1775,18 @@ export function createScene(container, data, callbacks = {}) {
       eyePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
       if(eyePointers.size>=2){
         const p=[...eyePointers.values()],distance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y);
-        if(distance>0&&pinchDistance>0){eyeFov=Math.max(35,Math.min(95,pinchFov*pinchDistance/distance));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();}
+        if(mode!=='walk'&&distance>0&&pinchDistance>0){eyeFov=Math.max(35,Math.min(95,pinchFov*pinchDistance/distance));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();}
         dragged=true;return;
       }
     }
     if(!pointerStart||event.pointerId!==pointerStart.id)return;
     if(Math.hypot(event.clientX-pointerStart.x,event.clientY-pointerStart.y)>5)dragged=true;
     if(firstPerson()&&pointerLast){
-      eyeYaw-=(event.clientX-pointerLast.x)*.13;eyePitch=Math.max(-65,Math.min(65,eyePitch+(event.clientY-pointerLast.y)*.13));
+      const dx=event.clientX-pointerLast.x,dy=event.clientY-pointerLast.y;
+      if(mode==='walk'){
+        const look=walkLook(eyeYaw*Math.PI/180,eyePitch*Math.PI/180,dx,dy);
+        eyeYaw=look.yaw*180/Math.PI;eyePitch=look.pitch*180/Math.PI;
+      }else{eyeYaw-=dx*.13;eyePitch=Math.max(-65,Math.min(65,eyePitch+dy*.13));}
       pointerLast={x:event.clientX,y:event.clientY};orientEye();
     }
   }
@@ -1727,13 +1803,14 @@ export function createScene(container, data, callbacks = {}) {
       if(hit){const [x,y]=fromWorld(hit.point.x,hit.point.y,hit.point.z),p={x,y};if(contains(p.x,p.y,data.site.boundary))callbacks.onPick(p);}
     }
     if(firstPerson()&&dragged)callbacks.onCameraChange?.({lookYaw:eyeYaw,lookPitch:eyePitch});
-    pointerStart=null;pointerLast=null;
+    pointerStart=null;pointerLast=null;cameraInteraction();
   }
   function keyDown(event){
     if(mode==='walk'){
       if(event.code==='ShiftLeft'||event.code==='ShiftRight'){walkFast=true;return;}
       const direction=keyDirections.get(event.code);
-      if(direction){event.preventDefault();walkKeys.add(direction);requestRender();return;}
+      if(direction){event.preventDefault();if((direction==='up'||direction==='down')&&walkNavigation()!=='free')return;walkKeys.add(direction);cameraInteraction();return;}
+      if(event.code==='KeyR'){event.preventDefault();followWalkGround();return;}
       if(event.key==='Escape'){event.preventDefault();walkKeys.clear();callbacks.onExitWalk?.();return;}
       return;
     }
@@ -1745,17 +1822,18 @@ export function createScene(container, data, callbacks = {}) {
   function keyUp(event){
     const direction=keyDirections.get(event.code);if(direction)walkKeys.delete(direction);
     if(event.code==='ShiftLeft'||event.code==='ShiftRight')walkFast=false;
-    if(mode==='walk'&&!walkKeys.size){lastWalkTime=0;notifyWalk(true);}
+    if(mode==='walk'&&!walkKeys.size){if(!walkSettling)lastWalkTime=0;cameraInteraction();notifyWalk(true);}
   }
-  function stopWalking(){walkKeys.clear();lastWalkTime=0;walkFast=false;}
+  function stopWalking(){walkKeys.clear();lastWalkTime=0;walkFast=false;eyePointers.clear();pointerStart=pointerLast=null;}
   function wheel(event){
     if(!firstPerson())return;
-    event.preventDefault();cameraInteraction();eyeFov=Math.max(35,Math.min(95,eyeFov+event.deltaY*.02));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();
+    event.preventDefault();if(mode==='walk')return;cameraInteraction();eyeFov=Math.max(35,Math.min(95,eyeFov+event.deltaY*.02));camera.fov=eyeFov;camera.updateProjectionMatrix();requestRender();
   }
   renderer.domElement.addEventListener('pointerdown',pointerDown);
   renderer.domElement.addEventListener('pointermove',pointerMove);
   renderer.domElement.addEventListener('pointerup',pointerUp);
   renderer.domElement.addEventListener('pointercancel',pointerUp);
+  renderer.domElement.addEventListener('lostpointercapture',pointerUp);
   renderer.domElement.addEventListener('keydown',keyDown);
   window.addEventListener('keyup',keyUp);
   window.addEventListener('blur',stopWalking);
@@ -1776,9 +1854,9 @@ export function createScene(container, data, callbacks = {}) {
     cancelAnimationFrame(frameHandle);clearTimeout(motionTimer);clearTimeout(interactionTimer);
     document.removeEventListener('visibilitychange',visibilityChanged);
     reducedMotion.removeEventListener('change',visibilityChanged);
-    window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',stopWalking);renderer.domElement.removeEventListener('blur',stopWalking);walkPad.remove();
+    window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',stopWalking);renderer.domElement.removeEventListener('blur',stopWalking);walkPad.remove();walkElevationPad.remove();
     dimensionOverlay.dispose();sharedHouseModel?.dispose();sharedHouseModel=null;
-    renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
+    renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('lostpointercapture',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const geometries=new Set(),materials=new Set([...Object.values(mat),...Object.values(designMaterials)]);
     scene.traverse(o=>{
       if(o.geometry)geometries.add(o.geometry);
@@ -1810,5 +1888,5 @@ export function createScene(container, data, callbacks = {}) {
       lighting:{sunDirection:direction.toArray(),sunColor:sun.color.getHex(),sunIntensity:sun.intensity,skyColor:ambient.color.getHex(),groundColor:ambient.groundColor.getHex(),ambientIntensity:ambient.intensity,interiorLightStrength:nightLightingState(lastSolar,currentSettings).gardenStrength,background:scene.background?.isColor?scene.background.getHex():0xb9cdd1}};
   }
   const getInteriorContextKey=()=>`${contextRevision}:${solarSignature}`;
-  return {available:true,rendererType,update,updateSun,setView,startWalk,setGarageView,setDesignInspection,updateGaragePreview,updateHstPreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getWalkState:()=>walkPose&&({...walkPose,position:walkPose.position.slice()}),getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
+  return {available:true,rendererType,update,updateSun,setView,startWalk,setWalkNavigation,followWalkGround,setGarageView,setDesignInspection,updateGaragePreview,updateHstPreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getWalkState:()=>walkPose&&({...walkPose,position:walkPose.position.slice(),navigation:walkNavigation(),floating:walkFloating,altitude:camera.position.y,cameraPosition:camera.position.toArray(),lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
 }

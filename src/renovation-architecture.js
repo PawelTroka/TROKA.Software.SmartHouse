@@ -2,6 +2,7 @@
  * These opening records cut the actual walls in both views. Measurements of the
  * original footprint, roof, floors and stairs are never edited by a style.
  */
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,f=0)=>Number.isFinite(Number(x))?Number(x):f;
 const EPS=1e-7;
@@ -33,6 +34,7 @@ export const RENOVATION_ARCHITECTURES=Object.freeze({
   'desert-modern':recipe('desert-modern','Deep-set horizontal picture windows, raised shaded sills and a monumental reveal around the garden HST.',2.92,1.82,.62,-.17,1,0,.055,2,2,.70,.40,.36,'picture',1.14),
   'alpine-lodge':recipe('alpine-lodge','Large paired timber windows with upper lights and sheltered timber reveals around the garden HST.',2.12,2.11,.43,.02,2,1,.09,3,2,.58,.34,.32,'french',1.10),
   'industrial-loft':recipe('industrial-loft','Tall workshop glazing in fine steel grids and a full-width minimalist garden HST.',2.76,2.26,.20,-.06,3,3,.041,2,4,.36,.20,.25,'steel-grid',1.15),
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(s=>[s.id,recipe(s.id,...s.architecture)])),
 });
 export const getRenovationArchitecture=id=>RENOVATION_ARCHITECTURES[typeof id==='string'?id:id?.id]||null;
 
@@ -148,6 +150,14 @@ export function renovatePlanOpenings(plan,{styleId='current'}={}){
     const source=wall.architectureSourceOpenings||wall.openings,length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]);
     const rooms=roomIntervals(plan,wall),fixtures=fixtureWallIntervals(plan,wall),openings=[],sign=directionSign([wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]]);
     for(const [i,o]of source.entries()){
+      if(o.service==='kitchen-sink'){
+        // The single kitchen window belongs to the sink layout, not the style's
+        // general glazing rhythm. Keep its clear span centered on the bowl and
+        // leave the newly closed street wall available for fitted storage.
+        openings.push({...o,...styleOpeningDetails(o,r.id),panes:1,transoms:0,
+          operation:'tilt-turn',roomId:'front-kitchen',source:'side-garden-sink-window-proposal'});
+        continue;
+      }
       if(o.type==='hst'){
         // Continuous opening with slim end jambs; all renovation styles share
         // the user's three-track HST. Structural capacity is not inferred.
@@ -305,7 +315,8 @@ export function renovationArchitecturalParts(layout,styleId){
   const parts=[],guards=[...layout.windows,layout.door,layout.portal,layout.atticWindow].filter(Boolean),openings=guards.filter(w=>w!==layout.portal&&w!==layout.atticWindow&&w.level!=='basement');
   for(const w of openings){
     const edge=layout.edges[w.edgeIndex];if(!edge)continue;
-    const finish=['hidden-bali','scandinavian','japandi','organic-scandinavian','organic-japandi','beach-house','danish-midcentury','finnish-sauna','arts-and-crafts','alpine-lodge'].includes(r.id)?'wood':'houseFrame';
+    const timber=['hidden-bali','scandinavian','japandi','organic-scandinavian','organic-japandi','beach-house','danish-midcentury','finnish-sauna','arts-and-crafts','alpine-lodge'].includes(r.id)||MINIMAL_STYLE_DEFINITIONS.some(s=>s.id===r.id&&s.timberSurrounds);
+    const finish=timber?'wood':'houseFrame';
     const put=(kind,lo,hi,bottom,top,depth)=>{
       if(lo<.10||hi>edge.length-.10||bottom<Math.max(layout.baseZ,edge.baseZ??layout.baseZ)+.03||top>minimumFacadeRoof(edge,lo,hi)-.09)return;
       if(guards.some(o=>o!==w&&o.edgeIndex===w.edgeIndex&&hi>o.lo-.03&&lo<o.hi+.03&&top>o.z-.03&&bottom<o.z+o.height+.03))return;

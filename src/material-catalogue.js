@@ -1,10 +1,11 @@
 // DOM-free material selection used by the scene and the comparison catalogue.
 // These are representative renovation finishes, not photos of the existing house.
-import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.34.0';
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.34.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.34.0';
-import {getDesignStyle} from './design-styles.js?v=1.34.0';
-import {STYLE_MATERIAL_SWATCHES} from './style-material-swatches.js?v=1.34.0';
+import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.35.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.35.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.35.0';
+import {getDesignStyle} from './design-styles.js?v=1.35.0';
+import {STYLE_MATERIAL_SWATCHES} from './style-material-swatches.js?v=1.35.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 export {MATERIAL_ASSETS};
 
 const finish=(asset,label,options={})=>Object.freeze({asset,label,...options});
@@ -65,6 +66,7 @@ export function getMaterialForFinish(name,{seams=true}={}){
 
 const timberFloors=new Set(['boards','wide-boards','dark-boards','pale-boards','bleached-boards','weathered-boards','narrow-boards']);
 const parquetFloors=new Set(['herringbone','dark-parquet','deco-parquet']);
+const interiorStoneByStyle=new Map(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,style.interiorStone]));
 
 export function getInteriorMaterialFinishes(styleId){
   const id=typeof styleId==='string'?styleId:styleId?.id;
@@ -76,8 +78,8 @@ export function getInteriorMaterialFinishes(styleId){
   const wall={plain:'smooth-render',smooth:'smooth-render',eggshell:'smooth-render',clay:'clay-render',
     stucco:'sand-render',wood:exterior.wood,brick:'clinker'}[recipe.wallSurface]||recipe.wallSurface;
   const wetFloor={'honed-stone':'limestone',slate:'slate-floor',slab:'porcelain',tile:'porcelain-tile'}[recipe.wetFloor]||recipe.wetFloor;
-  const stone=id==='coastal'?'limestone':['party-club','riviera-deco'].includes(id)?'marble':
-    ['hidden-bali','japandi','beach-house'].includes(id)?'limestone':id==='desert-modern'?'sandstone':'travertine';
+  const stone=interiorStoneByStyle.get(id)||(id==='coastal'?'limestone':['party-club','riviera-deco'].includes(id)?'marble':
+    ['hidden-bali','japandi','beach-house'].includes(id)?'limestone':id==='desert-modern'?'sandstone':'travertine');
   return {wall,wood:exterior.wood,floor,wetFloor,stone,fabric:recipe.upholstery};
 }
 

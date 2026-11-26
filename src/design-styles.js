@@ -1,6 +1,7 @@
 // Garden concepts use stable IDs in saved settings and share links. Finishes and
 // ornamental modules have no authority over site measurements, planting or prices.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.34.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.35.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 export const DEFAULT_DESIGN_STYLE = 'current';
 
 // House finishes are applied to the owner's facade only.
@@ -28,6 +29,7 @@ const exterior = {
   'desert-modern': ['#cda88d', '#8a6c57', '#685342'],
   'alpine-lodge': ['#cdbca6', '#5e5549', '#795e43'],
   'industrial-loft': ['#a6a49c', '#5e6562', '#495352'],
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,style.exterior])),
 };
 
 // Field dimensions and pitches are visual design choices in metres.
@@ -57,6 +59,7 @@ const houseRenovations = {
   'desert-modern': renovation('stone', .43, 'fine', 1, 'Earthen render, wide sandstone base courses, bronze surrounds, zinc roofing and monolithic opposing dining benches.', 0.14),
   'alpine-lodge': renovation('lap', .26, 'crosshead', 0, 'Wide cedar upper cladding and lower piers, timber crossheads, slate roofing and six-seat cross-braced lodge furniture.'),
   'industrial-loft': renovation('panels', 1.12, 'steel', 0, 'Board-marked concrete panel fields across both storeys, steel channel lintels, standing-seam roofing and reclaimed-timber six-seat dining.', 0.045),
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,renovation(...style.renovation)])),
 };
 
 function concept(id, label, family, description, colors, recipe, finishes, bespoke = '', aliases = []) {
@@ -172,6 +175,7 @@ export const DESIGN_STYLES = Object.freeze([
     '#92918b #b6b3a7 #896c55 #3c4544 #aaa395 #ac7350 #ffd39b',
     ['running', 1.45, .53, 'sled', 'girder', 'bell'],
     ['Long concrete-look panels', 'Black metal sled furniture', 'Riveted metal fascia', 'Spun workshop shades']),
+  ...MINIMAL_STYLE_DEFINITIONS.map(style=>concept(style.id,...style.concept)),
 ]);
 
 const byId = new Map(DESIGN_STYLES.map(style => [style.id, style]));

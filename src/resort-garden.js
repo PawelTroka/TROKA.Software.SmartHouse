@@ -1,6 +1,7 @@
 /** Movable furnishings and decorative light compositions. These are design
  * proposals, never replacements for surveyed geometry or screening volumes. */
-import {canopySupportBounds} from './geometry.js?v=1.34.0';
+import {canopySupportBounds} from './geometry.js?v=1.35.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const recipe=(terrace,garden,diningTurn,shift,hedgeCount,pendantCount,treeCount,light,plant)=>Object.freeze({
   terrace,garden,diningTurn,shift:Object.freeze(shift),hedgeCount,pendantCount,treeCount,
   light:Object.freeze(light),plant,
@@ -28,6 +29,7 @@ export const RESORT_GARDEN_RECIPES=Object.freeze({
   'desert-modern':recipe('low-lounge','daybed',1,[-.14,.12],5,2,1,[.53,.60,.23],'grass'),
   'alpine-lodge':recipe('conversation','offset',0,[.06,.24],7,3,3,[.62,.68,.27],'soft'),
   'industrial-loft':recipe('linear','reader',1,[-.10,-.06],7,3,2,[.63,.73,.28],'grass'),
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,recipe(...style.garden)])),
 });
 export const getResortGardenRecipe=id=>RESORT_GARDEN_RECIPES[typeof id==='string'?id:id?.designStyle]??null;
 

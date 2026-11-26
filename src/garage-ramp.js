@@ -2,10 +2,10 @@
  * geometry is implied. The conservative underside is flat over the full car.
  * Site coordinates are [x,y,elevation]; longitudinal profile s runs inward.
  */
-import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.34.0';
+import {GARAGE_DEFAULTS,GARAGE_FIELDS,garageGeometryKey,upgradeSingleCarGarage} from './garage-options.js?v=1.35.0';
 
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.34.0';
-import {getInteriorGarageConflicts} from './interior-plan.js?v=1.34.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.35.0';
+import {getInteriorGarageConflicts} from './interior-plan.js?v=1.35.0';
 export {CYBERSTER_AWD};
 const cache=new WeakMap(),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,fallback)=>Number.isFinite(x)?x:fallback;
