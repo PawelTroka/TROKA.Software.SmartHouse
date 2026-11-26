@@ -17,16 +17,26 @@ let browser,server,page,base=process.env.BASE_URL?.replace(/\/$/,'');
 const q=selector=>page.locator(selector);
 const field=id=>q(`#interior-host [data-iw="${id}"]`);
 const info=()=>q('#interior-host').evaluate(host=>host.getInteriorDiagnostics());
-const ready=()=>page.waitForFunction(()=>document.querySelector('#interior-host:not([hidden])')?.getInteriorDiagnostics?.().visible);
+// Re-entering the studio creates a fresh WebGL context. Its first software
+// frame can exceed the ordinary 20-second UI-action deadline on CI.
+const sceneStartupTimeout=120000;
+const ready=(timeout=20000)=>page.waitForFunction(()=>document.querySelector('#interior-host:not([hidden])')?.getInteriorDiagnostics?.().visible,undefined,{timeout});
 async function chooseLayout(layout){await q(`#interior-host button[data-layout="${layout}"]`).click();}
-async function chooseView(view){await q(`#interior-host button[data-view="${view}"]`).click();}
-async function rendered(style,view){
+async function chooseView(view){
+  await rendered(null,null,{timeout:sceneStartupTimeout});
+  const button=q(`#interior-host button[data-view="${view}"]`);
+  if(view!=='room'&&await button.getAttribute('aria-pressed')==='true')return;
+  await button.click({timeout:view==='dollhouse'?sceneStartupTimeout:20000});
+}
+async function rendered(style,view,{timeout=30000}={}){
   await page.waitForFunction(({style,view})=>{
     const host=document.querySelector('#interior-host'),d=host?.getInteriorDiagnostics?.(),s=d?.scene;
+    const requestedView=view||host?.querySelector('button[data-view][aria-pressed="true"]')?.dataset.view;
+    if(requestedView==='plan')return d?.visible&&host.dataset.view==='plan'&&Boolean(host.querySelector('[data-iw="plan"] svg'));
     const assets=s?.surfaceAssets;
-    return s?.available&&s.visible&&s.styleId===style&&s.view===view&&s.floor===host.dataset.floor&&s.layout===host.dataset.layout&&s.frames>0&&!s.framePending&&!s.interacting&&s.triangles>0&&
+    return s?.available&&s.visible&&s.styleId===(style||host.dataset.style)&&s.view===requestedView&&s.floor===host.dataset.floor&&s.layout===host.dataset.layout&&s.frames>0&&!s.framePending&&!s.interacting&&s.triangles>0&&
       assets?.requested>0&&assets.loaded===assets.requested&&assets.failed.length===0;
-  },{style,view},{timeout:30000});
+  },{style,view},{timeout});
   return (await info()).scene;
 }
 async function shot(name,selector){
@@ -49,7 +59,10 @@ async function walking(floor){
   assert.match(await walkCanvas().getAttribute('aria-label'),/WASD or arrow keys/);
   return walkCanvas().evaluate(canvas=>({floor:canvas.dataset.walkFloor,position:canvas.dataset.walkPosition.split(',').map(Number)}));
 }
-async function openInteriors(){await q('#interior-open').click();await ready();}
+async function openInteriors(){
+  await q('#interior-open').click({timeout:sceneStartupTimeout});await ready(sceneStartupTimeout);
+  await rendered(null,null,{timeout:sceneStartupTimeout});
+}
 async function stepWithKeys(){
   let distance=0;
   for(const key of ['a','ArrowUp','d','ArrowDown']){
@@ -232,8 +245,8 @@ try{
   const saved=await appState();await q('#save-a').click();await chooseLayout('existing');await q('#compare').click();assert.deepEqual(await appState(),saved);
   await q('#compare').click();assert.equal((await appState()).layout,'existing');await q('#compare').click();assert.deepEqual(await appState(),saved);
   await q('#share').click();await page.waitForFunction(()=>location.hash.includes('interiorRoomId=master')&&location.hash.includes('designStyle=japandi'));
-  const shared=page.url();await page.reload({waitUntil:'domcontentloaded'});await ready();assert.deepEqual(await appState(),saved);
-  await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));await page.reload({waitUntil:'domcontentloaded'});await ready();assert.deepEqual(await appState(),saved);
+  const shared=page.url();await page.reload({waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);assert.deepEqual(await appState(),saved);
+  await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));await page.reload({waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);assert.deepEqual(await appState(),saved);
   check('Save A, return to B, shared links and local reload preserve the whole-house style and interior navigation settings');
   assert.equal(await field('apply-exterior').isDisabled(),true);
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assert.equal(await field('canvas').locator('canvas').count(),0);
@@ -251,13 +264,13 @@ try{
   check('Exports contain the ground soaking bath and a compact 0.90 × 1.80 m upstairs hydromassage bath; both views share the 4 m balcony and all 3 doors');
   await q('#canopyDepth-value').fill('3.2');await q('#canopyDepth-value').press('Tab');
   const edited=await exportDesign();assertBalconyShared(edited,3.2);
-  await q('#interior-open').click();await ready();assert.equal(await field('apply-exterior').isDisabled(),false);
+  await openInteriors();assert.equal(await field('apply-exterior').isDisabled(),false);
   await chooseView('dollhouse');const changed=await rendered('japandi','dollhouse');assert.equal(changed.contextSource,'shared-site-model');
   await field('apply-exterior').click();assert.equal(await field('apply-exterior').isDisabled(),true);
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assertBalconyShared(await exportDesign(),4);
   check('Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together');
 
-  await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready();
+  await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();
   await field('style').selectOption('hidden-bali');await field('furniture').check();await field('hide-settings').click();await field('room').selectOption('lounge');
   assert.equal(await field('floor').inputValue(),'ground');assert.equal((await appState()).style,'hidden-bali');
