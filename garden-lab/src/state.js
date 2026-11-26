@@ -1,20 +1,20 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.34.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.34.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.34.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.34.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.34.0';
-import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.34.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.34.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.34.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.34.0';
-import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.34.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.34.0';
-import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.34.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.35.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.35.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.35.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.35.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.35.0';
+import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.35.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.35.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.35.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.35.0';
+import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.35.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.35.0';
+import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.35.0';
 
-import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.34.0';
-import {changePresentationSettings} from './studio-state.js?v=1.34.0';
+import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.35.0';
+import {changePresentationSettings} from './studio-state.js?v=1.35.0';
 
-export const STATE_VERSION = 30;
+export const STATE_VERSION = 31;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -117,7 +117,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',existingVegetation:siteId===DEFAULT_SITE_ID,existingCanopyAnalysis:siteId===DEFAULT_SITE_ID,existingLeafMode:'auto',gardenProgram:'classic',terraceCoverType:'canopy',designStyle:DEFAULT_DESIGN_STYLE,styleHouseFinish:false,styleGardenLayout:true,renderQuality:'auto',sceneMotion:true,
-    summerPoolLayout:siteId===DEFAULT_SITE_ID,jacuzziCentered:true,jacuzziMood:'aurora',...profile.defaults,siteId});
+    summerPoolLayout:siteId===DEFAULT_SITE_ID,jacuzziCentered:true,jacuzziMood:'aurora',walkNavigation:'free',...profile.defaults,siteId});
   const V29_DEFAULTS=Object.freeze({...DEFAULTS,summerPoolLayout:false,jacuzziCentered:false,hstOpen:0,sceneMotion:false,
     nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85,
     screeningTrees:siteId===DEFAULT_SITE_ID?STERNICZA_EXCELSA_TREES:DEFAULTS.screeningTrees});
@@ -184,6 +184,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(DESIGN_STYLES.some(style=>style.id===input.designStyle))out.designStyle=input.designStyle;
     out.styleHouseFinish=out.designStyle!==DEFAULT_DESIGN_STYLE;
     if(['auto','eco','high'].includes(input.renderQuality))out.renderQuality=input.renderQuality;
+    if(['free','physical'].includes(input.walkNavigation))out.walkNavigation=input.walkNavigation;
     if(['aurora','lagoon','amber'].includes(input.jacuzziMood))out.jacuzziMood=input.jacuzziMood;
     if(['canopy','balcony'].includes(input.terraceCoverType))out.terraceCoverType=input.terraceCoverType;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
@@ -281,7 +282,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     for(const [key,val] of p){
       if(Object.hasOwn(FIELDS,key)){if(val.trim()!=='')s[key]=Number(val);}
       else if(typeof DEFAULTS[key]==='boolean'){if(val==='true'||val==='false')s[key]=val==='true';}
-      else if(INTERIOR_STRING_KEYS.includes(key)||key==='preset'||key==='mode'||key==='sunDate'||key==='treeLeafMode'||key==='existingLeafMode'||key==='gardenProgram'||key==='terraceCoverType'||key==='designStyle'||key==='renderQuality'||key==='jacuzziMood')s[key]=val;
+      else if(INTERIOR_STRING_KEYS.includes(key)||key==='preset'||key==='mode'||key==='sunDate'||key==='treeLeafMode'||key==='existingLeafMode'||key==='gardenProgram'||key==='terraceCoverType'||key==='designStyle'||key==='renderQuality'||key==='jacuzziMood'||key==='walkNavigation')s[key]=val;
       else if(key==='screeningTrees'&&version>=7){
         s[key]=[];
         if(val.length<=20000)try{s[key]=JSON.parse(val);}catch{ /* Malformed trees never add default screens. */ }

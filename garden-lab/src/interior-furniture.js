@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.34.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.34.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.35.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.35.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
@@ -316,15 +316,35 @@ export function furnishInterior(parent,plan,tools,finishes) {
     if(!f.front)return [g,w,d];
     const angle=Math.atan2(f.front[0],f.front[1]);return Math.abs(f.front[0])>.5?[group(g,0,0,0,angle),d,w]:[group(g,0,0,0,angle),w,d];
   }
+  const kitchenSinkSize=(w,d)=>[Math.min(.66,w*.78),Math.min(.42,d*.78)];
   function kitchen(g,f,w,d,tall=false) {
     [g,w,d]=faceFront(g,f,w,d);const h=tall?(f.height||1.95):(f.height||.9);
     if(renovated){
       const kind=design.cabinet,body=kind==='louvred'?painted:['cane','slatted','shoji','midcentury','framed'].includes(kind)?m.wood:kind==='steel'?m.frame:kind==='gloss'?m.lacquer||m.cabinet:m.cabinet;
+      const sink=!tall&&(plan.fixtures||[]).find(item=>item.kind==='sink'&&item.hostId===f.id);
       box(g,m.frame,0,.06,-.012,w*.94,.12,d*.88);
-      if(kind==='capsule')rounded(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022,.075);else box(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022);
+      if(sink){
+        // A real cabinet shell leaves room for the recessed bowl. A solid
+        // carcass would otherwise fill the worktop aperture just below its rim.
+        box(g,body,0,.114,-.013,w,.032,d-.022);
+        box(g,body,0,(h+.13)/2,-d/2+.009,w,h-.13,.018);
+        for(const side of [-1,1])box(g,body,side*(w/2-.009),(h+.13)/2,-.013,.018,h-.13,d-.022);
+      }else if(kind==='capsule')rounded(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022,.075);else box(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022);
       const n=Math.max(1,Math.round(w/(tall?.55:.65)));
       for(let i=0;i<n;i++){
         const x=-w/2+(i+.5)*w/n,dw=w/n-.014,dh=h-.15,y=(h+.12)/2,z=d/2;
+        if(f.drawers&&!tall){
+          // Separate fronts give the working runs and island real drawer
+          // reveals. The recessed rail/handle follows the selected finish.
+          const levels=[.135,.39,.65,h-.035];
+          for(let j=0;j<levels.length-1;j++){
+            const lo=levels[j]+.006,hi=levels[j+1]-.006,cy=(lo+hi)/2;
+            rounded(g,body,x,cy,z,dw,hi-lo,.022,kind==='capsule'?.012:.004);
+            if(['flush','capsule','gloss','shoji'].includes(kind))box(g,m.frame,x,hi-.021,z+.013,dw*.84,.012,.014);
+            else box(g,kind==='steel'?m.steel:m.bronze,x,hi-.041,z+.026,Math.min(.20,dw*.38),.012,.026);
+          }
+          continue;
+        }
         if(kind==='capsule')rounded(g,m.ceramic,x,y,z,dw,dh,.03,.014);else box(g,body,x,y,z,dw,dh,.016);
         if(['shaker','framed','cane','shoji','midcentury','steel','louvred'].includes(kind)){
           const frame=kind==='louvred'?painted:kind==='steel'?m.frame:m.oak,thin=kind==='shoji'?.025:.043;
@@ -351,7 +371,24 @@ export function furnishInterior(parent,plan,tools,finishes) {
           else box(g,kind==='steel'?m.steel:m.bronze,x+dw*.30,tall?1.03:h-.14,z+.043,.015,tall?.20:.09,.025);
         }
       }
-      if(!tall){rounded(g,m.stone,0,h,0,w+.006,.048,d+.008,.014);if(['flush','gloss','deco'].includes(kind))box(g,m.glow,0,h-.048,d/2-.015,w*.94,.008,.008);}
+      if(!tall){
+        const island=f.variant==='social-island',top=island?.028:.038;
+        if(sink){
+          const angle=(f.rotation||0)+Math.atan2(f.front?.[0]||0,f.front?.[1]??1),c=Math.cos(angle),s=Math.sin(angle),dx=sink.x-f.x,dz=sink.z-f.z;
+          const cx=c*dx-s*dz,cz=s*dx+c*dz,sideways=Math.abs(sink.front?.[0]||0)>.5;
+          const [bw,bd]=kitchenSinkSize(sideways?sink.depth:sink.width,sideways?sink.width:sink.depth),cw=bw-.014,cd=bd-.014;
+          const geo=cached(`sink-top:${w}:${d}:${top}:${cx}:${cz}:${cw}:${cd}`,()=>{
+            const shape=new THREE.Shape(),hole=new THREE.Path(),W=w+.006,D=d+.008;
+            shape.moveTo(-W/2,-D/2);shape.lineTo(W/2,-D/2);shape.lineTo(W/2,D/2);shape.lineTo(-W/2,D/2);shape.closePath();
+            hole.moveTo(cx-cw/2,-cz-cd/2);hole.lineTo(cx-cw/2,-cz+cd/2);hole.lineTo(cx+cw/2,-cz+cd/2);hole.lineTo(cx+cw/2,-cz-cd/2);hole.closePath();shape.holes.push(hole);
+            const geometry=new THREE.ExtrudeGeometry(shape,{depth:top-.002,steps:1,bevelEnabled:true,bevelThickness:.001,bevelSize:.001,bevelSegments:1});
+            geometry.rotateX(-Math.PI/2);geometry.translate(0,-top/2+.001,0);return geometry;
+          });
+          detailMesh(g,geo,m.stone,0,h,0).name='sink-cutout-worktop';
+        }else rounded(g,m.stone,0,h,0,w+.006,top,d+.008,island?.009:.012);
+        if(island)for(const side of [-1,1])rounded(g,m.stone,side*(w/2-.016),(h+.10)/2,0,.032,h-.10,d+.008,.006);
+        if(['flush','gloss','deco'].includes(kind))box(g,m.glow,0,h-top,d/2-.015,w*.94,.008,.008);
+      }
       return;
     }
     box(g,m.frame,0,.06,-.012,w*.95,.12,d*.91);box(g,tall?m.wood:m.cabinet,0,(h+.09)/2,0,w,h-.09,d-.022);
@@ -419,6 +456,19 @@ export function furnishInterior(parent,plan,tools,finishes) {
       oval(g,m.ceramic,0,.20,-d*.035,w*.70,.40,d*.78);const b=group(g,0,0,d*.08);bowl(b,w,d*.80,.16,.28);faucet(g,0,.43,-d*.32,.115);
     }else if(f.kind==='basin'||f.kind==='sink') {
       const hosted=Boolean(f.hostId)||f.kind==='sink',h=hosted?.929:.78;
+      if(renovated&&f.kind==='sink'&&f.hostId){
+        const host=(plan.fixtures||[]).find(item=>item.id===f.hostId),top=(host?.height||.9)+.019;
+        const [bw,bd]=kitchenSinkSize(w,d),bottom=top-.18,depth=top-bottom;
+        rounded(g,m.steel,0,bottom,0,bw-.014,.012,bd-.014,.006);
+        for(const side of [-1,1]){
+          rounded(g,m.steel,side*(bw/2-.007),(top+bottom)/2,0,.014,depth,bd,.005);
+          rounded(g,m.steel,0,(top+bottom)/2,side*(bd/2-.007),bw,depth,.014,.005);
+          rounded(g,m.steel,side*bw/2,top+.002,0,.014,.006,bd+.014,.002);
+          rounded(g,m.steel,0,top+.002,side*bd/2,bw+.014,.006,.014,.002);
+        }
+        cyl(g,m.frame,0,bottom+.007,0,.026,.026,.002,20);
+        faucet(g,0,top,-d*.42,.25);return;
+      }
       if(!hosted){
         rounded(g,design.cabinet==='louvred'?painted:m.wood,0,.49,0,w*.96,.48,d*.9,.025);box(g,m.stone,0,h-.035,0,w,.07,d);
         const n=Math.max(2,Math.round(w/.45));for(let i=0;i<n;i++){const x=-w*.47+(i+.5)*w*.94/n;box(g,design.cabinet==='louvred'?painted:m.cabinet,x,.49,d*.46,w*.94/n-.012,.44,.014);if(renovated&&design.cabinet==='louvred')louvrePanel(g,x,.49,d*.48,w*.94/n-.04,.36);else if(renovated&&['fluted','slatted'].includes(design.cabinet))slatPanel(g,x,.49,d*.48,w*.94/n-.02,.42,m.wood,.05);else box(g,m.bronze,x,.63,d*.49,Math.min(.16,w/n*.5),.01,.015);}

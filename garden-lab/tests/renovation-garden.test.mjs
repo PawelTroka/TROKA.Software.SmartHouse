@@ -47,8 +47,8 @@ const physicalFeatures=program=>[
   ...program.coldPlunge.steps.map((s,i)=>({id:`plunge step ${i}`,owner:'plunge',ring:rectCorners(s)})),
 ];
 
-test('historical v1.33 styles select six real garden topologies without changing measured source geometry or tree centres',()=>{
-  assert.equal(styles.length,22);
+test('all renovation styles select six real garden topologies without changing measured source geometry or tree centres',()=>{
+  assert.equal(styles.length,34);
   assert.deepEqual(Object.keys(RENOVATION_GARDEN_RECIPES).sort(),styles.map(s=>s.id).sort());
   assert.equal(Object.keys(RENOVATION_GARDEN_SCHEMES).length,6);
   const custom=model.sanitizeState({...legacyDefaults,screeningTrees:legacyDefaults.screeningTrees.map((t,i)=>({...t,x:t.x-.1*(i+1),y:t.y-.1}))});

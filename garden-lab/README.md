@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.34.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.34.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.34.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.35.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.35.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.35.0)**
+
+## Comfortable exploration and minimal design families · 1.35.0
+
+Walking now uses the original interior controller's speed, fixed 70° lens, drag direction and sensitivity both inside and outside. Smooth height transitions replace hard stair and terrain snaps. Free exploration is the default: cross terrace edges, walk into the pool or jacuzzi, pass through objects, and use E/Q or touch controls to move vertically. R / Follow ground resumes floor and terrain following. A separate physical mode remains available for circulation checks.
+
+Every renovation now has an open kitchen edge toward living/dining: one 1.80 × 0.85 m island, clear access on both sides, retained fitted storage and one side-garden sink window. The street kitchen window, intrusive tall block, extra centre block and obstructing dining console are removed. The full rear living HST remains.
+
+Twelve additional renovations expand the catalogue to **35 choices including Current**, with a focus on Nordic, warm, soft, Belgian and Japanese minimalism, contemporary white/glass/concrete architecture, Organic Limestone and two restrained Bali/tropical retreats. Their actual facade openings, room furniture, garden compositions and photographic finishes differ. Finer joinery, stone edges and surface coatings improve close views without adding another full-scene rendering pass.
+
+[Controls, kitchen dimensions, style guide and verification scope](docs/comfortable-exploration-1.35.md)
 
 ## Continuous walking and the summer garden · 1.34.0
 

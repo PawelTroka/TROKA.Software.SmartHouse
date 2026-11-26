@@ -6,11 +6,13 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
+import {MINIMAL_STYLE_DEFINITIONS} from '../src/minimal-style-definitions.js';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const scenarioGroup=process.env.STUDIO_SCENARIO_GROUP||'all';
-if(!['all','styles','controls','properties'].includes(scenarioGroup))throw new Error('Unknown STUDIO_SCENARIO_GROUP: '+scenarioGroup);
-const runsGroup=group=>scenarioGroup==='all'||scenarioGroup===group;
+if(!['all','styles','styles-minimal','controls','properties'].includes(scenarioGroup))throw new Error('Unknown STUDIO_SCENARIO_GROUP: '+scenarioGroup);
+const runsGroup=group=>scenarioGroup==='all'||scenarioGroup===group||(group==='styles'&&scenarioGroup==='styles-minimal');
+const minimalIds=new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.id));
 const evidence=path.join(root,'test-results','studio',...(scenarioGroup==='all'?[]:[scenarioGroup]));
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
@@ -202,7 +204,7 @@ try{
   let before;
   if(runsGroup('styles')){
   const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
-  assert.equal(new Set(options).size,23);assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));assert.ok(options.includes('beach-house'));
+  assert.equal(new Set(options).size,35);for(const id of minimalIds)assert.ok(options.includes(id),id+' must be selectable');assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));assert.ok(options.includes('beach-house'));
   assert.equal(await el('#basementGarageEnabled').isChecked(),true);
   assert.equal((await settledInfo()).garageVehicles,2,'The fresh scene must contain two actual vehicles');
   await el('#style-open').click();assert.equal(await el('#style-search').evaluate(e=>e===document.activeElement),true);
@@ -217,7 +219,7 @@ try{
   await el('#style-search').fill('');assert.equal(await el('#style-grid button:visible').count(),4);
   await page.keyboard.press('Escape');await el('#style-dialog').waitFor({state:'hidden'});
   assert.ok(await el('#style-open').evaluate(e=>e===document.activeElement));
-  check('All 23 choices are accessible; Beach House has its own searchable entry, Coastal retains Hamptons and seaside aliases, and filtering/focus return work');
+  check('All 35 choices are accessible; Beach House has its own searchable entry, Coastal retains Hamptons and seaside aliases, and filtering/focus return work');
 
   await el('button[data-mode="orbit"]').click();await details();
   await el('#renderQuality').selectOption('eco');await sceneVisible();
@@ -255,7 +257,9 @@ try{
   const original=await shot('sternicza-current','#scene-host canvas');
   const reference=await houseScope(false),selectedShots=new Map(),selectedInfo=new Map(),geometrySignatures=new Set(),windowPatterns=new Set(),gardenSchemes=new Set();
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
-  for(const id of options.filter(id=>id!=='current')){
+  const sweep=options.filter(id=>id!=='current'&&(scenarioGroup==='all'||minimalIds.has(id)===(scenarioGroup==='styles-minimal')));
+  assert.equal(sweep.length,scenarioGroup==='all'?34:scenarioGroup==='styles-minimal'?12:22);
+  for(const id of sweep){
     await style(id);
     const info=await houseScope(true);
     assert.deepEqual(await cameraTime(),comparisonView,id+' preserves the fixed comparison view and daylight');
@@ -265,21 +269,22 @@ try{
     assert.ok(info.houseOpeningCount>0&&info.windowPattern.length>10,id+' has no rendered aperture records');
     assert.equal(info.gardenKitchens,1,id+' retains the fitted outdoor kitchen');
     assert.ok(info.gardenPlantingBeds>0,id+' has no fitted planting bed');
-    if(['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune','beach-house','japandi'].includes(id)){
+    if(minimalIds.has(id)||['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune','beach-house','japandi'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
       const diff=await pixelChange(original,frame);
       assert.ok(diff.pixels>100,id+' changed only '+diff.pixels+' canvas pixels');
       selectedShots.set(id,frame);report.styles.push({id,diff,stats:info});
     }else report.styles.push({id,stats:info});
   }
-  for(const [a,b] of [['space-age','hidden-bali'],['mediterranean-villa','space-age'],['coastal','baltic-dune'],['beach-house','coastal'],['beach-house','baltic-dune']]){
+  const comparisons=[['space-age','hidden-bali'],['mediterranean-villa','space-age'],['coastal','baltic-dune'],['beach-house','coastal'],['beach-house','baltic-dune'],['nordic-minimal','nordic-blackwood'],['warm-minimal','sculptural-concrete'],['organic-limestone','monolithic-white'],['bali-stone','tropical-minimal']];
+  for(const [a,b] of comparisons.filter(pair=>pair.every(id=>selectedShots.has(id)))){
     assert.ok((await pixelChange(selectedShots.get(a),selectedShots.get(b))).pixels>100,a+' and '+b+' look identical');
     assert.notEqual(selectedInfo.get(a).triangles,selectedInfo.get(b).triangles,a+' and '+b+' must change actual rendered geometry');
     assert.notEqual(selectedInfo.get(a).windowPattern,selectedInfo.get(b).windowPattern,a+' and '+b+' must use different physical apertures');
   }
-  assert.equal(geometrySignatures.size,22,'All 22 styles must change physical facade geometry');
-  assert.equal(windowPatterns.size,22,'Every style must have a distinct physical window proposal');
-  assert.equal(gardenSchemes.size,6,'All six garden recipe families must render around the shared summer pool');
+  assert.equal(geometrySignatures.size,sweep.length,'Every tested style must change physical facade geometry');
+  assert.equal(windowPatterns.size,sweep.length,'Every style must have a distinct physical window proposal');
+  assert.equal(gardenSchemes.size,scenarioGroup==='styles-minimal'?new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.gardenLayout[0])).size:6,'Every required garden recipe family must render around the shared summer pool');
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
   assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
@@ -287,13 +292,13 @@ try{
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check('All 22 styles have distinct physical window proposals, six garden recipe families and outdoor kitchens around the shared summer pool; both cars remain and Current restores the neutral dwelling');
+  check(`${sweep.length} tested styles have distinct physical window proposals, ${gardenSchemes.size} garden recipe families and outdoor kitchens around the shared summer pool; both cars remain and Current restores the neutral dwelling`);
   }
 
   if(runsGroup('controls')){
     if(!runsGroup('styles')){
       // Recreate the adopted neutral state used by the serial suite through
-      // the public controls, without running the independent 22-style sweep.
+      // the public controls, without running the independent style sweeps.
       await el('button[data-mode="orbit"]').click();await details();
       await el('#renderQuality').selectOption('eco');
       if(await el('#showDimensions').isChecked())await el('#showDimensions').uncheck();
@@ -488,7 +493,7 @@ try{
   report.mobile=[];
   for(const width of [390,320]){
     await page.setViewportSize({width,height:844});await el('#style-open').click();
-    assert.equal(await el('#style-grid button:visible').count(),23);
+    assert.equal(await el('#style-grid button:visible').count(),35);
     const last=el('#style-grid button').last();await last.scrollIntoViewIfNeeded();
     assert.ok(await last.evaluate(e=>{const box=e.getBoundingClientRect();return box.bottom<=innerHeight+2&&box.top>=0;}));
     const measured=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,dialog:document.querySelector('#style-dialog').getBoundingClientRect().width,scroll:document.querySelector('#style-dialog').scrollWidth,client:document.querySelector('#style-dialog').clientWidth}));
@@ -497,7 +502,7 @@ try{
     await page.keyboard.press('Escape');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
   }
-  check('390 px and 320 px editor and scrollable catalogue fit all 23 choices');
+  check('390 px and 320 px editor and scrollable catalogue fit all 35 choices');
   await page.setViewportSize({width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});
   for(const [site,id] of [['korzeniowskiego-40','organic-japandi'],['nadmorska-17','party-club']]){
     await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();

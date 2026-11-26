@@ -21,7 +21,7 @@ test('each renovation has a distinct shared furnishing plan without moving archi
     const blocking=plan.fixtures.filter(f=>!f.nonBlocking&&!f.hostId&&!f.wallMounted);
     assert.ok(blocking.filter(f=>['lounge','dining'].includes(f.roomId)).every(f=>f.z-f.depth/2-(f.kind==='diningTable'?.50:0)>=1.35-1e-8),styleId+' obstructs the 1 m glazing strip');
   }
-  assert.equal(signatures.size,22);
+  assert.equal(signatures.size,DESIGN_STYLES.filter(s=>s.renovation).length);
   assert.deepEqual(getInteriorPlan({styleId:'current'}),base);
   assert.deepEqual(getInteriorPlan({styleId:'unknown'}),base);
   assert.deepEqual(getInteriorPlan({styleId:'beach-house',layout:'existing'}),getInteriorPlan({layout:'existing'}));
@@ -47,7 +47,7 @@ test('rugs and table-top accessories do not block walking or become the room foc
 
 test('interior task lights have a fixed budget, bounded reach and obey the night strength',()=>{
   const plan=getInteriorPlan({styleId:'beach-house'}),lights=createInteriorTaskLights(plan.interiorLights,'#ffdeb1',{limit:8});
-  assert.equal(lights.count,3);assert.ok(lights.root.children.every(l=>l.distance<=3.2&&!l.castShadow));
+  assert.equal(lights.count,2);assert.ok(lights.root.children.every(l=>l.distance<=3.2&&!l.castShadow));
   lights.update(0);assert.equal(lights.root.visible,false);assert.ok(lights.root.children.every(l=>l.intensity===0));
   lights.update(.5);assert.equal(lights.root.visible,true);assert.ok(lights.root.children.every(l=>l.intensity===l.userData.taskIntensity*.5));
   lights.update(Infinity);assert.ok(lights.root.children.every(l=>l.intensity===0));lights.dispose();

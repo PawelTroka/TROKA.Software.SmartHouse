@@ -1,5 +1,6 @@
 // Physical interior renovation choices. These are construction/furniture
 // archetypes, not paint aliases. Every choice stays inside the measured plan.
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const recipe=(id,seating,chair,table,bed,cabinet,wall,ceiling,pendant,floor,wetFloor,wallSurface,upholstery,features)=>Object.freeze({
   id,seating,chair,table,bed,cabinet,wall,ceiling,pendant,floor,wetFloor,wallSurface,upholstery,features:Object.freeze(features),
 });
@@ -27,6 +28,7 @@ export const INTERIOR_RENOVATION_RECIPES=Object.freeze([
   recipe('desert-modern','block','block','monolith','plinth','flush','rammed','recess','clay','sandstone','sandstone','clay','boucle',['Monolithic stone tables and built-in block seating','Deep plinth beds and flush recessed joinery','Layered earth feature walls and clay pendants']),
   recipe('alpine-lodge','crossbuck','crossbuck','crossbuck','crossbuck','framed','timber','beams','lantern','wide-boards','slate','wood','wool',['Cross-braced timber sofas, tables and beds','Substantial framed oak storage','Broad timber linings and exposed ceiling beams']),
   recipe('industrial-loft','steel','steel','workshop','steel','steel','concrete','girder','cage','concrete','slab','microcement','leather',['Black steel and leather furniture','Workshop tables and steel-frame beds','Concrete feature panels, exposed girders and cage pendants']),
+  ...MINIMAL_STYLE_DEFINITIONS.map(style=>recipe(style.id,...style.interior)),
 ]);
 const byId=new Map(INTERIOR_RENOVATION_RECIPES.map(item=>[item.id,item]));
 export const getInteriorStyleRecipe=id=>byId.get(id)||byId.get('current');

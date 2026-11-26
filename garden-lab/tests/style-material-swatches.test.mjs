@@ -53,5 +53,5 @@ test('all published calibrated previews have verified bytes and stay a small sta
     assert.equal(bytes[0],0xff);assert.equal(bytes[1],0xd8);
   }
   assert.equal(total,manifest.totalBytes);assert.equal(unique.size,manifest.uniqueFiles);
-  assert.ok(total<2_000_000,'All 184 material/role previews together remain under 2 MB; individual cards are lazy-loaded');
+  assert.ok(total<2_000_000,'All 280 material/role previews together remain under 2 MB; individual cards are lazy-loaded');
 });

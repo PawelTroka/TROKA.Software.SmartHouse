@@ -2,8 +2,8 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.34.0';
-import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.34.0';
+import {getTreeType} from './tree-catalog.js?v=1.35.0';
+import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.35.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);

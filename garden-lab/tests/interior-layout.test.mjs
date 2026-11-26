@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {getInteriorPlan, getInteriorGarageConflicts} from '../src/interior-plan.js';
 import {fixturePlanFrame} from '../src/interior-plan-view.js';
 import {INTERIOR_COMPOSITIONS} from '../src/interior-curation.js';
+import {getHouseFloorPlan} from '../src/house-model.js';
 
 const proposal=floor=>getInteriorPlan({floor,layout:'renovation'});
 const near=(a,b,tol=1e-7)=>assert.ok(Math.abs(a-b)<tol,`${a} vs ${b}`);
@@ -22,21 +23,52 @@ const segmentDistance=(x,z,a,b)=>{
 const polygonDistance=(x,z,p)=>Math.min(...p.map((a,i)=>segmentDistance(x,z,a,p[(i+1)%p.length])));
 const rectDistance=(x,z,left,top,right,bottom)=>Math.hypot(Math.max(left-x,0,x-right),Math.max(top-z,0,z-bottom));
 
-test('every renovated kitchen has one living-space entrance and retains the full cabinet program',()=>{
+test('every renovated kitchen shares an open living edge, one useful island and clear entrances',()=>{
   for(const styleId of Object.keys(INTERIOR_COMPOSITIONS)){
     const plan=getInteriorPlan({floor:'ground',layout:'renovation',styleId});
     const hallWall=plan.walls.find(w=>w.id==='kitchen-hall-enclosure');
     assert.ok(hallWall,styleId);assert.deepEqual(hallWall.openings,[],`${styleId}: kitchen is enclosed from the entry hall`);
-    const opening=plan.walls.find(w=>w.id==='kitchen-living-opening').openings;
-    assert.equal(opening.length,1);assert.equal(opening[0].type,'passage');near(opening[0].width,1.66);
-    for(const id of ['west-counter','street-counter','east-counter','kitchen-fridge','kitchen-fridge-top','kitchen-wall-storage','kitchen-north-storage']){
+    const wall=plan.walls.find(w=>w.id==='kitchen-living-opening'),opening=wall.openings;
+    assert.equal(opening.length,1);assert.equal(opening[0].type,'passage');near(opening[0].width,3.65);
+    for(const id of ['west-counter','street-counter','east-counter','kitchen-fridge','kitchen-fridge-top','kitchen-wall-storage']){
       assert.ok(plan.fixtures.some(f=>f.id===id),`${styleId}: missing ${id}`);
     }
     const pantry=plan.fixtures.find(f=>f.id==='east-counter');assert.equal(pantry.kind,'storage');assert.ok(pantry.height>=2.4);
-    for(const centre of plan.fixtures.filter(f=>['kitchen-island','kitchen-worktable'].includes(f.id))){
-      assert.equal(centre.kind,'counter');assert.ok(centre.drawers,`${styleId}: the centre piece provides closed storage`);
-    }
+    for(const id of ['kitchen-north-storage','kitchen-worktable','dining-console'])assert.ok(!plan.fixtures.some(f=>f.id===id),`${styleId}: ${id} obstructs the open edge`);
+    const islands=plan.fixtures.filter(f=>f.id==='kitchen-island');assert.equal(islands.length,1);
+    const island=islands[0];assert.equal(island.kind,'counter');assert.ok(island.drawers);
+    near(island.width,1.80);near(island.depth,.85);assert.ok(island.height<=.92);
+    const start=wall.a[0]+opening[0].offset,end=start+opening[0].width;
+    assert.ok(island.x-island.width/2-start>=.95-1e-7,`${styleId}: left opening route`);
+    assert.ok(end-island.x-island.width/2>=.90-1e-7,`${styleId}: right entrance`);
+    assert.ok(island.z-island.depth/2<wall.a[1]&&island.z+island.depth/2>wall.a[1],`${styleId}: island belongs at the living edge`);
+    const tallAtOpening=plan.fixtures.filter(f=>f.roomId==='front-kitchen'&&f.height>1.2&&f.z-f.depth/2<5.85);
+    assert.deepEqual(tallAtOpening,[],`${styleId}: tall cabinet blocks the living-room connection`);
   }
+});
+
+test('all renovation styles keep one side-garden window centered over the sink and preserve the rear HST',()=>{
+  for(const styleId of Object.keys(INTERIOR_COMPOSITIONS)){
+    const plan=getHouseFloorPlan({settings:{designStyle:styleId}}),sink=plan.fixtures.find(f=>f.id==='kitchen-sink');
+    const windows=plan.walls.flatMap(w=>w.openings.filter(o=>o.type==='window'&&o.roomId==='front-kitchen').map(o=>({wall:w,opening:o})));
+    assert.equal(windows.length,1,styleId+' has one kitchen window');
+    const {wall,opening}=windows[0];assert.equal(wall.id,'left-facade');assert.equal(opening.outlook,'side-garden');
+    near(wall.a[1]+opening.offset+opening.width/2,sink.z);near(opening.width,1.42);
+    assert.equal(opening.panes,1);assert.equal(opening.transoms,0);assert.ok(opening.sill>1);
+    const host=plan.fixtures.find(f=>f.id===sink.hostId);
+    assert.ok(sink.x-sink.width/2>=host.x-host.width/2&&sink.x+sink.width/2<=host.x+host.width/2);
+    assert.ok(sink.z-sink.depth/2>=host.z-host.depth/2&&sink.z+sink.depth/2<=host.z+host.depth/2);
+    const cabinets=plan.fixtures.filter(f=>f.roomId==='front-kitchen'&&(f.wallMounted||f.height>1.2));
+    for(const cabinet of cabinets)assert.ok(cabinet.x-cabinet.width/2>1||cabinet.z+cabinet.depth/2<=wall.a[1]+opening.offset||cabinet.z-cabinet.depth/2>=wall.a[1]+opening.offset+opening.width,styleId+' cabinet covers the sink window');
+    const street=plan.walls.find(w=>w.id==='street-facade');
+    assert.ok(street.openings.every(o=>o.type!=='window'||street.a[0]+o.offset>=4.47),styleId+' retains an unwanted street kitchen window');
+    const hst=plan.walls.find(w=>w.id==='garden-hst').openings;
+    assert.equal(hst.length,1);assert.equal(hst[0].type,'hst');assert.equal(hst[0].panes,3);assert.ok(hst[0].width>10);
+  }
+  const existing=getInteriorPlan({layout:'existing'});
+  const street=existing.walls.find(w=>w.id==='street-facade'),side=existing.walls.find(w=>w.id==='left-facade');
+  assert.ok(street.openings.some(o=>o.type==='window'&&Math.abs(street.a[0]+o.offset-1.86)<1e-7),'the archived street kitchen window stays on its drawing');
+  assert.ok(side.openings.some(o=>o.type==='window'&&Math.abs(side.a[1]+o.offset-5.65)<1e-7),'the archived side kitchen window stays on its drawing');
 });
 
 // A conservative physical walking check: a 0.60 m diameter disc must travel
@@ -220,16 +252,13 @@ test('all resort arrangements retain free floor area, fixture approaches and roo
     }
     const roomTargets=targets[floor].map(point=>point.slice());
     if(floor==='ground'){
-      const island=plan.fixtures.find(f=>f.id==='kitchen-island'),table=plan.fixtures.find(f=>f.id==='kitchen-worktable');
-      // The destination follows the usable side of the new preparation area;
-      // the old kitchen centre is now inside the proposed island itself.
-      if(island)roomTargets[1]=[island.x+island.width/2+.45,island.z];
-      else if(table)roomTargets[1]=[table.x+table.width/2+.45,table.z];
+      const island=plan.fixtures.find(f=>f.id==='kitchen-island');
+      roomTargets[1]=[island.x+island.width/2+.45,island.z];
     }else if(plan.furnishingConcept?.office==='floating'){
       const chair=plan.fixtures.find(f=>f.id==='office-chair');roomTargets[1]=[chair.x-chair.width/2-.35,chair.z];
     }
     for(const point of roomTargets)assert.ok(reached(point),`${styleId} ${floor}: room route ${point} disconnected`);
-    for(const f of plan.fixtures)for(const point of f.approaches||(f.approach?[f.approach]:[]))assert.ok(reached(point),`${styleId} ${f.id}: fixture approach disconnected`);
+    for(const f of plan.fixtures)for(const point of f.approaches||(f.approach?[f.approach]:[]))assert.ok(reached(point),`${styleId} ${f.id}: fixture approach ${point} disconnected`);
     for(const w of plan.walls)for(const o of w.openings.filter(o=>o.type==='door')){
       const length=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]),ux=(w.b[0]-w.a[0])/length,uz=(w.b[1]-w.a[1])/length;
       const end=o.hinge==='end',t=o.offset+(end?o.width:0),hx=w.a[0]+t*ux,hz=w.a[1]+t*uz,side=end?-1:1,swing=o.swing===-1?-1:1;

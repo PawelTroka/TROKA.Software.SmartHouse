@@ -31,9 +31,9 @@ const physicalSignature=layout=>JSON.stringify(layout.windows.map(w=>{
   return [...ends.flat(),rounded(w.height),w.kind];
 }).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
 
-test('all 22 styles have distinct actual aperture geometry on shared, photo and mapped houses',()=>{
+test('all renovation styles have distinct actual aperture geometry on shared, photo and mapped houses',()=>{
   assert.deepEqual(Object.keys(RENOVATION_ARCHITECTURES).sort(),styleIds.slice().sort());
-  assert.equal(styleIds.length,22);assert.equal(getRenovationArchitecture('current'),null);
+  assert.ok(styleIds.length>=34);assert.equal(getRenovationArchitecture('current'),null);
   const signatures=[new Set(),new Set(),new Set()],before=JSON.stringify(source);
   for(const designStyle of styleIds){
     const state={...settings,designStyle},data=applyPlanExterior(source,state);
@@ -45,7 +45,7 @@ test('all 22 styles have distinct actual aperture geometry on shared, photo and 
       signatures[i].add(physicalSignature(layout));
     }
   }
-  assert.deepEqual(signatures.map(s=>s.size),[22,22,22]);
+  assert.deepEqual(signatures.map(s=>s.size),[styleIds.length,styleIds.length,styleIds.length]);
   assert.equal(JSON.stringify(source),before,'Architectural proposals cannot mutate the survey');
 });
 
