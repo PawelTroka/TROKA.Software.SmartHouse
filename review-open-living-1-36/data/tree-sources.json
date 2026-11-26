@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-14",
+  "currency": "PLN",
+  "summary": "Primary Polish and Belgian supplier catalog observations for purchased specimens. New alternatives were checked on 14 November 2026; original entries retain their 12 November observations. Stock availability, actual crown density, logistics and final quotes need confirmation. These are not mature-size or installed-price estimates.",
+  "taxNote": "Galeria Ogrodowa and De Bruyn website terms include VAT unless stated otherwise. Markflor Brabant is explicitly NET, excluding VAT. Fischer and Wyplatane amounts are recorded as displayed, with VAT basis unconfirmed. Euro prices use a fixed 4.30 PLN/EUR planning assumption, not a live exchange rate. Do not apply a blanket tax conversion to all sources.",
+  "sources": [
+    {
+      "id": "fischer-thuja-excelsa-9m",
+      "title": "Fischer nursery — Thuja Excelsa, 9 m individual specimen",
+      "url": "https://drzewkafischer.pl/index.php/solitaire/18/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 9,500 PLN for one 9 m tall × 2 m wide specimen; trunk circumference 50–60 cm. VAT basis, availability and matching multiples are not confirmed. Delivery, lifting and planting extra.",
+      "observations": [
+        { "typeId": "thuja-excelsa-9m", "heightM": [9, 9], "widthM": [2, 2], "trunkCircumferenceCM": [50, 60], "pricePLN": 9500, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "fischer-white-fir-9m",
+      "title": "Fischer nursery — white fir, 9 m individual specimen",
+      "url": "https://drzewkafischer.pl/index.php/solitaire/21/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 22,500 PLN for one 9 m tall × 4.5 m wide Abies concolor specimen; trunk circumference 110–120 cm. VAT basis, availability and matching multiples are not confirmed. Services extra.",
+      "observations": [
+        { "typeId": "white-fir-9m", "heightM": [9, 9], "widthM": [4.5, 4.5], "trunkCircumferenceCM": [110, 120], "pricePLN": 22500, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "debruyn-norway-spruce-9-10m",
+      "title": "De Bruyn — Norway spruce, 9–10 m height band",
+      "url": "https://catalog.boomkwekerij-debruyn.com/en/plantenboek/picea-abies/",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Published €3,070 per 9–10 m wired-rootball tree, converted to 13,201 PLN at the fixed planning rate 4.30 PLN/EUR. Crown width is not specified; the model's 3 m width/depth is an assumption, not verified stock. Services extra.",
+      "observations": [
+        { "typeId": "norway-spruce-9-10m", "heightM": [9, 10], "priceEUR": 3070, "exchangeRatePLNPerEUR": 4.3, "exchangeRateBasis": "Fixed planning assumption, not a live rate", "pricePLN": 13201, "taxBasis": "included", "assumedCrownWidthM": 3, "assumedCrownDepthM": 3, "stockStatus": "Height-band catalog; crown measurements and current availability unconfirmed" }
+      ]
+    },
+    {
+      "id": "markflor-thuja-brabant-6-7m",
+      "title": "Markflor — Thuja Brabant, 6–7 m soliter",
+      "url": "https://www.markflor.pl/cennik/drzewa-iglaste-bryla",
+      "observedAt": "2026-11-14",
+      "priceBasis": "2026/2027 price list: 2,800 PLN NET for a 6–7 m soliter. VAT is additional and is not silently added at an assumed rate. Crown width, current quantities and final delivered price need confirmation.",
+      "observations": [
+        { "typeId": "thuja-brabant-6-7m", "heightM": [6, 7], "pricePLN": 2800, "taxBasis": "net", "assumedCrownWidthM": 1.5, "assumedCrownDepthM": 1.5, "stockStatus": "Height-band price list; width and current quantity unconfirmed" }
+      ]
+    },
+    {
+      "id": "fischer-serbian-spruce-7m",
+      "title": "Fischer nursery — Serbian spruce, 7 m individual specimen",
+      "url": "https://drzewkafischer.pl/solitaire/76/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 8,300 PLN for one 7 m tall × 3 m wide specimen. VAT basis, availability and matching multiples are not confirmed. Delivery, lifting and planting extra.",
+      "observations": [
+        { "typeId": "serbian-spruce-7m", "heightM": [7, 7], "widthM": [3, 3], "pricePLN": 8300, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "debruyn-austrian-pine-8-9m",
+      "title": "De Bruyn — Austrian pine, 8–9 m height band",
+      "url": "https://catalog.boomkwekerij-debruyn.com/en/plantenboek/pinus-nigra-nigra/",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Published €6,174 per 8–9 m wired-rootball tree, converted to 26,548.20 PLN at the fixed planning rate 4.30 PLN/EUR. This excludes the separately priced multi-stem form. Crown width is unquoted; 3 m width/depth is an explicit model assumption. Services extra.",
+      "observations": [
+        { "typeId": "austrian-pine-debruyn-8-9m", "heightM": [8, 9], "priceEUR": 6174, "exchangeRatePLNPerEUR": 4.3, "exchangeRateBasis": "Fixed planning assumption, not a live rate", "pricePLN": 26548.2, "taxBasis": "included", "assumedCrownWidthM": 3, "assumedCrownDepthM": 3, "stockStatus": "Height-band catalog; crown measurements and current availability unconfirmed" }
+      ]
+    },
+    {
+      "id": "fischer-nordmann-fir-11m",
+      "title": "Fischer nursery — Nordmann fir, 11 m individual specimen",
+      "url": "https://drzewkafischer.pl/index.php/solitaire/75/show",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Displayed 28,000 PLN for one 11 m tall × 7 m wide specimen. VAT basis, current availability and matching multiples need confirmation. Its very large crown and root ball require a layout/access assessment. Services extra.",
+      "observations": [
+        { "typeId": "nordmann-fir-11m", "heightM": [11, 11], "widthM": [7, 7], "pricePLN": 28000, "taxBasis": "unspecified", "stockStatus": "Individual specimen listing; current availability and matching multiples unconfirmed" }
+      ]
+    },
+    {
+      "id": "debruyn-tax-terms",
+      "title": "De Bruyn — webshop VAT terms",
+      "url": "https://www.boomkwekerij-debruyn.com/en/verkoopvoorwaarden/",
+      "observedAt": "2026-11-14",
+      "priceBasis": "Webshop terms state that website product prices include VAT unless otherwise indicated. Confirm the final invoice for delivery to Poland; do not automatically add a blanket VAT percentage to the listed amounts."
+    },
+    {
+      "id": "galeria-austrian-pine",
+      "title": "Galeria Ogrodowa — broad Austrian pine specimens",
+      "url": "https://galeriaogrodowa.pl/produkt/sosna-czarna-pinus-nigra/",
+      "priceBasis": "Gross catalog PLN per plant: 4–4.5 m tall × 3–4 m diameter, 13,500 PLN; 5–6 m × 3–4 m, 16,900 PLN; 6–7 m × 4–6 m, 44,900 PLN; 9–10 m × 4–6 m, 59,900 PLN. Transport, unloading and planting extra.",
+      "observations": [
+        { "typeId": "austrian-pine-medium", "heightM": [4, 4.5], "diameterM": [3, 4], "transplantCount": 7, "pricePLN": 13500, "taxBasis": "VAT included" },
+        { "typeId": "austrian-pine-large", "heightM": [5, 6], "diameterM": [3, 4], "transplantCount": 7, "pricePLN": 16900, "taxBasis": "VAT included" },
+        { "typeId": "austrian-pine-xl", "heightM": [6, 7], "diameterM": [4, 6], "transplantCount": 8, "pricePLN": 44900, "taxBasis": "VAT included" },
+        { "typeId": "austrian-pine-tall", "heightM": [9, 10], "diameterM": [4, 6], "transplantCount": 8, "pricePLN": 59900, "taxBasis": "VAT included" }
+      ],
+      "logistics": "Transport is quoted by vehicle and distance. Customer arranges unloading; HDS transport can be discussed. A catalog size does not confirm availability or handling access."
+    },
+    {
+      "id": "fischer-serbian-spruce",
+      "title": "Fischer nursery — Serbian spruce, 6 m specimen",
+      "url": "https://drzewkafischer.pl/solitaire/100/show",
+      "priceBasis": "Displayed 4,950 PLN for a specimen 6 m tall and 1.75 m wide. VAT basis, delivery and availability need confirmation. Matching multiples are not confirmed.",
+      "observations": [
+        { "typeId": "serbian-spruce", "heightM": [6, 6], "widthM": [1.75, 1.75], "pricePLN": 4950, "taxBasis": "Not stated on the inspected product page" }
+      ]
+    },
+    {
+      "id": "galeria-hornbeam",
+      "title": "Galeria Ogrodowa — broad hornbeam specimen",
+      "url": "https://galeriaogrodowa.pl/produkt/grab-pospolity-carpinus-betulus/",
+      "priceBasis": "Gross catalog 11,300 PLN per 5–7 m tall, 2–3 m diameter specimen; trunk circumference 30–35 cm, transplanted five times. Delivery, unloading and planting extra.",
+      "observations": [
+        { "typeId": "broad-hornbeam", "heightM": [5, 7], "diameterM": [2, 3], "trunkCircumferenceCM": [30, 35], "transplantCount": 5, "pricePLN": 11300, "taxBasis": "VAT included" }
+      ]
+    },
+    {
+      "id": "wyplatane-pleached-hornbeam",
+      "title": "Wyplatane — Horizon Grab Grande pleached hornbeam",
+      "url": "https://wyplatane.pl/products/horizon-carpinus",
+      "priceBasis": "Displayed Grande price 2,190 PLN. Clear stem about 2.2 m plus 1.5 m high × 1.5 m wide panel gives about 3.7 m total height. Delivery included. Optional three stakes and tape 149 PLN/tree; planting extra.",
+      "observations": [
+        { "typeId": "pleached-hornbeam", "heightM": [3.7, 3.7], "clearStemM": 2.2, "panelHeightM": 1.5, "panelWidthM": 1.5, "trunkCircumferenceCM": [16, 18], "pricePLN": 2190, "deliveryIncluded": true, "optionalStakingKitPLN": 149, "taxBasis": "Displayed retail price; separate VAT wording not located" }
+      ],
+      "seasonality": "Supplier explicitly describes partial screening and visible gaps in winter. Crown depth is not supplied."
+    },
+    {
+      "id": "galeria-tax-terms",
+      "title": "Galeria Ogrodowa — VAT and sales terms",
+      "url": "https://galeriaogrodowa.pl/regulamin/",
+      "priceBasis": "The sales terms state that displayed product prices in PLN include VAT; delivery and other charges are confirmed with the order."
+    },
+    {
+      "id": "galeria-catalog-basis",
+      "title": "Galeria Ogrodowa — catalog price basis",
+      "url": "https://galeriaogrodowa.pl/",
+      "priceBasis": "The supplier describes website prices as indicative retail catalog prices and requests an individual offer. Listed sizes and prices are not a stock reservation."
+    }
+  ],
+  "plantSuitability": [
+    {
+      "id": "rhs-austrian-pine",
+      "title": "RHS — Austrian pine",
+      "url": "https://www.rhs.org.uk/plants/13107/pinus-nigra/details",
+      "note": "Evergreen, full sun, well-drained soil, H7. Mature height can exceed 12 m and spread 8 m; purchased dimensions are modelled separately."
+    },
+    {
+      "id": "rhs-coastal",
+      "title": "RHS — plants for coastal gardens",
+      "url": "https://www.rhs.org.uk/plants/for-places/coastal-areas",
+      "note": "Austrian pine is among coastal recommendations. Wind, salt exposure, soil and drainage still require site-specific selection."
+    },
+    {
+      "id": "rhs-serbian-spruce",
+      "title": "RHS — Serbian spruce",
+      "url": "https://www.rhs.org.uk/plants/12966/picea-omorika/details",
+      "note": "Narrow conical evergreen, H7, full sun and moist well-drained soil; shelter from cold drying winds. Mature spread about 2.5–4 m and height above 12 m."
+    },
+    {
+      "id": "rhs-hornbeam",
+      "title": "RHS — hornbeam",
+      "url": "https://www.rhs.org.uk/plants/3136/carpinus-betulus/details",
+      "note": "Deciduous, H7, sun or partial shade, moist well-drained or well-drained soil. Leaf-off screening is not an opaque summer canopy."
+    },
+    {
+      "id": "rhs-hedges",
+      "title": "RHS — choosing hedges",
+      "url": "https://www.rhs.org.uk/plants/types/hedges/choosing",
+      "note": "Hornbeam can retain some winter leaves, less than beech; this does not establish guaranteed opaque winter screening."
+    }
+  ],
+  "modelAssumptions": {
+    "dimensions": "Midpoints initialize purchased height bands. Crown bases are editable drawing assumptions; a quoted width initializes both width and depth. Height-only listings omit a verified width: the Norway spruce/imported pine use a 3 m model crown and Markflor Brabant uses 1.5 m. These are unverified assumptions. Panel clear-stem height and height/width are documented; its depth is a 0.4 m drawing assumption.",
+    "priceLimits": "Documented sizes use the published-stock price only within their supplied height/width bands; ordinary depth uses the quoted width band. For height-only listings, the default or smaller assumed crown may use a catalog-assumption budget anchor with stockMatch false. Increasing either assumed width or depth requires a custom plant quote. No height extrapolation or automatic discount for a smaller crown is applied. Panel depth above its 0.4 m default also requires a quote. These assumed limits are conservative budgeting rules, not verified supplier dimensions.",
+    "services": "Planting, anchoring, delivery, crane/unloading and establishment are separate editable allowances. Zero means unquoted when applicable. Published-stock Wyplatane delivery is included; a catalog pleached-only order receives no extra delivery or automatic crane allowance. Custom plant-only quotes do not inherit supplier delivery. Enlarging panel height, width or assumed depth also requires an unloading allowance because handling for the changed specimen is unverified.",
+    "quantity": "Only enabled trees enter the screening-tree budget. A catalog of an individual specimen does not guarantee multiple matching trees at the same price.",
+    "privacy": "Geometric crown envelopes are optimistic approximations. Branch gaps, density and seasonal leaf loss prevent a guaranteed 100 percent real-world privacy claim.",
+    "growth": "These are purchased-stock dimensions. No unverified growth curve, mature-size discount or maintenance cost forecast is used.",
+    "climate": "RHS hardiness and exposure profiles support species selection but are not a guarantee for an individual coastal Gdansk site or transplanted specimen."
+  }
+}
