@@ -27,6 +27,9 @@ if(!baseURL){
   baseURL='http://127.0.0.1:'+server.address().port;
 }
 const check=label=>{report.checks.push(label);console.log('REFINEMENT_CHECK '+label);};
+// A High/Automatic WebGL readback can exceed the ordinary UI-action deadline
+// on software-rendered CI. Keep captures bounded without relaxing assertions.
+const sceneCaptureTimeout=120000;
 const frames=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 async function ready(){
   await page.locator('#loading').waitFor({state:'hidden',timeout:60000});
@@ -45,12 +48,12 @@ async function number(id,value){
 }
 async function shot(name,selector='#viewport'){
   const node=page.locator(selector);await node.scrollIntoViewIfNeeded();await frames();
-  const filename=name+'.png';await node.screenshot({path:path.join(resultRoot,filename),animations:'disabled',scale:'css'});
+  const filename=name+'.png';await node.screenshot({path:path.join(resultRoot,filename),animations:'disabled',scale:'css',timeout:sceneCaptureTimeout});
   report.screenshots.push(filename);
 }
 async function sceneFrame(){
   await page.locator('#scene-host').scrollIntoViewIfNeeded();await frames();
-  return page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css'});
+  return page.locator('#scene-host').screenshot({type:'png',animations:'disabled',scale:'css',timeout:sceneCaptureTimeout});
 }
 async function changedPixels(before,after){
   return page.evaluate(async({before,after})=>{

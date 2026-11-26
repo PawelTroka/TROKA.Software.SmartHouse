@@ -42,10 +42,10 @@ async function rendered(style,view,{timeout=30000}={}){
 async function shot(name,selector){
   const node=selector?q(selector):page;
   const file=name+'.png';
-  await node.screenshot({path:path.join(output,file),scale:'css',animations:'disabled'});
+  await node.screenshot({path:path.join(output,file),scale:'css',animations:'disabled',timeout:sceneStartupTimeout});
   report.screenshots.push(file);
 }
-async function cameraFrame(){return field('canvas').locator('canvas').screenshot({scale:'css',animations:'disabled'});}
+async function cameraFrame(){return field('canvas').locator('canvas').screenshot({scale:'css',animations:'disabled',timeout:sceneStartupTimeout});}
 const walkCanvas=()=>q('#scene-host canvas');
 async function walking(floor){
   await q('#interior-host').waitFor({state:'hidden'});
