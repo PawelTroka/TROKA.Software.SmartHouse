@@ -22,8 +22,8 @@ const rect={x:4.1,y:8.5,z:2.4,width:.78,length:2};
 test('style IDs are stable, unique and all proposals have different architectural recipes',()=>{
   assert.equal(getDesignStyle('__proto__').id,DEFAULT_DESIGN_STYLE);
   assert.equal(getDesignStyle(null).id,DEFAULT_DESIGN_STYLE);
-  assert.equal(new Set(DESIGN_STYLES.map(s=>s.id)).size,23);
-  assert.equal(new Set(proposals.map(s=>JSON.stringify(s.recipe))).size,22);
+  assert.equal(new Set(DESIGN_STYLES.map(s=>s.id)).size,35);
+  assert.equal(new Set(proposals.map(s=>JSON.stringify(s.recipe))).size,34);
   for(const style of DESIGN_STYLES){
     assert.equal(getDesignStyle(style.id),style);
     assert.ok(Object.isFrozen(style.recipe.module)&&Object.isFrozen(style.palette));

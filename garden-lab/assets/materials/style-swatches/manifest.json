@@ -1,9 +1,9 @@
 {
   "version": 1,
   "method": "Production material pigment + production photographicReflectance in linear light; source texture quantization reproduced before pigment multiplication. Unlit albedo, no invented lighting.",
-  "sampleCount": 184,
-  "uniqueFiles": 119,
-  "totalBytes": 1145712,
+  "sampleCount": 280,
+  "uniqueFiles": 159,
+  "totalBytes": 1508139,
   "samples": [
     {
       "style": "current",
@@ -6996,6 +6996,3654 @@
         5.428423312561817,
         5.289826695701579,
         5.158370503501657
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.9697777728908075,
+        0.950655630837775,
+        0.8405539461887666
+      ],
+      "basePigment": [
+        0.775822218312646,
+        0.76052450467022,
+        0.6724431569510133
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "nordic-minimal/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "e7824a22bd059f42b51f_swatch.jpg",
+      "bytes": 10443,
+      "sha256": "d7b6fba85eca2a0497dd172deab3ccaa50c9c7751f96163a0b55463fd41e3659",
+      "meanSrgb": [
+        224.85134887695312,
+        222.79672241210938,
+        210.49632263183594
+      ],
+      "stdSrgb": [
+        10.34585916052399,
+        10.409124989942514,
+        10.683596687724025
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5332764040016892,
+        0.4178850708380236,
+        0.26225065751888765
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "nordic-minimal/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "a4f52e9f39db8226a244_swatch.jpg",
+      "bytes": 8505,
+      "sha256": "5c55b30e1480a314a54a90f18c0cd13bf6b176b3fdefd994bc337f8f5ea423ff",
+      "meanSrgb": [
+        172.64654541015625,
+        148.88150024414062,
+        125.1907958984375
+      ],
+      "stdSrgb": [
+        4.4910810082261525,
+        4.480119201736436,
+        4.550987938046947
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.6938717612856897,
+        0.6514056374127929,
+        0.5647115056965487
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "nordic-minimal/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "2a7dc80d430805f755a8_swatch.jpg",
+      "bytes": 4937,
+      "sha256": "60752242a3db6e86049756b145a456c160ffa4268fcfce2705b11663e915e29b",
+      "meanSrgb": [
+        172.8135986328125,
+        148.973876953125,
+        125.0013427734375
+      ],
+      "stdSrgb": [
+        1.9560404837478775,
+        1.9119698275805026,
+        1.9248257717640305
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        1,
+        0.9794222394019573
+      ],
+      "basePigment": [
+        0.85499260812105,
+        0.85499260812105,
+        0.7835377915215659
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "nordic-minimal/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "4259f2f1a79bfaf235f7_swatch.jpg",
+      "bytes": 6010,
+      "sha256": "5db3e7a7ce61bc74666d482101129cb7e14a9cf9855acf986c6c2fd04b364c34",
+      "meanSrgb": [
+        229.8939208984375,
+        229.8939208984375,
+        227.8939208984375
+      ],
+      "stdSrgb": [
+        2.3318007177914977,
+        2.3318007177914977,
+        2.3318007177914977
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        1,
+        0.9010830415100999
+      ],
+      "basePigment": [
+        0.8565262197200935,
+        0.8246625452332821,
+        0.72086643320808
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "nordic-minimal/interior/wall",
+      "viewMeters": 0.8,
+      "file": "f19c8b7bb9576b481a86_swatch.jpg",
+      "bytes": 10593,
+      "sha256": "129be6cb6ca58881344b4772475555a2e24697e7ffcaea2995db1db29e6a709f",
+      "meanSrgb": [
+        227.8526611328125,
+        227.87364196777344,
+        216.752197265625
+      ],
+      "stdSrgb": [
+        10.43352376770863,
+        10.647033557037567,
+        11.075536382421932
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5332764040016892,
+        0.4178850708380236,
+        0.26225065751888765
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "nordic-minimal/interior/wood",
+      "viewMeters": 0.4,
+      "file": "a4f52e9f39db8226a244_swatch.jpg",
+      "bytes": 8505,
+      "sha256": "5c55b30e1480a314a54a90f18c0cd13bf6b176b3fdefd994bc337f8f5ea423ff",
+      "meanSrgb": [
+        172.64654541015625,
+        148.88150024414062,
+        125.1907958984375
+      ],
+      "stdSrgb": [
+        4.4910810082261525,
+        4.480119201736436,
+        4.550987938046947
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        0.7377625268450512,
+        0.5702961099938479,
+        0.36129405013771904
+      ],
+      "basePigment": [
+        0.590210021476041,
+        0.4562368879950784,
+        0.28903524011017523
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "palette",
+      "key": "nordic-minimal/interior/floor",
+      "viewMeters": 1.2,
+      "file": "77812401305c04730f9a_swatch.jpg",
+      "bytes": 10019,
+      "sha256": "98ce09050033ea9bb31193522c0901fe071628979d95b04e388178f34ee4dfb4",
+      "meanSrgb": [
+        200.34817504882812,
+        177.8755645751953,
+        144.56077575683594
+      ],
+      "stdSrgb": [
+        7.786663667384593,
+        7.46782468966442,
+        6.322195247137492
+      ]
+    },
+    {
+      "style": "nordic-minimal",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        1,
+        0.9794222394019573
+      ],
+      "basePigment": [
+        0.85499260812105,
+        0.85499260812105,
+        0.7835377915215659
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "nordic-minimal/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "4259f2f1a79bfaf235f7_swatch.jpg",
+      "bytes": 6010,
+      "sha256": "5db3e7a7ce61bc74666d482101129cb7e14a9cf9855acf986c6c2fd04b364c34",
+      "meanSrgb": [
+        229.8939208984375,
+        229.8939208984375,
+        227.8939208984375
+      ],
+      "stdSrgb": [
+        2.3318007177914977,
+        2.3318007177914977,
+        2.3318007177914977
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "cedar",
+      "pigment": [
+        0.08100408335662017,
+        0.09276696046517334,
+        0.0743890476945272
+      ],
+      "basePigment": [
+        0.06480326668529614,
+        0.07421356837213867,
+        0.059511238155621766
+      ],
+      "sourceId": "japanese_cedar_planks",
+      "sourceFile": "japanese_cedar_planks_diffuse.jpg",
+      "meters": [
+        1.130000114440918,
+        1.130000114440918
+      ],
+      "colorMode": "palette",
+      "key": "nordic-blackwood/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "4541a88cfa5ea423d730_swatch.jpg",
+      "bytes": 10035,
+      "sha256": "cd8856934177a07e803b16b3415d56bf294bed9585b3ba24edc1653b563e3cc1",
+      "meanSrgb": [
+        71.93063354492188,
+        76.22557067871094,
+        61.22125244140625
+      ],
+      "stdSrgb": [
+        7.343071216235532,
+        8.657593452424328,
+        13.926135623778022
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "cedar-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.3139887133649649,
+        0.1844749944900301,
+        0.09530746662221588
+      ],
+      "sourceId": "japanese_cedar_planks_unit",
+      "sourceFile": "japanese_cedar_planks_unit_diffuse.jpg",
+      "meters": [
+        0.06400391273200512,
+        1.0483399499207735
+      ],
+      "colorMode": "natural",
+      "key": "nordic-blackwood/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "2c7b9249ee4780705ce9_swatch.jpg",
+      "bytes": 13635,
+      "sha256": "f782b2be6a88f1529097686f3ad23d3a46aa07d8cfee605e15f4e35573590d17",
+      "meanSrgb": [
+        183.50119018554688,
+        105.661865234375,
+        18.645477294921875
+      ],
+      "stdSrgb": [
+        9.03811197462613,
+        10.049460305364853,
+        9.394960050204762
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.41254261347374327,
+        0.3915724777393922,
+        0.34191442489801843
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "nordic-blackwood/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "wool",
+      "pigment": [
+        0.9038189111452438,
+        0.8583566405361079,
+        0.7465022354448305
+      ],
+      "basePigment": [
+        0.7230551289161951,
+        0.6866853124288864,
+        0.5972017883558645
+      ],
+      "sourceId": "wool_boucle",
+      "sourceFile": "wool_boucle_diffuse.jpg",
+      "meters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "colorMode": "palette",
+      "key": "nordic-blackwood/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "db197453c0ef7d9e8f64_swatch.jpg",
+      "bytes": 32089,
+      "sha256": "404ff3e02dad50e70422f16b37f11cf0e820168c41010c794a829d269eb85823",
+      "meanSrgb": [
+        175.36734008789062,
+        170.54550170898438,
+        157.51683044433594
+      ],
+      "stdSrgb": [
+        64.18524690795252,
+        61.91971759390487,
+        58.72108630212633
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "cedar",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4014740906785895,
+        0.38542354600251,
+        0.3285900051790293
+      ],
+      "sourceId": "japanese_cedar_planks",
+      "sourceFile": "japanese_cedar_planks_diffuse.jpg",
+      "meters": [
+        1.130000114440918,
+        1.130000114440918
+      ],
+      "colorMode": "natural",
+      "key": "nordic-blackwood/interior/wall",
+      "viewMeters": 0.8,
+      "file": "81c49396b8200a2da724_swatch.jpg",
+      "bytes": 12794,
+      "sha256": "e8daf20e0842f3556f820babd6c315e7bd1ad580052d3bd760eed4ded044af4f",
+      "meanSrgb": [
+        176.5269317626953,
+        101.29736328125,
+        13.50982666015625
+      ],
+      "stdSrgb": [
+        17.40027496534498,
+        13.312483371133224,
+        8.625254461216466
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "cedar-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.3139887133649649,
+        0.1844749944900301,
+        0.09530746662221588
+      ],
+      "sourceId": "japanese_cedar_planks_unit",
+      "sourceFile": "japanese_cedar_planks_unit_diffuse.jpg",
+      "meters": [
+        0.06400391273200512,
+        1.0483399499207735
+      ],
+      "colorMode": "natural",
+      "key": "nordic-blackwood/interior/wood",
+      "viewMeters": 0.4,
+      "file": "2c7b9249ee4780705ce9_swatch.jpg",
+      "bytes": 13635,
+      "sha256": "f782b2be6a88f1529097686f3ad23d3a46aa07d8cfee605e15f4e35573590d17",
+      "meanSrgb": [
+        183.50119018554688,
+        105.661865234375,
+        18.645477294921875
+      ],
+      "stdSrgb": [
+        9.03811197462613,
+        10.049460305364853,
+        9.394960050204762
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "cedar",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.43670863803033394,
+        0.29284983455148295,
+        0.172175006482505
+      ],
+      "sourceId": "japanese_cedar_planks",
+      "sourceFile": "japanese_cedar_planks_diffuse.jpg",
+      "meters": [
+        1.130000114440918,
+        1.130000114440918
+      ],
+      "colorMode": "natural",
+      "key": "nordic-blackwood/interior/floor",
+      "viewMeters": 1.2,
+      "file": "bfd93712758a1fb05193_swatch.jpg",
+      "bytes": 13289,
+      "sha256": "e2fac6b03400216508df60ffb12dc9e53160e524bd67b3fbb711b4001fa4341a",
+      "meanSrgb": [
+        172.89869689941406,
+        98.204345703125,
+        11.378936767578125
+      ],
+      "stdSrgb": [
+        19.34238073231229,
+        14.561381626570673,
+        7.839542537026591
+      ]
+    },
+    {
+      "style": "nordic-blackwood",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "wool",
+      "pigment": [
+        0.9038189111452438,
+        0.8583566405361079,
+        0.7465022354448305
+      ],
+      "basePigment": [
+        0.7230551289161951,
+        0.6866853124288864,
+        0.5972017883558645
+      ],
+      "sourceId": "wool_boucle",
+      "sourceFile": "wool_boucle_diffuse.jpg",
+      "meters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "colorMode": "palette",
+      "key": "nordic-blackwood/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "db197453c0ef7d9e8f64_swatch.jpg",
+      "bytes": 32089,
+      "sha256": "404ff3e02dad50e70422f16b37f11cf0e820168c41010c794a829d269eb85823",
+      "meanSrgb": [
+        175.36734008789062,
+        170.54550170898438,
+        157.51683044433594
+      ],
+      "stdSrgb": [
+        64.18524690795252,
+        61.91971759390487,
+        58.72108630212633
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.9130759251058947,
+        0.8317341228443461,
+        0.6900142518792999
+      ],
+      "basePigment": [
+        0.7304607400847158,
+        0.6653872982754769,
+        0.55201140150344
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "warm-minimal/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "495273910f19ae5e8727_swatch.jpg",
+      "bytes": 10041,
+      "sha256": "d2133e57423361482e251367a6951bd658528d07dd07332a5f444a7c5e13058d",
+      "meanSrgb": [
+        218.80540466308594,
+        210.2000732421875,
+        192.80227661132812
+      ],
+      "stdSrgb": [
+        9.948580973795005,
+        9.851570739712397,
+        9.852446787862691
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.450785782828426,
+        0.2917706498067337,
+        0.1499597898006365
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "warm-minimal/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5840784178830671,
+        0.4910208498384856,
+        0.36625259558833256
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "warm-minimal/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        0.9223880109590396,
+        0.7715082030150794
+      ],
+      "basePigment": [
+        0.8069522576650873,
+        0.7379104087672317,
+        0.6172065624120635
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "warm-minimal/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "77029744cd88e75d211b_swatch.jpg",
+      "bytes": 5588,
+      "sha256": "6f41cc27da12ed1108149c6d2ea9cb86337bb6ae9b295e120b0c3c3991af3367",
+      "meanSrgb": [
+        229.131103515625,
+        222.131103515625,
+        204.135009765625
+      ],
+      "stdSrgb": [
+        2.11583053908953,
+        2.11583053908953,
+        2.115152077381555
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        0.954718416425808,
+        0.8047376371520412
+      ],
+      "basePigment": [
+        0.8274948736542181,
+        0.7637747331406465,
+        0.643790109721633
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "warm-minimal/interior/wall",
+      "viewMeters": 0.8,
+      "file": "b6722f0715675a70120c_swatch.jpg",
+      "bytes": 10406,
+      "sha256": "7e9762f3ce6da399fab995debfafce60b83d2985331aa642c508947087947499",
+      "meanSrgb": [
+        228.13040161132812,
+        223.3776092529297,
+        206.36776733398438
+      ],
+      "stdSrgb": [
+        10.483351515330476,
+        10.405119636297151,
+        10.612708359840234
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.450785782828426,
+        0.2917706498067337,
+        0.1499597898006365
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "warm-minimal/interior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5324665866547568,
+        0.36795679327317543,
+        0.21043163270739945
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "natural",
+      "key": "warm-minimal/interior/floor",
+      "viewMeters": 1.2,
+      "file": "00a36bdba024b6b1d854_swatch.jpg",
+      "bytes": 9651,
+      "sha256": "bc266390cb33dd04a1ad459a8c1571d123789da639e985ad9ad510d0d26757a5",
+      "meanSrgb": [
+        162.42555236816406,
+        117.61895751953125,
+        83.75820922851562
+      ],
+      "stdSrgb": [
+        7.679012688518395,
+        6.745498407586358,
+        5.460834929846178
+      ]
+    },
+    {
+      "style": "warm-minimal",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        0.9223880109590396,
+        0.7715082030150794
+      ],
+      "basePigment": [
+        0.8069522576650873,
+        0.7379104087672317,
+        0.6172065624120635
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "warm-minimal/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "77029744cd88e75d211b_swatch.jpg",
+      "bytes": 5588,
+      "sha256": "6f41cc27da12ed1108149c6d2ea9cb86337bb6ae9b295e120b0c3c3991af3367",
+      "meanSrgb": [
+        229.131103515625,
+        222.131103515625,
+        204.135009765625
+      ],
+      "stdSrgb": [
+        2.11583053908953,
+        2.11583053908953,
+        2.115152077381555
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        0.9601889340532261,
+        0.849428087033178
+      ],
+      "basePigment": [
+        0.8069522576650873,
+        0.7681511472425809,
+        0.6795424696265424
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "soft-minimal/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "b42b140a0e049850e257_swatch.jpg",
+      "bytes": 10506,
+      "sha256": "4c108bf5219486b04b94817c5fc35743b6f72183265649cbf9d873f5ce0bdaf1",
+      "meanSrgb": [
+        228.15988159179688,
+        223.88873291015625,
+        211.7166290283203
+      ],
+      "stdSrgb": [
+        10.462355761104522,
+        10.459479220889428,
+        10.831187082316317
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4910208498384856,
+        0.3967552307153359,
+        0.2704977910022518
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "soft-minimal/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "a4f52e9f39db8226a244_swatch.jpg",
+      "bytes": 8505,
+      "sha256": "5c55b30e1480a314a54a90f18c0cd13bf6b176b3fdefd994bc337f8f5ea423ff",
+      "meanSrgb": [
+        172.64654541015625,
+        148.88150024414062,
+        125.1907958984375
+      ],
+      "stdSrgb": [
+        4.4910810082261525,
+        4.480119201736436,
+        4.550987938046947
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "porcelain",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.6866853124288864,
+        0.6307571363387763,
+        0.5394794890033748
+      ],
+      "sourceId": "Porcelain001",
+      "sourceFile": "Porcelain001_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "soft-minimal/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "9cd5323044329da6865d_swatch.jpg",
+      "bytes": 1052,
+      "sha256": "99971607f961e6aa466691d1647da5de8aee845734a2cfbc10a8e7e96777ef85",
+      "meanSrgb": [
+        249,
+        249,
+        249
+      ],
+      "stdSrgb": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "boucle",
+      "pigment": [
+        1,
+        1,
+        0.8763773649085018
+      ],
+      "basePigment": [
+        0.8713671191959567,
+        0.8069522576650873,
+        0.7011018919268015
+      ],
+      "sourceId": "wool_boucle_undyed",
+      "sourceFile": "wool_boucle_undyed_diffuse.jpg",
+      "meters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "colorMode": "palette",
+      "key": "soft-minimal/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "aeffc63ff20fc439f86a_swatch.jpg",
+      "bytes": 11481,
+      "sha256": "23a83b896d158b7763d13b52d534227a91d66a71324c5f5c36344cde7b134834",
+      "meanSrgb": [
+        229.90609741210938,
+        230.90609741210938,
+        216.90609741210938
+      ],
+      "stdSrgb": [
+        5.694331999728157,
+        5.694331999728157,
+        5.694331999728157
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        1,
+        0.9067624916505231
+      ],
+      "basePigment": [
+        0.8764494449056559,
+        0.8295435964795931,
+        0.7254099933204186
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "soft-minimal/interior/wall",
+      "viewMeters": 0.8,
+      "file": "805a527d669c54828057_swatch.jpg",
+      "bytes": 10576,
+      "sha256": "ebb9affacdfd3bbdddb15db4c2b95e17889616d3d33d89c4a428a4aa5c731f52",
+      "meanSrgb": [
+        227.83448791503906,
+        227.8207550048828,
+        217.59043884277344
+      ],
+      "stdSrgb": [
+        10.440410050574927,
+        10.6151101498038,
+        11.207534305557536
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4910208498384856,
+        0.3967552307153359,
+        0.2704977910022518
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "soft-minimal/interior/wood",
+      "viewMeters": 0.4,
+      "file": "a4f52e9f39db8226a244_swatch.jpg",
+      "bytes": 8505,
+      "sha256": "5c55b30e1480a314a54a90f18c0cd13bf6b176b3fdefd994bc337f8f5ea423ff",
+      "meanSrgb": [
+        172.64654541015625,
+        148.88150024414062,
+        125.1907958984375
+      ],
+      "stdSrgb": [
+        4.4910810082261525,
+        4.480119201736436,
+        4.550987938046947
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "concrete",
+      "pigment": [
+        0.8763966823215381,
+        0.8056434814029081,
+        0.6900993901982277
+      ],
+      "basePigment": [
+        0.7011173458572305,
+        0.6445147851223265,
+        0.5520795121585822
+      ],
+      "sourceId": "Concrete034",
+      "sourceFile": "Concrete034_diffuse.jpg",
+      "meters": [
+        1.1,
+        0.55
+      ],
+      "colorMode": "palette",
+      "key": "soft-minimal/interior/floor",
+      "viewMeters": 1.2,
+      "file": "11eeff2154a30e993c0c_swatch.jpg",
+      "bytes": 7021,
+      "sha256": "bbb322ebe928bc6fa347c5c84de278c17678bb0c0631ee09c606ad60e4b6953e",
+      "meanSrgb": [
+        217.4792022705078,
+        209.5132598876953,
+        196.4135284423828
+      ],
+      "stdSrgb": [
+        3.9429906005877022,
+        3.996760920673006,
+        3.858508975936107
+      ]
+    },
+    {
+      "style": "soft-minimal",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "boucle",
+      "pigment": [
+        1,
+        1,
+        0.8763773649085018
+      ],
+      "basePigment": [
+        0.8713671191959567,
+        0.8069522576650873,
+        0.7011018919268015
+      ],
+      "sourceId": "wool_boucle_undyed",
+      "sourceFile": "wool_boucle_undyed_diffuse.jpg",
+      "meters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "colorMode": "palette",
+      "key": "soft-minimal/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "aeffc63ff20fc439f86a_swatch.jpg",
+      "bytes": 11481,
+      "sha256": "23a83b896d158b7763d13b52d534227a91d66a71324c5f5c36344cde7b134834",
+      "meanSrgb": [
+        229.90609741210938,
+        230.90609741210938,
+        216.90609741210938
+      ],
+      "stdSrgb": [
+        5.694331999728157,
+        5.694331999728157,
+        5.694331999728157
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.779950489584495,
+        0.697925487032246,
+        0.5495714672887614
+      ],
+      "basePigment": [
+        0.623960391667596,
+        0.5583403896257968,
+        0.4396571738310091
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "belgian-minimal/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "7d8e7c56efdd5d04c5ec_swatch.jpg",
+      "bytes": 9504,
+      "sha256": "13c14efac9d745f5ed58b584f70445e5cfff128bd0f0dd679ffd12930ab4b59e",
+      "meanSrgb": [
+        204.4894561767578,
+        194.15487670898438,
+        174.45960998535156
+      ],
+      "stdSrgb": [
+        9.451808335973542,
+        9.129331633057388,
+        9.002025026860162
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.3277780980458375,
+        0.21952619971859377,
+        0.12213877222015301
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "belgian-minimal/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4735314961384573,
+        0.4019777798219466,
+        0.29613827078752575
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "belgian-minimal/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.8946168756257151,
+        0.8142570467659911,
+        0.651244466494221
+      ],
+      "basePigment": [
+        0.7156935005005721,
+        0.6514056374127929,
+        0.5209955731953768
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "belgian-minimal/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "1c526dd3c05440de45ea_swatch.jpg",
+      "bytes": 5234,
+      "sha256": "bf2f1f4dfb0fff7864ae75c8d7261b813fb480aae7e870aaef165f5729cf2fe3",
+      "meanSrgb": [
+        218.16990661621094,
+        210.16990661621094,
+        189.21092224121094
+      ],
+      "stdSrgb": [
+        1.9527620359163547,
+        1.9527620359163547,
+        1.9618999049068464
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.9491683133340767,
+        0.869080889506064,
+        0.7148542550140965
+      ],
+      "basePigment": [
+        0.7593346506672614,
+        0.6952647116048513,
+        0.5718834040112772
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "belgian-minimal/interior/wall",
+      "viewMeters": 0.8,
+      "file": "d624054ee3982b33132f_swatch.jpg",
+      "bytes": 10194,
+      "sha256": "a185bb9addaf23b698518cc7dd909f0105b9d9198c70a8fff1fdcfdc9fa9404e",
+      "meanSrgb": [
+        222.66355895996094,
+        214.5540771484375,
+        195.90362548828125
+      ],
+      "stdSrgb": [
+        10.159974385858657,
+        10.099875353496076,
+        10.101426020944567
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.3277780980458375,
+        0.21952619971859377,
+        0.12213877222015301
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "belgian-minimal/interior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4463612073069448,
+        0.3173856782114775,
+        0.190956920401061
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "natural",
+      "key": "belgian-minimal/interior/floor",
+      "viewMeters": 1.2,
+      "file": "00a36bdba024b6b1d854_swatch.jpg",
+      "bytes": 9651,
+      "sha256": "bc266390cb33dd04a1ad459a8c1571d123789da639e985ad9ad510d0d26757a5",
+      "meanSrgb": [
+        162.42555236816406,
+        117.61895751953125,
+        83.75820922851562
+      ],
+      "stdSrgb": [
+        7.679012688518395,
+        6.745498407586358,
+        5.460834929846178
+      ]
+    },
+    {
+      "style": "belgian-minimal",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.8946168756257151,
+        0.8142570467659911,
+        0.651244466494221
+      ],
+      "basePigment": [
+        0.7156935005005721,
+        0.6514056374127929,
+        0.5209955731953768
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "belgian-minimal/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "1c526dd3c05440de45ea_swatch.jpg",
+      "bytes": 5234,
+      "sha256": "bf2f1f4dfb0fff7864ae75c8d7261b813fb480aae7e870aaef165f5729cf2fe3",
+      "meanSrgb": [
+        218.16990661621094,
+        210.16990661621094,
+        189.21092224121094
+      ],
+      "stdSrgb": [
+        1.9527620359163547,
+        1.9527620359163547,
+        1.9618999049068464
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        1,
+        0.9794222394019573
+      ],
+      "basePigment": [
+        0.85499260812105,
+        0.8468732315065057,
+        0.7835377915215659
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "monolithic-white/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "d8aa5013b13055735f21_swatch.jpg",
+      "bytes": 10637,
+      "sha256": "01c420255cbc801ec7d3c265c185df86afb6f19069ce4250dc63908075adc1b7",
+      "meanSrgb": [
+        228.03614807128906,
+        227.86337280273438,
+        225.06236267089844
+      ],
+      "stdSrgb": [
+        10.556976763279279,
+        10.617251195595477,
+        11.384694505270359
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.55201140150344,
+        0.4969329950515914,
+        0.3915724777393922
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "monolithic-white/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "a4f52e9f39db8226a244_swatch.jpg",
+      "bytes": 8505,
+      "sha256": "5c55b30e1480a314a54a90f18c0cd13bf6b176b3fdefd994bc337f8f5ea423ff",
+      "meanSrgb": [
+        172.64654541015625,
+        148.88150024414062,
+        125.1907958984375
+      ],
+      "stdSrgb": [
+        4.4910810082261525,
+        4.480119201736436,
+        4.550987938046947
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "porcelain",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.7379104087672317,
+        0.7304607400847158,
+        0.6724431569510133
+      ],
+      "sourceId": "Porcelain001",
+      "sourceFile": "Porcelain001_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "monolithic-white/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "9cd5323044329da6865d_swatch.jpg",
+      "bytes": 1052,
+      "sha256": "99971607f961e6aa466691d1647da5de8aee845734a2cfbc10a8e7e96777ef85",
+      "meanSrgb": [
+        249,
+        249,
+        249
+      ],
+      "stdSrgb": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        1,
+        0.9891224254101939
+      ],
+      "basePigment": [
+        0.85499260812105,
+        0.85499260812105,
+        0.7912979403281551
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "monolithic-white/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "2757d7c1bbc33e2cb8cf_swatch.jpg",
+      "bytes": 6029,
+      "sha256": "f6f90dd5ad216eabc1b7ce01403962e2443bc4c3efdbbd7c8adb33395a0eab27",
+      "meanSrgb": [
+        229.9412841796875,
+        229.9412841796875,
+        227.9412841796875
+      ],
+      "stdSrgb": [
+        2.2842982548034647,
+        2.2842982548034647,
+        2.2842982548034647
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        1,
+        0.9899587491665419
+      ],
+      "basePigment": [
+        0.9071952691974721,
+        0.879925730408505,
+        0.7919669993332336
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "monolithic-white/interior/wall",
+      "viewMeters": 0.8,
+      "file": "e662d31d608444139cad_swatch.jpg",
+      "bytes": 10698,
+      "sha256": "9a9711d93fb8d977428a6c9fc7d0ef153fa67dcbc3ccf8c6eaf7699ee3e64354",
+      "meanSrgb": [
+        227.98287963867188,
+        228.0007781982422,
+        226.01109313964844
+      ],
+      "stdSrgb": [
+        10.501606257751115,
+        10.697743971463227,
+        11.470726194856624
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "ash",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.55201140150344,
+        0.4969329950515914,
+        0.3915724777393922
+      ],
+      "sourceId": "ash_veneer",
+      "sourceFile": "ash_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "monolithic-white/interior/wood",
+      "viewMeters": 0.4,
+      "file": "a4f52e9f39db8226a244_swatch.jpg",
+      "bytes": 8505,
+      "sha256": "5c55b30e1480a314a54a90f18c0cd13bf6b176b3fdefd994bc337f8f5ea423ff",
+      "meanSrgb": [
+        172.64654541015625,
+        148.88150024414062,
+        125.1907958984375
+      ],
+      "stdSrgb": [
+        4.4910810082261525,
+        4.480119201736436,
+        4.550987938046947
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "concrete",
+      "pigment": [
+        0.9327442882937179,
+        0.9153174455234416,
+        0.83635942494063
+      ],
+      "basePigment": [
+        0.7461954306349744,
+        0.7322539564187533,
+        0.669087539952504
+      ],
+      "sourceId": "Concrete034",
+      "sourceFile": "Concrete034_diffuse.jpg",
+      "meters": [
+        1.1,
+        0.55
+      ],
+      "colorMode": "palette",
+      "key": "monolithic-white/interior/floor",
+      "viewMeters": 1.2,
+      "file": "1c2cdf3f41d108aeba94_swatch.jpg",
+      "bytes": 7302,
+      "sha256": "400ca95a3421ef38e0a437d418e301d764bf5b1c03e452fcf0e311082fdc9e66",
+      "meanSrgb": [
+        224.610595703125,
+        221.610595703125,
+        213.407470703125
+      ],
+      "stdSrgb": [
+        4.111254179010909,
+        4.111254179010909,
+        3.756961519955048
+      ]
+    },
+    {
+      "style": "monolithic-white",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        1,
+        0.9891224254101939
+      ],
+      "basePigment": [
+        0.85499260812105,
+        0.85499260812105,
+        0.7912979403281551
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "monolithic-white/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "2757d7c1bbc33e2cb8cf_swatch.jpg",
+      "bytes": 6029,
+      "sha256": "f6f90dd5ad216eabc1b7ce01403962e2443bc4c3efdbbd7c8adb33395a0eab27",
+      "meanSrgb": [
+        229.9412841796875,
+        229.9412841796875,
+        227.9412841796875
+      ],
+      "stdSrgb": [
+        2.2842982548034647,
+        2.2842982548034647,
+        2.2842982548034647
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.8763773649085018,
+        0.8854697248570571,
+        0.7969960924834664
+      ],
+      "basePigment": [
+        0.7011018919268015,
+        0.7083757798856457,
+        0.6375968739867731
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "c5ca7c129122a2a20162_swatch.jpg",
+      "bytes": 10232,
+      "sha256": "c935ac8cd0cba394ce4e1834557e0249a86601a82243a0bf7d22546f6d17706a",
+      "meanSrgb": [
+        214.97796630859375,
+        215.8867645263672,
+        205.58438110351562
+      ],
+      "stdSrgb": [
+        9.923280676254414,
+        10.071585723330461,
+        10.636756315131718
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "walnut",
+      "pigment": [
+        0.4516334747162153,
+        0.32272856613849044,
+        0.18016058856022651
+      ],
+      "basePigment": [
+        0.36130677977297226,
+        0.25818285291079235,
+        0.14412847084818123
+      ],
+      "sourceId": "natural_walnut_veneer",
+      "sourceFile": "natural_walnut_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "8a5fcced6992d8acf793_swatch.jpg",
+      "bytes": 10304,
+      "sha256": "e39afe5e384c99e31e79045655de68b71eb761411121661c9a4e59a31e1ce97b",
+      "meanSrgb": [
+        161.8825225830078,
+        138.82965087890625,
+        105.73257446289062
+      ],
+      "stdSrgb": [
+        10.612843848359445,
+        10.995941954999756,
+        10.274789820124145
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "porcelain",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5209955731953768,
+        0.5271151256969157,
+        0.4793201830913402
+      ],
+      "sourceId": "Porcelain001",
+      "sourceFile": "Porcelain001_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "glass-stone-modern/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "9cd5323044329da6865d_swatch.jpg",
+      "bytes": 1052,
+      "sha256": "99971607f961e6aa466691d1647da5de8aee845734a2cfbc10a8e7e96777ef85",
+      "meanSrgb": [
+        249,
+        249,
+        249
+      ],
+      "stdSrgb": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.950655630837775,
+        0.9601889340532261,
+        0.8854697248570571
+      ],
+      "basePigment": [
+        0.76052450467022,
+        0.7681511472425809,
+        0.7083757798856457
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "2809f7f9199cfb70d244_swatch.jpg",
+      "bytes": 5901,
+      "sha256": "d350f428a5c22df49325d9785e2399becdfea360f79525484707b99776f93f09",
+      "meanSrgb": [
+        224.80621337890625,
+        225.80621337890625,
+        217.80621337890625
+      ],
+      "stdSrgb": [
+        2.27899111565857,
+        2.27899111565857,
+        2.27899111565857
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "concrete",
+      "pigment": [
+        1,
+        0.9891092017139431,
+        0.8732060151387078
+      ],
+      "basePigment": [
+        0.8087052108331529,
+        0.7912873613711545,
+        0.6985648121109662
+      ],
+      "sourceId": "Concrete034",
+      "sourceFile": "Concrete034_diffuse.jpg",
+      "meters": [
+        1.1,
+        0.55
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/interior/wall",
+      "viewMeters": 0.8,
+      "file": "064d051c3416df7faeb7_swatch.jpg",
+      "bytes": 7256,
+      "sha256": "96fcf2e7c908222cec0d1a7a743a967277141363ac1a93f64a3acbf1f21f32c0",
+      "meanSrgb": [
+        229.98748779296875,
+        229.48236083984375,
+        217.39862060546875
+      ],
+      "stdSrgb": [
+        4.903670668264765,
+        4.425185806995592,
+        4.331748460856205
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "walnut",
+      "pigment": [
+        0.4516334747162153,
+        0.32272856613849044,
+        0.18016058856022651
+      ],
+      "basePigment": [
+        0.36130677977297226,
+        0.25818285291079235,
+        0.14412847084818123
+      ],
+      "sourceId": "natural_walnut_veneer",
+      "sourceFile": "natural_walnut_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/interior/wood",
+      "viewMeters": 0.4,
+      "file": "8a5fcced6992d8acf793_swatch.jpg",
+      "bytes": 10304,
+      "sha256": "e39afe5e384c99e31e79045655de68b71eb761411121661c9a4e59a31e1ce97b",
+      "meanSrgb": [
+        161.8825225830078,
+        138.82965087890625,
+        105.73257446289062
+      ],
+      "stdSrgb": [
+        10.612843848359445,
+        10.995941954999756,
+        10.274789820124145
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "concrete",
+      "pigment": [
+        0.6941379691646776,
+        0.6916372696968615,
+        0.6239241536949897
+      ],
+      "basePigment": [
+        0.5553103753317421,
+        0.5533098157574892,
+        0.4991393229559917
+      ],
+      "sourceId": "Concrete034",
+      "sourceFile": "Concrete034_diffuse.jpg",
+      "meters": [
+        1.1,
+        0.55
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/interior/floor",
+      "viewMeters": 1.2,
+      "file": "c60daae88182df9920ba_swatch.jpg",
+      "bytes": 6704,
+      "sha256": "fec077bbcdbf4fae8fd9199c18eea93c1ae38cda6120142ca675e7ded44c291f",
+      "meanSrgb": [
+        195.7677459716797,
+        195.7677459716797,
+        186.0060272216797
+      ],
+      "stdSrgb": [
+        3.640406757798835,
+        3.640406757798835,
+        3.422768102021522
+      ]
+    },
+    {
+      "style": "glass-stone-modern",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.950655630837775,
+        0.9601889340532261,
+        0.8854697248570571
+      ],
+      "basePigment": [
+        0.76052450467022,
+        0.7681511472425809,
+        0.7083757798856457
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "glass-stone-modern/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "2809f7f9199cfb70d244_swatch.jpg",
+      "bytes": 5901,
+      "sha256": "d350f428a5c22df49325d9785e2399becdfea360f79525484707b99776f93f09",
+      "meanSrgb": [
+        224.80621337890625,
+        225.80621337890625,
+        217.80621337890625
+      ],
+      "stdSrgb": [
+        2.27899111565857,
+        2.27899111565857,
+        2.27899111565857
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "board-concrete",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.46778379610254284,
+        0.4735314961384573,
+        0.4019777798219466
+      ],
+      "sourceId": "wood_textured_concrete",
+      "sourceFile": "wood_textured_concrete_diffuse.jpg",
+      "meters": [
+        1.8000000715255737,
+        1.8000000715255737
+      ],
+      "colorMode": "natural",
+      "key": "sculptural-concrete/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "4f4284e54d827d7946e3_swatch.jpg",
+      "bytes": 8927,
+      "sha256": "b4ac13337835923f9156a3a6668161c04ea97a05923ce38a856c0750c06ab8a2",
+      "meanSrgb": [
+        116.60981750488281,
+        105.54144287109375,
+        89.88497924804688
+      ],
+      "stdSrgb": [
+        6.0854380955556575,
+        5.376231124283698,
+        4.943990143312081
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "walnut",
+      "pigment": [
+        0.32272856613849044,
+        0.21430137590319248,
+        0.1219841839163062
+      ],
+      "basePigment": [
+        0.25818285291079235,
+        0.171441100722554,
+        0.09758734713304495
+      ],
+      "sourceId": "natural_walnut_veneer",
+      "sourceFile": "natural_walnut_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "sculptural-concrete/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "8cd5e8b1e8e220b0ea93_swatch.jpg",
+      "bytes": 9415,
+      "sha256": "b68690f70ee90a7752fe1198e7a213122174c48010ccedbe4f48b781d2a3dcad",
+      "meanSrgb": [
+        138.89227294921875,
+        114.73576354980469,
+        87.94956970214844
+      ],
+      "stdSrgb": [
+        9.12003845526425,
+        9.306911941375667,
+        8.756192291192106
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "board-concrete",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4019777798219466,
+        0.3967552307153359,
+        0.34670405634441115
+      ],
+      "sourceId": "wood_textured_concrete",
+      "sourceFile": "wood_textured_concrete_diffuse.jpg",
+      "meters": [
+        1.8000000715255737,
+        1.8000000715255737
+      ],
+      "colorMode": "natural",
+      "key": "sculptural-concrete/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "e15efb1e03a304a51c13_swatch.jpg",
+      "bytes": 8482,
+      "sha256": "83f28af5d7045b4a7eb6fe579e6df05ba52f3c4d5158453a6c5f6b9eef7d7cb2",
+      "meanSrgb": [
+        116.53363037109375,
+        105.51193237304688,
+        89.869873046875
+      ],
+      "stdSrgb": [
+        5.542546009169892,
+        4.831755987139119,
+        4.362591004993667
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.8583566405361079,
+        0.8055996024542951,
+        0.6665955050021114
+      ],
+      "basePigment": [
+        0.6866853124288864,
+        0.6444796819634361,
+        0.5332764040016892
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "sculptural-concrete/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "61d26959ea3c282fb8fc_swatch.jpg",
+      "bytes": 5609,
+      "sha256": "b0ba6a8b0659b8e3a0de0ad956e799eb69d62bac0a1ab4525e82e3b20c8b38cc",
+      "meanSrgb": [
+        214.9569091796875,
+        209.7762451171875,
+        191.3182373046875
+      ],
+      "stdSrgb": [
+        2.0686030365929735,
+        2.131913939030652,
+        2.152995317288129
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "concrete",
+      "pigment": [
+        0.8242270368820342,
+        0.8012337747161924,
+        0.6847107398068465
+      ],
+      "basePigment": [
+        0.6593816295056274,
+        0.6409870197729539,
+        0.5477685918454772
+      ],
+      "sourceId": "Concrete034",
+      "sourceFile": "Concrete034_diffuse.jpg",
+      "meters": [
+        1.1,
+        0.55
+      ],
+      "colorMode": "palette",
+      "key": "sculptural-concrete/interior/wall",
+      "viewMeters": 0.8,
+      "file": "30624ab34345c0088091_swatch.jpg",
+      "bytes": 6863,
+      "sha256": "d16c157c99e4ca9010ec8ff0252b297d90edfaa68d8cd2895277534d8e6595a0",
+      "meanSrgb": [
+        212.02178955078125,
+        208.45343017578125,
+        195.15850830078125
+      ],
+      "stdSrgb": [
+        4.060750984155579,
+        4.339412790990604,
+        3.6441804153792168
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "walnut",
+      "pigment": [
+        0.32272856613849044,
+        0.21430137590319248,
+        0.1219841839163062
+      ],
+      "basePigment": [
+        0.25818285291079235,
+        0.171441100722554,
+        0.09758734713304495
+      ],
+      "sourceId": "natural_walnut_veneer",
+      "sourceFile": "natural_walnut_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "sculptural-concrete/interior/wood",
+      "viewMeters": 0.4,
+      "file": "8cd5e8b1e8e220b0ea93_swatch.jpg",
+      "bytes": 9415,
+      "sha256": "b68690f70ee90a7752fe1198e7a213122174c48010ccedbe4f48b781d2a3dcad",
+      "meanSrgb": [
+        138.89227294921875,
+        114.73576354980469,
+        87.94956970214844
+      ],
+      "stdSrgb": [
+        9.12003845526425,
+        9.306911941375667,
+        8.756192291192106
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "concrete",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4505747171631235,
+        0.438593108173699,
+        0.3824371314186941
+      ],
+      "sourceId": "Concrete034",
+      "sourceFile": "Concrete034_diffuse.jpg",
+      "meters": [
+        1.1,
+        0.55
+      ],
+      "colorMode": "natural",
+      "key": "sculptural-concrete/interior/floor",
+      "viewMeters": 1.2,
+      "file": "54a836c0e7890aade8a0_swatch.jpg",
+      "bytes": 6769,
+      "sha256": "674c3a438242a33b516d862f777d4252831b20c3a07c10bc2c135520d5ff0ed0",
+      "meanSrgb": [
+        184.3223114013672,
+        184.3223114013672,
+        184.3223114013672
+      ],
+      "stdSrgb": [
+        3.7151103517901602,
+        3.7151103517901602,
+        3.7151103517901602
+      ]
+    },
+    {
+      "style": "sculptural-concrete",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.8583566405361079,
+        0.8055996024542951,
+        0.6665955050021114
+      ],
+      "basePigment": [
+        0.6866853124288864,
+        0.6444796819634361,
+        0.5332764040016892
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "sculptural-concrete/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "61d26959ea3c282fb8fc_swatch.jpg",
+      "bytes": 5609,
+      "sha256": "b0ba6a8b0659b8e3a0de0ad956e799eb69d62bac0a1ab4525e82e3b20c8b38cc",
+      "meanSrgb": [
+        214.9569091796875,
+        209.7762451171875,
+        191.3182373046875
+      ],
+      "stdSrgb": [
+        2.0686030365929735,
+        2.131913939030652,
+        2.152995317288129
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.8405539461887666,
+        0.7465022354448305,
+        0.5634822285355325
+      ],
+      "basePigment": [
+        0.6724431569510133,
+        0.5972017883558645,
+        0.450785782828426
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "organic-limestone/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "f1194644a7dd803dea60_swatch.jpg",
+      "bytes": 9781,
+      "sha256": "efdb8449b4d593182058158aa39e3ac2a79f68af6c70ed94dd74b6f87c601590",
+      "meanSrgb": [
+        211.18093872070312,
+        200.06924438476562,
+        175.91024780273438
+      ],
+      "stdSrgb": [
+        9.793928070416433,
+        9.443685376823415,
+        9.153011503975844
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.407240211891531,
+        0.2663556047920505,
+        0.13013647668074665
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "organic-limestone/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5583403896257968,
+        0.4735314961384573,
+        0.3371636150376657
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "organic-limestone/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "boucle",
+      "pigment": [
+        1,
+        0.950655630837775,
+        0.779950489584495
+      ],
+      "basePigment": [
+        0.8387990117372213,
+        0.76052450467022,
+        0.623960391667596
+      ],
+      "sourceId": "wool_boucle_undyed",
+      "sourceFile": "wool_boucle_undyed_diffuse.jpg",
+      "meters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "colorMode": "palette",
+      "key": "organic-limestone/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "345fce161800919077d1_swatch.jpg",
+      "bytes": 11706,
+      "sha256": "5ff87cc852d93515ea5d0cf018b3abef61b326125f1d4e9f5d82c527e558fc3e",
+      "meanSrgb": [
+        230.09872436523438,
+        225.09848022460938,
+        205.89974975585938
+      ],
+      "stdSrgb": [
+        5.742074899721001,
+        5.742490968583855,
+        5.671239197824438
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.9879545255608105,
+        0.9001700084901182,
+        0.72375714221203
+      ],
+      "basePigment": [
+        0.7903636204486485,
+        0.7201360067920946,
+        0.5790057137696241
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "organic-limestone/interior/wall",
+      "viewMeters": 0.8,
+      "file": "cd6cc6081b25feeb3ff0_swatch.jpg",
+      "bytes": 10182,
+      "sha256": "9567a8b3aaf04e4c284d4c5d7970008fd6b9f85f6bd8eea16bc73cd811f5e9ea",
+      "meanSrgb": [
+        226.81546020507812,
+        217.55862426757812,
+        197.35671997070312
+      ],
+      "stdSrgb": [
+        10.32821968307717,
+        10.175305715229195,
+        10.136156957370712
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.407240211891531,
+        0.2663556047920505,
+        0.13013647668074665
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "organic-limestone/interior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.5019846869989302,
+        0.3501662617628972,
+        0.19655531352347655
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "natural",
+      "key": "organic-limestone/interior/floor",
+      "viewMeters": 1.2,
+      "file": "00a36bdba024b6b1d854_swatch.jpg",
+      "bytes": 9651,
+      "sha256": "bc266390cb33dd04a1ad459a8c1571d123789da639e985ad9ad510d0d26757a5",
+      "meanSrgb": [
+        162.42555236816406,
+        117.61895751953125,
+        83.75820922851562
+      ],
+      "stdSrgb": [
+        7.679012688518395,
+        6.745498407586358,
+        5.460834929846178
+      ]
+    },
+    {
+      "style": "organic-limestone",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "boucle",
+      "pigment": [
+        1,
+        0.950655630837775,
+        0.779950489584495
+      ],
+      "basePigment": [
+        0.8387990117372213,
+        0.76052450467022,
+        0.623960391667596
+      ],
+      "sourceId": "wool_boucle_undyed",
+      "sourceFile": "wool_boucle_undyed_diffuse.jpg",
+      "meters": [
+        0.3147823709728821,
+        0.39010000228881836
+      ],
+      "colorMode": "palette",
+      "key": "organic-limestone/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "345fce161800919077d1_swatch.jpg",
+      "bytes": 11706,
+      "sha256": "5ff87cc852d93515ea5d0cf018b3abef61b326125f1d4e9f5d82c527e558fc3e",
+      "meanSrgb": [
+        230.09872436523438,
+        225.09848022460938,
+        205.89974975585938
+      ],
+      "stdSrgb": [
+        5.742074899721001,
+        5.742490968583855,
+        5.671239197824438
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "clay-plaster",
+      "pigment": [
+        0.7969960924834664,
+        0.754784173559426,
+        0.5991502288641752
+      ],
+      "basePigment": [
+        0.6375968739867731,
+        0.6038273388475408,
+        0.4793201830913402
+      ],
+      "sourceId": "clay_plaster",
+      "sourceFile": "clay_plaster_diffuse.jpg",
+      "meters": [
+        1.9999996423721313,
+        1.9999996423721313
+      ],
+      "colorMode": "palette",
+      "key": "japanese-minimal/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "334eddf5b90606ea46ae_swatch.jpg",
+      "bytes": 5193,
+      "sha256": "daf72f24ebcc1e85d3620fd1c48390130f2bc259684f303abfa2fcb2841046f9",
+      "meanSrgb": [
+        209.6853485107422,
+        204.2782440185547,
+        184.43594360351562
+      ],
+      "stdSrgb": [
+        4.126066260378571,
+        4.010589354476484,
+        4.262474317273147
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.3371636150376657,
+        0.22322795730611386,
+        0.11443537381770343
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "japanese-minimal/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.46778379610254284,
+        0.4232676699760063,
+        0.31854677811435356
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "japanese-minimal/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.9223880109590396,
+        0.849428087033178,
+        0.6821555767019244
+      ],
+      "basePigment": [
+        0.7379104087672317,
+        0.6795424696265424,
+        0.5457244613615395
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "japanese-minimal/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "07a6045e9213ad5f6820_swatch.jpg",
+      "bytes": 5654,
+      "sha256": "4029bf2e4c42ada369a1b4f3f7843bf646118f2f085baa8d59b505e844376bef",
+      "meanSrgb": [
+        221.9481201171875,
+        213.9481201171875,
+        194.9481201171875
+      ],
+      "stdSrgb": [
+        2.123993070538805,
+        2.123993070538805,
+        2.123993070538805
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "clay-plaster",
+      "pigment": [
+        0.9600774991894184,
+        0.9054704488834592,
+        0.7465846624223613
+      ],
+      "basePigment": [
+        0.7680619993515347,
+        0.7243763591067673,
+        0.5972677299378891
+      ],
+      "sourceId": "clay_plaster",
+      "sourceFile": "clay_plaster_diffuse.jpg",
+      "meters": [
+        1.9999996423721313,
+        1.9999996423721313
+      ],
+      "colorMode": "palette",
+      "key": "japanese-minimal/interior/wall",
+      "viewMeters": 0.8,
+      "file": "acd9da65ca80580fca95_swatch.jpg",
+      "bytes": 5467,
+      "sha256": "58a1a92fcaa91b57ee09add58464f3058562b491a6c27e65519e4923c0ee893d",
+      "meanSrgb": [
+        227.29177856445312,
+        221.71151733398438,
+        202.95437622070312
+      ],
+      "stdSrgb": [
+        4.364763083287789,
+        4.466294169754554,
+        4.533727072296608
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "oak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.3371636150376657,
+        0.22322795730611386,
+        0.11443537381770343
+      ],
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "japanese-minimal/interior/wood",
+      "viewMeters": 0.4,
+      "file": "8116ceed9eaa6b8e754d_swatch.jpg",
+      "bytes": 6772,
+      "sha256": "27c326a9c26fced61b24d7520e2d8a6b92096b977bbf21963ad617a35601a4be",
+      "meanSrgb": [
+        220.0734405517578,
+        185.15379333496094,
+        148.7512969970703
+      ],
+      "stdSrgb": [
+        2.521330905913645,
+        2.6934179170603856,
+        2.716755143672262
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4529310692012245,
+        0.3199769085227415,
+        0.1855645415193463
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "natural",
+      "key": "japanese-minimal/interior/floor",
+      "viewMeters": 1.2,
+      "file": "00a36bdba024b6b1d854_swatch.jpg",
+      "bytes": 9651,
+      "sha256": "bc266390cb33dd04a1ad459a8c1571d123789da639e985ad9ad510d0d26757a5",
+      "meanSrgb": [
+        162.42555236816406,
+        117.61895751953125,
+        83.75820922851562
+      ],
+      "stdSrgb": [
+        7.679012688518395,
+        6.745498407586358,
+        5.460834929846178
+      ]
+    },
+    {
+      "style": "japanese-minimal",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        0.9223880109590396,
+        0.849428087033178,
+        0.6821555767019244
+      ],
+      "basePigment": [
+        0.7379104087672317,
+        0.6795424696265424,
+        0.5457244613615395
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "japanese-minimal/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "07a6045e9213ad5f6820_swatch.jpg",
+      "bytes": 5654,
+      "sha256": "4029bf2e4c42ada369a1b4f3f7843bf646118f2f085baa8d59b505e844376bef",
+      "meanSrgb": [
+        221.9481201171875,
+        213.9481201171875,
+        194.9481201171875
+      ],
+      "stdSrgb": [
+        2.123993070538805,
+        2.123993070538805,
+        2.123993070538805
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster",
+      "pigment": [
+        0.6588939071211445,
+        0.613776062298107,
+        0.445500180169222
+      ],
+      "basePigment": [
+        0.5271151256969157,
+        0.4910208498384856,
+        0.35640014413537763
+      ],
+      "sourceId": "white_stucco",
+      "sourceFile": "white_stucco_diffuse.jpg",
+      "meters": [
+        1.9980629682540894,
+        1.9980640411376953
+      ],
+      "colorMode": "palette",
+      "key": "bali-stone/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "10419201f640756c0b0a_swatch.jpg",
+      "bytes": 3717,
+      "sha256": "3b631ab0bc166db160b561ba2508c7fcd47eac378ab39f2a34b801cc0b99b95c",
+      "meanSrgb": [
+        191.89572143554688,
+        185.89572143554688,
+        159.89572143554688
+      ],
+      "stdSrgb": [
+        1.2065656988672833,
+        1.2065656988672833,
+        1.2065656988672833
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "teak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.23839757380151394,
+        0.12477181755144427,
+        0.059511238155621766
+      ],
+      "sourceId": "teak_veneer",
+      "sourceFile": "teak_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "bali-stone/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "cb09b9ddc0b906b88b2c_swatch.jpg",
+      "bytes": 10616,
+      "sha256": "112fcfdf159d4a9b0d972414948af4e6dda58271944bb08474aa5c237fe1d9eb",
+      "meanSrgb": [
+        174.8350067138672,
+        128.33404541015625,
+        84.585205078125
+      ],
+      "stdSrgb": [
+        8.665341823588534,
+        7.000060029868747,
+        4.492405250910887
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4232676699760063,
+        0.4019777798219466,
+        0.29613827078752575
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "bali-stone/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        0.9223880109590396,
+        0.697925487032246
+      ],
+      "basePigment": [
+        0.8148465722120952,
+        0.7379104087672317,
+        0.5583403896257968
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "bali-stone/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "d9c54fcbaeb0db85ea22_swatch.jpg",
+      "bytes": 5529,
+      "sha256": "d40b0d7dfd7eacbcbb2d64f1cdcc5468724258dad93e86e48258c416cefbf912",
+      "meanSrgb": [
+        229.18533325195312,
+        222.18533325195312,
+        196.18533325195312
+      ],
+      "stdSrgb": [
+        2.06718861578243,
+        2.06718861578243,
+        2.06718861578243
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.8716921005575325,
+        0.815225257676215,
+        0.6482486312575914
+      ],
+      "basePigment": [
+        0.6973536804460261,
+        0.652180206140972,
+        0.5185989050060731
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "bali-stone/interior/wall",
+      "viewMeters": 0.8,
+      "file": "39839260cb889708d400_swatch.jpg",
+      "bytes": 9904,
+      "sha256": "fd4ff911ff8558c0554d468dd76cc23c3961a65bad3344a257e45e598d1394ee",
+      "meanSrgb": [
+        214.76341247558594,
+        208.2800750732422,
+        187.8704071044922
+      ],
+      "stdSrgb": [
+        9.814215606916012,
+        9.794082148724584,
+        9.72773616125743
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "teak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.23839757380151394,
+        0.12477181755144427,
+        0.059511238155621766
+      ],
+      "sourceId": "teak_veneer",
+      "sourceFile": "teak_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "bali-stone/interior/wood",
+      "viewMeters": 0.4,
+      "file": "cb09b9ddc0b906b88b2c_swatch.jpg",
+      "bytes": 10616,
+      "sha256": "112fcfdf159d4a9b0d972414948af4e6dda58271944bb08474aa5c237fe1d9eb",
+      "meanSrgb": [
+        174.8350067138672,
+        128.33404541015625,
+        84.585205078125
+      ],
+      "stdSrgb": [
+        8.665341823588534,
+        7.000060029868747,
+        4.492405250910887
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        0.364637381080161,
+        0.21384576046319342,
+        0.11454198487798307
+      ],
+      "basePigment": [
+        0.29170990486412884,
+        0.17107660837055474,
+        0.09163358790238646
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "palette",
+      "key": "bali-stone/interior/floor",
+      "viewMeters": 1.2,
+      "file": "46b57ea7d0d7753c7f78_swatch.jpg",
+      "bytes": 7984,
+      "sha256": "39eab0547f38f3bcf17ab72c9d09b128238ed36909eb46d9d4e6188c55713e3d",
+      "meanSrgb": [
+        145.56565856933594,
+        113.42216491699219,
+        84.15631103515625
+      ],
+      "stdSrgb": [
+        5.838273815909835,
+        5.038443159676476,
+        4.0757011133505
+      ]
+    },
+    {
+      "style": "bali-stone",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        0.9223880109590396,
+        0.697925487032246
+      ],
+      "basePigment": [
+        0.8148465722120952,
+        0.7379104087672317,
+        0.5583403896257968
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "bali-stone/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "d9c54fcbaeb0db85ea22_swatch.jpg",
+      "bytes": 5529,
+      "sha256": "d40b0d7dfd7eacbcbb2d64f1cdcc5468724258dad93e86e48258c416cefbf912",
+      "meanSrgb": [
+        229.18533325195312,
+        222.18533325195312,
+        196.18533325195312
+      ],
+      "stdSrgb": [
+        2.06718861578243,
+        2.06718861578243,
+        2.06718861578243
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "exterior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        0.9223880109590396,
+        0.8673397016071122,
+        0.697925487032246
+      ],
+      "basePigment": [
+        0.7379104087672317,
+        0.6938717612856897,
+        0.5583403896257968
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "tropical-minimal/exterior/wall",
+      "viewMeters": 0.8,
+      "file": "47392dcb09c84855431d_swatch.jpg",
+      "bytes": 10137,
+      "sha256": "9d498451a13a9f6a7e65b6d6082182d411fb696f882bb358d39f823bd20cc94d",
+      "meanSrgb": [
+        220.30731201171875,
+        214.04876708984375,
+        194.1525115966797
+      ],
+      "stdSrgb": [
+        10.074204918384856,
+        10.028838833245542,
+        10.107802601971274
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "exterior",
+      "role": "wood",
+      "asset": "teak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.36130677977297226,
+        0.21586050010324417,
+        0.08650046202808521
+      ],
+      "sourceId": "teak_veneer",
+      "sourceFile": "teak_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "tropical-minimal/exterior/wood",
+      "viewMeters": 0.4,
+      "file": "cb09b9ddc0b906b88b2c_swatch.jpg",
+      "bytes": 10616,
+      "sha256": "112fcfdf159d4a9b0d972414948af4e6dda58271944bb08474aa5c237fe1d9eb",
+      "meanSrgb": [
+        174.8350067138672,
+        128.33404541015625,
+        84.585205078125
+      ],
+      "stdSrgb": [
+        8.665341823588534,
+        7.000060029868747,
+        4.492405250910887
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "exterior",
+      "role": "floor",
+      "asset": "limestone-unit",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.623960391667596,
+        0.5583403896257968,
+        0.4232676699760063
+      ],
+      "sourceId": "Tiles139_unit",
+      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "meters": [
+        0.1953125,
+        0.1953125
+      ],
+      "colorMode": "natural",
+      "key": "tropical-minimal/exterior/floor",
+      "viewMeters": 1.2,
+      "file": "506e88f13fe341444cb2_swatch.jpg",
+      "bytes": 11515,
+      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "meanSrgb": [
+        186.43885803222656,
+        166.06631469726562,
+        143.57240295410156
+      ],
+      "stdSrgb": [
+        6.8398593706711575,
+        6.388384717166016,
+        5.7305212697602705
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "exterior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        0.9988784225126102,
+        0.8142570467659911
+      ],
+      "basePigment": [
+        0.8713671191959567,
+        0.7991027380100881,
+        0.6514056374127929
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "tropical-minimal/exterior/fabric",
+      "viewMeters": 0.18,
+      "file": "266b231a593b821704b1_swatch.jpg",
+      "bytes": 5951,
+      "sha256": "4864e70c033555181aaa8141c95be4fabd6e1e64c101b165edf4ffc871426e0b",
+      "meanSrgb": [
+        230.83396911621094,
+        229.83396911621094,
+        209.83396911621094
+      ],
+      "stdSrgb": [
+        2.305529566616374,
+        2.305529566616374,
+        2.305529566616374
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "interior",
+      "role": "wall",
+      "asset": "plaster-fine",
+      "pigment": [
+        1,
+        0.9775059868339783,
+        0.8098008276499267
+      ],
+      "basePigment": [
+        0.8322626616110282,
+        0.7820047894671827,
+        0.6478406621199414
+      ],
+      "sourceId": "white_plaster_02",
+      "sourceFile": "white_plaster_02_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "palette",
+      "key": "tropical-minimal/interior/wall",
+      "viewMeters": 0.8,
+      "file": "8af79209c6de2ed53190_swatch.jpg",
+      "bytes": 10542,
+      "sha256": "c7e97187600833f52a93f0390417dd130dd9a0f5307be3847d41e252cea78695",
+      "meanSrgb": [
+        228.1857147216797,
+        225.61846923828125,
+        207.1331787109375
+      ],
+      "stdSrgb": [
+        10.462117962622631,
+        10.513735700474157,
+        10.685862002278256
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "interior",
+      "role": "wood",
+      "asset": "teak",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.36130677977297226,
+        0.21586050010324417,
+        0.08650046202808521
+      ],
+      "sourceId": "teak_veneer",
+      "sourceFile": "teak_veneer_diffuse.jpg",
+      "meters": [
+        1,
+        1
+      ],
+      "colorMode": "natural",
+      "key": "tropical-minimal/interior/wood",
+      "viewMeters": 0.4,
+      "file": "cb09b9ddc0b906b88b2c_swatch.jpg",
+      "bytes": 10616,
+      "sha256": "112fcfdf159d4a9b0d972414948af4e6dda58271944bb08474aa5c237fe1d9eb",
+      "meanSrgb": [
+        174.8350067138672,
+        128.33404541015625,
+        84.585205078125
+      ],
+      "stdSrgb": [
+        8.665341823588534,
+        7.000060029868747,
+        4.492405250910887
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "interior",
+      "role": "floor",
+      "asset": "oak-floor",
+      "pigment": [
+        1,
+        1,
+        1
+      ],
+      "basePigment": [
+        0.4698312845159391,
+        0.3148196884807328,
+        0.16601010326661353
+      ],
+      "sourceId": "oak_wood_planks",
+      "sourceFile": "oak_wood_planks_diffuse.jpg",
+      "meters": [
+        1.2000000476837158,
+        1.2000000476837158
+      ],
+      "colorMode": "natural",
+      "key": "tropical-minimal/interior/floor",
+      "viewMeters": 1.2,
+      "file": "00a36bdba024b6b1d854_swatch.jpg",
+      "bytes": 9651,
+      "sha256": "bc266390cb33dd04a1ad459a8c1571d123789da639e985ad9ad510d0d26757a5",
+      "meanSrgb": [
+        162.42555236816406,
+        117.61895751953125,
+        83.75820922851562
+      ],
+      "stdSrgb": [
+        7.679012688518395,
+        6.745498407586358,
+        5.460834929846178
+      ]
+    },
+    {
+      "style": "tropical-minimal",
+      "scope": "interior",
+      "role": "fabric",
+      "asset": "linen",
+      "pigment": [
+        1,
+        0.9988784225126102,
+        0.8142570467659911
+      ],
+      "basePigment": [
+        0.8713671191959567,
+        0.7991027380100881,
+        0.6514056374127929
+      ],
+      "sourceId": "rough_linen",
+      "sourceFile": "rough_linen_diffuse.jpg",
+      "meters": [
+        0.2707081392676629,
+        0.27129998803138733
+      ],
+      "colorMode": "palette",
+      "key": "tropical-minimal/interior/fabric",
+      "viewMeters": 0.18,
+      "file": "266b231a593b821704b1_swatch.jpg",
+      "bytes": 5951,
+      "sha256": "4864e70c033555181aaa8141c95be4fabd6e1e64c101b165edf4ffc871426e0b",
+      "meanSrgb": [
+        230.83396911621094,
+        229.83396911621094,
+        209.83396911621094
+      ],
+      "stdSrgb": [
+        2.305529566616374,
+        2.305529566616374,
+        2.305529566616374
       ]
     }
   ]

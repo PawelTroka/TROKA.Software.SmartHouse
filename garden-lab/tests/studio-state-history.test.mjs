@@ -14,7 +14,7 @@ const models=SITE_OPTIONS.map(site=>{
 });
 
 test('all style recipes, house scope and quality survive shared links on all three properties',()=>{
-  assert.equal(STATE_VERSION,30);
+  assert.equal(STATE_VERSION,31);
   for(const {model} of models)for(const style of DESIGN_STYLES){
     const original=model.sanitizeState({...changePresentationSettings(model.DEFAULTS,{designStyle:style.id}),
       renderQuality:'eco',sceneMotion:true,costStyleUpgradeQuote:24900,poolFreeboard:.12});
@@ -83,10 +83,10 @@ test('undo stores independent designs while preserving current camera, local tim
   const initial={...models[0].model.DEFAULTS},history=createDesignHistory(initial);
   const changed={...initial,designStyle:'hidden-bali',hedgeRear:5,screeningTrees:structuredClone(initial.screeningTrees)};
   history.record(changed);changed.screeningTrees[0].height=500;
-  const live={...changed,preset:'pool',mode:'eye',lookYaw:34,sunMinutes:900,renderQuality:'eco'};
+  const live={...changed,preset:'pool',mode:'eye',lookYaw:34,sunMinutes:900,renderQuality:'eco',walkNavigation:'physical'};
   const restored=history.undo(live);
   assert.equal(restored.designStyle,'current');assert.equal(restored.hedgeRear,initial.hedgeRear);
-  for(const key of ['preset','mode','lookYaw','sunMinutes','renderQuality'])assert.equal(restored[key],live[key]);
+  for(const key of ['preset','mode','lookYaw','sunMinutes','renderQuality','walkNavigation'])assert.equal(restored[key],live[key]);
   restored.screeningTrees[0].height=100;
   const redone=history.redo(live);
   assert.equal(redone.designStyle,'hidden-bali');assert.notEqual(redone.screeningTrees[0].height,500);
@@ -98,7 +98,7 @@ test('view changes do not erase redo; a new design branches and history has a ha
   for(let depth=5;depth<=10;depth++)history.record({...initial,depth});
   assert.equal(history.length,4);
   const undone=history.undo(initial);assert.equal(undone.depth,9);
-  assert.equal(history.record({...undone,mode:'plan',sunMinutes:900}),false);assert.equal(history.canRedo,true);
+  assert.equal(history.record({...undone,mode:'plan',sunMinutes:900,walkNavigation:'free'}),false);assert.equal(history.canRedo,true);
   history.record({...undone,depth:8.5});assert.equal(history.canRedo,false);assert.equal(history.length,4);
   assert.throws(()=>history.record({...initial,siteId:'nadmorska-17'}),/cross properties/);
 });

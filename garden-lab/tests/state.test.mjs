@@ -122,7 +122,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,30);
+ assert.equal(STATE_VERSION,31);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -441,4 +441,20 @@ test('historical styles adopt one coordinated renovation while explicit Current 
   }
  }
  assert.equal(decodeState(`v=25&site=${site}&designStyle=current&styleHouseFinish=true`).styleHouseFinish,false);
+});
+
+
+test('free exploration is the default for older designs and an explicit physical preference survives sharing',()=>{
+ const prior={...DEFAULTS,designStyle:'japandi',terraceDepth:3.7,firstFloorRise:3.05};
+ delete prior.walkNavigation;
+ const migrated=migrateSavedState(prior,30);
+ assert.equal(migrated.walkNavigation,'free');
+ for(const key of ['designStyle','terraceDepth','firstFloorRise','screeningTrees'])assert.deepEqual(migrated[key],prior[key]);
+ assert.equal(decodeState('v=30&site=sternicza-11&designStyle=coastal').walkNavigation,'free');
+ for(const walkNavigation of ['free','physical']){
+  const selected=sanitizeState({...prior,walkNavigation});
+  assert.equal(decodeState(encodeState(selected)).walkNavigation,walkNavigation);
+  assert.equal(migrateSavedState(selected,STATE_VERSION).walkNavigation,walkNavigation);
+ }
+ for(const walkNavigation of ['fly',null,1,'<script>'])assert.equal(sanitizeState({walkNavigation}).walkNavigation,'free');
 });

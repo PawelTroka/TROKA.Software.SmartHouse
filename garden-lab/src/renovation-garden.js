@@ -1,6 +1,7 @@
 /** Architectural garden proposals in site metres. These feed the existing pool,
  * excavation, sunlight, privacy, plan and budget models; they are not overlays. */
-import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.34.0';
+import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.35.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const rect=(x,y,width,length)=>Object.freeze({x,y,width,length});
 const scheme=(name,pool,firepit,dining,loungers,path,kitchen,beds)=>Object.freeze({
   name,pool:rect(...pool),firepit:Object.freeze(firepit),dining:rect(...dining),
@@ -50,6 +51,7 @@ const styles={
   'desert-modern':['mineral','Monolithic stone seating, restrained planted strips and an earthen outdoor kitchen.'],
   'alpine-lodge':['retreat','Broad timber courts, deep lounge furniture and a warm sauna-side retreat.'],
   'industrial-loft':['gallery','A long pool beside a concrete dining gallery, steel furniture and workshop-like kitchen.'],
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,style.gardenLayout])),
 };
 export const RENOVATION_GARDEN_RECIPES=Object.freeze(Object.fromEntries(Object.entries(styles)
   .map(([id,[scheme,description]])=>[id,Object.freeze({id,scheme,description,...RENOVATION_GARDEN_SCHEMES[scheme]})])));

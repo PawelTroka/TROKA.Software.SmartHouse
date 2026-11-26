@@ -43,7 +43,7 @@ function checkClearance(parts,layout){
 }
 
 test('each style fits all three facades and changes the shape of physical fittings',()=>{
-  assert.equal(styles.length,22);
+  assert.equal(styles.length,34);
   for(const {data,model} of sites){
     const settings=model.DEFAULTS,layout=makeLayout(data,settings),fingerprints=new Set();
     for(const style of styles){

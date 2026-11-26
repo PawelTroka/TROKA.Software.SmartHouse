@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {getInteriorPlan} from '../src/interior-plan.js';
 import {RENOVATION_ROOM_PROGRAMS} from '../src/interior-curation.js';
+import {DESIGN_STYLES} from '../src/design-styles.js';
 import {walkGeometry} from '../src/interior-navigation.js';
 import {footprintFit} from '../src/footprint-fit.js';
 
@@ -13,8 +14,8 @@ const solid=f=>!f.nonBlocking&&!f.hostId&&!f.wallMounted;
 const styles=Object.entries(RENOVATION_ROOM_PROGRAMS);
 
 test('new kitchen and office programmes retain architecture, wet services and physically separate fixtures',()=>{
-  assert.equal(styles.length,22);
-  assert.equal(new Set(styles.map(([,p])=>p[0])).size,3);
+  assert.deepEqual(styles.map(([id])=>id),DESIGN_STYLES.filter(s=>s.renovation).map(s=>s.id));
+  assert.deepEqual([...new Set(styles.map(([,p])=>p[0]))],['island']);
   assert.equal(new Set(styles.map(([,p])=>p[1])).size,2);
   for(const [styleId]of styles)for(const floor of ['ground','first']){
     const plan=getInteriorPlan({floor,styleId}),base=getInteriorPlan({floor,styleId:'current'});
@@ -26,7 +27,7 @@ test('new kitchen and office programmes retain architecture, wet services and ph
       const a=box(fixtures[i]),b=box(other),overlapX=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),overlapZ=Math.min(a.z1,b.z1)-Math.max(a.z0,b.z0);
       assert.ok(overlapX<=1e-8||overlapZ<=1e-8,`${styleId} ${floor}: ${fixtures[i].id} overlaps ${other.id}`);
     }
-    for(const f of fixtures.filter(f=>['kitchen-island','kitchen-worktable','east-counter','master-bed','master-nightstand-west','master-nightstand-east','office-desk','office-chair'].includes(f.id))){
+    for(const f of fixtures.filter(f=>['kitchen-island','east-counter','master-bed','master-nightstand-west','master-nightstand-east','office-desk','office-chair'].includes(f.id))){
       const room=plan.rooms.find(r=>r.id===f.roomId);
       assert.equal(footprintFit(ring(f),room.polygon).location,'inside',styleId+' '+f.id+' leaves its room');
     }
@@ -49,19 +50,14 @@ test('larger master beds preserve a 0.60 m route past the bedside cabinet and wa
 });
 
 test('kitchen workstations and offices have programme-aware usable approaches',()=>{
-  for(const [styleId,[kitchen,office]]of styles){
+  for(const [styleId,[,office]]of styles){
     const ground=getInteriorPlan({floor:'ground',styleId}),first=getInteriorPlan({floor:'first',styleId});
-    const centre=byId(ground,'kitchen-island')||byId(ground,'kitchen-worktable');
-    let kitchenApproach=[2.4,6.6];
-    if(centre){
-      const c=box(centre),west=box(byId(ground,'west-counter')),street=box(byId(ground,'street-counter'));
-      const room=ground.rooms.find(r=>r.id==='front-kitchen'),east=byId(ground,'east-counter');
-      const eastLimit=east?box(east).x0:Math.max(...room.polygon.map(p=>p[0]));
-      assert.ok(c.x0-west.x1>=.90-1e-8,styleId+' west preparation aisle');
-      assert.ok(eastLimit-c.x1>=.90-1e-8,styleId+' east preparation aisle');
-      assert.ok(street.z0-c.z1>=.90-1e-8,styleId+' sink-counter aisle');
-      kitchenApproach=[c.x1+.45,centre.z];
-    }
+    const centre=byId(ground,'kitchen-island'),c=box(centre),street=box(byId(ground,'street-counter'));
+    const wall=ground.walls.find(w=>w.id==='kitchen-living-opening'),opening=wall.openings[0],start=wall.a[0]+opening.offset;
+    assert.ok(c.x0-start>=.95-1e-8,styleId+' left opening route');
+    assert.ok(start+opening.width-c.x1>=.90-1e-8,styleId+' entrance beside island');
+    assert.ok(street.z0-c.z1>=1.20-1e-8,styleId+' cooking work zone');
+    const kitchenApproach=[c.x1+.45,centre.z];
     const chair=byId(first,'office-chair');
     const officeApproach=office==='floating'?[chair.x-chair.width/2-.35,chair.z]:[chair.x+chair.width/2+.45,chair.z];
     // The full circulation suite independently traverses these destinations

@@ -1,7 +1,7 @@
 /** Versioned, reproducible garden proposals. Historical layouts remain literal.
  * Coordinates are mapped local metres, with x increasing toward PCK3/east.
  */
-import {getTreeType} from './tree-catalog.js?v=1.34.0';
+import {getTreeType} from './tree-catalog.js?v=1.35.0';
 
 export const SUMMER_POOL=Object.freeze({x:3.25,y:25,width:8,length:3.5});
 export const SUMMER_FIREPIT=Object.freeze([12.65,29.5]);

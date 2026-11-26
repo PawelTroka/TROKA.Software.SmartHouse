@@ -1,13 +1,14 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js?v=1.34.0';
-import {buildArchitecture} from './interior-architecture.js?v=1.34.0';
-import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.34.0';
-import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.34.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.34.0';
-import {renderBudget} from './render-quality.js?v=1.34.0';
-import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.34.0';
-import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.34.0';
-import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.34.0';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.35.0';
+import {buildArchitecture} from './interior-architecture.js?v=1.35.0';
+import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.35.0';
+import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.35.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.35.0';
+import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds} from './walk-motion.js?v=1.35.0';
+import {renderBudget} from './render-quality.js?v=1.35.0';
+import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.35.0';
+import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.35.0';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.35.0';
 
 const walkKeys=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
 const DEFAULTS={view:'dollhouse',styleId:'current',roomId:null,showChanges:false,showFurniture:true,showCeiling:true};
@@ -46,15 +47,20 @@ export function createInteriorScene(container,callbacks={}) {
   }
   container.append(pad);
   function request(){if(!raf&&!disposed&&visible&&plan)raf=requestAnimationFrame(frame);}
+  function finishNavigation(){
+    interactionTimer=0;
+    if(visible&&(keys.size||down||drag)){interactionTimer=setTimeout(finishNavigation,180);return;}
+    interacting=false;resize();request();
+  }
   function navigationChanged(){
     if(!interacting){interacting=true;resize();}
     clearTimeout(interactionTimer);
-    interactionTimer=setTimeout(()=>{interactionTimer=0;interacting=false;resize();request();},180);
+    interactionTimer=setTimeout(finishNavigation,180);
   }
   function orient(){camera.rotation.order='YXZ';camera.rotation.y=-yaw;camera.rotation.x=pitch;camera.rotation.z=0;}
   function move(right,forward,distance){
     const norm=Math.hypot(right,forward);if(!norm)return;
-    const dx=(Math.cos(yaw)*right+Math.sin(yaw)*forward)/norm*distance,dz=(Math.sin(yaw)*right-Math.cos(yaw)*forward)/norm*distance;
+    const [dx,,dz]=walkDelta(right,forward,distance,yaw);
     // Independent axes slide along walls. Small substeps prevent crossing thin partitions at low frame rates.
     const n=Math.max(1,Math.ceil(distance/.07));for(let i=0;i<n;i++){
       if(clear(camera.position.x+dx/n,camera.position.z,state.showFurniture))camera.position.x+=dx/n;
@@ -63,9 +69,10 @@ export function createInteriorScene(container,callbacks={}) {
   }
   function frame(now){
     raf=0;if(disposed||!visible||!model)return;
-    const dt=Math.max(0,Math.min(.056,(now-lastTime)/1000||0));lastTime=now;
+    const dt=walkFrameSeconds(now,lastTime);
     const walking=state.view==='room'&&keys.size>0;
-    if(walking){navigationChanged();move(Number(keys.has('right'))-Number(keys.has('left')),Number(keys.has('forward'))-Number(keys.has('back')),dt*1.68);}
+    lastTime=walking?now:0;
+    if(walking){navigationChanged();move(Number(keys.has('right'))-Number(keys.has('left')),Number(keys.has('forward'))-Number(keys.has('back')),dt*WALK_COMFORT.speed);}
     if(orbit.enabled)orbit.update();
     if(model.updateVisibility(state.view,camera.position,state))dirtyShadow=true;
     if(dirtyShadow){renderer.shadowMap.needsUpdate=true;dirtyShadow=false;}
@@ -95,7 +102,7 @@ export function createInteriorScene(container,callbacks={}) {
     if(!plan||!model)return;keys.clear();
     if(state.view==='room'){
       const room=plan.rooms.find(r=>r.id===state.roomId)||plan.rooms[0],pose=roomPose(plan,room,clear,state.showFurniture);
-      yaw=pose.yaw;pitch=pose.pitch;eye=pose.eye;camera.position.set(pose.x,plan.elevation+eye,pose.z);camera.fov=70;camera.updateProjectionMatrix();orient();
+      yaw=pose.yaw;pitch=pose.pitch;eye=pose.eye;camera.position.set(pose.x,plan.elevation+eye,pose.z);camera.fov=WALK_COMFORT.fov;camera.updateProjectionMatrix();orient();
       const b=ringBounds(room.polygon);lamp.position.set(b.x,plan.elevation+Math.min(plan.clearHeight-.17,2.23),b.z);lamp.intensity=plan.floor==='basement'?9:6;
     }else{fitDollhouse();lamp.intensity=0;}
     updateRoomFill();dirtyShadow=true;request();
@@ -156,7 +163,7 @@ export function createInteriorScene(container,callbacks={}) {
   }
   orbit.addEventListener('change',()=>{if(orbit.enabled){navigationChanged();request();}});
   listen(canvas,'pointerdown',e=>{if(e.button!==0)return;canvas.focus({preventScroll:true});down={x:e.clientX,y:e.clientY,id:e.pointerId};if(state.view==='room'){drag={...down};canvas.setPointerCapture(e.pointerId);} });
-  listen(canvas,'pointermove',e=>{if(!drag||e.pointerId!==drag.id||state.view!=='room')return;navigationChanged();yaw+=(e.clientX-drag.x)*.0043;pitch=THREE.MathUtils.clamp(pitch-(e.clientY-drag.y)*.0043,-1.24,1.24);drag.x=e.clientX;drag.y=e.clientY;orient();request();});
+  listen(canvas,'pointermove',e=>{if(!drag||e.pointerId!==drag.id||state.view!=='room')return;navigationChanged();({yaw,pitch}=walkLook(yaw,pitch,e.clientX-drag.x,e.clientY-drag.y));drag.x=e.clientX;drag.y=e.clientY;orient();request();});
   listen(canvas,'pointerup',e=>{
     if(!down||e.pointerId!==down.id)return;const clicked=Math.hypot(e.clientX-down.x,e.clientY-down.y)<5;down=drag=null;
     if(!clicked||!plan||state.view!=='dollhouse')return;

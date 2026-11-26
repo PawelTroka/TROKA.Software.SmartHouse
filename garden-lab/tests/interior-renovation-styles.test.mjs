@@ -20,7 +20,7 @@ function fixture(kind,width,depth,extra={}){return {id:kind,kind,x:0,z:0,width,d
 function furniture(id,fixtures){const root=new THREE.Group(),tools=modelTools(),f=finishes(id);furnishInterior(root,{fixtures},tools,f);root.updateMatrixWorld(true);return {root,dispose(){root.traverse(n=>{if(n.geometry&&!n.geometry.userData.sharedPrimitive)n.geometry.dispose();});tools.dispose();f.dispose();}};}
 function shapeDigest(root){const hash=createHash('sha256');root.traverse(n=>{if(!n.isMesh)return;hash.update(Buffer.from(n.geometry.attributes.position.array.buffer));hash.update(Buffer.from(new Float64Array(n.matrixWorld.elements).buffer));});return hash.digest('hex');}
 
-test('all 22 renovation choices have physical recipes and geometry independent of colour',()=>{
+test('all 34 renovation choices have physical recipes and geometry independent of colour',()=>{
   assert.deepEqual(INTERIOR_RENOVATION_RECIPES.map(r=>r.id),DESIGN_STYLES.map(r=>r.id));
   assert.deepEqual(getInteriorStyleRecipe('current').features,[]);
   const shapes=new Map();
@@ -29,7 +29,7 @@ test('all 22 renovation choices have physical recipes and geometry independent o
     const f=furniture(style.id,[fixture('sofa',2.20,.88),fixture('bed',1.8,2.1,{x:4,headboard:[0,-1]}),fixture('diningTable',2.4,1.04,{x:8}),fixture('kitchen',2.1,.60,{x:12,front:[0,1]}),fixture('wardrobe',1.4,.60,{x:16,front:[0,1]})]);
     const digest=shapeDigest(f.root);assert.ok(!shapes.has(digest),`${style.id} duplicated geometry of ${shapes.get(digest)}`);shapes.set(digest,style.id);f.dispose();
   }
-  assert.equal(shapes.size,22);
+  assert.equal(shapes.size,34);
 });
 
 test('style furniture and explicit orientations retain the measured world footprints',()=>{

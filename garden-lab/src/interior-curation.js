@@ -1,5 +1,6 @@
 // Movable furniture and light positions, in the same measured local metres as
 // the architectural plan. These arrangements never move walls or wet fittings.
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const intent=(name,layout,tableWidth,tableDepth,tableX,tableZ,seatSpan,readingX,lamp)=>Object.freeze({
   name,layout,tableWidth,tableDepth,tableX,tableZ,seatSpan,readingX,lamp,
 });
@@ -26,19 +27,21 @@ export const INTERIOR_COMPOSITIONS=Object.freeze({
   'desert-modern':intent('Low mineral retreat','linear',2.32,1.10,2.78,2.57,2.50,1.08,'stone'),
   'alpine-lodge':intent('Deep timber lounge','social',2.54,1.00,2.72,2.49,2.62,.98,'lantern'),
   'industrial-loft':intent('Open workshop salon','garden',2.62,.98,2.69,2.58,2.60,1.04,'tube'),
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(s=>[s.id,intent(...s.composition)])),
 });
 export const RENOVATION_ROOM_PROGRAMS=Object.freeze({
-  'organic-modern':['island','floating',1.95], 'hidden-bali':['worktable','wall',2.0],
-  'mediterranean-villa':['worktable','wall',1.90], 'modern-minimal':['island','floating',1.90],
-  scandinavian:['worktable','wall',1.80], japandi:['galley','wall',1.90],
-  'organic-scandinavian':['worktable','floating',1.95], 'organic-japandi':['island','wall',2.0],
+  'organic-modern':['island','floating',1.95], 'hidden-bali':['island','wall',2.0],
+  'mediterranean-villa':['island','wall',1.90], 'modern-minimal':['island','floating',1.90],
+  scandinavian:['island','wall',1.80], japandi:['island','wall',1.90],
+  'organic-scandinavian':['island','floating',1.95], 'organic-japandi':['island','wall',2.0],
   'space-age':['island','floating',1.90], 'party-club':['island','floating',2.0],
-  'baltic-dune':['worktable','wall',1.90], coastal:['worktable','wall',1.90],
-  'beach-house':['island','floating',2.0], 'gdansk-brick':['worktable','wall',1.80],
-  'danish-midcentury':['worktable','floating',1.90], 'finnish-sauna':['galley','wall',1.80],
-  'riviera-deco':['island','floating',2.0], 'arts-and-crafts':['worktable','wall',1.90],
+  'baltic-dune':['island','wall',1.90], coastal:['island','wall',1.90],
+  'beach-house':['island','floating',2.0], 'gdansk-brick':['island','wall',1.80],
+  'danish-midcentury':['island','floating',1.90], 'finnish-sauna':['island','wall',1.80],
+  'riviera-deco':['island','floating',2.0], 'arts-and-crafts':['island','wall',1.90],
   'palm-springs':['island','floating',1.90], 'desert-modern':['island','wall',2.0],
-  'alpine-lodge':['worktable','wall',2.0], 'industrial-loft':['worktable','floating',1.90],
+  'alpine-lodge':['island','wall',2.0], 'industrial-loft':['island','floating',1.90],
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(s=>[s.id,s.roomProgram])),
 });
 
 const f=(id,kind,label,roomId,x,z,width,depth,extra={})=>({id,kind,label,roomId,x,z,width,depth,rotation:0,...extra});
@@ -48,13 +51,8 @@ const lamp=(id,roomId,x,z,kind,extra={})=>f(id,'floorLamp','Shaded reading light
 
 function groundFixtures(plan,c){
   const fixed=plan.fixtures.filter(item=>!['table','sofa'].includes(item.id)).map(item=>({...item}));
-  // Every scheme keeps the complete storage wall. Worktables now have
-  // enclosed drawer bases; their proportions vary without deleting cabinets.
-  if(c.kitchen==='worktable'){
-    fixed.push(f('kitchen-worktable','counter','Preparation cabinet with deep drawers','front-kitchen',2.40,6.52,.82,1.12,{height:.89,front:[1,0],variant:'worktable',drawers:true}));
-  }else if(c.kitchen==='island'){
-    fixed.push(f('kitchen-island','counter','Preparation island with fitted storage','front-kitchen',2.40,6.52,.82,1.12,{height:.90,front:[1,0],drawers:true}));
-  }
+  // The living-edge island and perimeter kitchen are shared architectural
+  // choices. A finish style never adds the former block in the working aisle.
   const living=[];
   const coffee=(x,z,w=1.12,d=.60)=>f('lounge-table','coffeeTable','Low conversation table','lounge',x,z,w,d);
   if(c.layout==='conversation'){
@@ -90,9 +88,7 @@ function groundFixtures(plan,c){
     rug('lounge-rug','lounge',8.13,3.12,3.90,2.94),
     f('table','diningTable',c.tableWidth>=2.7?'Eight-seat supper table':'Six-seat dining table','dining',c.tableX,c.tableZ,c.tableWidth,c.tableDepth,{seats:c.tableWidth>=2.7?8:6}),
     ...living,
-    f('dining-console','console','Low service console and ceramics','dining',1.55,4.49,1.64,.42,{height:.72,front:[0,-1]}),
     lamp('lounge-reading-light','lounge',9.92,4.62,c.lamp),
-    f('dining-console-light','tableLamp','Soft dining console light','dining',1.00,4.49,.28,.28,{hostId:'dining-console',baseHeight:.74,height:.46,lamp:c.lamp}),
     f('dining-plant','plant','Sculptural indoor foliage','dining',.80,1.62,.48,.48),
   ];
   return [...furnishings,...fixed];
@@ -127,7 +123,7 @@ function firstFixtures(plan,c){
 
 export function curateInteriorPlan(plan,styleId='current'){
   const composition=INTERIOR_COMPOSITIONS[styleId],program=RENOVATION_ROOM_PROGRAMS[styleId];
-  const c=composition?{...composition,kitchen:program[0],office:program[1],bedWidth:program[2]}:null;
+  const c=composition?{...composition,kitchen:'island',office:program[1],bedWidth:program[2]}:null;
   if(!c||plan.layout!=='renovation'||!['ground','first'].includes(plan.floor))return plan;
   const fixtures=plan.floor==='ground'?groundFixtures(plan,c):firstFixtures(plan,c);
   const lamps=fixtures.filter(item=>['floorLamp','tableLamp'].includes(item.kind)).map(item=>({

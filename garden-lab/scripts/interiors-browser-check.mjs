@@ -47,16 +47,22 @@ async function shot(name,selector){
 }
 async function cameraFrame(){return field('canvas').locator('canvas').screenshot({scale:'css',animations:'disabled',timeout:sceneStartupTimeout});}
 const walkCanvas=()=>q('#scene-host canvas');
-async function walking(floor){
+const walkSnapshot=()=>page.evaluate(()=>({
+  walk:{...document.querySelector('#scene-host canvas')?.dataset},
+  render:{...document.querySelector('#render-diagnostics')?.dataset},
+}));
+async function walking(floor,{timeout=30000,settled=false,afterFrame=null}={}){
   await q('#interior-host').waitFor({state:'hidden'});
-  await page.waitForFunction(floor=>{
+  await page.waitForFunction(({floor,settled,afterFrame})=>{
     const canvas=document.querySelector('#scene-host canvas'),d=document.querySelector('#render-diagnostics')?.dataset;
-    return canvas?.dataset.walkFloor===floor&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&
-      Number(d.triangles)>0&&Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&Number(d.surfaceAssetsFailed)===0;
-  },floor,{timeout:30000});
+    const target=Number(canvas?.dataset.walkPosition?.split(',')[1]),altitude=Number(canvas?.dataset.walkAltitude);
+    const heightReady=!settled||(canvas?.dataset.walkFloating==='false'&&Number.isFinite(target)&&Number.isFinite(altitude)&&Math.abs(altitude-target)<=.002&&d?.interacting==='false');
+    return canvas?.dataset.walkFloor===floor&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&heightReady&&
+      (afterFrame===null||Number(d.frames)>afterFrame)&&Number(d.triangles)>0&&Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&Number(d.surfaceAssetsFailed)===0;
+  },{floor,settled,afterFrame},{timeout});
   assert.equal(await q('#viewer .mode-tabs button[data-mode="walk"]').getAttribute('aria-pressed'),'true');
   assert.equal(await q('#walk-location').inputValue(),floor);
-  assert.match(await walkCanvas().getAttribute('aria-label'),/WASD or arrow keys/);
+  assert.match(await walkCanvas().getAttribute('aria-label'),/WASD or arrows/);
   return walkCanvas().evaluate(canvas=>({floor:canvas.dataset.walkFloor,position:canvas.dataset.walkPosition.split(',').map(Number)}));
 }
 async function openInteriors(){
@@ -188,7 +194,7 @@ try{
   const ref=await rendered('hidden-bali','dollhouse');assert.ok(ref.drawCalls>0&&ref.furnitureCount>0);assert.equal(ref.layout,'renovation');
   assert.equal(await field('apply-exterior').isDisabled(),true,'The marked terrace/balcony must be linked automatically');
   const ids=await field('style').locator('option').evaluateAll(nodes=>nodes.map(n=>n.value).filter(v=>v!=='follow'));
-  assert.equal(new Set(ids).size,23);assert.ok(ids.includes('coastal'));assert.ok(ids.includes('beach-house'));
+  assert.equal(new Set(ids).size,35);assert.ok(ids.includes('coastal'));assert.ok(ids.includes('beach-house'));
   const geometryCounts=new Set(),featureSets=new Set();
   for(const id of ids.filter(id=>id!=='current')){
     await field('style').selectOption(id);const s=await rendered(id,'dollhouse');
@@ -198,19 +204,19 @@ try{
     assert.equal(s.renovationFeatures.length,3);assert.equal(s.contextSource,'shared-site-model');
     geometryCounts.add(s.triangles);featureSets.add(JSON.stringify(s.renovationFeatures));
     const item={id,meshes:s.meshes,triangles:s.triangles,furnitureCount:s.furnitureCount,expectedFurnitureCount:expectedPlan.fixtures.length,features:s.renovationFeatures};
-    if(['japandi','space-age','hidden-bali','coastal','beach-house'].includes(id)){
+    if(['japandi','space-age','hidden-bali','coastal','beach-house','nordic-minimal','warm-minimal','organic-limestone','bali-stone'].includes(id)){
       item.difference=await pixels(originalFrame,await cameraFrame());assert.ok(item.difference.changed>150,JSON.stringify(item));
       await shot('ground-'+id+'-dollhouse');
     }
     report.styles.push(item);
   }
-  assert.ok(geometryCounts.size>=11,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,22);
+  assert.ok(geometryCounts.size>=11,`Styles changed only ${geometryCounts.size} actual triangle counts`);assert.equal(featureSets.size,34);
   const major=report.styles.filter(s=>['hidden-bali','japandi','space-age','coastal'].includes(s.id));assert.equal(new Set(major.map(s=>s.triangles)).size,4);
   assert.notEqual(report.styles.find(s=>s.id==='coastal').triangles,report.styles.find(s=>s.id==='baltic-dune').triangles,'Coastal is a distinct physical interior, not another name for Baltic Dune');
   for(const id of ['coastal','baltic-dune'])assert.notEqual(report.styles.find(s=>s.id==='beach-house').triangles,report.styles.find(s=>s.id===id).triangles,'Beach House has its own physical furniture and composition');
   await field('style').selectOption('current');await rendered('current','dollhouse');
   report.restoration=await pixels(originalFrame,await cameraFrame());assert.ok(report.restoration.fraction<.004,JSON.stringify(report.restoration));
-  check('All 22 renovations have physical features and varied rendered geometry; Beach House, Coastal and Baltic Dune are distinct, and Current restores the original layout/image');
+  check('All 34 renovations have physical features and varied rendered geometry; Beach House, Coastal and Baltic Dune are distinct, and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
   await field('style').selectOption('beach-house');await field('floor').selectOption('ground');await field('room').selectOption('lounge');
   await field('enter').click();const beach=await walking('ground');
@@ -237,6 +243,49 @@ try{
   assert.ok(report.walking.attic.position[1]>report.walking.first.position[1]+2.4);
   assert.ok(report.walking.basement.position[1]<report.walking.ground.position[1]-1.5);
   check('The walking location control reaches basement, living floor, first floor, attic and garden in the same visible scene');
+
+  assert.equal(await q('#walkNavigation').inputValue(),'free');
+  assert.equal(await walkCanvas().getAttribute('data-walk-navigation'),'free');
+  assert.equal(Number(await walkCanvas().getAttribute('data-walk-fov')),70);
+  const beforeRise=Number(await walkCanvas().getAttribute('data-walk-altitude'));
+  report.walking.comfort={beforeRise,beforeHeightControls:await walkSnapshot()};
+  await walkCanvas().focus();await page.keyboard.down('e');
+  try{await page.waitForFunction(before=>{
+    const d=document.querySelector('#scene-host canvas')?.dataset;
+    return d?.walkFloating==='true'&&Number(d.walkAltitude)>before+.03;
+  },beforeRise,{timeout:10000});}finally{await page.keyboard.up('e');}
+  const raised=Number(await walkCanvas().getAttribute('data-walk-altitude'));
+  report.walking.comfort.raised=raised;
+  await page.keyboard.down('q');
+  try{await page.waitForFunction(before=>Number(document.querySelector('#scene-host canvas')?.dataset.walkAltitude)<before-.03,raised,{timeout:10000});}
+  finally{await page.keyboard.up('q');}
+  const beforeGround=await walkSnapshot();report.walking.comfort.beforeGround=beforeGround;
+  await page.keyboard.press('r');
+  await page.waitForFunction(()=>document.querySelector('#scene-host canvas')?.dataset.walkFloating==='false');
+  // The comfortable controller caps each advance at 56 ms. Under SwiftShader,
+  // the several frames needed to settle even a small height offset can take
+  // longer than 30 seconds. Keep its real camera/idle checks and give only this
+  // transition the existing software-render deadline used for fresh scenes.
+  await walking('garden',{timeout:sceneStartupTimeout,settled:true,afterFrame:Number(beforeGround.render.frames)});
+  report.walking.comfort.grounded=await walkSnapshot();
+  const lookBefore=await walkCanvas().evaluate(c=>({yaw:Number(c.dataset.walkYaw),pitch:Number(c.dataset.walkPitch)}));
+  const viewBox=await walkCanvas().boundingBox();assert.ok(viewBox);
+  const dragX=viewBox.x+viewBox.width/2,dragY=viewBox.y+viewBox.height/2;
+  await page.mouse.move(dragX,dragY);await page.mouse.down();await page.mouse.move(dragX+40,dragY-20,{steps:4});await page.mouse.up();
+  const lookAfter=await walkCanvas().evaluate(c=>({yaw:Number(c.dataset.walkYaw),pitch:Number(c.dataset.walkPitch)}));
+  assert.ok(Math.abs((lookAfter.yaw-lookBefore.yaw)-40*.0043*180/Math.PI)<.02,'Right drag must use the original interior direction and sensitivity');
+  assert.ok(Math.abs((lookAfter.pitch-lookBefore.pitch)-20*.0043*180/Math.PI)<.02,'Upward drag must look up with the original interior sensitivity');
+  await page.mouse.wheel(0,200);
+  assert.equal(Number(await walkCanvas().getAttribute('data-walk-fov')),70,'Walking lens stays fixed during scrolling');
+  await q('#walkNavigation').selectOption('physical');
+  assert.equal(await walkCanvas().getAttribute('data-walk-navigation'),'physical');
+  assert.equal(await q('.walk-elevation-pad').isVisible(),false);
+  await q('#walkNavigation').selectOption('free');
+  assert.equal(await walkCanvas().getAttribute('data-walk-navigation'),'free');
+  assert.equal(await q('.walk-elevation-pad').isVisible(),true);
+  Object.assign(report.walking.comfort,{lookBefore,lookAfter,fov:70});
+  check('Free exploration is the default; E/Q change height, R follows ground, drag matches the original interior controller, the lens stays fixed, and physical mode remains optional');
+
   await openInteriors();await field('floor').selectOption('first');await field('room').selectOption('office');await chooseView('dollhouse');
   const office=await rendered('japandi','dollhouse'),parked=office.frames,background=await q('#render-diagnostics').getAttribute('data-frames');
   await page.waitForTimeout(240);assert.equal((await info()).scene.frames,parked);assert.equal(await q('#render-diagnostics').getAttribute('data-frames'),background);
@@ -288,8 +337,30 @@ try{
     const after=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);padDistance+=Math.hypot(after[0]-before[0],after[2]-before[2]);
   }
   assert.ok(padDistance>.08,`On-screen walking controls moved only ${padDistance} m`);report.mobile.padDistance=padDistance;
+
+  const elevation=q('#scene-host .walk-elevation-pad');assert.equal(await elevation.isVisible(),true);
+  assert.equal(await elevation.locator('button').count(),3);
+  for(const direction of ['up','down']){
+    const button=elevation.locator(`[data-walk-elevation="${direction}"]`),bounds=await button.boundingBox();assert.ok(bounds);
+    assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390&&bounds.height>=40,'Elevation controls must fit the mobile screen');
+    const before=Number(await walkCanvas().getAttribute('data-walk-altitude'));
+    await page.mouse.move(bounds.x+bounds.width/2,bounds.y+bounds.height/2);await page.mouse.down();
+    try{await page.waitForFunction(({before,direction})=>{
+      const d=document.querySelector('#scene-host canvas')?.dataset,delta=Number(d?.walkAltitude)-before;
+      return d?.walkFloating==='true'&&(direction==='up'?delta>.02:delta<-.02);
+    },{before,direction},{timeout:10000});}finally{await page.mouse.up();}
+  }
+  await elevation.locator('[data-walk-elevation="follow"]').click();
+  assert.equal(await walkCanvas().getAttribute('data-walk-floating'),'false');
+  assert.equal(await elevation.locator('[data-walk-elevation="follow"]').getAttribute('aria-pressed'),'true');
   await shot('mobile-house-garden-walk');
-  check('390 px plan, dollhouse and unified walk fit the viewport; all four on-screen movement buttons are reachable and move the camera');
+  check('390 px plan, dollhouse and unified walk fit the viewport; all four direction buttons and the rise, lower and ground-following controls are reachable and move the camera');
   assert.deepEqual(report.errors,[]);report.status='passed';
-}catch(error){report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);if(page)try{await shot('failure');}catch{}}
+}catch(error){
+  report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);
+  if(page){
+    try{report.failureState=await walkSnapshot();}catch(diagnosticError){report.failureStateError=String(diagnosticError);}
+    try{await shot('failure');}catch{}
+  }
+}
 finally{await writeFile(path.join(output,'browser-report.json'),JSON.stringify(report,null,2));await browser?.close();if(server)await new Promise(resolve=>server.close(resolve));console.log('INTERIOR_RESULT '+report.status);}

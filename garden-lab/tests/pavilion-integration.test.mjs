@@ -84,8 +84,8 @@ test('pavilion choices survive a save and share round-trip, while older and othe
   }
 });
 
-test('all 22 renovation styles and Current retain usable furniture and both pavilion entrances clear fixed spa objects and the parcel',()=>{
-  assert.equal(DESIGN_STYLES.filter(s=>s.id!=='current').length,22);
+test('all 34 renovation styles and Current retain usable furniture and both pavilion entrances clear fixed spa objects and the parcel',()=>{
+  assert.equal(DESIGN_STYLES.filter(s=>s.id!=='current').length,34);
   for(const style of DESIGN_STYLES)for(const placement of PAVILION_PLACEMENTS){
     const settings=model.sanitizeState(changePresentationSettings({...defaults,...placement.settings,pavilionEnabled:true},{designStyle:style.id}));
     const data=applyPlanExterior(source,settings),p=privacyStructures(settings,data).pavilion;

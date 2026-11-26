@@ -21,6 +21,15 @@ test('quality caps limit total pixels on large/high-DPI viewports and shadow siz
   assert.equal(renderBudget('high',1200,800,1).pixelRatio,1);
 });
 
+test('High uses the same bounded motion buffer as Auto while retaining its stable shadow allocation',()=>{
+  const viewport=[2560,1440,2],options={maxTextureSize:8192};
+  const still=renderBudget('high',...viewport,options),moving=renderBudget('high',...viewport,{...options,interacting:true});
+  const auto=renderBudget('auto',...viewport,{...options,interacting:true});
+  assert.ok(still.pixelRatio**2*viewport[0]*viewport[1]>3900000);
+  assert.ok(moving.pixelRatio**2*viewport[0]*viewport[1]<=900001);
+  assert.equal(moving.pixelRatio,auto.pixelRatio);assert.equal(moving.shadowSize,still.shadowSize);
+});
+
 test('indexed terrain samples each distinct plan coordinate once and preserves triangle order, UVs and slopes',()=>{
   let samples=0;
   const builder=terrainVertexBuffer((x,y)=>{samples++;return 3+x*.2+y*.1;},true);

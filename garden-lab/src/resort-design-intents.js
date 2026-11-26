@@ -1,5 +1,6 @@
 // Short design notes for the actual furnishing and lighting recipes. They
 // describe a proposal, not additional rooms, measured planting or quoted work.
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.35.0';
 const intent = (headline, retreat, gathering, evening, signature) => Object.freeze({
   headline, retreat, gathering, evening, signature,
 });
@@ -143,6 +144,7 @@ export const RESORT_DESIGN_INTENTS = Object.freeze({
     'A long workshop-style table makes a communal dining setting.',
     'Spun shades put warm light where people gather.',
     'Board-marked concrete, steel and warm timber.'),
+  ...Object.fromEntries(MINIMAL_STYLE_DEFINITIONS.map(style=>[style.id,intent(...style.intent)])),
 });
 
 export const getResortDesignIntent = id => RESORT_DESIGN_INTENTS[id] || RESORT_DESIGN_INTENTS.current;
