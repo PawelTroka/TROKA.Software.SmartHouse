@@ -14,9 +14,10 @@ const runsGroup=group=>scenarioGroup==='all'||scenarioGroup===group;
 const evidence=path.join(root,'test-results','studio',...(scenarioGroup==='all'?[]:[scenarioGroup]));
 await mkdir(evidence,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
-// Measured canopies can make SwiftShader frames slow. Extend only scene
-// scrolling/capture; functional assertions and the CI job deadline stay bounded.
+// Measured canopies can make SwiftShader frames slow. Keep scene scrolling,
+// capture and full A/B rebuilds bounded separately from ordinary controls.
 const SCENE_CAPTURE_TIMEOUT=120000;
+const SCENE_TRANSITION_TIMEOUT=120000;
 const report={version,group:scenarioGroup,checks:[],screenshots:[],styles:[],errors:[],
   sceneEvidence:'Canvas screenshots and pixel comparisons require the public diagnostics to report WebGL. Editor and catalogue screenshots show the browser interface.'};
 const check=name=>{report.checks.push(name);console.log('STUDIO_CHECK '+name);};
@@ -40,12 +41,12 @@ const el=selector=>page.locator(selector);
 const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
 const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
   [k,k==='motionActive'?v==='true':Number.isFinite(Number(v))?Number(v):v])));
-const sceneVisible=async()=>{
+const sceneVisible=async(timeout=35000)=>{
   await el('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
   await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
-    Number(document.querySelector('#render-diagnostics').dataset.frames)>0);
+    Number(document.querySelector('#render-diagnostics').dataset.frames)>0,null,{timeout});
   await page.waitForFunction(()=>{const d=document.querySelector('#render-diagnostics').dataset;
-    return Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&d.surfaceAssetsFailed==='0';});
+    return Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&d.surfaceAssetsFailed==='0';},null,{timeout});
   await waitFrames();
 };
 async function ready(){
@@ -388,11 +389,24 @@ try{
   // A third, intermediate design distinguishes undoing the B edit from
   // incorrectly recording the temporarily displayed A as the previous edit.
   await style('space-age');await style('party-club');
-  await el('#compare').click();assert.equal(await el('#designStyle').inputValue(),'hidden-bali');
-  await el('#compare').click();assert.equal(await el('#designStyle').inputValue(),'party-club');
-  await el('#studio-undo').click();assert.equal(await el('#designStyle').inputValue(),'space-age');
+  // These actions rebuild the scene while their controls scroll it offscreen.
+  // A changed selector alone does not show that the new geometry and textures
+  // have rendered. Settle each transition before rebuilding the next design.
+  for(const [selector,id]of [
+    ['#compare','hidden-bali'],['#compare','party-club'],
+    ['#studio-undo','space-age'],['#studio-redo','party-club'],['#studio-undo','space-age'],
+  ]){
+    const previousFrame=(await stats()).frames;
+    await el(selector).click({timeout:SCENE_TRANSITION_TIMEOUT});
+    assert.equal(await el('#designStyle').inputValue(),id);
+    await sceneVisible(SCENE_TRANSITION_TIMEOUT);
+    await page.waitForFunction(({id,previousFrame})=>{
+      const d=document.querySelector('#render-diagnostics').dataset;
+      return d.renderedStyle===id&&Number(d.frames)>previousFrame;
+    },{id,previousFrame},{timeout:SCENE_TRANSITION_TIMEOUT});
+  }
   assert.equal(Number(await quote.inputValue()),0);
-  check('Save A and return to B preserve the intermediate real design as the Undo target');
+  check('Save A and return to B preserve the intermediate real design through Undo, Redo and Undo again');
 
   await el('[data-studio-moment="blue"]').click();await sceneVisible();
   await page.waitForFunction(()=>Number(document.querySelector('#viewport').dataset.nightActivation)>0);
