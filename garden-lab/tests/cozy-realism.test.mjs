@@ -89,6 +89,44 @@ test('natural facade photographs are tinted once, cast relief shadows and keep v
   }finally{mesh.geometry.dispose();mesh.material.forEach(m=>m.dispose());}
 });
 
+test('Nordic Blackwood carries charcoal boards over the eaves and gables while retaining cedar reveals',()=>{
+  const style=getDesignStyle('nordic-blackwood'),settings={...defaults,designStyle:style.id,styleHouseFinish:true};
+  const layout=houseAppearanceLayout(applyPlanExterior(data,settings),settings),roof=layout.roof.envelope;
+  const parts=houseRenovationParts(layout,style),gable=houseGableRenovation(roof,layout,style);
+  for(const [label,selection]of [
+    ['wall boards',parts.filter(p=>p.kind==='boards')],
+    ['eaves',parts.filter(p=>p.kind==='eaves-finish')],
+    ['gable boards',gable.parts.filter(p=>p.kind==='boards')],
+  ]){
+    assert.ok(selection.length>0,label);
+    assert.ok(selection.every(p=>p.finish==='houseWall'),label+' must use the charcoal wall finish');
+  }
+  const reveals=parts.filter(p=>p.kind==='architectural-reveal');
+  assert.ok(reveals.length>0&&reveals.every(p=>p.finish==='wood'));
+  assert.equal(exteriorFinishForRole(style,'houseWall'),'charred-wood');
+  assert.equal(exteriorFinishForRole(style,'wood'),'cedar','Reveals and furniture keep natural warm cedar');
+  for(const [mesh,source,edges]of [
+    [addHouseRenovation(new THREE.Group(),layout,style),parts,layout.edges],
+    [addRenovationGableCladding(new THREE.Group(),roof,layout,style),gable.parts,gable.edges],
+  ])try{
+    const charred=mesh.material.find(m=>m.userData.exteriorRole==='houseWall');
+    assert.equal(charred.userData.exteriorFinish,'charred-wood');
+    assert.equal(charred.color.getHex(),new THREE.Color(style.palette.houseWall).getHex());
+    assert.equal(charred.userData.woodGrainAxis,'v');
+    const ordered=[...new Set(source.map(p=>p.finish))].flatMap(finish=>source.filter(p=>p.finish===finish));
+    const {position,uv}=mesh.geometry.attributes;
+    for(const kind of ['boards','eaves-finish']){
+      const i=ordered.findIndex(p=>p.kind===kind);if(i<0)continue;
+      const part=ordered[i],edge=edges[part.edgeIndex];
+      for(let k=i*54;k<i*54+6;k++){
+        const along=(position.getX(k)-edge.a[0])*edge.direction[0]+(position.getZ(k)-edge.a[1])*edge.direction[1];
+        const grain=kind==='boards'?position.getY(k):along;
+        assert.ok(Math.abs(uv.getY(k)-grain-(part.uvOffset?.[1]??0))<1e-5,kind+' grain follows the physical member');
+      }
+    }
+  }finally{mesh.geometry.dispose();mesh.material.forEach(m=>m.dispose());}
+});
+
 test('large gable treatments distinguish teak screens, broad beach boards and fine Coastal siding without changing the roof',()=>{
   const d=applyPlanExterior(data,defaults),layout=houseAppearanceLayout(d,defaults),roof=layout.roof.envelope;
   const original=JSON.stringify(roof.surfaceFaces),signatures=new Set();

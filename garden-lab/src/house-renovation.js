@@ -115,7 +115,7 @@ function openingTrim(w,trim,shutters,place){
   }
 }
 
-function cladding(bay,recipe,place){
+function cladding(bay,recipe,place,finishOverride){
   const {lo,hi,bottom,top,edgeIndex}=bay,{field,pitch}=recipe;
   const put=(kind,a,b,c,d,depth,finish,tone=1,member=0)=>{
     if(b-a<.012||d-c<.012)return false;
@@ -127,7 +127,7 @@ function cladding(bay,recipe,place){
   };
   const wood=['boards','battens','paired','lap','weatherboard'].includes(field);
   const relief=recipe.relief??.094;
-  const finish=field==='weatherboard'?'houseWall':wood?'wood':field==='flutes'?'houseFrame':'surface';
+  const finish=finishOverride??(field==='weatherboard'?'houseWall':wood?'wood':field==='flutes'?'houseFrame':'surface');
   put('cladding-backing',lo,hi,bottom,top,.027,wood?'houseFrame':'edge');
   if(['battens','paired','boards','flutes'].includes(field)){
     const origin=bay.columnOrigin??.22,step=pitch;
@@ -177,6 +177,8 @@ function cladding(bay,recipe,place){
 export function houseRenovationParts(layout,style){
   if(!style?.renovation||!layout?.edges?.length)return [];
   const recipe=style.renovation,construction=getExteriorSurfaceSpec(style),parts=[],bays=[];
+  // Blackwood's stained envelope differs from its natural cedar joinery.
+  const claddingFinish=style.id==='nordic-blackwood'?'houseWall':undefined;
   // Bound the number of full-height shutter assemblies. Give the garden facade first choice.
   const trimWindows=layout.windows.filter(w=>w.level!=='basement'&&w.hi>w.lo&&w.height>0);
   const shutterOrder=trimWindows.filter(w=>!['hst','balcony-door'].includes(w.kind))
@@ -254,10 +256,10 @@ export function houseRenovationParts(layout,style){
     if(eaveTop>upper+1){
       const eaveDepth=recipe.trim==='crosshead'?.135:recipe.trim==='stepped'?.12:.075;
       for(const [lo,hi]of freeSpans(edge,eaveTop-.10,eaveTop,guards,.055))if(hi-lo>.25)
-        place({kind:'eaves-finish',lo,hi,bottom:eaveTop-.10,top:eaveTop,depth:eaveDepth,finish:recipe.field==='weatherboard'?'houseFrame':['boards','battens','paired','lap'].includes(recipe.field)?'wood':'edge'});
+        place({kind:'eaves-finish',lo,hi,bottom:eaveTop-.10,top:eaveTop,depth:eaveDepth,finish:claddingFinish??(recipe.field==='weatherboard'?'houseFrame':['boards','battens','paired','lap'].includes(recipe.field)?'wood':'edge')});
     }
   }
-  for(const bay of bays)cladding({...bay,courseOrigin:layout.floorZ},recipe,bay.place);
+  for(const bay of bays)cladding({...bay,courseOrigin:layout.floorZ},recipe,bay.place,claddingFinish);
   parts.push(...renovationArchitecturalParts(layout,style.id));
   return parts;
 }
@@ -276,6 +278,7 @@ export function houseGableRenovation(roof,layout,style){
     return{index:i,a,b,length,direction,outward:area>0?[direction[1],-direction[0]]:[-direction[1],direction[0]],roofEdge:r,baseZ};
   });
   const recipe=style.renovation,vertical=['battens','paired','boards','flutes'].includes(recipe.field),pitch=recipe.pitch;
+  const claddingFinish=style.id==='nordic-blackwood'?'houseWall':undefined;
   for(const edge of result.edges){
     if(edge.length<.4)continue;
     const lo=.12,hi=edge.length-.12,bottom=baseZ+.045,top=Math.max(...edge.roofEdge.points.map(p=>p[2]))-.11;
@@ -290,7 +293,7 @@ export function houseGableRenovation(roof,layout,style){
       for(let col=Math.floor((lo-.22)/pitch);.22+col*pitch<hi;col++){
         const a=Math.max(lo,.22+col*pitch),b=Math.min(hi,.22+(col+1)*pitch),ceiling=minimumRoof(edge,a,b)-.11;
         if(b-a<.02||ceiling-bottom<.04)continue;
-        cladding({id:`gable-${edge.index}-${col}`,edgeIndex:edge.index,lo:a,hi:b,bottom,top:ceiling,courseOrigin:layout.floorZ},recipe,place);
+        cladding({id:`gable-${edge.index}-${col}`,edgeIndex:edge.index,lo:a,hi:b,bottom,top:ceiling,courseOrigin:layout.floorZ},recipe,place,claddingFinish);
       }
     }else{
       // Horizontal boards terminate against the real sloped verge. Courses
@@ -299,7 +302,7 @@ export function houseGableRenovation(roof,layout,style){
         const a=Math.max(bottom,layout.floorZ+row*pitch),b=Math.min(top,layout.floorZ+(row+1)*pitch);
         if(b-a<.02)continue;
         for(const [x0,x1]of roofSpans(edge,lo,hi,b+.11))if(x1-x0>.04)
-          cladding({id:`gable-${edge.index}-${row}`,edgeIndex:edge.index,lo:x0,hi:x1,bottom:a,top:b,courseOrigin:layout.floorZ},recipe,place);
+          cladding({id:`gable-${edge.index}-${row}`,edgeIndex:edge.index,lo:x0,hi:x1,bottom:a,top:b,courseOrigin:layout.floorZ},recipe,place,claddingFinish);
       }
     }
   }
