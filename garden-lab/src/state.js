@@ -1,20 +1,21 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.35.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.35.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.35.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.35.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.35.0';
-import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.35.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.35.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.35.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.35.0';
-import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.35.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.35.0';
-import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.35.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.36.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.36.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.36.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.36.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.36.0';
+import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.36.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.36.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.36.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.36.0';
+import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.36.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.36.0';
+import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.36.0';
+import {upgradeSummerTreePreset} from './summer-garden.js?v=1.36.0';
 
-import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.35.0';
-import {changePresentationSettings} from './studio-state.js?v=1.35.0';
+import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.36.0';
+import {changePresentationSettings} from './studio-state.js?v=1.36.0';
 
-export const STATE_VERSION = 31;
+export const STATE_VERSION = 32;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -60,7 +61,7 @@ const V17_STERNICZA_TREES=Object.freeze([[19.3,30.2,6],[13.8,35.8,6],[18.45,35.5
 
 const BASE_FIELDS = Object.freeze({
   hstOpen: {label:'Terrace doors',min:0,max:1,step:.01,value:1,group:'manual'},
-  poolSunbedSides: {label:'Sunbed sides',min:1,max:3,step:1,value:3,group:'manual'},
+  poolSunbedSides: {label:'Sunbed sides',min:1,max:3,step:1,value:1,group:'manual'},
   hedgeRear: {label:'Rear hedge',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeLeft: {label:'Left hedge · east',min:0,max:15,step:0.1,value:4,group:'hedge'},
   hedgeRight: {label:'Right hedge · west',min:0,max:15,step:0.1,value:4,group:'hedge'},
@@ -257,6 +258,13 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     // Older saved proposals keep their chosen pool and excavation locations.
     // Selecting a new renovation explicitly adopts its coordinated garden.
     if(version<29)next.styleGardenLayout=false;
+    // The requested left-edge pool occupies one former automatic tree slot.
+    // Relocate only a complete, recognized v30/v31 species preset; arbitrary
+    // edited trees, removed specimens and historical garden layouts stay put.
+    if(version>=30&&version<32&&siteId===DEFAULT_SITE_ID&&next.summerPoolLayout){
+      const relocated=upgradeSummerTreePreset(next.screeningTrees);
+      if(relocated)next.screeningTrees=relocated;
+    }
     return next;
   }
   function encodeState(state) {
@@ -314,7 +322,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     }
     return true;
   }
-  function migrateSavedState(input,version=3,{restoreCurrentGarageProposal=false,adoptResortUpdate=false}={}) {
+  function migrateSavedState(input,version=3,{restoreCurrentGarageProposal=false,adoptResortUpdate=false,adoptGardenRefinement=false}={}) {
     if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return sanitizeState();
     if(version>=6&&input.siteId!==siteId)return sanitizeState();
     if(input.siteId!==undefined&&input.siteId!==siteId)return sanitizeState();
@@ -332,6 +340,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       for(const [key,old]of [['nightGardenIntensity',75],['nightPendantIntensity',80],['nightHedgeIntensity',85]])
         if(next[key]===old)next[key]=DEFAULTS[key];
     }
+    // The active pre-v32 proposal adopts the requested inward-facing row.
+    // Shared links and comparison A do not opt in; a deliberate two-side
+    // arrangement remains a two-side arrangement.
+    if(adoptGardenRefinement&&version<32&&siteId===DEFAULT_SITE_ID&&next.summerPoolLayout&&next.poolSunbedSides===3)next.poolSunbedSides=1;
     if(version===1)next.linkedHedges=false;
     return next;
   }

@@ -1,5 +1,5 @@
 /** Register one drawing-based house and its decks. Source survey is preserved. */
-import {houseModelFrame} from './house-model.js?v=1.35.0';
+import {houseModelFrame} from './house-model.js?v=1.36.0';
 const cache=new WeakMap();
 export function applyPlanExterior(data,settings={}){
   if(!data?.site?.terrace||(data.site.id||settings.siteId||'sternicza-11')!=='sternicza-11')return data;

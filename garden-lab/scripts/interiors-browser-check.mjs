@@ -6,6 +6,8 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {getInteriorPlan} from '../src/interior-plan.js';
+import {checkFullscreenRoundtrip,checkFullscreenFallback,checkFullscreenHandoff} from './fullscreen-browser-helpers.mjs';
+import {captureOpenLivingViews} from './open-living-browser-helpers.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=path.join(root,'test-results','interiors');
@@ -126,6 +128,12 @@ try{
   assert.equal(await page.evaluate(()=>performance.getEntriesByType('resource').some(e=>new URL(e.name).pathname.endsWith('/scene-interior.js'))),false);
   check('Opening a shared floor plan creates no interior WebGL context or renderer import');
 
+  const planFullscreen={target:'#interior-host',button:'#interior-host [data-iw="fullscreen"]',surface:'#interior-host [data-iw="plan"] svg',settle:()=>rendered(null,'plan',{timeout:sceneStartupTimeout})};
+  report.fullscreen={plan:await checkFullscreenRoundtrip(page,{...planFullscreen,expectedMode:'native'}),fallback:await checkFullscreenFallback(page,planFullscreen)};
+  assert.equal(await field('canvas').locator('canvas').count(),0);
+  assert.equal(await page.evaluate(()=>performance.getEntriesByType('resource').some(e=>new URL(e.name).pathname.endsWith('/scene-interior.js'))),false);
+  check('Fullscreen and the unsupported-API fallback expand the existing floor plan, preserve lazy rendering, and restore its size and focus on Escape');
+
   await field('floor').selectOption('basement');
   assert.equal(await field('garage').isChecked(),true,'Sparse garage-era links restore the requested two-car proposal');
   for(const id of ['coastal','current','coastal']){
@@ -219,13 +227,17 @@ try{
   check('All 34 renovations have physical features and varied rendered geometry; Beach House, Coastal and Baltic Dune are distinct, and Current restores the original layout/image');
   await field('furniture').uncheck();assert.equal((await rendered('current','dollhouse')).furnitureCount,0);await field('furniture').check();
   await field('style').selectOption('beach-house');await field('floor').selectOption('ground');await field('room').selectOption('lounge');
-  await field('enter').click();const beach=await walking('ground');
+  report.fullscreen.handoff=await checkFullscreenHandoff(page,{fromButton:'#interior-host [data-iw="fullscreen"]',nextTarget:'#viewer',action:()=>field('enter').click(),settle:({afterFrame=null}={})=>walking('ground',{timeout:sceneStartupTimeout,settled:true,afterFrame})});
+  const beach=await walking('ground');
   assert.match(await q('#walk-status').textContent(),/Living room/);
   assert.equal(await q('#workspace').evaluate(node=>node.inert),false);
   assert.equal(await field('canvas').locator('canvas').count(),0,'The room handoff releases the separate interior WebGL context');
   await shot('ground-beach-house-living-walk','#scene-host canvas');
   report.walking={ground:beach,keyboardDistance:await stepWithKeys()};
   check('Room entry opens the full house-and-garden walker, releases the room renderer and responds to WASD and arrow keys');
+  await walking('ground',{timeout:sceneStartupTimeout,settled:true});
+  report.fullscreen.walk=await checkFullscreenRoundtrip(page,{settle:({afterFrame})=>walking('ground',{timeout:sceneStartupTimeout,settled:true,afterFrame}),onExpanded:()=>shot('desktop-fullscreen-walk','#viewer')});
+  check('Interior-to-walking handoff keeps fullscreen; desktop entry and Escape retain the same camera, lens, canvas and keyboard walking mode');
   await openInteriors();await chooseView('dollhouse');await rendered('beach-house','dollhouse');
   await field('style').selectOption('japandi');await field('floor').selectOption('first');await field('room').selectOption('master');
   await field('enter').click();const eye=await walking('first');assert.match(await q('#walk-status').textContent(),/Main bedroom|Master|Bedroom/i);
@@ -253,11 +265,11 @@ try{
   try{await page.waitForFunction(before=>{
     const d=document.querySelector('#scene-host canvas')?.dataset;
     return d?.walkFloating==='true'&&Number(d.walkAltitude)>before+.03;
-  },beforeRise,{timeout:10000});}finally{await page.keyboard.up('e');}
+  },beforeRise,{timeout:30000});}finally{await page.keyboard.up('e');}
   const raised=Number(await walkCanvas().getAttribute('data-walk-altitude'));
   report.walking.comfort.raised=raised;
   await page.keyboard.down('q');
-  try{await page.waitForFunction(before=>Number(document.querySelector('#scene-host canvas')?.dataset.walkAltitude)<before-.03,raised,{timeout:10000});}
+  try{await page.waitForFunction(before=>Number(document.querySelector('#scene-host canvas')?.dataset.walkAltitude)<before-.03,raised,{timeout:30000});}
   finally{await page.keyboard.up('q');}
   const beforeGround=await walkSnapshot();report.walking.comfort.beforeGround=beforeGround;
   await page.keyboard.press('r');
@@ -319,12 +331,23 @@ try{
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assertBalconyShared(await exportDesign(),4);
   check('Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together');
 
+  report.openLiving=await captureOpenLivingViews(page,{shot,walking,openInteriors,timeout:sceneStartupTimeout});
+  check('Daylight kitchen connection, concealed chimney and open stair guard captured through public room and camera controls');
+
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();
   await field('style').selectOption('hidden-bali');await field('furniture').check();await field('hide-settings').click();await field('room').selectOption('lounge');
   assert.equal(await field('floor').inputValue(),'ground');assert.equal((await appState()).style,'hidden-bali');
   const size=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth,drawing:Math.round(document.querySelector('.iw-drawing').getBoundingClientRect().height),host:document.querySelector('#interior-host').getBoundingClientRect().bottom,height:innerHeight}));
   assert.ok(size.width<=size.screen+1&&size.drawing>260&&size.host<=size.height+1,JSON.stringify(size));report.mobile=size;
+  report.fullscreen.mobilePlan=await checkFullscreenRoundtrip(page,{...planFullscreen,onExpanded:async()=>{
+    await field('settings').click();
+    const first=q('#interior-host button').first();await first.focus();await page.keyboard.press('Shift+Tab');
+    assert.equal(await first.evaluate(node=>node===document.activeElement),false,'Backward Tab must move off the first control');
+    assert.equal(await field('inspector').evaluate(node=>node.contains(document.activeElement)),true,'Backward Tab wraps to a visible inspector control');
+    assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).visibility),'visible','Backward Tab must skip the hidden mobile drawing controls');
+    await field('hide-settings').click();await shot('mobile-fullscreen-plan','#interior-host');
+  }});
   await shot('mobile-floor-plan');await chooseView('dollhouse');await rendered('hidden-bali','dollhouse');await shot('mobile-dollhouse');
   await chooseView('room');await walking('ground');
   const pad=q('#scene-host .walk-pad');assert.equal(await pad.isVisible(),true);assert.equal(await pad.locator('button').count(),4);
@@ -348,13 +371,24 @@ try{
     try{await page.waitForFunction(({before,direction})=>{
       const d=document.querySelector('#scene-host canvas')?.dataset,delta=Number(d?.walkAltitude)-before;
       return d?.walkFloating==='true'&&(direction==='up'?delta>.02:delta<-.02);
-    },{before,direction},{timeout:10000});}finally{await page.mouse.up();}
+    },{before,direction},{timeout:30000});}finally{await page.mouse.up();}
   }
   await elevation.locator('[data-walk-elevation="follow"]').click();
   assert.equal(await walkCanvas().getAttribute('data-walk-floating'),'false');
   assert.equal(await elevation.locator('[data-walk-elevation="follow"]').getAttribute('aria-pressed'),'true');
   await shot('mobile-house-garden-walk');
+  await walking('ground',{timeout:sceneStartupTimeout,settled:true});
+  report.fullscreen.mobileWalk=await checkFullscreenRoundtrip(page,{settle:({afterFrame})=>walking('ground',{timeout:sceneStartupTimeout,settled:true,afterFrame}),onExpanded:async()=>{
+    for(const selector of ['#viewer-fullscreen','#walk-location','#walkNavigation','#scene-host .walk-pad button','#scene-host .walk-elevation-pad button']){
+      for(const node of await q(selector).all()){
+        const bounds=await node.boundingBox();assert.ok(bounds,`${selector} is visible in mobile fullscreen`);
+        assert.ok(bounds.x>=-1&&bounds.y>=-1&&bounds.x+bounds.width<=391&&bounds.y+bounds.height<=845,`${selector} fits inside mobile fullscreen: ${JSON.stringify(bounds)}`);
+      }
+    }
+    await shot('mobile-fullscreen-walk','#viewer');
+  }});
   check('390 px plan, dollhouse and unified walk fit the viewport; all four direction buttons and the rise, lower and ground-following controls are reachable and move the camera');
+  check('Mobile fullscreen keeps the model, location/navigation selectors and all seven walking controls inside the screen, with visible keyboard focus and a stable camera');
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);

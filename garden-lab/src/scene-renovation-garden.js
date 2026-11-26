@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {gardenGroundAt} from './geometry.js?v=1.35.0';
-import {createStyledDeck,createStyledResortPiece} from './scene-style-details.js?v=1.35.0';
-import {finishDeckBox} from './scene-static-details.js?v=1.35.0';
+import {gardenGroundAt} from './geometry.js?v=1.36.0';
+import {createStyledDeck} from './scene-style-details.js?v=1.36.0';
+import {finishDeckBox} from './scene-static-details.js?v=1.36.0';
 
 /** The low landscape furnishings use the same fitted rectangles as the plan.
  * Planting is ornamental; it never creates an analytical privacy barrier. */
@@ -18,7 +18,6 @@ export function createRenovationGardenDetails(furniture,style,settings,data,mate
     mesh.name=p.id;finishDeckBox(mesh,m.deck,style,p.x,p.y);
     group.add(createStyledDeck(style,{...p,z:z+.037},{svgMode}));
   }
-  if(r.kitchen){const p=r.kitchen;group.add(createStyledResortPiece(style,m,{...p,z:height(p.x+p.width/2,p.y+p.length/2)},{svgMode}));}
   for(const bed of r.beds||[]){
     const {x,y,width:w,length:l,plant}=bed,z=height(x+w/2,y+l/2),edge=.045;
     box(x,y,z+.015,w,l,.035,m.wood);
@@ -44,5 +43,5 @@ export function createRenovationGardenDetails(furniture,style,settings,data,mate
     const leaf=new THREE.MeshStandardMaterial({vertexColors:true,side:THREE.DoubleSide,roughness:.95});leaf.userData.transient=true;
     const mesh=new THREE.Mesh(geometry,leaf);mesh.name=bed.id;mesh.receiveShadow=true;mesh.castShadow=!svgMode;group.add(mesh);
   }
-  group.userData={scheme:r.scheme,kitchen:Boolean(r.kitchen),beds:r.beds?.length||0,pads:r.pads?.length||0};return group;
+  group.userData={scheme:r.scheme,kitchen:false,beds:r.beds?.length||0,pads:r.pads?.length||0};return group;
 }

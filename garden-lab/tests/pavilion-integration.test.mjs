@@ -15,13 +15,14 @@ import {analyzeVisibility,observerForPreset,privacyStructures,pointInPolygon,ter
 import {firstPrivacyIntersection} from '../src/privacy-structures.js';
 import {prepareSunGeometry,firstSunBlocker} from '../src/shade.js';
 import {gardenQuantities,estimateGardenCosts,estimatePrivacyCosts} from '../src/costs.js';
+import {LEGACY_SUMMER_TREE_POSITIONS} from '../src/summer-garden.js';
 
 const source=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 // Retain every physical context building; sample only PCK3 for these checks.
 source.buildings=source.buildings.map(b=>b.id!=='building-9'&&b.kind==='target'?{...b,kind:'context'}:b);
 const model=createStateModel(getSiteProfile('sternicza-11',source));
 // This published pavilion comparison used its narrower compatible planting.
-// The new broad-pine garden is tested separately below, including its repair.
+// Broad-pine placements are tested separately below, including their repair.
 const defaults=model.decodeState('v=29&site=sternicza-11');
 const emptyAnalysis={byBlock:[],rays:[]};
 const close=(a,b,label)=>assert.ok(Math.abs(a-b)<1e-7,`${label}: ${a} vs ${b}`);
@@ -37,9 +38,15 @@ const obstacles=(settings,data)=>{
     rectCorners(p.coldPlunge,p.coldPlunge.pad),...p.sauna.entrySteps.map(s=>s.footprint),...p.coldPlunge.steps.map(s=>rectCorners(s))];
 };
 
-test('new broad-pine garden reports pavilion collisions and the explicit Excelsa prescription resolves them',()=>{
+test('saved broad-pine garden reports pavilion collisions and the explicit Excelsa prescription resolves them',()=>{
+  // Keep the released 1.35 conflict fixture explicit. The 1.36 tree move that
+  // clears the left-edge pool also clears the near-garage pavilion; it must not
+  // erase the collision warnings for an older, deliberately retained garden.
+  const oldTrees=model.DEFAULTS.screeningTrees.map((tree,i)=>{
+    const [x,y]=LEGACY_SUMMER_TREE_POSITIONS['austrian-pine-tall'][i];return {...tree,x,y};
+  });
   for(const placement of PAVILION_PLACEMENTS){
-    const s={...model.DEFAULTS,...placement.settings,pavilionEnabled:true},data=applyPlanExterior(source,s);
+    const s={...model.DEFAULTS,...placement.settings,screeningTrees:oldTrees,pavilionEnabled:true},data=applyPlanExterior(source,s);
     const report=pavilionStudy(observerForPreset('terrace',s,data),s,data,emptyAnalysis);
     assert.equal(report.valid,false,'Broad crowns are never silently shrunk or ignored');
     assert.ok(report.treeConflicts.some(t=>t.crown==='overlap'||t.trunk));

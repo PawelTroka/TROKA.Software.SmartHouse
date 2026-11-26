@@ -1,6 +1,6 @@
-import {sampledRoofFaces} from './roof-mesh.js?v=1.35.0';
-import {localRoofEnvelope,roofEdgeHeight} from './roof-envelope.js?v=1.35.0';
-import {reconstructSteppedRoof,transformRoofPatches} from './observed-roof-patches.js?v=1.35.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.36.0';
+import {localRoofEnvelope,roofEdgeHeight} from './roof-envelope.js?v=1.36.0';
+import {reconstructSteppedRoof,transformRoofPatches} from './observed-roof-patches.js?v=1.36.0';
 
 const cache=new WeakMap();
 const finite=(value,fallback=0)=>Number.isFinite(value)?value:fallback;

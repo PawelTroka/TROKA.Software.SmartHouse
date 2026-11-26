@@ -298,7 +298,7 @@ try{
     assert.equal(info.garageVehicles,2,id+' must retain both actual vehicle groups');
     geometrySignatures.add(info.houseRenovationParts+':'+info.windowPattern);windowPatterns.add(info.windowPattern);gardenSchemes.add(info.gardenScheme);selectedInfo.set(id,info);
     assert.ok(info.houseOpeningCount>0&&info.windowPattern.length>10,id+' has no rendered aperture records');
-    assert.equal(info.gardenKitchens,1,id+' retains the fitted outdoor kitchen');
+    assert.equal(info.gardenKitchens,0,id+' omits outdoor kitchens');
     assert.ok(info.gardenPlantingBeds>0,id+' has no fitted planting bed');
     if(minimalIds.has(id)||['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune','beach-house','japandi'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
@@ -315,7 +315,7 @@ try{
   }
   assert.equal(geometrySignatures.size,sweep.length,'Every tested style must change physical facade geometry');
   assert.equal(windowPatterns.size,sweep.length,'Every style must have a distinct physical window proposal');
-  assert.equal(gardenSchemes.size,scenarioGroup==='styles-minimal'?new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.gardenLayout[0])).size:6,'Every required garden recipe family must render around the shared summer pool');
+  assert.equal(gardenSchemes.size,scenarioGroup==='styles-minimal'?new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.gardenLayout[0])).size:6,'Every required garden recipe family must render around the shared left-edge pool');
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
   assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
@@ -323,7 +323,7 @@ try{
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check(`${sweep.length} tested styles have distinct physical window proposals, ${gardenSchemes.size} garden recipe families and outdoor kitchens around the shared summer pool; both cars remain and Current restores the neutral dwelling`);
+  check(`${sweep.length} tested styles have distinct physical window proposals, ${gardenSchemes.size} garden recipe families without outdoor kitchens around the shared left-edge pool; both cars remain and Current restores the neutral dwelling`);
   }
 
   if(runsGroup('controls')){

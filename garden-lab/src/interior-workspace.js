@@ -1,8 +1,8 @@
-import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.35.0';
-import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.35.0';
-import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.35.0';
-import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.35.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.35.0';
+import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.36.0';
+import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.36.0';
+import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.36.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.36.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -37,14 +37,15 @@ function numberCell(text, tag = 'td') {
 export function createInteriorWorkspace(container, {settings:initial = {}, onChange, onClose, onStatus,onWalk,getData,getExteriorContext,getContextKey} = {}) {
   container.classList.add('iw-workspace');
   container.setAttribute('aria-label','Sternicza 11 interior studio');
-  container.setAttribute('role','region');
+  if(!container.classList.contains('is-model-fullscreen'))container.setAttribute('role','region');
   container.tabIndex = -1;
   container.hidden = true;
   container.innerHTML = `
     <header class="iw-header">
       <div class="iw-identity"><button type="button" data-iw="close" class="iw-back">${icon('back')}<span>Garden</span></button><div><span class="iw-caption">Sternicza 11</span><h2 tabindex="-1" data-iw="title">Interior studio</h2></div></div>
       <div class="iw-header-actions"><div class="iw-layout" role="group" aria-label="Drawing layout"><button type="button" data-layout="existing">Original drawings</button><button type="button" data-layout="renovation">Your renovation</button></div>
-      <button type="button" data-iw="settings" class="iw-tool iw-mobile-button" aria-controls="iw-inspector" aria-expanded="false" title="Materials, room schedule and drawing notes">${icon('settings')}<span>Settings</span></button></div>
+      <button type="button" data-iw="settings" class="iw-tool iw-mobile-button" aria-controls="iw-inspector" aria-expanded="false" title="Materials, room schedule and drawing notes">${icon('settings')}<span>Settings</span></button>
+      <button type="button" data-iw="fullscreen" class="iw-tool iw-fullscreen model-fullscreen-button" aria-pressed="false" aria-label="Enter fullscreen" title="Make this model fullscreen"><svg aria-hidden="true" focusable="false" viewBox="0 0 20 20"><path class="fullscreen-expand-icon" d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4"/><path class="fullscreen-collapse-icon" d="M3 7h4V3m6 0v4h4M7 17v-4H3m14 0h-4v4"/></svg><span data-fullscreen-label>Fullscreen</span></button></div>
     </header>
     <div class="iw-body">
       <aside id="iw-inspector" data-iw="inspector" class="iw-inspector" aria-label="Interior settings and room schedule">
@@ -140,7 +141,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function loadScene() {
     if (scene || sceneLoad || sceneError) return;
     const token = generation;
-    sceneLoad = import('./scene-interior.js?v=1.35.0').then(({createInteriorScene}) => {
+    sceneLoad = import('./scene-interior.js?v=1.36.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
         getExteriorContext,
@@ -363,5 +364,5 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   }
   const getDiagnostics = () => ({visible,renderedView,sceneError,drawnRevision,floor:plan?.floor,layout:plan?.layout,roomId:room?.id,styleId:style?.id,scene:scene?.getDiagnostics() || null});
   container.getInteriorDiagnostics = getDiagnostics;
-  return {update,setVisible,dispose,getDiagnostics};
+  return {update,setVisible,dispose,getDiagnostics,resize(){scene?.resize();positionPlan();}};
 }

@@ -6,24 +6,30 @@ import fs from 'node:fs';
 import {resolve} from 'node:path';
 import {ROOT,studyInput} from './garden-study-support.mjs';
 import {gardenProgram} from '../src/garden-program.js';
-import {rectCorners} from '../src/layout.js';
-import {gardenGroundAt,pointInPolygon,observerForPreset} from '../src/geometry.js';
+import {rectCorners,terraceStairs} from '../src/layout.js';
+import {gardenGroundAt,pointInPolygon,observerForPreset,terraceGroundReference} from '../src/geometry.js';
 import {analyzeFacadeVisibility} from '../src/facade-visibility.js';
 import {screeningTreeVolumes,createScreeningTree,treeRayIntersection} from '../src/screening-trees.js';
 import {TREE_CATALOG} from '../src/tree-catalog.js';
 import {STERNICZA_REFERENCE_POOL_TREES,STERNICZA_EXCELSA_TREES} from '../src/screening-layouts.js';
 import {closestFootprints,closestBoundary} from '../src/dimensions.js';
-const {data,settings,evidence}=studyInput({screeningTrees:[]});
+const {data,settings,evidence}=studyInput({screeningTrees:[],poolSunbedSides:3});
 const program=gardenProgram(settings,data),round=n=>Math.round(n*10000)/10000;
 const baseViews=['sofa','standing','terrace','jacuzzi','pool','firepit','sauna'].map(id=>({id,
   weight:['sofa','standing','terrace','jacuzzi'].includes(id)?2:1,...observerForPreset(id,settings,data)}));
-baseViews.push({id:'poolside-loungers',weight:1,x:7,y:30,z:gardenGroundAt(7,30,settings,data)+1.1});
-baseViews.push({id:'dining',weight:1,x:10.8,y:34.7,z:gardenGroundAt(10.8,34.7,settings,data)+1.2});
+const sunbed=program.furniture.sunbeds[1],dining=program.furniture.dining;
+for(const [id,r,eye]of [['poolside-loungers',sunbed,1.1],['dining',dining,1.2]]){
+  const x=r.x+r.width/2,y=r.y+r.length/2;
+  baseViews.push({id,weight:1,x,y,z:gardenGroundAt(x,y,settings,data)+eye});
+}
 const views=baseViews.map(view=>{const v=analyzeFacadeVisibility(view,'building-9',settings,data,{spacing:1});
  return {...view,total:v.total,blocked:v.total-v.visible,rays:v.rays.filter(r=>r.visible),words:Math.ceil(v.visible/32)};});
-const obstacles=[rectCorners(program.pool,program.pool.coping),program.sauna.footprint,program.firepit.outerFootprint,
-  rectCorners(program.coldPlunge,program.coldPlunge.pad),rectCorners(program.furniture.dining),rectCorners(program.furniture.kitchen),
-  ...program.furniture.loungers.map(([x,y])=>rectCorners({x,y,width:.78,length:2})),
+const terrace={...data.site.terrace,y:data.site.rearMidpoint[1],length:settings.terraceDepth};
+const stairs=terraceStairs(terrace,settings.terraceDepth,terraceGroundReference(settings,data).drop,settings,data);
+const obstacles=[data.site.house.footprint,rectCorners(terrace),rectCorners(stairs),
+  rectCorners(program.pool,program.pool.coping),program.sauna.footprint,program.firepit.outerFootprint,
+  rectCorners(program.coldPlunge,program.coldPlunge.pad),rectCorners(dining),
+  ...program.furniture.sunbeds.map(b=>rectCorners(b)),
   ...program.coldPlunge.steps.map(s=>rectCorners(s)),...program.sauna.entrySteps.map(s=>s.footprint)];
 const pop=v=>{v=v-((v>>>1)&0x55555555);v=(v&0x33333333)+((v>>>2)&0x33333333);return (((v+(v>>>4))&0x0f0f0f0f)*0x01010101)>>>24;};
 const empty=()=>views.map(v=>new Uint32Array(v.words));
@@ -37,7 +43,7 @@ const presets={};
 for(const type of TREE_CATALOG){
   const candidates=[];
   // East edge and rear/east return only: central garden remains available.
-  for(let y=23.5;y<=36.5;y+=.5)for(let x=11.5;x<=19.25;x+=.5){
+  for(let y=19.5;y<=36.5;y+=.5)for(let x=10.5;x<=19.25;x+=.5){
     const point=[x,y],edge=Math.min(closestBoundary([point],data,'left').distance,closestBoundary([point],data,'rear').distance);
     if(edge<1.1||edge>3.7||!pointInPolygon(point,data.site.boundary))continue;
     if(obstacles.some(r=>pointInPolygon(point,r)||closestFootprints([point],r).distance<1))continue;
@@ -60,8 +66,9 @@ for(const type of TREE_CATALOG){
       const group=[...s.group,c],key=group.map(x=>x.tree.id).sort().join('|');if(seen.has(key))continue;seen.add(key);
       const masks=union(s.masks,c.masks),coverage=score(masks).coverage;
       const gardenCost=group.reduce((a,c)=>a+c.edge,0)/group.length;
-      // Shade-sensitive pool sits west of this edge band. Nearer-boundary
-      // placement costs less central garden while facade coverage dominates.
+      // The owner's long left-edge pool and every optional sunbed are fixed.
+      // Nearer-boundary placement preserves the open central garden while
+      // facade coverage dominates; this objective does not optimise sunlight.
       next.push({group,masks,coverage,score:coverage-.012*gardenCost});
     }
     beam=next.sort((a,b)=>b.score-a.score).slice(0,40);
@@ -80,6 +87,7 @@ const baselines=Object.fromEntries([['no-specimens',[]],['previous-excelsa',STER
 }));
 const output={method:{...evidence,target:'PCK3 / building-9',grid:.5,beamWidth:40,facadeGrid:1,
   objective:'Weighted PCK3 facade sample coverage minus 0.012 × average trunk distance from nearest east/rear boundary. House/terrace/jacuzzi weight 2; pool/fire/sauna/sunbeds/dining weight 1.',
-  constraints:'Trunks 1.1–3.7 m from east/rear boundary; 1 m from pool coping/fixed spa/furniture footprints; maximum 1 m modeled crown overhang. Minimum spacing depends on catalogue width, bounded to 1.5–3 m.',
+  proposal:'1.36 owner-selected long left-edge pool and central fire lounge; all three optional sunbed sides reserved, no outdoor kitchen.',
+  constraints:'Trunks 1.1–3.7 m from east/rear boundary; 1 m from house, terrace, stairs, pool coping, fixed spa and all seven sunbed/dining footprints; maximum 1 m modeled crown overhang. Minimum spacing depends on catalogue width, bounded to 1.5–3 m.',
   limitations:'Finite beam/grid search, ideal dense crown volumes and assumed stock dimensions. Overhang requires agreement/maintenance; not a planting or legal clearance certification. Narrow and lower stock cannot match large pine screening.'},baselines,presets};
-fs.writeFileSync(resolve(ROOT,'data/boundary-tree-search-1.34.json'),JSON.stringify(output,null,2)+'\n');
+fs.writeFileSync(resolve(ROOT,'data/boundary-tree-search-1.36.json'),JSON.stringify(output,null,2)+'\n');

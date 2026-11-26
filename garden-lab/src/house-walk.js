@@ -1,14 +1,14 @@
-import {getHouseFloorPlan,houseModelFrame} from './house-model.js?v=1.35.0';
-import {containsPoint,wallPanels,ringBounds} from './interior-geometry.js?v=1.35.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.35.0';
-import {stairTreads} from './stair-surfaces.js?v=1.35.0';
-import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.35.0';
-import {gardenGroundAt,terrainAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.35.0';
-import {terraceStairs} from './layout.js?v=1.35.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.35.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.35.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.35.0';
-import {entranceAccessLayout} from './entrance-access.js?v=1.35.0';
+import {getHouseFloorPlan,houseModelFrame} from './house-model.js?v=1.36.0';
+import {containsPoint,wallPanels,ringBounds} from './interior-geometry.js?v=1.36.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.36.0';
+import {stairTreads} from './stair-surfaces.js?v=1.36.0';
+import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.36.0';
+import {gardenGroundAt,terrainAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.36.0';
+import {terraceStairs} from './layout.js?v=1.36.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.36.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.36.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.36.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.36.0';
 
 const EPS=1e-6,RADIUS=.16,MAX_STEP=.245;
 const rectangle=(x0,z0,x1,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
@@ -54,7 +54,7 @@ export function createWalkNavigation(data,settings={}){
         }
       }
     }
-    for(const core of plan.cores||[])solids.push({polygon:core.polygon,bottom:plan.elevation,top:plan.elevation+plan.clearHeight,id:core.id});
+    for(const core of plan.cores||[])solids.push({polygon:core.enclosure?.polygon||core.polygon,bottom:plan.elevation,top:plan.elevation+plan.clearHeight,id:core.id});
     for(const f of plan.fixtures||[]){
       if(f.hostId||f.nonBlocking||f.wallMounted||(f.kind==='car'&&settings.basementGarageEnabled))continue;
       // Chairs belong to the table footprint and are included in its envelope.
