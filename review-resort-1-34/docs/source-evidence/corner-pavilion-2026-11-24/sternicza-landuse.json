@@ -1,0 +1,187 @@
+{
+  "queryUrl": "https://geogdansk.pl/server/rest/services/WUiA/MPZP_NA_WMS/MapServer/0/query?f=json&geometry=%7B%22rings%22%3A+%5B%5B%5B476064.831756033%2C+726902.760579949%5D%2C+%5B476083.477007224%2C+726894.680132194%5D%2C+%5B476071.997650043%2C+726868.237330145%5D%2C+%5B476068.411497858%2C+726859.922715501%5D%2C+%5B476049.880342341%2C+726867.59176273%5D%2C+%5B476053.437225993%2C+726875.956766203%5D%2C+%5B476054.923818833%2C+726879.293865758%5D%2C+%5B476064.831756033%2C+726902.760579949%5D%5D%5D%2C+%22spatialReference%22%3A+%7B%22wkid%22%3A+2180%7D%7D&geometryType=esriGeometryPolygon&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=false",
+  "input": {
+    "rings": [
+      [
+        [
+          476064.831756033,
+          726902.760579949
+        ],
+        [
+          476083.477007224,
+          726894.680132194
+        ],
+        [
+          476071.997650043,
+          726868.237330145
+        ],
+        [
+          476068.411497858,
+          726859.922715501
+        ],
+        [
+          476049.880342341,
+          726867.59176273
+        ],
+        [
+          476053.437225993,
+          726875.956766203
+        ],
+        [
+          476054.923818833,
+          726879.293865758
+        ],
+        [
+          476064.831756033,
+          726902.760579949
+        ]
+      ]
+    ],
+    "spatialReference": {
+      "wkid": 2180
+    }
+  },
+  "response": {
+    "displayFieldName": "RASTER",
+    "fieldAliases": {
+      "PRZEZNACZENIE": "PRZEZNACZENIE",
+      "UCHWALA_LINK": "LINK DO UCHWAŁY",
+      "TEREN_LINK": "LINK DO KARTY TERENU",
+      "LEGENDA_LINK": "LINK DO LEGENDY",
+      "Shape.STArea()": "Shape.STArea()",
+      "Shape.STLength()": "Shape.STLength()",
+      "OBJECTID": "OBJECTID",
+      "RASTER": "RASTER",
+      "WAZNE_OD": "WAZNE_OD",
+      "WAZNE_DO": "WAZNE_DO",
+      "NR_MPZP": "NR_MPZP",
+      "UCHWALA": "UCHWALA",
+      "POW_METR_2": "POW_METR_2",
+      "OPIS": "OPIS",
+      "WYPIS": "WYPIS",
+      "KOLOR": "KOLOR",
+      "NR_TERENU": "NR_TERENU",
+      "SYMBOL": "SYMBOL",
+      "ID": "ID"
+    },
+    "fields": [
+      {
+        "name": "PRZEZNACZENIE",
+        "type": "esriFieldTypeString",
+        "alias": "PRZEZNACZENIE",
+        "length": 255
+      },
+      {
+        "name": "UCHWALA_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK DO UCHWAŁY",
+        "length": 500
+      },
+      {
+        "name": "TEREN_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK DO KARTY TERENU",
+        "length": 500
+      },
+      {
+        "name": "LEGENDA_LINK",
+        "type": "esriFieldTypeString",
+        "alias": "LINK DO LEGENDY",
+        "length": 500
+      },
+      {
+        "name": "Shape.STArea()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STArea()"
+      },
+      {
+        "name": "Shape.STLength()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STLength()"
+      },
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "RASTER",
+        "type": "esriFieldTypeString",
+        "alias": "RASTER",
+        "length": 255
+      },
+      {
+        "name": "WAZNE_OD",
+        "type": "esriFieldTypeDate",
+        "alias": "WAZNE_OD",
+        "length": 8
+      },
+      {
+        "name": "WAZNE_DO",
+        "type": "esriFieldTypeDate",
+        "alias": "WAZNE_DO",
+        "length": 8
+      },
+      {
+        "name": "NR_MPZP",
+        "type": "esriFieldTypeString",
+        "alias": "NR_MPZP",
+        "length": 50
+      },
+      {
+        "name": "UCHWALA",
+        "type": "esriFieldTypeString",
+        "alias": "UCHWALA",
+        "length": 50
+      },
+      {
+        "name": "POW_METR_2",
+        "type": "esriFieldTypeDouble",
+        "alias": "POW_METR_2"
+      },
+      {
+        "name": "OPIS",
+        "type": "esriFieldTypeString",
+        "alias": "OPIS",
+        "length": 500
+      },
+      {
+        "name": "WYPIS",
+        "type": "esriFieldTypeString",
+        "alias": "WYPIS",
+        "length": 120
+      },
+      {
+        "name": "KOLOR",
+        "type": "esriFieldTypeString",
+        "alias": "KOLOR",
+        "length": 50
+      },
+      {
+        "name": "NR_TERENU",
+        "type": "esriFieldTypeString",
+        "alias": "NR_TERENU",
+        "length": 50
+      },
+      {
+        "name": "SYMBOL",
+        "type": "esriFieldTypeString",
+        "alias": "SYMBOL",
+        "length": 120
+      },
+      {
+        "name": "ID",
+        "type": "esriFieldTypeInteger",
+        "alias": "ID"
+      }
+    ],
+    "features": []
+  },
+  "headers": {
+    "cache-control": "must-revalidate,max-age=0,public",
+    "content-length": "2023",
+    "content-type": "application/json; charset=UTF-8",
+    "etag": "\"a6c0edca\"",
+    "date": "Tue, 24 Nov 2026 12:27:49 GMT"
+  }
+}

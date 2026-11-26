@@ -1,0 +1,1849 @@
+{
+  "method": "Same alternative garden programme and same observer in both comparisons. Baseline suppresses only pavilion opaque boxes, not the pool/spa rearrangement. Actual pavilion shell includes blank rear/east walls, transparent front/west windows and ground door, opaque floor slabs/roof, entry steps. Existing trees use summer canopy envelopes; these are modeled screening assumptions. Percentages are unweighted point-ray counts, never projected image area or a whole-garden guarantee. Height datum is the lowest original ground corner; no height credit for proposed fill.",
+  "target": {
+    "id": "building-9",
+    "roofPoints": 365
+  },
+  "proposals": [
+    {
+      "id": "rear-east",
+      "label": "Rear/east corner · nearer PCK3",
+      "settings": {
+        "pavilionX": 12.2,
+        "pavilionY": 29,
+        "pavilionWidth": 5,
+        "pavilionDepth": 5.8
+      },
+      "heights": [
+        {
+          "height": 6.5,
+          "originalBaseZ": 2.52,
+          "floorZ": 3.58,
+          "topZ": 9.02,
+          "entry": {
+            "side": "front",
+            "doorX0": 13.12,
+            "doorX1": 14.17,
+            "doorY": 29,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.5836576117067542,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 3,
+            "riserHeight": 0.14554368933163206,
+            "approachZ": 3.147026543711858,
+            "outerY": 27.16,
+            "footprint": [
+              [
+                12.945,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                29
+              ],
+              [
+                12.945,
+                29
+              ],
+              [
+                12.945,
+                27.16
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.6,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 243,
+              "additionalBlocked": 132,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 229,
+              "shellRoofBlocked": 131,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 345,
+                "missed": 20,
+                "planCoveragePercent": 94.52,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 0,
+              "additionalBlocked": 256,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 4.09,
+                "requiredHeightForAll": 4.09,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 271,
+              "additionalBlocked": 108,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 246,
+              "shellRoofBlocked": 114,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 153,
+                "missed": 212,
+                "planCoveragePercent": 41.92,
+                "requiredHeightForIntercepted": 8.28,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 289,
+              "additionalBlocked": 111,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 254,
+              "shellRoofBlocked": 104,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 286,
+                "missed": 79,
+                "planCoveragePercent": 78.36,
+                "requiredHeightForIntercepted": 9.88,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 137,
+              "additionalBlocked": 10,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 129,
+              "shellRoofBlocked": 19,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 19,
+                "missed": 346,
+                "planCoveragePercent": 5.21,
+                "requiredHeightForIntercepted": 3.56,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        },
+        {
+          "height": 8,
+          "originalBaseZ": 2.52,
+          "floorZ": 3.58,
+          "topZ": 10.52,
+          "entry": {
+            "side": "front",
+            "doorX0": 13.12,
+            "doorX1": 14.17,
+            "doorY": 29,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.5836576117067542,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 3,
+            "riserHeight": 0.14554368933163206,
+            "approachZ": 3.147026543711858,
+            "outerY": 27.16,
+            "footprint": [
+              [
+                12.945,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                29
+              ],
+              [
+                12.945,
+                29
+              ],
+              [
+                12.945,
+                27.16
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 129,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.6,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 105,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 36,
+              "additionalBlocked": 339,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 30,
+              "shellRoofBlocked": 331,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 345,
+                "missed": 20,
+                "planCoveragePercent": 94.52,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 0,
+              "additionalBlocked": 256,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 4.09,
+                "requiredHeightForAll": 4.09,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 238,
+              "additionalBlocked": 141,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 214,
+              "shellRoofBlocked": 151,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 153,
+                "missed": 212,
+                "planCoveragePercent": 41.92,
+                "requiredHeightForIntercepted": 8.28,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 139,
+              "additionalBlocked": 261,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 110,
+              "shellRoofBlocked": 254,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 286,
+                "missed": 79,
+                "planCoveragePercent": 78.36,
+                "requiredHeightForIntercepted": 9.88,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 137,
+              "additionalBlocked": 10,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 129,
+              "shellRoofBlocked": 19,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 19,
+                "missed": 346,
+                "planCoveragePercent": 5.21,
+                "requiredHeightForIntercepted": 3.56,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        },
+        {
+          "height": 10,
+          "originalBaseZ": 2.52,
+          "floorZ": 3.58,
+          "topZ": 12.52,
+          "entry": {
+            "side": "front",
+            "doorX0": 13.12,
+            "doorX1": 14.17,
+            "doorY": 29,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.5836576117067542,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 3,
+            "riserHeight": 0.14554368933163206,
+            "approachZ": 3.147026543711858,
+            "outerY": 27.16,
+            "footprint": [
+              [
+                12.945,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                29
+              ],
+              [
+                12.945,
+                29
+              ],
+              [
+                12.945,
+                27.16
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 235,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.6,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 235,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 20,
+              "additionalBlocked": 355,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 16,
+              "shellRoofBlocked": 345,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 345,
+                "missed": 20,
+                "planCoveragePercent": 94.52,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 0,
+              "additionalBlocked": 256,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 4.09,
+                "requiredHeightForAll": 4.09,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 236,
+              "additionalBlocked": 143,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 212,
+              "shellRoofBlocked": 153,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 153,
+                "missed": 212,
+                "planCoveragePercent": 41.92,
+                "requiredHeightForIntercepted": 8.28,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 108,
+              "additionalBlocked": 292,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 79,
+              "shellRoofBlocked": 286,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 286,
+                "missed": 79,
+                "planCoveragePercent": 78.36,
+                "requiredHeightForIntercepted": 9.88,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 137,
+              "additionalBlocked": 10,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 129,
+              "shellRoofBlocked": 19,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 19,
+                "missed": 346,
+                "planCoveragePercent": 5.21,
+                "requiredHeightForIntercepted": 3.56,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        },
+        {
+          "height": 12,
+          "originalBaseZ": 2.52,
+          "floorZ": 3.58,
+          "topZ": 14.52,
+          "entry": {
+            "side": "front",
+            "doorX0": 13.12,
+            "doorX1": 14.17,
+            "doorY": 29,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.5836576117067542,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 3,
+            "riserHeight": 0.14554368933163206,
+            "approachZ": 3.147026543711858,
+            "outerY": 27.16,
+            "footprint": [
+              [
+                12.945,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                27.16
+              ],
+              [
+                14.344999999999999,
+                29
+              ],
+              [
+                12.945,
+                29
+              ],
+              [
+                12.945,
+                27.16
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 235,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.6,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 235,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 235,
+                "missed": 130,
+                "planCoveragePercent": 64.38,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 20,
+              "additionalBlocked": 355,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 16,
+              "shellRoofBlocked": 345,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 345,
+                "missed": 20,
+                "planCoveragePercent": 94.52,
+                "requiredHeightForIntercepted": 9.84,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 0,
+              "additionalBlocked": 256,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 4.09,
+                "requiredHeightForAll": 4.09,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 236,
+              "additionalBlocked": 143,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 212,
+              "shellRoofBlocked": 153,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 153,
+                "missed": 212,
+                "planCoveragePercent": 41.92,
+                "requiredHeightForIntercepted": 8.28,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 108,
+              "additionalBlocked": 292,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 79,
+              "shellRoofBlocked": 286,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 286,
+                "missed": 79,
+                "planCoveragePercent": 78.36,
+                "requiredHeightForIntercepted": 9.88,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 137,
+              "additionalBlocked": 10,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 129,
+              "shellRoofBlocked": 19,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 19,
+                "missed": 346,
+                "planCoveragePercent": 5.21,
+                "requiredHeightForIntercepted": 3.56,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "near-garage",
+      "label": "Near the former outdoor garage",
+      "settings": {
+        "pavilionX": 11.4,
+        "pavilionY": 24.7,
+        "pavilionWidth": 5.8,
+        "pavilionDepth": 5.2
+      },
+      "heights": [
+        {
+          "height": 6.5,
+          "originalBaseZ": 2.42,
+          "floorZ": 3.33,
+          "topZ": 8.92,
+          "entry": {
+            "side": "front",
+            "doorX0": 12.32,
+            "doorX1": 13.370000000000001,
+            "doorY": 24.7,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.3334815075130195,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 2,
+            "riserHeight": 0.1478339929993333,
+            "approachZ": 3.037813521514353,
+            "outerY": 23.18,
+            "footprint": [
+              [
+                12.145000000000001,
+                23.18
+              ],
+              [
+                13.545,
+                23.18
+              ],
+              [
+                13.545,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                23.18
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 214,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.5,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 150,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.81,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 14,
+              "additionalBlocked": 361,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 12,
+              "shellRoofBlocked": 353,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 7.76,
+                "requiredHeightForAll": 7.76,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 256,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 238,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 373,
+              "additionalBlocked": 6,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 339,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 220,
+              "additionalBlocked": 180,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 189,
+              "shellRoofBlocked": 168,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 199,
+                "missed": 166,
+                "planCoveragePercent": 54.52,
+                "requiredHeightForIntercepted": 7.64,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 147,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 134,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        },
+        {
+          "height": 8,
+          "originalBaseZ": 2.42,
+          "floorZ": 3.33,
+          "topZ": 10.42,
+          "entry": {
+            "side": "front",
+            "doorX0": 12.32,
+            "doorX1": 13.370000000000001,
+            "doorY": 24.7,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.3334815075130195,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 2,
+            "riserHeight": 0.1478339929993333,
+            "approachZ": 3.037813521514353,
+            "outerY": 23.18,
+            "footprint": [
+              [
+                12.145000000000001,
+                23.18
+              ],
+              [
+                13.545,
+                23.18
+              ],
+              [
+                13.545,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                23.18
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 354,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.5,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 354,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.81,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 0,
+              "additionalBlocked": 375,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 7.76,
+                "requiredHeightForAll": 7.76,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 256,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 238,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 373,
+              "additionalBlocked": 6,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 339,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 189,
+              "additionalBlocked": 211,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 158,
+              "shellRoofBlocked": 199,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 199,
+                "missed": 166,
+                "planCoveragePercent": 54.52,
+                "requiredHeightForIntercepted": 7.64,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 147,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 134,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        },
+        {
+          "height": 10,
+          "originalBaseZ": 2.42,
+          "floorZ": 3.33,
+          "topZ": 12.42,
+          "entry": {
+            "side": "front",
+            "doorX0": 12.32,
+            "doorX1": 13.370000000000001,
+            "doorY": 24.7,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.3334815075130195,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 2,
+            "riserHeight": 0.1478339929993333,
+            "approachZ": 3.037813521514353,
+            "outerY": 23.18,
+            "footprint": [
+              [
+                12.145000000000001,
+                23.18
+              ],
+              [
+                13.545,
+                23.18
+              ],
+              [
+                13.545,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                23.18
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 354,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.5,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 354,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.81,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 0,
+              "additionalBlocked": 375,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 7.76,
+                "requiredHeightForAll": 7.76,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 256,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 238,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 373,
+              "additionalBlocked": 6,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 339,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 189,
+              "additionalBlocked": 211,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 158,
+              "shellRoofBlocked": 199,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 199,
+                "missed": 166,
+                "planCoveragePercent": 54.52,
+                "requiredHeightForIntercepted": 7.64,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 147,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 134,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        },
+        {
+          "height": 12,
+          "originalBaseZ": 2.42,
+          "floorZ": 3.33,
+          "topZ": 14.42,
+          "entry": {
+            "side": "front",
+            "doorX0": 12.32,
+            "doorX1": 13.370000000000001,
+            "doorY": 24.7,
+            "doorWidth": 1.05,
+            "thresholdZ": 3.3334815075130195,
+            "landingWidth": 1.4,
+            "landingDepth": 1.2,
+            "risers": 2,
+            "riserHeight": 0.1478339929993333,
+            "approachZ": 3.037813521514353,
+            "outerY": 23.18,
+            "footprint": [
+              [
+                12.145000000000001,
+                23.18
+              ],
+              [
+                13.545,
+                23.18
+              ],
+              [
+                13.545,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                24.7
+              ],
+              [
+                12.145000000000001,
+                23.18
+              ]
+            ]
+          },
+          "warnings": [],
+          "views": [
+            {
+              "view": "sofa",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 4.84
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 2,
+              "visibleAfter": 0,
+              "additionalBlocked": 2,
+              "roofTotal": 365,
+              "roofVisibleBefore": 0,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 354,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.5,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "standing",
+              "eye": {
+                "x": 9.61,
+                "y": 15.62,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 5,
+              "visibleAfter": 1,
+              "additionalBlocked": 4,
+              "roofTotal": 365,
+              "roofVisibleBefore": 1,
+              "roofVisibleAfter": 1,
+              "shellRoofBlocked": 354,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 354,
+                "missed": 11,
+                "planCoveragePercent": 96.99,
+                "requiredHeightForIntercepted": 7.81,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "terrace",
+              "eye": {
+                "x": 9.61,
+                "y": 21.12,
+                "z": 5.29
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 375,
+              "visibleAfter": 0,
+              "additionalBlocked": 375,
+              "roofTotal": 365,
+              "roofVisibleBefore": 348,
+              "roofVisibleAfter": 0,
+              "shellRoofBlocked": 365,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 365,
+                "missed": 0,
+                "planCoveragePercent": 100,
+                "requiredHeightForIntercepted": 7.76,
+                "requiredHeightForAll": 7.76,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "garden",
+              "eye": {
+                "x": 11.8,
+                "y": 32.1,
+                "z": 4.71
+              },
+              "sampleTotal": 420,
+              "visibleBefore": 256,
+              "visibleAfter": 256,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 238,
+              "roofVisibleAfter": 238,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "pool",
+              "eye": {
+                "x": 3.75,
+                "y": 26.1,
+                "z": 3.29
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 379,
+              "visibleAfter": 373,
+              "additionalBlocked": 6,
+              "roofTotal": 365,
+              "roofVisibleBefore": 339,
+              "roofVisibleAfter": 339,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "jacuzzi",
+              "eye": {
+                "x": 5.52,
+                "y": 20.97,
+                "z": 4.34
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 400,
+              "visibleAfter": 189,
+              "additionalBlocked": 211,
+              "roofTotal": 365,
+              "roofVisibleBefore": 350,
+              "roofVisibleAfter": 158,
+              "shellRoofBlocked": 199,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 199,
+                "missed": 166,
+                "planCoveragePercent": 54.52,
+                "requiredHeightForIntercepted": 7.64,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            },
+            {
+              "view": "firepit",
+              "eye": {
+                "x": 9,
+                "y": 33.28,
+                "z": 3.63
+              },
+              "sampleTotal": 460,
+              "visibleBefore": 147,
+              "visibleAfter": 147,
+              "additionalBlocked": 0,
+              "roofTotal": 365,
+              "roofVisibleBefore": 134,
+              "roofVisibleAfter": 134,
+              "shellRoofBlocked": 0,
+              "roofEnvelope": {
+                "status": "ok",
+                "total": 365,
+                "intercepted": 0,
+                "missed": 365,
+                "planCoveragePercent": 0,
+                "requiredHeightForIntercepted": null,
+                "requiredHeightForAll": null,
+                "method": "Plan interception of measured roof-point rays; ideal opaque envelope only. Actual glazing, roof and wall screening is reported separately."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

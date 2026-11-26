@@ -1,0 +1,182 @@
+[
+  {
+    "localXY": [
+      3,
+      12
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476062.8126713985%2C726890.5571666053&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      10,
+      15
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476068.04252876196%2C726885.0210495583&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      17,
+      25
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476070.48889076913%2C726873.0621485666&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      3,
+      32
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476054.85982752324%2C726872.2063553345&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      10,
+      32
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476061.282611468%2C726869.4228599782&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      17,
+      32
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476067.7053954128%2C726866.6393646218&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      3,
+      36
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476053.2692587482%2C726868.5361930804&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      10,
+      36
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476059.692042693%2C726865.752697724&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      17,
+      36
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476066.1148266378%2C726862.9692023677&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  },
+  {
+    "localXY": [
+      17,
+      37.5
+    ],
+    "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=476065.5183633471%2C726861.5928915223&geometryType=esriGeometryPoint&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=oznaczenie%2Ch%2Cpz%2Cpbc%2Ciz&returnGeometry=false",
+    "response": [
+      {
+        "attributes": {
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "h": "12.0m",
+          "pz": "30.0%"
+        }
+      }
+    ]
+  }
+]
