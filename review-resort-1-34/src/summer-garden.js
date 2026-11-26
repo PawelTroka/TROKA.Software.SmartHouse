@@ -3,7 +3,7 @@
  */
 import {getTreeType} from './tree-catalog.js?v=1.34.0';
 
-export const SUMMER_POOL=Object.freeze({x:3.25,y:24.75,width:8,length:3.5});
+export const SUMMER_POOL=Object.freeze({x:3.25,y:25,width:8,length:3.5});
 export const SUMMER_FIREPIT=Object.freeze([12.65,29.5]);
 export const summerGardenEnabled=(settings={},data)=>settings.summerPoolLayout===true&&
   (data?.site?.id||settings.siteId||'sternicza-11')==='sternicza-11'&&
@@ -29,11 +29,11 @@ export function summerGardenFurniture(settings={},pool=SUMMER_POOL){
 // Filled by the bounded boundary-placement study. Every species uses its own
 // catalogue dimensions and independently scored edge positions.
 export const BOUNDARY_TREE_POSITIONS=Object.freeze({
-  'thuja-excelsa-9m':Object.freeze([[16,36],[17,28],[18,36]].map(Object.freeze)),
+  'thuja-excelsa-9m':Object.freeze([[16,36],[18,36],[17,28]].map(Object.freeze)),
   'white-fir-9m':Object.freeze([[17,36],[17,28],[14,36]].map(Object.freeze)),
   'norway-spruce-9-10m':Object.freeze([[16,36],[17,28],[18,35]].map(Object.freeze)),
   'thuja-brabant-6-7m':Object.freeze([[19,36],[15,36],[17,36]].map(Object.freeze)),
-  'serbian-spruce-7m':Object.freeze([[16,36],[18,35],[17,28]].map(Object.freeze)),
+  'serbian-spruce-7m':Object.freeze([[16,36],[17,28],[18,35]].map(Object.freeze)),
   'austrian-pine-debruyn-8-9m':Object.freeze([[15,36],[17,28],[18,35]].map(Object.freeze)),
   'nordmann-fir-11m':Object.freeze([[17,28],[17,25],[17.5,35]].map(Object.freeze)),
   'austrian-pine-medium':Object.freeze([[17,36],[14,36],[17,27]].map(Object.freeze)),

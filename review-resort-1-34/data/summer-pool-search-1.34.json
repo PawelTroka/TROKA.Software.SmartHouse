@@ -1,5 +1,28 @@
 {
   "method": {
+    "sourceData": {
+      "site-data.json": {
+        "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+      },
+      "sternicza-surrounding-nature.json": {
+        "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+      },
+      "sternicza-neighbor-roofs.json": {
+        "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+      }
+    },
+    "state": "v=30&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A19.3%2C%22y%22%3A30.2%2C%22height%22%3A10%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A6%2C%22crownDepth%22%3A6%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A13.8%2C%22y%22%3A35.8%2C%22height%22%3A10%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A6%2C%22crownDepth%22%3A6%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18.45%2C%22y%22%3A35.57%2C%22height%22%3A10%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove&summerPoolLayout=false",
+    "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+    "terrace": {
+      "x": 5.358610661552147,
+      "y": 18.117475217542932,
+      "width": 8.5,
+      "depth": 4
+    },
+    "rearMidpoint": [
+      9.608610661552147,
+      18.117475217542932
+    ],
     "dates": [
       "2026-06-01",
       "2026-06-15",
@@ -64,58 +87,18 @@
   "candidates": [
     {
       "x": 3.25,
-      "y": 24.75,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.5201,
-      "samples": 90
-    },
-    {
-      "x": 3.75,
-      "y": 24.75,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.5178,
-      "samples": 90
-    },
-    {
-      "x": 3.5,
-      "y": 24.75,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.517,
-      "samples": 96
-    },
-    {
-      "x": 3.25,
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5149,
+      "score": 0.5156,
       "samples": 105
-    },
-    {
-      "x": 4.25,
-      "y": 24.75,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.5142,
-      "samples": 90
-    },
-    {
-      "x": 4,
-      "y": 24.75,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.5134,
-      "samples": 96
     },
     {
       "x": 3.25,
       "y": 25.25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5128,
+      "score": 0.5132,
       "samples": 90
     },
     {
@@ -123,7 +106,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5118,
+      "score": 0.5126,
       "samples": 105
     },
     {
@@ -131,7 +114,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5114,
+      "score": 0.5121,
       "samples": 112
     },
     {
@@ -139,7 +122,7 @@
       "y": 25.25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5088,
+      "score": 0.5092,
       "samples": 90
     },
     {
@@ -147,7 +130,7 @@
       "y": 25.25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5087,
+      "score": 0.5091,
       "samples": 96
     },
     {
@@ -155,7 +138,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5075,
+      "score": 0.5084,
       "samples": 105
     },
     {
@@ -163,7 +146,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5071,
+      "score": 0.5078,
       "samples": 112
     },
     {
@@ -171,7 +154,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.506,
+      "score": 0.5063,
       "samples": 105
     },
     {
@@ -179,7 +162,7 @@
       "y": 25.25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5037,
+      "score": 0.5042,
       "samples": 90
     },
     {
@@ -187,31 +170,31 @@
       "y": 25.25,
       "width": 8,
       "length": 3.5,
-      "score": 0.5035,
+      "score": 0.5039,
       "samples": 96
-    },
-    {
-      "x": 3.5,
-      "y": 25.5,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.5013,
-      "samples": 112
-    },
-    {
-      "x": 3.75,
-      "y": 25.5,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.5011,
-      "samples": 105
     },
     {
       "x": 4.75,
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.501,
+      "score": 0.5018,
+      "samples": 105
+    },
+    {
+      "x": 3.5,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5016,
+      "samples": 112
+    },
+    {
+      "x": 3.75,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5014,
       "samples": 105
     },
     {
@@ -219,7 +202,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.495,
+      "score": 0.4954,
       "samples": 112
     },
     {
@@ -227,7 +210,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4948,
+      "score": 0.4952,
       "samples": 105
     },
     {
@@ -235,7 +218,7 @@
       "y": 26,
       "width": 8,
       "length": 3.5,
-      "score": 0.4933,
+      "score": 0.4932,
       "samples": 105
     },
     {
@@ -243,15 +226,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.492,
-      "samples": 105
-    },
-    {
-      "x": 3.75,
-      "y": 26,
-      "width": 8,
-      "length": 3.5,
-      "score": 0.4865,
+      "score": 0.4929,
       "samples": 105
     },
     {
@@ -259,7 +234,15 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.486,
+      "score": 0.4864,
+      "samples": 105
+    },
+    {
+      "x": 3.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4864,
       "samples": 105
     },
     {
@@ -267,7 +250,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.4807,
+      "score": 0.4815,
       "samples": 105
     },
     {
@@ -283,7 +266,7 @@
       "y": 26.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4762,
+      "score": 0.4761,
       "samples": 105
     },
     {
@@ -291,7 +274,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4746,
+      "score": 0.475,
       "samples": 105
     },
     {
@@ -299,7 +282,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.4681,
+      "score": 0.4689,
       "samples": 105
     },
     {
@@ -307,7 +290,7 @@
       "y": 26.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4675,
+      "score": 0.4674,
       "samples": 105
     },
     {
@@ -323,7 +306,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4611,
+      "score": 0.4615,
       "samples": 105
     },
     {
@@ -347,7 +330,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.4523,
+      "score": 0.4532,
       "samples": 105
     },
     {
@@ -355,7 +338,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4463,
+      "score": 0.4468,
       "samples": 105
     },
     {
@@ -379,7 +362,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.4352,
+      "score": 0.4358,
       "samples": 105
     },
     {
@@ -387,7 +370,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4285,
+      "score": 0.4289,
       "samples": 105
     },
     {
@@ -411,7 +394,7 @@
       "y": 25,
       "width": 8,
       "length": 3.5,
-      "score": 0.4161,
+      "score": 0.4164,
       "samples": 105
     },
     {
@@ -427,7 +410,7 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.4094,
+      "score": 0.4097,
       "samples": 105
     },
     {
@@ -459,9 +442,49 @@
       "y": 25.5,
       "width": 8,
       "length": 3.5,
-      "score": 0.3889,
+      "score": 0.389,
+      "samples": 105
+    },
+    {
+      "x": 7.25,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3808,
+      "samples": 105
+    },
+    {
+      "x": 6.75,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3707,
+      "samples": 105
+    },
+    {
+      "x": 8.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3671,
+      "samples": 105
+    },
+    {
+      "x": 7.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3589,
+      "samples": 105
+    },
+    {
+      "x": 7.25,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3488,
       "samples": 105
     }
   ],
-  "candidateCount": 88
+  "candidateCount": 83
 }

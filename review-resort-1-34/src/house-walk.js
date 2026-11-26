@@ -26,7 +26,7 @@ export function createWalkNavigation(data,settings={}){
   const frame=houseModelFrame(data,settings);
   const supported=!!frame&&(data.site.id||settings.siteId)==='sternicza-11';
   const plans=supported?Object.fromEntries(['basement','ground','first','attic'].map(floor=>[floor,getHouseFloorPlan({floor,settings,data})])):{};
-  const surfaces=[],solids=[],treads=[],ceilingHoles=new Map();
+  const surfaces=[],solids=[],treads=[],hstOpenings=[],ceilingHoles=new Map();
   let lastBlocking=null;
   const toLocal=(position)=>frame?frame.toLocal(position[0],position[2],position[1]):[position[0],position[2],position[1]];
   const toWorld=(x,z,y)=>{if(!frame)return[x,y,z];const p=frame.toSite(x,z,y);return[p[0],p[2],p[1]];};
@@ -45,7 +45,8 @@ export function createWalkNavigation(data,settings={}){
         if(o.type==='window')solids.push({a:at(o.offset),b:at(o.offset+o.width),radius:.02,bottom,top,id:'glass-'+wall.id});
         else if(o.type==='hst'||o.type==='balcony-door'){
           const parts=o.type==='hst'?hstPanelLayout(o,settings):balconyPanelLayout(o);
-          for(const p of parts.blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id:'glass-'+wall.id});
+          if(o.type==='hst')hstOpenings.push({opening:o,at,bottom,top,id:'glass-'+wall.id});
+          for(const p of parts.blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id:'glass-'+wall.id,hst:o.type==='hst'});
         }else if(o.type==='door'){
           const end=o.hinge==='end',sign=end?-1:1,hinge=o.offset+(end?o.width-.047:.047),angle=-sign*(o.swing||1)*Math.PI/2;
           const a=at(hinge),along=sign*(o.width-.10)*Math.cos(angle),across=-sign*(o.width-.10)*Math.sin(angle);
@@ -68,6 +69,12 @@ export function createWalkNavigation(data,settings={}){
     }
   }
   const ground=(x,y)=>gardenGroundAt(x,y,settings,data);
+  function updateHst(next=settings){
+    for(let i=solids.length-1;i>=0;i--)if(solids[i].hst)solids.splice(i,1);
+    for(const {opening,at,bottom,top,id}of hstOpenings){
+      for(const p of hstPanelLayout(opening,next).blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id,hst:true});
+    }
+  }
   const terrace=data.site.terrace,ref=terraceGroundReference(settings,data);
   const terraceFlight=terraceStairs({...terrace,y:data.site.rearMidpoint[1]},Number(settings.terraceDepth)||terrace.depth,ref.drop,settings,data);
   function siteSurface(id,polygon,height,extra={}){surfaces.push({id,polygon:localRing(polygon),height:relativeHeight(height),floor:'garden',outdoor:true,...extra});}
@@ -203,6 +210,6 @@ export function createWalkNavigation(data,settings={}){
     }
     return null;
   }
-  return{supported,plans,frame,locate,move,spawnFloor,spawnGarden,updateVehicles,
+  return{supported,plans,frame,locate,move,spawnFloor,spawnGarden,updateVehicles,updateHst,
     getDiagnostics:()=>({lastBlocking,floors:Object.keys(plans),connections:[...new Set(treads.map(t=>t.stairId))],treads:treads.length,surfaces:surfaces.length,collisionObjects:solids.length,stairsAreSharedGeometry:true})};
 }

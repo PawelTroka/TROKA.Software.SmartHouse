@@ -548,7 +548,7 @@ function update(){
     ?'Current retains the original first-floor windows; choose a renovation style to add balcony access'
     :balconyAccess?(cover.accesses.length===3?'three new rear room doors connect to the deck':'a new rear access door is proposed'):'rear access does not fit the selected deck or roof';
   $('terrace-cover-summary').textContent=cover.type==='balcony'
-    ?`${fmt(cover.width,1)} × ${fmt(cover.depth,1)} m · ${fmt(cover.deckArea,1)} m² column-free balcony concept. Finished deck +${fmt(settings.firstFloorRise,2)} m above the terrace, with ${fmt(cover.clearBelow,2)} m clear below the slab. 1.10 m clear-glass guard; ${balconyAccessText}. Concealed cantilever connections, waterproofing and drainage require project design and a separate quote.`
+    ?`${fmt(cover.width,1)} × ${fmt(cover.depth,1)} m · ${fmt(cover.deckArea,1)} m² column-free first-floor balcony concept. Finished deck +${fmt(settings.firstFloorRise,2)} m above the terrace, with ${fmt(cover.clearBelow,2)} m clear below the slab. 1.10 m clear-glass guard; ${balconyAccessText}. Concealed cantilever connections, waterproofing and drainage require project design and a separate quote.`
     :`${fmt(cover.width,1)} × ${fmt(cover.depth,1)} m column-free canopy concept; roof underside +${fmt(settings.canopyHeight,2)} m above the terrace. The fascia extends ${fmt(settings.fasciaDepth,2)} m below it. Concealed cantilever connections require project design.`;
   $('terrace-cover-warning').hidden=!cover.enabled||!cover.warnings.length;
   $('terrace-cover-warning').textContent=cover.warnings.join(' ');
@@ -612,10 +612,12 @@ async function syncInteriorWorkspace(){
 function beginWalk({floor='garden',roomId}={}){
   if(!scene?.available)return;
   stopSunPlayback();
-  settings=sanitizeState({...settings,mode:'walk',interiorEnabled:false,interiorFloor:floor==='garden'?settings.interiorFloor:floor});
+  settings=sanitizeState({...settings,mode:'walk',interiorEnabled:false,
+    interiorView:settings.interiorView==='room'?'dollhouse':settings.interiorView,
+    interiorFloor:floor==='garden'?settings.interiorFloor:floor});
   syncControls();showMode();
   if(scene.startWalk({floor,roomId})){
-    lastSceneMode='walk';$('walk-location').value=floor;
+    lastSceneMode='walk';
     $('viewer').scrollIntoView({behavior:'auto',block:'start'});persist();
   }else toast('No clear walking position is available in that room. Choose another starting point.');
 }
@@ -798,7 +800,12 @@ for(const key of ['hedgeFullPerimeter','raiseNewHedges','canopyEnabled','removeG
 for(const key of ['existingVegetation','existingCanopyAnalysis'])$(key).addEventListener('change',e=>{settings=sanitizeState({...settings,[key]:e.target.checked});showingA=false;syncControls();update();});
 $('existingLeafMode').addEventListener('change',e=>{settings=sanitizeState({...settings,existingLeafMode:e.target.value});showingA=false;syncControls();update();});
 $('walk-start').addEventListener('click',()=>beginWalk({floor:$('walk-location').value}));
-$('hstOpen').addEventListener('input',e=>{settings=sanitizeState({...settings,hstOpen:Number(e.target.value)});showingA=false;syncControls();scheduleUpdate();});
+$('hstOpen').addEventListener('input',e=>{
+  settings=sanitizeState({...settings,hstOpen:Number(e.target.value)});showingA=false;
+  $('hst-opening-value').textContent=`${Math.round(settings.hstOpen*100)}%`;
+  $('hstOpen').setAttribute('aria-valuetext',`${Math.round(settings.hstOpen*100)} percent open; two panels stack to the left`);
+  scene?.updateHstPreview?.(settings);persist();
+});
 $('poolSunbedSides').addEventListener('change',e=>{settings=sanitizeState({...settings,poolSunbedSides:Number(e.target.value)});showingA=false;syncControls();update();});
 $('jacuzziMood').addEventListener('change',e=>{settings=sanitizeState({...settings,jacuzziMood:e.target.value});showingA=false;syncControls();update();});
 $('terraceCoverType').addEventListener('change',e=>{settings=sanitizeState({...settings,terraceCoverType:e.target.value});showingA=false;$('scenario').value='custom';syncControls();update();});

@@ -117,53 +117,58 @@ function openingTrim(w,trim,shutters,place){
 
 function cladding(bay,recipe,place){
   const {lo,hi,bottom,top,edgeIndex}=bay,{field,pitch}=recipe;
-  const put=(kind,a,b,c,d,depth,finish,tone=1)=>place({
-    kind,lo:a,hi:b,bottom:c,top:d,depth,finish,tone,bayId:bay.id??`bay-${edgeIndex}`});
+  const put=(kind,a,b,c,d,depth,finish,tone=1,member=0)=>{
+    if(b-a<.012||d-c<.012)return false;
+    // Each sawn member samples a different part of the photograph. A member
+    // split around a window retains its phase and metre scale in every band.
+    const seed=edgeIndex*97+member*17,fract=x=>x-Math.floor(x);
+    return place({kind,lo:a,hi:b,bottom:c,top:d,depth,finish,tone,
+      uvOffset:[fract(seed*.618033989)*3.7,fract(seed*.414213562)*1.9],bayId:bay.id??`bay-${edgeIndex}`});
+  };
   const wood=['boards','battens','paired','lap','weatherboard'].includes(field);
   const relief=recipe.relief??.094;
   const finish=field==='weatherboard'?'houseWall':wood?'wood':field==='flutes'?'houseFrame':'surface';
   put('cladding-backing',lo,hi,bottom,top,.027,wood?'houseFrame':'edge');
   if(['battens','paired','boards','flutes'].includes(field)){
-    const n=Math.max(2,Math.round((hi-lo)/pitch)),step=(hi-lo)/n;
-    for(let i=0;i<n;i++){
-      const x=lo+i*step;
+    const origin=bay.columnOrigin??.22,step=pitch;
+    for(let i=Math.floor((lo-origin)/pitch);origin+i*pitch<hi;i++){
+      const x=origin+i*pitch;
       if(field==='paired'){
-        put('paired-batten',x+.08*step,x+.27*step,bottom,top,relief,finish);
-        put('paired-batten',x+.42*step,x+.61*step,bottom,top,relief,finish);
+        put('paired-batten',Math.max(lo,x+.08*step),Math.min(hi,x+.27*step),bottom,top,relief,finish,1,i*2);
+        put('paired-batten',Math.max(lo,x+.42*step),Math.min(hi,x+.61*step),bottom,top,relief,finish,.975,i*2+1);
       }else{
         const fill=field==='boards'?.92:field==='flutes'?.66:.52;
-        put(field,x+(1-fill)*step/2,x+(1+fill)*step/2,bottom,top,field==='boards'?relief*.64:relief,finish,.96+.065*((i*7)%11)/10);
+        put(field,Math.max(lo,x+(1-fill)*step/2),Math.min(hi,x+(1+fill)*step/2),bottom,top,
+          field==='boards'?relief*.64:relief,finish,.96+.065*((i*7)%11)/10,i);
       }
     }
     return;
   }
-  if(field==='weatherboard'){
+  if(field==='weatherboard'||field==='lap'){
     // Register the lap courses to one shared height grid over the whole house. Cutting
     // around a shutter or reveal must not squeeze the remaining boards into a
     // different pitch on the next strip of the same wall.
     const origin=bay.courseOrigin??0;
     for(let row=Math.floor((bottom-origin)/pitch);origin+row*pitch<top;row++){
       const z=origin+row*pitch,a=Math.max(bottom,z+.007),b=Math.min(top,z+pitch-.007);
-      if(b-a>.012)put('weatherboard-course',lo,hi,a,b,.065,finish);
+      if(b-a>.012)put(field==='lap'?'lap-board':'weatherboard-course',lo,hi,a,b,field==='lap'?relief*.72:.065,finish,1,row);
       const lipBottom=Math.max(bottom,z+.007),lipTop=Math.min(top,z+.035);
-      if(lipTop-lipBottom>.006)put('weatherboard-drip',lo,hi,lipBottom,lipTop,.085,finish);
+      if(lipTop-lipBottom>.012)put(field==='lap'?'lap-drip':'weatherboard-drip',lo,hi,lipBottom,lipTop,field==='lap'?relief:.085,finish,1,row);
     }
     return;
   }
-  const rows=Math.max(2,Math.round((top-bottom)/pitch)),rise=(top-bottom)/rows;
-  for(let row=0;row<rows;row++){
-    const z=bottom+row*rise;
-    if(field==='lap'){
-      put('lap-board',lo,hi,z+.007,z+rise-.007,relief*.72,finish);
-      put('lap-drip',lo,hi,z+.007,z+.035,relief,finish);
-      continue;
-    }
+  const origin=bay.courseOrigin??0,rise=pitch;
+  for(let row=Math.floor((bottom-origin)/pitch);origin+row*pitch<top;row++){
+    const z=origin+row*pitch,aZ=Math.max(bottom,z+.007),bZ=Math.min(top,z+rise-.007);
+    if(bZ-aZ<.012)continue;
     const unit=pitch*(field==='panels'?1.7:field==='brick'?2.45:2.8);
     const shift=field==='panels'?0:row%2*unit/2;
-    for(let x=lo-shift,i=0;x<hi;x+=unit,i++){
+    const columnOrigin=(bay.columnOrigin??.22)-shift;
+    for(let i=Math.floor((lo-columnOrigin)/unit),x=columnOrigin+i*unit;x<hi;x+=unit,i++){
       const a=Math.max(x,lo)+.007,b=Math.min(x+unit,hi)-.007;
       if(b-a<.025)continue;
-      put(field,a,b,z+.007,z+rise-.007,relief*.64+.003*((i+row)%3),finish,[.91,1,.97,1.045][(row*3+i)%4]);
+      const colour=((row*3+i)%4+4)%4;
+      put(field,a,b,aZ,bZ,relief*.64+.003*((i+row)%3),finish,[.91,1,.97,1.045][colour],row*101+i);
     }
   }
 }
@@ -206,7 +211,7 @@ export function houseRenovationParts(layout,style){
     const coverage=construction?.coverage??'piers';
     const fullFields=[];
     if(['upper','upper-and-piers','all-panels'].includes(coverage))fullFields.push([upper,upper+2.49]);
-    if(coverage==='all-panels'&&canUseLower)fullFields.push([lower,lower+2.50]);
+    if(['all-panels','stone-volumes'].includes(coverage)&&canUseLower)fullFields.push([lower,lower+2.50]);
     if(['mineral-base','masonry-piers'].includes(coverage)&&canUseLower)fullFields.push([lower,lower+(coverage==='masonry-piers'?.91:.72)]);
     for(const [requestedBottom,requestedTop] of fullFields){
       const bottom=Math.max(requestedBottom,(edge.baseZ??layout.baseZ)+.04);
@@ -226,7 +231,7 @@ export function houseRenovationParts(layout,style){
     }
     // Piers use the remaining full-height solid bays. On mapped houses, an
     // unlocated street entrance still reserves its lower facade.
-    const levels=['piers','masonry-piers','mineral-base'].includes(coverage)?[upper]:[];
+    const levels=['piers','masonry-piers','mineral-base','stone-volumes'].includes(coverage)?[upper]:[];
     if(canUseLower&&['piers','upper-and-piers','masonry-piers'].includes(coverage))levels.push(lower);
     for(const level of levels){
       const bottom=Math.max(level,(edge.baseZ??layout.baseZ)+.04);
@@ -255,6 +260,50 @@ export function houseRenovationParts(layout,style){
   for(const bay of bays)cladding({...bay,courseOrigin:layout.floorZ},recipe,bay.place);
   parts.push(...renovationArchitecturalParts(layout,style.id));
   return parts;
+}
+
+/** Gable finishes share the exact roof boundary and attic datum. Keeping these
+ * parts separate lets the interior viewer hide them with the roof, while the
+ * upper timber treatment remains continuous in the outside view. No roof plane,
+ * sunlight envelope, structural wall or aperture is changed by this finish. */
+export function houseGableRenovation(roof,layout,style){
+  const result={edges:[],parts:[]};
+  if(!style?.renovation||getExteriorSurfaceSpec(style)?.gable!=='continue'||!roof?.gableFaces?.length)return result;
+  const baseZ=Math.min(...roof.gableFaces.flat().map(p=>p[2]));
+  const ring=roof.ring,area=ring.reduce((sum,p,i)=>sum+p[0]*ring[(i+1)%ring.length][1]-ring[(i+1)%ring.length][0]*p[1],0);
+  result.edges=roof.edges.map((r,i)=>{
+    const a=ring[i],b=ring[(i+1)%ring.length],length=r.length,direction=[(b[0]-a[0])/length,(b[1]-a[1])/length];
+    return{index:i,a,b,length,direction,outward:area>0?[direction[1],-direction[0]]:[-direction[1],direction[0]],roofEdge:r,baseZ};
+  });
+  const recipe=style.renovation,vertical=['battens','paired','boards','flutes'].includes(recipe.field),pitch=recipe.pitch;
+  for(const edge of result.edges){
+    if(edge.length<.4)continue;
+    const lo=.12,hi=edge.length-.12,bottom=baseZ+.045,top=Math.max(...edge.roofEdge.points.map(p=>p[2]))-.11;
+    if(top-bottom<.06)continue;
+    const place=part=>{
+      if(part.top-part.bottom<.012||part.top>minimumRoof(edge,part.lo,part.hi)-.09)return false;
+      result.parts.push({...part,edgeIndex:edge.index,gable:true});return true;
+    };
+    if(vertical){
+      // Full-height pieces, cut beneath the roof at their actual widths. This
+      // is a few hundred batched solids, not a grid of many short fake battens.
+      for(let col=Math.floor((lo-.22)/pitch);.22+col*pitch<hi;col++){
+        const a=Math.max(lo,.22+col*pitch),b=Math.min(hi,.22+(col+1)*pitch),ceiling=minimumRoof(edge,a,b)-.11;
+        if(b-a<.02||ceiling-bottom<.04)continue;
+        cladding({id:`gable-${edge.index}-${col}`,edgeIndex:edge.index,lo:a,hi:b,bottom,top:ceiling,courseOrigin:layout.floorZ},recipe,place);
+      }
+    }else{
+      // Horizontal boards terminate against the real sloped verge. Courses
+      // keep the same pitch and height origin as the storeys beneath them.
+      for(let row=Math.floor((bottom-layout.floorZ)/pitch);layout.floorZ+row*pitch<top;row++){
+        const a=Math.max(bottom,layout.floorZ+row*pitch),b=Math.min(top,layout.floorZ+(row+1)*pitch);
+        if(b-a<.02)continue;
+        for(const [x0,x1]of roofSpans(edge,lo,hi,b+.11))if(x1-x0>.04)
+          cladding({id:`gable-${edge.index}-${row}`,edgeIndex:edge.index,lo:x0,hi:x1,bottom:a,top:b,courseOrigin:layout.floorZ},recipe,place);
+      }
+    }
+  }
+  return result;
 }
 
 export function summarizeHouseRenovation(parts,style){

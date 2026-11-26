@@ -326,7 +326,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(adoptResortUpdate&&version<30&&siteId===DEFAULT_SITE_ID){
       Object.assign(next,{summerPoolLayout:true,jacuzziCentered:true,hstOpen:1,sceneMotion:true});
       const oldTrees=STERNICZA_EXCELSA_TREES;
-      if(next.screeningTrees.length===oldTrees.length&&next.screeningTrees.every((t,i)=>['typeId','x','y','height'].every(k=>t[k]===oldTrees[i][k])))
+      if(next.screeningTrees.length===oldTrees.length&&next.screeningTrees.every((t,i)=>['typeId','x','y','height','crownBase','crownWidth','crownDepth','rotation','enabled','unitPrice'].every(k=>t[k]===oldTrees[i][k])))
         next.screeningTrees=DEFAULTS.screeningTrees.map(t=>({...t}));
       for(const [key,old]of [['nightGardenIntensity',75],['nightPendantIntensity',80],['nightHedgeIntensity',85]])
         if(next[key]===old)next[key]=DEFAULTS[key];

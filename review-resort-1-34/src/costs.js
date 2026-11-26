@@ -169,7 +169,7 @@ const quantityCache = new WeakMap();
 /** Areas on the mapped plan, before soil-depth and delivery multipliers. */
 export function gardenQuantities(settings, data) {
   const c = costSettings(settings);
-  const signature = JSON.stringify([settings.gardenProgram,settings.designStyle,settings.styleGardenLayout,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
+  const signature = JSON.stringify([settings.gardenProgram,settings.designStyle,settings.styleGardenLayout,settings.summerPoolLayout,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
     settings.hedgeInset ?? 0, c.costBedWidth, ...['Rear', 'Left', 'Right', 'Front'].map(side => positive(settings[`hedge${side}`] ?? (side==='Front'?0:2.5)) > 0)]);
   // data.site survives building sensitivity overrides, so cost geometry is reused.
   const cached = quantityCache.get(data.site);

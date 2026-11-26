@@ -16,7 +16,11 @@ export function rectCorners(rect,padding=0) {
 
 /** Low furniture only: it illustrates the proposal and is excluded from sun rays. */
 export function gardenFurniture(data,settings={}) {
-  const result=resortGardenFurniture(baseGardenFurniture(data,settings),settings,data);
+  const base=baseGardenFurniture(data,settings);
+  // Finish-only comparisons retain the physical furniture/path quantities.
+  // Resort transforms and fit filtering belong to the optional garden layout.
+  if(settings.styleGardenLayout===false)return base;
+  const result=resortGardenFurniture(base,settings,data);
   if(!result.resort)return result;
   // The side selector controls actual individual sunbeds. The older two-seat
   // style recipe must not collapse four same-side beds into one double daybed.

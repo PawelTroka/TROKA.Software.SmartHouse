@@ -37,6 +37,20 @@ function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
 }
 export function roofClearance(plan,z){return plan.floor==='attic'?Math.max(.05,(plan.roof?.ridgeElevation??8.75)-plan.elevation-Math.abs(z-(plan.roof?.ridgeZ??4.5))*Math.tan((plan.roof?.pitchDeg??30)*Math.PI/180)):plan.clearHeight;}
 
+/** Translate existing operable leaves; static tracks, geometry and materials
+ * stay allocated. Leaf-local X survives wall and whole-house batching. */
+export function updateHstOpening(root,settings={}){
+  let updated=0;
+  root?.traverse(node=>{
+    const leaf=node.userData.hstLeaf;if(!leaf)return;
+    const panel=hstPanelLayout(leaf.opening,settings).panels[leaf.index];
+    const delta=panel.centre-leaf.centre;
+    if(Math.abs(delta)>1e-10){node.translateX(delta);updated++;}
+    node.userData.hstLeaf={...leaf,centre:panel.centre,lo:panel.lo,hi:panel.hi};
+  });
+  return updated;
+}
+
 function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null) {
   const dx=wall.b[0]-wall.a[0],dz=wall.b[1]-wall.a[1],len=Math.hypot(dx,dz);if(len<.01||height<=0)return;
   const {box,group,cyl,rounded}=tools, g=group(parent,wall.a[0],0,wall.a[1],-Math.atan2(dz,dx)),th=wall.thickness;
@@ -59,14 +73,19 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
     if(glazed){
       box(g,frame,left+w/2,bottom+sillWidth/2,0,w,sillWidth,.098);
       if(o.type==='window')box(g,m.stone,left+w/2,bottom-.014,0,w+.072,.039,th+.127);
-      if(['hst','balcony-door'].includes(o.type)&&o.architectureStyle){
+      if(['hst','balcony-door'].includes(o.type)){
         const system=o.type==='hst'?hstPanelLayout({...o,width:w},state):balconyPanelLayout({...o,width:w});
         for(const panel of system.panels){
           const z=panel.track-.047,fw=panel.frameWidth;
-          for(const px of [panel.lo+fw/2,panel.hi-fw/2])box(g,frame,px,bottom+h/2,z,fw,h-2*frameWidth,.042);
-          for(const yy of [bottom+frameWidth*1.5,top-frameWidth*1.5])box(g,frame,panel.centre,yy,z,panel.width,frameWidth,.042);
-          box(g,m.glass,panel.centre,bottom+h/2,z,panel.width-2*fw,h-4*frameWidth,.009);
-          if(!panel.fixed)box(g,frame,panel.hi-fw*2,bottom+Math.min(1.05,h*.48),z+.032,.014,.22,.025);
+          const leaf=group(g,panel.centre,0,z);
+          for(const px of [-panel.width/2+fw/2,panel.width/2-fw/2])box(leaf,frame,px,bottom+h/2,0,fw,h-2*frameWidth,.042);
+          for(const yy of [bottom+frameWidth*1.5,top-frameWidth*1.5])box(leaf,frame,0,yy,0,panel.width,frameWidth,.042);
+          box(leaf,m.glass,0,bottom+h/2,0,panel.width-2*fw,h-4*frameWidth,.009);
+          if(!panel.fixed)box(leaf,frame,panel.width/2-fw*2,bottom+Math.min(1.05,h*.48),.032,.014,.22,.025);
+          if(o.type==='hst'){
+            batchGroup(leaf);leaf.name='hst-leaf-'+panel.index;leaf.userData.preserveTransform=true;
+            leaf.userData.hstLeaf={opening:{offset:left,width:w},index:panel.index,centre:panel.centre,lo:panel.lo,hi:panel.hi};
+          }
           box(g,m.dark,left+w/2,bottom+.006,z,w,.012,.012);
         }
         g.userData.hst={...system,openingWidth:w};

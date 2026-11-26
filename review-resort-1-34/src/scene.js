@@ -5,6 +5,7 @@ import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedg
 import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.34.0';
 import {houseModelFrame} from './house-model.js?v=1.34.0';
 import {createWalkNavigation} from './house-walk.js?v=1.34.0';
+import {updateHstOpening} from './interior-architecture.js?v=1.34.0';
 import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.34.0';
 import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.34.0';
 import { addHouseRenovation } from './scene-house-renovation.js?v=1.34.0';
@@ -1331,7 +1332,7 @@ export function createScene(container, data, callbacks = {}) {
     line(markerGroup,[[observer.x,observer.y,ground+.03],[observer.x,observer.y,observer.z]],'#d4a64e');
     const disc=new THREE.Mesh(new THREE.RingGeometry(.24,.36,32),mat.gold);
     disc.rotation.x=-Math.PI/2;disc.position.copy(point(observer.x,observer.y,ground+.045));markerGroup.add(disc);
-    markerGroup.visible=mode!=='eye';
+    markerGroup.visible=!firstPerson();
     if(settings.showRays&&analysis?.rays?.length){
       const sample=analysis.rays.filter((_,i)=>i%Math.max(1,Math.ceil(analysis.rays.length/70))===0);
       if(analysis.criticalRay&&!sample.includes(analysis.criticalRay))sample.push(analysis.criticalRay);
@@ -1350,7 +1351,7 @@ export function createScene(container, data, callbacks = {}) {
     for(const l of labels){
       projected.copy(l.position).project(camera);
       direction.copy(l.position).sub(camera.position);
-      const hidden=currentSettings.showLabels===false||mode==='eye'||projected.z>1||projected.z< -1||direction.dot(cameraForward)<0||Math.abs(projected.x)>1.2||Math.abs(projected.y)>1.2;
+      const hidden=currentSettings.showLabels===false||firstPerson()||projected.z>1||projected.z< -1||direction.dot(cameraForward)<0||Math.abs(projected.x)>1.2||Math.abs(projected.y)>1.2;
       l.element.hidden=hidden;
       if(!hidden){l.element.style.left=`${(projected.x*.5+.5)*lastWidth}px`;l.element.style.top=`${(-projected.y*.5+.5)*lastHeight}px`;}
     }
@@ -1383,11 +1384,15 @@ export function createScene(container, data, callbacks = {}) {
   }
   function startWalk({floor,roomId,position}={}){
     walkModel??=createWalkNavigation(data,currentSettings);
-    const preferred=position||currentObserver&&toWorld(currentObserver.x,currentObserver.y,currentObserver.z);
+    const gardenX=data.site.terrace.x+data.site.terrace.width*.85;
+    const gardenY=data.site.rearMidpoint[1]+num(currentSettings.terraceDepth,4)+1.8;
+    const preferred=position||(floor==='garden'
+      ?toWorld(gardenX,gardenY,gardenGroundAt(gardenX,gardenY,currentSettings,data)+1.57)
+      :currentObserver&&toWorld(currentObserver.x,currentObserver.y,currentObserver.z));
     const pose=floor&&floor!=='garden'?walkModel.spawnFloor(floor,roomId):walkModel.spawnGarden(preferred);
     if(!pose)return false;
     mode='walk';walkKeys.clear();lastWalkTime=0;controls.enabled=false;markerGroup.visible=false;walkPad.hidden=false;
-    camera.fov=65;camera.near=.035;camera.up.set(0,1,0);camera.updateProjectionMatrix();
+    camera.fov=eyeFov=65;camera.near=.035;camera.up.set(0,1,0);camera.updateProjectionMatrix();
     renderer.domElement.setAttribute('aria-label','Walk through the house and garden. Use WASD or arrow keys to move; drag to look.');
     applyWalkPose(pose);renderer.domElement.focus({preventScroll:true});return true;
   }
@@ -1428,7 +1433,7 @@ export function createScene(container, data, callbacks = {}) {
     renderPending=false;frameHandle=0;if(!canDraw())return;
     const walking=mode==='walk'&&walkKeys.size>0;
     if(walking){
-      const dt=lastWalkTime?Math.min(.06,(now-lastWalkTime)/1000):1/60;
+      const dt=lastWalkTime?Math.min(.25,(now-lastWalkTime)/1000):1/60;
       stepWalk(Number(walkKeys.has('right'))-Number(walkKeys.has('left')),Number(walkKeys.has('forward'))-Number(walkKeys.has('back')),dt*(walkFast?2.7:1.65));
     }
     lastWalkTime=walking?now:0;
@@ -1568,8 +1573,21 @@ export function createScene(container, data, callbacks = {}) {
     if(nextPose===lastVehiclePose)return;
     lastVehiclePose=nextPose;
     garageScene.setVehiclePose(garageVehiclePose(currentGarageLayout,progress,settings.garageReverse===true));
+    walkModel?.updateVehicles(currentSettings);
     contextRevision++;
     shadowBoundsDirty=true;requestRender();
+  }
+
+  /** Slider ticks move only the existing leaves and their collision spans. */
+  function updateHstPreview(settings=currentSettings){
+    currentSettings={...currentSettings,hstOpen:settings.hstOpen};
+    const changed=sharedHouseModel?updateHstOpening(sharedHouseModel.root,currentSettings):0;
+    walkModel?.updateHst(currentSettings);
+    if(mode==='walk'&&walkPose&&!walkModel?.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30})){
+      applyWalkPose(walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden());
+    }
+    if(changed){contextRevision++;shadowBoundsDirty=true;requestRender();}
+    return changed;
   }
 
   function update(settings,observer,analysis,activeData=data) {
@@ -1583,7 +1601,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
     syncExistingVegetation(settings);
-    const signature=JSON.stringify([...['summerPoolLayout','poolSunbedSides','jacuzziCentered','jacuzziMood','hstOpen','gardenProgram','designStyle','styleGardenLayout','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
+    const signature=JSON.stringify([...['summerPoolLayout','poolSunbedSides','jacuzziCentered','jacuzziMood','gardenProgram','designStyle','styleGardenLayout','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
       'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageSpaces','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     const rebuilt=signature!==designSignature;
     if(rebuilt){designSignature=signature;rebuildDesign(settings);}
@@ -1604,6 +1622,7 @@ export function createScene(container, data, callbacks = {}) {
         applyWalkPose(retained||walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden(walkPose.position));
       }
     }
+    updateHstPreview(settings);
     if(finishesChanged&&!svgMode){projectArchitecturalMaterialUVs(scene);reflections?.setSurface(scene.getObjectByName('pool-water'));}
     if(finishesChanged||dimensionsVisible!==settings.showDimensions){
       dimensionsVisible=settings.showDimensions;
@@ -1791,5 +1810,5 @@ export function createScene(container, data, callbacks = {}) {
       lighting:{sunDirection:direction.toArray(),sunColor:sun.color.getHex(),sunIntensity:sun.intensity,skyColor:ambient.color.getHex(),groundColor:ambient.groundColor.getHex(),ambientIntensity:ambient.intensity,interiorLightStrength:nightLightingState(lastSolar,currentSettings).gardenStrength,background:scene.background?.isColor?scene.background.getHex():0xb9cdd1}};
   }
   const getInteriorContextKey=()=>`${contextRevision}:${solarSignature}`;
-  return {available:true,rendererType,update,updateSun,setView,startWalk,setGarageView,setDesignInspection,updateGaragePreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getWalkState:()=>walkPose&&({...walkPose,position:walkPose.position.slice()}),getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
+  return {available:true,rendererType,update,updateSun,setView,startWalk,setGarageView,setDesignInspection,updateGaragePreview,updateHstPreview,resize,dispose,setPresentation,setPresentationVisible,getPerformanceInfo,createInteriorContext,getInteriorContextKey,getWalkState:()=>walkPose&&({...walkPose,position:walkPose.position.slice()}),getCameraState:()=>({mode,lookYaw:eyeYaw,lookPitch:eyePitch,fov:camera.fov}),getRenderInfo:()=>renderer.info?.render||null};
 }

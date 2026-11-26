@@ -91,6 +91,15 @@ export function batchGroup(group) {
   group.traverse(mesh=>{if(mesh.isMesh&&mesh.material?.userData.woodGrainAxis)memberGrain=true;});
   if(memberGrain)projectArchitecturalMaterialUVs(group);
   const inverse = group.matrixWorld.clone().invert(), batches = new Map(), geometries = new Set();
+  // Operable assemblies keep their own transform through both wall and whole
+  // storey batching. Their small child batches can then move without rebuilding
+  // the static furnished house or reallocating any geometry.
+  const movable=[];
+  group.traverse(node=>{if(node!==group&&node.userData.preserveTransform)movable.push(node);});
+  for(const node of movable){
+    const local=new THREE.Matrix4().multiplyMatrices(inverse,node.matrixWorld);
+    node.removeFromParent();local.decompose(node.position,node.quaternion,node.scale);
+  }
   const normalMatrix=new THREE.Matrix3(), v = new THREE.Vector3();
   group.traverse(mesh => {
     if (!mesh.isMesh) return;
@@ -116,6 +125,7 @@ export function batchGroup(group) {
     const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=!mat.transparent;mesh.receiveShadow=true; group.add(mesh);
   }
   for(const geo of geometries) if(!geo.userData.sharedPrimitive) geo.dispose();
+  for(const node of movable)group.add(node);
 }
 
 export function modelTools() {

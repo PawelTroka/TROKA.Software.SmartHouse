@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
 import {toWorld} from './orientation.js?v=1.34.0';
 import {facadePoint} from './house-appearance.js?v=1.34.0';
-import {houseRenovationParts,summarizeHouseRenovation} from './house-renovation.js?v=1.34.0';
+import {houseRenovationParts,houseGableRenovation,summarizeHouseRenovation} from './house-renovation.js?v=1.34.0';
 import {applyExteriorSurface} from './exterior-materials.js?v=1.34.0';
 
 const flatSvgDetails=new Set(['brick','stone','panels','soldier-lintel','shutter-louvre']);
@@ -9,6 +9,17 @@ const flatSvgDetails=new Set(['brick','stone','panels','soldier-lintel','shutter
 /** Batched physical cladding, deep reveals and sun heads, including returns. */
 export function addHouseRenovation(parent,layout,style,{svgMode=false}={}){
   const parts=houseRenovationParts(layout,style);
+  return addRenovationParts(parent,layout,style,parts,{svgMode});
+}
+
+export function addRenovationGableCladding(parent,roof,layout,style,{svgMode=false}={}){
+  const gables=houseGableRenovation(roof,layout,style);
+  const mesh=addRenovationParts(parent,{...layout,edges:gables.edges},style,gables.parts,{svgMode});
+  if(mesh){mesh.name='renovation-gable-cladding';mesh.userData.houseRoof=true;}
+  return mesh;
+}
+
+function addRenovationParts(parent,layout,style,parts,{svgMode=false}={}){
   if(!parts.length)return null;
   const positions=[],colors=[],uvs=[],materials=[],groups=[];
   const finishes=[...new Set(parts.map(p=>p.finish))];
@@ -36,7 +47,8 @@ export function addHouseRenovation(parent,layout,style,{svgMode=false}={}){
         const vertical=['battens','paired-batten','boards','flutes','window-jamb','slatted-reveal'].includes(part.kind);
         const timber=material.userData.woodGrainAxis;
         const grainU=timber==='u';
-        uvs.push(timber?(vertical===grainU?height:along):along,timber?(vertical===grainU?along:height):height);
+        uvs.push((timber?(vertical===grainU?height:along):along)+(part.uvOffset?.[0]??0),
+          (timber?(vertical===grainU?along:height):height)+(part.uvOffset?.[1]??0));
       }
     };
     quad(...front);

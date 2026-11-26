@@ -1,5 +1,28 @@
 {
   "method": {
+    "sourceData": {
+      "site-data.json": {
+        "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+      },
+      "sternicza-surrounding-nature.json": {
+        "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+      },
+      "sternicza-neighbor-roofs.json": {
+        "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+      }
+    },
+    "state": "v=30&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove",
+    "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+    "terrace": {
+      "x": 5.358610661552147,
+      "y": 18.117475217542932,
+      "width": 8.5,
+      "depth": 4
+    },
+    "rearMidpoint": [
+      9.608610661552147,
+      18.117475217542932
+    ],
     "target": "PCK3 / building-9",
     "grid": 0.5,
     "beamWidth": 40,
@@ -10,25 +33,25 @@
   },
   "baselines": {
     "no-specimens": {
-      "weightedCoverage": 0.6338,
+      "weightedCoverage": 0.6309,
       "views": [
         {
           "id": "sofa",
-          "blocked": 290,
+          "blocked": 286,
           "total": 340,
-          "percent": 85.2941
+          "percent": 84.1176
         },
         {
           "id": "standing",
-          "blocked": 290,
+          "blocked": 286,
           "total": 340,
-          "percent": 85.2941
+          "percent": 84.1176
         },
         {
           "id": "terrace",
-          "blocked": 114,
+          "blocked": 115,
           "total": 340,
-          "percent": 33.5294
+          "percent": 33.8235
         },
         {
           "id": "jacuzzi",
@@ -38,9 +61,9 @@
         },
         {
           "id": "pool",
-          "blocked": 317,
+          "blocked": 319,
           "total": 629,
-          "percent": 50.3975
+          "percent": 50.7154
         },
         {
           "id": "firepit",
@@ -69,25 +92,25 @@
       ]
     },
     "previous-excelsa": {
-      "weightedCoverage": 0.7106,
+      "weightedCoverage": 0.7076,
       "views": [
         {
           "id": "sofa",
-          "blocked": 307,
+          "blocked": 302,
           "total": 340,
-          "percent": 90.2941
+          "percent": 88.8235
         },
         {
           "id": "standing",
-          "blocked": 307,
+          "blocked": 302,
           "total": 340,
-          "percent": 90.2941
+          "percent": 88.8235
         },
         {
           "id": "terrace",
-          "blocked": 152,
+          "blocked": 154,
           "total": 340,
-          "percent": 44.7059
+          "percent": 45.2941
         },
         {
           "id": "jacuzzi",
@@ -97,9 +120,9 @@
         },
         {
           "id": "pool",
-          "blocked": 343,
+          "blocked": 348,
           "total": 629,
-          "percent": 54.531
+          "percent": 55.3259
         },
         {
           "id": "firepit",
@@ -128,7 +151,7 @@
       ]
     },
     "same-stock-old-positions": {
-      "weightedCoverage": 0.9335,
+      "weightedCoverage": 0.9332,
       "views": [
         {
           "id": "sofa",
@@ -144,9 +167,9 @@
         },
         {
           "id": "terrace",
-          "blocked": 309,
+          "blocked": 308,
           "total": 340,
-          "percent": 90.8824
+          "percent": 90.5882
         },
         {
           "id": "jacuzzi",
@@ -156,9 +179,9 @@
         },
         {
           "id": "pool",
-          "blocked": 502,
+          "blocked": 503,
           "total": 629,
-          "percent": 79.8092
+          "percent": 79.9682
         },
         {
           "id": "firepit",
@@ -187,7 +210,7 @@
       ]
     },
     "original-pines": {
-      "weightedCoverage": 0.9602,
+      "weightedCoverage": 0.9598,
       "views": [
         {
           "id": "sofa",
@@ -203,9 +226,9 @@
         },
         {
           "id": "terrace",
-          "blocked": 324,
+          "blocked": 325,
           "total": 340,
-          "percent": 95.2941
+          "percent": 95.5882
         },
         {
           "id": "jacuzzi",
@@ -215,9 +238,9 @@
         },
         {
           "id": "pool",
-          "blocked": 566,
+          "blocked": 559,
           "total": 629,
-          "percent": 89.9841
+          "percent": 88.8712
         },
         {
           "id": "firepit",
@@ -265,8 +288,8 @@
         {
           "id": "pine-2",
           "typeId": "thuja-excelsa-9m",
-          "x": 17,
-          "y": 28,
+          "x": 18,
+          "y": 36,
           "height": 9,
           "crownBase": 0.3,
           "crownWidth": 2,
@@ -278,8 +301,8 @@
         {
           "id": "pine-3",
           "typeId": "thuja-excelsa-9m",
-          "x": 18,
-          "y": 36,
+          "x": 17,
+          "y": 28,
           "height": 9,
           "crownBase": 0.3,
           "crownWidth": 2,
@@ -289,13 +312,13 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.7248,
+      "weightedCoverage": 0.7211,
       "candidateCount": 117,
       "minSpacing": 1.5,
       "boundaryDistances": [
         1.9533,
-        3.3034,
-        1.9202
+        1.9202,
+        3.3034
       ],
       "crownOverhang": [
         0,
@@ -305,21 +328,21 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 309,
+          "blocked": 304,
           "total": 340,
-          "percent": 90.8824
+          "percent": 89.4118
         },
         {
           "id": "standing",
-          "blocked": 309,
+          "blocked": 304,
           "total": 340,
-          "percent": 90.8824
+          "percent": 89.4118
         },
         {
           "id": "terrace",
-          "blocked": 163,
+          "blocked": 164,
           "total": 340,
-          "percent": 47.9412
+          "percent": 48.2353
         },
         {
           "id": "jacuzzi",
@@ -329,9 +352,9 @@
         },
         {
           "id": "pool",
-          "blocked": 343,
+          "blocked": 346,
           "total": 629,
-          "percent": 54.531
+          "percent": 55.0079
         },
         {
           "id": "firepit",
@@ -401,7 +424,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.8171,
+      "weightedCoverage": 0.8147,
       "candidateCount": 117,
       "minSpacing": 2.475,
       "boundaryDistances": [
@@ -417,15 +440,15 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 326,
+          "blocked": 322,
           "total": 340,
-          "percent": 95.8824
+          "percent": 94.7059
         },
         {
           "id": "standing",
-          "blocked": 326,
+          "blocked": 322,
           "total": 340,
-          "percent": 95.8824
+          "percent": 94.7059
         },
         {
           "id": "terrace",
@@ -435,15 +458,15 @@
         },
         {
           "id": "jacuzzi",
-          "blocked": 217,
+          "blocked": 219,
           "total": 340,
-          "percent": 63.8235
+          "percent": 64.4118
         },
         {
           "id": "pool",
-          "blocked": 376,
+          "blocked": 379,
           "total": 629,
-          "percent": 59.7774
+          "percent": 60.2544
         },
         {
           "id": "firepit",
@@ -513,7 +536,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.7773,
+      "weightedCoverage": 0.7749,
       "candidateCount": 117,
       "minSpacing": 1.6500000000000001,
       "boundaryDistances": [
@@ -529,33 +552,33 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 316,
+          "blocked": 313,
           "total": 340,
-          "percent": 92.9412
+          "percent": 92.0588
         },
         {
           "id": "standing",
-          "blocked": 316,
+          "blocked": 313,
           "total": 340,
-          "percent": 92.9412
+          "percent": 92.0588
         },
         {
           "id": "terrace",
-          "blocked": 195,
+          "blocked": 194,
           "total": 340,
-          "percent": 57.3529
+          "percent": 57.0588
         },
         {
           "id": "jacuzzi",
-          "blocked": 193,
+          "blocked": 194,
           "total": 340,
-          "percent": 56.7647
+          "percent": 57.0588
         },
         {
           "id": "pool",
-          "blocked": 366,
+          "blocked": 369,
           "total": 629,
-          "percent": 58.1876
+          "percent": 58.6645
         },
         {
           "id": "firepit",
@@ -625,7 +648,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.6701,
+      "weightedCoverage": 0.6675,
       "candidateCount": 117,
       "minSpacing": 1.5,
       "boundaryDistances": [
@@ -641,21 +664,21 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 297,
+          "blocked": 293,
           "total": 340,
-          "percent": 87.3529
+          "percent": 86.1765
         },
         {
           "id": "standing",
-          "blocked": 297,
+          "blocked": 293,
           "total": 340,
-          "percent": 87.3529
+          "percent": 86.1765
         },
         {
           "id": "terrace",
-          "blocked": 125,
+          "blocked": 126,
           "total": 340,
-          "percent": 36.7647
+          "percent": 37.0588
         },
         {
           "id": "jacuzzi",
@@ -665,9 +688,9 @@
         },
         {
           "id": "pool",
-          "blocked": 326,
+          "blocked": 330,
           "total": 629,
-          "percent": 51.8283
+          "percent": 52.4642
         },
         {
           "id": "firepit",
@@ -713,8 +736,8 @@
         {
           "id": "pine-2",
           "typeId": "serbian-spruce-7m",
-          "x": 18,
-          "y": 35,
+          "x": 17,
+          "y": 28,
           "height": 7,
           "crownBase": 0.4,
           "crownWidth": 3,
@@ -726,8 +749,8 @@
         {
           "id": "pine-3",
           "typeId": "serbian-spruce-7m",
-          "x": 17,
-          "y": 28,
+          "x": 18,
+          "y": 35,
           "height": 7,
           "crownBase": 0.4,
           "crownWidth": 3,
@@ -737,13 +760,13 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.7243,
+      "weightedCoverage": 0.7223,
       "candidateCount": 117,
       "minSpacing": 1.6500000000000001,
       "boundaryDistances": [
         1.9533,
-        2.3137,
-        3.3034
+        3.3034,
+        2.3137
       ],
       "crownOverhang": [
         0,
@@ -753,15 +776,15 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 308,
+          "blocked": 305,
           "total": 340,
-          "percent": 90.5882
+          "percent": 89.7059
         },
         {
           "id": "standing",
-          "blocked": 308,
+          "blocked": 305,
           "total": 340,
-          "percent": 90.5882
+          "percent": 89.7059
         },
         {
           "id": "terrace",
@@ -771,15 +794,15 @@
         },
         {
           "id": "jacuzzi",
-          "blocked": 155,
+          "blocked": 156,
           "total": 340,
-          "percent": 45.5882
+          "percent": 45.8824
         },
         {
           "id": "pool",
-          "blocked": 341,
+          "blocked": 343,
           "total": 629,
-          "percent": 54.213
+          "percent": 54.531
         },
         {
           "id": "firepit",
@@ -849,7 +872,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.8696,
+      "weightedCoverage": 0.8663,
       "candidateCount": 117,
       "minSpacing": 1.6500000000000001,
       "boundaryDistances": [
@@ -865,15 +888,15 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 332,
+          "blocked": 328,
           "total": 340,
-          "percent": 97.6471
+          "percent": 96.4706
         },
         {
           "id": "standing",
-          "blocked": 332,
+          "blocked": 328,
           "total": 340,
-          "percent": 97.6471
+          "percent": 96.4706
         },
         {
           "id": "terrace",
@@ -883,15 +906,15 @@
         },
         {
           "id": "jacuzzi",
-          "blocked": 270,
+          "blocked": 269,
           "total": 340,
-          "percent": 79.4118
+          "percent": 79.1176
         },
         {
           "id": "pool",
-          "blocked": 423,
+          "blocked": 430,
           "total": 629,
-          "percent": 67.2496
+          "percent": 68.3625
         },
         {
           "id": "firepit",
@@ -961,7 +984,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.8451,
+      "weightedCoverage": 0.8462,
       "candidateCount": 21,
       "minSpacing": 3,
       "boundaryDistances": [
@@ -989,9 +1012,9 @@
         },
         {
           "id": "terrace",
-          "blocked": 254,
+          "blocked": 255,
           "total": 340,
-          "percent": 74.7059
+          "percent": 75
         },
         {
           "id": "jacuzzi",
@@ -1001,9 +1024,9 @@
         },
         {
           "id": "pool",
-          "blocked": 396,
+          "blocked": 401,
           "total": 629,
-          "percent": 62.9571
+          "percent": 63.752
         },
         {
           "id": "firepit",
@@ -1073,7 +1096,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.7177,
+      "weightedCoverage": 0.7143,
       "candidateCount": 117,
       "minSpacing": 1.9250000000000003,
       "boundaryDistances": [
@@ -1089,15 +1112,15 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 310,
+          "blocked": 306,
           "total": 340,
-          "percent": 91.1765
+          "percent": 90
         },
         {
           "id": "standing",
-          "blocked": 310,
+          "blocked": 306,
           "total": 340,
-          "percent": 91.1765
+          "percent": 90
         },
         {
           "id": "terrace",
@@ -1113,9 +1136,9 @@
         },
         {
           "id": "pool",
-          "blocked": 332,
+          "blocked": 334,
           "total": 629,
-          "percent": 52.7822
+          "percent": 53.1002
         },
         {
           "id": "firepit",
@@ -1185,7 +1208,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.7874,
+      "weightedCoverage": 0.7844,
       "candidateCount": 117,
       "minSpacing": 1.9250000000000003,
       "boundaryDistances": [
@@ -1201,33 +1224,33 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 328,
+          "blocked": 324,
           "total": 340,
-          "percent": 96.4706
+          "percent": 95.2941
         },
         {
           "id": "standing",
-          "blocked": 328,
+          "blocked": 324,
           "total": 340,
-          "percent": 96.4706
+          "percent": 95.2941
         },
         {
           "id": "terrace",
-          "blocked": 184,
-          "total": 340,
-          "percent": 54.1176
-        },
-        {
-          "id": "jacuzzi",
           "blocked": 186,
           "total": 340,
           "percent": 54.7059
         },
         {
+          "id": "jacuzzi",
+          "blocked": 185,
+          "total": 340,
+          "percent": 54.4118
+        },
+        {
           "id": "pool",
-          "blocked": 358,
+          "blocked": 360,
           "total": 629,
-          "percent": 56.9157
+          "percent": 57.2337
         },
         {
           "id": "firepit",
@@ -1297,7 +1320,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.8752,
+      "weightedCoverage": 0.8741,
       "candidateCount": 79,
       "minSpacing": 2.75,
       "boundaryDistances": [
@@ -1313,33 +1336,33 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 340,
+          "blocked": 339,
           "total": 340,
-          "percent": 100
+          "percent": 99.7059
         },
         {
           "id": "standing",
-          "blocked": 340,
+          "blocked": 339,
           "total": 340,
-          "percent": 100
+          "percent": 99.7059
         },
         {
           "id": "terrace",
-          "blocked": 252,
+          "blocked": 251,
           "total": 340,
-          "percent": 74.1176
+          "percent": 73.8235
         },
         {
           "id": "jacuzzi",
-          "blocked": 249,
+          "blocked": 247,
           "total": 340,
-          "percent": 73.2353
+          "percent": 72.6471
         },
         {
           "id": "pool",
-          "blocked": 422,
+          "blocked": 431,
           "total": 629,
-          "percent": 67.0906
+          "percent": 68.5215
         },
         {
           "id": "firepit",
@@ -1409,7 +1432,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.9384,
+      "weightedCoverage": 0.9378,
       "candidateCount": 79,
       "minSpacing": 2.75,
       "boundaryDistances": [
@@ -1437,9 +1460,9 @@
         },
         {
           "id": "terrace",
-          "blocked": 310,
+          "blocked": 308,
           "total": 340,
-          "percent": 91.1765
+          "percent": 90.5882
         },
         {
           "id": "jacuzzi",
@@ -1449,9 +1472,9 @@
         },
         {
           "id": "pool",
-          "blocked": 499,
+          "blocked": 502,
           "total": 629,
-          "percent": 79.3323
+          "percent": 79.8092
         },
         {
           "id": "firepit",
@@ -1521,7 +1544,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.6697,
+      "weightedCoverage": 0.6667,
       "candidateCount": 117,
       "minSpacing": 1.5,
       "boundaryDistances": [
@@ -1537,21 +1560,21 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 297,
+          "blocked": 293,
           "total": 340,
-          "percent": 87.3529
+          "percent": 86.1765
         },
         {
           "id": "standing",
-          "blocked": 297,
+          "blocked": 293,
           "total": 340,
-          "percent": 87.3529
+          "percent": 86.1765
         },
         {
           "id": "terrace",
-          "blocked": 124,
+          "blocked": 125,
           "total": 340,
-          "percent": 36.4706
+          "percent": 36.7647
         },
         {
           "id": "jacuzzi",
@@ -1561,9 +1584,9 @@
         },
         {
           "id": "pool",
-          "blocked": 326,
+          "blocked": 328,
           "total": 629,
-          "percent": 51.8283
+          "percent": 52.1463
         },
         {
           "id": "firepit",
@@ -1633,7 +1656,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.7801,
+      "weightedCoverage": 0.7757,
       "candidateCount": 117,
       "minSpacing": 1.5,
       "boundaryDistances": [
@@ -1649,33 +1672,33 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 325,
+          "blocked": 321,
           "total": 340,
-          "percent": 95.5882
+          "percent": 94.4118
         },
         {
           "id": "standing",
-          "blocked": 325,
+          "blocked": 321,
           "total": 340,
-          "percent": 95.5882
+          "percent": 94.4118
         },
         {
           "id": "terrace",
-          "blocked": 187,
+          "blocked": 185,
           "total": 340,
-          "percent": 55
+          "percent": 54.4118
         },
         {
           "id": "jacuzzi",
-          "blocked": 189,
+          "blocked": 188,
           "total": 340,
-          "percent": 55.5882
+          "percent": 55.2941
         },
         {
           "id": "pool",
-          "blocked": 353,
+          "blocked": 357,
           "total": 629,
-          "percent": 56.1208
+          "percent": 56.7568
         },
         {
           "id": "firepit",
@@ -1745,7 +1768,7 @@
           "unitPrice": 0
         }
       ],
-      "weightedCoverage": 0.6616,
+      "weightedCoverage": 0.6589,
       "candidateCount": 117,
       "minSpacing": 1.5,
       "boundaryDistances": [
@@ -1761,21 +1784,21 @@
       "views": [
         {
           "id": "sofa",
-          "blocked": 290,
+          "blocked": 286,
           "total": 340,
-          "percent": 85.2941
+          "percent": 84.1176
         },
         {
           "id": "standing",
-          "blocked": 290,
+          "blocked": 286,
           "total": 340,
-          "percent": 85.2941
+          "percent": 84.1176
         },
         {
           "id": "terrace",
-          "blocked": 115,
+          "blocked": 116,
           "total": 340,
-          "percent": 33.8235
+          "percent": 34.1176
         },
         {
           "id": "jacuzzi",
@@ -1785,9 +1808,9 @@
         },
         {
           "id": "pool",
-          "blocked": 320,
+          "blocked": 324,
           "total": 629,
-          "percent": 50.8744
+          "percent": 51.5103
         },
         {
           "id": "firepit",
