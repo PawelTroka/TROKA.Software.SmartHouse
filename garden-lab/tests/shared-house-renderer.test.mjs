@@ -10,7 +10,8 @@ import {getInteriorPlan} from '../src/interior-plan.js';
 import {getDesignStyle} from '../src/design-styles.js';
 import {createSharedHouseModel,cloneOwnedScene} from '../src/scene-house-model.js';
 import {interiorMaterials} from '../src/interior-materials.js';
-import {buildArchitecture} from '../src/interior-architecture.js';
+import {buildArchitecture,updateHstOpening} from '../src/interior-architecture.js';
+import {hstPanelLayout} from '../src/hst-system.js';
 import {modelTools} from '../src/interior-geometry.js';
 import {terrainAt} from '../src/geometry.js';
 
@@ -23,22 +24,25 @@ const settings={...state.DEFAULTS,designStyle:'hidden-bali',interiorLayout:'reno
 function canvasDocument(){const context=new Proxy({},{get:()=>()=>{}});return{createElement:()=>({width:0,height:0,getContext:()=>context})};}
 function materialList(root){const set=new Set();root.traverse(o=>{for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])set.add(m);});return set;}
 function geometryList(root){const set=new Set();root.traverse(o=>{if(o.geometry)set.add(o.geometry);});return set;}
-const pointKey=(x,y,z)=>[x,y,z].map(n=>Math.round(n*1e5)).join(',');
+// Float32 storey-relative vertices lose a few micrometres when translated
+// back to building datum; compare the rendered cloud at 0.1 mm resolution.
+const pointKey=(x,y,z)=>[x,y,z].map(n=>Math.round(n*1e4)).join(',');
 function vertices(root,elevation=0){const points=new Map();root.traverse(o=>{
   if(!o.isMesh)return;const p=o.geometry.attributes.position;
   for(let i=0;i<p.count;i++){const k=pointKey(p.getX(i),p.getY(i)+elevation,p.getZ(i));points.set(k,(points.get(k)||0)+1);}
 });return points;}
 
-test('the canonical receiving stair keeps its archived void evidence and follows edited floor rise',()=>{
-  for(const firstFloorRise of [2.70,3.05,3.50]){
-    const options={...settings,firstFloorRise},data=applyPlanExterior(source,options);
+test('renovated stairs align their openings while Current preserves the archived mismatch',()=>{
+  for(const designStyle of ['current','hidden-bali'])for(const firstFloorRise of [2.70,3.05,3.50]){
+    const options={...settings,firstFloorRise,designStyle},data=applyPlanExterior(source,options);
     const ground=getHouseFloorPlan({floor:'ground',settings:options,data}),first=getHouseFloorPlan({floor:'first',settings:options,data});
     const lower=ground.stairs.find(s=>s.id==='main-stair'),upper=first.stairs.find(s=>s.id==='main-stair');
-    const historical=getInteriorPlan({floor:'first',layout:'renovation'});
+    const layout=designStyle==='current'?'existing':'renovation',historical=getInteriorPlan({floor:'first',layout});
     assert.deepEqual(upper.polygon,lower.polygon);assert.deepEqual(upper.direction,lower.direction);assert.equal(upper.rise,firstFloorRise);
     assert.deepEqual(upper.sourcePolygon,historical.stairs.find(s=>s.id==='main-stair').polygon);
-    assert.deepEqual(first.voids,historical.voids);assert.notDeepEqual(upper.polygon,upper.sourcePolygon);
-    assert.match(first.issues.find(x=>x.includes('shared main stair')),/alignment and headroom/);
+    assert.deepEqual(first.voids,historical.voids);
+    if(designStyle==='current'){assert.notDeepEqual(upper.polygon,upper.sourcePolygon);assert.match(first.issues.find(x=>x.includes('shared main stair')),/alignment and headroom/);}
+    else {assert.deepEqual(upper.polygon,upper.sourcePolygon);assert.match(first.issues.find(x=>x.includes('aligns the main floor opening')),/headroom/);}
   }
 });
 
@@ -47,17 +51,17 @@ test('the exterior retains all interior furniture vertices and exactly one canon
   try{
     const data=applyPlanExterior(source,settings);assembled=createSharedHouseModel(data,settings,{terrainAt});
     const stairs=assembled.root.getObjectByName('shared-house-stairs');
-    assert.deepEqual(stairs.children.map(o=>o.userData.houseStairConnection.id).sort(),['attic-hatch','cellar-stair','main-stair']);
+    assert.deepEqual(stairs.children.map(o=>o.userData.houseStairConnection.id).sort(),['attic-stair','cellar-stair','main-stair']);
     const canonical=vertices(stairs.getObjectByName('shared-stair-main-stair'));
     for(const floor of ['ground','first']){
       const plan=getHouseFloorPlan({floor,settings,data}),tools=modelTools(),finishes=interiorMaterials(settings.designStyle);
-      const inside=buildArchitecture(plan,{showOutdoor:false,showExterior:false},tools,finishes);
+      const inside=buildArchitecture({...plan,stairs:plan.stairs.filter(s=>s.id==='main-stair')},{showOutdoor:false,showExterior:false},tools,finishes);
       try{
         const outside=assembled.root.getObjectByName('shared-house-floor-'+floor),expected=vertices(inside.groups.props),actual=vertices(outside);
         assert.ok(expected.size>1000,`${floor} furnishing should contain detailed geometry`);
         for(const [point,count]of expected)assert.ok((actual.get(point)||0)>=count,`${floor}: furniture point ${point} is absent from the exterior`);
         assert.equal(outside.userData.houseFloor,floor);
-        assert.ok(outside.children.every(n=>n.isMesh&&n.visible),'Only full, visible batched geometry remains');
+        assert.ok(outside.children.every(n=>(n.isMesh||n.userData.hstLeaf)&&n.visible),'Only full static batches and operable HST leaf batches remain');
         assert.deepEqual(vertices(inside.groups.stairs,plan.elevation),canonical,`${floor} must show the same physical connecting flight`);
         inside.updateVisibility('room',new THREE.Vector3(),{showStairs:false});assert.equal(inside.groups.stairs.visible,false);
         inside.updateVisibility('dollhouse',new THREE.Vector3(),{showStairs:true});assert.equal(inside.groups.stairs.visible,true);
@@ -66,8 +70,38 @@ test('the exterior retains all interior furniture vertices and exactly one canon
     const context=cloneOwnedScene([assembled.root],o=>o.userData.houseFloor!=='first');
     assert.equal(context.root.getObjectByName('shared-house-floor-first'),undefined);
     const connections=[];context.root.traverse(o=>{if(o.userData.houseStairConnection)connections.push(o.userData.houseStairConnection.id);});
-    assert.deepEqual(connections.sort(),['attic-hatch','cellar-stair','main-stair']);context.dispose();
+    assert.deepEqual(connections.sort(),['attic-stair','cellar-stair','main-stair']);context.dispose();
   }finally{assembled?.dispose();if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+
+test('HST updates move the actual pane batches without rebuilding the house or its fixed tracks',()=>{
+  const previous=globalThis.document;globalThis.document=canvasDocument();let assembled,clone;
+  try{
+    const options={...settings,hstOpen:1},data=applyPlanExterior(source,options);
+    assembled=createSharedHouseModel(data,options,{terrainAt});
+    const floor=assembled.root.getObjectByName('shared-house-floor-ground'),leaves=[];
+    floor.traverse(o=>{if(o.userData.hstLeaf)leaves.push(o);});
+    assert.equal(leaves.length,3,'Both wall and whole-storey batching retain the three operable leaf assemblies');
+    const geometries=geometryList(assembled.root),materials=materialList(assembled.root);
+    const fixed=leaves.find(n=>n.userData.hstLeaf.index===0),fixedPosition=fixed.position.clone();
+    const plan=getHouseFloorPlan({floor:'ground',settings:options,data}),wall=plan.walls.find(w=>w.openings.some(o=>o.type==='hst')),opening=wall.openings.find(o=>o.type==='hst');
+    const buffers=[];floor.traverse(o=>{if(o.isMesh)buffers.push([o.geometry,o.geometry.attributes.position.array.slice()]);});
+    for(const hstOpen of [0,.42,1]){
+      assert.equal(updateHstOpening(assembled.root,{hstOpen}),2);
+      assembled.root.updateMatrixWorld(true);const inverse=floor.matrixWorld.clone().invert(),expected=hstPanelLayout(opening,{hstOpen});
+      for(const leaf of leaves){
+        const bounds=new THREE.Box3(),point=new THREE.Vector3();
+        leaf.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++)bounds.expandByPoint(point.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld).applyMatrix4(inverse));});
+        const panel=expected.panels[leaf.userData.hstLeaf.index];
+        assert.ok(Math.abs(bounds.min.x-wall.a[0]-panel.lo)<2e-6);assert.ok(Math.abs(bounds.max.x-wall.a[0]-panel.hi)<2e-6);
+      }
+      assert.ok(fixed.position.distanceTo(fixedPosition)<1e-9,'The stacked fixed leaf remains anchored');
+      assert.deepEqual(geometryList(assembled.root),geometries);assert.deepEqual(materialList(assembled.root),materials);
+      for(const [geometry,positions]of buffers)assert.deepEqual(geometry.attributes.position.array,positions,'Fixed structure and tracks retain their original vertex buffers');
+    }
+    clone=cloneOwnedScene([floor]);updateHstOpening(clone.root,{hstOpen:0});
+    assert.equal(leaves.find(n=>n.userData.hstLeaf.index===2).userData.hstLeaf.centre,hstPanelLayout(opening,{hstOpen:1}).panels[2].centre,'Updating a context clone must not mutate the original leaf state');
+  }finally{clone?.dispose();assembled?.dispose();if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
 
 test('the historical entry retains landing wings at the top of both external stair flights',()=>{

@@ -2731,6 +2731,91 @@
       ]
     },
     {
+      "id": "pine_bark",
+      "name": "Pine Bark",
+      "source": "https://polyhaven.com/a/pine_bark",
+      "provider": "Poly Haven",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "downloaded": "2026-11-26",
+      "physicalSizeMeters": [
+        2.0,
+        2.0
+      ],
+      "physicalSizeSource": "Provider asset page reports 2 m scan width; square tile.",
+      "maps": {
+        "Diffuse": {
+          "file": "pine_bark_diffuse.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_diff_1k.jpg",
+          "md5": "af514e63a14699f6775302e0dfba1711",
+          "sha256": "25bc0ec67a189bb11e6c30f5ea72d6067de3e9951ebc59c1bc500c177c01a144",
+          "bytes": 495254,
+          "sourceResolution": "1K",
+          "colorSpace": "sRGB",
+          "width": 1024,
+          "height": 1024,
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 837641,
+            "sourceMd5": "7bb38cccfc647aeaf2f5b6488c815e75",
+            "sourceSha256": "89ddfbff0388d30caff902ba600cdf75eb1e651ca71ece6594b5a9b27abb47ab",
+            "meanAbsoluteError8Bit": 1.7468
+          }
+        },
+        "nor_gl": {
+          "file": "pine_bark_nor_gl.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_nor_gl_1k.jpg",
+          "md5": "e74a0e457a951b1abda89abddfc51d89",
+          "sha256": "878f895ea2a66d59b50479f8b95080c05b758315987ec328c1e112451b130b0b",
+          "bytes": 764361,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "4:4:4",
+            "sourceBytes": 1178440,
+            "sourceMd5": "7b971070fc986e517b5d2795cec0f4e0",
+            "sourceSha256": "666e5f175a010f12577687dd8029125bff99110e6a97958afb295b34266437db",
+            "meanAbsoluteError8Bit": 2.2645,
+            "normalAngularErrorP95Degrees": 3.7551
+          }
+        },
+        "Rough": {
+          "file": "pine_bark_rough.jpg",
+          "sourceUrl": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/pine_bark/pine_bark_rough_1k.jpg",
+          "md5": "0d3265727d82b9bfbe29bcd14a4e6a1a",
+          "sha256": "ba0cd46a02b633c3e82e0453db475e6f4608587ea5402b8d8ca8eb99633f78cd",
+          "bytes": 240790,
+          "sourceResolution": "1K",
+          "colorSpace": "linear",
+          "width": 1024,
+          "height": 1024,
+          "deliveryCompression": {
+            "format": "JPEG",
+            "quality": 94,
+            "chromaSubsampling": "grayscale green channel",
+            "sourceBytes": 506697,
+            "sourceMd5": "f5ba950ee648056809153e0506f8a2e2",
+            "sourceSha256": "04f466447098d0b6d3d4abdc69ce5766d5da67eedfa076e4a3f22fe6996a60a8",
+            "meanAbsoluteError8Bit": 1.2147
+          }
+        }
+      },
+      "linearAlbedoMean": [
+        0.1385581,
+        0.0890337,
+        0.0541108
+      ]
+    },
+    {
       "id": "red_brick_03_unit",
       "name": "Red Brick 03 \u2014 mortar-free unit sample",
       "provider": "Poly Haven",

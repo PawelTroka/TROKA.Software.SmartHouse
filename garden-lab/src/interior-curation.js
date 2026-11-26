@@ -48,17 +48,12 @@ const lamp=(id,roomId,x,z,kind,extra={})=>f(id,'floorLamp','Shaded reading light
 
 function groundFixtures(plan,c){
   const fixed=plan.fixtures.filter(item=>!['table','sofa'].includes(item.id)).map(item=>({...item}));
-  // Retain sink/hob services but replace the dry joinery and central workspace.
-  // At least 0.90 m remains beside the island and along the street counter.
-  const east=fixed.findIndex(item=>item.id==='east-counter');
+  // Every scheme keeps the complete storage wall. Worktables now have
+  // enclosed drawer bases; their proportions vary without deleting cabinets.
   if(c.kitchen==='worktable'){
-    if(east>=0)fixed.splice(east,1);
-    fixed.push(f('kitchen-worktable','console','Freestanding preparation table','front-kitchen',2.82,6.55,1.48,.80,{height:.89,front:[0,-1],variant:'worktable'}));
+    fixed.push(f('kitchen-worktable','counter','Preparation cabinet with deep drawers','front-kitchen',2.40,6.52,.82,1.12,{height:.89,front:[1,0],variant:'worktable',drawers:true}));
   }else if(c.kitchen==='island'){
-    if(east>=0)Object.assign(fixed[east],{z:7.49,depth:1.02,label:'Short appliance and storage run'});
-    fixed.push(f('kitchen-island','counter','Preparation island with fitted storage','front-kitchen',2.37,6.40,.82,1.22,{height:.90,front:[1,0]}));
-  }else if(east>=0){
-    Object.assign(fixed[east],{depth:1.70,z:7.15,label:'Quiet galley preparation run'});
+    fixed.push(f('kitchen-island','counter','Preparation island with fitted storage','front-kitchen',2.40,6.52,.82,1.12,{height:.90,front:[1,0],drawers:true}));
   }
   const living=[];
   const coffee=(x,z,w=1.12,d=.60)=>f('lounge-table','coffeeTable','Low conversation table','lounge',x,z,w,d);

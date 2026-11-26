@@ -153,7 +153,7 @@ function canonicalScope(exported,id){
   }
 }
 const gardenSettings=settings=>Object.fromEntries(Object.entries(settings).filter(([key])=>
-  /^(garden|hedge|bed|screeningTrees|treeLeafMode|pool|jacuzzi|privacyPergola|spaScreens|sauna|coldPlunge|firepit|removeGarage)/.test(key)));
+  /^(garden|summerPoolLayout|hedge|bed|screeningTrees|treeLeafMode|pool|jacuzzi|privacyPergola|spaScreens|sauna|coldPlunge|firepit|removeGarage)/.test(key)));
 // Compare complete renovation states at one fixed camera and solar moment.
 // Turning renovation off now restores Current for the whole house and garden.
 async function compareHouse(site,id){
@@ -278,7 +278,7 @@ try{
   }
   assert.equal(geometrySignatures.size,22,'All 22 styles must change physical facade geometry');
   assert.equal(windowPatterns.size,22,'Every style must have a distinct physical window proposal');
-  assert.equal(gardenSchemes.size,6,'All six fitted garden topologies must render');
+  assert.equal(gardenSchemes.size,6,'All six garden recipe families must render around the shared summer pool');
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
   assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
@@ -286,7 +286,7 @@ try{
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check('All 22 styles have distinct physical window proposals, six fitted garden arrangements and outdoor kitchens; both cars remain and Current restores the neutral dwelling');
+  check('All 22 styles have distinct physical window proposals, six garden recipe families and outdoor kitchens around the shared summer pool; both cars remain and Current restores the neutral dwelling');
   }
 
   if(runsGroup('controls')){

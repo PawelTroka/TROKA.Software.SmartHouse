@@ -2,8 +2,8 @@
   "version": 1,
   "method": "Production material pigment + production photographicReflectance in linear light; source texture quantization reproduced before pigment multiplication. Unlit albedo, no invented lighting.",
   "sampleCount": 184,
-  "uniqueFiles": 118,
-  "totalBytes": 1142142,
+  "uniqueFiles": 119,
+  "totalBytes": 1145712,
   "samples": [
     {
       "style": "current",
@@ -4038,38 +4038,38 @@
       "style": "beach-house",
       "scope": "exterior",
       "role": "floor",
-      "asset": "limestone-unit",
+      "asset": "oak",
       "pigment": [
-        1,
-        1,
-        1
+        0.8673397016071122,
+        0.7300980223538339,
+        0.5290845874700079
       ],
       "basePigment": [
         0.6938717612856897,
         0.5840784178830671,
         0.4232676699760063
       ],
-      "sourceId": "Tiles139_unit",
-      "sourceFile": "Tiles139_unit_diffuse.jpg",
+      "sourceId": "oak_veneer_02",
+      "sourceFile": "oak_veneer_02_diffuse.jpg",
       "meters": [
-        0.1953125,
-        0.1953125
+        1,
+        1
       ],
-      "colorMode": "natural",
+      "colorMode": "palette",
       "key": "beach-house/exterior/floor",
       "viewMeters": 1.2,
-      "file": "506e88f13fe341444cb2_swatch.jpg",
-      "bytes": 11515,
-      "sha256": "cd0eaf5c4a69acb12f3d84f941879bc20da480eb6bf2b06815011025ef125dda",
+      "file": "795530448a39064684dc_swatch.jpg",
+      "bytes": 3570,
+      "sha256": "182268e7c3012f09f2bdc29ec669ae750df819513a9b366d160b9892e9e8f437",
       "meanSrgb": [
-        186.43885803222656,
-        166.06631469726562,
-        143.57240295410156
+        216.80023193359375,
+        200.52142333984375,
+        174.48944091796875
       ],
       "stdSrgb": [
-        6.8398593706711575,
-        6.388384717166016,
-        5.7305212697602705
+        1.2009075323624767,
+        1.1893868748923493,
+        1.2001198588926576
       ]
     },
     {

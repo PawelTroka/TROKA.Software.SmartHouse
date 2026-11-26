@@ -28,7 +28,7 @@ test('full mapped perimeter orders 137 thujas with one shared delivery allowance
   near(cost.hedges.baseTotal.low-old.hedges.baseTotal.low,44*(300+75));
 });
 
-test('front-side extensions add their declared drip allowance and fitted hedge lanterns to garden finishes',()=>{
+test('front-side extensions add their declared drip allowance and retain the bounded eight hedge lanterns',()=>{
   const cost=estimateCosts(full,data),old=estimateCosts(base,data);
   const extension=hedgeSegments(full,data).filter(s=>s.groundZone==='front'&&s.side!=='front')
     .reduce((sum,s)=>sum+Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]),0);
@@ -43,7 +43,9 @@ test('front-side extensions add their declared drip allowance and fitted hedge l
     assert.deepEqual(row.cost,old.garden.rows.find(previous=>previous.key===row.key).cost,row.key);
   }
   const extraLanterns=cost.garden.quantities.hedgePendantCount-old.garden.quantities.hedgePendantCount;
-  assert.ok(extraLanterns>0);
+  assert.equal(cost.garden.quantities.hedgePendantCount,8);
+  assert.equal(old.garden.quantities.hedgePendantCount,8);
+  assert.equal(extraLanterns,0,'The full perimeter keeps the same eight fitted accent lights');
   near(cost.total.low-old.total.low,16500+extension*35+extraLanterns*700);
   near(cost.total.high-old.total.high,(16500+extension*65+extraLanterns*1500)*1.2);
 });

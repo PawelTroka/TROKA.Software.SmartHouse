@@ -113,8 +113,8 @@ test('spa screens improve PCK3 rays at jacuzzi without claiming whole-garden cov
   near(panel.y0+.035-tub.y1,.65);
 });
 
-test('recommended presets screen their intended occupied areas while leaving the distant garden result honest',()=>{
-  const base=createStateModel(getSiteProfile('sternicza-11')).DEFAULTS;
+test('historical recommended presets retain their audited screening with the original pool layout',()=>{
+  const base=createStateModel(getSiteProfile('sternicza-11')).decodeState('v=29&site=sternicza-11');
   const eyeHeights={sofa:1.2,terrace:1.65,jacuzzi:.7,garden:1.65};
   const results=state=>Object.fromEntries(Object.entries(eyeHeights).map(([place,eyeHeight])=>[
     place,analyzeVisibility(observerForPreset(place,{...state,eyeHeight},source),state,source)
@@ -139,5 +139,15 @@ test('recommended presets screen their intended occupied areas while leaving the
         assert.ok(covered>99,`${id}: finite screen and extended roof protect every sampled spa seat (${covered.toFixed(1)}%)`);
       }
     }
+  }
+});
+
+test('a historical optional pergola discloses its real conflict with the summer pool',()=>{
+  const base=createStateModel(getSiteProfile('sternicza-11')).DEFAULTS;
+  assert.equal(base.privacyPergolaEnabled,false,'The fresh garden does not contain the conflicting optional structure');
+  for(const id of ['pergola','layered']){
+    const candidate=privacyPresetState(id,base),layout=privacyStructures(candidate,source);
+    assert.ok(layout.warnings.some(w=>/Garden pergola footprint overlaps the pool and coping/.test(w)),id);
+    assert.equal(candidate.summerPoolLayout,true,'A privacy option never silently restores the older pool');
   }
 });

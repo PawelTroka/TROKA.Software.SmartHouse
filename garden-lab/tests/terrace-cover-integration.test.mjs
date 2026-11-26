@@ -80,20 +80,20 @@ test('the visible budget identifies missing balcony work alongside an unquoted b
   }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
 
-test('balcony dimensions follow its first floor, deck, guard and actual support spans',()=>{
+test('balcony dimensions follow its first floor, deck and guard without column spans',()=>{
   const cover=terraceCover(base,data),records=gardenDimensions(base,data),get=id=>records.find(record=>record.id===id);
   near(get('balcony-width').value,8.5);near(get('balcony-length').value,4);near(get('balcony-area').value,34);
   near(get('balcony-floor-level').value,3);near(get('balcony-clear-below').value,2.75);
-  near(get('balcony-beam-clearance').value,2.51);near(get('balcony-deck-thickness').value,.25);near(get('balcony-guard-height').value,1.1);
+  near(get('balcony-beam-clearance').value,2.75);near(get('balcony-deck-thickness').value,.25);near(get('balcony-guard-height').value,1.1);
   for(let i=1;i<cover.supports.length;i++){
     const a=cover.supports[i-1],b=cover.supports[i];
     near(get(`balcony-support-span-${i}`).value,Math.abs((b.x0+b.x1-a.x0-a.x1)/2));
   }
-  const schedule=dimensionScheduleMarkup(records);assert.match(schedule,/First-floor balcony · proposal/);assert.match(schedule,/under beam/);
+  const schedule=dimensionScheduleMarkup(records);assert.match(schedule,/First-floor balcony · proposal/);assert.match(schedule,/clear headroom/);
   for(const record of records.filter(record=>record.feature==='balcony'))assert.equal((schedule.match(new RegExp(`data-dimension-record="${record.id}"`,'g'))||[]).length,1);
   const higher=gardenDimensions({...base,firstFloorRise:3.5,canopyHeight:5},data);
   near(higher.find(record=>record.id==='balcony-floor-level').value,3.5);
-  near(higher.find(record=>record.id==='balcony-beam-clearance').value,3.01);
+  near(higher.find(record=>record.id==='balcony-beam-clearance').value,3.25);
   for(const settings of [{...base,canopyEnabled:false},{...base,terraceCoverType:'canopy'},{...base,siteId:'nadmorska-17'}])assert.ok(!gardenDimensions(settings,data).some(record=>record.feature==='balcony'));
 });
 
@@ -102,7 +102,7 @@ test('plan and sections show finite balcony members, proposed access and transpa
   const markup=terraceCoverPlanMarkup(cover,{X,Y,scale});
   assert.match(markup,/data-terrace-cover-plan="balcony"/);assert.match(markup,/BALCONY · FIRST FLOOR/);
   assert.match(markup,/data-terrace-cover-access="proposed"/);
-  assert.equal((markup.match(/data-terrace-cover-part="post"/g)||[]).length,3);
+  assert.equal((markup.match(/data-terrace-cover-part="post"/g)||[]).length,0);
   const x=(cover.bounds.x0+cover.bounds.x1)/2+.2,origin=[x,cover.bounds.y0],direction=[0,1];
   const cuts=terraceCoverSectionCuts(cover,origin,direction),slab=cuts.find(cut=>cut.part==='slab');
   near(slab.interval[0],0);near(slab.interval[1],4);near(slab.z0,cover.deckTopZ-.25);

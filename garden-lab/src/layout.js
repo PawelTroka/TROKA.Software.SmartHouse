@@ -1,8 +1,9 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.33.0';
-import {resortGardenFurniture} from './resort-garden.js?v=1.33.0';
-import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.33.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.33.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.34.0';
+import {resortGardenFurniture} from './resort-garden.js?v=1.34.0';
+import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.34.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.34.0';
+import {summerGardenEnabled} from './summer-garden.js?v=1.34.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -15,8 +16,16 @@ export function rectCorners(rect,padding=0) {
 
 /** Low furniture only: it illustrates the proposal and is excluded from sun rays. */
 export function gardenFurniture(data,settings={}) {
-  const result=resortGardenFurniture(baseGardenFurniture(data,settings),settings,data);
+  const base=baseGardenFurniture(data,settings);
+  // Finish-only comparisons retain the physical furniture/path quantities.
+  // Resort transforms and fit filtering belong to the optional garden layout.
+  if(settings.styleGardenLayout===false)return base;
+  const result=resortGardenFurniture(base,settings,data);
   if(!result.resort)return result;
+  // The side selector controls actual individual sunbeds. The older two-seat
+  // style recipe must not collapse four same-side beds into one double daybed.
+  if(summerGardenEnabled(settings,data))result.resort.items=result.loungers.map(([x,y],i)=>({
+    id:`summer-pool-lounger-${i+1}`,kind:'lounger',x,y,width:.78,length:2,back:'north'}));
   const t=data.site.terrace,rear=data.site.rearMidpoint[1],depth=Number(settings.terraceDepth)||t.depth;
   const stairs=terraceStairs({...t,y:rear},depth,terraceGroundReference(settings,data).drop,settings,data);
   const program=gardenProgram(settings,data),pool=poolBounds(settings,data);
@@ -73,7 +82,11 @@ function baseGardenFurniture(data,settings={}) {
 export function terraceStairs(terrace,depth,drop,settings={},data) {
   const count=drop>.1?Math.max(1,Math.ceil(drop/.18)):0;
   const spa=data&&spaEnabled(settings,data);
-  return {x:terrace.x+(terrace.stairOffset??(spa?3.6:1)),y:terrace.y+depth,width:terrace.stairWidth??3,length:count*.29,count,drop:Math.max(0,drop)};
+  const centered=spa&&settings.jacuzziCentered===true;
+  // A central spa keeps the generous west-side route to the lawn open. The
+  // shared stair rectangle drives walking, plan, mesh and solar obstruction.
+  return {x:terrace.x+(terrace.stairOffset??(centered?.18:spa?3.6:1)),y:terrace.y+depth,
+    width:terrace.stairWidth??(centered?2.2:3),length:count*.29,count,drop:Math.max(0,drop)};
 }
 export function rectanglesOverlap(a,b,gap=0) {
   return a.x<b.x+b.width+gap&&a.x+a.width+gap>b.x

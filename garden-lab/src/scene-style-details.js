@@ -1,6 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.33.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.33.0';
+import {toWorld} from './orientation.js?v=1.34.0';
+import {projectArchitecturalMaterialUVs} from './material-assets.js?v=1.34.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.34.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.
@@ -95,6 +96,14 @@ function assembly(name, origin, {svgMode=false,upholsteryMaterials=[]} = {}) {
   const add = (geometry,material,x,y,z,quaternion) => {
     const buffer = batches.get(material) || {positions:[],normals:[],uvs:[]};
     batches.set(material,buffer);
+    // Register a photograph on each actual member before merging the chair.
+    // Otherwise a complete sofa's bounds turn leg fibres sideways and stretch
+    // cushion weave across unrelated upholstered parts.
+    if(material?.userData.metricTexture){
+      const member=new THREE.Mesh(geometry,material);
+      projectArchitecturalMaterialUVs(member);
+      geometry=member.geometry;buffer.metric=true;
+    }
     if (quaternion) geometry.applyQuaternion(quaternion);
     geometry.translate(...toWorld(x,y,z));
     const {position,normal,uv}=geometry.attributes;
@@ -192,6 +201,7 @@ function assembly(name, origin, {svgMode=false,upholsteryMaterials=[]} = {}) {
       g.setAttribute('position',new THREE.Float32BufferAttribute(data.positions,3));
       g.setAttribute('normal',new THREE.Float32BufferAttribute(data.normals,3));
       g.setAttribute('uv',new THREE.Float32BufferAttribute(data.uvs,2));
+      if(data.metric)g.userData.architecturalMetricUVs=true;
       const mesh=new THREE.Mesh(g,material);mesh.receiveShadow=true;
       // The assembled chairs, daybeds and tables need their own real sun
       // shadows as well as contact shading. These are visual casters only;

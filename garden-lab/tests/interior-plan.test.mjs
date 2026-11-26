@@ -124,8 +124,8 @@ test('renovated fittings stay in their assigned room and clear the flue cores',(
     const zOverlap=(a.depth+b.depth)/2-Math.abs(a.z-b.z);
     assert.ok(xOverlap<=0||zOverlap<=0,a.id+' overlaps '+b.id);
   }
-  assert.equal(first.fixtures.filter(f=>f.kind==='tub').length,0);
-  assert.equal(first.fixtures.filter(f=>f.kind==='hotTub').length,1);
+  assert.equal(first.fixtures.filter(f=>f.kind==='tub'&&f.variant==='whirlpool').length,1);
+  assert.equal(first.fixtures.filter(f=>f.kind==='hotTub').length,0);
   assert.equal(first.fixtures.find(f=>f.kind==='shower').heads,2);
   assert.match(first.issues.find(x=>x.includes('sauna')),/1\.28 × 1\.30/);
 });
@@ -182,5 +182,7 @@ test('attic maximum follows the section and lower roof areas have less gross hea
   assert.ok(atticHeadroomAt(0)<.5);
   for(const b of attic.headroomBands)near(atticHeadroomAt(b.polygon[0][1]),b.minimum);
   assert.ok(attic.headroomBands[0].area>attic.headroomBands.at(-1).area);
-  assert.deepEqual(attic.voids[0],proposal('first').stairs.find(s=>s.kind==='hatch').polygon);
+  assert.deepEqual(attic.voids[0],proposal('first').stairs.find(s=>s.to==='attic').polygon);
+  assert.equal(proposal('first').stairs.find(s=>s.to==='attic').kind,'flight');
+  assert.deepEqual(baseline('attic').voids[0],baseline('first').stairs.find(s=>s.kind==='hatch').polygon);
 });

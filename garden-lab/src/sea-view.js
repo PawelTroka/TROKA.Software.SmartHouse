@@ -1,6 +1,6 @@
-import {evaluateSeaView,seaCameraPose,seaRayHeight,seaViewSummary,SEA_MODES} from './sea-visibility.js?v=1.33.0';
-import {DEFAULT_SETTINGS,floorElevation} from './geometry.js?v=1.33.0';
-import {sterniczaRoofEnvelope} from './house-roof.js?v=1.33.0';
+import {evaluateSeaView,seaCameraPose,seaRayHeight,seaViewSummary,SEA_MODES} from './sea-visibility.js?v=1.34.0';
+import {DEFAULT_SETTINGS,floorElevation} from './geometry.js?v=1.34.0';
+import {sterniczaRoofEnvelope} from './house-roof.js?v=1.34.0';
 
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const metres=n=>Number.isFinite(n)?`${n.toFixed(1)} m`:'Unknown';

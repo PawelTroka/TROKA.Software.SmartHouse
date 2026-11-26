@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / 'assets/materials'
 USER_AGENT = 'SmartHouseGardenLab-MaterialCuration/1.0 (self-hosted CC0 architectural material comparison)'
 POLY = {
+    'pine_bark': '1k',
     'white_plaster_02': '1k',
     'clay_plaster': '1k',
     'oak_veneer_02': '1k',

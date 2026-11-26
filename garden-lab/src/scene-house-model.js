@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.js';
-import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.33.0';
-import {interiorMaterials} from './interior-materials.js?v=1.33.0';
-import {modelTools,batchGroup} from './interior-geometry.js?v=1.33.0';
-import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.33.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.33.0';
-import {addHouseRenovation} from './scene-house-renovation.js?v=1.33.0';
-import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.33.0';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.33.0';
-import {getDesignStyle} from './design-styles.js?v=1.33.0';
-import {toWorldTriangle} from './orientation.js?v=1.33.0';
-import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.33.0';
+import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.34.0';
+import {interiorMaterials} from './interior-materials.js?v=1.34.0';
+import {modelTools,batchGroup} from './interior-geometry.js?v=1.34.0';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.34.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.34.0';
+import {addHouseRenovation,addRenovationGableCladding} from './scene-house-renovation.js?v=1.34.0';
+import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.34.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.34.0';
+import {getDesignStyle} from './design-styles.js?v=1.34.0';
+import {toWorldTriangle} from './orientation.js?v=1.34.0';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.34.0';
 
 /** Same architecture/furniture builder as the interior viewer, with all four
  * floors assembled in the site frame. No placeholder furniture or facade holes. */
@@ -36,7 +36,7 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
     // partitions/cores remain visible because their conflicts are real.
     if(floor==='basement'&&settings.basementGarageEnabled)plan.fixtures=[];
     plan.outdoor=plan.outdoor.filter(p=>p.kind==='landing'&&!settings.basementGarageEnabled);
-    const model=buildArchitecture(plan,{showFurniture:true,showCeiling:true,showStairs:false,showOutdoor:true,showExterior:!settings.basementGarageEnabled},tools,finishes);
+    const model=buildArchitecture(plan,{showFurniture:true,showCeiling:true,showStairs:false,showOutdoor:true,showExterior:!settings.basementGarageEnabled,hstOpen:settings.hstOpen},tools,finishes);
     model.root.name=`shared-house-floor-${floor}`;model.root.userData.houseFloor=floor;
     model.updateVisibility('building',new THREE.Vector3(),{showFurniture:true,showCeiling:true,showStairs:false});
     if(floor==='attic')model.groups.ceiling.visible=false; // Exact shared roof below owns its skin.
@@ -69,6 +69,7 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
     g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
     const m=new THREE.Mesh(g,palette.plaster);m.name='shared-house-gables';m.castShadow=true;m.receiveShadow=true;roofGroup.add(m);
   }
+  addRenovationGableCladding(roofGroup,roof,layout,exteriorStyle,{svgMode});
   if(settings.basementGarageEnabled)addHouseEntry(root,layout,palette,(x,y)=>terrainAt(x,y,data),{drawDoor:false});
   addHouseRenovation(root,layout,exteriorStyle,{svgMode});
   root.userData.sharedHouse={source:'archived-and-marked-plans',floors:models.length,styleId:style.id,layout:settings.interiorLayout,registration:'street-wall-midpoint-no-scaling'};

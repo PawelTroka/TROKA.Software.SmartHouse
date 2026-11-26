@@ -19,14 +19,16 @@ import {designTerrainCutouts} from '../src/scene.js';
 const source=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const sourceSnapshot=structuredClone(source);
 const model=createStateModel(getSiteProfile('sternicza-11',source));
-const registeredHouse=applyPlanExterior(source,model.DEFAULTS).site.house.footprint;
+// v1.33 style-specific garden layouts remain an explicit historical comparison.
+const legacyDefaults=model.decodeState('v=29&site=sternicza-11');
+const registeredHouse=applyPlanExterior(source,legacyDefaults).site.house.footprint;
 const styles=DESIGN_STYLES.filter(s=>s.id!=='current');
 const programs=['classic','spa','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'];
 const near=(a,b,label)=>assert.ok(Math.abs(a-b)<1e-7,`${label}: ${a} versus ${b}`);
 const bounds=r=>({x0:r.x,x1:r.x+r.width,y0:r.y,y1:r.y+r.length});
 const sameBounds=(a,b)=>['x0','x1','y0','y1'].every(k=>Math.abs(a[k]-b[k])<1e-8);
 const fixture=(id,patch={})=>{
-  const settings=model.sanitizeState(changePresentationSettings(model.DEFAULTS,{designStyle:id,...patch}));
+  const settings=model.sanitizeState(changePresentationSettings(legacyDefaults,{designStyle:id,...patch}));
   const data=applyPlanExterior(source,settings);
   return {settings,data,program:gardenProgram(settings,data),furniture:gardenFurniture(data,settings)};
 };
@@ -45,17 +47,17 @@ const physicalFeatures=program=>[
   ...program.coldPlunge.steps.map((s,i)=>({id:`plunge step ${i}`,owner:'plunge',ring:rectCorners(s)})),
 ];
 
-test('all 22 styles select six real garden topologies without changing measured source geometry or tree centres',()=>{
+test('historical v1.33 styles select six real garden topologies without changing measured source geometry or tree centres',()=>{
   assert.equal(styles.length,22);
   assert.deepEqual(Object.keys(RENOVATION_GARDEN_RECIPES).sort(),styles.map(s=>s.id).sort());
   assert.equal(Object.keys(RENOVATION_GARDEN_SCHEMES).length,6);
-  const custom=model.sanitizeState({...model.DEFAULTS,screeningTrees:model.DEFAULTS.screeningTrees.map((t,i)=>({...t,x:t.x-.1*(i+1),y:t.y-.1}))});
+  const custom=model.sanitizeState({...legacyDefaults,screeningTrees:legacyDefaults.screeningTrees.map((t,i)=>({...t,x:t.x-.1*(i+1),y:t.y-.1}))});
   const topologies=new Set();
   for(const style of styles){
     const {settings,data,program}=fixture(style.id);
     assert.ok(program.renovation,style.id);
     topologies.add(JSON.stringify([program.pool,program.firepit.x,program.firepit.y,program.furniture]));
-    assert.deepEqual(settings.screeningTrees,model.DEFAULTS.screeningTrees,style.id+' preserves chosen trees');
+    assert.deepEqual(settings.screeningTrees,legacyDefaults.screeningTrees,style.id+' preserves chosen trees');
     assert.deepEqual(changePresentationSettings(custom,{designStyle:style.id}).screeningTrees,custom.screeningTrees,style.id+' preserves custom tree centres');
     assert.deepEqual(data.site.boundary,source.site.boundary,style.id+' boundary');
     assert.deepEqual(data.site.house.footprint,registeredHouse,style.id+' registered drawing model');
@@ -117,7 +119,7 @@ test('each default style retains a resting group and cooking counter with clear 
 
 test('Current, explicit manual programmes and pavilion alternatives retain the chosen underlying garden',()=>{
   for(const gardenProgramId of programs){
-    const base=model.sanitizeState({...model.DEFAULTS,gardenProgram:gardenProgramId,designStyle:'current',styleGardenLayout:false});
+    const base=model.sanitizeState({...legacyDefaults,gardenProgram:gardenProgramId,designStyle:'current',styleGardenLayout:false});
     const original=gardenProgram(base,source);
     assert.deepEqual(gardenProgram({...base,styleGardenLayout:true},source),original,'Current '+gardenProgramId);
     for(const style of styles){
@@ -138,14 +140,14 @@ test('Current, explicit manual programmes and pavilion alternatives retain the c
 test('v28 saved and shared geometry stays explicit while v29 layout choices round-trip and style adoption is deliberate',()=>{
   assert.ok(model.STATE_VERSION>=29);
   for(const style of styles){
-    const previous={...model.DEFAULTS,siteId:'sternicza-11',designStyle:style.id,gardenProgram:'spa-pool-grove'};
+    const previous={...legacyDefaults,siteId:'sternicza-11',designStyle:style.id,gardenProgram:'spa-pool-grove'};
     delete previous.styleGardenLayout;
     for(const restored of [model.decodeState(`v=28&site=sternicza-11&designStyle=${style.id}&gardenProgram=spa-pool-grove`),model.migrateSavedState(previous,28)]){
       assert.equal(restored.styleGardenLayout,false,style.id+' historical state');
       assert.deepEqual(poolBounds(restored,source),poolBounds({...restored,designStyle:'current'},source));
     }
     for(const enabled of [false,true]){
-      const settings=model.sanitizeState({...model.DEFAULTS,designStyle:style.id,styleGardenLayout:enabled});
+      const settings=model.sanitizeState({...legacyDefaults,designStyle:style.id,styleGardenLayout:enabled});
       const restored=model.decodeState(model.encodeState(settings));
       assert.equal(restored.styleGardenLayout,enabled,style.id+' share');
       assert.deepEqual(poolBounds(restored,source),poolBounds(settings,source),style.id+' shared pool');
@@ -154,7 +156,7 @@ test('v28 saved and shared geometry stays explicit while v29 layout choices roun
     }
   }
   assert.equal(model.decodeState('v=28&site=sternicza-11&styleGardenLayout=true').styleGardenLayout,false,'An unknown legacy field cannot relocate a saved pool');
-  const manual=model.sanitizeState({...model.DEFAULTS,designStyle:'hidden-bali',styleGardenLayout:false,gardenProgram:'spa-corner'});
+  const manual=model.sanitizeState({...legacyDefaults,designStyle:'hidden-bali',styleGardenLayout:false,gardenProgram:'spa-corner'});
   assert.equal(changePresentationSettings(manual,{designStyle:'hidden-bali'}).styleGardenLayout,false,'Reapplying the current style preserves manual intent');
   const adopted=changePresentationSettings(manual,{designStyle:'modern-minimal'});
   assert.equal(adopted.styleGardenLayout,true,'Choosing a different renovation adopts its garden');
@@ -172,7 +174,7 @@ test('relocated water and fire rooms share exact terrain holes, sun receivers an
   // physical cache, even when the measured property data is unchanged.
   const data=structuredClone(source);
   for(const style of styles){
-    const settings=model.sanitizeState({...model.DEFAULTS,designStyle:style.id,styleGardenLayout:true});
+    const settings=model.sanitizeState({...legacyDefaults,designStyle:style.id,styleGardenLayout:true});
     const program=gardenProgram(settings,data),pool=poolBounds(settings,data),levels=spaLevels(settings,data);
     const sun=prepareSunGeometry(settings,data),holes=designTerrainCutouts(settings,data);
     for(const room of [pool,program.firepit,program.coldPlunge]){
@@ -197,7 +199,7 @@ test('relocated water and fire rooms share exact terrain holes, sun receivers an
 });
 
 test('sun and budget caches invalidate on both style switches and the manual-layout flag',()=>{
-  const data=structuredClone(source),base={...model.DEFAULTS,designStyle:'hidden-bali',styleGardenLayout:true};
+  const data=structuredClone(source),base={...legacyDefaults,designStyle:'hidden-bali',styleGardenLayout:true};
   const a=prepareSunGeometry(base,data),qa=gardenQuantities(base,data);
   const shortPool={...base,designStyle:'mediterranean-villa'};
   const b=prepareSunGeometry(shortPool,data),qb=gardenQuantities(shortPool,data);

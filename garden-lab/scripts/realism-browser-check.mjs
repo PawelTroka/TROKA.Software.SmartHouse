@@ -10,8 +10,9 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const baseline=process.env.RENDER_BASELINE?path.resolve(process.env.RENDER_BASELINE):null;
 const output=path.join(root,'test-results','realism');await mkdir(output,{recursive:true});
 const report={checks:[],screenshots:[],scenes:[],errors:[]};
-// Measured canopies can make SwiftShader frames slow. Extend only scene
-// scrolling/capture; functional assertions and the CI job deadline stay bounded.
+// Measured canopies can make High-quality SwiftShader frames slow. Rendering
+// actions and captures share a bounded deadline; normal UI assertions retain
+// the shorter default timeout and the CI job keeps its overall deadline.
 const SCENE_CAPTURE_TIMEOUT=120000;
 const check=message=>{report.checks.push(message);console.log('REALISM_CHECK '+message);};
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg'};
@@ -29,17 +30,20 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base='http://127.0.0.1:'+server.address().port;
 let browser,page;
 const diagnostics=()=>page.locator('#render-diagnostics').evaluate(el=>({...el.dataset}));
+const sceneClick=selector=>page.locator(selector).click({timeout:SCENE_CAPTURE_TIMEOUT});
 const screenshot=async name=>{
   await page.locator('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
   if(!name.startsWith('before-'))await page.waitForFunction(()=>{const d=document.querySelector('#render-diagnostics').dataset;
-    return d.interacting==='false'&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested;});
+    return d.renderer==='webgl'&&d.drawEnabled==='true'&&Number(d.frames)>0&&d.interacting==='false'&&
+      Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&d.surfaceAssetsFailed==='0';
+  },null,{timeout:SCENE_CAPTURE_TIMEOUT});
   await page.locator('#scene-host').screenshot({path:path.join(output,name+'.png'),animations:'disabled',timeout:SCENE_CAPTURE_TIMEOUT});report.screenshots.push(name+'.png');
 };
 async function waitForAssets(){
   await page.waitForFunction(async()=>{
     const version=document.querySelector('meta[name="application-version"]').content;
     const module=await import(new URL('src/material-assets.js?v='+version,document.baseURI).href);
-    const status=module.surfaceAssetDiagnostics();return status.loaded===status.requested&&status.requested>0;
+    const status=module.surfaceAssetDiagnostics();return status.failed.length>0||status.loaded===status.requested&&status.requested>0;
   },null,{timeout:90000});
   const status=await page.evaluate(async()=>{const version=document.querySelector('meta[name="application-version"]').content;const m=await import(new URL('src/material-assets.js?v='+version,document.baseURI).href);return m.surfaceAssetDiagnostics();});
   assert.deepEqual(status.failed,[]);return status;
@@ -87,14 +91,32 @@ async function verifyPhotographicUpload(){
   check('A photograph replaces the rendered placeholder in two independent GPU contexts and an early clone');
 }
 async function open(style,before=false,extra=''){
-  await page.goto(base+(before?'/baseline/':'/current/')+'?site=sternicza-11#v=28&site=sternicza-11&designStyle='+style+'&styleHouseFinish=true&showDimensions=false&renderQuality=high'+extra,{waitUntil:'networkidle'});
+  const params=new URLSearchParams('v=28&site=sternicza-11&styleHouseFinish=true&showDimensions=false&renderQuality=high');
+  params.set('designStyle',style);
+  for(const [key,value]of new URLSearchParams(extra.replace(/^&/,'')))params.set(key,value);
+  const mode=params.get('mode')||'orbit';
+  assert.ok(['orbit','eye'].includes(mode),'Comparison camera must be orbit or eye');
+  // Load the same saved design behind its real Plan tab first. Otherwise the
+  // initial garage camera, arriving photographs and an immediate Orbit click
+  // compete for several expensive High-quality software-rendered frames.
+  // Switching through the public mode button still selects exactly the same
+  // garden overview / eye camera on both revisions and verifies the real UI.
+  params.set('mode','plan');
+  report.activeScene={style,before,mode};console.log('REALISM_SCENE '+JSON.stringify(report.activeScene));
+  await page.goto(base+(before?'/baseline/':'/current/')+'?site=sternicza-11#'+params,{waitUntil:'networkidle'});
   await page.locator('#loading').waitFor({state:'hidden',timeout:90000});
-  // The app intentionally opens an active garage study at the front entrance.
-  // The comparison needs the rear garden overview shown in the user's request.
-  if(!extra.includes('mode=eye'))await page.locator('button[data-mode="orbit"]').click();
+  assert.equal(await page.locator('#viewport').getAttribute('data-mode'),'plan');
+  if(!before)await waitForAssets();
+  await sceneClick(`button[data-mode="${mode}"]`);
+  assert.equal(await page.locator('#viewport').getAttribute('data-mode'),mode);
+  assert.equal(await page.locator(`button[data-mode="${mode}"]`).getAttribute('aria-pressed'),'true');
   await page.locator('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await page.waitForFunction(()=>Number(document.querySelector('#render-diagnostics')?.dataset.frames)>0);
-  if(!before){await waitForAssets();await page.waitForFunction(()=>document.querySelector('#render-diagnostics')?.dataset.contactShading==='true');}
+  await page.waitForFunction(()=>Number(document.querySelector('#render-diagnostics')?.dataset.frames)>0,null,{timeout:SCENE_CAPTURE_TIMEOUT});
+  if(!before){
+    await page.waitForFunction(style=>{const d=document.querySelector('#render-diagnostics')?.dataset;
+      return d?.renderer==='webgl'&&d.drawEnabled==='true'&&d.renderedStyle===style&&d.contactShading==='true';
+    },style,{timeout:SCENE_CAPTURE_TIMEOUT});
+  }
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 }
 try{
@@ -105,7 +127,7 @@ try{
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text());});
   if(baseline){
     await open('hidden-bali',true);await screenshot('before-bali-overview');
-    await page.locator('[data-mode="eye"]').click();await page.locator('[data-preset="terrace"]').click();await screenshot('before-bali-terrace');
+    await sceneClick('button[data-mode="eye"]');await sceneClick('[data-preset="terrace"]');await screenshot('before-bali-terrace');
     await open('hidden-bali',true,'&mode=eye&preset=garden&lookYaw=180&lookPitch=0&fov=60');await screenshot('before-bali-garden-house');
   }
   for(const style of ['hidden-bali','coastal','modern-minimal']){
@@ -113,15 +135,15 @@ try{
     const stats=await diagnostics();assert.equal(stats.garageVehicles,'2');assert.equal(stats.contactShading,'true');
     report.scenes.push({style,...stats,assets:await waitForAssets()});
     if(style==='hidden-bali'){
-      await page.locator('[data-mode="eye"]').click();await page.locator('[data-preset="terrace"]').click();await screenshot('after-bali-terrace');
-      await page.locator('[data-preset="pool"]').click();await screenshot('after-bali-pool');
+      await sceneClick('button[data-mode="eye"]');await sceneClick('[data-preset="terrace"]');await screenshot('after-bali-terrace');
+      await sceneClick('[data-preset="pool"]');await screenshot('after-bali-pool');
       report.pool=await diagnostics();assert.equal(report.pool.poolReflections,'true','Swimming-eye reflection must be active');
       await open('hidden-bali',false,'&mode=eye&preset=garden&lookYaw=180&lookPitch=0&fov=60');await screenshot('after-bali-garden-house');
     }
   }
   check('Bali, Coastal and Modern render photographic materials, contact shading and both cars');
 
-  await page.locator('#garage-view').click();await screenshot('after-modern-two-car-garage');
+  await sceneClick('#garage-view');await screenshot('after-modern-two-car-garage');
   assert.equal((await diagnostics()).garageVehicles,'2');
   await verifyPhotographicUpload();
 
@@ -135,17 +157,36 @@ try{
   check('Mobile renders successfully without desktop contact-shading buffers');
 
   await page.setViewportSize({width:1540,height:1100});
-  await open('hidden-bali');await page.locator('#interior-open').click();
+  await open('hidden-bali');await sceneClick('#interior-open');
   const host=page.locator('#interior-host');await host.waitFor({state:'visible'});
   await host.locator('[data-iw="floor"]').selectOption('ground');
   await host.locator('[data-iw="room"]').selectOption('lounge');
-  await host.locator('button[data-view="room"]').click();
-  await page.waitForFunction(()=>document.querySelector('#interior-host')?.getInteriorDiagnostics?.().scene?.frames>0);
+  // The workspace still has its own dollhouse renderer; Room now hands off to
+  // the continuous house-and-garden walker and releases that separate canvas.
+  // Verify both production renderers instead of waiting on the removed room one.
+  await sceneClick('#interior-host button[data-view="dollhouse"]');
+  await page.waitForFunction(()=>{const d=document.querySelector('#interior-host')?.getInteriorDiagnostics?.(),s=d?.scene;
+    return d?.visible&&s?.visible&&s.floor==='ground'&&s.styleId==='hidden-bali'&&s.view==='dollhouse'&&s.frames>0&&s.triangles>0&&s.contactShading;
+  },null,{timeout:SCENE_CAPTURE_TIMEOUT});
   await waitForAssets();
-  await page.waitForFunction(()=>document.querySelector('#interior-host')?.getInteriorDiagnostics?.().scene?.contactShading);
-  await host.locator('[data-iw="canvas"] canvas').screenshot({path:path.join(output,'after-bali-interior.png'),timeout:SCENE_CAPTURE_TIMEOUT});report.screenshots.push('after-bali-interior.png');
-  report.interior=await host.evaluate(el=>el.getInteriorDiagnostics());
-  check('Interior receives the same photographic surfaces and contact shading');
+  report.interiorDollhouse=await host.evaluate(el=>el.getInteriorDiagnostics());
+  assert.ok(report.interiorDollhouse.scene.surfaceAssets.requested>0);
+  assert.equal(report.interiorDollhouse.scene.surfaceAssets.loaded,report.interiorDollhouse.scene.surfaceAssets.requested);
+  assert.deepEqual(report.interiorDollhouse.scene.surfaceAssets.failed,[]);
+  await host.locator('[data-iw="canvas"] canvas').screenshot({path:path.join(output,'after-bali-dollhouse.png'),animations:'disabled',timeout:SCENE_CAPTURE_TIMEOUT});report.screenshots.push('after-bali-dollhouse.png');
+  await sceneClick('#interior-host button[data-view="room"]');
+  await host.waitFor({state:'hidden'});
+  await page.waitForFunction(()=>{const canvas=document.querySelector('#scene-host canvas'),d=document.querySelector('#render-diagnostics')?.dataset;
+    return document.querySelector('#viewport')?.dataset.mode==='walk'&&canvas?.dataset.walkFloor==='ground'&&canvas.dataset.walkPosition&&
+      d?.renderer==='webgl'&&d.drawEnabled==='true'&&d.renderedStyle==='hidden-bali'&&Number(d.triangles)>0&&d.contactShading==='true';
+  },null,{timeout:SCENE_CAPTURE_TIMEOUT});
+  assert.equal(await page.locator('button[data-mode="walk"]').getAttribute('aria-pressed'),'true');
+  assert.match(await page.locator('#walk-status').textContent(),/Living room/);
+  assert.equal(await host.locator('[data-iw="canvas"] canvas').count(),0,'Room entry releases the separate interior WebGL canvas');
+  await waitForAssets();await screenshot('after-bali-interior');
+  report.interior={...await diagnostics(),...await page.locator('#scene-host canvas').evaluate(canvas=>({floor:canvas.dataset.walkFloor,position:canvas.dataset.walkPosition.split(',').map(Number)}))};
+  assert.ok(report.interior.position.every(Number.isFinite));
+  check('Dollhouse and continuous indoor Walk both receive photographic surfaces and contact shading; room entry releases the separate renderer');
   assert.deepEqual(report.errors,[],'Browser/shader errors');
 }catch(error){
   report.failure=error.stack;

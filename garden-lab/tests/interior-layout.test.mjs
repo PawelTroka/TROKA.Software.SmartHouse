@@ -22,6 +22,23 @@ const segmentDistance=(x,z,a,b)=>{
 const polygonDistance=(x,z,p)=>Math.min(...p.map((a,i)=>segmentDistance(x,z,a,p[(i+1)%p.length])));
 const rectDistance=(x,z,left,top,right,bottom)=>Math.hypot(Math.max(left-x,0,x-right),Math.max(top-z,0,z-bottom));
 
+test('every renovated kitchen has one living-space entrance and retains the full cabinet program',()=>{
+  for(const styleId of Object.keys(INTERIOR_COMPOSITIONS)){
+    const plan=getInteriorPlan({floor:'ground',layout:'renovation',styleId});
+    const hallWall=plan.walls.find(w=>w.id==='kitchen-hall-enclosure');
+    assert.ok(hallWall,styleId);assert.deepEqual(hallWall.openings,[],`${styleId}: kitchen is enclosed from the entry hall`);
+    const opening=plan.walls.find(w=>w.id==='kitchen-living-opening').openings;
+    assert.equal(opening.length,1);assert.equal(opening[0].type,'passage');near(opening[0].width,1.66);
+    for(const id of ['west-counter','street-counter','east-counter','kitchen-fridge','kitchen-fridge-top','kitchen-wall-storage','kitchen-north-storage']){
+      assert.ok(plan.fixtures.some(f=>f.id===id),`${styleId}: missing ${id}`);
+    }
+    const pantry=plan.fixtures.find(f=>f.id==='east-counter');assert.equal(pantry.kind,'storage');assert.ok(pantry.height>=2.4);
+    for(const centre of plan.fixtures.filter(f=>['kitchen-island','kitchen-worktable'].includes(f.id))){
+      assert.equal(centre.kind,'counter');assert.ok(centre.drawers,`${styleId}: the centre piece provides closed storage`);
+    }
+  }
+});
+
 // A conservative physical walking check: a 0.60 m diameter disc must travel
 // around actual fixture footprints, stair voids, retained flues, wall jambs,
 // and fully open door leaves. This tests walking with the doors fully open;
@@ -89,10 +106,10 @@ test('bathroom brief is fitted at real fixture dimensions without a duplicate up
   const tub=byId(ground,'ground-tub'),spa=byId(first,'spa-jets');
   assert.equal(tub.kind,'tub');assert.equal(tub.variant,'soaking');near(tub.width,.88);near(tub.depth,1.78);near(tub.height,.68);
   assert.equal(byId(ground,'ground-basin').basins,2);assert.equal(ground.fixtures.filter(f=>f.kind==='bidet').length,1);
-  assert.equal(first.fixtures.filter(f=>f.kind==='tub'||f.kind==='bidet').length,0);
-  assert.equal(first.fixtures.filter(f=>f.kind==='hotTub').length,1);
-  near(spa.width,2.05);near(spa.depth,1.80);near(spa.height,.86);
-  for(const flag of ['jets','lights','hydromassage'])assert.equal(spa[flag],true);
+  assert.equal(first.fixtures.filter(f=>f.kind==='tub').length,1);
+  assert.equal(first.fixtures.filter(f=>f.kind==='hotTub'||f.kind==='bidet'||f.kind==='spaStep').length,0);
+  near(spa.width,.90);near(spa.depth,1.80);near(spa.height,.62);assert.equal(spa.variant,'whirlpool');
+  for(const flag of ['jets','hydromassage'])assert.equal(spa[flag],true);assert.equal(spa.lights,false);
   assert.equal(byId(first,'spa-vanity').basins,1);
   const shower=byId(first,'spa-shower');assert.equal(shower.heads,2);near(shower.width,1.20);near(shower.depth,1.62);
   near(first.rooms.find(r=>r.id==='spa-bath').area,11.83);near(first.rooms.find(r=>r.id==='sauna').area,1.66);
@@ -143,7 +160,7 @@ test('0.60 m routes reach both bathrooms and their individual usable fixture app
 test('upper floor furniture leaves a 0.60 m route from the landing to every proposed room',()=>{
   const plan=proposal('first'),reached=circulation(plan,[5.4,4.4]);
   const points={master:[2.10,2.0],office:[6.1,2.8],'guest-1':[9.00,2.20],'guest-2':[2.90,6.50],
-    'guest-3':[2.90,8.30],wardrobe:[5.30,9.80],'spa-bath':[8.10,7.98],sauna:[9.60,4.38]};
+    'guest-3':[2.90,8.30],wardrobe:[5.30,9.80],'spa-bath':[8.55,7.40],sauna:[9.60,4.38]};
   const disconnected=[];
   for(const [id,point] of Object.entries(points)){
     assert.ok(contains(plan.rooms.find(r=>r.id===id).polygon,...point));
@@ -194,7 +211,7 @@ test('registered garage bounds move the portal, lining, cars and core conflicts 
 
 test('all resort arrangements retain free floor area, fixture approaches and room access',()=>{
   const targets={ground:[[2.75,3.9],[2.4,6.6],[5.35,2],[8.1,1.1]],
-    first:[[2.10,2.0],[6.1,2.8],[9,2.2],[2.9,6.5],[2.9,8.3],[5.3,9.8],[8.1,7.98],[9.6,4.38]]};
+    first:[[2.10,2.0],[6.1,2.8],[9,2.2],[2.9,6.5],[2.9,8.3],[5.3,9.8],[8.55,7.40],[9.6,4.38]]};
   for(const styleId of Object.keys(INTERIOR_COMPOSITIONS))for(const floor of ['ground','first']){
     const plan=getInteriorPlan({floor,styleId}),items=solidFixtures(plan),reached=circulation(plan,floor==='ground'?[5.3,4.4]:[5.4,4.4]);
     for(const [i,a] of items.entries())for(const b of items.slice(i+1)){
@@ -207,7 +224,7 @@ test('all resort arrangements retain free floor area, fixture approaches and roo
       // The destination follows the usable side of the new preparation area;
       // the old kitchen centre is now inside the proposed island itself.
       if(island)roomTargets[1]=[island.x+island.width/2+.45,island.z];
-      else if(table)roomTargets[1]=[table.x,table.z-table.depth/2-.45];
+      else if(table)roomTargets[1]=[table.x+table.width/2+.45,table.z];
     }else if(plan.furnishingConcept?.office==='floating'){
       const chair=plan.fixtures.find(f=>f.id==='office-chair');roomTargets[1]=[chair.x-chair.width/2-.35,chair.z];
     }

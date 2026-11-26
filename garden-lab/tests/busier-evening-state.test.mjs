@@ -4,9 +4,10 @@ import {readFileSync} from 'node:fs';
 import {createStateModel,STATE_VERSION} from '../src/state.js';
 import {getSiteProfile} from '../src/sites.js';
 import {NIGHT_DEFAULTS,nightLightingState} from '../src/night-lighting.js';
+import {STERNICZA_EXCELSA_TREES} from '../src/screening-layouts.js';
 
-const previous={nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55};
-const current={nightWindowActivity:70,nightPendantIntensity:80,nightHedgeIntensity:85};
+const previous={nightGardenIntensity:75,nightWindowActivity:35,nightPendantIntensity:65,nightHedgeIntensity:55};
+const current={nightWindowActivity:70,nightGardenIntensity:45,nightPendantIntensity:65,nightHedgeIntensity:30};
 const withoutChangedLights=state=>Object.fromEntries(Object.entries(state).filter(([key])=>!Object.hasOwn(current,key)));
 
 for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40','korzeniowskiego-40.json'],['nadmorska-17','nadmorska-17.json']]){
@@ -15,17 +16,18 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
   // A v19 fixture must retain its published non-lighting defaults even after
   // a later release changes the fresh terrace, cover and garage proposal.
   const publishedDefaults=Object.freeze({...model.DEFAULTS,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
-    ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
+    hstOpen:0,summerPoolLayout:false,jacuzziCentered:false,sceneMotion:false,
+    ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false,screeningTrees:STERNICZA_EXCELSA_TREES}:{}),
     terraceCoverType:'canopy',...previous});
 
-  test(id+': fresh designs and current sparse links use the brighter, busier evening defaults',()=>{
+  test(id+': fresh designs and current sparse links use the soft pendant-led evening defaults',()=>{
     assert.ok(STATE_VERSION>=20);
     for(const [key,value] of Object.entries(current)){
       assert.equal(NIGHT_DEFAULTS[key],value,key);
       assert.equal(model.FIELDS[key].value,value,key);
       assert.equal(model.DEFAULTS[key],value,key);
     }
-    assert.equal(model.DEFAULTS.nightGardenIntensity,75);
+    assert.equal(model.DEFAULTS.nightGardenIntensity,45);
     assert.equal(model.DEFAULTS.nightWindowIntensity,60);
     assert.deepEqual(model.sanitizeState(),model.DEFAULTS);
     assert.deepEqual(model.decodeState(`v=${STATE_VERSION}&site=${id}`),model.DEFAULTS);
@@ -39,7 +41,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
         for(const [key,value] of Object.entries(previous))assert.equal(restored[key],value,`v${version} ${key}`);
         const shared=model.encodeState(restored),params=new URLSearchParams(shared);
         assert.equal(params.get('v'),String(STATE_VERSION));
-        for(const [key,value] of Object.entries(previous))assert.equal(params.get(key),String(value),`v${version} explicitly retains ${key}`);
+        for(const [key,value] of Object.entries(previous))if(value!==model.DEFAULTS[key])assert.equal(params.get(key),String(value),`v${version} explicitly retains ${key}`);
         assert.deepEqual(model.decodeState(shared),restored,`v${version} is stable after re-sharing`);
         assert.deepEqual(model.migrateSavedState(restored,STATE_VERSION),restored,`v${version} is stable after saving as the current version`);
         if(version===19)assert.deepEqual(withoutChangedLights(restored),withoutChangedLights(publishedDefaults),
@@ -79,8 +81,8 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
 test('rendering fallbacks use the same defaults as new designs and retain explicit zero brightness',()=>{
   const night={enabled:true,elevation:-12};
   const defaults=nightLightingState(night);
-  assert.equal(defaults.gardenStrength,.75);assert.equal(defaults.pendantStrength,.8);
-  assert.equal(defaults.hedgeStrength,.85);assert.equal(defaults.windowStrength,.6);assert.equal(defaults.windowActivity,.7);
+  assert.equal(defaults.gardenStrength,.45);assert.equal(defaults.pendantStrength,.65);
+  assert.equal(defaults.hedgeStrength,.3);assert.equal(defaults.windowStrength,.6);assert.equal(defaults.windowActivity,.7);
   for(const bad of [undefined,NaN,Infinity,null,'bright']){
     const state=nightLightingState(night,Object.fromEntries(Object.keys(NIGHT_DEFAULTS).filter(key=>typeof NIGHT_DEFAULTS[key]==='number').map(key=>[key,bad])));
     assert.deepEqual(state,defaults);

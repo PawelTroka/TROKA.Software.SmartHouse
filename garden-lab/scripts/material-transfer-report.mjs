@@ -11,7 +11,7 @@ const files=new Map(manifest.assets.flatMap(a=>Object.values(a.maps).map(m=>[m.f
 const paths=spec=>spec?Object.values(spec.files):[];
 const size=items=>[...new Set(items)].reduce((n,file)=>n+files.get(file),0);
 const finish=(name,seams=true)=>paths(getMaterialForFinish(name,{seams}));
-const baseline=['wood','grass','plaster','stone','linen'].flatMap(key=>paths(MATERIAL_ASSETS[key]));
+const baseline=['wood','grass','plaster','stone','linen','pine-bark'].flatMap(key=>paths(MATERIAL_ASSETS[key]));
 const rows=DESIGN_STYLES.filter(s=>s.id!=='current').map(style=>{
   const e=getExteriorSurfaceSpec(style),i=getInteriorMaterialFinishes(style);
   const exterior=[...finish(e.wall),...finish(e.roof),...finish(e.wood,false),...finish(e.paving,false),...finish(e.fabric),

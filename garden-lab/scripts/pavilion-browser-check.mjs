@@ -153,15 +153,23 @@ try{
   report.original={stats:await stats(),programme:original.settings.gardenProgram,view:await viewContext()};
 
   await renderedChange(()=>q('#pavilionEnabled').check());
+  const conflict=await exportDesign();
+  assert.equal(conflict.cornerPavilion.valid,false,'Broad boundary pines must disclose their pavilion overlap');
+  assert.deepEqual(conflict.settings.screeningTrees,original.settings.screeningTrees,'Enabling construction must not silently replace planting');
+  assert.equal(await q('#pavilion-compatible-planting').isVisible(),true);
+  await renderedChange(()=>q('#pavilion-compatible-planting').click());
   const rear=await exportDesign();await expectStudy(rear,{height:6.5,x:12.2,y:29,width:5,depth:5.8});
+  assert.equal(rear.cornerPavilion.valid,true,'The explicit narrow-tree prescription resolves the pavilion conflict');
+  assert.ok(rear.settings.screeningTrees.every(tree=>tree.typeId==='thuja-excelsa-9m'));
+  assert.equal(await q('#pavilion-compatible-planting').isVisible(),false);
+  const compatibleTrees=rear.settings.screeningTrees;
   assert.equal(await q('#pavilion-settings').isVisible(),true);
-  assert.deepEqual(rear.settings.screeningTrees,original.settings.screeningTrees);
   assert.equal(rear.settings.gardenProgram,original.settings.gardenProgram);
   const rearFrame=await shot('02-rear-corner-6-5m-orbit','#scene-host canvas');
   report.enableDifference=await pixelChange(baseline,rearFrame);
   assert.ok(report.enableDifference.pixels>100,'Enabling the alternative did not change the rendered garden');
   report.rear=rear.cornerPavilion;
-  check('The optional 6.5 m pavilion renders, moves the pool west, retains planting and agrees with its live PCK3 readout');
+  check('The optional pavilion reports the broad-pine clash; its explicit Excelsa planting action resolves the layout and restores a valid PCK3 comparison');
 
   const lowStats=await stats(),lowView=await viewContext();
   await renderedChange(()=>q('[data-pavilion-height="10"]').click());
@@ -229,7 +237,8 @@ try{
   assert.equal(restored.cornerPavilion.enabled,false);
   assert.equal(await q('#pavilion-settings').isVisible(),false);
   assert.equal(await q('#garden-program').inputValue(),original.settings.gardenProgram);
-  assert.deepEqual(gardenSnapshot(restored),gardenSnapshot(original));
+  assert.deepEqual(gardenSnapshot(restored),{...gardenSnapshot(original),trees:compatibleTrees},
+    'Turning the pavilion off restores the garden geometry and retains the explicitly accepted planting');
   assert.ok(!restored.privacyStructures.footprints.some(item=>item.group==='pavilion'));
   // Hidden plan DOM is intentionally lazy; the exported footprints and the
   // active rendered scene are the current state while Orbit is selected.

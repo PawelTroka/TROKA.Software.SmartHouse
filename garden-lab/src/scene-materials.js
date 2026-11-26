@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {createPhotographicMaps,calibratePhotographicTint} from './material-assets.js?v=1.33.0';
+import {createPhotographicMaps,calibratePhotographicTint} from './material-assets.js?v=1.34.0';
 
 // Local photographic PBR finish samples supplement the procedural botanical
 // and water textures. Files are self-hosted CC0 assets; none depict this site.
@@ -188,7 +188,7 @@ export function createSurfaceTextures(maxAnisotropy = 4) {
   const {waterNormal,microHeight,barkHeight} = createDetailMaps();
   const maps = {stone, stucco, wood, grass, foliage, pineNeedles, bark, roof, textiles,
     environment, waterNormal, microHeight, barkHeight};
-  for(const [name,asset] of [['stone','stone'],['stucco','plaster'],['wood','wood'],['grass','grass'],['textiles','linen']]){
+  for(const [name,asset] of [['stone','stone'],['stucco','plaster'],['wood','wood'],['grass','grass'],['textiles','linen'],['bark','pine-bark']]){
     const photo=createPhotographicMaps(asset,{anisotropy:maxAnisotropy});if(!photo)continue;
     maps[name].dispose();maps[name]=photo.map;maps[name+'Normal']=photo.normalMap;maps[name+'Roughness']=photo.roughnessMap;
   }
@@ -201,12 +201,12 @@ export function configureBasePhotographicMaterials(materials,textures){
   for(const [role,family,asset,strength] of [
     ['stone','stone','stone',.35],['stoneLight','stone','stone',.35],
     ['wall','stucco','plaster',.23],['wood','wood','wood',.6],['woodLight','wood','wood',.6],
-    ['grass','grass','grass',.72],['linen','textiles','linen',.4],
+    ['grass','grass','grass',.72],['linen','textiles','linen',.4],['treeBark','bark','pine-bark',.75],
   ]){
     const material=materials[role];if(!material||!textures[family+'Normal'])continue;
     material.map=textures[family];material.normalMap=textures[family+'Normal'];material.roughnessMap=textures[family+'Roughness'];
     material.bumpMap=null;material.normalScale=new THREE.Vector2(strength,strength);material.roughness=1;
-    calibratePhotographicTint(material,asset);material.userData.metricTexture=true;
+    calibratePhotographicTint(material,asset);material.userData.metricTexture=role!=='treeBark';
     material.userData.photographicSurface=material.map.userData.materialAsset.id;material.needsUpdate=true;
   }
 }

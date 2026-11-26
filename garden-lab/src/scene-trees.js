@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.33.0';
-import {createFoliageMaterial} from './scene-vegetation.js?v=1.33.0';
+import {toWorld} from './orientation.js?v=1.34.0';
+import {createFoliageMaterial} from './scene-vegetation.js?v=1.34.0';
 
 const point = (x, y, z) => new THREE.Vector3(...toWorld(x, y, z));
 
@@ -103,7 +103,9 @@ function addPine(group, v, materials, svgMode, valid) {
     if (length < .01) return;
     const geometry = new THREE.CylinderGeometry(tipRadius, radius, length, svgMode ? 4 : 6, 1);
     const uv = geometry.getAttribute('uv');
-    for (let i = 0; i < uv.count; i++) uv.setY(i, uv.getY(i) * Math.max(.3, length / 1.8));
+    // Metres on the photographed two-metre bark scan. Cylinder UVs must stay
+    // wrapped around the branch instead of later planar material projection.
+    for (let i = 0; i < uv.count; i++) uv.setXY(i,uv.getX(i)*TAU*radius,uv.getY(i)*length);
     const matrix = new THREE.Matrix4().compose(a.add(b).multiplyScalar(.5),
       new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize()), new THREE.Vector3(1, 1, 1));
     geometry.applyMatrix4(matrix);
@@ -211,13 +213,17 @@ function addPine(group, v, materials, svgMode, valid) {
 
   const trunkTop = v.trunkTopZ ?? v.crownBottomZ + height * .48;
   const trunkHeight = trunkTop - v.groundZ, radius = v.trunkRadius || .12;
-  const trunkGeometry = new THREE.CylinderGeometry(radius * .44, radius * .96, trunkHeight, svgMode ? 7 : 12, svgMode ? 3 : 9);
+  const trunkGeometry = new THREE.CylinderGeometry(radius * .44, radius * .96, trunkHeight, svgMode ? 7 : 24, svgMode ? 3 : 18);
   const trunkPositions = trunkGeometry.getAttribute('position'), trunkUvs = trunkGeometry.getAttribute('uv');
   for (let i = 0; i < trunkPositions.count; i++) {
     const x = trunkPositions.getX(i), y = trunkPositions.getY(i), z = trunkPositions.getZ(i);
-    const furrow = .97 + .025 * Math.sin(Math.atan2(z, x) * 7 + y * .8 + phase);
-    trunkPositions.setXYZ(i, x * furrow, y, z * furrow);
-    trunkUvs.setY(i, trunkUvs.getY(i) * Math.max(1, trunkHeight / 1.8));
+    const t=(y+trunkHeight/2)/trunkHeight,angle=Math.atan2(z,x);
+    const furrow=.92+.035*Math.sin(angle*7+y*.8+phase)+.025*Math.sin(angle*13-y*1.7+phase);
+    // Very gentle specimen-specific curvature and buttress ridges avoid the
+    // straight furniture-pole trunk; all vertices remain in the same radius.
+    const bend=Math.sin(t*Math.PI)*radius*.045;
+    trunkPositions.setXYZ(i,x*furrow+Math.cos(phase)*bend,y,z*furrow+Math.sin(phase)*bend);
+    trunkUvs.setXY(i,trunkUvs.getX(i)*TAU*radius,trunkUvs.getY(i)*trunkHeight);
   }
   trunkGeometry.computeVertexNormals();
   const trunk = new THREE.Mesh(trunkGeometry, materials.bark);

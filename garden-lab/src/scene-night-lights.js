@@ -1,10 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.33.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.33.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.33.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.33.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.33.0';
-import {getResortGardenRecipe} from './resort-garden.js?v=1.33.0';
+import {toWorld} from './orientation.js?v=1.34.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.34.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.34.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.34.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.34.0';
+import {getResortGardenRecipe} from './resort-garden.js?v=1.34.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -20,13 +20,15 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   const materials=new Set(),geometries=new Set();
   const palette=style && style.id!=='current' ? style.palette : null;
   const fixtureForm=palette ? style.recipe.fixture : 'woven';
-  const warm=palette?.light??'#ffce86',water='#73d6d0';
+  // Stable warm-white sources (approximately 2400 K); style colours belong
+  // to the shades and furniture, not to an orange flood across the garden.
+  const warm='#ffd6a3',water='#73d6d0';
   const makeMaterial=(params)=>{const m=new THREE.MeshStandardMaterial(params);m.userData.transient=true;materials.add(m);return m;};
   const body=makeMaterial({color:palette?.frame??'#343d38',roughness:.72,metalness:.3});
   const warmGlow=new THREE.MeshBasicMaterial({color:warm,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
   const waterGlow=new THREE.MeshBasicMaterial({color:water,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
-  const pendantGlow=new THREE.MeshBasicMaterial({color:palette?.light??'#ffdb9b',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
-  const hedgeGlow=new THREE.MeshBasicMaterial({color:palette?.light??'#ffcd87',transparent:true,opacity:0,depthWrite:false,toneMapped:false});
+  const pendantGlow=new THREE.MeshBasicMaterial({color:warm,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
+  const hedgeGlow=new THREE.MeshBasicMaterial({color:warm,transparent:true,opacity:0,depthWrite:false,toneMapped:false});
   const glowChannels=[[warmGlow,'garden'],[waterGlow,'garden'],[pendantGlow,'pendant'],[hedgeGlow,'hedge']];
   for(const [m] of glowChannels){m.userData.transient=true;materials.add(m);}
   const mesh=(geometry,material,name,x,y,z)=>{
@@ -69,7 +71,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
     mesh(new THREE.CylinderGeometry(.055,.065,.47,8),body,name,x,y,z+.235);
     mesh(new THREE.CylinderGeometry(.12,.12,.045,12),body,`${name}-shield`,x,y,z+.48);
     emitter(x,y,z+.435,.055);halo(x,y,z+.435,warm,.28);
-    light('point',`${name}-light`,x,y,z+.43,warm,8.5*(resort?.light[0]??1),resort?3.2:4.6);
+    light('point',`${name}-light`,x,y,z+.43,warm,3.4*(resort?.light[0]??1),3.2);
     fixtures.push({kind:'shielded-path-light',x,y,z:z+.47});
   };
   const bounds=boundsOf(data.site.boundary),centre=[(bounds.minX+bounds.maxX)/2,(bounds.minY+bounds.maxY)/2];
@@ -92,7 +94,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
     const target=[tree.x,tree.y,treeZ+Math.max(2,tree.height*.63)];
     fixture.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),point(...target).sub(fixture.position).normalize());
     emitter(x,y,z+.205,.065);halo(x,y,z+.205,warm,.32);
-    light('spot',`tree-uplight-beam-${i+1}`,x,y,z+.21,warm,200*(resort?.light[0]??1),Math.max(12,tree.height+3),target,true);
+    light('spot',`tree-uplight-beam-${i+1}`,x,y,z+.21,warm,54*(resort?.light[0]??1),Math.max(12,tree.height+3),target,true);
     fixtures.push({kind:'tree-uplight',treeId:tree.id,x,y,z:z+.21});
   }
   const furniture=gardenFurniture(data,settings);
@@ -103,7 +105,7 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   const {floorZ,drop}=terraceGroundReference(settings,data),stairs=terraceStairs({...terrace,y:rear},depth,drop,settings,data);
   const stripX=stairs.count?stairs.x+stairs.width/2:terrace.x+terrace.width/2,stripWidth=stairs.count?stairs.width*.82:Math.min(3,terrace.width*.6),stripY=rear+depth+.035;
   const strip=mesh(new THREE.BoxGeometry(stripWidth,.025,.035),warmGlow,'terrace-step-led',stripX,stripY,floorZ-.065);emitters.push({mesh:strip,channel:'garden'});
-  light('point','terrace-step-light',stripX,stripY+.08,floorZ-.07,warm,17*(resort?.light[0]??1),resort?3.8:5.5);
+  light('point','terrace-step-light',stripX,stripY+.08,floorZ-.07,warm,7*(resort?.light[0]??1),3.4);
   fixtures.push({kind:'terrace-step-strip',x:stripX,y:stripY,z:floorZ-.065});
   // Wall-mounted submerged pool points. Their colour washes the basin and
   // water materials; they are visual proposals, not product photometry.
@@ -131,8 +133,8 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   // Merge each shade's ribs into one mesh rather than multiplying draw calls.
   // Every shade also shows warm transmitted light. Separate materials retain
   // independent dimmers, including in the simplified SVG renderer.
-  const shadeEmission=new THREE.Color(palette?.light??'#ffc781');
-  const shadeColor=['orb','linen'].includes(fixtureForm) ? palette.fabric : palette?.accent??'#b59969';
+  const shadeEmission=new THREE.Color(warm);
+  const shadeColor=['orb','linen'].includes(fixtureForm) ? palette?.fabric??'#f1e6cc' : palette?.accent??'#b59969';
   const shadeMaterials=Object.fromEntries(['pendant','hedge'].map(channel=>[channel,
     makeMaterial({color:shadeColor,roughness:palette ? .86 : .92,metalness:0,side:THREE.DoubleSide,emissiveIntensity:0})]));
   const cordMaterial=makeMaterial({color:palette?.frame??'#3d4034',roughness:.9,metalness:.1});
@@ -184,36 +186,36 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   };
   const pendantLayout=pendantLightingLayout(settings,data);
   for(const support of pendantLayout.supports){
-    join([support.x,support.y,support.baseZ],[support.x,support.y,support.topZ],support.zone==='garden'?.026:.018,body,`${support.id}-post`);
+    join([support.x,support.y,support.baseZ],[support.x,support.y,support.topZ],support.zone==='hedge'?.018:.024,body,`${support.id}-post`);
     mesh(new THREE.CylinderGeometry(.075,.085,.045,8),body,`${support.id}-foot`,support.x,support.y,support.baseZ+.0225);
   }
   for(const cable of pendantLayout.cables){
     for(let i=1;i<cable.points.length;i++)join(cable.points[i-1],cable.points[i],cable.kind==='arm'?.012:.006,cordMaterial,cable.id);
   }
-  // Every inner-hedge lantern must illuminate nearby foliage and ground, not
-  // just its own lens. Layout caps the hedge at 24 fixtures: with three dining
-  // and at most twelve landscape lights, the scene remains bounded at 39.
-  // These short-range hedge sources do not add shadow maps.
-  for(const [channel,lanterns,glow,color] of [['pendant',pendantLayout.garden,pendantGlow,palette?.light??'#ffda9b'],['hedge',pendantLayout.hedge,hedgeGlow,palette?.light??'#ffcb84']]){
+  // Small shaded sources light the dining setting and route. Eight restrained
+  // hedge accents replace the former bright continuous perimeter. No extra
+  // shadow map is allocated per pendant, keeping the scene budget bounded.
+  for(const [channel,lanterns,glow,color] of [['pendant',pendantLayout.garden,pendantGlow,warm],['hedge',pendantLayout.hedge,hedgeGlow,warm]]){
     for(const fixture of lanterns){
       const {x,y,z,radius,height,hangZ}=fixture;
       join([x,y,hangZ],[x,y,z+height*.5],.006,cordMaterial,`${fixture.id}-drop`);
       const shade=mesh(shadeGeometry(radius,height),shadeMaterials[channel],`${fixture.id}-${fixtureForm}-shade`,x,y,z);
       shade.userData.fixtureForm=fixtureForm;
       mesh(new THREE.CylinderGeometry(.035,.045,.055,8),body,`${fixture.id}-socket`,x,y,z+height*.35);
-      const diffuser=emitter(x,y,z-height*.1,radius*.61,glow,channel);
-      diffuser.name=`${fixture.id}-glowing-core`;diffuser.scale.y=height/(radius*1.8);
-      halo(x,y,z-height*.1,color,channel==='pendant'?radius*2.5:resort?.42:.60,channel);
+      const diffuser=emitter(x,y,z-height*.1,Math.min(.042,radius*.30),glow,channel);
+      diffuser.name=`${fixture.id}-glowing-core`;diffuser.scale.y=1.35;
+      halo(x,y,z-height*.1,color,channel==='pendant'?radius*1.75:.25,channel);
       if(channel==='pendant'){
-        const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,40*(resort?.light[1]??1),resort?4.4:5.5,[x,y,fixture.groundZ],false,channel);
-        if(pendantLight){pendantLight.angle=resort?.86:1.02;pendantLight.penumbra=.75;}
-      }else light('point',`${fixture.id}-light`,x,y,z-height*.1,color,72*(resort?.light[2]??1),resort?3.8:6,null,false,channel);
+        const pendantLight=light('spot',`${fixture.id}-light`,x,y,z-height*.2,color,(fixture.zone==='path'?10:24)*(resort?.light[1]??1),fixture.zone==='path'?3.8:4.4,[x,y,fixture.groundZ],false,channel);
+        if(pendantLight){pendantLight.angle=fixture.zone==='path'?1.10:1.02;pendantLight.penumbra=.95;}
+      }else light('point',`${fixture.id}-light`,x,y,z-height*.1,color,14*(resort?.light[2]??1),3.8,null,false,channel);
       fixtures.push({...fixture,kind:channel==='pendant'?'garden-pendant':'hedge-pendant',channel});
     }
   }
   group.userData.fixtureSchedule=fixtures;
   group.userData.pendantLayout=pendantLayout;
   group.userData.resortLightRecipe=resort;
+  group.userData.lightingIntent={temperatureK:2400,maximumHedgeAccents:8,pathStrings:pendantLayout.cables.filter(c=>c.kind==='festoon').length};
   let applied={garden:-1,pendant:-1,hedge:-1};
   const bounded=value=>Math.max(0,Math.min(1,Number.isFinite(value)?value:0));
   const apply=(strength)=>{
@@ -221,10 +223,10 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
       {garden:bounded(strength?.gardenStrength),pendant:bounded(strength?.pendantStrength),hedge:bounded(strength?.hedgeStrength)};
     const changed=Object.keys(values).some(key=>Math.abs(values[key]-applied[key])>.0001);applied=values;
     for(const l of lights){const value=values[l.userData.nightChannel];l.visible=value>.001;l.intensity=l.userData.nominalIntensity*value;}
-    for(const [m,channel] of glowChannels)m.opacity=Math.min(1,values[channel]*1.5);
-    for(const {material,channel} of haloMaterials)material.opacity=values[channel]*(channel==='hedge'?.85:.65);
+    for(const [m,channel] of glowChannels)m.opacity=Math.min(.88,values[channel]*1.18);
+    for(const {material,channel} of haloMaterials)material.opacity=values[channel]*(channel==='hedge'?.24:.32);
     for(const [channel,material] of Object.entries(shadeMaterials)){
-      material.emissiveIntensity=values[channel]*.45;
+      material.emissiveIntensity=values[channel]*.20;
       // SVGRenderer adds emissive directly and does not apply its intensity.
       material.emissive.copy(shadeEmission).multiplyScalar(svgMode?material.emissiveIntensity:1);
     }

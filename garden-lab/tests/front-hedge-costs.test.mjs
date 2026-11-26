@@ -24,7 +24,7 @@ test('front budget excludes the access openings and rounds each planted span ind
   assert.equal(cost.hedges.lines.delivery,1000);
 });
 
-test('adding front thujas adds planting, drip irrigation and the fitted inner-hedge lanterns',()=>{
+test('adding front thujas adds planting and drip irrigation while redistributing eight restrained hedge lanterns',()=>{
   const old=estimateCosts({...base,hedgeFront:0},data),cost=estimateCosts(base,data);
   const front=cost.hedges.sides.find(s=>s.side==='front'),frontInstalled=front.plants.low+front.planting;
   assert.deepEqual(cost.hedges.sides.filter(s=>s.side!=='front'),old.hedges.sides);
@@ -34,7 +34,9 @@ test('adding front thujas adds planting, drip irrigation and the fitted inner-he
   near(cost.garden.quantities.frontIrrigationArea,front.length);
   near(cost.garden.quantities.irrigatedArea-old.garden.quantities.irrigatedArea,front.length);
   const extraLanterns=cost.garden.quantities.hedgePendantCount-old.garden.quantities.hedgePendantCount;
-  assert.ok(extraLanterns>0);
+  assert.equal(cost.garden.quantities.hedgePendantCount,8);
+  assert.equal(old.garden.quantities.hedgePendantCount,8);
+  assert.equal(extraLanterns,0,'Extending the planted perimeter redistributes its eight accents without adding lamps');
   near(cost.total.low-old.total.low,frontInstalled+front.length*35+extraLanterns*700);
   near(cost.total.high-old.total.high,(frontInstalled+front.length*65+extraLanterns*1500)*1.2);
   for(const row of cost.garden.rows.filter(row=>!['costGardenIrrigation','costGardenLighting'].includes(row.key))){

@@ -1,6 +1,6 @@
 /** Movable furnishings and decorative light compositions. These are design
  * proposals, never replacements for surveyed geometry or screening volumes. */
-import {canopySupportBounds} from './geometry.js?v=1.33.0';
+import {canopySupportBounds} from './geometry.js?v=1.34.0';
 const recipe=(terrace,garden,diningTurn,shift,hedgeCount,pendantCount,treeCount,light,plant)=>Object.freeze({
   terrace,garden,diningTurn,shift:Object.freeze(shift),hedgeCount,pendantCount,treeCount,
   light:Object.freeze(light),plant,
@@ -40,6 +40,36 @@ export function resortTerraceLayout(data,settings,tub,stairs){
   const r=getResortGardenRecipe(settings),t=data.site.terrace;
   if(!r)return {items:[],clearances:[],recipe:null};
   const x=t.x,y=data.site.rearMidpoint[1],width=t.width,depth=Number(settings.terraceDepth)||t.depth;
+  if(tub.centered){
+    const threshold=Math.min(.78,Math.max(.35,tub.y0-y-.05));
+    const clearances=[
+      {id:'threshold-route',x,y,width,length:threshold},
+      {id:'garden-edge-route',x,y:y+depth-threshold,width,length:threshold},
+      {id:'spa-access',x:tub.x0-.60,y:tub.y0-.60,width:tub.width+1.20,length:tub.length+1.20},
+      {id:'spa-right-route',x:tub.x0-.82,y,width:.82,length:depth},
+      {id:'spa-left-route',x:tub.x1,y,width:.82,length:depth},
+    ];
+    const bays=[{id:'right',x:x+.16,width:tub.x0-.82-x-.16,back:'west'},
+      {id:'left',x:tub.x1+.82,width:x+width-.16-tub.x1-.82,back:'east'}];
+    const items=[],length=Math.max(0,depth-2*threshold-.10),startY=y+threshold+.05;
+    const add=o=>{if(o.width>.25&&o.length>.25&&!clearances.some(c=>overlaps(o,c))&&!items.some(i=>overlaps(i,o,.06)))items.push(o);};
+    for(const bay of bays){
+      if(bay.width<.72||length<1.4)continue;
+      const outer=bay.id==='right'?bay.x:bay.x+bay.width-.88;
+      if(r.terrace==='daybed'&&bay.width>1.65){
+        const w=Math.min(1.62,bay.width-.10),l=Math.min(2.08,length);
+        add(item('terrace-'+bay.id+'-daybed','daybed',bay.id==='right'?bay.x:bay.x+bay.width-w,startY,w,l));
+      }else{
+        const kind=r.terrace==='paired'?'lounger':'sofa',w=kind==='lounger'?.78:.88;
+        add(item('terrace-'+bay.id+'-'+kind,kind,outer,startY,w,Math.min(2.12,length),bay.back));
+      }
+      if(bay.width>1.7){
+        const tx=bay.id==='right'?bay.x+bay.width-.50:bay.x;
+        add(item('terrace-'+bay.id+'-drinks','table',tx,startY+.56,.48,.58));
+      }
+    }
+    return {items,clearances,recipe:r.terrace,bays,centerpiece:true};
+  }
   const edge=.16,threshold=.95,routeW=1.20;
   const routeX=Math.max(tub.x1+.60,Math.min(x+width-routeW-.30,stairs.x+stairs.width/2-routeW/2));
   const route={id:'terrace-route',x:routeX,y,width:routeW,length:depth};

@@ -1,9 +1,9 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.33.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.33.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.33.0';
-import {curateInteriorPlan} from './interior-curation.js?v=1.33.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.34.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.34.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.34.0';
+import {curateInteriorPlan} from './interior-curation.js?v=1.34.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -51,10 +51,10 @@ function flueCores(){
     {id:'east-flue',label:'Four-flue stack',polygon:rect(6.86,4.89,8.08,5.23),flues:4},
   ];
 }
-const mainOpening=()=>rect(5.88,4.98,6.89,7.81);
+const mainOpening=(proposed=false)=>proposed?rect(5.88,6.00,7.00,8.60):rect(5.88,4.98,6.89,7.81);
 const hatch=()=>rect(4.87,6.71,5.78,7.76);
-const mainFlight=()=>stair('main-stair','Timber stair to first floor','winder','ground','first',rect(5.91,6.06,7,8.62),[0,-1],17,3.05);
-const foldStair=()=>stair('attic-hatch','Folding attic stair','hatch','first','attic',hatch(),[0,-1],0,2.7);
+const mainFlight=(proposed=false)=>stair('main-stair',proposed?'Aligned stair to first floor':'Timber stair to first floor',proposed?'flight':'winder','ground','first',proposed?rect(5.88,6.00,7,8.60):rect(5.91,6.06,7,8.62),[0,-1],17,3.05);
+const foldStair=(proposed=false)=>proposed?stair('attic-stair','Compact stair through enlarged attic opening','flight','first','attic',rect(5.20,5.95,6.10,8.50),[0,-1],15,2.7):stair('attic-hatch','Folding attic stair','hatch','first','attic',hatch(),[0,-1],0,2.7);
 const interiorStair=()=>stair('cellar-stair','Timber stair from cellar','flight','basement','ground',rect(5.88,6.00,7.00,8.60),[0,-1],12,2);
 function exteriorStairs(){
   return [
@@ -74,7 +74,7 @@ function groundPlan(proposed){
   const shell=[
     ...mainSides(.35,roomLights()),
     h('street-facade',.175,10.595,8.825,.35,[
-      windowAt(1.86),passage(4.59,1.20),door(5.97,.95,'start',1),windowAt(7.62),
+      windowAt(1.86),passage(4.59,proposed?1.38:1.20),door(5.97,.95,'start',1),windowAt(7.62),
     ],exterior),
     h('street-bay-screen',3.61,7.16,10.45,.38,[windowAt(4.335,.5,1.1,1.15),windowAt(5.935,.5,1.1,1.15)],exterior),
     v('entrance-landing-divider',5.85,8.82,10.45,.12),
@@ -87,7 +87,7 @@ function groundPlan(proposed){
     v('kitchen-hall',4.53,5.04,8.825,.12,[door(6.99,.88,'end',1)]),
     v('wet-room-divider',8.98,5.23,8.825,.10,[door(5.25,.85,'start',-1)]),
   ];
-  const stairWest=v('stair-west',5.85,6.08,8.825,.12);
+  const stairWest=v('stair-west',5.85,6.08,8.825,.12,proposed?[passage(7.60,1.13,2.30)]:[],proposed?added:undefined);
   const stairEast=v('stair-and-bath-access',7.04,5.23,8.825,.12,[door(5.25,.82,'start',-1)]);
   const originalRooms=[
     room('rear-left','Garden room I','living',rect(.35,.35,5.83,4.85),'1/1',24.57,'Boards'),
@@ -100,7 +100,7 @@ function groundPlan(proposed){
   const newRooms=[
     room('dining','Dining','dining',rect(.35,.35,5.89,4.85)),
     room('lounge','Living room','living',rect(5.89,.35,10.42,4.85)),
-    room('front-kitchen','Open kitchen','kitchen',rect(.35,4.85,4.47,8.65)),
+    room('front-kitchen','Fitted kitchen · living-room access','kitchen',rect(.35,5.23,4.47,8.65)),
     room('hall','Entry and circulation','hall',[[4.47,4.85],[6.86,4.85],[6.86,6.02],[5.79,6.02],[5.79,8.65],[4.47,8.65]]),
     room('bathroom','Combined bathroom','bathroom',rect(7.10,5.27,10.42,8.65)),
   ];
@@ -109,10 +109,13 @@ function groundPlan(proposed){
     fixture('table','diningTable','Large dining table','dining',3.02,2.75,3.18,1.04,{seats:8}),
     fixture('sofa','sofa','U-shaped sectional facing the TV','lounge',8.13,3.30,2.60,2.70,{shape:'U',openTo:'right',front:[1,0]}),
     fixture('tv','tv','TV on solid right-wall bay','lounge',10.34,4.14,.11,1.34),
-    fixture('west-counter','counter','Kitchen cabinets','front-kitchen',.69,6.51,.65,2.96,{front:[1,0]}),
+    fixture('west-counter','counter','Full-depth kitchen drawer run','front-kitchen',.69,6.66,.65,2.68,{front:[1,0],drawers:true}),
     fixture('street-counter','counter','Low cabinets below street window','front-kitchen',2.41,8.31,4.08,.62,{front:[0,-1]}),
-    fixture('east-counter','counter','Preparation and appliance run','front-kitchen',4.10,6.95,.63,2.10,{front:[-1,0]}),
-    fixture('kitchen-fridge','fridge','Refrigerator facing the kitchen aisle','front-kitchen',3.70,5.38,.70,.60,{front:[-1,0]}),
+    fixture('east-counter','storage','Full-height pantry and appliance cabinets','front-kitchen',4.10,7.31,.63,1.36,{front:[-1,0],height:2.48,pantry:true}),
+    fixture('kitchen-fridge','fridge','Refrigerator in the tall cabinet wall','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0]}),
+    fixture('kitchen-fridge-top','wallCabinet','Storage over the refrigerator','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],baseHeight:1.95,height:.53,wallMounted:true}),
+    fixture('kitchen-wall-storage','wallCabinet','Wall cabinets beside the side window','front-kitchen',.55,7.43,.36,1.02,{front:[1,0],baseHeight:1.48,height:.90,wallMounted:true}),
+    fixture('kitchen-north-storage','storage','Full-height crockery and food storage','front-kitchen',1.78,5.56,1.46,.62,{front:[0,1],height:2.48}),
     fixture('hob','hob','Cooktop','front-kitchen',.68,6.45,.49,.61,{hostId:'west-counter'}),
     fixture('kitchen-sink','sink','Double sink below the window','front-kitchen',2.39,8.31,.90,.48,{hostId:'street-counter',front:[0,-1],basins:2}),
     fixture('ground-tub','tub','Deep freestanding soaking tub','bathroom',9.91,7.66,.88,1.78,{variant:'soaking',height:.68,front:[-1,0],approach:[9.12,7.13]}),
@@ -126,15 +129,17 @@ function groundPlan(proposed){
   const landing=platform('entry-landing','Twin entry landings','landing',rect(3.28,9,7.49,10.40),1.4);
   return {
     rooms:proposed?newRooms:originalRooms,
-    walls:[...shell,stairWest,stairEast,...(proposed?[modifiedRear,h('right-wet-crosswall',6.86,10.595,5.04,.38)]:[oldRear,...old])],
+    walls:[...shell,stairWest,stairEast,...(proposed?[modifiedRear,h('right-wet-crosswall',6.86,10.595,5.04,.38),
+      v('kitchen-hall-enclosure',4.53,5.04,8.825,.12,[],added),
+      h('kitchen-living-opening',.175,4.53,5.04,.12,[passage(2.75,1.66,2.45)],added)]:[oldRear,...old])],
     removedWalls:proposed?[oldRear,old[0],old[1],old[3],old[4]]:[],
     outdoor:proposed?[landing,platform('terrace','Garden terrace · 4 m','terrace',rect(0,-4,WIDTH,0),4)]:[landing],
-    fixtures:proposed?fitted:[],cores:flueCores(),stairs:[mainFlight(),...exteriorStairs()],voids:[],
+    fixtures:proposed?fitted:[],cores:flueCores(),stairs:[mainFlight(proposed),interiorStair(),...exteriorStairs()],voids:[mainOpening(true)],
     sources:sources('ground','front','side','structure','section',...(proposed?['ground-markup']:[])),
     issues:proposed?[
       'Opening the transverse wall below existing timber floors and making a 9.97 m glazing aperture need a load-path design, verified supports and flue survey.',
       'The right-wall TV is on the short solid panel in front of the side window. The 4 m terrace crosses the rear cellar areaway; provide retained access and drainage.',
-      'Kitchen, dining and lounge areas are open zones. Furniture, glazing subdivisions and clearances are design assumptions.',
+      'The fitted kitchen has one 1.66 m opening to the living/dining space and a continuous wall to the entry hall. Full-height pantry/appliance cabinets, drawer runs and wall cabinets preserve the windows and preparation aisles.',
       'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
       'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',
     ]:['The historical twin approach differs from the photo-informed present-day exterior. Door leaves, front screen details and the exact stair turn need a measured survey.'],
@@ -158,7 +163,7 @@ function firstPlan(proposed){
     v('office-guest',8.07,.17,3.895,.075),
     h('office-hall',4.575,8.07,3.895,.075,[door(5.17,.80,'start',-1)]),
     v('master-door',4.575,3.895,4.925,.075,[door(3.995,.80,'end',1)]),
-    proposed?v('spa-stair-privacy',6.95,4.925,8.83,.12,[door(7.80,.80,'start',-1)],added):oldStairWall,
+    proposed?v('spa-stair-privacy',6.95,4.925,8.83,.12,[door(5.25,.75,'start',-1)],added):oldStairWall,
     h('east-flue-wall',6.86,proposed?9.10:8.96,4.925,.12),
   ];
   const guestWall=h('guest-hall',8.07,10.60,3.895,.075,[door(8.68,.80,'start',-1)]);
@@ -227,8 +232,7 @@ function firstPlan(proposed){
     fixture('guest3-store','wardrobe','Shallow storage','guest-3',3.39,7.23,.80,.44,{front:[0,1]}),
     fixture('bay-storage','wardrobe','Hanging storage beside the door','wardrobe',4.30,9.07,.82,.60,{front:[0,1]}),
     fixture('bay-storage-east','wardrobe','Wide hanging storage beside the door','wardrobe',6.29,9.07,1.18,.60,{front:[0,1]}),
-    fixture('spa-jets','hotTub','Two-person hydrotherapy spa','spa-bath',8.10,6.30,2.05,1.80,{front:[0,1],height:.86,occupants:2,jets:true,lights:true,hydromassage:true,serviceSide:'front',serviceClearance:.60}),
-    fixture('spa-step','spaStep','Removable two-level spa step','spa-bath',8.10,7.43,.70,.40,{front:[0,1],height:.32,removable:true,approach:[8.10,7.98]}),
+    fixture('spa-jets','tub','Compact hydromassage bath','spa-bath',7.70,7.40,.90,1.80,{front:[1,0],variant:'whirlpool',height:.62,occupants:1,jets:true,lights:false,hydromassage:true,serviceSide:'front',serviceClearance:.60,approach:[8.55,7.40]}),
     fixture('spa-shower','shower','Two-person shower','spa-bath',9.79,6.17,1.20,1.62,{heads:2,front:[0,1],approach:[9.49,7.28]}),
     fixture('spa-vanity','basin','Single vanity on the solid side wall','spa-bath',10.10,7.63,.56,1.10,{front:[-1,0],basins:1,approach:[9.49,7.63]}),
     fixture('spa-wc','toilet','WC','spa-bath',9.47,8.29,.46,.64,{front:[0,-1],approach:[9.47,7.64]}),
@@ -243,13 +247,13 @@ function firstPlan(proposed){
     removedWalls:proposed?[oldRear,guestWall,oldStairWall,...steps.slice(0,2),...wet]:[],
     outdoor:proposed?[platform('balcony','Shared garden balcony · 4 m','balcony',rect(0,-4,WIDTH,0),4)]:[],
     fixtures:proposed?furnished:originalFittings,cores:flueCores(),
-    stairs:[{...mainFlight(),polygon:mainOpening()},foldStair()],voids:[mainOpening()],
+    stairs:[{...mainFlight(proposed),polygon:mainOpening(proposed)},foldStair(proposed)],voids:[mainOpening(proposed)],
     sources:sources('first','front','side','section','structure',...(proposed?['first-markup']:[])),
     issues:proposed?[
-      'The two new front guest rooms fit compact singles. The folding attic hatch opens into their new circulation route; check ladder deployment and door swings.',
+      'The two new front guest rooms fit compact singles. A compact stair replaces the folding attic ladder in the renovation, with an enlarged opening beside the main stair. Its top reaches the central roof zone; structure, headroom and stair pitch require a measured design.',
       'The bay is printed 3.07 × 1.68 m inside. The proposed 10 cm wardrobe partition leaves about 3.07 × 1.59 m clear; retaining the full depth would move it about 9 cm toward the hall and require the adjoining door routes to be checked.',
       'Moving the new sauna partition 0.36 m into the bath gives approximately 1.28 × 1.30 m clear. A 1.20 × 1.24 m cabin footprint fits that allowance, but lining, heater separation, ventilation, service access and the selected product still need checking.',
-      'The revised spa has one 2.05 × 1.80 m hydrotherapy tub with jets and lighting, a 1.20 × 1.62 m two-person shower, one washbasin and a WC. Its approximately 11.83 m² room retains a modest 0.60 m route; the entry step must be removable for front-panel servicing.',
+      'The bathroom has a 1.80 × 0.90 m hydromassage bath, 0.62 m high, with discreet jets instead of an outdoor-spa shell. The 1.20 × 1.62 m two-person shower, vanity and WC remain; the smaller bath opens a wider central route and needs no entry step.',
       'The old glazed kitchen/stair partition is closed for bathroom privacy. Verify filled spa loads on the historic timber floor, delivery access, equipment maintenance, waterproofing, humidity control and the exact product before installation.',
       'Tall bay wardrobes flank the new door instead of covering the side windows. The main bed faces the balcony; the two front guest beds remain compact singles, with a low headboard under the side window in guest room II.',
       'The third rear door is new. Verify structure, independent support, waterproofing, guards and thresholds for the 4 m balcony.',
@@ -354,7 +358,9 @@ function conversionWalls(existing,frame){
     if(cut1<hi)walls.push(sliceWall(w,cut1,hi,'-right','retained'));
   }
   walls.push(h('garage-portal',.20,10.57,8.80,.40,[opening('garage-door',frame.x0,frame.width,2.10)],{...exterior,...added}));
-  walls.push(v('garage-right-lining',frame.x1+.10,.4,8.8,.2,[door(3.05,.8,'start',-1),door(7.30,.8,'start',-1)],added));
+  // A new garage lining cannot pass through the retained stair. Keep the
+  // rear compartment door, and leave the stair-side approach physically open.
+  walls.push(v('garage-right-lining',frame.x1+.10,.4,6.0,.2,[door(3.05,.8,'start',-1)],added));
   if(frame.x0>.60)walls.push(v('garage-left-lining',frame.x0-.10,.4,8.8,.2,[],added));
   return {walls,removedWalls};
 }
@@ -381,7 +387,7 @@ function garagePlan(settings){
     issues:[
       'Two straight parking lanes project across the historical cellar. The drawing and mapped perimeter are centred without rescaling. Check registration on site.',
       ...conflicts.map(c=>'The proposed lanes intersect the retained '+c.label.toLowerCase()+'. Structural resolution is required.'),
-      'The rear cellar entrance needs a safe route, and the original stair now lands above the lowered floor. The exterior ramp study compares gradients, overhead clearance and vehicle underside separately.',
+      'The rear cellar entrance needs a safe route. The proposed cellar flight follows the lowered floor and its side approach stays open; its reconstruction and steep pitch need measured design. The exterior ramp study compares gradients, overhead clearance and vehicle underside separately.',
       'The proposed floor is '+Math.abs(elevation).toFixed(2)+' m below ground-floor datum; the drawing marks a foundation line at −2.50 m. Establish actual footing depths and design any required underpinning, water control and load transfers.',
       'Mirror clearances assume closed doors. '+(garage.widthPass?'The selected width meets the study allowances.':'The selected width fails the two-car lateral allowance.'),
     ],
@@ -393,7 +399,7 @@ export function atticHeadroomAt(z){
   if(!Number.isFinite(z)||z<0||z>DEPTH)return 0;
   return 3-Math.abs(z-4.50)*Math.tan(Math.PI/6);
 }
-function atticPlan(){
+function atticPlan(proposed=false){
   const headroomBands=[1.4,1.9,2.2].map(minimum=>{
     const halfDepth=(3-minimum)/Math.tan(Math.PI/6);
     const polygon=rect(.34,4.5-halfDepth,10.43,4.5+halfDepth);
@@ -403,7 +409,7 @@ function atticPlan(){
     rooms:[room('attic','Unpartitioned roof space','attic',rect(.34,.34,10.43,8.66))],
     walls:[...mainSides(.34,[]).map(w=>({...w,height:.40})),h('garden-eave',.17,10.60,.17,.34,[],{...exterior,height:.40}),
       h('street-eave',.17,10.60,8.83,.34,[],{...exterior,height:.40})],
-    removedWalls:[],fixtures:[],stairs:[foldStair()],voids:[hatch()],cores:flueCores(),outdoor:[],headroomBands,
+    removedWalls:[],fixtures:[],stairs:[foldStair(proposed)],voids:[proposed?foldStair(true).polygon:hatch()],cores:flueCores(),outdoor:[],headroomBands,
     sources:sources('first','section','front','side','structure'),
     issues:['The +5.75 m datum marks the upper ceiling or truss chord. The 3.00 m ridge height and headroom bands are gross envelope dimensions. Actual deck, insulation, truss webs and available clear floor area need inspection.',
       'A folding stair is drawn on the floor below. No attic room partitions or habitable area are documented. The front bay roof detail and exact truss spacing are inferred.'],
@@ -415,7 +421,7 @@ export function getInteriorPlan({floor='ground',layout='renovation',styleId='cur
   const proposed=layout==='renovation';
   const converted=floor==='basement'&&proposed&&garageVariant==='two-car';
   const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed),
-    first:()=>firstPlan(proposed),attic:atticPlan};
+    first:()=>firstPlan(proposed),attic:()=>atticPlan(proposed)};
   const detail=builders[floor]();
   const {roof}=INTERIOR_DIMENSIONS,bay=floor==='first'?INTERIOR_DIMENSIONS.firstBay:INTERIOR_DIMENSIONS.bay;
   const bayRight=round(bay.x+bay.width),bayFront=round(DEPTH+bay.depth);

@@ -3,19 +3,19 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.33.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.33.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.33.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.33.0';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.33.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.33.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.33.0';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.33.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.34.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.34.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.34.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.34.0';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.34.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.34.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.34.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.34.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.33.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.33.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.33.0';
-import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.33.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.34.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.34.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.34.0';
+import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.34.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -260,17 +260,18 @@ export function terraceGroundReference(settings = {}, data) {
   return { x, y, offset, floorZ, groundZ, drop: floorZ - groundZ };
 }
 
-/** Right means looking from the house into the garden: the low-x edge. */
+/** The centerpiece is centred on both terrace axes; legacy links can retain the edge position. */
 export function jacuzziBounds(settings = {}, data) {
   const compact=(settings.pavilionEnabled===true||['spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(settings.gardenProgram))&&spaEnabled(settings,data);
   const depth = number(settings.terraceDepth, 4.2), size = compact?2.3:2.2;
   const spa=spaEnabled(settings,data);
   const infinity=spa&&(!compact||settings.jacuzziOverflow===true);
-  const x0 = data.site.terrace.x + 0.15;
-  const y0 = data.site.rearMidpoint[1] + (spa?depth-size:Math.min(1.45,Math.max(0.15,depth-size-.15)));
+  const centered=settings.jacuzziCentered===true;
+  const x0 = centered?data.site.terrace.x+(data.site.terrace.width-size)/2:data.site.terrace.x+.15;
+  const y0 = data.site.rearMidpoint[1] + (centered?(depth-size)/2:(spa?depth-size:Math.min(1.45,Math.max(0.15,depth-size-.15))));
   const x1=x0+size,y1=y0+size,z=floorElevation(settings,data),waterOffset=infinity?-.035:-.115;
   const bottomZ=z-(compact?.78:.68);
-  return {x0,x1,y0,y1,width:size,length:size,z,infinity,overflow:infinity,waterOffset,waterZ:z+waterOffset,bottomZ,
+  return {x0,x1,y0,y1,width:size,length:size,z,centered,infinity,overflow:infinity,waterOffset,waterZ:z+waterOffset,bottomZ,
     externalHeight:compact?.9:.74,seats:compact?7:null,
     seatCentres:compact?[[.45,.45],[1.15,.32],[1.85,.45],[1.98,1.15],[1.85,1.85],[.45,1.85],[.32,1.15]].map(([x,y])=>[x0+x,y0+y]):null,
     serviceAccess:compact?{clearance:.6,x0:x0-.6,x1:x1+.6,y0:y0-.6,y1:y1+.6,datum:'Required technical access; removable deck and garden-side service access, not extra water area.'}:null,

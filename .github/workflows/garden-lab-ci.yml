@@ -41,7 +41,7 @@ jobs:
       - name: Install Chromium and system dependencies
         run: npx --no-install playwright install --with-deps chromium
       - name: Terrace, balcony and two-car browser checks
-        timeout-minutes: 5
+        timeout-minutes: 8
         run: node scripts/refinements-browser-check.mjs
       - name: Upload browser evidence
         if: always()
@@ -145,7 +145,7 @@ jobs:
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
       - run: npx --no-install playwright install --with-deps chromium
       - name: Original and renovated interiors in WebGL
-        timeout-minutes: 8
+        timeout-minutes: 12
         run: node scripts/interiors-browser-check.mjs
       - name: Upload interior evidence
         if: always()

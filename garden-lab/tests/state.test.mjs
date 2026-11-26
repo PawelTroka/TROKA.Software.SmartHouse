@@ -5,7 +5,7 @@ import {createStateModel,STATE_VERSION,DEFAULTS,FIELDS,MODES,sanitizeState,encod
 import {COST_FIELDS} from '../src/costs.js';
 import {BUILDING_FIELDS} from '../src/buildings.js';
 import {getSiteProfile} from '../src/sites.js';
-import {getScreeningLayouts} from '../src/screening-layouts.js';
+import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from '../src/screening-layouts.js';
 test('share links preserve fill, fixed floors, independent hedge heights and observer settings',()=>{
  const state={...DEFAULTS,hedgeRear:6,hedgeLeft:4,hedgeRight:2.5,gardenRaise:.5,bedRaise:.25,floorHeight:1.2,raiseNewHedges:false,preset:'custom',observerX:7.2,observerY:28,mode:'section',canopyEnabled:true,fasciaDepth:.35};
  const decoded=decodeState(encodeState(state));
@@ -122,7 +122,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,29);
+ assert.equal(STATE_VERSION,30);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -215,7 +215,7 @@ test('v5 physical side labels and state retain left/east and right/west without 
  assert.equal(FIELDS.hedgeRight.label,'Right hedge · west');
  const current={...DEFAULTS,poolFreeboard:.02,garageSlabThickness:.25,basementGarageEnabled:false,hedgeFront:0,hedgeFullPerimeter:false,gardenProgram:'classic',screeningTrees:[],hedgeLeft:3,hedgeRight:8,costTreePriceLeft:300,costTreePriceRight:850,lookYaw:25};
  assert.deepEqual(decodeState(encodeState(current)),current);
- assert.deepEqual(migrateSavedState(current,5),{...current,styleGardenLayout:false});
+ assert.deepEqual(migrateSavedState(current,5),{...current,sceneMotion:false,styleGardenLayout:false});
  assert.equal(decodeState('#v=5&hedgeLeft=3').hedgeRight,4);
  assert.equal(decodeState('#v=5&lookYaw=25').lookYaw,25);
 });
@@ -394,7 +394,8 @@ test('sparse v17 links and saved designs retain the exact pictured pines indepen
   old.screeningTrees[0].height=7;
   assert.equal(future.decodeState('v=17&site=sternicza-11').screeningTrees[0].height,10,'Migration must not mutate the frozen historical snapshot');
  }
- assert.deepEqual(future.decodeState('v=18&site=sternicza-11').screeningTrees,futureTrees);
+ assert.deepEqual(future.decodeState('v=18&site=sternicza-11').screeningTrees,STERNICZA_EXCELSA_TREES);
+ assert.deepEqual(future.decodeState('v=30&site=sternicza-11').screeningTrees,futureTrees);
  assert.equal(future.decodeState('v=18&site=sternicza-11').showDimensions,false);
  const korz=createStateModel(getSiteProfile('korzeniowskiego-40'));
  for(const version of [17,18]){

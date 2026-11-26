@@ -2,7 +2,19 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.33.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.33.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.33.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.34.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.34.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.34.0)**
+
+## Continuous walking and the summer garden · 1.34.0
+
+**Walk** now connects the garden and renovated house in one scene, with the same WASD/arrow and touch controls inside and out. Shared stair treads connect basement, living floor, first floor and attic. Room Eye level actions enter this same walker. The drawing-based Current comparison remains available.
+
+The terrace spa is centered, with animated Aurora/Lagoon/Amber water moods. Canopies and balconies are column-free cantilever concepts. The living-room HST has three slim panels and an opening slider; two leaves stack onto the left fixed panel without rebuilding the scene. Kitchens retain generous closed storage and open only toward living/dining; the upstairs fixture is a compact hydromassage bath.
+
+The pool's feasible summer-sun position is shared across styles, with sunbeds on one, two or three sides. Austrian pines return as the default, with photographed bark and calculated boundary positions for all 14 species choices. The study estimates 6.94 equivalent direct-sun hours per summer day over the pool, compared with 4.93 for the earlier pool/Excelsa layout. These are modeled water-area averages.
+
+Distinct gable/upper-storey cladding, metric photographic grain, bevels and softer warm pendant strings improve the real-time scene. Schema 30 preserves earlier shared comparisons while the active previous session adopts the requested changes once.
+
+[Release scope and controls](docs/resort-update-1.34.md) · [Summer sun and planting calculations](docs/summer-garden-1.34.md)
 
 ## Substantial renovation designs · 1.33.0
 
