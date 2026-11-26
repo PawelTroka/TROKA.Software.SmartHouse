@@ -3,7 +3,10 @@ import {houseModelFrame} from '../src/house-model.js';
 import {WALK_COMFORT} from '../src/walk-motion.js';
 
 const VIEWS=Object.freeze([
-  Object.freeze({id:'kitchen-connection',room:'front-kitchen',x:3.15,z:4.4,eye:1.57,yaw:-2.59,pitch:-.15}),
+  // A step into the living room keeps the connected sink end and concealed
+  // chimney together in the fixed walking lens; the closer kitchen spawn
+  // cuts the chimney out of the frame.
+  Object.freeze({id:'kitchen-connection',room:'front-kitchen',x:3.15,z:3.5,eye:1.57,yaw:-2.89,pitch:-.15}),
   Object.freeze({id:'open-stair-guard',room:'hall',x:5.15,z:5.55,eye:1.57,yaw:Math.PI,pitch:-.18}),
 ]);
 const degrees=radians=>radians*180/Math.PI;
@@ -34,6 +37,7 @@ export async function captureOpenLivingViews(page,{
   const q=selector=>page.locator(selector);
   const field=id=>q(`#interior-host [data-iw="${id}"]`);
   const canvas=()=>q('#scene-host canvas');
+  const frameCount=async()=>Number(await q('#render-diagnostics').getAttribute('data-frames'));
   const pose=()=>canvas().evaluate(node=>({
     position:node.dataset.walkPosition?.split(',').map(Number),
     altitude:Number(node.dataset.walkAltitude),yaw:Number(node.dataset.walkYaw),pitch:Number(node.dataset.walkPitch),
@@ -60,7 +64,7 @@ export async function captureOpenLivingViews(page,{
     document.querySelector('#interior-host')?.hidden,
   {mode,style},{timeout:remaining()});
   const turnTo=async(targetYaw,targetPitch)=>{
-    let drags=0;
+    let drags=0,afterFrame=null;
     for(;drags<6;drags++){
       const current=await pose(),yaw=angleDifference(targetYaw,current.yaw),pitch=targetPitch-current.pitch;
       if(Math.abs(yaw)<.04&&Math.abs(pitch)<.04)break;
@@ -70,13 +74,14 @@ export async function captureOpenLivingViews(page,{
       const dx=Math.max(-limitX,Math.min(limitX,yaw/gain));
       const dy=Math.max(-limitY,Math.min(limitY,-pitch/gain));
       const x=b.x+b.width/2-dx/2,y=b.y+b.height/2-dy/2;
+      afterFrame=await frameCount();
       await page.mouse.move(x,y);await page.mouse.down();
       try{await page.mouse.move(x+dx,y+dy,{steps:1});}finally{await page.mouse.up();}
     }
     const result=await pose();
     assert.ok(Math.abs(angleDifference(targetYaw,result.yaw))<.05&&Math.abs(targetPitch-result.pitch)<.05,
       `Normal drag did not reach the requested view: ${JSON.stringify({targetYaw,targetPitch,result})}`);
-    return drags;
+    return {drags,afterFrame};
   };
 
   assert.equal(await page.evaluate(()=>Boolean(document.body.dataset.modelFullscreen)),false,
@@ -125,10 +130,11 @@ export async function captureOpenLivingViews(page,{
     const customUrl=await navigate(await share(),{mode:'eye',preset:'custom',observerX:p[0],observerY:p[1],
       eyeHeight:view.eye,fov:70,interiorEnabled:false,interiorView:'plan'});
     await waitMode('eye');
+    const beforeWalk=await frameCount();
     await q('#viewer button[data-mode="walk"]').click({timeout:remaining()});
-    await walking('ground',{timeout:remaining(),settled:true});
-    const drags=await turnTo(yaw,pitch);
-    await walking('ground',{timeout:remaining(),settled:true});
+    await walking('ground',{timeout:remaining(),settled:true,afterFrame:beforeWalk});
+    const {drags,afterFrame}=await turnTo(yaw,pitch);
+    await walking('ground',{timeout:remaining(),settled:true,afterFrame});
     const actual=await pose();
     assert.equal(actual.floor,'ground');assert.equal(actual.navigation,'free');assert.equal(actual.fov,70);
     assert.ok(Math.hypot(actual.position[0]-p[0],actual.position[2]-p[1])<.015,'Public custom observer must reach the intended interior location');
