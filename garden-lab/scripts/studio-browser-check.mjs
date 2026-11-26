@@ -40,6 +40,12 @@ if(!base){
   base='http://127.0.0.1:'+server.address().port;
 }
 const el=selector=>page.locator(selector);
+const sceneCaptures=new WeakMap();
+const sceneCaptureSize=()=>el('#scene-host canvas').evaluate(canvas=>{
+  const rect=canvas.getBoundingClientRect();
+  return {cssWidth:rect.width,cssHeight:rect.height,bufferWidth:canvas.width,bufferHeight:canvas.height,
+    viewportWidth:innerWidth,viewportHeight:innerHeight,devicePixelRatio};
+});
 const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
 const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
   [k,k==='motionActive'?v==='true':Number.isFinite(Number(v))?Number(v):v])));
@@ -88,7 +94,14 @@ async function shot(name,selector){
     return !toast.classList.contains('visible') && Number(getComputedStyle(toast).opacity)===0;
   });
   await waitFrames();
-  const image=await target.screenshot(options);report.screenshots.push(filename);return image;
+  const size=sceneCapture?await sceneCaptureSize():null;
+  const image=await target.screenshot(options);report.screenshots.push(filename);
+  if(sceneCapture){
+    assert.deepEqual(await sceneCaptureSize(),size,'Camera viewport or drawing buffer resized during capture');
+    sceneCaptures.set(image,size);
+    (report.sceneCaptures??=[]).push({filename,...size,pngWidth:image.readUInt32BE(16),pngHeight:image.readUInt32BE(20)});
+  }
+  return image;
 }
 async function exportDesign(){
   const result=page.waitForEvent('download');
@@ -96,19 +109,37 @@ async function exportDesign(){
   return JSON.parse(await readFile(await (await result).path(),'utf8'));
 }
 async function pixelChange(a,b){
-  return page.evaluate(async bytes=>{
+  const sizeA=sceneCaptures.get(a),sizeB=sceneCaptures.get(b);
+  assert.ok(sizeA&&sizeB,'Pixel comparisons require captured viewport and drawing-buffer dimensions');
+  assert.deepEqual(sizeA,sizeB,'Camera viewport or drawing buffer resized');
+  const pngSize=buffer=>({width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)});
+  const pngA=pngSize(a),pngB=pngSize(b);
+  // At fractional scroll positions Chromium can include one extra CSS-pixel
+  // edge in a locator PNG (observed: 832×496 from an unchanged 832×495 canvas).
+  // The real CSS viewport and backing buffer above must still match exactly.
+  // Never rescale images or tolerate a true camera/renderer resize.
+  for(const png of [pngA,pngB])assert.ok(Math.abs(png.width-Math.round(sizeA.cssWidth))<=1&&
+    Math.abs(png.height-Math.round(sizeA.cssHeight))<=1,'Scene screenshot exceeds its CSS viewport by more than one edge pixel');
+  assert.ok(Math.abs(pngA.width-pngB.width)<=1&&Math.abs(pngA.height-pngB.height)<=1,
+    'Camera capture dimensions differ by more than one edge pixel');
+  const width=Math.min(pngA.width,pngB.width),height=Math.min(pngA.height,pngB.height);
+  const diff=await page.evaluate(async({bytes,width,height})=>{
     const decode=async base64=>{
       const image=new Image();image.src='data:image/png;base64,'+base64;await image.decode();
       const canvas=new OffscreenCanvas(image.width,image.height),ctx=canvas.getContext('2d');
       ctx.drawImage(image,0,0);return ctx.getImageData(0,0,canvas.width,canvas.height);
     };
     const [a,b]=await Promise.all(bytes.map(decode));
-    if(a.width!==b.width||a.height!==b.height)throw Error('Camera viewport resized');
-    let pixels=0;for(let i=0;i<a.data.length;i+=4){
-      if(Math.max(...[0,1,2].map(c=>Math.abs(a.data[i+c]-b.data[i+c])))>15)pixels++;
+    let pixels=0;for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+      const ai=(y*a.width+x)*4,bi=(y*b.width+x)*4;
+      if(Math.max(...[0,1,2].map(c=>Math.abs(a.data[ai+c]-b.data[bi+c])))>15)pixels++;
     }
-    return {pixels,fraction:pixels/(a.width*a.height)};
-  },[a.toString('base64'),b.toString('base64')]);
+    return {pixels,fraction:pixels/(width*height)};
+  },{bytes:[a.toString('base64'),b.toString('base64')],width,height});
+  if(pngA.width!==pngB.width||pngA.height!==pngB.height)diff.captureCrop={
+    comparedWidth:width,comparedHeight:height,a:pngA,b:pngB,
+  };
+  return diff;
 }
 const expectMotion=active=>page.waitForFunction(value=>document.querySelector('#render-diagnostics').dataset.motionActive===String(value),active);
 const cameraTime=()=>page.evaluate(()=>({
@@ -508,7 +539,7 @@ try{
     await page.goto(base+'/?site='+site,{waitUntil:'domcontentloaded'});await ready();
     await el('button[data-mode="orbit"]').click();await style('current');
     const originalProperty=await exportDesign();canonicalScope(originalProperty,'current');
-    const ref=await el('#scene-host canvas').screenshot({scale:'css',timeout:SCENE_CAPTURE_TIMEOUT});
+    const ref=await shot(site+'-current','#scene-host canvas');
     await style(id);const frame=await shot(site+'-'+id,'#scene-host canvas');
     const diff=await pixelChange(ref,frame);assert.ok(diff.pixels>100,site+' pixels '+diff.pixels);
     const saved=await exportDesign();canonicalScope(saved,id);assert.equal(saved.siteId,site);assert.ok(saved.designChecks.checks.length>0);

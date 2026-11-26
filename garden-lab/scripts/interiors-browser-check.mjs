@@ -47,13 +47,19 @@ async function shot(name,selector){
 }
 async function cameraFrame(){return field('canvas').locator('canvas').screenshot({scale:'css',animations:'disabled',timeout:sceneStartupTimeout});}
 const walkCanvas=()=>q('#scene-host canvas');
-async function walking(floor){
+const walkSnapshot=()=>page.evaluate(()=>({
+  walk:{...document.querySelector('#scene-host canvas')?.dataset},
+  render:{...document.querySelector('#render-diagnostics')?.dataset},
+}));
+async function walking(floor,{timeout=30000,settled=false,afterFrame=null}={}){
   await q('#interior-host').waitFor({state:'hidden'});
-  await page.waitForFunction(floor=>{
+  await page.waitForFunction(({floor,settled,afterFrame})=>{
     const canvas=document.querySelector('#scene-host canvas'),d=document.querySelector('#render-diagnostics')?.dataset;
-    return canvas?.dataset.walkFloor===floor&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&
-      Number(d.triangles)>0&&Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&Number(d.surfaceAssetsFailed)===0;
-  },floor,{timeout:30000});
+    const target=Number(canvas?.dataset.walkPosition?.split(',')[1]),altitude=Number(canvas?.dataset.walkAltitude);
+    const heightReady=!settled||(canvas?.dataset.walkFloating==='false'&&Number.isFinite(target)&&Number.isFinite(altitude)&&Math.abs(altitude-target)<=.002&&d?.interacting==='false');
+    return canvas?.dataset.walkFloor===floor&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&heightReady&&
+      (afterFrame===null||Number(d.frames)>afterFrame)&&Number(d.triangles)>0&&Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&Number(d.surfaceAssetsFailed)===0;
+  },{floor,settled,afterFrame},{timeout});
   assert.equal(await q('#viewer .mode-tabs button[data-mode="walk"]').getAttribute('aria-pressed'),'true');
   assert.equal(await q('#walk-location').inputValue(),floor);
   assert.match(await walkCanvas().getAttribute('aria-label'),/WASD or arrows/);
@@ -242,18 +248,26 @@ try{
   assert.equal(await walkCanvas().getAttribute('data-walk-navigation'),'free');
   assert.equal(Number(await walkCanvas().getAttribute('data-walk-fov')),70);
   const beforeRise=Number(await walkCanvas().getAttribute('data-walk-altitude'));
+  report.walking.comfort={beforeRise,beforeHeightControls:await walkSnapshot()};
   await walkCanvas().focus();await page.keyboard.down('e');
   try{await page.waitForFunction(before=>{
     const d=document.querySelector('#scene-host canvas')?.dataset;
     return d?.walkFloating==='true'&&Number(d.walkAltitude)>before+.03;
   },beforeRise,{timeout:10000});}finally{await page.keyboard.up('e');}
   const raised=Number(await walkCanvas().getAttribute('data-walk-altitude'));
+  report.walking.comfort.raised=raised;
   await page.keyboard.down('q');
   try{await page.waitForFunction(before=>Number(document.querySelector('#scene-host canvas')?.dataset.walkAltitude)<before-.03,raised,{timeout:10000});}
   finally{await page.keyboard.up('q');}
+  const beforeGround=await walkSnapshot();report.walking.comfort.beforeGround=beforeGround;
   await page.keyboard.press('r');
   await page.waitForFunction(()=>document.querySelector('#scene-host canvas')?.dataset.walkFloating==='false');
-  await walking('garden');
+  // The comfortable controller caps each advance at 56 ms. Under SwiftShader,
+  // the several frames needed to settle even a small height offset can take
+  // longer than 30 seconds. Keep its real camera/idle checks and give only this
+  // transition the existing software-render deadline used for fresh scenes.
+  await walking('garden',{timeout:sceneStartupTimeout,settled:true,afterFrame:Number(beforeGround.render.frames)});
+  report.walking.comfort.grounded=await walkSnapshot();
   const lookBefore=await walkCanvas().evaluate(c=>({yaw:Number(c.dataset.walkYaw),pitch:Number(c.dataset.walkPitch)}));
   const viewBox=await walkCanvas().boundingBox();assert.ok(viewBox);
   const dragX=viewBox.x+viewBox.width/2,dragY=viewBox.y+viewBox.height/2;
@@ -269,7 +283,7 @@ try{
   await q('#walkNavigation').selectOption('free');
   assert.equal(await walkCanvas().getAttribute('data-walk-navigation'),'free');
   assert.equal(await q('.walk-elevation-pad').isVisible(),true);
-  report.walking.comfort={beforeRise,raised,lookBefore,lookAfter,fov:70};
+  Object.assign(report.walking.comfort,{lookBefore,lookAfter,fov:70});
   check('Free exploration is the default; E/Q change height, R follows ground, drag matches the original interior controller, the lens stays fixed, and physical mode remains optional');
 
   await openInteriors();await field('floor').selectOption('first');await field('room').selectOption('office');await chooseView('dollhouse');
@@ -342,5 +356,11 @@ try{
   await shot('mobile-house-garden-walk');
   check('390 px plan, dollhouse and unified walk fit the viewport; all four direction buttons and the rise, lower and ground-following controls are reachable and move the camera');
   assert.deepEqual(report.errors,[]);report.status='passed';
-}catch(error){report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);if(page)try{await shot('failure');}catch{}}
+}catch(error){
+  report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);
+  if(page){
+    try{report.failureState=await walkSnapshot();}catch(diagnosticError){report.failureStateError=String(diagnosticError);}
+    try{await shot('failure');}catch{}
+  }
+}
 finally{await writeFile(path.join(output,'browser-report.json'),JSON.stringify(report,null,2));await browser?.close();if(server)await new Promise(resolve=>server.close(resolve));console.log('INTERIOR_RESULT '+report.status);}
