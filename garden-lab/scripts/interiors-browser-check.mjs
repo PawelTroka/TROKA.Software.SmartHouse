@@ -41,11 +41,10 @@ async function walking(floor){
   await q('#interior-host').waitFor({state:'hidden'});
   await page.waitForFunction(floor=>{
     const canvas=document.querySelector('#scene-host canvas'),d=document.querySelector('#render-diagnostics')?.dataset;
-    const onRequestedLevel=canvas?.dataset.walkFloor===floor||(floor==='garden'&&canvas?.dataset.walkFloor==='ground');
-    return onRequestedLevel&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&
+    return canvas?.dataset.walkFloor===floor&&canvas.dataset.walkPosition&&d?.drawEnabled==='true'&&d.renderPending==='false'&&
       Number(d.triangles)>0&&Number(d.surfaceAssetsRequested)>0&&d.surfaceAssetsLoaded===d.surfaceAssetsRequested&&Number(d.surfaceAssetsFailed)===0;
   },floor,{timeout:30000});
-  assert.equal(await q('[data-mode="walk"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await q('#viewer .mode-tabs button[data-mode="walk"]').getAttribute('aria-pressed'),'true');
   assert.equal(await q('#walk-location').inputValue(),floor);
   assert.match(await walkCanvas().getAttribute('aria-label'),/WASD or arrow keys/);
   return walkCanvas().evaluate(canvas=>({floor:canvas.dataset.walkFloor,position:canvas.dataset.walkPosition.split(',').map(Number)}));
@@ -153,7 +152,7 @@ try{
   }
   check('Original and renovated plans expose schedules, openings and headroom; the explicit shared two-car switch reveals retained garage conflicts');
   await field('floor').selectOption('ground');
-  await q('[data-iw-room="lounge"]').focus();await page.keyboard.press('Enter');assert.equal(await field('room').inputValue(),'lounge');
+  await field('plan').locator('[data-iw-room="lounge"][role="button"]').focus();await page.keyboard.press('Enter');assert.equal(await field('room').inputValue(),'lounge');
   await field('zoom-in').click();assert.equal(await field('drawing').getAttribute('data-zoomed'),'true');await field('zoom-fit').click();
   await field('changes').uncheck();await field('style').selectOption('current');await chooseView('dollhouse');
   await rendered('current','dollhouse');
@@ -260,7 +259,7 @@ try{
 
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready();
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();
-  await field('style').selectOption('hidden-bali');await field('furniture').check();await field('room').selectOption('lounge');await field('hide-settings').click();
+  await field('style').selectOption('hidden-bali');await field('furniture').check();await field('hide-settings').click();await field('room').selectOption('lounge');
   assert.equal(await field('floor').inputValue(),'ground');assert.equal((await appState()).style,'hidden-bali');
   const size=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth,drawing:Math.round(document.querySelector('.iw-drawing').getBoundingClientRect().height),host:document.querySelector('#interior-host').getBoundingClientRect().bottom,height:innerHeight}));
   assert.ok(size.width<=size.screen+1&&size.drawing>260&&size.host<=size.height+1,JSON.stringify(size));report.mobile=size;
