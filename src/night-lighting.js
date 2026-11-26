@@ -2,7 +2,7 @@
  * not measured luminance, electrical wattage or a lighting-design calculation. */
 export const NIGHT_DEFAULTS=Object.freeze({
   nightGardenLights:true,nightPendantLights:true,nightHedgeLights:true,nightWindowLights:true,
-  nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85,
+  nightGardenIntensity:45,nightPendantIntensity:65,nightHedgeIntensity:30,
   nightWindowActivity:70,nightWindowIntensity:60,
 });
 

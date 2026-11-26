@@ -1,10 +1,20 @@
-import {PAVILION_PLACEMENTS} from './corner-pavilion.js?v=1.33.0';
-import {pavilionStudy} from './pavilion-study.js?v=1.33.0';
+import {PAVILION_PLACEMENTS} from './corner-pavilion.js?v=1.34.0';
+import {pavilionStudy} from './pavilion-study.js?v=1.34.0';
+import {STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.34.0';
 const $=id=>document.getElementById(id);
 const fmt=(n,d=1)=>Number.isFinite(n)?n.toFixed(d):'—';
 
 export function createPavilionControls({getSettings,getData,getObserver,getAnalysis,onChange,onView,notify}){
   const section=$('corner-pavilion-panel');let wasEnabled=false;
+  const plantingButton=document.createElement('button');plantingButton.type='button';
+  plantingButton.className='button subtle';plantingButton.id='pavilion-compatible-planting';
+  plantingButton.textContent='Use pavilion planting · Excelsa trio';
+  plantingButton.title='Replace the three specimen trees with the narrower, previously checked 9 m Excelsa layout.';
+  $('pavilion-warning').after(plantingButton);
+  plantingButton.addEventListener('click',()=>{
+    onChange({screeningTrees:STERNICZA_EXCELSA_TREES.map(t=>({...t}))});
+    notify('Pavilion planting applied: three 9 m Excelsa in the compatible reference positions. The pool and building stay in place.');
+  });
   $('pavilionEnabled').addEventListener('change',event=>{
     onChange({pavilionEnabled:event.target.checked});
     notify(event.target.checked?'Pavilion garden alternative applied · height is a study':'Pavilion off · previous pool and spa arrangement restored');
@@ -45,6 +55,7 @@ export function createPavilionControls({getSettings,getData,getObserver,getAnaly
     const gaps=report.clearances;
     $('pavilion-clearances').textContent=gaps?`Modelled wall gaps: rear boundary ${fmt(gaps.rear,2)} m · east boundary ${fmt(gaps.east,2)} m · house ${fmt(gaps.house,2)} m. These distances do not establish compliant siting, fire separation or daylight.`:'';
     const warnings=report.warnings||[];$('pavilion-warning').hidden=!warnings.length;$('pavilion-warning').textContent=warnings.join(' ');
+    plantingButton.hidden=!(report.treeConflicts||[]).some(t=>t.trunk||t.crown==='overlap');
   }
   return {sync,render,exportSummary:summary};
 }

@@ -3,15 +3,15 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.33.0';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.33.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.33.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.33.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.33.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.33.0';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.33.0';
-import { getDesignStyle } from './design-styles.js?v=1.33.0';
-import { upgradeSingleCarGarage } from './garage-options.js?v=1.33.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.34.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.34.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.34.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.34.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.34.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.34.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.34.0';
+import { getDesignStyle } from './design-styles.js?v=1.34.0';
+import { upgradeSingleCarGarage } from './garage-options.js?v=1.34.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -169,7 +169,7 @@ const quantityCache = new WeakMap();
 /** Areas on the mapped plan, before soil-depth and delivery multipliers. */
 export function gardenQuantities(settings, data) {
   const c = costSettings(settings);
-  const signature = JSON.stringify([settings.gardenProgram,settings.designStyle,settings.styleGardenLayout,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
+  const signature = JSON.stringify([settings.gardenProgram,settings.designStyle,settings.styleGardenLayout,settings.summerPoolLayout,...Object.keys(PAVILION_DEFAULTS).map(key=>settings[key]),settings.gardenRaise,settings.basementGarageEnabled===true,settings.garageRampWidth,settings.hedgeFullPerimeter===true,settings.terraceDepth ?? 4.2, settings.removeGarage !== false,
     settings.hedgeInset ?? 0, c.costBedWidth, ...['Rear', 'Left', 'Right', 'Front'].map(side => positive(settings[`hedge${side}`] ?? (side==='Front'?0:2.5)) > 0)]);
   // data.site survives building sensitivity overrides, so cost geometry is reused.
   const cached = quantityCache.get(data.site);

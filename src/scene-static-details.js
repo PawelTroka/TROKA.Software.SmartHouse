@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.33.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.34.0';
 
 // Only the garden builder's unnamed, fixed, single-material boxes participate.
 // Named targets, glass sorting, vehicles, selectable terrain and fixture groups
@@ -54,8 +54,14 @@ export function proposedMaterials(base, style, {svgMode=false} = {}) {
     ['linen','linen',p.fabric], ['fabricAccent','linen',p.accent], ['styleAccent','metal',p.accent], ['styleLight','linen',p.light],
     ['wall','wall',p.houseWall], ['roof','roof',p.houseRoof], ['plinth','plinth',p.houseFrame]
   ]) {
-    const material = base[source].clone();
+    const textile=['linen','fabricAccent'].includes(key);
+    const material = textile?new THREE.MeshPhysicalMaterial():base[source].clone();
+    if(textile)THREE.MeshStandardMaterial.prototype.copy.call(material,base[source]);
     material.color.set(color);
+    if(textile){
+      material.sheen=style.construction.fabric==='velvet'?.65:.28;
+      material.sheenColor.copy(material.color);material.sheenRoughness=.85;
+    }
     if (key === 'woodLight') material.color.lerp(new THREE.Color('#f4e5c9'),.16);
     applyExteriorSurface(material,style,key==='fabricAccent'?'fabric':key,{svgMode});
     materials[key] = material;

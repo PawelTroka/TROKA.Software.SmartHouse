@@ -1,12 +1,13 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.33.0';
-import {facadeSolidPanels} from './renovation-architecture.js?v=1.33.0';
+import {toWorld} from './orientation.js?v=1.34.0';
+import {facadeSolidPanels} from './renovation-architecture.js?v=1.34.0';
+import {hstPanelLayout} from './hst-system.js?v=1.34.0';
 
 /** Proposed mapped-house walls and apertures. Current uses its original path.
  * Geometry is batched across the house by finish, rather than by wall cell or
  * window bar. The renderer owns no DOM, making actual aperture rays testable.
  */
-export function createRenovationFacadeGroup(layout,materials){
+export function createRenovationFacadeGroup(layout,materials,settings={}){
   if(!layout?.architectureProposal)return null;
   const group=new THREE.Group();group.name='renovated-mapped-facades';
   const batches=new Map(),apertures=[];
@@ -42,14 +43,22 @@ export function createRenovationFacadeGroup(layout,materials){
       const frame=Math.min(.12,Math.max(.022,w.frameWidth||.05),width/4,w.height/4),top=w.z+w.height;
       const panes=Math.max(1,Math.min(10,Math.round(w.panes||1))),transoms=Math.max(0,Math.min(6,Math.round(w.transoms||0)));
       const glassRole=w.glazing==='privacy'?'privacy-glass':'glass';
-      rectangle(edge,w.lo+frame,w.hi-frame,w.z+frame,top-frame,glassRole,.012);
+      const slider=w.kind==='hst'?hstPanelLayout({...w,offset:w.lo},settings):null;
+      if(slider){
+        for(const panel of slider.panels){
+          const f=panel.frameWidth,track=.012+panel.track;
+          rectangle(edge,panel.lo+f,panel.hi-f,w.z+frame,top-frame,glassRole,track);
+          for(const x of [panel.lo,panel.hi-f])rectangle(edge,x,x+f,w.z+frame,top-frame,'frame',track+.014);
+          for(const y of [w.z+frame,top-2*frame])rectangle(edge,panel.lo,panel.hi,y,y+frame,'frame',track+.014);
+        }
+      }else rectangle(edge,w.lo+frame,w.hi-frame,w.z+frame,top-frame,glassRole,.012);
       // Outer jambs use a full frame width. They meet the glass exactly; half
       // bars clipped at the edge would leave uncovered strips around the pane.
       rectangle(edge,w.lo,w.lo+frame,w.z,top,'frame',.035);
       rectangle(edge,w.hi-frame,w.hi,w.z,top,'frame',.035);
       rectangle(edge,w.lo+frame,w.hi-frame,w.z,w.z+frame,'frame',.035);
       rectangle(edge,w.lo+frame,w.hi-frame,top-frame,top,'frame',.035);
-      for(let k=1;k<panes;k++){
+      for(let k=1;!slider&&k<panes;k++){
         const x=w.lo+width*k/panes;
         rectangle(edge,x-frame/2,x+frame/2,w.z+frame,top-frame,'frame',.035);
       }
@@ -58,7 +67,7 @@ export function createRenovationFacadeGroup(layout,materials){
         rectangle(edge,w.lo+frame,w.hi-frame,z-frame*.36,z+frame*.36,'frame',.037);
       }
       apertures.push({id:w.id,edgeIndex:edge.index,lo:w.lo,hi:w.hi,bottom:w.z,top,panes,transoms,frameWidth:frame,
-        glazing:w.glazing||'clear',mullions:panes-1});
+        glazing:w.glazing||'clear',mullions:panes-1,...(slider?{openFraction:slider.open,clearWidth:slider.clear.width,stackSide:'left'}:{})});
     }
   }
   for(const [role,{positions,uv,material}]of batches){

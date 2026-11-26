@@ -1,6 +1,7 @@
 /** Proposed garden objects, in the mapped local metre frame. No height model. */
-import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.33.0';
-import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.33.0';
+import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.34.0';
+import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.34.0';
+import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.34.0';
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){
@@ -16,7 +17,7 @@ export function poolBounds(settings={},data){
   // is a conceptual trunk-centre to finished-coping allowance, not a certified
   // root-ball, excavation or maintenance clearance. Historical pools stay fixed.
   const renovation=getRenovationGardenRecipe(settings,data);
-  const pool=renovation?renovation.pool:pavilionAlternativeEnabled(settings,data)?{x:2,y:25,width:3.5,length:8}:spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
+  const pool=summerGardenEnabled(settings,data)?SUMMER_POOL:renovation?renovation.pool:pavilionAlternativeEnabled(settings,data)?{x:2,y:25,width:3.5,length:8}:spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
     y:poolGrove?26.30:aligned||screened?19.5:24.5,width:3.5,length:poolGrove?8:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;
   const copingRise=.075;
@@ -85,7 +86,8 @@ export function gardenProgram(settings={},data){
   sauna.heater=compact?{x:x+1.4,y:y+.3,width:.55,length:.55,height:.85}:{x:x+1.1,y:y+.65,width:.65,length:.65,height:.85};
   sauna.viewpoint={x:x+(compact?1.75:2.2),y:y+(compact?1.95:3.45),eyeHeight:1.6,lookAt:[10.2,24.3]};
 
-  const firepit={id:'firepit',label:'Sunken fire lounge',x:renovation?renovation.firepit[0]:pavilion?6.8:8.4,y:renovation?renovation.firepit[1]:pavilion?29.4:26.8,width:4.4,length:4.4,
+  const summer=summerGardenEnabled(settings,data);
+  const firepit={id:'firepit',label:'Sunken fire lounge',x:summer?SUMMER_FIREPIT[0]:renovation?renovation.firepit[0]:pavilion?6.8:8.4,y:summer?SUMMER_FIREPIT[1]:renovation?renovation.firepit[1]:pavilion?29.4:26.8,width:4.4,length:4.4,
     depth:.6,floorDepth:.6,wallThickness:.18,seatHeight:.43,copingOverhang:.08};
   firepit.anchor=centre(firepit);firepit.footprint=rectRing(firepit);
   // Union envelope of the excavated room and the rendered U-shaped coping.
@@ -108,7 +110,7 @@ export function gardenProgram(settings={},data){
   coldPlunge.steps=edge?Array.from({length:5},(_,i)=>({x:coldPlunge.x,y:coldPlunge.y-(5-i)*.3,width:1,length:.3})):
     [{x:8.3,y:32.6,width:1,length:.3,height:.25},
       {x:8.3,y:32.9,width:1,length:.3,height:.5}];
-  const furniture={loungers:renovation?renovation.loungers.map(p=>[...p]):pavilion?[[9.7,35],[10.8,35]]:[[12.3,22.7],[13.4,22.7]],
+  const furniture=summer?summerGardenFurniture(settings):{loungers:renovation?renovation.loungers.map(p=>[...p]):pavilion?[[9.7,35],[10.8,35]]:[[12.3,22.7],[13.4,22.7]],
     dining:renovation?{...renovation.dining}:{x:pavilion?6.5:3.6,y:pavilion?24.2:24.4,width:3.8,length:3.4},
     path:renovation?renovation.path.map(p=>[...p]):pavilion?[]:edge?[[6.7,29.5],[6.4,31.2],[5.8,32.8]]:
       [[7.1,29.5],[8.1,31.5],[11.3,32.6],[11.5,34.3]]};

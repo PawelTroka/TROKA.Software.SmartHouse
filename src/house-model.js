@@ -1,9 +1,9 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.33.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.33.0';
-import {renovatePlanOpenings} from './renovation-architecture.js?v=1.33.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.34.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.34.0';
+import {renovatePlanOpenings} from './renovation-architecture.js?v=1.34.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -22,7 +22,7 @@ export function houseModelFrame(data,settings={}){
 export function houseModelKey(settings={}){
   return JSON.stringify(['designStyle','interiorLayout','floorHeight','firstFloorRise','atticRise','basementGarageEnabled',
     'garageClearHeight','garageExtraDepth','garageSlabThickness','garageInsideRun','garageRampWidth','garageBottomApron',
-    'terraceWidth','terraceDepth','canopyEnabled','terraceCoverType','canopyDepth','canopyWidth'].map(k=>settings[k]));
+    'terraceWidth','terraceDepth','hstOpen','canopyEnabled','terraceCoverType','canopyDepth','canopyWidth'].map(k=>settings[k]));
 }
 export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   const layout=settings.designStyle&&settings.designStyle!=='current'?'renovation':'existing';
@@ -31,7 +31,8 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   // The garage is an independently selected engineering study, in both views.
   const plan=getInteriorPlan({floor,layout:converted?'renovation':layout,styleId:settings.designStyle||'current',garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
   const first=num(settings.firstFloorRise,3.05),attic=num(settings.atticRise,5.75);
-  const levels={ground:0,first,attic,basement:plan.elevation};
+  const basement=settings.basementGarageEnabled===true?-(num(settings.garageClearHeight,2.3)+num(settings.garageExtraDepth,0)+num(settings.garageSlabThickness,.25)):-2;
+  const levels={ground:0,first,attic,basement:floor==='basement'?plan.elevation:basement};
   const previous=plan.clearHeight;
   if(floor==='ground')plan.clearHeight=Math.max(.05,first-.30);
   if(floor==='first')plan.clearHeight=Math.max(.05,attic-first);
@@ -47,9 +48,9 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
       sourcePolygon:s.polygon.map(p=>p.slice()),polygon:canonicalMain.polygon.map(p=>p.slice()),
       direction:canonicalMain.direction.slice(),steps:canonicalMain.steps,
     }:{})}:{}),
-    rise:s.from==='ground'&&s.to==='first'?first:s.to==='attic'?attic-first:s.rise,
+    rise:s.from==='ground'&&s.to==='first'?first:s.to==='attic'?attic-first:s.id==='cellar-stair'&&layout==='renovation'?-basement:s.rise,
   }));
-  if(canonicalMain)plan.issues.push('The shared main stair uses the ground-plan footprint on both floors. The archived first-floor opening remains in its drawn position; the differing outlines need a measured alignment and headroom check.');
+  if(canonicalMain)plan.issues.push(layout==='renovation'?'The renovation aligns the main floor opening with the stair footprint and adds a compact attic stair. Survey stair pitch, landings, structure and headroom before detailed design.':'The shared main stair uses the ground-plan footprint on both floors. The archived first-floor opening remains in its drawn position; the differing outlines need a measured alignment and headroom check.');
   if(settings.basementGarageEnabled){plan.stairs=plan.stairs.filter(s=>s.kind!=='exterior');plan.outdoor=plan.outdoor.filter(p=>p.kind!=='landing');}
   plan.roof={...plan.roof,ridgeElevation:attic+3,chimneyElevation:attic+3.85};
   const frame=houseModelFrame(data,settings);
@@ -62,7 +63,7 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
     if(floor==='first'&&settings.canopyEnabled&&settings.terraceCoverType==='balcony')plan.outdoor.push(platform('balcony',num(settings.canopyWidth,10.77),num(settings.canopyDepth,4)));
   }
   plan.modelSource='shared-house';
-  return renovatePlanOpenings(plan,{styleId:settings.designStyle||'current'});
+  return renovatePlanOpenings(plan,{styleId:settings.designStyle||'current',hstOpen:settings.hstOpen});
 }
 
 /** Storey-specific facades. The same aperture dimensions cut the 3D walls and

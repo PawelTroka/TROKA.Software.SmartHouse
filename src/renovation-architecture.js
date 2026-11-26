@@ -11,34 +11,36 @@ const recipe=(id,description,width,height,sill,shift,panes,transoms,frameWidth,g
   gardenHeight:Math.min(2.5,height+.25),doorHeight:Math.min(2.35,height+.2),privacySill:1.5,
 });
 export const RENOVATION_ARCHITECTURES=Object.freeze({
-  'organic-modern':recipe('organic-modern','Broad picture windows, low stone sills and two garden openings with deep mineral reveals.',2.65,2.02,.36,.08,1,0,.055,2,3,.38,.24,.19,'picture'),
-  'hidden-bali':recipe('hidden-bali','Tall teak-framed sliding openings, two sheltered garden portals and deep timber reveals.',2.48,2.28,.13,-.12,2,0,.065,2,3,.42,.32,.38,'sliding',1.14),
-  'mediterranean-villa':recipe('mediterranean-villa','Tall divided French windows, three garden doorways, deep plaster jambs and shaded stone heads.',1.82,2.18,.33,.04,2,2,.075,3,2,.52,.29,.22,'french',1.12),
+  'organic-modern':recipe('organic-modern','Broad picture windows, low stone sills and deep mineral reveals around the full-width HST.',2.65,2.02,.36,.08,1,0,.055,2,3,.38,.24,.19,'picture'),
+  'hidden-bali':recipe('hidden-bali','Tall teak-framed windows and deep timber reveals framing the continuous garden HST.',2.48,2.28,.13,-.12,2,0,.065,2,3,.42,.32,.38,'sliding',1.14),
+  'mediterranean-villa':recipe('mediterranean-villa','Tall divided French windows, deep plaster jambs and shaded stone heads beside the continuous garden HST.',1.82,2.18,.33,.04,2,2,.075,3,2,.52,.29,.22,'french',1.12),
   'modern-minimal':recipe('modern-minimal','Large low-sill picture windows and one broad sliding garden opening with fine aluminium frames.',3.08,2.32,.14,.13,1,0,.035,1,3,.24,.16,.12,'picture',1.18),
-  'scandinavian':recipe('scandinavian','Generous paired casements with a clear upper light and three practical timber garden doors.',1.96,1.92,.55,-.08,2,1,.067,3,2,.34,.19,.16,'casement'),
-  'japandi':recipe('japandi','Asymmetric horizontal glazing, quiet two-panel sliders and two shadowed garden bays.',2.42,1.78,.64,.19,2,0,.045,2,2,.46,.27,.23,'sliding',1.10),
+  'scandinavian':recipe('scandinavian','Generous paired casements with a clear upper light and warm timber framing around the garden HST.',1.96,1.92,.55,-.08,2,1,.067,3,2,.34,.19,.16,'casement'),
+  'japandi':recipe('japandi','Asymmetric horizontal glazing and quiet timber reveals around the full-width garden HST.',2.42,1.78,.64,.19,2,0,.045,2,2,.46,.27,.23,'sliding',1.10),
   'organic-scandinavian':recipe('organic-scandinavian','Tall three-part timber windows, low garden sills and broad softly shaded openings.',2.34,2.12,.36,-.13,3,0,.062,2,3,.30,.23,.20,'casement',1.08),
-  'organic-japandi':recipe('organic-japandi','Offset picture windows, generous mineral reveals and a pair of broad garden sliders.',2.82,1.94,.45,-.19,1,0,.052,2,2,.56,.34,.27,'picture',1.16),
+  'organic-japandi':recipe('organic-japandi','Offset picture windows and generous mineral reveals around the full-width garden HST.',2.82,1.94,.45,-.19,1,0,.052,2,2,.56,.34,.27,'picture',1.16),
   'space-age':recipe('space-age','Wide three-light ribbon windows and a continuous garden slider inside deep metallic portal frames.',2.72,1.63,.76,.16,3,0,.06,1,4,.28,.28,.24,'ribbon',1.20),
   'party-club':recipe('party-club','Tall wide glazing, thin dark dividers and one stacking garden opening beneath a deep continuous shade.',3.28,2.39,.10,-.07,3,0,.04,1,6,.22,.22,.40,'stacking',1.18),
-  'baltic-dune':recipe('baltic-dune','Low horizontal three-light windows and paired sheltered sliding bays with silvered timber reveals.',2.88,1.68,.72,.11,3,0,.058,2,3,.40,.25,.31,'ribbon'),
-  'beach-house':recipe('beach-house','Broad low-sill timber glazing and two stacking garden bays that open the living rooms to the terrace.',2.74,2.24,.14,.06,3,0,.064,2,4,.28,.22,.34,'stacking',1.12),
-  coastal:recipe('coastal','Paired divided-light French windows, three garden doorways and deep white projecting casings.',2.08,2.07,.42,-.04,2,2,.083,3,2,.44,.25,.23,'french',1.10),
-  'gdansk-brick':recipe('gdansk-brick','Narrow tall steel-divided windows, substantial brick piers and three vertical garden portals.',1.48,2.29,.26,.09,2,3,.047,3,2,.64,.30,.18,'steel-grid',1.02),
+  'baltic-dune':recipe('baltic-dune','Low horizontal three-light windows and silvered timber reveals around the continuous garden HST.',2.88,1.68,.72,.11,3,0,.058,2,3,.40,.25,.31,'ribbon'),
+  'beach-house':recipe('beach-house','Broad low-sill timber glazing and a full-width three-panel HST connecting the living room to the terrace.',2.74,2.24,.14,.06,3,0,.064,2,4,.28,.22,.34,'stacking',1.12),
+  coastal:recipe('coastal','Paired divided-light French windows and deep white projecting casings around the garden HST.',2.08,2.07,.42,-.04,2,2,.083,3,2,.44,.25,.23,'french',1.10),
+  'gdansk-brick':recipe('gdansk-brick','Narrow tall steel-divided windows and deep brick reveals around the full-width garden HST.',1.48,2.29,.26,.09,2,3,.047,3,2,.64,.30,.18,'steel-grid',1.02),
   'danish-midcentury':recipe('danish-midcentury','Long three-part timber picture windows, higher sills and a wide garden slider beneath a strong horizontal head.',3.02,1.71,.68,-.15,3,0,.068,1,4,.30,.21,.33,'ribbon',1.13),
-  'finnish-sauna':recipe('finnish-sauna','Quiet square picture windows, protected high bathroom lights and two deep cedar garden portals.',1.72,1.76,.67,.03,1,0,.071,2,2,.62,.35,.28,'picture',1.04),
-  'riviera-deco':recipe('riviera-deco','Tall three-part glazing, a high transom and three garden portals framed by stepped projecting heads.',2.28,2.22,.29,-.10,3,1,.062,3,3,.48,.31,.29,'deco-grid',1.16),
-  'arts-and-crafts':recipe('arts-and-crafts','Broad paired timber casements with upper divided lights and three garden doors between substantial piers.',2.18,1.98,.51,.07,2,2,.089,3,2,.60,.29,.26,'casement',1.08),
+  'finnish-sauna':recipe('finnish-sauna','Quiet square picture windows, protected high bathroom lights and deep cedar reveals around the garden HST.',1.72,1.76,.67,.03,1,0,.071,2,2,.62,.35,.28,'picture',1.04),
+  'riviera-deco':recipe('riviera-deco','Tall three-part windows, high transoms and stepped projecting heads above the garden HST.',2.28,2.22,.29,-.10,3,1,.062,3,3,.48,.31,.29,'deco-grid',1.16),
+  'arts-and-crafts':recipe('arts-and-crafts','Broad paired timber casements with upper divided lights and crafted timber reveals around the garden HST.',2.18,1.98,.51,.07,2,2,.089,3,2,.60,.29,.26,'casement',1.08),
   'palm-springs':recipe('palm-springs','Very broad low-sill picture windows and one open garden frontage under long protective sun heads.',3.36,2.08,.24,.17,1,0,.045,1,4,.26,.20,.39,'picture',1.20),
-  'desert-modern':recipe('desert-modern','Deep-set horizontal picture windows, raised shaded sills and two monumental recessed garden bays.',2.92,1.82,.62,-.17,1,0,.055,2,2,.70,.40,.36,'picture',1.14),
-  'alpine-lodge':recipe('alpine-lodge','Large paired timber windows with upper lights and three sheltered French garden doors.',2.12,2.11,.43,.02,2,1,.09,3,2,.58,.34,.32,'french',1.10),
-  'industrial-loft':recipe('industrial-loft','Tall workshop glazing in fine steel grids and two large factory-style garden openings.',2.76,2.26,.20,-.06,3,3,.041,2,4,.36,.20,.25,'steel-grid',1.15),
+  'desert-modern':recipe('desert-modern','Deep-set horizontal picture windows, raised shaded sills and a monumental reveal around the garden HST.',2.92,1.82,.62,-.17,1,0,.055,2,2,.70,.40,.36,'picture',1.14),
+  'alpine-lodge':recipe('alpine-lodge','Large paired timber windows with upper lights and sheltered timber reveals around the garden HST.',2.12,2.11,.43,.02,2,1,.09,3,2,.58,.34,.32,'french',1.10),
+  'industrial-loft':recipe('industrial-loft','Tall workshop glazing in fine steel grids and a full-width minimalist garden HST.',2.76,2.26,.20,-.06,3,3,.041,2,4,.36,.20,.25,'steel-grid',1.15),
 });
 export const getRenovationArchitecture=id=>RENOVATION_ARCHITECTURES[typeof id==='string'?id:id?.id]||null;
 
 export function styleOpeningDetails(opening,styleId){
   const r=getRenovationArchitecture(styleId);if(!r)return {};
   const kind=opening.type||opening.kind,access=['hst','balcony-door'].includes(kind);
+  if(kind==='hst')return {panes:3,transoms:0,frameWidth:.028,operation:'left-stacking',glazing:'clear',
+    architectureStyle:r.id,source:'full-width-three-track-proposal'};
   const operation=kind==='door'?'hinged':access&&['picture','ribbon'].includes(r.operation)?'sliding':access&&r.operation==='casement'?'french':r.operation;
   return {panes:access?r.gardenPanels:r.panes,transoms:access&&['sliding','stacking','picture','ribbon'].includes(r.operation)?0:r.transoms,
     frameWidth:r.frameWidth,operation,glazing:opening.privacy?'privacy':'clear',
@@ -147,13 +149,18 @@ export function renovatePlanOpenings(plan,{styleId='current'}={}){
     const rooms=roomIntervals(plan,wall),fixtures=fixtureWallIntervals(plan,wall),openings=[],sign=directionSign([wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]]);
     for(const [i,o]of source.entries()){
       if(o.type==='hst'){
-        const lo=.30,hi=length-.30,bays=Math.min(r.gardenBays,Math.max(1,Math.floor((hi-lo)/2.3))),cell=(hi-lo)/bays;
-        const height=Math.min(r.gardenHeight,wall.height-.18);
+        // Continuous opening with slim end jambs; all renovation styles share
+        // the user's three-track HST. Structural capacity is not inferred.
+        const offset=.03,end=length-.03,height=Math.min(2.5,wall.height-.18);
         if(height<.5)continue;
-        for(let bay=0;bay<bays;bay++){
-          const offset=lo+cell*bay+(bay?r.pier/2:0),end=lo+cell*(bay+1)-(bay<bays-1?r.pier/2:0);
-          openings.push({...o,...styleOpeningDetails(o,r.id),offset,width:end-offset,sill:0,height,proposalBay:bay});
-        }
+        openings.push({...o,...styleOpeningDetails(o,r.id),offset,width:end-offset,sill:0,height,proposalBay:0});
+        continue;
+      }
+      if(o.type==='door'){
+        // The surveyed street entry stays aligned with its landing. A nearby
+        // open foyer passage must not shrink the usable entrance aperture.
+        openings.push({...o,...styleOpeningDetails(o,r.id),offset:o.offset,width:o.width,
+          sill:0,height:Math.min(Math.max(o.height,r.doorHeight),wall.height-.18)});
         continue;
       }
       if(!['window','balcony-door','door'].includes(o.type)){openings.push({...o});continue;}
@@ -237,15 +244,11 @@ export function renovateFacadeOpenings(layout,{styleId='current',atticFloorZ}={}
     if(w.kind==='hst'){
       const key=edge.index+':'+level;if(handledAccess.has(key))continue;handledAccess.add(key);
       const band=original.filter(o=>o.kind==='hst'&&o.edgeIndex===edge.index&&Math.abs(o.z-w.z)<.2);
-      const low=Math.max(.30,Math.min(...band.map(o=>o.lo))),high=Math.min(edge.length-.30,Math.max(...band.map(o=>o.hi)));
-      const bays=Math.min(r.gardenBays,Math.max(1,Math.floor((high-low)/2.3))),cell=(high-low)/bays;
-      for(let bay=0;bay<bays;bay++){
-        const lo=low+cell*bay+(bay?r.pier/2:0),hi=low+cell*(bay+1)-(bay<bays-1?r.pier/2:0),z=Math.max(w.z,floor);
-        const height=openingHeight(edge,lo,hi,z,level,r.gardenHeight);if(hi-lo<.5||height<.5)continue;
-        windows.push({...w,...styleOpeningDetails(w,r.id),id:band.length===1&&bays===1?w.id:`${band[0].id}-bay-${bay}`,
-          lo,hi,width:hi-lo,centre:(lo+hi)/2,z,height,proposalBay:bay,
-          position:[edge.a[0]+edge.direction[0]*(lo+hi)/2,edge.a[1]+edge.direction[1]*(lo+hi)/2,z],outward:edge.outward.slice()});
-      }
+      const lo=.03,hi=edge.length-.03,z=Math.max(w.z,floor);
+      const height=openingHeight(edge,lo,hi,z,level,2.5);
+      if(hi-lo>.5&&height>.5)windows.push({...w,...styleOpeningDetails(w,r.id),id:band[0].id,
+        lo,hi,width:hi-lo,centre:(lo+hi)/2,z,height,proposalBay:0,
+        position:[edge.a[0]+edge.direction[0]*(lo+hi)/2,edge.a[1]+edge.direction[1]*(lo+hi)/2,z],outward:edge.outward.slice()});
       continue;
     }
     const peers=original.filter(other=>other!==w&&other.edgeIndex===w.edgeIndex&&Math.abs(other.z-w.z)<1.1);

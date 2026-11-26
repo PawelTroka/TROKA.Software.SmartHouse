@@ -3,16 +3,16 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.33.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.33.0';
-import { localRoofEnvelope } from './roof-envelope.js?v=1.33.0';
-import {sampledRoofFaces} from './roof-mesh.js?v=1.33.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.33.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.33.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.33.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.33.0';
-import { terraceStairs } from './layout.js?v=1.33.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.33.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.34.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.34.0';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.34.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.34.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.34.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.34.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.34.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.34.0';
+import { terraceStairs } from './layout.js?v=1.34.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.34.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -122,7 +122,7 @@ function gableFaces(ring,eaves,ridge,axis='x') {
   return [[a,d,f],[a,f,e],[e,f,c],[e,c,b],[a,e,b],[d,c,f]];
 }
 
-export {sampledRoofFaces} from './roof-mesh.js?v=1.33.0';
+export {sampledRoofFaces} from './roof-mesh.js?v=1.34.0';
 
 const contextOccluderCache=new WeakMap();
 
@@ -335,7 +335,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['poolFreeboard','gardenProgram','designStyle','styleGardenLayout','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS];
+const geometryKeys=['summerPoolLayout','poolSunbedSides','jacuzziCentered','hstOpen','poolFreeboard','gardenProgram','designStyle','styleGardenLayout','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21',settings.existingVegetation,settings.existingCanopyAnalysis,settings.existingLeafMode]);

@@ -1,0 +1,490 @@
+{
+  "method": {
+    "sourceData": {
+      "site-data.json": {
+        "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+      },
+      "sternicza-surrounding-nature.json": {
+        "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+      },
+      "sternicza-neighbor-roofs.json": {
+        "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+      }
+    },
+    "state": "v=30&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A19.3%2C%22y%22%3A30.2%2C%22height%22%3A10%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A6%2C%22crownDepth%22%3A6%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A13.8%2C%22y%22%3A35.8%2C%22height%22%3A10%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A6%2C%22crownDepth%22%3A6%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18.45%2C%22y%22%3A35.57%2C%22height%22%3A10%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove&summerPoolLayout=false",
+    "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+    "terrace": {
+      "x": 5.358610661552147,
+      "y": 18.117475217542932,
+      "width": 8.5,
+      "depth": 4
+    },
+    "rearMidpoint": [
+      9.608610661552147,
+      18.117475217542932
+    ],
+    "dates": [
+      "2026-06-01",
+      "2026-06-15",
+      "2026-06-30",
+      "2026-07-01",
+      "2026-07-15",
+      "2026-07-31",
+      "2026-08-01",
+      "2026-08-15",
+      "2026-08-31"
+    ],
+    "times": [
+      420,
+      450,
+      480,
+      510,
+      540,
+      570,
+      600,
+      630,
+      660,
+      690,
+      720,
+      750,
+      780,
+      810,
+      840,
+      870,
+      900,
+      930,
+      960,
+      990,
+      1020,
+      1050,
+      1080,
+      1110,
+      1140,
+      1170,
+      1200,
+      1230,
+      1260
+    ],
+    "timezone": "Europe/Warsaw",
+    "mapGrid": 0.5,
+    "poolGrid": 0.5,
+    "clearanceBeyondWater": 1.28,
+    "refinement": {
+      "step": 0.25,
+      "x": [
+        2.75,
+        4.25
+      ],
+      "y": [
+        24.5,
+        25.5
+      ]
+    },
+    "sunbedConstraint": "Three furnished sides with bed rectangles at least 1 m inside the parcel and 0.25 m from fixed structures; 1 m coping-to-stair walking route.",
+    "source": "Shared buildings, measured neighbouring roof envelopes, enabled measured existing summer canopies, 4 m hedges and original 10 m Austrian pine reference.",
+    "limitations": "Initial ground-grid approximation; final chosen candidates require horizontal water-plane verification. Fire lounge and movable furniture are repositioned, sauna and cold plunge retained. Not weather, irradiance, continuous/global optimality or surveyed planting clearance."
+  },
+  "candidates": [
+    {
+      "x": 3.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5156,
+      "samples": 105
+    },
+    {
+      "x": 3.25,
+      "y": 25.25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5132,
+      "samples": 90
+    },
+    {
+      "x": 3.75,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5126,
+      "samples": 105
+    },
+    {
+      "x": 3.5,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5121,
+      "samples": 112
+    },
+    {
+      "x": 3.75,
+      "y": 25.25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5092,
+      "samples": 90
+    },
+    {
+      "x": 3.5,
+      "y": 25.25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5091,
+      "samples": 96
+    },
+    {
+      "x": 4.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5084,
+      "samples": 105
+    },
+    {
+      "x": 4,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5078,
+      "samples": 112
+    },
+    {
+      "x": 3.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5063,
+      "samples": 105
+    },
+    {
+      "x": 4.25,
+      "y": 25.25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5042,
+      "samples": 90
+    },
+    {
+      "x": 4,
+      "y": 25.25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5039,
+      "samples": 96
+    },
+    {
+      "x": 4.75,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5018,
+      "samples": 105
+    },
+    {
+      "x": 3.5,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5016,
+      "samples": 112
+    },
+    {
+      "x": 3.75,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.5014,
+      "samples": 105
+    },
+    {
+      "x": 4,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4954,
+      "samples": 112
+    },
+    {
+      "x": 4.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4952,
+      "samples": 105
+    },
+    {
+      "x": 3.25,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4932,
+      "samples": 105
+    },
+    {
+      "x": 5.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4929,
+      "samples": 105
+    },
+    {
+      "x": 4.75,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4864,
+      "samples": 105
+    },
+    {
+      "x": 3.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4864,
+      "samples": 105
+    },
+    {
+      "x": 5.75,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4815,
+      "samples": 105
+    },
+    {
+      "x": 4.25,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4781,
+      "samples": 105
+    },
+    {
+      "x": 3.25,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4761,
+      "samples": 105
+    },
+    {
+      "x": 5.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.475,
+      "samples": 105
+    },
+    {
+      "x": 6.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4689,
+      "samples": 105
+    },
+    {
+      "x": 3.75,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4674,
+      "samples": 105
+    },
+    {
+      "x": 4.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.467,
+      "samples": 105
+    },
+    {
+      "x": 5.75,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4615,
+      "samples": 105
+    },
+    {
+      "x": 4.25,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.457,
+      "samples": 105
+    },
+    {
+      "x": 5.25,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4535,
+      "samples": 105
+    },
+    {
+      "x": 6.75,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4532,
+      "samples": 105
+    },
+    {
+      "x": 6.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4468,
+      "samples": 105
+    },
+    {
+      "x": 4.75,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4435,
+      "samples": 105
+    },
+    {
+      "x": 5.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4381,
+      "samples": 105
+    },
+    {
+      "x": 7.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4358,
+      "samples": 105
+    },
+    {
+      "x": 6.75,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4289,
+      "samples": 105
+    },
+    {
+      "x": 5.25,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.428,
+      "samples": 105
+    },
+    {
+      "x": 6.25,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4214,
+      "samples": 105
+    },
+    {
+      "x": 7.75,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4164,
+      "samples": 105
+    },
+    {
+      "x": 5.75,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4109,
+      "samples": 105
+    },
+    {
+      "x": 7.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4097,
+      "samples": 105
+    },
+    {
+      "x": 6.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.4016,
+      "samples": 105
+    },
+    {
+      "x": 8.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3954,
+      "samples": 105
+    },
+    {
+      "x": 6.25,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3922,
+      "samples": 105
+    },
+    {
+      "x": 7.75,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.389,
+      "samples": 105
+    },
+    {
+      "x": 7.25,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3808,
+      "samples": 105
+    },
+    {
+      "x": 6.75,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3707,
+      "samples": 105
+    },
+    {
+      "x": 8.25,
+      "y": 25.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3671,
+      "samples": 105
+    },
+    {
+      "x": 7.75,
+      "y": 26,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3589,
+      "samples": 105
+    },
+    {
+      "x": 7.25,
+      "y": 26.5,
+      "width": 8,
+      "length": 3.5,
+      "score": 0.3488,
+      "samples": 105
+    }
+  ],
+  "candidateCount": 83
+}

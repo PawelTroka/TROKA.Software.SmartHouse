@@ -2,7 +2,8 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.33.0';
+import {getTreeType} from './tree-catalog.js?v=1.34.0';
+import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.34.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -321,6 +322,20 @@ const poolGroveLayouts=Object.freeze([
     settings:poolGroveSettings,trees:Object.freeze([])}),
 ]);
 
-export function getScreeningLayouts(siteId,program='spa-pool-grove') {
-  return siteId==='sternicza-11'?(program==='spa-pool-grove'?poolGroveLayouts:program==='spa-corner'?rearCornerLayouts:program==='spa-aligned'?alignedLayouts:program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
+const summerSettings=Object.freeze({...poolGroveSettings,summerPoolLayout:true,poolSunbedSides:3,terraceDepth:4});
+export const STERNICZA_SUMMER_TREES=Object.freeze(optimizedScreeningTrees('austrian-pine-tall').map(Object.freeze));
+const summerLayouts=Object.freeze([
+  Object.freeze({id:'default',label:'Austrian pines · optimized boundary trio · default',
+    note:'Three 9.5 m Austrian pines, with 5 m modeled crowns, use the species-specific east/rear boundary search. Trunks stay near the plot edge and clear of the summer pool, sunbeds and spa. Dense-crown PCK3 coverage is sampled from nine occupied views; foliage is not perfectly opaque. Some crowns extend across the boundary; stock, roots, maintenance and overhang need site-specific confirmation.',
+    settings:summerSettings,trees:STERNICZA_SUMMER_TREES}),
+  ...Object.keys(BOUNDARY_TREE_POSITIONS).filter(id=>id!=='austrian-pine-tall').map(typeId=>{
+    const type=getTreeType(typeId);return Object.freeze({id:typeId,label:`${type.label} · boundary trio`,
+      note:'Uses independently calculated positions for this species and its own catalogue height/crown dimensions. Changing species applies these positions automatically. Narrower or lower trees leave more of PCK3 visible; compare each view. Modeled crown overhang is at most 1 m; this is a planting concept, not an approved clearance.',
+      settings:summerSettings,trees:Object.freeze(optimizedScreeningTrees(typeId).map(Object.freeze))});
+  }),
+  Object.freeze({id:'hedges-only',label:'Summer pool · no specimen trees',
+    note:'Retains the summer pool, sunbeds, terrace and full-perimeter hedges without the specimen-tree screen.',settings:summerSettings,trees:Object.freeze([])}),
+]);
+export function getScreeningLayouts(siteId,program='spa-pool-grove',settings={}) {
+  return siteId==='sternicza-11'?(program==='summer'||settings.summerPoolLayout===true?summerLayouts:program==='spa-pool-grove'?poolGroveLayouts:program==='spa-corner'?rearCornerLayouts:program==='spa-aligned'?alignedLayouts:program==='spa-grove'?groveLayouts:program==='spa-screened'?screenedLayouts:program==='spa-compact'?compactLayouts:program==='spa-edge'?edgeLayouts:program==='spa'?spaLayouts:layouts):Object.freeze([]);
 }

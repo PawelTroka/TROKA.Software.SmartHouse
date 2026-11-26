@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.33.0';
-import {CYBERSTER_AWD,garageProfileAt,garageVehiclePose} from './garage-ramp.js?v=1.33.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.34.0';
+import {CYBERSTER_AWD,garageProfileAt,garageVehiclePose} from './garage-ramp.js?v=1.34.0';
 
 const EPS=1e-9;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring||[];
@@ -312,16 +312,18 @@ export function createGarageGroup(layout,materials,{svgMode=false,groundAt=()=>l
   mesh(group,'garage-retaining-wall-right',rightWall,concrete);
   mesh(group,'garage-retaining-wall-caps',curbTop,concrete);
   const rearS=layout.roomRearS,inner=width/2,outer=inner+thickness;
-  const roomStart=axis.frontRun;
-  for(const side of [-1,1])slab(group,`garage-basement-wall-${side}`,
+  const roomStart=axis.frontRun,sharedArchitecture=!!layout.architecturalGarageBounds;
+  // The registered house owns walls and floor openings. A second tunnel
+  // would close the working cellar stair and conceal its retained structure.
+  if(!sharedArchitecture)for(const side of [-1,1])slab(group,`garage-basement-wall-${side}`,
     [station(roomStart,side*inner,0),station(rearS,side*inner,0),station(rearS,side*outer,0),station(roomStart,side*outer,0)].map(p=>p.slice(0,2)),
     layout.floorZ-.16,portal.ceilingZ,interior);
-  slab(group,'garage-basement-back-wall',[station(rearS,-outer,0),station(rearS+.18,-outer,0),station(rearS+.18,outer,0),station(rearS,outer,0)].map(p=>p.slice(0,2)),layout.floorZ-.16,portal.ceilingZ,interior);
+  if(!sharedArchitecture)slab(group,'garage-basement-back-wall',[station(rearS,-outer,0),station(rearS+.18,-outer,0),station(rearS+.18,outer,0),station(rearS,outer,0)].map(p=>p.slice(0,2)),layout.floorZ-.16,portal.ceilingZ,interior);
   const flatStart=Math.min(rearS,axis.totalRun);
   const flat=slab(group,'garage-basement-parking-floor',[station(flatStart,-inner,0),station(rearS,-inner,0),station(rearS,inner,0),station(flatStart,inner,0)].map(p=>p.slice(0,2)),layout.floorZ-.16,layout.floorZ,paving);
   // A true opaque ceiling; viewing the open entrance does not rely on a black
   // facade decal or a transparent house. It follows the proposed slab underside.
-  slab(group,'garage-basement-ceiling',layout.roomFootprint,portal.ceilingZ,layout.livingFloorZ,concrete);
+  if(!sharedArchitecture)slab(group,'garage-basement-ceiling',layout.roomFootprint,portal.ceilingZ,layout.livingFloorZ,concrete);
   for(const side of [-1,1])slab(group,`garage-portal-jamb-${side}`,
     [station(roomStart-.12,side*inner,0),station(roomStart+.08,side*inner,0),station(roomStart+.08,side*outer,0),station(roomStart-.12,side*outer,0)].map(p=>p.slice(0,2)),
     portal.bottomZ-.10,portal.topZ,concrete);

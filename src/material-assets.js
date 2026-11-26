@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.33.0';
+import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.34.0';
 export {MATERIAL_ASSETS};
 
 // Original 1K PBR files from Poly Haven, vendored for offline/self-hosted use.
@@ -213,8 +213,17 @@ export function projectArchitecturalMaterialUVs(root){
         const i=geometry.index?geometry.index.getX(j):j;
         p.fromBufferAttribute(position,i).applyMatrix4(mesh.matrixWorld);
         n.fromBufferAttribute(normal,i).applyNormalMatrix(normalMatrix);
-        const grainAxis=materials[range.materialIndex]?.userData.woodGrainAxis;
-        if(grainAxis&&woodAxes){
+        const finish=materials[range.materialIndex],grainAxis=finish?.userData.woodGrainAxis;
+        if(finish?.userData.exteriorRole==='roof'&&Math.abs(n.y)<.9999){
+          // Roof courses use true metres on the pitched plane. A horizontal
+          // world projection stretched every tile uphill and sent standing
+          // seams in different directions on the two sides of the ridge.
+          if(n.y<0)n.negate();
+          grain.set(n.z,0,-n.x).normalize();
+          if(grain.x<-.00001||(Math.abs(grain.x)<.00001&&grain.z<0))grain.negate();
+          crossGrain.crossVectors(n,grain).normalize();
+          uv.setXY(i,p.dot(grain),p.dot(crossGrain));
+        }else if(grainAxis&&woodAxes){
           // Furniture posts and rails share a finish, but their wood fibres
           // must follow each actual member rather than a global horizontal axis.
           const axis=woodAxes.reduce((best,a)=>{

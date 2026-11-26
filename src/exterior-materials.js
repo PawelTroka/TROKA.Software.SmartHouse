@@ -1,11 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface} from './material-assets.js?v=1.33.0';
-import {getMaterialForFinish} from './material-catalogue.js?v=1.33.0';
+import {applyPhotographicSurface} from './material-assets.js?v=1.34.0';
+import {getMaterialForFinish} from './material-catalogue.js?v=1.34.0';
 
 // Finish specifications describe construction, grain and reflectance. They are
 // independent of palette colours and keep the original/current materials intact.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.33.0';
-export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.33.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.34.0';
+export {EXTERIOR_SURFACES,getExteriorSurfaceSpec,getBalconyGuardRecipe} from './exterior-recipes.js?v=1.34.0';
 const woodTypes=new Set(['oak','ash','walnut','teak','cedar','silvered-wood','charred-wood','reclaimed-wood','weatherboard','whitewashed-oak','painted-wood','painted-weatherboard']);
 const fabricTypes=new Set(['linen','washed-linen','woven','boucle','canvas','velvet','vinyl','leather','wool','fine']);
 const metalTypes=new Set(['bronze','brass','anodized','chrome','painted-steel','blackened-steel','zinc','standing-seam']);
@@ -83,7 +83,7 @@ export function exteriorSurfacePixels(kind,size=128,{seams=true}={}){
       h=.5+grit*.8-(seam<.03?.10:0)-(tie<.045?.13:0);tone=.90+wave(u*3,v*7)*.03+grit*.6-(tie<.04?.10:0);
     }else if(metalTypes.has(kind)){
       h=.5+wave(u*61,v)*.006;tone=.94+wave(u*57,v)*.015;
-      if(kind==='standing-seam'){const seam=Math.min(fract(u*5),1-fract(u*5));h+=seam<.045?.23:0;tone-=seam<.025?.17:0;}
+      if(kind==='standing-seam'){const seam=Math.min(fract(u*2),1-fract(u*2));h+=seam<.045?.23:0;tone-=seam<.025?.17:0;}
     }else{
       const coarse=wave(u*3+wave(u,v*2)*.2,v*5)*.055+wave(u*7,v*11)*.025;
       const smooth=kind==='smooth-render'||kind==='porcelain';

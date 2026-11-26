@@ -1,5 +1,5 @@
-import {getBuildingTargets} from './buildings.js?v=1.33.0';
-import {getScreeningLayouts} from './screening-layouts.js?v=1.33.0';
+import {getBuildingTargets} from './buildings.js?v=1.34.0';
+import {getScreeningLayouts} from './screening-layouts.js?v=1.34.0';
 
 export const DEFAULT_SITE_ID = 'sternicza-11';
 export const SITE_OPTIONS = Object.freeze([
@@ -12,12 +12,12 @@ const finite = (value,fallback) => Number.isFinite(value)?value:fallback;
 const wrap = angle => ((angle%360)+360)%360;
 const cardinal = angle => Number.isFinite(angle)?['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(wrap(angle)/22.5)%16]:'—';
 
-/** Property-aware v6–v29 share links win; older links always refer to Sternicza. */
+/** Property-aware v6–v30 share links win; older links always refer to Sternicza. */
 export function resolveSiteId(search='',hash='') {
   const params=new URLSearchParams(String(search).replace(/^\?/,''));
   const shared=new URLSearchParams(String(hash).replace(/^#/,''));
   const version=shared.get('v');
-  if(['6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29'].includes(version))return known(shared.get('site'))?shared.get('site'):DEFAULT_SITE_ID;
+  if(['6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'].includes(version))return known(shared.get('site'))?shared.get('site'):DEFAULT_SITE_ID;
   if(['1','2','3','4','5'].includes(version))return DEFAULT_SITE_ID;
   return known(params.get('site'))?params.get('site'):DEFAULT_SITE_ID;
 }
@@ -56,7 +56,7 @@ export function getSiteProfile(siteId=DEFAULT_SITE_ID,data) {
   const houseBounds=boundaryBounds(site.house?.footprint);
   const rear=site.rearMidpoint||(houseBounds?[(houseBounds.minX+houseBounds.maxX)/2,houseBounds.maxY]:legacy?[9.6091676564,18.0150830369]:[NaN,NaN]);
   const terrace=site.terrace;
-  const screeningLayouts=getScreeningLayouts(option.id),startingLayout=screeningLayouts.find(layout=>layout.id==='default');
+  const screeningLayouts=getScreeningLayouts(option.id,'summer'),startingLayout=screeningLayouts.find(layout=>layout.id==='default');
   const defaultHedges=site.defaultHedges||{};
   const defaults=legacy?{hedgeFront:4,...startingLayout?.settings,screeningTrees:startingLayout?.trees||Object.freeze([]),
     firstFloorRise:3.05,atticRise:5.75,garageSlabThickness:.30,basementGarageEnabled:true,terraceWidth:8.5,
