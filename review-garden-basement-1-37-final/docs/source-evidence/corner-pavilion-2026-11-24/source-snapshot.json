@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-11-24",
+  "scope": "Bounded research evidence for the Garden Lab 1.32 corner pavilion study. Legal/web fields below are selected factual metadata and research interpretations, not certified property planning conditions.",
+  "property": {
+    "modelParcels": [
+      "226101_1.0034.400",
+      "226101_1.0034.401"
+    ],
+    "modelAreaM2": 766.86,
+    "approximateWidthM": 20.32090125701205,
+    "approximateDepthM": 38.21412931043182,
+    "ownershipVerified": false,
+    "developmentSiteBoundaryCertified": false,
+    "coordinates": {
+      "localOriginEN": [
+        476064.831756033,
+        726902.760579949
+      ],
+      "xUnitEN": [
+        0.9175405635394497,
+        -0.3976421937618153
+      ],
+      "yUnitEN": [
+        -0.3976421937618153,
+        -0.9175405635394497
+      ],
+      "horizontalCRS": "EPSG:2180",
+      "verticalDatum": "PL-EVRF2007-NH",
+      "yGridAzimuth": 203.43086313576222
+    },
+    "combinedPolygonEN": {
+      "rings": [
+        [
+          [
+            476064.831756033,
+            726902.760579949
+          ],
+          [
+            476083.477007224,
+            726894.680132194
+          ],
+          [
+            476071.997650043,
+            726868.237330145
+          ],
+          [
+            476068.411497858,
+            726859.922715501
+          ],
+          [
+            476049.880342341,
+            726867.59176273
+          ],
+          [
+            476053.437225993,
+            726875.956766203
+          ],
+          [
+            476054.923818833,
+            726879.293865758
+          ],
+          [
+            476064.831756033,
+            726902.760579949
+          ]
+        ]
+      ],
+      "spatialReference": {
+        "wkid": 2180
+      }
+    },
+    "boundsEN": {
+      "minE": 476049.880342341,
+      "minN": 726859.922715501,
+      "maxE": 476083.477007224,
+      "maxN": 726902.760579949
+    }
+  },
+  "currentMPZP": {
+    "method": "esriSpatialRelIntersects against the complete modelled combined parcel polygon, input CRS EPSG:2180; raw requests and responses retained. Independently repeated by a second review.",
+    "records": [
+      {
+        "file": "sternicza-landuse.json",
+        "featureCount": 0
+      },
+      {
+        "file": "sternicza-bounds.json",
+        "featureCount": 0
+      },
+      {
+        "file": "sternicza-app.json",
+        "featureCount": 0
+      }
+    ],
+    "interpretation": "No covering current MPZP found in these official city layers. This is not a formal municipal certificate. No current MPZP height, roof, building line or coverage rule assigned.",
+    "currentPermittedHeightM": null,
+    "independentVerificationFile": "root-independent-verification.json"
+  },
+  "draftPOG": {
+    "publisher": "Biuro Rozwoju Gdańska",
+    "statusObserved": "Stage 4: revised draft sent for statutory agreement after consultations",
+    "statusPageUpdated": "2026-11-16",
+    "draftPublicationDate": "2026-10-07",
+    "inForceConfirmed": false,
+    "sourceLabel": "POG_PO_KONSULTACJACH_07102026",
+    "experienceItem": "e21c8101a4c74ed69065d08644fcd8f0",
+    "webmapItem": "d0cd10214a7343b5b385bc92ee962b2e",
+    "configurationUrl": "https://brg.geogdansk.pl/portal/sharing/rest/content/items/e21c8101a4c74ed69065d08644fcd8f0/data?f=pjson",
+    "webmapUrl": "https://brg.geogdansk.pl/portal/sharing/rest/content/items/d0cd10214a7343b5b385bc92ee962b2e/data?f=pjson",
+    "zoneQueryService": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query",
+    "testedInteriorPointCount": 10,
+    "testedPointsLocalXY": [
+      [
+        3,
+        12
+      ],
+      [
+        10,
+        15
+      ],
+      [
+        17,
+        25
+      ],
+      [
+        3,
+        32
+      ],
+      [
+        10,
+        32
+      ],
+      [
+        17,
+        32
+      ],
+      [
+        3,
+        36
+      ],
+      [
+        10,
+        36
+      ],
+      [
+        17,
+        36
+      ],
+      [
+        17,
+        37.5
+      ]
+    ],
+    "interiorPointZone": "649SW",
+    "selectedAttributes": {
+      "oznaczenie": "649SW",
+      "h": "12.0m",
+      "pz": "30.0%",
+      "pbc": "50.0%",
+      "iz": "1,5"
+    },
+    "draftOUZ": "138OUZ",
+    "wholePolygonAlsoIntersects": "637SW (16 m draft height); all tested interior/corner points return 649SW. No 16 m assumption is used for the pavilion.",
+    "entitlement": false,
+    "interpretation": "Proposed urban standards only. They do not establish a current permitted height or entitlement for a detached wellness, auxiliary or recreation building."
+  },
+  "primarySources": [
+    {
+      "id": "city-mpzp-dataset",
+      "url": "https://ckan.multimediagdansk.pl/dataset/mpzp",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "publisher": "City of Gdańsk",
+        "dataset": "Miejscowe Plany Zagospodarowania Przestrzennego"
+      }
+    },
+    {
+      "id": "city-planning-services",
+      "url": "https://bip.gdansk.pl/zagospodarowanie-przestrzenne/uslugi-sieciowe",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "scope": "Official planning network services"
+      }
+    },
+    {
+      "id": "brzezno-plans",
+      "url": "https://bip.gdansk.pl/zagospodarowanie-przestrzenne/03-Brzezno,a,5019",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "scope": "District plan list; nearby plan names alone do not establish parcel coverage"
+      }
+    },
+    {
+      "id": "brg-pog-status",
+      "url": "https://bip.brg.gda.pl/plan-ogolny-miasta-gdanska",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "pageUpdated": "2026-11-16",
+        "stage": 4,
+        "stageMeaning": "Revised draft, statutory agreement after consultation",
+        "notYetAtAdoptionStage": true,
+        "propertyEntitlementCaveat": "POG functions and parameters do not establish entitlement to every included development form on every parcel; detailed conditions belong in MPZP/WZ."
+      }
+    },
+    {
+      "id": "ministry-planning-faq",
+      "url": "https://www.gov.pl/web/rozwoj-technologia/reforma-planowania-przestrzennego-2",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "cutoffDate": "2026-09-01",
+        "interpretation": "After the cutoff, where POG has not entered into force, WZ generally requires proceedings begun before the cutoff, subject to statutory exceptions."
+      }
+    },
+    {
+      "id": "ministry-pog-deadline",
+      "url": "https://www.gov.pl/web/rozwoj-technologia/co-oznacza-uplyw-terminu-na-uchwalenie-planow-ogolnych",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "published": "2026-08-31",
+        "existingValidWZAndMPZP": "Not automatically extinguished by the POG deadline"
+      }
+    },
+    {
+      "id": "deadline-amendment",
+      "url": "https://eli.gov.pl/api/acts/DU/2026/781/text.pdf",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "gazette": "Dz.U. 2026 poz. 781",
+        "actDate": "2026-04-30",
+        "published": "2026-06-15",
+        "mainEntryIntoForce": "2026-07-01",
+        "selectedChange": "POG transition dates moved from end June/start July to end August/start September 2026"
+      }
+    },
+    {
+      "id": "pending-bill-3175",
+      "url": "https://www.sejm.gov.pl/Sejm10.nsf/PrzebiegProc.xsp?nr=3175",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "recordStateChecked": "2026-11-16",
+        "status": "Referred for first reading in committees; not enacted in checked record",
+        "usedAsCurrentLaw": false
+      }
+    },
+    {
+      "id": "old-building-wt-status",
+      "url": "https://eli.gov.pl/eli/DU/2022/1225/ogl",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "document": "Consolidated notice of the regulation on technical conditions for buildings and their siting",
+        "gazette": "Dz.U. 2022 poz. 1225",
+        "status": "uznany za uchylony",
+        "repealDate": "2026-09-21"
+      }
+    },
+    {
+      "id": "old-building-wt-provisions",
+      "url": "https://eli.gov.pl/api/acts/DU/2022/1225/text.html",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "provisionsConsulted": [
+          "§3(8)",
+          "§12",
+          "§13",
+          "§60",
+          "§§271–273"
+        ],
+        "conceptBoundaryAssumptionsM": {
+          "blankWall": 3,
+          "wallWithWindowsOrDoors": 4
+        },
+        "specialGarageOutbuildingBoundaryException": {
+          "maximumLengthM": 6.5,
+          "maximumHeightM": 3,
+          "otherConditionsApply": true
+        },
+        "classificationNote": "A wellness pavilion is not automatically an outbuilding or individual recreation building. These legacy numerical offsets are not a current permission finding."
+      }
+    },
+    {
+      "id": "technical-regime-transition",
+      "url": "https://eli.gov.pl/api/acts/DU/2026/1161/text.pdf",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "gazette": "Dz.U. 2026 poz. 1161",
+        "actDate": "2026-07-31",
+        "published": "2026-09-01",
+        "relevantProvision": "Article 2 point 4, adding Building Law arts. 102a–102c",
+        "relevantProvisionEntry": "2026-09-02 (Article 5 exception)",
+        "interpretation": "Conditional election of the former technical regime with the required investor declaration and consistent project application; Ministry describes the option as lasting through 20 March 2028."
+      }
+    },
+    {
+      "id": "new-building-wt-announcement",
+      "url": "https://www.gov.pl/web/rozwoj-technologia/nowe-rozporzadzenie-w-sprawie-warunkow-technicznych-dla-budynkow",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "published": "2026-11-24",
+        "signatureAnnounced": true,
+        "announcedEntry": "Day after publication in Dziennik Ustaw",
+        "gazettePublicationVerified": false,
+        "completeNewEnactedTextVerified": false,
+        "usedToAssertNewSetbackValues": false,
+        "interpretation": "Signature announcement is not proof of publication or entry into force."
+      }
+    },
+    {
+      "id": "wz-urban-analysis-regulation",
+      "url": "https://eli.gov.pl/api/acts/DU/2024/1116/text.html",
+      "checkedDate": "2026-11-24",
+      "selectedFields": {
+        "gazette": "Dz.U. 2024 poz. 1116",
+        "provisionsConsulted": [
+          "§1",
+          "§2",
+          "§7"
+        ],
+        "interpretation": "WZ conditions use proposed function and relevant surrounding development. PCK3 height does not automatically establish a garden pavilion entitlement."
+      }
+    }
+  ],
+  "physicalStudy": {
+    "file": "physical-pavilion-comparison.json",
+    "algorithm": "scripts/analyze-corner-pavilion.mjs",
+    "target": "building-9 (PCK3)",
+    "measuredRoofPointCount": 365,
+    "studyHeightsM": [
+      6.5,
+      8,
+      10,
+      12
+    ],
+    "observers": [
+      "sofa",
+      "standing",
+      "terrace",
+      "garden",
+      "pool",
+      "jacuzzi",
+      "firepit"
+    ],
+    "baseline": "Same alternative garden, eye and summer vegetation; suppress only pavilion opaque construction.",
+    "heightDatum": "Lowest original terrain corner; proposed fill adds no screening height.",
+    "actualShell": "Opaque walls, slabs, roof, piers, landing and steps; garden-facing windows and entrance door remain transparent.",
+    "idealEnvelope": "Separate opaque flat-top plan-interception limit. Not used as actual-shell screening.",
+    "metric": "Unweighted target-point sightline counts; not image area, guaranteed foliage privacy, or a legal envelope.",
+    "reproductionVerifiedByteForByte": "2026-11-24",
+    "sha256": "7be4342a65f08860a9380f35b42a2b0d46e11e99dea91b04163df8d1bf6529d0",
+    "dataInputs": [
+      {
+        "path": "data/site-data.json",
+        "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+      },
+      {
+        "path": "data/sternicza-surrounding-nature.json",
+        "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+      }
+    ],
+    "retainedFinalRegisteredGeometryStudy": true,
+    "registration": {
+      "function": "applyPlanExterior",
+      "source": "src/plan-exterior.js",
+      "method": "Apply the architectural house and terrace registration before every observer and visibility calculation, matching the live app."
+    },
+    "finalPlacementChecks": [
+      {
+        "id": "rear-east",
+        "settings": {
+          "pavilionX": 12.2,
+          "pavilionY": 29,
+          "pavilionWidth": 5,
+          "pavilionDepth": 5.8
+        },
+        "terraceEndY": 22.117475217542932,
+        "entryOuterY": 27.16,
+        "entryTerraceGap": 5.042524782457068,
+        "bodyHouseGap": 10.861348013602434,
+        "eastBoundaryGap": 3.1031963508966407,
+        "rearBoundaryGap": 3.13324348821661,
+        "entryDoorX": [
+          13.12,
+          14.17
+        ],
+        "landingWidth": 1.4,
+        "risers": 3,
+        "riserHeight": 0.14554368933163206
+      },
+      {
+        "id": "near-garage",
+        "settings": {
+          "pavilionX": 11.4,
+          "pavilionY": 24.7,
+          "pavilionWidth": 5.8,
+          "pavilionDepth": 5.2
+        },
+        "terraceEndY": 22.117475217542932,
+        "entryOuterY": 23.18,
+        "entryTerraceGap": 1.0625247824570678,
+        "bodyHouseGap": 6.561348013602434,
+        "eastBoundaryGap": 3.102899216054727,
+        "rearBoundaryGap": 8.032571608554319,
+        "entryDoorX": [
+          12.32,
+          13.370000000000001
+        ],
+        "landingWidth": 1.4,
+        "risers": 2,
+        "riserHeight": 0.1478339929993333
+      }
+    ],
+    "placementCheckMethod": "privacyStructures on applyPlanExterior-registered site, closestFootprints and closestBoundary; the 1 m approach integration check covers Current plus all 22 renovation styles.",
+    "placementCheckSource": "tests/pavilion-integration.test.mjs"
+  },
+  "evidenceFiles": [
+    {
+      "file": "physical-pavilion-comparison.json",
+      "bytes": 63623,
+      "sha256": "7be4342a65f08860a9380f35b42a2b0d46e11e99dea91b04163df8d1bf6529d0"
+    },
+    {
+      "file": "root-independent-verification.json",
+      "bytes": 22442,
+      "sha256": "2d75d2b5abb8d41c2b60e0c98efc96d893d6b5e1c970a08da8fa13651d355c0c"
+    },
+    {
+      "file": "sternicza-app.json",
+      "bytes": 5519,
+      "sha256": "cd4e6204d39d9486a065360adc0c85b76fe34714b5c86790b2b897551ebe43f2"
+    },
+    {
+      "file": "sternicza-bounds.json",
+      "bytes": 8397,
+      "sha256": "82144e52bf4d7cd87fc8752cd085d4d69e54a5cd72c07f82fd0463b71d1582bf"
+    },
+    {
+      "file": "sternicza-draft-pog-ouz.json",
+      "bytes": 2994,
+      "sha256": "fc05a10dd9b568e4508346bd92d04525dfc2d14939fb353447e853e7f23b418f"
+    },
+    {
+      "file": "sternicza-draft-pog-points.json",
+      "bytes": 6032,
+      "sha256": "2561060ec5a60d790453f53558c7cac2bf8c47f2b36ba190ee000ac4e1020b70"
+    },
+    {
+      "file": "sternicza-draft-pog-zone.json",
+      "bytes": 5752,
+      "sha256": "e8badb357179ce1c098f29d5f67fb3b25ee82796251b3d6cb81d845165f3984c"
+    },
+    {
+      "file": "sternicza-landuse.json",
+      "bytes": 4829,
+      "sha256": "192cde3e0bcfb054ce574200163d4517b4eda1fcd2c89c2c8c543ce9eb2ea74d"
+    },
+    {
+      "file": "sternicza-pending.json",
+      "bytes": 9811,
+      "sha256": "41cb821ac887239cd082d5bd40eaf3f49f473f5697a44b250083c35aea388564"
+    }
+  ]
+}

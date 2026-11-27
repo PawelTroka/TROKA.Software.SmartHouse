@@ -1,0 +1,629 @@
+{
+  "version": "1.23.0",
+  "stateVersion": 23,
+  "updatedAt": "2026-11-18",
+  "siteId": "sternicza-11",
+  "inputs": {
+    "costSpacing": 0.8,
+    "costTreePriceRear": 0,
+    "costTreePriceLeft": 0,
+    "costTreePriceRight": 0,
+    "costTreePriceFront": 0,
+    "costPriceFactor": 100,
+    "costPlantingRate": 75,
+    "costHedgeDelivery": 1000,
+    "costHedgeEquipment": 0,
+    "costScreeningPlanting": 0,
+    "costScreeningAnchoring": 0,
+    "costScreeningDelivery": 0,
+    "costScreeningCrane": 0,
+    "costScreeningEstablishment": 0,
+    "costSpaPool": 0,
+    "costSpaJacuzzi": 0,
+    "costSpaSauna": 0,
+    "costSpaColdPlunge": 0,
+    "costSpaFirepit": 0,
+    "costGardenTerrace": 0,
+    "costGardenPaving": 0,
+    "costGardenFurniture": 0,
+    "costGardenPlanting": 0,
+    "costGardenLawn": 0,
+    "costGardenIrrigation": 0,
+    "costGardenLighting": 0,
+    "costGardenUtilities": 0,
+    "costGardenDemolition": 0,
+    "costGardenDesign": 0,
+    "costGardenCanopy": 0,
+    "costBalconyQuote": 0,
+    "costPrivacyPergolaQuote": 0,
+    "costSpaScreenQuote": 0,
+    "costBasementGarageQuote": 0,
+    "costAreaOverride": 0,
+    "costBedWidth": 1,
+    "costTopsoilDepth": 0.15,
+    "costLooseFactor": 1.2,
+    "costFillRate": 75,
+    "costTopsoilRate": 110,
+    "costEarthworkRate": 50,
+    "costTruckCapacity": 10,
+    "costSoilDelivery": 500,
+    "costRetainingAllowance": 8000,
+    "costDrainageAllowance": 3000,
+    "costAccessAllowance": 1500,
+    "costContingency": 20,
+    "buyNewThujas": true,
+    "costUsePlanningAllowances": true,
+    "sunEnabled": true,
+    "sunDate": "2026-06-21",
+    "sunMinutes": 720,
+    "nightGardenLights": true,
+    "nightPendantLights": true,
+    "nightHedgeLights": true,
+    "nightWindowLights": true,
+    "nightGardenIntensity": 75,
+    "nightPendantIntensity": 80,
+    "nightHedgeIntensity": 85,
+    "nightWindowActivity": 70,
+    "nightWindowIntensity": 60,
+    "privacyPergolaHeight": 5,
+    "privacyPergolaWidth": 5,
+    "privacyPergolaDepth": 2,
+    "privacyPergolaX": 10.5,
+    "privacyPergolaY": 23.5,
+    "spaScreenHeight": 2.2,
+    "spaScreenWidth": 3.6,
+    "spaScreenReturn": 1.5,
+    "spaScreenGap": 0.65,
+    "privacyPergolaEnabled": false,
+    "privacyPergolaFoliage": false,
+    "spaScreensEnabled": false,
+    "garageClearHeight": 2.3,
+    "garageSlabThickness": 0.25,
+    "garageExtraDepth": 0,
+    "garageSpaces": 2,
+    "garageRampWidth": 5.8,
+    "garageInsideRun": 2,
+    "garageBottomApron": 0.4,
+    "garageMaxGrade": 25,
+    "garageClearanceMm": 105.6,
+    "garageReserveMm": 30,
+    "garageProgress": 40,
+    "basementGarageEnabled": true,
+    "garageReverse": false,
+    "hedgeRear": 4,
+    "hedgeLeft": 4,
+    "hedgeRight": 4,
+    "hedgeFront": 4,
+    "gardenRaise": 0.5,
+    "bedRaise": 0,
+    "terraceDepth": 4,
+    "canopyDepth": 4,
+    "canopyHeight": 3,
+    "fasciaDepth": 0.3,
+    "canopyWidth": 8.5,
+    "floorHeight": 1.2,
+    "firstFloorRise": 3,
+    "atticRise": 6,
+    "eyeHeight": 1.2,
+    "poolEyeAboveWater": 0.15,
+    "hedgeInset": 0.5,
+    "observerX": 9.6091676564,
+    "observerY": 30,
+    "lookYaw": 0,
+    "lookPitch": 0,
+    "b9HeightDelta": 0,
+    "b9DistanceDelta": 0,
+    "b15HeightDelta": 0,
+    "b15DistanceDelta": 0,
+    "b29HeightDelta": 0,
+    "b29DistanceDelta": 0,
+    "b31HeightDelta": 0,
+    "b31DistanceDelta": 0,
+    "b53HeightDelta": 0,
+    "b53DistanceDelta": 0,
+    "preset": "sofa",
+    "mode": "orbit",
+    "raiseNewHedges": true,
+    "canopyEnabled": true,
+    "removeGarage": true,
+    "showRays": false,
+    "showDimensions": true,
+    "includeHighFeatures": false,
+    "linkedHedges": false,
+    "hedgeFullPerimeter": true,
+    "sunPathVisible": false,
+    "jacuzziOverflow": true,
+    "screeningTrees": [
+      {
+        "id": "tree-1",
+        "typeId": "thuja-excelsa-9m",
+        "height": 9,
+        "crownBase": 0.3,
+        "crownWidth": 2,
+        "crownDepth": 2,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0,
+        "x": 19.3,
+        "y": 30.2
+      },
+      {
+        "id": "tree-2",
+        "typeId": "thuja-excelsa-9m",
+        "height": 9,
+        "crownBase": 0.3,
+        "crownWidth": 2,
+        "crownDepth": 2,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0,
+        "x": 13.8,
+        "y": 35.8
+      },
+      {
+        "id": "tree-3",
+        "typeId": "thuja-excelsa-9m",
+        "height": 9,
+        "crownBase": 0.3,
+        "crownWidth": 2,
+        "crownDepth": 2,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0,
+        "x": 18.45,
+        "y": 35.57
+      }
+    ],
+    "treeLeafMode": "auto",
+    "gardenProgram": "spa-pool-grove",
+    "terraceCoverType": "canopy",
+    "siteId": "sternicza-11"
+  },
+  "defaults": {
+    "terraceDepthM": 4,
+    "jacuzziOverflow": true,
+    "canopyEnabled": true,
+    "canopyProjectionM": 4,
+    "canopyUndersideAboveTerraceM": 3
+  },
+  "balcony": {
+    "widthM": 8.5,
+    "projectionM": 4,
+    "areaM2": 34,
+    "deckAboveTerraceM": 3,
+    "clearBelowSlabM": 2.75,
+    "clearBelowFrontBeamM": 2.51,
+    "guardHeightM": 1.1,
+    "deckThicknessM": 0.25,
+    "supports": [
+      {
+        "id": "cover-balcony-post-0",
+        "group": "terrace-cover",
+        "type": "balcony",
+        "part": "post",
+        "label": "Balcony support",
+        "x0": 4.679167656420746,
+        "y0": 21.805083036928558,
+        "x1": 4.8591676564207456,
+        "y1": 21.985083036928557,
+        "z0": 2.9468303963947697,
+        "z1": 6.1475585030942295,
+        "opaque": true
+      },
+      {
+        "id": "cover-balcony-post-1",
+        "group": "terrace-cover",
+        "type": "balcony",
+        "part": "post",
+        "label": "Balcony support",
+        "x0": 9.519167656420745,
+        "y0": 21.805083036928558,
+        "x1": 9.699167656420745,
+        "y1": 21.985083036928557,
+        "z0": 3.6375585030942297,
+        "z1": 6.1475585030942295,
+        "opaque": true
+      },
+      {
+        "id": "cover-balcony-post-2",
+        "group": "terrace-cover",
+        "type": "balcony",
+        "part": "post",
+        "label": "Balcony support",
+        "x0": 13.889167656420744,
+        "y0": 21.805083036928558,
+        "x1": 14.069167656420744,
+        "y1": 21.985083036928557,
+        "z0": 3.0701689101641727,
+        "z1": 6.1475585030942295,
+        "opaque": true
+      }
+    ],
+    "warnings": [],
+    "assumptions": [
+      "An outer balcony support is moved outside the jacuzzi service zone; the projecting beam and foundation locations are design proposals.",
+      "The balcony replaces the canopy. Its finished deck follows the editable first-floor level, with a proposed 0.25 m deck, 0.24 m beam, three supports and a 1.10 m guardrail.",
+      "A new garden-facing first-floor access door, structure, foundations, waterproofing, drainage and guard details require project design; the dimensions are not an engineered approval.",
+      "Guard glazing is treated as clear: it gives no opaque privacy or shade credit. Only the actual slab, beam, posts and rails are counted."
+    ],
+    "costStatus": "Separate complete installed quote required; no canopy allowance applied."
+  },
+  "garage": {
+    "enabledByDefault": false,
+    "spaces": 2,
+    "clearWidthM": 5.8,
+    "gateWidthM": 6.6000000000000005,
+    "approachM": 9.125904390764711,
+    "insideContinuationM": 2,
+    "dropM": 1.3987967185427332,
+    "flatParkingLengthM": 6.994098781639057,
+    "peakGradientPercent": 25,
+    "portal": {
+      "center": [
+        11.75178498,
+        9.125833824752544
+      ],
+      "a": [
+        14.651762555763835,
+        9.137238212807963
+      ],
+      "b": [
+        8.851807404236165,
+        9.114429436697124
+      ],
+      "width": 5.8,
+      "bottomZ": 1.134523446036881,
+      "topZ": 3.234523446036881,
+      "ceilingZ": 3.3875585030942297,
+      "availableHeight": 2.2530350570573487,
+      "clearHeight": 2.1,
+      "assumedDoorClearHeight": 2.1
+    },
+    "parking": {
+      "spaces": 2,
+      "laneWidth": 2.9,
+      "laneOffsets": [
+        -1.45,
+        1.45
+      ],
+      "movingLaneOffset": 1.45,
+      "parkedLaneOffset": -1.45,
+      "mirrorWallClearance": 0.395,
+      "bodyWallClearance": 0.49349999999999994,
+      "betweenMirrors": 0.79,
+      "betweenBodies": 0.9869999999999999,
+      "wallAllowance": 0.3,
+      "betweenAllowance": 0.6,
+      "minimumWidth": 5.42,
+      "widthPass": true
+    },
+    "entryAccess": {
+      "proposed": true,
+      "doorCenter": [
+        9.16,
+        9.11564142812329
+      ],
+      "landing": {
+        "footprint": [
+          [
+            7.4,
+            9.108720090818723
+          ],
+          [
+            9.84,
+            9.11831558117278
+          ],
+          [
+            9.843932547605316,
+            8.118323313668009
+          ],
+          [
+            7.403932547605318,
+            8.108727823313952
+          ],
+          [
+            7.4,
+            9.108720090818723
+          ]
+        ],
+        "projection": 1,
+        "thickness": 0.18,
+        "fromS": 8.125904390764711,
+        "toS": 9.125904390764711,
+        "innerLateral": 1.911799762982548,
+        "outerLateral": 4.351818630416801,
+        "topZ": 3.6375585030942297,
+        "soffitZ": 3.4575585030942295
+      },
+      "stairs": {
+        "landingX": 7.4,
+        "tread": 0.32,
+        "maxRiser": 0.18,
+        "width": 1,
+        "heading": "east"
+      },
+      "pedestrianGateCenter": [
+        5,
+        0
+      ]
+    },
+    "assessment": {
+      "forward": {
+        "minimumClearance": 0.04224621381551241,
+        "minimumVerticalClearance": 0.04224621381551241,
+        "minimumOverheadClearance": 0.7351038939383954,
+        "minimumPortalClearance": 0.7351038939383954,
+        "minimumSoffitClearance": 0.888138950995744,
+        "minimumEntryLandingClearance": 0.8773671405311427,
+        "criticalOverhead": {
+          "rearS": 7.728532661899129,
+          "station": 9.125904390764711,
+          "element": "garage doorway",
+          "reverse": false
+        },
+        "criticalEntryLanding": {
+          "rearS": 6.680011764123757,
+          "station": 8.125904390764711,
+          "reverse": false
+        },
+        "portalPosesChecked": 158,
+        "coveredPosesChecked": 266,
+        "entryLandingPosesChecked": 187,
+        "criticalRearS": 7.124679442549632,
+        "criticalProgress": 0.6246996309678424,
+        "limitingPart": "front-overhang",
+        "limitingStation": 10.736392006573842,
+        "posesChecked": 558,
+        "step": 0.035,
+        "reverse": false
+      },
+      "reverse": {
+        "minimumClearance": 0.042449352660789495,
+        "minimumVerticalClearance": 0.04262915726018024,
+        "minimumOverheadClearance": 0.7351039059359503,
+        "minimumPortalClearance": 0.7351039059359503,
+        "minimumSoffitClearance": 0.888138962993299,
+        "minimumEntryLandingClearance": 0.8773632757356906,
+        "criticalOverhead": {
+          "rearS": 10.413631268714106,
+          "station": 9.125904390764711,
+          "element": "garage doorway",
+          "reverse": true
+        },
+        "criticalEntryLanding": {
+          "rearS": 9.365110370938734,
+          "station": 8.125904390764711,
+          "reverse": true
+        },
+        "portalPosesChecked": 159,
+        "coveredPosesChecked": 267,
+        "entryLandingPosesChecked": 188,
+        "criticalRearS": 2.6451190538871447,
+        "criticalProgress": 0.21642880176566584,
+        "limitingPart": "underbody",
+        "limitingStation": 1.2739931959223119,
+        "posesChecked": 558,
+        "step": 0.035,
+        "reverse": true
+      },
+      "minimumClearance": 0.04224621381551241,
+      "minimumVerticalClearance": 0.04224621381551241,
+      "requiredMargin": 0.03,
+      "numericalAllowance": 0.001,
+      "conservativeClearance": 0.04124621381551241,
+      "reserveRemaining": 0.012246213815512413,
+      "passes": true,
+      "clearancePass": true,
+      "geometryPass": true,
+      "gradeWithinLimit": true,
+      "parkingFits": true,
+      "parkingWidthPass": true,
+      "structuralHeadroomPass": true,
+      "widthBenchmarkPass": true,
+      "doorBenchmarkPass": true,
+      "parkingFlatLength": 6.994098781639057,
+      "minCoveredHeadroom": 2.2459831975420617,
+      "entryLandingHeadroom": 2.2459831975420617,
+      "minimumOverheadClearance": 0.7351038939383954,
+      "minimumEntryLandingClearance": 0.8773632757356906,
+      "criticalOverhead": {
+        "rearS": 7.728532661899129,
+        "station": 9.125904390764711,
+        "element": "garage doorway",
+        "reverse": false
+      },
+      "criticalEntryLanding": {
+        "rearS": 9.365110370938734,
+        "station": 8.125904390764711,
+        "reverse": true
+      },
+      "posesChecked": 1116,
+      "portalPosesChecked": 317,
+      "coveredPosesChecked": 533,
+      "entryLandingPosesChecked": 375,
+      "limitingDirection": "forward",
+      "status": "conditional-clearance",
+      "thresholdResolved": false,
+      "roadApproachSurveyed": false,
+      "warnings": [
+        "Concept only: original basement, slab, foundations, drainage and vehicle bumper geometry are not surveyed.",
+        "The entire underside is conservatively flat at the selected level-road clearance, including both overhangs; tyre radii are nominal size geometry.",
+        "Quasi-static rigid-body geometry excludes braking, suspension travel, tyre deflection, snow, ruts and construction tolerances.",
+        "The road approach and crossing are assumed flush and level. The required drainage/containment threshold detail is unresolved; a 30 mm edge is not included.",
+        "The 25% gradient, 3 m access width and 2.20 m structural headroom figures are transitional design benchmarks; project applicability needs confirmation.",
+        "The 2.10 m door opening is an assumption without surveyed lintel or door-gear geometry; overhead checks use a conservative full-height closed-car envelope.",
+        "The 2-car plan uses two identical Cyberster envelopes: 4.535 m long, 1.913 m body width and 2.110 m across mirrors. Doors remain closed; their opening space and street turning manoeuvres are not modelled.",
+        "Parking width is compared with a chosen 0.30 m mirror-to-wall allowance and, for two cars, 0.60 m between mirror envelopes. These are planning allowances, not a surveyed door-opening or accessibility assessment.",
+        "The wider ramp requires proposed side-return entry stairs and a 1.0 m cantilevered landing at the existing front door. Its 0.18 m slab underside is included in both driving sweeps; its structure has not been designed.",
+        "The bottom curve continues inside the existing house and requires structural and basement-layout design."
+      ]
+    }
+  },
+  "viewpoints": {
+    "pool": {
+      "x": 16.27,
+      "y": 27.400000000000002,
+      "z": 3.6734969119567165,
+      "groundZ": 3.5234969119567165,
+      "waterZ": 3.5234969119567165,
+      "preset": "pool",
+      "label": "Pool · swimming eye level",
+      "surface": "pool-water",
+      "eyeHeight": 0.15,
+      "defaultLookYaw": 0,
+      "defaultLookPitch": 0
+    },
+    "balcony": {
+      "x": 9.609167656420745,
+      "y": 21.36508303692856,
+      "groundZ": 6.63755850309423,
+      "z": 8.28755850309423,
+      "eyeHeight": 1.65,
+      "preset": "balcony",
+      "surface": "balcony",
+      "label": "Balcony · standing",
+      "defaultLookYaw": 0,
+      "defaultLookPitch": -8
+    }
+  },
+  "frontHedge": {
+    "standard": {
+      "segments": [
+        {
+          "id": "front-span-1",
+          "a": [
+            0.5047416972310454,
+            0.5
+          ],
+          "b": [
+            8.56,
+            0.5000000000000003
+          ],
+          "length": 8.055258302768955
+        },
+        {
+          "id": "front-span-2",
+          "a": [
+            9.76,
+            0.5000000000000004
+          ],
+          "b": [
+            15.820588917030452,
+            0.5000000000000007
+          ],
+          "length": 6.060588917030454
+        }
+      ],
+      "openings": [
+        {
+          "id": "front-pedestrian-opening",
+          "label": "Pedestrian opening · proposed",
+          "a": [
+            8.56,
+            0.5000000000000003
+          ],
+          "b": [
+            9.76,
+            0.5000000000000004
+          ],
+          "width": 1.1999999999999993
+        },
+        {
+          "id": "front-vehicle-opening",
+          "label": "Vehicle opening · proposed",
+          "a": [
+            15.820588917030452,
+            0.5000000000000007
+          ],
+          "b": [
+            19.820588917030456,
+            0.5000000000000009
+          ],
+          "width": 4
+        }
+      ],
+      "length": 14.11584721979941,
+      "assumption": "Proposed 1.20 m pedestrian opening aligned with the entrance and 4.00 m vehicle opening; gate positions are not surveyed. Only these access gaps interrupt the front hedge. Front planting stays at existing grade."
+    },
+    "twoCarGarage": {
+      "segments": [
+        {
+          "id": "front-span-1",
+          "a": [
+            0.5047416972310454,
+            0.5
+          ],
+          "b": [
+            4.3999999999999995,
+            0.5000000000000002
+          ],
+          "length": 3.8952583027689545
+        },
+        {
+          "id": "front-span-2",
+          "a": [
+            5.6,
+            0.5000000000000002
+          ],
+          "b": [
+            8.487673033458254,
+            0.5000000000000003
+          ],
+          "length": 2.8876730334582543
+        },
+        {
+          "id": "front-span-3",
+          "a": [
+            15.087673033458255,
+            0.5000000000000007
+          ],
+          "b": [
+            19.820588917030456,
+            0.5000000000000009
+          ],
+          "length": 4.732915883572199
+        }
+      ],
+      "openings": [
+        {
+          "id": "front-pedestrian-opening",
+          "label": "Pedestrian opening · proposed",
+          "a": [
+            4.3999999999999995,
+            0.5000000000000002
+          ],
+          "b": [
+            5.6,
+            0.5000000000000002
+          ],
+          "width": 1.1999999999999997
+        },
+        {
+          "id": "front-vehicle-opening",
+          "label": "Basement ramp opening · proposed",
+          "a": [
+            8.487673033458254,
+            0.5000000000000003
+          ],
+          "b": [
+            15.087673033458255,
+            0.5000000000000007
+          ],
+          "width": 6.600000000000001
+        }
+      ],
+      "length": 11.515847219799406,
+      "assumption": "The two separate openings align with the basement ramp and proposed side-return entrance stair. Planting closes the rest of the frontage, including between the gates. Gate positions and street connection remain proposals. Openings receive no privacy-screen credit."
+    }
+  },
+  "evidenceFiles": [
+    "house-appearance.json",
+    "garage-sources.json"
+  ],
+  "limitations": [
+    "Photo-informed openings and concealed elevations remain approximate. The photographed street-right cross-gable locally overrides conflicting mapped returns; its estimated dimensions and roof residuals are documented in house-appearance.json.",
+    "The rear balcony access, wider basement opening, side-return entrance stair and landing are proposals, not existing surveyed features.",
+    "Vehicle results are static closed-car geometry; doors, road turning, drainage/threshold, actual basement and structural design remain unresolved.",
+    "Old shared links retain the old 4.2 m terrace, canopy-off, overflow-off and single-car settings when those fields were omitted."
+  ]
+}
