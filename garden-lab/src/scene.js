@@ -1646,6 +1646,10 @@ export function createScene(container, data, callbacks = {}) {
   /** A fixed architectural comparison view, independent of the privacy eye.
    * Changing the design does not reset this camera or the selected daylight. */
   function setDesignInspection(kind='house'){
+    // Re-selecting the same orbit can schedule a frame without a controls
+    // change event. Publish its completion even inside the normal one-second
+    // stats throttle, after the immediate pending-frame report below.
+    statusChanged=true;
     setView('orbit');
     if(kind==='garden'){callbacks.onPerformanceInfo?.(getPerformanceInfo());return true;}
     const bounds=boundsOf(data.site.house.footprint),width=bounds.maxX-bounds.minX,depth=bounds.maxY-bounds.minY;
