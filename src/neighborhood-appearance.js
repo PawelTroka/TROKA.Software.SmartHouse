@@ -1,5 +1,5 @@
-import {neighborhoodAppearanceData} from './neighborhood-appearance-data.js?v=1.35.0';
-import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.35.0';
+import {neighborhoodAppearanceData} from './neighborhood-appearance-data.js?v=1.36.0';
+import {visualNeighborRoof,clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.36.0';
 
 const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-7?ring.slice(0,-1):ring||[];

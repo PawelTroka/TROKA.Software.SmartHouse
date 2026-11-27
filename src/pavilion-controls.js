@@ -1,6 +1,6 @@
-import {PAVILION_PLACEMENTS} from './corner-pavilion.js?v=1.35.0';
-import {pavilionStudy} from './pavilion-study.js?v=1.35.0';
-import {STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.35.0';
+import {PAVILION_PLACEMENTS} from './corner-pavilion.js?v=1.36.0';
+import {pavilionStudy} from './pavilion-study.js?v=1.36.0';
+import {STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.36.0';
 const $=id=>document.getElementById(id);
 const fmt=(n,d=1)=>Number.isFinite(n)?n.toFixed(d):'—';
 

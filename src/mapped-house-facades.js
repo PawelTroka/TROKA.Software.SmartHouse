@@ -1,6 +1,6 @@
 // Inferred facade openings used by both the mapped-house renderer and style treatments.
-import {localRoofEnvelope, roofEdgeHeight} from './roof-envelope.js?v=1.35.0';
-import {renovateFacadeOpenings,getRenovationArchitecture,minimumFacadeRoof} from './renovation-architecture.js?v=1.35.0';
+import {localRoofEnvelope, roofEdgeHeight} from './roof-envelope.js?v=1.36.0';
+import {renovateFacadeOpenings,getRenovationArchitecture,minimumFacadeRoof} from './renovation-architecture.js?v=1.36.0';
 
 // A survey may subdivide one straight wall into several cadastral edges. The
 // architectural rhythm belongs to the full elevation; tiny segments must not

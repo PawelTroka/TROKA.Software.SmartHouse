@@ -63,13 +63,18 @@ function wallDrawing(wall, changes) {
   const width = `stroke-width="${n(wall.thickness || .16)}"`;
   const openings = [...(wall.openings || [])].sort((a,b) => a.offset-b.offset);
   let from = 0, solids = '', symbols = '';
+  const segment=(left,right)=>{
+    if(wall.form!=='timber-screen'||status==='removed')return line(left,0,right,0,cls,width);
+    const span=right-left,slat=Math.min(wall.slatWidth||.035,span),count=Math.max(1,Math.ceil((span-slat)/(wall.slatPitch||.12)));
+    return `<g class="iw-fixture"><title>${esc(wall.label)} · ${n(wall.height)} m</title>${line(left,0,right,0,'','stroke-width=".012"')}${Array.from({length:count+1},(_,i)=>`<rect x="${n(left+(span-slat)*i/count)}" y="${n(-wall.thickness/2)}" width="${n(slat)}" height="${n(wall.thickness)}"/>`).join('')}</g>`;
+  };
   for (const o of openings) {
     const start = Math.max(from, Math.min(len, o.offset)), end = Math.max(start,Math.min(len,o.offset+o.width));
-    if (start > from) solids += line(from,0,start,0,cls,width);
+    if (start > from) solids += segment(from,start);
     if (end > start && status !== 'removed') symbols += openingSymbol(o,start,end);
     from = end;
   }
-  if (from < len) solids += line(from,0,len,0,cls,width);
+  if (from < len) solids += segment(from,len);
   return `<g transform="${transform}">${solids}${symbols}</g>`;
 }
 
@@ -216,7 +221,7 @@ export function drawInteriorPlan(host, plan, { roomId, showFurniture = true, sho
     <pattern id="iw-stone" width=".16" height=".16" patternUnits="userSpaceOnUse"><rect width=".16" height=".16" fill="#e9e7de"/><circle cx=".04" cy=".07" r=".011" fill="#b1aea0"/></pattern></defs>
     <text class="iw-plan-side" x="${n(centerX)}" y="${n(b.top-.42)}">GARDEN SIDE</text><text class="iw-plan-side" x="${n(centerX)}" y="${n(b.bottom+1.02)}">STREET SIDE</text>
     ${decks}<polygon class="iw-outline" points="${pts(outline)}"/>${roomMarkup}
-    <g class="iw-drafting">${roofBands(plan)}${(plan.voids||[]).map(p => `<polygon class="iw-void" points="${pts(p)}"/>`).join('')}${(plan.stairs||[]).map(stairDrawing).join('')}${(plan.cores||[]).filter(c => c.polygon?.length).map(c => `<polygon class="iw-core" points="${pts(c.polygon)}"><title>${esc(c.label)}</title></polygon>`).join('')}
+    <g class="iw-drafting">${roofBands(plan)}${(plan.voids||[]).map(p => `<polygon class="iw-void" points="${pts(p)}"/>`).join('')}${(plan.stairs||[]).map(stairDrawing).join('')}${(plan.cores||[]).filter(c => c.polygon?.length).map(c => `${c.enclosure?`<polygon class="iw-fixture" points="${pts(c.enclosure.polygon)}"><title>${esc(c.enclosure.label)}</title></polygon>`:''}<polygon class="iw-core" points="${pts(c.polygon)}"${c.enclosure?' opacity=".35"':''}><title>${esc(c.label)}</title></polygon>`).join('')}
     ${showFurniture ? (plan.fixtures||[]).map(fixtureDrawing).join('') : ''}${plan.walls.map(w => wallDrawing(w,showChanges)).join('')}${showChanges ? (plan.removedWalls||[]).map(w => wallDrawing(w,true)).join('') : ''}
     ${(plan.conflicts||[]).map(c => `<polygon class="iw-conflict" points="${pts(c.polygon)}"><title>${esc(c.label)} crosses the proposed lanes</title></polygon>`).join('')}
     ${rooms.map((r,i) => roomLabel(r,i,anchors[i])).join('')}${dimensions(width,depth,b)}</g></svg>`;

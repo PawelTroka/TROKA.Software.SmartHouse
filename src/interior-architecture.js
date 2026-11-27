@@ -1,10 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.35.0';
-import {furnishInterior} from './interior-furniture.js?v=1.35.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.35.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.35.0';
-import {stairTreads} from './stair-surfaces.js?v=1.35.0';
-import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.35.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.36.0';
+import {furnishInterior} from './interior-furniture.js?v=1.36.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.36.0';
+import {stairTreads} from './stair-surfaces.js?v=1.36.0';
+import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.36.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -55,6 +55,20 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
   const dx=wall.b[0]-wall.a[0],dz=wall.b[1]-wall.a[1],len=Math.hypot(dx,dz);if(len<.01||height<=0)return;
   const {box,group,cyl,rounded}=tools, g=group(parent,wall.a[0],0,wall.a[1],-Math.atan2(dz,dx)),th=wall.thickness;
   const changed=state.showChanges&&wall.status==='new', paint=changed?m.addition:m.wall;
+  if(wall.form==='timber-screen'){
+    const wood=changed?m.addition:m.oak;
+    // A low, visually open guard follows the old stair-side partition. Its
+    // opening remains a real entrance; no rail or slat bridges that route.
+    for(const p of wallPanels(wall,height)){
+      const width=p.right-p.left,top=p.top,bottom=p.bottom;if(width<.01||top-bottom<.08)continue;
+      const rail=Math.min(.045,(top-bottom)/4),slat=Math.min(wall.slatWidth||.035,width),span=width-slat;
+      rounded(g,wood,(p.left+p.right)/2,top-rail/2,0,width,rail,th,.008);
+      box(g,wood,(p.left+p.right)/2,bottom+rail,0,width,rail,th*.64);
+      const count=Math.max(1,Math.ceil(span/(wall.slatPitch||.12))),lo=bottom+rail*1.5,hi=top-rail;
+      for(let i=0;i<=count;i++)box(g,wood,p.left+slat/2+span*i/count,(lo+hi)/2,0,slat,hi-lo,th*.50);
+    }
+    return;
+  }
   for(const s of wallPanels(wall,height)) {
     const x=(s.left+s.right)/2,w=s.right-s.left,h=s.top-s.bottom;if(w<.001||h<.001)continue;
     box(g,paint,x,s.bottom+h/2,0,w,h,th);
@@ -409,6 +423,13 @@ export function buildArchitecture(plan,state,tools,finishes) {
     for(const [node,height] of [[pair.full,top],[pair.cut,Math.min(.79,top)]]){
       box(node,m.brick,b.x,height/2,b.z,b.width,height,b.depth);box(node,m.stone,b.x,height+.013,b.z,b.width+.022,.026,b.depth+.022);
       const n=c.flues||2,along=b.width>b.depth;for(let i=0;i<n;i++){const t=(i+.5)/n-.5;box(node,m.dark,b.x+(along?t*b.width:0),height+.029,b.z+(along?0:t*b.depth),along?b.width/n*.56:b.width*.48,.008,along?b.depth*.51:b.depth/n*.54);}
+      if(c.enclosure?.kind==='cabinet-panels'){
+        // Continue the refrigerator wall's cabinetry around the intact stack.
+        // Thin removable faces leave the flue volume untouched; their full
+        // outer envelope is also used by physical circulation and the plan.
+        const panels=c.enclosure.panels.map(f=>({...f,kind:'wallCabinet',height,panelOnly:true,handleless:true}));
+        furnishInterior(node,{...plan,fixtures:panels},tools,finishes);
+      }
     }
   }
   for(const s of plan.stairs||[]){if(s.kind==='exterior'&&state.showExterior===false)continue;addFlight(s.kind==='exterior'?base:stairs,s,plan,tools,m);if(s.kind==='hatch'&&s.from===floor){const b=ringBounds(s.polygon);for(const side of [-1,1]){box(ceiling,m.trim,b.x+side*b.width/2,h-.052,b.z,.035,.05,b.depth);box(ceiling,m.trim,b.x,h-.052,b.z+side*b.depth/2,b.width,.05,.035);}}}
