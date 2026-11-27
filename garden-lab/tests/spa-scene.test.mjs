@@ -51,11 +51,15 @@ test('cold plunge has the specified water depth without a false pad across its b
   group.traverse(object=>{if(object.name==='plunge-pad'){const b=bounds(object);assert.ok(center[0]<b.min.x||center[0]>b.max.x||center[1]<b.min.z||center[1]>b.max.z);}});
 });
 
-test('spa terrain opens the pool, edge tub, firepit and plunge while classic stays unchanged',()=>{
+test('spa and classic terrain retain their basin openings alongside the shared cellar opening',()=>{
   const holes=designTerrainCutouts(settings,data);
-  assert.equal(holes.length,4);
+  const cellar=holes.find(h=>h.id==='shared-house-basement-opening');
+  assert.ok(cellar?.polygon?.length>=4,'Both garden programs retain the complete cellar cutout');
+  assert.equal(holes.filter(h=>h!==cellar).length,4);
   for(const rect of [program.pool,program.firepit,program.coldPlunge])assert.ok(holes.some(h=>Math.abs(h.x0-rect.x)<1e-8&&Math.abs(h.x1-rect.x-rect.width)<1e-8&&Math.abs(h.y0-rect.y)<1e-8&&Math.abs(h.y1-rect.y-rect.length)<1e-8));
-  const legacy=designTerrainCutouts({...settings,gardenProgram:'classic'},data);assert.equal(legacy.length,2);
+  const legacy=designTerrainCutouts({...settings,gardenProgram:'classic'},data);
+  assert.deepEqual(legacy.find(h=>h.id==='shared-house-basement-opening'),cellar);
+  assert.equal(legacy.filter(h=>h.id!=='shared-house-basement-opening').length,2);
   near(legacy[0].x0,data.site.pool.x);
   assert.equal(createSpaAmenityGroup(gardenProgram({...settings,gardenProgram:'classic'},data),{},materials).children.length,0);
 });
