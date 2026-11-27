@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {MINIMAL_STYLE_DEFINITIONS} from '../src/minimal-style-definitions.js';
 import {verifyGardenLiving} from './garden-living-browser-helpers.mjs';
+import {captureSceneScreenshot} from './scene-gpu-capture.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const scenarioGroup=process.env.STUDIO_SCENARIO_GROUP||'all';
@@ -83,9 +84,10 @@ async function details(){
 async function shot(name,selector){
   const filename=name+'.png',options={path:path.join(evidence,filename),animations:'disabled',scale:'css'};
   const sceneCapture=selector==='#scene-host canvas';
-  if(sceneCapture)options.timeout=SCENE_CAPTURE_TIMEOUT;
+  const deadline=Date.now()+SCENE_CAPTURE_TIMEOUT;
+  const remaining=()=>{const ms=deadline-Date.now();assert.ok(ms>0,'Studio scene capture exceeded its 120 s deadline');return ms;};
   const target=selector?el(selector):page;
-  if(selector)await target.scrollIntoViewIfNeeded(sceneCapture?{timeout:SCENE_CAPTURE_TIMEOUT}:{});
+  if(selector)await target.scrollIntoViewIfNeeded(sceneCapture?{timeout:remaining()}:{});
   if(selector==='#scene-host canvas')assert.equal((await stats()).renderer,'webgl',name);
   // Playwright captures overlays above the canvas, including a toast triggered
   // by the preceding download. Wait for both its class and opacity transition
@@ -93,10 +95,12 @@ async function shot(name,selector){
   if(name!=='failure')await page.waitForFunction(()=>{
     const toast=document.getElementById('toast');
     return !toast.classList.contains('visible') && Number(getComputedStyle(toast).opacity)===0;
-  });
-  await waitFrames();
+  },null,sceneCapture?{timeout:remaining()}:{});
+  if(!sceneCapture)await waitFrames();
   const size=sceneCapture?await sceneCaptureSize():null;
-  const image=await target.screenshot(options);report.screenshots.push(filename);
+  const image=sceneCapture?await captureSceneScreenshot(page,selector,options,{label:name,deadline,
+    captures:report.sceneGpuCaptures??=[]}):await target.screenshot(options);
+  report.screenshots.push(filename);
   if(sceneCapture){
     assert.deepEqual(await sceneCaptureSize(),size,'Camera viewport or drawing buffer resized during capture');
     sceneCaptures.set(image,size);
@@ -227,9 +231,10 @@ async function compareHouse(site,id){
 }
 async function settledInfo(){
   // Re-entering the viewport refreshes its public counters without changing
-  // geometry. This also waits for the GPU to draw a complete frame on SwiftShader.
+  // geometry. Fence the actual submission before reading the settled counters.
   await sceneVisible();
-  await el('#scene-host canvas').screenshot({animations:'disabled',scale:'css',timeout:SCENE_CAPTURE_TIMEOUT});
+  await captureSceneScreenshot(page,'#scene-host canvas',{animations:'disabled',scale:'css'},
+    {label:'settled-info',deadline:Date.now()+SCENE_CAPTURE_TIMEOUT,captures:report.sceneGpuCaptures??=[]});
   return stats();
 }
 try{

@@ -112,3 +112,37 @@ test('motion target capability rejects unavailable or mismatched float multisamp
   rounded.resize(390,700,1,'auto',{interacting:true});
   assert.equal(rounded.getDiagnostics().motionSamples,4);assert.equal(rounded.getDiagnostics().motionRequestedSamples,2);rounded.dispose();
 });
+
+test('optional phase marks surround the scene/resolve and output with the exact next public frame metadata',()=>{
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),{renderer}=motionRenderer(scene);
+  const events=[],fences=[],deleted=[],gl=renderer.getContext(),draw=renderer.render.bind(renderer);
+  Object.assign(gl,{SYNC_GPU_COMMANDS_COMPLETE:10,TIMEOUT_EXPIRED:11,
+    fenceSync(){const handle={id:fences.length+1};fences.push(handle);events.push('fence-'+handle.id);return handle;},
+    clientWaitSync(handle,flags,timeout){assert.equal(timeout,0);return this.TIMEOUT_EXPIRED;},deleteSync:handle=>deleted.push(handle),flush:()=>events.push('flush')});
+  renderer.domElement.dataset={renderedFrameCount:'17'};
+  renderer.render=(object,...args)=>{events.push(object===scene?'scene-and-resolve':'output');return draw(object,...args);};
+  const presentation=createArchitecturalRenderer(renderer,scene,camera,{gpuPhaseDiagnostics:true});
+  presentation.resize(1280,584,.54,'auto',{interacting:true});presentation.render();
+  assert.deepEqual(events,['fence-1','scene-and-resolve','fence-2','output','fence-3','flush']);
+  const sample=presentation.getDiagnostics().gpuPhases.pending[0];
+  assert.deepEqual(sample.metadata,{renderPath:'motion-target',sceneBufferWidth:691,sceneBufferHeight:315,scenePixelRatio:.54,
+    motionSamples:2,canvasWidth:1280,canvasHeight:584,expectedPublicFrame:18,cameraPosition:[0,0,0],cameraQuaternion:[0,0,0,1]});
+  assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968});
+  presentation.dispose();assert.equal(deleted.length,3);assert.equal(new Set(deleted).size,3);
+});
+
+test('a scene or output error aborts optional phase evidence and still restores the renderer',()=>{
+  for(const throwAt of ['scene','output']){
+    const scene=new THREE.Scene(),{renderer,state}=motionRenderer(scene),gl=renderer.getContext(),created=[],deleted=[];
+    Object.assign(gl,{SYNC_GPU_COMMANDS_COMPLETE:10,TIMEOUT_EXPIRED:11,
+      fenceSync(){const handle={};created.push(handle);return handle;},clientWaitSync(){return this.TIMEOUT_EXPIRED;},
+      deleteSync:handle=>deleted.push(handle),flush(){}});
+    const presentation=createArchitecturalRenderer(renderer,scene,new THREE.PerspectiveCamera(),{gpuPhaseDiagnostics:true});
+    presentation.resize(1280,584,.54,'auto',{interacting:true});state.throwAt=throwAt;
+    assert.throws(()=>presentation.render(),new RegExp(throwAt+' draw failed'));
+    const diagnostics=presentation.getDiagnostics().gpuPhases;
+    assert.equal(diagnostics.pending.length,0);assert.equal(diagnostics.samples[0].status,'aborted');assert.equal(diagnostics.completedSamples,0);
+    assert.equal(state.target,null);assert.equal(renderer.autoClear,true);assert.equal(state.clearColor.getHexString(),'123456');
+    presentation.dispose();assert.equal(deleted.length,created.length);assert.equal(new Set(deleted).size,created.length);
+  }
+});

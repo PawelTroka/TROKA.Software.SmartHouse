@@ -52,6 +52,45 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  gpu-phase-profile:
+    name: GPU phase diagnostic
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Read the unchanged walking fixture
+        uses: actions/checkout@v6
+        with:
+          ref: 66c096a94b6ada93e015a98bce07b4b3a643f933
+          path: .walk-baseline
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: python3 scripts/install-ci-browser.py
+      - name: Measure scene and final-image work without changing acceptance gates
+        # Three independent 120 s caps, plus reporting and teardown.
+        timeout-minutes: 7
+        env:
+          BASELINE_DIR: ../.walk-baseline/garden-lab
+        run: node scripts/gpu-phase-profile.mjs
+      - name: Upload bounded phase measurements
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: gpu-phase-profile-evidence
+          path: garden-lab/test-results/gpu-phase-profile/
+          if-no-files-found: ignore
+          retention-days: 7
+
   browser-regression:
     name: WebGL regression · ${{ matrix.scenario }}
     runs-on: ubuntu-24.04
