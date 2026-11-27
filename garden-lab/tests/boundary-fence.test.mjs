@@ -3,10 +3,13 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
 import {DEFAULTS} from '../src/state.js';
-import {DESIGN_STYLES} from '../src/design-styles.js';
+import {DESIGN_STYLES,getDesignStyle} from '../src/design-styles.js';
 import {frontHedgeLayout,gardenGroundAt,pointInPolygon} from '../src/geometry.js';
 import {boundaryFenceLayout,boundaryMemberFaces,boundaryPlanMarkup,firstBoundaryIntersection} from '../src/boundary-fence.js';
 import {createBoundaryFenceGroup} from '../src/scene-boundary-fence.js';
+import {applyExteriorSurface} from '../src/exterior-materials.js';
+import {houseAppearanceLayout} from '../src/house-appearance.js';
+import {addHouseRenovation} from '../src/scene-house-renovation.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const settings={...DEFAULTS,designStyle:'warm-minimal',perimeterFenceEnabled:true,pedestrianGateOpen:true,garageGateOpen:true};
@@ -122,6 +125,37 @@ test('renderer batches the complete fence into at most eight finish meshes witho
   assert.ok(Math.abs(bounds.max.y-Math.max(...l.members.map(m=>m.topZ)))<1e-6,'Rendered highest point matches layout elevations within Float32 precision');
   assert.equal(group.userData.gateStates.filter(g=>g.open).length,2);
   for(const m of meshes)m.geometry.dispose();material.dispose();
+});
+
+test('Nordic Blackwood fence uses the actual charred house finish while retaining its geometry and other finishes',()=>{
+  const style=getDesignStyle('nordic-blackwood'),s={...settings,designStyle:style.id},layout=boundaryFenceLayout(s,data);
+  const wood=new THREE.MeshStandardMaterial({color:style.palette.wood});applyExteriorSurface(wood,style,'wood',{seams:false});
+  const other=new THREE.MeshStandardMaterial({color:'#888888'}),materials={wood,metal:other,stone:other,stoneLight:other,wall:other};
+  const fence=createBoundaryFenceGroup(layout,materials),house=addHouseRenovation(new THREE.Group(),houseAppearanceLayout(data,s),style);
+  const warm=createBoundaryFenceGroup(boundaryFenceLayout(settings,data),materials);
+  try{
+    const timber=fence.getObjectByName('boundary-fence-wood'),finish=timber.material;
+    const cladding=house.material.find(m=>m.userData.exteriorRole==='houseWall'&&m.userData.exteriorFinish==='charred-wood');
+    assert.ok(cladding,'Compare against the material assigned by the actual house renderer');
+    assert.notEqual(finish,wood);assert.equal(wood.userData.exteriorFinish,'cedar');
+    assert.equal(finish.userData.exteriorFinish,'charred-wood');assert.equal(finish.userData.exteriorRole,'houseWall');
+    assert.notDeepEqual(finish.color.toArray(),wood.color.toArray(),'The gate must not retain the warm cedar joinery colour');
+    assert.deepEqual(finish.color.toArray(),cladding.color.toArray());
+    for(const key of ['roughness','metalness'])assert.equal(finish[key],cladding[key]);
+    assert.deepEqual(finish.normalScale.toArray(),cladding.normalScale.toArray());
+    for(const key of ['map','normalMap','roughnessMap']){
+      assert.ok(finish[key]&&cladding[key]);assert.deepEqual(finish[key].image.data,cladding[key].image.data,'Use the same calibrated seam-free surface');
+    }
+    assert.equal(finish.userData.woodGrainAxis,cladding.userData.woodGrainAxis);
+    assert.equal(timber.geometry.userData.architecturalMetricUVs,true,'Keep the grain aligned with each vertical batten');
+    const expected=new Float32Array(layout.members.filter(m=>m.material==='wood').flatMap(m=>boundaryMemberFaces(m).flatMap(face=>[0,2,1].flatMap(i=>[face[i][0],face[i][2],face[i][1]]))));
+    assert.deepEqual(timber.geometry.attributes.position.array,expected,'Changing the finish cannot change a gate, pier or infill vertex');
+    for(const mesh of fence.children.filter(m=>m!==timber))assert.equal(mesh.material,other,'The other boundary finishes remain unchanged');
+    assert.equal(warm.getObjectByName('boundary-fence-wood').material,wood,'Other styles still use their supplied timber finish');
+  }finally{
+    for(const group of [fence,warm])for(const mesh of group.children){mesh.geometry.dispose();if(mesh.material!==wood&&mesh.material!==other)mesh.material.dispose();}
+    house.geometry.dispose();for(const material of house.material)material.dispose();wood.dispose();other.dispose();
+  }
 });
 
 test('plan overlay exposes the same two gates and their independent state',()=>{

@@ -16,6 +16,7 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   assert.equal(baseline.gardenLayout.pool.length,6.5);assert.equal(baseline.gardenLayout.pool.width,3.2);
   assert.equal(baseline.gardenLayout.pool.x,15.5);assert.equal(baseline.gardenLayout.pool.y,19.8);
   assert.equal(baseline.gardenLayout.sunbeds.length,2);
+  await el('#showDimensions').uncheck();
   await details();await style('warm-minimal');
   await el('[data-studio-moment="noon"]').first().click({timeout});
   await el('button[data-mode="orbit"]').click({timeout});await el('#reset-camera').click({timeout});
@@ -58,6 +59,15 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
     await shot('front-gates-'+id+'-closed','#scene-host canvas');
   }
   assert.equal(new Set(fenceStyles.map(s=>s.pattern)).size,2);
+  // Inspect the separate pedestrian leaf directly; the wider frontage camera
+  // is centred on the garage opening and cannot show both entrances in detail.
+  const frontageAssumptions=el('#assumption-controls').locator('..');
+  if(await frontageAssumptions.getAttribute('open')===null)await frontageAssumptions.locator(':scope > summary').click();
+  for(const [id,value]of [['observerX',5.0],['observerY',3.3],['eyeHeight',1.65]]){
+    await el('#'+id+'-value').fill(String(value));await el('#'+id+'-value').press('Enter');
+  }
+  await el('[data-look-yaw="180"]').click({timeout});await sceneVisible(timeout);
+  await shot('front-pedestrian-gate-bali-stone-closed','#scene-host canvas');
   await el('#perimeterFenceEnabled').uncheck();assert.equal((await sceneInfo()).boundaryFence.enabled,false);
   await el('#perimeterFenceEnabled').check();assert.equal((await sceneInfo()).boundaryFence.enabled,true);
   await el('#pedestrianGateOpen').check();
