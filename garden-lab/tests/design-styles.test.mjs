@@ -117,15 +117,21 @@ test('styled luminaires follow each composition and retain independent dimmers',
         const style=getDesignStyle(id),lighting=createGardenNightLighting(settings,data,{style});
         try{
           const expected=pendantLightingLayout({...settings,designStyle:id},data);
-          assert.deepEqual(lighting.fixtures.filter(f=>f.channel).map(f=>f.id),[...expected.garden,...expected.hedge].map(f=>f.id));
+          const hanging=lighting.fixtures.filter(f=>f.channel==='pendant'||f.channel==='hedge');
+          assert.deepEqual(hanging.map(f=>f.id),[...expected.garden,...expected.hedge].map(f=>f.id));
           assert.ok(lighting.lightCount<=31,'Dining and path strings stay below the established 39-light GPU budget');
           assert.ok(expected.hedge.length<=9);
           lighting.apply({gardenStrength:0,pendantStrength:.8,hedgeStrength:0});
-          for(const f of lighting.fixtures.filter(f=>f.channel)){
+          for(const f of hanging){
             const shade=lighting.group.getObjectByName(f.id+'-'+style.recipe.fixture+'-shade');
             assert.ok(shade,style.id);
             assert.ok(shade.geometry.attributes.position.count>0);
             assert.equal(shade.material.emissiveIntensity>0,f.channel==='pendant');
+          }
+          for(const f of lighting.fixtures.filter(f=>f.channel==='garden')){
+            const light=lighting.group.getObjectByName(f.id+'-downlight');
+            assert.ok(light,style.id+' route and gate sources remain separate from pendant shades');
+            assert.equal(light.visible,false,'Pendant dimming must not activate route or gate lights');
           }
           const hedge=lighting.fixtures.filter(f=>f.channel==='hedge');
           const sameSize=hedge.filter(f=>f.radius===hedge[0]?.radius&&f.height===hedge[0]?.height);

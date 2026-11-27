@@ -1,6 +1,6 @@
 // Architectural and furniture recipes shared by all interior/exterior renderers.
 // Pure data: importing style choices never creates a WebGL renderer or loads images.
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.36.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
 const spec=(wall,roof,wood,paving,fabric,metal,coverage,dining,guard,gable='mineral')=>Object.freeze({wall,roof,wood,paving,fabric,metal,coverage,dining,guard,gable});
 export const EXTERIOR_SURFACES=Object.freeze({
   'organic-modern':spec('limewash','standing-seam','oak','travertine','boucle','bronze','stone-volumes','oval-six','glass'),

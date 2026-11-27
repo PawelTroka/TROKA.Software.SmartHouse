@@ -47,7 +47,7 @@ test('every renovated kitchen shares a connected peninsula and a wider refrigera
     near(Math.min(...enclosure.polygon.map(p=>p[0]))-(island.x+island.width/2),1.18);
     assert.ok(end-island.x-island.width/2>=1.4,`${styleId}: free end narrows the architectural opening`);
     assert.ok(island.z-island.depth/2<wall.a[1]&&island.z+island.depth/2>wall.a[1],`${styleId}: island belongs at the living edge`);
-    const tallAtOpening=plan.fixtures.filter(f=>f.roomId==='front-kitchen'&&f.height>1.2&&f.z-f.depth/2<5.85);
+    const tallAtOpening=plan.fixtures.filter(f=>f.roomId==='front-kitchen'&&!f.wallMounted&&f.height>1.2&&f.z-f.depth/2<5.85);
     assert.deepEqual(tallAtOpening,[],`${styleId}: tall cabinet blocks the living-room connection`);
   }
 });
@@ -64,7 +64,8 @@ test('all renovation styles keep one side-garden window centered over the sink a
     assert.ok(sink.x-sink.width/2>=host.x-host.width/2&&sink.x+sink.width/2<=host.x+host.width/2);
     assert.ok(sink.z-sink.depth/2>=host.z-host.depth/2&&sink.z+sink.depth/2<=host.z+host.depth/2);
     const cabinets=plan.fixtures.filter(f=>f.roomId==='front-kitchen'&&(f.wallMounted||f.height>1.2));
-    for(const cabinet of cabinets)assert.ok(cabinet.x-cabinet.width/2>1||cabinet.z+cabinet.depth/2<=wall.a[1]+opening.offset||cabinet.z-cabinet.depth/2>=wall.a[1]+opening.offset+opening.width,styleId+' cabinet covers the sink window');
+    for(const cabinet of cabinets)assert.ok(cabinet.x-cabinet.width/2>1||cabinet.z+cabinet.depth/2<=wall.a[1]+opening.offset||cabinet.z-cabinet.depth/2>=wall.a[1]+opening.offset+opening.width||
+      (cabinet.baseHeight||0)>=opening.sill+opening.height||((cabinet.baseHeight||0)+(cabinet.height||0))<=opening.sill,styleId+' cabinet covers the sink window');
     const street=plan.walls.find(w=>w.id==='street-facade');
     assert.ok(street.openings.every(o=>o.type!=='window'||street.a[0]+o.offset>=4.47),styleId+' retains an unwanted street kitchen window');
     const hst=plan.walls.find(w=>w.id==='garden-hst').openings;

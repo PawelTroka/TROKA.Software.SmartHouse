@@ -2,7 +2,7 @@
  * These opening records cut the actual walls in both views. Measurements of the
  * original footprint, roof, floors and stairs are never edited by a style.
  */
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.36.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,f=0)=>Number.isFinite(Number(x))?Number(x):f;
 const EPS=1e-7;

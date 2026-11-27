@@ -5,12 +5,15 @@ import {createStateModel} from '../src/state.js';
 import {getSiteProfile} from '../src/sites.js';
 import {estimateCosts,estimateSpaCosts,gardenQuantities} from '../src/costs.js';
 import {renderBudget} from '../src/budget-view.js';
+import {gardenProgram,poolBounds} from '../src/garden-program.js';
+import {footprintArea} from '../src/footprint-fit.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const korz=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json',import.meta.url)));
 const model=createStateModel(getSiteProfile('sternicza-11',data));
-// These garden/spa accounting fixtures exclude the independently quoted garage.
-const base={...model.DEFAULTS,basementGarageEnabled:false,terraceDepth:4.2,canopyEnabled:false,jacuzziOverflow:false,gardenProgram:'spa',screeningTrees:[],costContingency:25,costUsePlanningAllowances:false};
+// These garden/spa accounting fixtures exclude independently quoted garage
+// and perimeter work, so an unquoted fence cannot mask spa completeness.
+const base={...model.DEFAULTS,basementGarageEnabled:false,perimeterFenceEnabled:false,terraceDepth:4.2,canopyEnabled:false,jacuzziOverflow:false,gardenProgram:'spa',screeningTrees:[],costContingency:25,costUsePlanningAllowances:false};
 // Arbitrary contractor quotes test accounting; these are not supplier estimates.
 const quotes={costSpaPool:243000,costSpaJacuzzi:71600,costSpaSauna:85400,costSpaColdPlunge:22300,costSpaFirepit:52000};
 const sumQuotes=Object.values(quotes).reduce((sum,value)=>sum+value,0);
@@ -19,11 +22,12 @@ const near=(a,b,eps=1e-7)=>assert.ok(Math.abs(a-b)<eps,`${a} ≠ ${b}`);
 test('spa fill excludes the chamfered sauna, sunken lounge and cold plunge without changing the rear plot',()=>{
   const classic=gardenQuantities({...base,gardenProgram:'classic'},data);
   const spa=gardenQuantities(base,data);
-  // Both programmes have a 3.5 × 8 m pool. The added foundations/excavations
-  // occupy a 4.2 × 4.1 m sauna minus its triangular corner, a 4.4 m lounge,
-  // and a 2.2 × 1.3 m plunge. The jacuzzi is already inside the terrace.
-  const addedExclusions=4.2*4.1-1.8*1.8/2+4.4*4.4+2.2*1.3;
-  near(addedExclusions,37.82);
+  // The revised pool is smaller than the archived classic pool. Account for
+  // that released soil as well as the added sauna, lounge and plunge holes.
+  const program=gardenProgram(base,data),oldPool=poolBounds({...base,gardenProgram:'classic'},data);
+  const addedExclusions=[program.sauna,program.firepit,program.coldPlunge].reduce((sum,p)=>sum+footprintArea(p.footprint),0)
+    +program.pool.width*program.pool.length-oldPool.width*oldPool.length;
+  near(addedExclusions,30.62);
   near(classic.automaticArea,338.6942927042236);
   near(spa.automaticArea,classic.automaticArea-addedExclusions);
   near(spa.excludedArea-classic.excludedArea,addedExclusions);
@@ -36,7 +40,7 @@ test('spa fill excludes the chamfered sauna, sunken lounge and cold plunge witho
 test('half-metre spa fill avoids filling the new excavations and keeps topsoil within the selected raise',()=>{
   const old=estimateCosts({...base,gardenProgram:'classic',gardenRaise:.5,bedRaise:0},data).earthworks;
   const spa=estimateCosts({...base,gardenRaise:.5,bedRaise:0,costTopsoilDepth:.15,costLooseFactor:1.2},data).earthworks;
-  near(old.gardenVolume-spa.gardenVolume,18.91);
+  near(old.gardenVolume-spa.gardenVolume,30.62*.5);
   near(spa.compactedVolume,spa.area*.5);
   near(spa.topsoilVolume,spa.area*.15);
   near(spa.bulkFillVolume,spa.area*.35);

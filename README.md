@@ -10,9 +10,10 @@
 
 Interactive garden, privacy and interior simulator for Sternicza 11 in Gdańsk, with furnished 3D and eye-level views, original and renovated floor plans, sightline sections, adjustable hedges, garden levels, planting beds and terrace screening.
 
-- **[Open the latest Garden Lab](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.33.0)**
-- **[Open Coastal with the two-car garage](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.33.0#v=29&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true)**
-- **[Open the Sternicza interior studio](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.33.0#v=29&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true&mode=plan&interiorEnabled=true&interiorView=dollhouse)** · [Coastal and garage update](garden-lab/docs/coastal-garage-1.28.md) · [Drawing review](garden-lab/docs/interior-plan-review-1.26.0.md)
+- **[Open the latest Garden Lab](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.37.0)**
+- **[Open Coastal with the two-car garage](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.37.0#v=33&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true)**
+- **[Open the Sternicza interior studio](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.37.0#v=33&site=sternicza-11&designStyle=coastal&basementGarageEnabled=true&mode=plan&interiorEnabled=true&interiorView=dollhouse)** · [Coastal and garage update](garden-lab/docs/coastal-garage-1.28.md) · [Drawing review](garden-lab/docs/interior-plan-review-1.26.0.md)
+- [Retained trees, garden routes, basement rooms and matching gates](garden-lab/docs/garden-and-basement-1.37.md)
 - [Substantial renovation designs, physical openings and gardens](garden-lab/docs/renovation-depth-1.33.md)
 - [Photographic material catalogue](garden-lab/docs/renovation-materials.md)
 - [Architectural materials, model detail and rendering update](garden-lab/docs/architectural-rendering-1.29.md)

@@ -224,15 +224,67 @@ function hedgeSpecimen(variant, heightBand) {
   return geometry;
 }
 
+// Prune only the outside of a hedge specimen. Slice triangles at the local
+// plane instead of flattening whole sprays into an opaque rectangular face.
+// A small family of quantised cuts keeps the existing instance batching.
+function clippedHedgeSpecimen(source, limit) {
+  if (limit === null) return source;
+  const names = Object.keys(source.attributes), values = Object.fromEntries(names.map(name => [name, []]));
+  const point = index => Object.fromEntries(names.map(name => {
+    const attribute = source.attributes[name];
+    return [name, Array.from({length:attribute.itemSize}, (_, axis) => attribute.array[index * attribute.itemSize + axis])];
+  }));
+  const mix = (a,b,t) => Object.fromEntries(names.map(name => [name,a[name].map((v,i) => v + (b[name][i] - v) * t)]));
+  const emit = vertex => names.forEach(name => values[name].push(...vertex[name]));
+  for (let i = 0; i < source.attributes.position.count; i += 3) {
+    const input = [point(i),point(i+1),point(i+2)], output = [];
+    for (let j = 0; j < 3; j++) {
+      const a=input[j],b=input[(j+1)%3],insideA=a.position[2]>=limit,insideB=b.position[2]>=limit;
+      if (insideA) output.push(a);
+      if (insideA !== insideB) output.push(mix(a,b,(limit-a.position[2])/(b.position[2]-a.position[2])));
+    }
+    for (let j = 1; j < output.length - 1; j++) [output[0],output[j],output[j+1]].forEach(emit);
+  }
+  const geometry = new THREE.BufferGeometry();
+  names.forEach(name => geometry.setAttribute(name,new THREE.Float32BufferAttribute(values[name],source.attributes[name].itemSize)));
+  geometry.userData={...source.userData,outwardTrim:limit};
+  geometry.computeBoundingBox();geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function fenceTrimPlanes(fence) {
+  if (!fence?.enabled) return [];
+  // Include pier caps and the parked sliding leaves, which sit slightly
+  // farther inward than the fixed infill. Gate gaps themselves stay untouched.
+  const clearance=Math.max(.075,(fence.style?.pier||.15)/2+.009)+.025;
+  const inward=({a,b})=>{const length=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/length,(b[0]-a[0])/length];};
+  return [...fence.segments.map(s=>({...s,inward:inward(s),clearance})),
+    ...fence.gates.flatMap(g=>g.leaves.map(leaf=>({...leaf,inward:inward(g),clearance:.075})))];
+}
+
+function outwardTrimFor(planes,x,y,tx,ty,along,depth) {
+  let cut=-Infinity;
+  for (const {a,b,inward,clearance} of planes) {
+    const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+    if (length<1e-6||-ty*inward[0]+tx*inward[1]<.999999||Math.abs((dx*tx+dy*ty)/length)<.999999) continue;
+    const start=(a[0]-x)*tx+(a[1]-y)*ty,end=(b[0]-x)*tx+(b[1]-y)*ty;
+    if (Math.min(start,end)>along||Math.max(start,end)<-along) continue;
+    cut=Math.max(cut,(-(a[0]-x)*ty+(a[1]-y)*tx+clearance)/depth);
+  }
+  // At most sixteen cut depths per height/shape, with <=6 cm extra pruning.
+  // No cut means the original vertex data is used unchanged.
+  return cut<=-1?null:Math.min(1,Math.ceil(cut*8)/8);
+}
+
 export function createHedgeVegetation(segments, {
-  groundAt, topAt, spacing = .65, material, svgMode = false,
+  groundAt, topAt, spacing = .65, material, svgMode = false, fence = null,
 } = {}) {
   const group = new THREE.Group();
   group.name = 'botanical-hedges';
   group.userData.analyticalScreen = false;
   group.userData.originalProceduralAsset = true;
   if (svgMode || !material || !groundAt || !topAt) return group;
-  const buckets = new Map();
+  const buckets = new Map(), trimPlanes = fenceTrimPlanes(fence);
   let count = 0;
   for (const segment of segments) {
     const {a, b} = segment, dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy);
@@ -256,10 +308,11 @@ export function createHedgeVegetation(segments, {
       const h = safeTop - ground;
       if (!(h >= .12)) continue;
       const band = Math.max(2, Math.min(14, Math.ceil((height - 1e-6) / 2) * 2)), variant = i % 4;
-      const key = `${band}:${variant}`, bucket = buckets.get(key) || {band, variant, plants: []};
-      buckets.set(key, bucket);
       const topVariation = .974 + .026 * Math.sin((i + 1) * 1.754 + a[0] * .41 + a[1] * .23) ** 2;
       const widthVariation = .94 + .06 * Math.sin((i + 1) * 2.14 + a[0] * .28) ** 2;
+      const trim=outwardTrimFor(trimPlanes,x,y,tx,ty,along*widthVariation,radius*.88*widthVariation);
+      const key = `${band}:${variant}:${trim}`, bucket = buckets.get(key) || {band, variant, trim, plants: []};
+      buckets.set(key, bucket);
       const matrix = new THREE.Matrix4().makeBasis(new THREE.Vector3(tx, 0, ty), new THREE.Vector3(0, 1, 0), new THREE.Vector3(-ty, 0, tx));
       matrix.scale(new THREE.Vector3(along * widthVariation, h * topVariation, radius * .88 * widthVariation)); matrix.setPosition(x, ground, y);
       bucket.plants.push({matrix, shade: .90 + .09 * Math.sin((i + 1) * 2.399963 + a[0] * .7 + a[1] * .4) ** 2});
@@ -269,8 +322,13 @@ export function createHedgeVegetation(segments, {
   if (!count) return group;
   const foliageMaterial = createFoliageMaterial(material, 'thuja');
   foliageMaterial.color.set('#87986b');
-  for (const {band, variant, plants} of buckets.values()) {
-    const geometry = hedgeSpecimen(variant, band), mesh = new THREE.InstancedMesh(geometry, foliageMaterial, plants.length);
+  const specimens=new Map(), originalsUsed=new Set();
+  for (const {band, variant, trim, plants} of buckets.values()) {
+    const key=`${band}:${variant}`;
+    if(!specimens.has(key))specimens.set(key,hedgeSpecimen(variant,band));
+    const source=specimens.get(key),geometry=clippedHedgeSpecimen(source,trim);
+    if(trim===null)originalsUsed.add(source);
+    const mesh = new THREE.InstancedMesh(geometry, foliageMaterial, plants.length);
     mesh.name = `hedge-sprays-${band}-${variant}`;
     const color = new THREE.Color();
     plants.forEach(({matrix, shade}, i) => {mesh.setMatrixAt(i, matrix); color.setRGB(shade * .97, shade, shade * .94); mesh.setColorAt(i, color);});
@@ -283,7 +341,9 @@ export function createHedgeVegetation(segments, {
     mesh.computeBoundingBox(); mesh.computeBoundingSphere();
     group.add(mesh);
   }
+  for(const source of specimens.values())if(!originalsUsed.has(source))source.dispose();
   group.userData.plantCount = count;
   group.userData.drawCalls = buckets.size;
+  group.userData.fenceTrimmed = trimPlanes.length > 0;
   return group;
 }

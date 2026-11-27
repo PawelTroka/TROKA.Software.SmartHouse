@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.36.0';
-import {exteriorSurfacePixels} from './exterior-materials.js?v=1.36.0';
-import {getDesignStyle} from './design-styles.js?v=1.36.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
-import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.36.0';
+import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.37.0';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.37.0';
+import {getDesignStyle} from './design-styles.js?v=1.37.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
+import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.37.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {
@@ -156,7 +156,7 @@ export function interiorMaterials(styleId,{svgMode=false}={}) {
     privacyGlass:physical('#dbe7e3',.82,{transparent:true,opacity:.78,depthWrite:false,metalness:0,ior:1.5,reflectivity:.25,side:THREE.DoubleSide}),
     leaf:make('#52694c',.8),leafLight:make('#829573',.76),pot:make(mix(p.accent,'#ca9378',.43),.8),paper:make('#e5dcc4'),art:make('#ffffff',.8,{map:map(artwork(p))}),
     glow:make(p.light,.5,{emissive:p.light,emissiveIntensity:.55}),addition:make('#539a80'),removed:make('#c35844'),
-    concrete:make('#aca99d',.94,{map:stoneMap}),brick:make('#aa8169',.93,{map:tileMap}),plinth:make('#5b635b',.88),
+    concrete:make('#aca99d',.94,{map:stoneMap}),brick:make('#aa8169',.93,{map:tileMap}),plinth:make('#5b635b',.88),rubber:make('#373d39',.96,{map:stoneMap}),
     brickFloor:make('#a36d4f',.96,{map:map(brickPaving())}),earth:make('#74634e',1,{map:stoneMap}),
     cane:make(mix(p.wood,'#dcc099',.40),.82,{map:linen,bumpMap:linen,bumpScale:.008}),lacquer:physical(p.accent,.22,{metalness:0,clearcoat:.85,clearcoatRoughness:.10}),
     spaWater:make('#83cbd1',.11,{metalness:.03,transparent:true,opacity:.58,depthWrite:false}),spaGlow:make('#7bdde9',.3,{emissive:'#45d7ed',emissiveIntensity:.85}),bubbles:make('#d9ffff',.12,{transparent:true,opacity:.73,depthWrite:false}),

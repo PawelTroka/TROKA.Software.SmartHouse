@@ -1,9 +1,9 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.36.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.36.0';
-import {renovatePlanOpenings} from './renovation-architecture.js?v=1.36.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.37.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.37.0';
+import {renovatePlanOpenings} from './renovation-architecture.js?v=1.37.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -37,6 +37,13 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   if(floor==='ground')plan.clearHeight=Math.max(.05,first-.30);
   if(floor==='first')plan.clearHeight=Math.max(.05,attic-first);
   if(['ground','first'].includes(floor)&&plan.clearHeight<2.3)plan.issues.unshift('The edited floor levels leave only '+plan.clearHeight.toFixed(2)+' m of clear room height. Furniture and use need reconsideration; the model does not increase the available space.');
+  // Ceiling-fitted kitchen cupboards follow edited room heights. Omit a
+  // header that cannot fit above its window rather than covering the opening.
+  plan.fixtures=plan.fixtures.flatMap(f=>{
+    if(!f.ceilingFitted)return [f];
+    const height=Math.round((plan.clearHeight-(f.baseHeight||0)-(f.ceilingScribe||0))*1e6)/1e6;
+    return height>=.12?[{...f,height}]:[];
+  });
   plan.elevation=levels[floor];plan.slabThickness=floor==='first'?.30:.20;
   plan.walls=plan.walls.map(w=>{const height=Math.abs(w.height-previous)<.001?plan.clearHeight:w.height;
     return{...w,height,openings:w.openings.filter(o=>(o.sill||0)<height).map(o=>({...o,height:Math.min(o.height,height-(o.sill||0))}))};});

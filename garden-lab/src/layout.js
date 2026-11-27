@@ -1,9 +1,10 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.36.0';
-import {resortGardenFurniture} from './resort-garden.js?v=1.36.0';
-import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.36.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.36.0';
-import {summerGardenEnabled} from './summer-garden.js?v=1.36.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.37.0';
+import {resortGardenFurniture} from './resort-garden.js?v=1.37.0';
+import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.37.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.37.0';
+import {summerGardenEnabled} from './summer-garden.js?v=1.37.0';
+import {gardenPathNetwork} from './garden-paths.js?v=1.37.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -19,9 +20,9 @@ export function gardenFurniture(data,settings={}) {
   const base=baseGardenFurniture(data,settings);
   // Finish-only comparisons retain the physical furniture/path quantities.
   // Resort transforms and fit filtering belong to the optional garden layout.
-  if(settings.styleGardenLayout===false)return base;
+  if(settings.styleGardenLayout===false)return withGardenPaths(base,data,settings);
   const result=resortGardenFurniture(base,settings,data);
-  if(!result.resort)return result;
+  if(!result.resort)return withGardenPaths(result,data,settings);
   // The side selector controls actual individual sunbeds. The older two-seat
   // style recipe must not collapse the inward-facing row into one double bed.
   if(summerGardenEnabled(settings,data))result.resort.items=result.sunbeds.map(b=>({...b}));
@@ -42,6 +43,7 @@ export function gardenFurniture(data,settings={}) {
   // A retained building or enlarged deck may consume a proposed furniture
   // zone. Omit that proposal consistently in both plan and rendered scene.
   const diningVisible=(!data.site.garage||settings.removeGarage!==false)&&fits(result.dining);
+  const network=withGardenPaths({...result,diningVisible,resort:{...result.resort,items}},data,settings).pathNetwork;
   const proposal=program.renovation;
   let beds=[],pads=[];
   if(proposal){
@@ -50,13 +52,21 @@ export function gardenFurniture(data,settings={}) {
     const paths=path.map(([x,y])=>({x,y,width:1.15,length:.9}));
     beds=proposal.beds.filter(r=>fits(r)&&clearOfFurniture(r)&&
       !paths.some(p=>rectanglesOverlap(r,p,.12))&&
+      !(network?.segments||[]).some(p=>overlapArea(rectCorners(r,.12),p.footprint)>1e-8)&&
       !(settings.screeningTrees||[]).some(t=>t.enabled!==false&&t.x>=r.x-1&&t.x<=r.x+r.width+1&&t.y>=r.y-1&&t.y<=r.y+r.length+1))
       .map((r,i)=>({...r,id:`garden-bed-${i+1}`,plant:result.resort.plant}));
     pads=items.filter(p=>['daybed','lounger','sofa'].includes(p.kind)).map((p,i)=>({
       id:`resting-pad-${i+1}`,x:p.x-.16,y:p.y-.16,width:p.width+.32,length:p.length+.32,
     })).filter(fits);
   }
-  return {...result,path,diningVisible,resort:{...result.resort,items,kitchen:null,beds,pads,scheme:proposal?.name||null}};
+  return {...result,path,diningVisible,pathNetwork:network,resort:{...result.resort,items,kitchen:null,beds,pads,scheme:proposal?.name||null}};
+}
+function withGardenPaths(furniture,data,settings){
+  if(!summerGardenEnabled(settings,data))return furniture;
+  const t=data.site.terrace,depth=Number(settings.terraceDepth)||t.depth,terrace={x:t.x,y:data.site.rearMidpoint[1],width:t.width,length:depth};
+  const stairs=terraceStairs({...t,y:terrace.y},depth,terraceGroundReference(settings,data).drop,settings,data);
+  return {...furniture,pathNetwork:gardenPathNetwork({program:gardenProgram(settings,data),stairs,terrace,
+    dining:furniture.dining,items:furniture.resort?.items||furniture.sunbeds||[],boundary:data.site.boundary,trees:settings.screeningTrees||[]})};
 }
 function baseGardenFurniture(data,settings={}) {
   const program=gardenProgram(settings,data);

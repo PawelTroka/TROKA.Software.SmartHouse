@@ -1,12 +1,12 @@
 /** Versioned, reproducible garden proposals. Historical layouts remain literal.
  * Coordinates are mapped local metres, with x increasing toward PCK3/east.
  */
-import {getTreeType} from './tree-catalog.js?v=1.36.0';
+import {getTreeType} from './tree-catalog.js?v=1.37.0';
 
 // The current proposal follows the owner's left-edge pool preference. The
 // earlier transverse summer-sun study remains a separate historical record;
 // this arrangement is not claimed to be its sunlight optimum.
-export const SUMMER_POOL=Object.freeze({x:15.10,y:23.5,width:3.5,length:8});
+export const SUMMER_POOL=Object.freeze({x:15.50,y:19.8,width:3.2,length:6.5});
 export const SUMMER_FIREPIT=Object.freeze([7.409167656420745,27.75]);
 export const summerGardenEnabled=(settings={},data)=>settings.summerPoolLayout===true&&
   (data?.site?.id||settings.siteId||'sternicza-11')==='sternicza-11'&&
@@ -19,16 +19,18 @@ export function summerGardenFurniture(settings={},pool=SUMMER_POOL){
   const p=pool;
   const bed=(x,y,width=.78,length=2,back='north')=>({x,y,width,length,back});
   const rows=[
-    // Headrests sit beside the pool; the sunbeds face the open garden. The
-    // central/rear part of this edge stays open beside the fire lounge.
-    {side:'garden',beds:[.1,1.3,2.5].map(dy=>bed(p.x-2.6,p.y+dy,2,.78,'east'))},
-    {side:'front',beds:[.15,1.25].map(dx=>bed(p.x+dx,p.y-2.8))},
-    {side:'rear',beds:[.15,1.25].map(dx=>bed(p.x+dx,p.y+p.length+1,.78,2,'south'))},
+    // Narrow chaises run parallel to the long pool edge. Keep their entire
+    // envelope beyond the full-width terrace and the route behind their feet.
+    {side:'garden',beds:[-2.45,-1.35].map(dx=>bed(p.x+dx,p.y+3.55))},
+    {side:'front',beds:[bed(p.x+.60,p.y-1.35,2,.78,'east')]},
+    // The restored (18,28) pine keeps its original soil pocket. This one
+    // rear chaise sits west of it, never on the hedge side of the pool.
+    {side:'rear',beds:[bed(p.x-1.05,p.y+p.length+1.45,2,.78,'west')]},
   ].slice(0,sides);
   const sunbeds=rows.flatMap(r=>r.beds).map((b,i)=>({...b,id:`garden-sunbed-${i+1}`,kind:'lounger'}));
   return {loungers:sunbeds.map(b=>[b.x,b.y]),sunbeds,loungerSides:rows.map(r=>r.side),
     dining:{x:1.85,y:25.8,width:3.8,length:3.4},
-    path:[[6.25,23.8],[6.25,25.3],[5.85,30.3],[5.3,32.1]],
+    path:[],
     beds:[{x:1.35,y:29.7,width:.62,length:3.5},{x:10.4,y:34.3,width:2.8,length:.65}]};
 }
 
@@ -52,7 +54,7 @@ export const LEGACY_SUMMER_TREE_POSITIONS=Object.freeze({
 });
 
 // Updated by the constrained left-edge-pool screening study.
-export const BOUNDARY_TREE_POSITIONS=Object.freeze({
+export const V136_SUMMER_TREE_POSITIONS=Object.freeze({
   'thuja-excelsa-9m':Object.freeze([[19,33],[16,36],[18,36]].map(Object.freeze)),
   'white-fir-9m':Object.freeze([[19,33],[14,35],[17,36]].map(Object.freeze)),
   'norway-spruce-9-10m':Object.freeze([[19,33],[18,35],[14,35]].map(Object.freeze)),
@@ -69,14 +71,26 @@ export const BOUNDARY_TREE_POSITIONS=Object.freeze({
   'pleached-hornbeam':Object.freeze([[19,33],[19,35],[11,35]].map(Object.freeze))
 });
 
-/** Move only a complete known species preset. Custom positions are never
- * inferred or overwritten, and all identities/dimensions/quotes stay intact. */
-export function upgradeSummerTreePreset(trees){
+// The owner's original planting is authoritative. Pool and path proposals
+// fit around these positions; selecting a finish never edits specimen trees.
+export const BOUNDARY_TREE_POSITIONS=LEGACY_SUMMER_TREE_POSITIONS;
+
+function presetIndices(trees,positions){
   if(!Array.isArray(trees)||trees.length!==3)return null;
-  const typeId=trees[0]?.typeId,old=LEGACY_SUMMER_TREE_POSITIONS[typeId],next=BOUNDARY_TREE_POSITIONS[typeId];
-  if(!old||!next||trees.some(t=>t?.typeId!==typeId))return null;
+  const typeId=trees[0]?.typeId,old=positions[typeId];
+  if(!old||trees.some(t=>t?.typeId!==typeId))return null;
   const indices=trees.map(t=>old.findIndex(([x,y])=>Math.abs(t.x-x)<1e-6&&Math.abs(t.y-y)<1e-6));
   if(indices.some(i=>i<0)||new Set(indices).size!==3)return null;
+  return indices;
+}
+export const isSummerTreePreset=trees=>presetIndices(trees,BOUNDARY_TREE_POSITIONS)!==null;
+
+/** Undo only a complete known 1.36 automatic relocation. Custom positions,
+ * partial planting, stock dimensions, identities and quotes remain untouched. */
+export function restoreSummerTreePreset(trees){
+  const indices=presetIndices(trees,V136_SUMMER_TREE_POSITIONS);
+  if(!indices)return null;
+  const next=BOUNDARY_TREE_POSITIONS[trees[0].typeId];
   return trees.map((tree,i)=>({...tree,x:next[indices[i]][0],y:next[indices[i]][1]}));
 }
 

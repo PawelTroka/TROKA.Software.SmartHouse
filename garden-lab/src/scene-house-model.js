@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.js';
-import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.36.0';
-import {interiorMaterials} from './interior-materials.js?v=1.36.0';
-import {modelTools,batchGroup} from './interior-geometry.js?v=1.36.0';
-import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.36.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.36.0';
-import {addHouseRenovation,addRenovationGableCladding} from './scene-house-renovation.js?v=1.36.0';
-import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.36.0';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.36.0';
-import {getDesignStyle} from './design-styles.js?v=1.36.0';
-import {toWorldTriangle} from './orientation.js?v=1.36.0';
-import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.36.0';
+import {buildArchitecture,addFlight} from './interior-architecture.js?v=1.37.0';
+import {interiorMaterials} from './interior-materials.js?v=1.37.0';
+import {modelTools,batchGroup} from './interior-geometry.js?v=1.37.0';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.37.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.37.0';
+import {addHouseRenovation,addRenovationGableCladding} from './scene-house-renovation.js?v=1.37.0';
+import {addHouseRoof,addHouseEntry} from './scene-house.js?v=1.37.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.37.0';
+import {getDesignStyle} from './design-styles.js?v=1.37.0';
+import {toWorldTriangle} from './orientation.js?v=1.37.0';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.37.0';
 
 /** Same architecture/furniture builder as the interior viewer, with all four
  * floors assembled in the site frame. No placeholder furniture or facade holes. */
@@ -26,15 +26,16 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
   // Connections belong to the building, not either adjacent floor. The room
   // context can omit one storey without duplicating or losing its shared stair.
   const stairs=new THREE.Group();stairs.name='shared-house-stairs';stairs.userData.houseStairs=true;local.add(stairs);
-  const taskSpecs=[];
+  const taskSpecs=[],basementTaskSpecs=[];
   for(const floor of ['basement','ground','first','attic']){
     const plan=getHouseFloorPlan({floor,settings,data});
     // Two main-floor sources and one upstairs reading light serve the entire
     // building. A light is never duplicated per window or furniture piece.
     for(const source of (plan.interiorLights||[]).filter(s=>floor==='ground'?['dining-pendant','lounge-reading-light'].includes(s.id):s.id==='master-reading-light'))taskSpecs.push({...source,elevation:plan.elevation});
+    if(floor==='basement')for(const source of plan.interiorLights||[])basementTaskSpecs.push({...source,elevation:plan.elevation});
     // Exterior's engineering garage owns its ramp and vehicles. Retained cellar
     // partitions/cores remain visible because their conflicts are real.
-    if(floor==='basement'&&settings.basementGarageEnabled)plan.fixtures=[];
+    if(floor==='basement'&&settings.basementGarageEnabled)plan.fixtures=plan.fixtures.filter(f=>f.kind!=='car');
     plan.outdoor=plan.outdoor.filter(p=>p.kind==='landing'&&!settings.basementGarageEnabled);
     const model=buildArchitecture(plan,{showFurniture:true,showCeiling:true,showStairs:false,showOutdoor:true,showExterior:!settings.basementGarageEnabled,hstOpen:settings.hstOpen},tools,finishes);
     model.root.name=`shared-house-floor-${floor}`;model.root.userData.houseFloor=floor;
@@ -53,7 +54,12 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
     }
   }
   const taskLighting=createInteriorTaskLights(taskSpecs,style.palette.light,{limit:svgMode?0:3});local.add(taskLighting.root);
-  taskLighting.update(0);setInteriorLampMaterials(finishes,0);
+  // The occupied basement rooms get two bounded, unshadowed task sources.
+  // They retain a daytime minimum because their small cellar windows alone
+  // do not illuminate a technical workspace; the upstairs budget is unchanged.
+  const basementLighting=createInteriorTaskLights(basementTaskSpecs,style.palette.light,{limit:svgMode?0:2});
+  basementLighting.root.name='basement-task-lighting';local.add(basementLighting.root);
+  taskLighting.update(0);basementLighting.update(0);setInteriorLampMaterials(finishes,0);
   const layout=houseAppearanceLayout(data,settings,{garageLayout}),roof=layout.roof.envelope;
   const roofGroup=new THREE.Group();roofGroup.name='shared-house-roof';roofGroup.userData.houseRoof=true;root.add(roofGroup);
   const roofEdges=roof.edges.map((edge,i)=>{const a=roof.ring[i],b=roof.ring[(i+1)%roof.ring.length],length=edge.length,direction=[(b[0]-a[0])/length,(b[1]-a[1])/length];
@@ -74,7 +80,7 @@ export function createSharedHouseModel(data,settings,{garageLayout,terrainAt,svg
   addHouseRenovation(root,layout,exteriorStyle,{svgMode});
   root.userData.sharedHouse={source:'archived-and-marked-plans',floors:models.length,styleId:style.id,layout:settings.interiorLayout,registration:'street-wall-midpoint-no-scaling'};
   let disposed=false;
-  return{root,frame,layout,updateLighting(strength){taskLighting.update(strength);setInteriorLampMaterials(finishes,strength);},dispose(){if(disposed)return;disposed=true;taskLighting.dispose();for(const m of models)m.dispose();
+  return{root,frame,layout,updateLighting(strength){taskLighting.update(strength);basementLighting.update(strength);setInteriorLampMaterials(finishes,strength);},dispose(){if(disposed)return;disposed=true;taskLighting.dispose();basementLighting.dispose();for(const m of models)m.dispose();
     stairs.traverse(o=>o.geometry?.dispose());stairs.removeFromParent();finishes.dispose();tools.dispose();
     const geometry=new Set(),materials=new Set(Object.values(palette));root.traverse(o=>{if(o.geometry)geometry.add(o.geometry);if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);});
     geometry.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());root.removeFromParent();}};

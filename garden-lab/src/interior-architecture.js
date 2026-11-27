@@ -1,10 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.36.0';
-import {furnishInterior} from './interior-furniture.js?v=1.36.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.36.0';
-import {stairTreads} from './stair-surfaces.js?v=1.36.0';
-import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.36.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.37.0';
+import {furnishInterior} from './interior-furniture.js?v=1.37.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.37.0';
+import {stairTreads} from './stair-surfaces.js?v=1.37.0';
+import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.37.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -378,7 +378,7 @@ export function buildArchitecture(plan,state,tools,finishes) {
   // Finish patches follow the room polygons over a continuous display base.
   for(const r of plan.rooms){
     const wet=['bathroom','bath','kitchen','sauna','utility','garage'].includes(r.kind),finish=(r.finish||'').toLowerCase();
-    const cellarFinish=originalCellar?(finish==='brick'?m.brickFloor:m.earth):m.concrete;
+    const cellarFinish=originalCellar?(finish==='brick'?m.brickFloor:m.earth):r.kind==='gym'?(m.rubber||m.concrete):r.kind==='utility'?m.tiles:m.concrete;
     const mat=floor==='basement'?cellarFinish:r.kind==='sauna'?m.boards:wet||finish.includes('tile')?m.tiles:architecturalFloor;
     floorMesh(base,r.polygon,mat,.008,holes);
     if(r.kind==='sauna'&&plan.layout==='renovation'){
@@ -461,7 +461,15 @@ export function buildArchitecture(plan,state,tools,finishes) {
   }else floorMesh(ceiling,outline,m.ceiling,h,plan.stairs?.filter(s=>s.from===floor).map(s=>s.polygon)||[]);
   furnishInterior(props,plan,tools,finishes);
   for(const r of plan.rooms) {
-    if(attic||floor==='basement'||plan.layout!=='renovation')continue;
+    if(attic||plan.layout!=='renovation')continue;
+    if(floor==='basement'){
+      if(plan.basementFitOut&&['utility','gym'].includes(r.kind)){
+        const b=ringBounds(r.polygon);
+        box(ceiling,m.frame,b.x,h-.027,b.z,1.0,.045,.24);
+        box(ceiling,m.glow,b.x,h-.053,b.z,.95,.008,.20);
+      }
+      continue;
+    }
     if(renovating)finishCeiling(ceiling,r,plan,tools,m,design);
     const table=plan.fixtures?.find(f=>f.roomId===r.id&&f.kind==='diningTable'),b=ringBounds(r.polygon);
     if(table){for(const t of [-.25,.25])makePendant(decor,table.x+t*table.width,table.z,h,tools,m,design.id==='current'?style.recipe.fixture:design.pendant);}

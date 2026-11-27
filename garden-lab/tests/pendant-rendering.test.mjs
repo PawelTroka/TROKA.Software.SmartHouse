@@ -7,6 +7,8 @@ import {pendantLightingLayout} from '../src/pendant-layout.js';
 import {createStateModel} from '../src/state.js';
 import {getSiteProfile} from '../src/sites.js';
 import {estimateGardenCosts} from '../src/costs.js';
+import {gardenFurniture} from '../src/layout.js';
+import {boundaryFenceLayout} from '../src/boundary-fence.js';
 
 const properties=['site-data.json','korzeniowskiego-40.json','nadmorska-17.json'].map(file=>{
   const data=JSON.parse(readFileSync(new URL('../data/'+file,import.meta.url)));
@@ -117,11 +119,15 @@ test('hedge accents and path strings provide softly bounded warm illumination wi
   }
 });
 
-test('lighting budget counts installed pendants once, retains them when unlit and accepts a complete quote',()=>{
+test('lighting budget counts route, gate and pendant fittings once, retains them when unlit and accepts a complete quote',()=>{
   for(const {data,settings} of properties){
     const state={...settings,costUsePlanningAllowances:true},layout=pendantLightingLayout(state,data);
     const cost=estimateGardenCosts(state,data),row=cost.rows.find(row=>row.key==='costGardenLighting');
-    const count=12+layout.garden.length+layout.hedge.length;
+    const routes=gardenFurniture(data,state).pathNetwork?.lights.length??3,gates=boundaryFenceLayout(state,data).fixtures.length;
+    assert.equal(cost.quantities.otherLightingAllowance,9);
+    assert.equal(cost.quantities.routeFixtureCount,routes);assert.equal(cost.quantities.gateFixtureCount,gates);
+    if(data.site.id==='sternicza-11'){assert.equal(routes,7);assert.equal(gates,2);}
+    const count=9+routes+gates+layout.garden.length+layout.hedge.length;
     assert.equal(cost.quantities.lightingFittings,count);
     assert.deepEqual(row.cost,{low:count*700,high:count*1500});
     assert.match(row.scope,/no pendant product or support-frame quotation/);

@@ -118,7 +118,7 @@ test('proposed garden fixtures keep finite positions and a bounded GPU light cou
       assert.ok(lights.length>0&&lights.length<=39,'The scene keeps landscape, dining and path pendants plus hedge accents within a fixed light budget');
       assert.equal(lighting.lightCount,lights.length);
       assert.ok(lights.filter(light=>light.castShadow).length<=3,'Only the limited tree uplights acquire local shadow maps');
-      assert.ok(lights.filter(light=>light.userData.nightChannel==='garden').length<=12);
+      assert.ok(lights.filter(light=>light.userData.nightChannel==='garden').length<=18,'Seven bounded route downlights and two gate lights replace the old three bollards');
       assert.ok(lights.filter(light=>light.userData.nightChannel==='pendant').length<=12);
       const hedgeLights=lights.filter(light=>light.userData.nightChannel==='hedge');
       assert.ok(hedgeLights.length<=24);

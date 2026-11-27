@@ -99,7 +99,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scenario: [styles, styles-minimal, controls, properties]
+        scenario: [styles, styles-minimal, controls, properties, garden-living]
     defaults:
       run:
         working-directory: garden-lab

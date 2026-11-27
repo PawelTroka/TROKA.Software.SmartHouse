@@ -26,9 +26,9 @@ const segmentDistance=(p,a,b)=>{
   return Math.hypot(p[0]-a[0]-dx*t,p[1]-a[1]-dy*t);
 };
 
-test('garden pendant strings sag between real supports, clear the walking corridor and retain headroom',()=>{
+test('historical non-summer garden pendant strings sag between real supports, clear the walking corridor and retain headroom',()=>{
   for(const designStyle of ['current','hidden-bali','beach-house','organic-modern']){
-    const settings={...defaults,designStyle},layout=pendantLightingLayout(settings,data);
+    const settings={...defaults,designStyle,summerPoolLayout:false},layout=pendantLightingLayout(settings,data);
     const strings=layout.cables.filter(c=>c.kind==='festoon'),path=gardenFurniture(data,settings).path;
     assert.ok(strings.length>=1&&strings.length<=2,designStyle+' receives a bounded path-lighting proposal');
     const supports=new Map(layout.supports.map(s=>[s.id,s]));
@@ -50,12 +50,14 @@ test('garden pendant strings sag between real supports, clear the walking corrid
 });
 
 test('warm shaded route lamps and lower perimeter lighting preserve independent dimmers',()=>{
-  const lighting=createGardenNightLighting({...defaults,designStyle:'hidden-bali'},data,{style:getDesignStyle('hidden-bali')});
+  for(const summerPoolLayout of [false,true]){
+  const settings={...defaults,designStyle:'hidden-bali',summerPoolLayout};
+  const lighting=createGardenNightLighting(settings,data,{style:getDesignStyle('hidden-bali')});
   try{
     assert.equal(lighting.group.userData.lightingIntent.temperatureK,2400);
     lighting.apply(nightLightingState({enabled:true,elevation:-12},{...defaults,...NIGHT_DEFAULTS}));
     const lights=[];lighting.group.traverse(o=>{if(o.isLight)lights.push(o);});
-    assert.ok(lights.length<=31);
+    assert.ok(lights.length<=(summerPoolLayout?31:39));
     for(const light of lights.filter(l=>l.userData.nightChannel==='hedge'))assert.ok(light.intensity<=14*.3);
     for(const f of lighting.fixtures.filter(f=>f.zone==='path')){
       const light=lighting.group.getObjectByName(f.id+'-light');
@@ -64,9 +66,23 @@ test('warm shaded route lamps and lower perimeter lighting preserve independent 
       const bulb=lighting.group.getObjectByName(f.id+'-glowing-core');
       assert.ok(bulb.geometry.parameters.radius<=.042,'Small bulb, not a shade-sized luminous sphere');
     }
+    const route=lighting.fixtures.filter(f=>f.id?.startsWith('garden-route-light-'));
+    if(summerPoolLayout){
+      const network=gardenFurniture(data,settings).pathNetwork;
+      assert.equal(route.length,7);assert.equal(new Set(route.map(f=>f.destination)).size,7);
+      assert.deepEqual(route.map(f=>f.id),network.lights.map(f=>f.id));
+      assert.equal(lighting.fixtures.filter(f=>f.zone==='path').length,0,'The connected route uses shielded downlights');
+      for(const f of route){
+        const light=lighting.group.getObjectByName(f.id+'-downlight'),lens=lighting.group.getObjectByName(f.id+'-recessed-lens');
+        assert.ok(light.isSpotLight&&light.penumbra>=.9);assert.equal(light.castShadow,false);
+        assert.equal(light.userData.nightChannel,'garden');assert.ok(lens.geometry.parameters.radiusTop<=.07);
+      }
+    }else assert.ok(lighting.fixtures.some(f=>f.zone==='path'),'Historical pendant lighting is still exercised');
     lighting.apply({gardenStrength:0,pendantStrength:.5,hedgeStrength:0});
     assert.ok(lights.every(l=>l.visible===(l.userData.nightChannel==='pendant')));
-  }finally{lighting.dispose();}
+    lighting.apply({gardenStrength:.5,pendantStrength:0,hedgeStrength:0});
+    assert.ok(lights.every(l=>l.visible===(l.userData.nightChannel==='garden')));
+  }finally{lighting.dispose();}}
 });
 
 test('natural facade photographs are tinted once, cast relief shadows and keep vertical member grain',()=>{

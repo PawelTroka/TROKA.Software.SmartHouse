@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.35.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.35.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.35.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.37.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.37.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.37.0)**
+
+## Retained trees, garden routes and fitted rooms · 1.37.0
+
+The original pine positions are restored. Schema **33** reverses only a complete recognized automatic 1.36 relocation; custom planting remains in place, and pool/style changes do not move trees. The pool is now **3.20 × 6.50 m**, nearer the house along the left/east boundary. Two compact chaises run parallel to its long edge, with optional short-edge beds for three or four total.
+
+The cold plunge is recessed flush with its apron. Decorated stone-and-mineral paths connect all six garden destinations, with **seven shielded warm path lights**. Fitted kitchen storage now reaches the ceiling and fills the available upper, corner and side spaces while keeping the connected peninsula, concealed chimney, sink window and wider entrance.
+
+The basement remainder contains a **17.03 m² compact gym** and an **11.19 m² technical/laundry room**, outside both parking lanes. The renovation uses the proposed **2.30 m clear basement headroom**; Current retains the original 1.70 m cellar comparison. A **2.20 m perimeter fence** and separate **1.20 m pedestrian / 6.60 m garage gates** coordinate with all 34 renovation styles. Gate states persist independently and agree across rendering, walking and analysis.
+
+[Controls, dimensions, preserved planting, cost scope and verification](docs/garden-and-basement-1.37.md)
 
 ## Fullscreen, connected kitchen and open garden · 1.36.0
 

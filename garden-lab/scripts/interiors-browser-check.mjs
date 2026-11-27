@@ -332,7 +332,7 @@ try{
   check('Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together');
 
   report.openLiving=await captureOpenLivingViews(page,{shot,walking,openInteriors,timeout:sceneStartupTimeout});
-  check('Daylight kitchen connection, concealed chimney and open stair guard captured through public room and camera controls');
+  check('Daylight ceiling-fitted kitchen storage, concealed chimney, open stair guard, compact gym and plant/laundry captured through public room and camera controls');
 
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();

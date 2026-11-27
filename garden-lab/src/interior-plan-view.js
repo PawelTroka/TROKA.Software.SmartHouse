@@ -108,7 +108,19 @@ function fixtureDrawing(f) {
   const kind = String(f.kind).toLowerCase(), x = -w/2, y = -d/2;
   const rect = (a,b,width,height,r = .035) => `<rect x="${n(a)}" y="${n(b)}" width="${n(width)}" height="${n(height)}" rx="${n(r)}"/>`;
   let shape = rect(x,y,w,d);
-  if (/bed/.test(kind)) {
+  if(kind==='exercisebike'){
+    shape=rect(-w*.13,-d*.42,w*.26,d*.84,.045)+rect(-w*.25,-d*.25,w*.5,d*.19,.055)+line(-w*.42,d*.32,w*.42,d*.32,'')+line(0,d*.20,0,d*.41,'');
+  }else if(kind==='exercisebench'){
+    shape=rect(-w*.40,-d*.45,w*.80,d*.63,.06)+rect(-w*.40,d*.22,w*.80,d*.24,.045)+line(-w*.46,-d*.34,w*.46,-d*.34,'')+line(-w*.46,d*.34,w*.46,d*.34,'');
+  }else if(kind==='weightrack'){
+    for(let i=0;i<3;i++)shape+=`<circle cx="${n((i-1)*w*.29)}" cy="0" r="${n(Math.min(d*.27,.10))}"/>`;
+  }else if(kind==='plantunit'){
+    shape=rect(-w*.48,-d*.42,w*.39,d*.84)+`<circle cx="${n(w*.23)}" cy="0" r="${n(Math.min(d*.41,w*.22))}"/>`;
+  }else if(kind==='washer'||kind==='dryer'){
+    shape+=rect(-w*.37,-d*.34,w*.74,d*.67,.06)+line(-w*.35,d*.37,w*.35,d*.37,'');
+  }else if(kind==='exercisemat'){
+    shape=rect(x,y,w,d,.05)+`<rect x="${n(x+.06)}" y="${n(y+.06)}" width="${n(w-.12)}" height="${n(d-.12)}" fill="none" stroke-dasharray=".06 .04"/>`;
+  }else if (/bed/.test(kind)) {
     shape += rect(x+.07,y+.08,w-.14,Math.min(d*.23,.42),.065) + line(x,y+d*.35,-x,y+d*.35,'');
   } else if (f.shape === 'U') {
     shape = rect(x,y,w,d*.25) + rect(x,-y-d*.25,w,d*.25) + rect(x,y+d*.25,w*.32,d*.5);
@@ -163,7 +175,7 @@ function fixtureDrawing(f) {
   } else if (/car/.test(kind)) {
     shape += rect(x+w*.1,y+d*.24,w*.8,d*.48,.11);
   }
-  return `<g class="iw-fixture${kind==='rug'?' iw-rug':''}"${kind==='rug'?' opacity=".38"':''} data-iw-fixture="${esc(f.id)}" transform="translate(${n(f.x)} ${n(f.z)}) rotate(${n(-rotation*180/Math.PI)})"><title>${esc(f.label || kind)}</title>${shape}</g>`;
+  return `<g class="iw-fixture${kind==='rug'?' iw-rug':''}"${kind==='rug'?' opacity=".38"':kind==='wallcabinet'?' stroke-dasharray=".035 .025"':''} data-iw-fixture="${esc(f.id)}" transform="translate(${n(f.x)} ${n(f.z)}) rotate(${n(-rotation*180/Math.PI)})"><title>${esc(f.label || kind)}</title>${shape}</g>`;
 }
 
 function stairDrawing(stair, idx) {
@@ -208,7 +220,7 @@ export function drawInteriorPlan(host, plan, { roomId, showFurniture = true, sho
   const vb = [b.left-1,b.top-.88,b.right-b.left+1.62,b.bottom-b.top+2.12];
   const centerX = (b.left+b.right)/2;
   const anchors = rooms.map(r => labelAnchor(r.polygon));
-  const roomMarkup = rooms.map((r,i) => `<g class="iw-zone${r.id===roomId?' is-selected':''}" data-iw-room="${esc(r.id)}" role="button" tabindex="0" aria-label="${esc(r.label)}, ${r.area.toFixed(1)} square metres modelled" aria-pressed="${r.id===roomId}"><title>${esc(r.label)}</title><polygon points="${pts(r.polygon)}" fill="${esc({bathroom:'url(#iw-tile)',sauna:'url(#iw-boards)',garage:'url(#iw-stone)',cellar:'url(#iw-stone)',hall:'#efeadf',wardrobe:'#eee7d8'}[r.kind] || 'url(#iw-boards)')}"/></g>`).join('');
+  const roomMarkup = rooms.map((r,i) => `<g class="iw-zone${r.id===roomId?' is-selected':''}" data-iw-room="${esc(r.id)}" role="button" tabindex="0" aria-label="${esc(r.label)}, ${r.area.toFixed(1)} square metres modelled" aria-pressed="${r.id===roomId}"><title>${esc(r.label)}</title><polygon points="${pts(r.polygon)}" fill="${esc({bathroom:'url(#iw-tile)',utility:'url(#iw-tile)',gym:'#c0c5bf',sauna:'url(#iw-boards)',garage:'url(#iw-stone)',cellar:'url(#iw-stone)',hall:'#efeadf',wardrobe:'#eee7d8'}[r.kind] || 'url(#iw-boards)')}"/></g>`).join('');
   const decks = outdoor.map(o => {
     const p = o.polygon;
     if (!p?.length) return '';
