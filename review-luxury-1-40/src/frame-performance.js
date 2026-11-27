@@ -34,7 +34,7 @@ export function createFramePerformance(capacity=360){
  * idle rendering always restores the selected still-image quality separately.
  */
 export function createAdaptiveMotionQuality(){
-  const scales=[1,.84,.68,.54],samples=[];let level=0,lastChange=-Infinity,lastEvaluation=0,changes=0,p75=0;
+  const scales=[1,.84,.68,.54],samples=[];let level=0,lastChange=-Infinity,lastEvaluation=0,changes=0,p75=0,pressureChanges=0,lastPressureAgeMs=0;
   return {
     sample(now,delta,active){
       if(!active||!(delta>0)){samples.length=0;return false;}
@@ -44,8 +44,19 @@ export function createAdaptiveMotionQuality(){
       if(p75<=24||level>=scales.length-1)return false;
       level++;changes++;lastChange=now;samples.length=0;return true;
     },
-    reset(){level=0;changes=0;lastChange=-Infinity;lastEvaluation=0;samples.length=0;p75=0;},
+    // The caller must have observed two unretired fences and a nonblocking
+    // TIMEOUT_EXPIRED while navigation is active. Severe queue pressure must
+    // not wait for eight multi-second submissions before choosing the next
+    // existing scale. This only changes policy state; resize waits for a slot.
+    pressure(now,oldestPendingMs){
+      if(!Number.isFinite(now)||!Number.isFinite(oldestPendingMs)||oldestPendingMs<=250||
+        level>=scales.length-1||now-lastChange<900)return false;
+      level++;changes++;pressureChanges++;lastPressureAgeMs=oldestPendingMs;
+      lastChange=now;lastEvaluation=now;samples.length=0;return true;
+    },
+    reset(){level=0;changes=0;lastChange=-Infinity;lastEvaluation=0;samples.length=0;p75=0;pressureChanges=0;lastPressureAgeMs=0;},
     get scale(){return scales[level];},
-    getDiagnostics(){return {mode:'measured-motion-buffer',level,scale:scales[level],changes,lastP75Ms:p75,targetMs:24,minimumScale:scales.at(-1),cooldownMs:900,recoversAtRest:true};},
+    getDiagnostics(){return {mode:'measured-motion-buffer',level,scale:scales[level],changes,lastP75Ms:p75,targetMs:24,minimumScale:scales.at(-1),cooldownMs:900,
+      pressureChanges,lastPressureAgeMs,pressureThresholdMs:250,recoversAtRest:true};},
   };
 }

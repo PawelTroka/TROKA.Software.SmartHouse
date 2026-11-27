@@ -5,7 +5,7 @@ import {GTAOPass} from '../vendor/addons/postprocessing/GTAOPass.js';
 import {OutputPass} from '../vendor/addons/postprocessing/OutputPass.js';
 
 /** Contact shading is a presentation effect, in metres. It never changes the
- * analytical sun/privacy geometry. Small screens and Eco retain direct MSAA
+ * analytical sun/privacy geometry. Small screens and Eco retain direct idle
  * rendering; the more expensive pass runs only when the scene needs a frame. */
 export function architecturalRenderBudget(quality,width,height,{interacting=false,memoryGB=8}={}){
   const enabled=quality!=='eco'&&width>=600&&!(memoryGB>0&&memoryGB<=4)&&!interacting;
@@ -46,8 +46,35 @@ class ArchitecturalAO extends GTAOPass{
 
 export function createArchitecturalRenderer(renderer,scene,camera,{interior=false}={}){
   const supported=renderer.capabilities.isWebGL2&&renderer.extensions.has('EXT_color_buffer_float');
+  // The main scene has an opaque canvas and a separately sized display buffer.
+  // The transparent interior/dollhouse renderer keeps its existing pipeline.
+  const gl=renderer.getContext?.();let motionSupported=false,motionSampleCount=0;
+  let motionUnsupportedReason=interior?'interior-renderer':!renderer.capabilities.isWebGL2?'webgl2-unavailable':
+    !supported?'float-color-buffer-unavailable':!(renderer.capabilities.maxSamples>=2)?'multisampling-unavailable':
+      !gl?.getInternalformatParameter?'format-sample-query-unavailable':null;
+  if(!interior&&supported&&renderer.capabilities.maxSamples>=2&&gl?.getInternalformatParameter){
+    // Float multisampling is optional even with EXT_color_buffer_float. GL
+    // rounds a request up to the next supported count for each attachment;
+    // color and the r160 default depth format must resolve to the same count.
+    const samplesFor=format=>Math.min(...Array.from(gl.getInternalformatParameter(gl.RENDERBUFFER,format,gl.SAMPLES)||[])
+      .filter(samples=>samples>=2&&samples<=renderer.capabilities.maxSamples));
+    try{const colorSamples=samplesFor(gl.RGBA16F),depthSamples=samplesFor(gl.DEPTH_COMPONENT24);
+      motionSupported=Number.isFinite(colorSamples)&&colorSamples===depthSamples;
+      if(motionSupported)motionSampleCount=colorSamples;
+      else motionUnsupportedReason=!Number.isFinite(colorSamples)?'float-multisampling-unavailable':
+        !Number.isFinite(depthSamples)?'depth-multisampling-unavailable':'float-depth-sample-mismatch';
+    }catch{motionUnsupportedReason='format-sample-query-failed';}
+  }
+  const drawingSize=new THREE.Vector2(),savedClearColor=new THREE.Color();
+  let canvasSamples=null;
+  // SAMPLES describes the currently bound framebuffer. Query the default
+  // framebuffer once at construction, never infer it from composer settings.
+  if(renderer.getRenderTarget?.()===null){
+    if(gl?.getParameter)canvasSamples=gl.getParameter(gl.SAMPLES);
+  }
   let composer=null,ao=null,colorPass=null,output=null,enabled=false,width=0,height=0,ratio=0,
-    lastSamples=0,lastAOSamples=0,sceneInfo=null,disposed=false;
+    lastSamples=0,lastAOSamples=0,sceneInfo=null,disposed=false,
+    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,sceneWidth=0,sceneHeight=0,sceneRatio=1;
   function initialise(){
     if(composer||!supported)return;
     const target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
@@ -68,8 +95,20 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
   }
   function resize(w,h,pixelRatio=1,quality='auto',options={}){
     if(disposed)return;
+    sceneWidth=w;sceneHeight=h;sceneRatio=pixelRatio;
     const budget=architecturalRenderBudget(quality,w,h,options);
     enabled=Boolean(supported&&budget.enabled);
+    motionEnabled=Boolean(motionSupported&&options.interacting);
+    if(motionEnabled){
+      const mw=Math.max(1,Math.floor(w*pixelRatio)),mh=Math.max(1,Math.floor(h*pixelRatio));
+      if(!motionTarget){
+        motionTarget=new THREE.WebGLRenderTarget(mw,mh,{type:THREE.HalfFloatType,samples:2});
+        motionTarget.texture.name='ArchitecturalMotion.color';
+        motionColorPass=new RenderPass(scene,camera);
+        motionOutput=new OutputPass();motionOutput.renderToScreen=true;
+      }else if(motionTarget.width!==mw||motionTarget.height!==mh)motionTarget.setSize(mw,mh);
+      return;
+    }
     if(!enabled)return;
     initialise();
     const samples=Math.min(budget.msaaSamples,renderer.capabilities.maxSamples||0);
@@ -89,17 +128,54 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       ao.updatePdMaterial({samples:budget.denoiseSamples});lastAOSamples=budget.samples;
     }
   }
+  function renderMotion(){
+    const previousTarget=renderer.getRenderTarget(),previousFace=renderer.getActiveCubeFace(),previousMip=renderer.getActiveMipmapLevel();
+    const previousAutoClear=renderer.autoClear,previousAlpha=renderer.getClearAlpha();renderer.getClearColor(savedClearColor);
+    try{
+      // r160 resolves the target's MSAA at the end of renderer.render(). Its
+      // ordinary offscreen scene shader writes linear HDR; OutputPass applies
+      // the existing AgX/exposure/sRGB transform exactly once, as at idle.
+      motionColorPass.render(renderer,null,motionTarget);
+      sceneInfo={...renderer.info.render};
+      motionOutput.render(renderer,null,motionTarget);
+    }finally{
+      // RenderPass's normal restoration does not run if a draw throws.
+      renderer.autoClear=previousAutoClear;
+      renderer.setClearColor(savedClearColor,previousAlpha);
+      renderer.setRenderTarget(previousTarget,previousFace,previousMip);
+    }
+  }
+  function getDiagnostics(){
+    let sceneBufferWidth,sceneBufferHeight,scenePixelRatio=sceneRatio,renderPath;
+    if(motionEnabled&&motionTarget){
+      renderPath='motion-target';sceneBufferWidth=motionTarget.width;sceneBufferHeight=motionTarget.height;
+    }else if(enabled&&composer){
+      renderPath='ao-composer';sceneBufferWidth=Math.floor(composer.readBuffer.width);sceneBufferHeight=Math.floor(composer.readBuffer.height);
+    }else{
+      renderPath='direct';
+      if(renderer.getDrawingBufferSize)renderer.getDrawingBufferSize(drawingSize);
+      else drawingSize.set(renderer.domElement?.width??Math.floor(sceneWidth*sceneRatio),renderer.domElement?.height??Math.floor(sceneHeight*sceneRatio));
+      sceneBufferWidth=drawingSize.x;sceneBufferHeight=drawingSize.y;scenePixelRatio=renderer.getPixelRatio?.()??sceneRatio;
+    }
+    return {contactShading:enabled,contactShadingSupported:supported,
+      aoWidth:enabled?ao?.width||0:0,aoHeight:enabled?ao?.height||0:0,
+      msaaSamples:enabled?lastSamples:0,toneMapping:'AgX',renderPath,sceneBufferWidth,sceneBufferHeight,scenePixelRatio,
+      motionSupported,motionUnsupportedReason,
+      // GL rounds requested samples up to a supported count. Report the
+      // matching per-format result, independently of the default canvas.
+      motionSamples:motionEnabled?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,canvasSamples};
+  }
   return {
     resize,
     render(){
       if(disposed)return;
-      if(enabled&&composer)composer.render(0);
+      if(motionEnabled&&motionTarget)renderMotion();
+      else if(enabled&&composer)composer.render(0);
       else{renderer.render(scene,camera);sceneInfo={...renderer.info.render};}
     },
+    get motionSupported(){return motionSupported;},
     get sceneInfo(){return sceneInfo;},
-    getDiagnostics:()=>({contactShading:enabled,contactShadingSupported:supported,
-      aoWidth:enabled?ao?.width||0:0,aoHeight:enabled?ao?.height||0:0,
-      msaaSamples:enabled?lastSamples:0,toneMapping:'AgX'}),
-    dispose(){if(disposed)return;disposed=true;ao?.dispose();output?.dispose();composer?.dispose();}
+    getDiagnostics,
+    dispose(){if(disposed)return;disposed=true;ao?.dispose();output?.dispose();composer?.dispose();motionTarget?.dispose();motionColorPass?.dispose();motionOutput?.dispose();}
   };
 }
