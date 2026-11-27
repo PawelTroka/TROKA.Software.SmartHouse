@@ -46,7 +46,7 @@ function openingSymbol(o, start, end) {
   const type = o.type;
   if (type === 'passage') return '';
   const width = end-start;
-  if (type === 'window' || type === 'hst' || type === 'garage-door') {
+  if (type === 'window' || type === 'hst' || type === 'balcony-door' || type === 'garage-door') {
     return `<g class="iw-glazing"><path d="M${n(start)},-.042 H${n(end)} V.042 H${n(start)} Z"/>${line((start+end)/2,-.065,(start+end)/2,.065,'iw-mullion')}</g>`;
   }
   const hingeEnd = o.hinge === 'end', hinge = hingeEnd ? end : start;
@@ -84,7 +84,10 @@ function wallDrawing(wall, changes) {
 export function fixturePlanFrame(f) {
   let width=f.width,depth=f.depth,rotation=f.rotation||0;
   const kind=String(f.kind||'').toLowerCase();
-  const front=kind==='bed'&&f.headboard?f.headboard.map(v=>-v):f.front;
+  // Articulated televisions reserve an axis-aligned screen-and-arm envelope;
+  // their actual screen direction is drawn inside that envelope below.
+  if(kind==='walltv')return {width,depth,rotation};
+  const front=(kind==='bed'||kind==='sofabed'&&f.open)&&f.headboard?f.headboard.map(v=>-v):f.front;
   if(front) {
     const angle=Math.atan2(front[0],front[1]);
     if(kind==='sofa'&&f.shape?.toUpperCase()==='U') {
@@ -108,7 +111,18 @@ function fixtureDrawing(f) {
   const kind = String(f.kind).toLowerCase(), x = -w/2, y = -d/2;
   const rect = (a,b,width,height,r = .035) => `<rect x="${n(a)}" y="${n(b)}" width="${n(width)}" height="${n(height)}" rx="${n(r)}"/>`;
   let shape = rect(x,y,w,d);
-  if(kind==='exercisebike'){
+  if(kind==='walltv'){
+    const front=f.screenFront||[0,1],length=Math.hypot(...front),tx=front[1]/length,tz=-front[0]/length,span=f.screenWidth||.84,
+      anchor=f.wallAnchor||[f.x,f.z-.06];
+    shape=line(anchor[0]-f.x,anchor[1]-f.z,0,0,'','stroke-width=".025"')+line(-tx*span/2,-tz*span/2,tx*span/2,tz*span/2,'','stroke-width=".045"');
+  }else if(kind==='cabletrainer'){
+    shape=rect(x,y,w,.08)+rect(x+.045,y,.24,d)+rect(-x-.285,y,.24,d)+line(x+.12,d*.36,-x-.12,d*.36,'');
+    for(const side of [-1,1])shape+=rect(side*w*.39-.12,-d*.30,.24,.25,.02);
+  }else if(kind==='adjustabledumbbells'){
+    shape='';for(const side of [-1,1])shape+=rect(side*w*.27-w*.20,-d*.44,w*.40,d*.88,.025)+line(side*w*.27,-d*.16,side*w*.27,d*.16,'');
+  }else if(kind==='gymstorage'){
+    shape+=line(x,y+.04,-x,y+.04,'');for(let i=0;i<3;i++)shape+=`<circle cx="${n((i-1)*w*.29)}" cy="0" r=".075"/>`;
+  }else if(kind==='exercisebike'){
     shape=rect(-w*.13,-d*.42,w*.26,d*.84,.045)+rect(-w*.25,-d*.25,w*.5,d*.19,.055)+line(-w*.42,d*.32,w*.42,d*.32,'')+line(0,d*.20,0,d*.41,'');
   }else if(kind==='exercisebench'){
     shape=rect(-w*.40,-d*.45,w*.80,d*.63,.06)+rect(-w*.40,d*.22,w*.80,d*.24,.045)+line(-w*.46,-d*.34,w*.46,-d*.34,'')+line(-w*.46,d*.34,w*.46,d*.34,'');
@@ -120,8 +134,10 @@ function fixtureDrawing(f) {
     shape+=rect(-w*.37,-d*.34,w*.74,d*.67,.06)+line(-w*.35,d*.37,w*.35,d*.37,'');
   }else if(kind==='exercisemat'){
     shape=rect(x,y,w,d,.05)+`<rect x="${n(x+.06)}" y="${n(y+.06)}" width="${n(w-.12)}" height="${n(d-.12)}" fill="none" stroke-dasharray=".06 .04"/>`;
-  }else if (/bed/.test(kind)) {
-    shape += rect(x+.07,y+.08,w-.14,Math.min(d*.23,.42),.065) + line(x,y+d*.35,-x,y+d*.35,'');
+  }else if (kind==='bed'||kind==='sofabed'&&f.open) {
+    const count=(f.mattressWidth??w)>1.2?2:1;
+    for(let i=0;i<count;i++)shape+=rect(x+.07+i*(w-.14)/count,y+.08,(w-.14)/count-.025,Math.min(d*.23,.42),.065);
+    shape+=line(x,y+d*.35,-x,y+d*.35,'');
   } else if (f.shape === 'U') {
     shape = rect(x,y,w,d*.25) + rect(x,-y-d*.25,w,d*.25) + rect(x,y+d*.25,w*.32,d*.5);
   } else if (/sofa|couch|bench|armchair/.test(kind)) {
@@ -164,7 +180,8 @@ function fixtureDrawing(f) {
   } else if(kind==='bidet') {
     shape=`<ellipse cx="0" cy="0" rx="${n(w*.47)}" ry="${n(d*.47)}"/>`+rect(-w*.27,-d*.20,w*.54,d*.49,Math.min(w,d)*.15)+line(0,-d*.40,0,-d*.24,'');
   } else if(kind==='desk') {
-    shape+=rect(-w*.28,-d*.27,w*.56,.035,.008)+rect(-w*.19,d*.10,w*.38,d*.17,.01);
+    const count=f.workstations===2?2:1;
+    for(let i=0;i<count;i++){const cx=(i-(count-1)/2)*(w/2),screen=Math.min(w/count*.55,.61);shape+=rect(cx-screen/2,-d*.27,screen,.035,.008)+rect(cx-Math.min(.36,w/count*.38)/2,d*.10,Math.min(.36,w/count*.38),d*.17,.01);}
   } else if(kind==='chair') {
     shape+=rect(x,y,w,d*.15,.025);
   } else if(kind==='spastep') {
@@ -220,7 +237,7 @@ export function drawInteriorPlan(host, plan, { roomId, showFurniture = true, sho
   const vb = [b.left-1,b.top-.88,b.right-b.left+1.62,b.bottom-b.top+2.12];
   const centerX = (b.left+b.right)/2;
   const anchors = rooms.map(r => labelAnchor(r.polygon));
-  const roomMarkup = rooms.map((r,i) => `<g class="iw-zone${r.id===roomId?' is-selected':''}" data-iw-room="${esc(r.id)}" role="button" tabindex="0" aria-label="${esc(r.label)}, ${r.area.toFixed(1)} square metres modelled" aria-pressed="${r.id===roomId}"><title>${esc(r.label)}</title><polygon points="${pts(r.polygon)}" fill="${esc({bathroom:'url(#iw-tile)',utility:'url(#iw-tile)',gym:'#c0c5bf',sauna:'url(#iw-boards)',garage:'url(#iw-stone)',cellar:'url(#iw-stone)',hall:'#efeadf',wardrobe:'#eee7d8'}[r.kind] || 'url(#iw-boards)')}"/></g>`).join('');
+  const roomMarkup = rooms.map((r,i) => `<g class="iw-zone${r.id===roomId?' is-selected':''}" data-iw-room="${esc(r.id)}" role="button" tabindex="0" aria-label="${esc(r.label)}, ${r.area.toFixed(1)} square metres modelled${r.fitOutNote?', '+esc(r.fitOutNote):''}" aria-pressed="${r.id===roomId}"><title>${esc(r.label)}${r.fitOutNote?' · '+esc(r.fitOutNote):''}</title><polygon points="${pts(r.polygon)}" fill="${esc({bathroom:'url(#iw-tile)',utility:'url(#iw-tile)',gym:'#c0c5bf',sauna:'url(#iw-boards)',garage:'url(#iw-stone)',cellar:'url(#iw-stone)',hall:'#efeadf',wardrobe:'#eee7d8'}[r.kind] || 'url(#iw-boards)')}"/></g>`).join('');
   const decks = outdoor.map(o => {
     const p = o.polygon;
     if (!p?.length) return '';

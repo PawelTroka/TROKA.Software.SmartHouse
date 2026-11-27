@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.37.0';
-import {facadeSolidPanels} from './renovation-architecture.js?v=1.37.0';
-import {hstPanelLayout} from './hst-system.js?v=1.37.0';
+import {toWorld} from './orientation.js?v=1.38.0';
+import {facadeSolidPanels} from './renovation-architecture.js?v=1.38.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.38.0';
 
 /** Proposed mapped-house walls and apertures. Current uses its original path.
  * Geometry is batched across the house by finish, rather than by wall cell or
@@ -43,7 +43,7 @@ export function createRenovationFacadeGroup(layout,materials,settings={}){
       const frame=Math.min(.12,Math.max(.022,w.frameWidth||.05),width/4,w.height/4),top=w.z+w.height;
       const panes=Math.max(1,Math.min(10,Math.round(w.panes||1))),transoms=Math.max(0,Math.min(6,Math.round(w.transoms||0)));
       const glassRole=w.glazing==='privacy'?'privacy-glass':'glass';
-      const slider=w.kind==='hst'?hstPanelLayout({...w,offset:w.lo},settings):null;
+      const slider=['hst','balcony-door'].includes(w.kind)?slidingPanelLayout({...w,offset:w.lo},settings):null;
       if(slider){
         for(const panel of slider.panels){
           const f=panel.frameWidth,track=.012+panel.track;

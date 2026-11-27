@@ -2,7 +2,7 @@
  * These opening records cut the actual walls in both views. Measurements of the
  * original footprint, roof, floors and stairs are never edited by a style.
  */
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.38.0';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,f=0)=>Number.isFinite(Number(x))?Number(x):f;
 const EPS=1e-7;
@@ -41,8 +41,8 @@ export const getRenovationArchitecture=id=>RENOVATION_ARCHITECTURES[typeof id===
 export function styleOpeningDetails(opening,styleId){
   const r=getRenovationArchitecture(styleId);if(!r)return {};
   const kind=opening.type||opening.kind,access=['hst','balcony-door'].includes(kind);
-  if(kind==='hst')return {panes:3,transoms:0,frameWidth:.028,operation:'left-stacking',glazing:'clear',
-    architectureStyle:r.id,source:'full-width-three-track-proposal'};
+  if(access)return {panes:3,transoms:0,frameWidth:.028,operation:'left-stacking',glazing:'clear',
+    architectureStyle:r.id,source:kind==='hst'?'full-width-three-track-proposal':'balcony-three-track-proposal'};
   const operation=kind==='door'?'hinged':access&&['picture','ribbon'].includes(r.operation)?'sliding':access&&r.operation==='casement'?'french':r.operation;
   return {panes:access?r.gardenPanels:r.panes,transoms:access&&['sliding','stacking','picture','ribbon'].includes(r.operation)?0:r.transoms,
     frameWidth:r.frameWidth,operation,glazing:opening.privacy?'privacy':'clear',

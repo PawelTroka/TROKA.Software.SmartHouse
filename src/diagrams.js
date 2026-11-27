@@ -11,22 +11,23 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.37.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.37.0';
-import {gazeDirection} from './orientation.js?v=1.37.0';
-import {localSunDirection} from './solar.js?v=1.37.0';
-import {getSiteProfile} from './sites.js?v=1.37.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.37.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.37.0';
-import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.37.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.37.0';
-import {terraceStairs,gardenFurniture} from './layout.js?v=1.37.0';
-import {resortTerraceLayout} from './resort-garden.js?v=1.37.0';
-import {getDesignStyle} from './design-styles.js?v=1.37.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.37.0';
+} from './geometry.js?v=1.38.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.38.0';
+import {gazeDirection} from './orientation.js?v=1.38.0';
+import {localSunDirection} from './solar.js?v=1.38.0';
+import {getSiteProfile} from './sites.js?v=1.38.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.38.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.38.0';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.38.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.38.0';
+import {terraceStairs,gardenFurniture} from './layout.js?v=1.38.0';
+import {resortTerraceLayout} from './resort-garden.js?v=1.38.0';
+import {getDesignStyle} from './design-styles.js?v=1.38.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.38.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.37.0';
-import {boundaryFenceLayout,boundaryPlanMarkup} from './boundary-fence.js?v=1.37.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.38.0';
+import {boundaryFenceLayout,boundaryPlanMarkup} from './boundary-fence.js?v=1.38.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.38.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -102,6 +103,13 @@ export function spaPlanMarkup(program,{X,Y,scale,labels=true,subtle=false}) {
   const pit=f?`<g data-spa-object="firepit">${rect(f,`rx="${.12*scale}" fill="#c9ba9e" fill-opacity="${subtle ? .15 : .8}" stroke="#968267" stroke-width="1.4"`)}${(f.seats||[]).map(b=>rect(b,'fill="#a99272" stroke="#7f705c" stroke-width=".6"')).join('')}${(f.steps||[]).map(step=>rect(step,'fill="none" stroke="#7f705c" stroke-width=".7"')).join('')}<circle cx="${X(f.x+f.width/2)}" cy="${Y(f.y+f.length*.58)}" r="${.45*scale}" fill="#8c5940" stroke="#d3a36d" stroke-width="1.4"/>${labels?text(`FIREPIT −${fmt(f.depth,2)} m`,f.x+f.width/2,f.y+f.length+.65,C.ink,8.5):''}</g>`:'';
   const plunge=c?`<g data-spa-object="cold-plunge" data-sunken="${c.sunken===true}">${(c.steps||[]).map(step=>rect(step,'data-spa-object="plunge-step" fill="#c9b391" stroke="#9c8769" stroke-width=".7"')).join('')}${c.sunken?rect(c.surroundBounds,'fill="#d5c8b1" stroke="#a99a80" stroke-width=".7"'):''}${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text(c.sunken?'SUNKEN PLUNGE':'COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
   return subtle?`<g pointer-events="none">${sauna+pit+plunge}</g>`:sauna+pit+plunge;
+}
+
+/** Top-down projections of actual opaque members, shared by both plan maps. */
+export function spaCoverPlanMarkup(settings,data,{X,Y,scale,subtle=false}){
+  const covers=[jacuzziCoverLayout(jacuzziBounds(settings,data),settings),spaLevels(settings,data).coldPlunge?.cover].filter(Boolean);
+  const color=getDesignStyle(settings.designStyle).palette.surface||C.stone;
+  return covers.map(cover=>`<g data-spa-cover="${esc(cover.id)}" data-cover-closed="${cover.closed}" pointer-events="none">${cover.panels.slice().sort((a,b)=>a.topZ-b.topZ).map(panel=>`<rect x="${X(panel.x)}" y="${Y(panel.y)}" width="${panel.width*scale}" height="${panel.length*scale}" fill="${color}" fill-opacity="${subtle?.7:1}" stroke="#827964" stroke-width=".7"><title>${esc(cover.id==='jacuzzi-cover'?'Jacuzzi sliding cover':'Cold plunge sliding cover')} · ${cover.closed?'closed':'parked at the side'}</title></rect>`).join('')}</g>`).join('');
 }
 
 /** Top-down projections of actual opaque members, shared by both plan maps. */
@@ -301,6 +309,7 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${detail && pool&&!measured ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">POOL</text>` : ''}
         ${gardenPathPlanMarkup(data,settings,{X,Y,scale})}
         ${spaPlanMarkup(program,{X,Y,scale,labels:detail&&!measured})}
+        ${spaCoverPlanMarkup(settings,data,{X,Y,scale})}
         ${garage}
         ${hedges}
         ${frontOpenings}

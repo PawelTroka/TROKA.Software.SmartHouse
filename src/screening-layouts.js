@@ -2,8 +2,8 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.37.0';
-import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.37.0';
+import {getTreeType} from './tree-catalog.js?v=1.38.0';
+import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.38.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -325,12 +325,12 @@ const poolGroveLayouts=Object.freeze([
 const summerSettings=Object.freeze({...poolGroveSettings,summerPoolLayout:true,poolSunbedSides:1,terraceDepth:4});
 export const STERNICZA_SUMMER_TREES=Object.freeze(optimizedScreeningTrees('austrian-pine-tall').map(Object.freeze));
 const summerLayouts=Object.freeze([
-  Object.freeze({id:'default',label:'Austrian pines · optimized boundary trio · default',
-    note:'Three 9.5 m Austrian pines, with 5 m modeled crowns, use the species-specific east/rear boundary search. Trunks stay near the plot edge and clear of the left-edge pool, all optional sunbeds and spa. Dense-crown PCK3 coverage is sampled from nine occupied views; foliage is not perfectly opaque. Some crowns extend across the boundary; stock, roots, maintenance and overhang need site-specific confirmation.',
+  Object.freeze({id:'default',label:'Austrian pines · earlier close grove · default',
+    note:'Three 9.5 m Austrian pines return to the earlier rear-left grove, with the nearest pair 2.00 m apart. The 3.2 × 6.5 m pool sits just in front of them, along the left edge. Modeled crowns are 5 m wide; foliage is not perfectly opaque. Verify actual root balls, crown overlap and any boundary overhang when arranging the trees.',
     settings:summerSettings,trees:STERNICZA_SUMMER_TREES}),
   ...Object.keys(BOUNDARY_TREE_POSITIONS).filter(id=>id!=='austrian-pine-tall').map(typeId=>{
     const type=getTreeType(typeId);return Object.freeze({id:typeId,label:`${type.label} · boundary trio`,
-      note:'Uses independently calculated positions for this species and its own catalogue height/crown dimensions. Changing species applies these positions automatically. Narrower or lower trees leave more of PCK3 visible; compare each view. Modeled crown overhang is at most 1 m; this is a planting concept, not an approved clearance.',
+      note:'Uses this species’ catalogue height and crown dimensions in a boundary arrangement fitted around the pool. Changing species applies these preset positions. Narrower or lower trees can leave more of PCK3 visible; compare each view. Check crown overlap and boundary overhang for the actual specimens.',
       settings:summerSettings,trees:Object.freeze(optimizedScreeningTrees(typeId).map(Object.freeze))});
   }),
   Object.freeze({id:'hedges-only',label:'Left-edge pool · no specimen trees',
