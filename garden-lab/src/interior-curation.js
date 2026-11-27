@@ -117,7 +117,7 @@ function firstFixtures(plan,c){
     f('master-reading-table','sideTable','Bedside reading and tea table','master',1.98,1.25,.40,.40,{height:.42}),
     lamp('master-reading-light','master',.69,.76,c.lamp),
     f('master-bedside-light','tableLamp','Soft bedside lamp','master',byId('master-nightstand-east').x,byId('master-nightstand-east').z,.25,.25,{hostId:'master-nightstand-east',baseHeight:.55,height:.40,lamp:c.lamp}),
-    f('office-task-light','tableLamp','Focused desk light','office',fixedOffice?4.91:c.office==='floating'?6.84:4.99,fixedOffice?2.98:c.office==='floating'?1.86:1.58+deskShift,.22,.22,{hostId:'office-desk',baseHeight:.78,height:.42,lamp:c.lamp}),
+    f('office-task-light','tableLamp','Focused desk light','office',fixedOffice?4.91:c.office==='floating'?6.84:4.99,fixedOffice?.70:c.office==='floating'?1.86:1.58+deskShift,.22,.22,{hostId:'office-desk',baseHeight:.78,height:.42,lamp:c.lamp}),
   );
   return items;
 }
