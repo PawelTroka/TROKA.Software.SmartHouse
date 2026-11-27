@@ -3,7 +3,7 @@ import { OrbitControls } from '../vendor/OrbitControls.js?v=1.37.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
 import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.37.0';
 import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.37.0';
-import {houseModelFrame} from './house-model.js?v=1.37.0';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.37.0';
 import {createWalkNavigation} from './house-walk.js?v=1.37.0';
 import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds,smoothWalkElevation} from './walk-motion.js?v=1.37.0';
 import {updateHstOpening} from './interior-architecture.js?v=1.37.0';
@@ -14,7 +14,7 @@ import { houseAppearanceLayout } from './house-appearance.js?v=1.37.0';
 import { entranceAccessLayout } from './entrance-access.js?v=1.37.0';
 import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.37.0';
 import { sampledRoofFaces } from './roof-mesh.js?v=1.37.0';
-import { terrainVertexBuffer, parcelTerrainClip } from './terrain-mesh.js?v=1.37.0';
+import { terrainSurfaceGeometry } from './terrain-mesh.js?v=1.37.0';
 import { renderBudget } from './render-quality.js?v=1.37.0';
 import {latestIntersectionEntry} from './render-visibility.js?v=1.37.0';
 import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.37.0';
@@ -56,7 +56,7 @@ import { boundaryFenceLayout, BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js
 import { createBoundaryFenceGroup } from './scene-boundary-fence.js?v=1.37.0';
 import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.37.0';
 import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.37.0';
-import { garageTerrainCutouts,subtractGarageOpenings,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.37.0';
+import { garageTerrainCutouts,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.37.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -74,8 +74,16 @@ const centroid = ring => {
 export function designTerrainCutouts(settings,data){
   const tub=jacuzziBounds(settings,data),program=gardenProgram(settings,data),p=poolBounds(settings,data);
   const rect=r=>({x0:r.x,x1:r.x+r.width,y0:r.y,y1:r.y+r.length});
+  const frame=(data.site.id||settings.siteId||'sternicza-11')==='sternicza-11'?houseModelFrame(data,settings):null;
+  // The registered house has a complete cellar, wider than the parking strip.
+  // Cut its exact envelope from both ground layers, even when garage mode is
+  // off, so neither the occupied rooms nor the archived cellar contain grass.
+  const basement=frame?getHouseFloorPlan({floor:'basement',settings,data}).envelope.outline.map(([x,z])=>frame.toSite(x,z).slice(0,2)):null;
+  const house=basement?[{id:'shared-house-basement-opening',polygon:basement,
+    x0:Math.min(...basement.map(p=>p[0])),x1:Math.max(...basement.map(p=>p[0])),
+    y0:Math.min(...basement.map(p=>p[1])),y1:Math.max(...basement.map(p=>p[1]))}]:[];
   return[rect(p),{x0:tub.x0,x1:tub.x1,y0:tub.y0,y1:tub.y1},...(program.active?[rect(program.firepit),rect(program.coldPlunge)]:[]),
-    ...garageTerrainCutouts(garageLayout(settings,data,{terrainAt}))];
+    ...house,...garageTerrainCutouts(garageLayout(settings,data,{terrainAt}))];
 }
 
 function contains(x, y, ring) {
@@ -511,39 +519,7 @@ export function createScene(container, data, callbacks = {}) {
   };
 
   function makeTerrain(group, bounds, step, heightAt, material, ring = null, vertexColors = false, cutouts = []) {
-    const [x0, y0, x1, y1] = bounds, vertices = terrainVertexBuffer(heightAt, vertexColors);
-    // Split exactly at each rectangular opening before removing cells. Merely
-    // dropping triangles by centroid would leave coarse grass wedges in a pool.
-    const axis = (start, end, edges) => {
-      const values = [end];
-      for(let p=start;p<end;p+=step)values.push(p);
-      values.push(...edges.filter(p=>p>start&&p<end));
-      return values.sort((a,b)=>a-b).filter((p,i,all)=>i===0||p-all[i-1]>1e-8);
-    };
-    const xs=axis(x0,x1,cutouts.flatMap(c=>[c.x0,c.x1]));
-    const ys=axis(y0,y1,cutouts.flatMap(c=>[c.y0,c.y1]));
-    const clipToParcel=ring===data.site.boundary?parcelTerrainClip(ring,pointInPolygon):null;
-    const polygonCutouts=cutouts.filter(c=>c.polygon?.length>=3);
-    for(let row=0;row<ys.length-1;row++)for(let col=0;col<xs.length-1;col++){
-      const x=xs[col],xx=xs[col+1],y=ys[row],yy=ys[row+1];
-      if(cutouts.some(c=>!c.polygon&&x>=c.x0-1e-8&&xx<=c.x1+1e-8&&y>=c.y0-1e-8&&yy<=c.y1+1e-8))continue;
-      for(const tri of [[[x,y],[xx,y],[xx,yy]],[[x,y],[xx,yy],[x,yy]]]){
-        const pieces=polygonCutouts.length?subtractGarageOpenings(tri,polygonCutouts):[tri];
-        for(const piece of pieces){
-          if(ring&&!clipToParcel&&!contains(...centroid(piece),ring))continue;
-          for(const clipped of clipToParcel?clipToParcel(piece):[piece]){
-            // Drop collinear fan triangles at exact boundary/cell contacts.
-            const [a]=clipped;
-            for(let i=1;i<clipped.length-1;i++){
-              const b=clipped[i],c=clipped[i+1];
-              if(Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))<=1e-10)continue;
-              for(const p of [a,c,b])vertices.add(...p);
-            }
-          }
-        }
-      }
-    }
-    const geometry = vertices.finish();
+    const geometry=terrainSurfaceGeometry(bounds,step,heightAt,{boundary:ring,clipBoundary:ring===data.site.boundary,vertexColors,cutouts});
     let m = material;
     if (vertexColors) {
       m = material.clone();
@@ -709,7 +685,7 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   // Both terrain meshes use the same real openings: no grass or context slab
-  // may cross the swimming water, recessed plunge or the sunken firepit floor.
+  // may cross the cellar, swimming water, recessed plunge or sunken firepit.
   const waterCutouts=settings=>designTerrainCutouts(settings,data);
   let contextTerrains=[],contextTerrainCutouts='';
   function syncContextTerrain(settings){

@@ -97,7 +97,7 @@ export async function captureOpenLivingViews(page,{
   assert.equal(new URL(restoreUrl).searchParams.get('site'),'sternicza-11');
   const captureSettings={...GARAGE_DEFAULTS,designStyle:style,basementGarageEnabled:true,garageProgress:100};
   await navigate(restoreUrl,{designStyle:style,interiorView:'plan',interiorEnabled:false,interiorFloor:'ground',
-    ...captureSettings,interiorFurniture:true,interiorChanges:false,walkNavigation:'free',sceneMotion:false,mode:'orbit'});
+    ...captureSettings,interiorFurniture:true,interiorChanges:false,showDimensions:false,walkNavigation:'free',sceneMotion:false,mode:'orbit'});
   await waitMode('orbit');
   if(await q('#sun-controls').getAttribute('open')===null)await q('#sun-controls > summary').click({timeout:remaining()});
   if(await q('#sun-date').inputValue()!==date){

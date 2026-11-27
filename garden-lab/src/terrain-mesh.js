@@ -1,5 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
 import { toWorld } from './orientation.js?v=1.37.0';
+import {pointInPolygon} from './geometry.js?v=1.37.0';
+import {subtractGarageOpenings} from './scene-garage.js?v=1.37.0';
 
 // Terrain is a continuous surface. Share exactly equal plan coordinates whilst
 // preserving clipped intersections, triangle winding, physical UVs and heights.
@@ -87,4 +89,45 @@ export function parcelTerrainClip(ring, contains) {
     }
     return output;
   };
+}
+
+/** The shared surface builder for the lawn, local ground and context terrain.
+ * Openings are subtracted before triangulation, including skew house walls;
+ * sampling a triangle centre would leave ground wedges inside the basement. */
+export function terrainSurfaceGeometry(bounds,step,heightAt,{boundary=null,clipBoundary=true,vertexColors=false,cutouts=[]}={}){
+  const [x0,y0,x1,y1]=bounds,vertices=terrainVertexBuffer(heightAt,vertexColors);
+  const axis=(start,end,edges)=>{
+    const values=[end];
+    for(let p=start;p<end;p+=step)values.push(p);
+    values.push(...edges.filter(p=>p>start&&p<end));
+    return values.sort((a,b)=>a-b).filter((p,i,all)=>i===0||p-all[i-1]>1e-8);
+  };
+  const xs=axis(x0,x1,cutouts.flatMap(c=>[c.x0,c.x1])),ys=axis(y0,y1,cutouts.flatMap(c=>[c.y0,c.y1]));
+  const clipToParcel=boundary&&clipBoundary?parcelTerrainClip(boundary,pointInPolygon):null;
+  const polygonCutouts=cutouts.filter(c=>c.polygon?.length>=3);
+  for(let row=0;row<ys.length-1;row++)for(let col=0;col<xs.length-1;col++){
+    const x=xs[col],xx=xs[col+1],y=ys[row],yy=ys[row+1];
+    if(cutouts.some(c=>!c.polygon&&x>=c.x0-1e-8&&xx<=c.x1+1e-8&&y>=c.y0-1e-8&&yy<=c.y1+1e-8))continue;
+    for(const tri of [[[x,y],[xx,y],[xx,yy]],[[x,y],[xx,yy],[x,yy]]]){
+      const pieces=polygonCutouts.length?subtractGarageOpenings(tri,polygonCutouts):[tri];
+      for(const piece of pieces){
+        if(boundary&&!clipBoundary){
+          // Mapped road overlays retain their established centroid inclusion;
+          // exact boundary clipping belongs to the parcel terrain only.
+          const ring=piece.length>1&&Math.hypot(piece[0][0]-piece.at(-1)[0],piece[0][1]-piece.at(-1)[1])<1e-6?piece.slice(0,-1):piece;
+          const center=ring.reduce((s,p)=>[s[0]+p[0]/ring.length,s[1]+p[1]/ring.length],[0,0]);
+          if(!pointInPolygon(center,boundary))continue;
+        }
+        for(const clipped of clipToParcel?clipToParcel(piece):[piece]){
+        const [a]=clipped;
+        for(let i=1;i<clipped.length-1;i++){
+          const b=clipped[i],c=clipped[i+1];
+          if(Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))<=1e-10)continue;
+          for(const p of [a,c,b])vertices.add(...p);
+        }
+        }
+      }
+    }
+  }
+  return vertices.finish();
 }

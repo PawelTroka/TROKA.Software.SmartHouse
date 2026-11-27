@@ -52,6 +52,8 @@ At the default two-car garage width, the remaining space contains:
 
 Both parking lanes and the actual cars retain their geometry. Two **0.90 m internal openings** provide access from the retained stair side. The furnishings and their use areas remain outside the car lanes, retained cores and circulation route. The plan, interior studio and shared house-and-garden walker display the same fit-out. Two bounded unshadowed task lights make the new rooms usable in the interior view.
 
+Both ground meshes have an exact opening for the complete registered cellar, including the rooms beside the garage. This prevents outdoor terrain from crossing the basement views while retaining the surrounding garden and the separate ramp excavation.
+
 The proposal extends the existing lowered-basement assumption across these rooms: **floor −2.60 m with 2.30 m clear headroom**. The original cellar comparison remains at **−2.00 m / 1.70 m clear**. These are proposal levels, not confirmation of existing headroom or structural feasibility. If an edited garage position leaves insufficient room width, the fit-out is omitted with a visible explanation instead of occupying a parking lane.
 
 ## Matching fence and front gates
