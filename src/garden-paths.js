@@ -1,6 +1,6 @@
 /** A small, connected landscape route in mapped metres. Tree positions are
  * inputs, never outputs. The same polygons drive drawing, meshes and budget. */
-import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.38.0';
+import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.39.0';
 
 const distance=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
 const rectangle=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length]];
@@ -116,7 +116,7 @@ export function gardenPathNetwork({program,stairs,terrace,dining,items=[],bounda
     }
   }
   const lightAnchors=[['terrace',nodes.landing[0]-.72,nodes.landing[1]],['dining',dining.x+dining.width+.32,dining.y+.42],
-    ['firepit',fireX-.73,firepit.y-.70],['pool',pool.x-.97,poolY+.82],
+    ['firepit',fireX-.73,firepit.y-.70],['pool',pool.x-1.85,poolY+.82],
     ['spa-route',mainX-.72,30.9],['sauna',nodes.saunaTurn[0]-.50,nodes.saunaTurn[1]-.48],
     ['plunge',coldPlunge.anchor[0]+.72,coldPlunge.y-.60]];
   const lights=lightAnchors.filter(([,x,y])=>enabledTrees.every(t=>distance([x,y],[t.x,t.y])>.75)&&

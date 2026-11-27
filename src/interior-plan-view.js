@@ -1,5 +1,6 @@
 // Plan coordinates are metres, with the garden at z = 0 and the street at z = 9.
 // The SVG uses the same polygons, openings and furniture footprints as the 3D scene.
+import {interiorRoomMetrics} from './interior-dimensions.js?v=1.39.0';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n = value => Number(value.toFixed(3));
 const pts = polygon => polygon.map(([x,z]) => `${n(x)},${n(z)}`).join(' ');
@@ -223,15 +224,17 @@ function dimensions(w, d, b) {
     <text x="${n(w/2)}" y="${n(y+.01)}">${w.toFixed(2)} m</text><text transform="translate(${n(x)},${n(d/2)}) rotate(-90)">${d.toFixed(2)} m</text></g>`;
 }
 
-function roomLabel(room, i, pos) {
+function roomLabel(room, i, pos, plan, showDimensions) {
   const [x,z] = pos, number = String(i+1).padStart(2,'0');
   const short = room.label.split(' · ')[0].replace(/\s*\([^)]*\)/g,'').trim();
   const half = short.length*.066;
   const fits = short.length <= 28 && signedDistance(x-half,z+.22,room.polygon) > .09 && signedDistance(x+half,z+.22,room.polygon) > .09;
-  return `<g class="iw-zone-label" transform="translate(${n(x)} ${n(z)})"><circle r=".215"/><text class="iw-zone-number" y=".004">${number}</text>${fits ? `<text class="iw-zone-name" y=".47">${esc(short)}</text>` : ''}</g>`;
+  const metrics=showDimensions?interiorRoomMetrics(plan,room):null;
+  const measurement=metrics?`<g class="iw-room-measures" data-iw-room-dimensions="${esc(room.id)}"><title>Approximate model dimensions${metrics.maximumExtents?' · maximum extents of an irregular room':''}; floor area excludes slab openings.</title><text y="-.54">${metrics.width.toFixed(2)} × ${metrics.depth.toFixed(2)} m${metrics.maximumExtents?' max':''}</text><text y="-.28">${metrics.area.toFixed(2)} m²</text></g>`:'';
+  return `<g class="iw-zone-label" transform="translate(${n(x)} ${n(z)})"><circle r=".215"/><text class="iw-zone-number" y=".004">${number}</text>${measurement}${fits ? `<text class="iw-zone-name" y=".47">${esc(short)}</text>` : ''}</g>`;
 }
 
-export function drawInteriorPlan(host, plan, { roomId, showFurniture = true, showChanges = false, palette = {} } = {}) {
+export function drawInteriorPlan(host, plan, { roomId, showFurniture = true, showChanges = false, showDimensions = true, palette = {} } = {}) {
   const {width,depth,outline} = plan.envelope, outdoor = plan.outdoor || [], rooms = plan.rooms;
   const b = bounds([...outline,...outdoor.flatMap(o => o.polygon || []),...(plan.stairs||[]).flatMap(s => s.polygon || [])]);
   const vb = [b.left-1,b.top-.88,b.right-b.left+1.62,b.bottom-b.top+2.12];
@@ -253,6 +256,6 @@ export function drawInteriorPlan(host, plan, { roomId, showFurniture = true, sho
     <g class="iw-drafting">${roofBands(plan)}${(plan.voids||[]).map(p => `<polygon class="iw-void" points="${pts(p)}"/>`).join('')}${(plan.stairs||[]).map(stairDrawing).join('')}${(plan.cores||[]).filter(c => c.polygon?.length).map(c => `${c.enclosure?`<polygon class="iw-fixture" points="${pts(c.enclosure.polygon)}"><title>${esc(c.enclosure.label)}</title></polygon>`:''}<polygon class="iw-core" points="${pts(c.polygon)}"${c.enclosure?' opacity=".35"':''}><title>${esc(c.label)}</title></polygon>`).join('')}
     ${showFurniture ? (plan.fixtures||[]).map(fixtureDrawing).join('') : ''}${plan.walls.map(w => wallDrawing(w,showChanges)).join('')}${showChanges ? (plan.removedWalls||[]).map(w => wallDrawing(w,true)).join('') : ''}
     ${(plan.conflicts||[]).map(c => `<polygon class="iw-conflict" points="${pts(c.polygon)}"><title>${esc(c.label)} crosses the proposed lanes</title></polygon>`).join('')}
-    ${rooms.map((r,i) => roomLabel(r,i,anchors[i])).join('')}${dimensions(width,depth,b)}</g></svg>`;
+    ${rooms.map((r,i) => roomLabel(r,i,anchors[i],plan,showDimensions)).join('')}${showDimensions?dimensions(width,depth,b):''}</g></svg>`;
   return vb;
 }

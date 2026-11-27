@@ -3,8 +3,8 @@
  * The immutable LoD1 record is provenance, not an additional opaque prism under
  * a resolved lower wing. Privacy target samples remain a separate input.
  */
-import {visualNeighborRoof} from './observed-neighbor-roofs.js?v=1.38.0';
-import {observedApartmentRoof} from './observed-apartment-roofs.js?v=1.38.0';
+import {visualNeighborRoof} from './observed-neighbor-roofs.js?v=1.39.0';
+import {observedApartmentRoof} from './observed-apartment-roofs.js?v=1.39.0';
 
 const cache=new WeakMap(),EPS=1e-8;
 const point=p=>Array.isArray(p)?p:[p.x,p.y,p.z];

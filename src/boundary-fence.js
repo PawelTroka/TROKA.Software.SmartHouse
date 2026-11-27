@@ -1,7 +1,7 @@
 /** One metric boundary proposal shared by the plan, renderer, physical walk and rays.
  * Coordinates use site x/y and absolute elevation z. No planting is edited here. */
-import {frontHedgeLayout,gardenGroundAt} from './geometry.js?v=1.38.0';
-import {getDesignStyle} from './design-styles.js?v=1.38.0';
+import {frontHedgeLayout,gardenGroundAt} from './geometry.js?v=1.39.0';
+import {getDesignStyle} from './design-styles.js?v=1.39.0';
 
 export const BOUNDARY_HEIGHT=2.2;
 export const BOUNDARY_GEOMETRY_KEYS=Object.freeze(['perimeterFenceEnabled','pedestrianGateOpen','garageGateOpen']);

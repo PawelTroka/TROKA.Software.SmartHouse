@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {spaCoverAtProgress} from './spa-covers.js?v=1.38.0';
-import {toWorld} from './orientation.js?v=1.38.0';
+import {spaCoverAtProgress} from './spa-covers.js?v=1.39.0';
+import {toWorld} from './orientation.js?v=1.39.0';
 
 function batchCoverParts(parent){
   const buckets=new Map();
@@ -44,20 +44,27 @@ export function createSpaCoverGroup(layout,materials,{svgMode=false}={}){
   };
   const surface=materials.deck||materials.woodLight||materials.wood;
   const frame=materials.metal||materials.stone;
-  for(const rail of layout.rails)box(group,rail.id,rail.x,rail.y,rail.baseZ,rail.width,rail.length,rail.topZ-rail.baseZ,frame);
-  batchCoverParts(group);
+  // The tracks and parked leaves are below the continuous surround. Leaving
+  // their meshes out also keeps the SVG fallback clean and avoids underground
+  // parts casting implausible shadows through the terrace.
   for(const panel of layout.panels){
-    const moving=new THREE.Group();moving.name=panel.id;moving.position.x=panel.x;moving.userData.spaCoverPanel=true;
+    const moving=new THREE.Group();moving.name=panel.id;moving.userData.spaCoverPanel=true;
+    moving.userData.referenceBaseZ=panel.closedTopZ-layout.panelThickness;
     group.add(moving);
-    box(moving,panel.id+'-frame',0,panel.y,panel.baseZ,panel.width,panel.length,layout.panelThickness,frame);
+    box(moving,panel.id+'-frame',0,panel.y,moving.userData.referenceBaseZ,panel.width,panel.length,layout.panelThickness-.009,frame);
     const inset=.028,joint=svgMode?.009:.006,count=Math.max(3,Math.ceil(panel.length/.17)),unit=(panel.length-2*inset)/count;
-    for(let i=0;i<count;i++)box(moving,panel.id+'-slat-'+i,inset,panel.y+inset+i*unit,panel.topZ-.009,
+    for(let i=0;i<count;i++)box(moving,panel.id+'-slat-'+i,inset,panel.y+inset+i*unit,panel.closedTopZ-.009,
       panel.width-2*inset,unit-joint,.009,surface);
-    // Recessed pull at the leading edge: a dark inset, not a trip-height handle.
-    box(moving,panel.id+'-pull',.075,panel.y+panel.length/2-.075,panel.topZ+.0005,.014,.15,.002,frame);
     batchCoverParts(moving);
+    moving.traverse(mesh=>{
+      if(!mesh.isMesh)return;
+      mesh.userData.coverOriginalPositions=Array.from(mesh.geometry.attributes.position.array);
+      mesh.geometry.attributes.position.setUsage(THREE.DynamicDrawUsage);
+      mesh.geometry.attributes.uv.setUsage(THREE.DynamicDrawUsage);
+    });
   }
   group.userData.spaCover={layout,progress:layout.progress,closed:layout.closed,panelCount:layout.panels.length};
+  setSpaCoverProgress(group,layout.progress);
   return group;
 }
 
@@ -66,7 +73,28 @@ export function createSpaCoverGroup(layout,materials,{svgMode=false}={}){
 export function setSpaCoverProgress(group,progress){
   const previous=group?.userData?.spaCover;if(!previous)return null;
   const layout=spaCoverAtProgress(previous.layout,progress);
-  for(const panel of layout.panels){const mesh=group.getObjectByName(panel.id);if(mesh)mesh.position.x=panel.x;}
+  for(const panel of layout.panels){
+    const mesh=group.getObjectByName(panel.id);if(!mesh)continue;
+    mesh.visible=panel.visible;
+    mesh.position.x=panel.x;
+    mesh.position.y=panel.baseZ-mesh.userData.referenceBaseZ;
+    if(!panel.visible)continue;
+    const bounds=panel.exposedBounds,x0=bounds.x-panel.x,x1=x0+bounds.width,z0=bounds.y,z1=z0+bounds.length;
+    // Clip the small existing vertex buffers at the cassette mouth. The boards
+    // and metre-scaled grain slide rigidly instead of shrinking as they stow.
+    mesh.traverse(part=>{
+      const original=part.userData.coverOriginalPositions;if(!original)return;
+      const geometry=part.geometry,p=geometry.attributes.position,n=geometry.attributes.normal,uv=geometry.attributes.uv;
+      for(let i=0;i<p.count;i++){
+        const x=Math.max(x0,Math.min(x1,original[i*3])),y=original[i*3+1],z=Math.max(z0,Math.min(z1,original[i*3+2]));
+        p.setXYZ(i,x,y,z);
+        if(Math.abs(n.getY(i))>.5)uv.setXY(i,x,z);
+        else if(Math.abs(n.getX(i))>.5)uv.setXY(i,z,y);
+        else uv.setXY(i,x,y);
+      }
+      p.needsUpdate=true;uv.needsUpdate=true;geometry.computeBoundingBox();geometry.computeBoundingSphere();
+    });
+  }
   group.userData.spaCover={...previous,layout,progress:layout.progress,closed:layout.progress===1};
   return layout;
 }

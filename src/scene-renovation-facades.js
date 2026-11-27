@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.38.0';
-import {facadeSolidPanels} from './renovation-architecture.js?v=1.38.0';
-import {slidingPanelLayout} from './hst-system.js?v=1.38.0';
+import {toWorld} from './orientation.js?v=1.39.0';
+import {facadeSolidPanels} from './renovation-architecture.js?v=1.39.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.39.0';
 
 /** Proposed mapped-house walls and apertures. Current uses its original path.
  * Geometry is batched across the house by finish, rather than by wall cell or

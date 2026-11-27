@@ -3,18 +3,18 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.38.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.38.0';
-import { localRoofEnvelope } from './roof-envelope.js?v=1.38.0';
-import {sampledRoofFaces} from './roof-mesh.js?v=1.38.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.38.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.38.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.38.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.38.0';
-import {jacuzziCoverLayout} from './spa-covers.js?v=1.38.0';
-import { terraceStairs } from './layout.js?v=1.38.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.38.0';
-import { boundaryFenceLayout,boundaryMemberFaces,BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.38.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.39.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.39.0';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.39.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.39.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.39.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.39.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.39.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.39.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.39.0';
+import { terraceStairs } from './layout.js?v=1.39.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.39.0';
+import { boundaryFenceLayout,boundaryMemberFaces,BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.39.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -124,7 +124,7 @@ function gableFaces(ring,eaves,ridge,axis='x') {
   return [[a,d,f],[a,f,e],[e,f,c],[e,c,b],[a,e,b],[d,c,f]];
 }
 
-export {sampledRoofFaces} from './roof-mesh.js?v=1.38.0';
+export {sampledRoofFaces} from './roof-mesh.js?v=1.39.0';
 
 const contextOccluderCache=new WeakMap();
 
@@ -136,7 +136,7 @@ function spaOccluders(settings,data) {
   const terrace=data.site.terrace;
   if(terrace){
     const cover=jacuzziCoverLayout(jacuzziBounds(settings,data),settings);
-    for(const panel of cover?.panels||[])slab(panel.id,'Sliding jacuzzi cover',panel,panel.baseZ,panel.topZ);
+    for(const panel of cover?.panels||[])if(panel.visible)slab(panel.id,'Sliding jacuzzi cover',panel.exposedBounds,panel.baseZ,panel.topZ);
     const drop=terraceGroundReference(settings,data).drop;
     const stairs=terraceStairs(terrace,num(settings.terraceDepth,terrace.depth),drop,settings,data),floor=floorElevation(settings,data);
     for(let i=0;i<stairs.count;i++)slab('terrace-step','Terrace access step',
@@ -181,7 +181,7 @@ function spaOccluders(settings,data) {
     ])slab('cold-plunge-pad',c.sunken?'Cold-plunge flush surround':'Cold-plunge raised pad',strip,cz.padBaseZ,cz.padTopZ);
   }
   for(const step of cz.steps)slab('cold-plunge-step','Cold-plunge access step',step,step.baseZ??cz.groundZ,step.topZ);
-  for(const panel of cz.cover?.panels||[])slab(panel.id,'Sliding cold-plunge cover',panel,panel.baseZ,panel.topZ);
+  for(const panel of cz.cover?.panels||[])if(panel.visible)slab(panel.id,'Sliding cold-plunge cover',panel.exposedBounds,panel.baseZ,panel.topZ);
 
   return objects;
 }
@@ -343,7 +343,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['summerPoolLayout','rearCornerPool','poolSunbedSides','jacuzziCentered','jacuzziCoverClosed','coldPlungeCoverClosed','hstOpen','poolFreeboard','gardenProgram','designStyle','styleGardenLayout','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS,...BOUNDARY_GEOMETRY_KEYS];
+const geometryKeys=['summerPoolLayout','rearCornerPool','edgeAlignedSunbeds','poolSunbedSides','jacuzziCentered','jacuzziCoverClosed','coldPlungeCoverClosed','hstOpen','poolFreeboard','gardenProgram','designStyle','styleGardenLayout','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS,...BOUNDARY_GEOMETRY_KEYS];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21',settings.existingVegetation,settings.existingCanopyAnalysis,settings.existingLeafMode]);

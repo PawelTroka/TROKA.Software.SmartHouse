@@ -2,8 +2,8 @@
  * Site-specific design starting points. Coordinates are local mapped metres.
  * This module contains data only; it does not choose positions at page load.
  */
-import {getTreeType} from './tree-catalog.js?v=1.38.0';
-import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.38.0';
+import {getTreeType} from './tree-catalog.js?v=1.39.0';
+import {optimizedScreeningTrees,BOUNDARY_TREE_POSITIONS} from './summer-garden.js?v=1.39.0';
 
 const treesFrom = rows => Object.freeze(rows.map((row,index) => {
   const type=getTreeType(row.typeId);
@@ -322,11 +322,11 @@ const poolGroveLayouts=Object.freeze([
     settings:poolGroveSettings,trees:Object.freeze([])}),
 ]);
 
-const summerSettings=Object.freeze({...poolGroveSettings,summerPoolLayout:true,poolSunbedSides:1,terraceDepth:4});
+const summerSettings=Object.freeze({...poolGroveSettings,summerPoolLayout:true,poolSunbedSides:2,edgeAlignedSunbeds:true,terraceDepth:4});
 export const STERNICZA_SUMMER_TREES=Object.freeze(optimizedScreeningTrees('austrian-pine-tall').map(Object.freeze));
 const summerLayouts=Object.freeze([
-  Object.freeze({id:'default',label:'Austrian pines · earlier close grove · default',
-    note:'Three 9.5 m Austrian pines return to the earlier rear-left grove, with the nearest pair 2.00 m apart. The 3.2 × 6.5 m pool sits just in front of them, along the left edge. Modeled crowns are 5 m wide; foliage is not perfectly opaque. Verify actual root balls, crown overlap and any boundary overhang when arranging the trees.',
+  Object.freeze({id:'default',label:'Austrian pines · left-boundary screening · default',
+    note:'The nearest 9.5 m Austrian pine returns toward the left boundary beside the pool’s far corner; the other two stay in place. The 3.2 × 6.5 m pool has parallel sunbeds along its garden-facing and near edges. Modeled crowns are 5 m wide; foliage has gaps and the nearest crown overhangs the boundary. Actual planting and maintenance clearances need confirmation.',
     settings:summerSettings,trees:STERNICZA_SUMMER_TREES}),
   ...Object.keys(BOUNDARY_TREE_POSITIONS).filter(id=>id!=='austrian-pine-tall').map(typeId=>{
     const type=getTreeType(typeId);return Object.freeze({id:typeId,label:`${type.label} · boundary trio`,

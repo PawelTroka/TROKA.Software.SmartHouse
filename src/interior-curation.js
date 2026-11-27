@@ -1,6 +1,6 @@
 // Movable furniture and light positions, in the same measured local metres as
 // the architectural plan. These arrangements never move walls or wet fittings.
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.38.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.39.0';
 const intent=(name,layout,tableWidth,tableDepth,tableX,tableZ,seatSpan,readingX,lamp)=>Object.freeze({
   name,layout,tableWidth,tableDepth,tableX,tableZ,seatSpan,readingX,lamp,
 });

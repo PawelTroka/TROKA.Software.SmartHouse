@@ -1,7 +1,7 @@
 /** Versioned, reproducible garden proposals. Historical layouts remain literal.
  * Coordinates are mapped local metres, with x increasing toward PCK3/east.
  */
-import {getTreeType} from './tree-catalog.js?v=1.38.0';
+import {getTreeType} from './tree-catalog.js?v=1.39.0';
 
 // The current proposal follows the owner's left-edge pool preference. The
 // earlier transverse summer-sun study remains a separate historical record;
@@ -17,19 +17,22 @@ export const summerGardenEnabled=(settings={},data)=>settings.summerPoolLayout==
 /** The left-edge pool position is independent of finish styles. Only movable
  * garden furniture and planting borders differ between those styles. */
 export function summerGardenFurniture(settings={},pool=summerPoolBounds(settings)){
-  const sides=Math.max(1,Math.min(3,Math.round(Number(settings.poolSunbedSides)||1)));
+  const sides=Math.max(1,Math.min(3,Math.round(Number(settings.poolSunbedSides)||2)));
   const p=pool;
   const bed=(x,y,width=.78,length=2,back='north')=>({x,y,width,length,back});
+  const aligned=settings.edgeAlignedSunbeds!==false&&settings.rearCornerPool!==false;
   const rows=[
-    // Narrow chaises run parallel to the long pool edge. Keep their entire
-    // envelope beyond the full-width terrace and the route behind their feet.
-    {side:'garden',beds:[-2.45,-1.35].map(dx=>bed(p.x+dx,p.y+3.55))},
+    // End-to-end chaises follow the inner long edge, rather than spreading
+    // two metres into the lawn. Their gap admits the lit pool approach. The
+    // near short-edge chaise completes the owner's compact L arrangement.
+    {side:'garden',beds:aligned?[-.5,2.9].map(dy=>bed(p.x-1.38,p.y+dy)):
+      [-2.45,-1.35].map(dx=>bed(p.x+dx,p.y+3.55))},
     {side:'front',beds:[bed(p.x+.60,p.y-1.35,2,.78,'east')]},
     // Keep the optional rear chaise beside the compact grove's free soil
     // pocket; the nearest trunk remains to its garden-facing side.
     {side:'rear',beds:[settings.rearCornerPool===false?bed(p.x-1.05,p.y+p.length+1.45,2,.78,'west'):bed(p.x+.40,p.y+p.length+.65,2,.78,'west')]},
   ].slice(0,sides);
-  const sunbeds=rows.flatMap(r=>r.beds).map((b,i)=>({...b,id:`garden-sunbed-${i+1}`,kind:'lounger'}));
+  const sunbeds=rows.flatMap(r=>r.beds.map(b=>({...b,poolEdge:r.side}))).map((b,i)=>({...b,id:`garden-sunbed-${i+1}`,kind:'lounger'}));
   return {loungers:sunbeds.map(b=>[b.x,b.y]),sunbeds,loungerSides:rows.map(r=>r.side),
     dining:{x:1.85,y:25.8,width:3.8,length:3.4},
     path:[],
@@ -77,12 +80,14 @@ export const V136_SUMMER_TREE_POSITIONS=Object.freeze({
 // fit around these positions; selecting a finish never edits specimen trees.
 export const BOUNDARY_TREE_POSITIONS=LEGACY_SUMMER_TREE_POSITIONS;
 
-// Exact v1.12 close-grove coordinates, restored at the owner's request. Keep
-// historical exports literal: archived links must not silently acquire a new
-// planting. New species choices move only stems that the new pool would cover.
+// Literal 1.38 planting for archived links and precise active-session matching.
 export const CLOSE_GROVE_TREE_POSITIONS=Object.freeze([[13,34.1],[14.2,32.5],[17.6,34.9]].map(Object.freeze));
+// Restore only the nearest pine toward the left/east boundary. The original
+// x=19.30 is retained; y clears the current rearward pool coping by 1.02 m.
+// The other two pines, dimensions and mature crown assumptions stay unchanged.
+export const BOUNDARY_PINE_TREE_POSITIONS=Object.freeze([[13,34.1],[19.3,32.25],[17.6,34.9]].map(Object.freeze));
 export const CURRENT_SUMMER_TREE_POSITIONS=Object.freeze(Object.fromEntries(Object.entries(LEGACY_SUMMER_TREE_POSITIONS).map(([typeId,positions])=>{
-  if(typeId==='austrian-pine-tall')return [typeId,CLOSE_GROVE_TREE_POSITIONS];
+  if(typeId==='austrian-pine-tall')return [typeId,BOUNDARY_PINE_TREE_POSITIONS];
   let moved=0;
   return [typeId,Object.freeze(positions.map(([x,y])=>{
     const p=SUMMER_POOL,conflict=x>p.x-.53&&x<p.x+p.width+.53&&y>p.y-.53&&y<p.y+p.length+.53;
@@ -98,7 +103,8 @@ function presetIndices(trees,positions){
   if(indices.some(i=>i<0)||new Set(indices).size!==3)return null;
   return indices;
 }
-export const isSummerTreePreset=trees=>presetIndices(trees,CURRENT_SUMMER_TREE_POSITIONS)!==null||presetIndices(trees,BOUNDARY_TREE_POSITIONS)!==null;
+export const isSummerTreePreset=trees=>presetIndices(trees,CURRENT_SUMMER_TREE_POSITIONS)!==null||presetIndices(trees,BOUNDARY_TREE_POSITIONS)!==null||
+  presetIndices(trees,{'austrian-pine-tall':CLOSE_GROVE_TREE_POSITIONS})!==null;
 
 /** Undo only a complete known 1.36 automatic relocation. Custom positions,
  * partial planting, stock dimensions, identities and quotes remain untouched. */
@@ -119,6 +125,15 @@ export function restoreCloseGrovePreset(trees){
     return trees.map((tree,i)=>{const [x,y]=CLOSE_GROVE_TREE_POSITIONS[roles[indices[i]]];return {...tree,x,y};});
   }
   return null;
+}
+
+/** Adopt the owner-requested correction only for the complete unedited 1.38
+ * triplet. A manual move, missing specimen or different species is authoritative.
+ * Older presets can first pass through their existing explicit migration. */
+export function restoreBoundaryPinePreset(trees){
+  const indices=presetIndices(trees,{'austrian-pine-tall':CLOSE_GROVE_TREE_POSITIONS});
+  if(!indices)return null;
+  return trees.map((tree,i)=>{const [x,y]=BOUNDARY_PINE_TREE_POSITIONS[indices[i]];return {...tree,x,y};});
 }
 
 export function optimizedScreeningTrees(typeId='austrian-pine-tall',previous=[]){
