@@ -17,7 +17,7 @@ import { sampledRoofFaces } from './roof-mesh.js?v=1.40.0';
 import { terrainSurfaceGeometry } from './terrain-mesh.js?v=1.40.0';
 import { renderBudget } from './render-quality.js?v=1.40.0';
 import {createFramePerformance,createAdaptiveMotionQuality} from './frame-performance.js?v=1.40.0';
-import {partitionVegetationInstances} from './scene-spatial-instances.js?v=1.40.0';
+import {createVegetationInstanceCuller} from './scene-spatial-instances.js?v=1.40.0';
 import {createMirrorReflections} from './scene-mirrors.js?v=1.40.0';
 import {livingCinemaDiagnostics} from './living-cinema.js?v=1.40.0';
 import {latestIntersectionEntry} from './render-visibility.js?v=1.40.0';
@@ -455,7 +455,8 @@ export function createScene(container, data, callbacks = {}) {
   const interiorDimensionOverlay=createInteriorDimensionOverlay(container,scene,()=>[houseGroup],{shared:true});
   const equipmentLabels=createEquipmentLabelOverlay(container,scene,()=>[houseGroup],{shared:true});
   const performanceTiming=createFramePerformance(),adaptiveQuality=createAdaptiveMotionQuality();
-  const sceneOptimization={existingVegetation:null,gardenVegetation:null,repeatedGardenDetails:null,dimensionOcclusion:'cached-triangle-bvh',dimensionLayoutHz:10};
+  const vegetationCulling=createVegetationInstanceCuller();
+  const sceneOptimization={repeatedGardenDetails:null,dimensionOcclusion:'cached-triangle-bvh',dimensionLayoutHz:10};
   let disposed = false, renderPending = false, mode = 'orbit', currentSettings = {}, currentObserver = null, currentAnalysis = null;
   let designSignature = '', observerSignature = '', eyeYaw = 0, eyePitch = 0, eyeFov=65, storedYaw = null, storedPitch = null;
   let lastWidth = 0, lastHeight = 0, lastPixelRatio = 0;
@@ -767,7 +768,7 @@ export function createScene(container, data, callbacks = {}) {
     vegetationSignature=signature;vegetationSource=data.existingVegetation;vegetationBuildings=data.buildings;
     removeGeometry(existingVegetationGroup);
     existingVegetationGroup.add(createExistingVegetationGroup(data,settings,{svgMode,origin:plotCentre}));
-    if(!svgMode)sceneOptimization.existingVegetation=partitionVegetationInstances(existingVegetationGroup);
+    if(!svgMode)vegetationCulling.setRoots([existingVegetationGroup,designGroup]);
     contextRevision++;shadowBoundsDirty=true;
     gardenLightBoundary?.install(existingVegetationGroup);
   }
@@ -1179,7 +1180,7 @@ export function createScene(container, data, callbacks = {}) {
       projectWaterUVs(finishesGroup,mat.water,mat.waterLight);
       batchGardenBoxes(finishesGroup);
       sceneOptimization.repeatedGardenDetails=batchRepeatedGardenDetails(finishesGroup);
-      sceneOptimization.gardenVegetation=partitionVegetationInstances(designGroup);
+      vegetationCulling.setRoots([existingVegetationGroup,designGroup]);
     }
     gardenNight=createGardenNightLighting(settings,data,{svgMode,style});
     finishesGroup.add(gardenNight.group);
@@ -1504,7 +1505,7 @@ export function createScene(container, data, callbacks = {}) {
       }).filter(Boolean)},
       interiorDimensions:interiorDimensionOverlay.getDiagnostics(),
       gardenDimensions:dimensionOverlay.getDiagnostics(),equipmentLabels:equipmentLabels.getDiagnostics(),
-      performanceTiming:performanceTiming.getDiagnostics(),adaptiveQuality:adaptiveQuality.getDiagnostics(),sceneOptimization,
+      performanceTiming:performanceTiming.getDiagnostics(),adaptiveQuality:adaptiveQuality.getDiagnostics(),sceneOptimization:{...sceneOptimization,vegetation:vegetationCulling.getDiagnostics()},
       mirrors:mirrors?.getDiagnostics()||null,
       livingCinema:walkModel?.plans?.ground?livingCinemaDiagnostics(walkModel.plans.ground):null,luxuryKitchen:walkModel?.plans?.ground?.kitchenFitOut||null,
       slidingDoors:{terrace:currentSettings.hstOpen??1,upper:currentSettings.balconyOpen??1},
@@ -1538,8 +1539,12 @@ export function createScene(container, data, callbacks = {}) {
     }
     lastWalkTime=walking||walkSettling?now:0;
     const navigationActive=interacting||walking||walkSettling;
+    performanceTiming.phase('navigation',performance.now()-cpuStart,navigationActive);
     const deliveredFrame=performanceTiming.begin(now,navigationActive);
-    if(!svgMode&&adaptiveQuality.sample(now,deliveredFrame,navigationActive)){statusChanged=true;resize();}
+    if(!svgMode&&adaptiveQuality.sample(now,deliveredFrame,navigationActive)){
+      const started=performance.now();statusChanged=true;resize();performanceTiming.phase('adaptiveResize',performance.now()-started,navigationActive);
+    }
+    let phaseStart=performance.now();
     if(!svgMode&&shadowBoundsDirty){
       refreshShadowBounds();renderer.shadowMap.needsUpdate=true;
     }
@@ -1556,15 +1561,35 @@ export function createScene(container, data, callbacks = {}) {
     }else lastMotionTime=0;
     jacuzziEffects?.update(waveTime,nightLightingState(lastSolar,currentSettings).gardenStrength,animate);
     if(sky)sky.position.copy(camera.position);
+    performanceTiming.phase('sceneUpdates',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
     const labelView={mode,floor:walkPose?.floor,roomId:walkPose?.roomId,interacting:navigationActive,now};
     interiorDimensionOverlay.render(camera,lastWidth,lastHeight,labelView);
     equipmentLabels.render(camera,lastWidth,lastHeight,labelView);
+    performanceTiming.phase('interiorLabels',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
     reflections?.render({quality,width:lastWidth,height:lastHeight,interacting,visible:canDraw(),revision:contextRevision+':'+solarSignature});
     mirrors?.render({quality,width:lastWidth,height:lastHeight,interacting:navigationActive,visible:canDraw(),revision:contextRevision+':'+solarSignature});
-    if(presentation)presentation.render();else renderer.render(scene,camera);
+    performanceTiming.phase('reflections',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
+    // Alternate-camera captures above and every shadow-update frame retain
+    // complete vegetation. Only this moving color pass compacts visible
+    // instances; finally restores the full model before any other consumer.
+    try{
+      // r160 leaves needsUpdate set when no shadow lights are active. Keep
+      // that pending work for the next lit view without disabling culling in
+      // an unlit night scene forever.
+      const shadowPassPending=!svgMode&&renderer.shadowMap.enabled&&(renderer.shadowMap.needsUpdate||renderer.shadowMap.autoUpdate)&&
+        (sun.visible&&sun.castShadow||gardenNight?.group.visible&&gardenNight.group.children.some(light=>light.isLight&&light.visible&&light.castShadow));
+      if(!svgMode)vegetationCulling.prepare(camera,{enabled:navigationActive&&!shadowPassPending});
+      performanceTiming.phase('instanceCulling',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
+      if(presentation)presentation.render();else renderer.render(scene,camera);
+      performanceTiming.phase('sceneRender',performance.now()-phaseStart,navigationActive);
+    }finally{
+      phaseStart=performance.now();vegetationCulling.restore();performanceTiming.phase('instanceRestore',performance.now()-phaseStart,navigationActive);
+    }
+    phaseStart=performance.now();
     // A rebuild or visibility callback alone does not replace the visible frame.
     renderedStyle=finishSignature||null;frameCount++;
     renderLabels();dimensionOverlay.render(camera,lastWidth,lastHeight,mode,{interacting:navigationActive,now,indoor:!!interiorDimensionOverlay.getDiagnostics().floor});
+    performanceTiming.phase('gardenLabels',performance.now()-phaseStart,navigationActive);
     performanceTiming.end(performance.now()-cpuStart,navigationActive);
     if(statusChanged||now-lastInfoTime>=1000){
       lastInfoTime=now;statusChanged=false;callbacks.onPerformanceInfo?.(getPerformanceInfo());
@@ -1961,7 +1986,7 @@ export function createScene(container, data, callbacks = {}) {
     document.removeEventListener('visibilitychange',visibilityChanged);
     reducedMotion.removeEventListener('change',visibilityChanged);
     window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',stopWalking);renderer.domElement.removeEventListener('blur',stopWalking);walkPad.remove();walkElevationPad.remove();
-    dimensionOverlay.dispose();interiorDimensionOverlay.dispose();equipmentLabels.dispose();mirrors?.dispose();sharedHouseModel?.dispose();sharedHouseModel=null;
+    dimensionOverlay.dispose();interiorDimensionOverlay.dispose();equipmentLabels.dispose();mirrors?.dispose();vegetationCulling.dispose();sharedHouseModel?.dispose();sharedHouseModel=null;
     renderer.domElement.removeEventListener('pointerdown',pointerDown);renderer.domElement.removeEventListener('pointermove',pointerMove);renderer.domElement.removeEventListener('pointerup',pointerUp);renderer.domElement.removeEventListener('pointercancel',pointerUp);renderer.domElement.removeEventListener('lostpointercapture',pointerUp);renderer.domElement.removeEventListener('keydown',keyDown);renderer.domElement.removeEventListener('wheel',wheel);
     const geometries=new Set(),materials=new Set([...Object.values(mat),...Object.values(designMaterials)]);
     scene.traverse(o=>{
