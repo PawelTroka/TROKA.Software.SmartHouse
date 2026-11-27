@@ -7,7 +7,6 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {getInteriorPlan} from '../src/interior-plan.js';
 import {checkFullscreenRoundtrip,checkFullscreenFallback,checkFullscreenHandoff} from './fullscreen-browser-helpers.mjs';
-import {captureOpenLivingViews} from './open-living-browser-helpers.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=path.join(root,'test-results','interiors');
@@ -331,8 +330,9 @@ try{
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assertBalconyShared(await exportDesign(),4);
   check('Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together');
 
-  report.openLiving=await captureOpenLivingViews(page,{shot,walking,openInteriors,exportDesign,timeout:sceneStartupTimeout,maxDurationMs:600000});
-  check('Daylight ceiling-fitted kitchen storage, concealed chimney, open stair guard, compact gym and plant/laundry captured through public room and camera controls');
+  // The dedicated living-fitouts matrix captures all thirteen requested room
+  // views in bounded parallel groups. This suite retains the complete style,
+  // navigation, saved-design and mobile walkthrough regression sequence.
 
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);
   await chooseView('plan');await field('floor').selectOption('ground');await field('settings').click();

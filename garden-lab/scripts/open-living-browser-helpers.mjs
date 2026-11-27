@@ -32,6 +32,17 @@ const VIEWS=Object.freeze([
     roomFraction:[.80,.90],aimRoomFraction:[.55,.25],pitch:-.20,options:{gymBenchParked:false}}),
   Object.freeze({id:'plant-laundry',floor:'basement',room:'basement-technical',roomSpawn:true,yaw:-1.95,pitch:-.16}),
 ]);
+export const LIVING_FITOUT_GROUPS=Object.freeze({
+  architecture:Object.freeze(VIEWS.slice(0,5).map(view=>view.id)),
+  guests:Object.freeze(VIEWS.slice(5,8).map(view=>view.id)),
+  'office-basement':Object.freeze(VIEWS.slice(8).map(view=>view.id)),
+});
+export function livingFitoutViews({group='all',viewIds=null}={}){
+  assert.ok(group==='all'||Object.hasOwn(LIVING_FITOUT_GROUPS,group),'Unknown living fit-out group: '+group);
+  const ids=viewIds??(group==='all'?VIEWS.map(view=>view.id):LIVING_FITOUT_GROUPS[group]);
+  assert.ok(Array.isArray(ids)&&ids.length>0&&new Set(ids).size===ids.length,'Choose distinct living fit-out view IDs');
+  return ids.map(id=>{const view=VIEWS.find(item=>item.id===id);assert.ok(view,'Unknown living fit-out view: '+id);return view;});
+}
 const degrees=radians=>radians*180/Math.PI;
 const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
 
@@ -40,9 +51,10 @@ const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
  * state. Upstairs poses use room entry plus normal walking: the custom observer
  * is supported by the ground floor and cannot position an upstairs camera.
  *
- * Call after the desktop exports, before the caller reloads its saved share
- * for mobile checks. Plan-only studio visits reuse the exterior WebGL context:
- * this helper never reloads the document or creates an interior 3D renderer.
+ * Each named group can run in its own bounded CI job. `viewIds` selects an
+ * explicit subset, and `onProgress` preserves completed evidence on failure.
+ * Plan-only studio visits reuse the exterior WebGL context: this helper never
+ * reloads the document or creates an interior 3D renderer.
  *
  * `shot(name,selector)`, `walking(floor,options)` and `openInteriors()` are the
  * existing interiors-browser-check helpers. The default leaves the last walk
@@ -51,8 +63,10 @@ const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
 export async function captureOpenLivingViews(page,{
   shot,walking,openInteriors,style='warm-minimal',date='2026-06-21',
   timeout=120000,maxDurationMs=600000,includePlan=false,restore=false,exportDesign=null,
+  group='all',viewIds=null,onProgress=null,
 }={}){
   assert.equal(typeof shot,'function');assert.equal(typeof walking,'function');assert.equal(typeof openInteriors,'function');
+  const selectedViews=livingFitoutViews({group,viewIds});
   const started=Date.now(),deadline=started+maxDurationMs;
   const remaining=()=>{
     const left=deadline-Date.now();
@@ -124,9 +138,16 @@ export async function captureOpenLivingViews(page,{
       // Keyboard activation of the visible walk pad is a real public input.
       // Its native accessible click advances exactly 0.28 m, independently of
       // render speed. Timed WASD pulses can expire before software WebGL has
-      // drawn a movement frame; the caller already tests continuous WASD.
+      // drawn a movement frame; the main interior suite tests continuous WASD.
       await forward.press('Enter',{timeout:remaining()});
-      await walking(floor,{timeout:remaining(),settled:true,afterFrame});
+      // Intermediate steps need an acknowledged public pose, not another
+      // expensive settled-quality frame. The final view below still waits
+      // for its actual WebGL frame, settled altitude and complete assets.
+      await page.waitForFunction(({floor,before})=>{
+        const c=document.querySelector('#scene-host canvas'),p=c?.dataset.walkPosition?.split(',').map(Number);
+        return c?.dataset.walkFloor===floor&&c.dataset.walkNavigation==='free'&&p?.length===3&&
+          Math.hypot(p[0]-before[0],p[2]-before[2])>.001;
+      },{floor,before:before.position},{timeout:remaining(),polling:50});
       const after=await pose(),moved=Math.hypot(after.position[0]-before.position[0],after.position[2]-before.position[2]),error=distanceFrom(after);
       const sample={step:steps+1,before:before.position,after:after.position,yaw:after.yaw,distance,error,moved,frames:[afterFrame,await frameCount()]};
       samples.push(sample);travel+=moved;
@@ -164,7 +185,8 @@ export async function captureOpenLivingViews(page,{
     date:await q('#sun-date').inputValue(),time:await q('#sun-time').inputValue()};
   assert.equal(new URL(restoreUrl).searchParams.get('site'),'sternicza-11');
   const captureSettings={...GARAGE_DEFAULTS,designStyle:style,basementGarageEnabled:true,garageProgress:100,
-    firstFloorRise:3.05,atticRise:5.75,officeCoworking:true,officeGuestBedOpen:false,gymBenchParked:true};
+    firstFloorRise:3.05,atticRise:5.75,officeCoworking:true,officeGuestBedOpen:false,gymBenchParked:true,
+    terraceDepth:4,terraceWidth:10.77,canopyEnabled:true,terraceCoverType:'balcony',canopyDepth:4,canopyWidth:10.77};
   await navigate(restoreUrl,{designStyle:style,interiorView:'plan',interiorEnabled:false,interiorFloor:'ground',
     ...captureSettings,interiorFurniture:true,interiorChanges:false,showDimensions:false,walkNavigation:'free',sceneMotion:false,mode:'orbit'});
   await waitMode('orbit');
@@ -185,10 +207,11 @@ export async function captureOpenLivingViews(page,{
   captureSettings.floorHeight=floorHeight;
   const basementPlan=getHouseFloorPlan({floor:'basement',settings:captureSettings,data:applyPlanExterior(data,captureSettings)});
   assert.ok(basementPlan.basementFitOut,'The public source and selected garage proposal must contain both basement rooms');
-  const report={style,daylight,original,restoreUrl,views:[],arrangements:[],plan:null,restored:false};
-  for(const view of VIEWS){
+  const report={group,expectedViews:selectedViews.map(view=>view.id),style,daylight,original,restoreUrl,views:[],arrangements:[],plan:null,restored:false};
+  await onProgress?.(report);
+  for(const view of selectedViews){
     remaining();
-    await openInteriors();
+    await openInteriors({timeout:remaining()});
     assert.equal(await field('canvas').locator('canvas').count(),0,'Plan-only room selection must not create another WebGL context');
     if(await field('floor').inputValue()!==view.floor)await field('floor').selectOption(view.floor,{timeout:remaining()});
     await field('room').selectOption(view.room,{timeout:remaining()});
@@ -199,8 +222,8 @@ export async function captureOpenLivingViews(page,{
       // coworking arrangement. Both choices are checked against public JSON.
       await field('officeCoworking').uncheck({timeout:remaining()});
       await field('close').click({timeout:remaining()});await q('#interior-host').waitFor({state:'hidden',timeout:remaining()});
-      report.arrangements.push({id:'office-single-station',...assertExport(await exportDesign(),{officeCoworking:false})});
-      await openInteriors();
+      report.arrangements.push({id:'office-single-station',...assertExport(await exportDesign({timeout:remaining()}),{officeCoworking:false})});
+      await openInteriors({timeout:remaining()});
     }
     for(const [key,value] of Object.entries(view.options||{})){
       await field(key).setChecked(value,{timeout:remaining()});assert.equal(await field(key).isChecked(),value);
@@ -212,16 +235,16 @@ export async function captureOpenLivingViews(page,{
     if(includePlan&&view.id==='kitchen-storage-connection'){
       await field('plan').locator('svg').waitFor({state:'visible',timeout:remaining()});
       report.plan=`ground-${style}-open-living-renovation-plan`;
-      await shot(report.plan,'#interior-host');
+      await shot(report.plan,'#interior-host',{timeout:remaining()});
     }
     if(view.id==='compact-gym-parked'){
       await field('plan').locator('svg').waitFor({state:'visible',timeout:remaining()});
       report.basementPlan=`basement-${style}-gym-technical-plan`;
-      await shot(report.basementPlan,'#interior-host');
+      await shot(report.basementPlan,'#interior-host',{timeout:remaining()});
     }
     await field('enter').click({timeout:remaining()});
     const spawn=await walking(view.floor,{timeout:remaining(),settled:true});
-    if(exportDesign&&(view.options||view.id==='kitchen-storage-connection'))report.arrangements.push({id:view.id,...assertExport(await exportDesign(),view.options||{})});
+    if(exportDesign&&(view.options||report.arrangements.length===0))report.arrangements.push({id:view.id,...assertExport(await exportDesign({timeout:remaining()}),view.options||{})});
     const moves=[],target=view.walkTo||(view.roomFraction?relative(view.roomFraction):null);
     if(target)for(const waypoint of [...(view.via||[]),target])moves.push(await walkTo(waypoint,view.floor));
     const current=await pose(),actualLocal=frame.toLocal(current.position[0],current.position[2],current.position[1]);
@@ -243,7 +266,8 @@ export async function captureOpenLivingViews(page,{
       await walking(view.floor,{timeout:remaining(),settled:true,afterFrame:beforeWalk});
     }
     const {drags,afterFrame}=await turnTo(yaw,pitch);
-    await walking(view.floor,{timeout:remaining(),settled:true,afterFrame});
+    const finalFrame=afterFrame??moves.at(-1)?.samples.at(-1)?.frames[0]??null;
+    await walking(view.floor,{timeout:remaining(),settled:true,afterFrame:finalFrame});
     const actual=await pose();
     assert.equal(actual.floor,view.floor);assert.equal(actual.navigation,'free');assert.equal(actual.fov,70);
     assert.ok(Math.hypot(actual.position[0]-p[0],actual.position[2]-p[1])<(target?.17:.015),'Public camera controls must retain the intended interior location');
@@ -255,9 +279,10 @@ export async function captureOpenLivingViews(page,{
     }
     await canvas().scrollIntoViewIfNeeded({timeout:remaining()});
     const name=`${view.floor}-${style}-${view.id}-daylight`;
-    await shot(name,'#scene-host canvas');
+    await shot(name,'#scene-host canvas',{timeout:remaining()});
     report.views.push({name,room:view.room,requestedLocal:view,requestedSite:{x:p[0],y:p[1],altitude:p[2],yaw,pitch},
       actual,spawn,moves,drags,customUrl});
+    report.elapsedMs=Date.now()-started;await onProgress?.(report);
   }
   if(restore){
     await page.goto(restoreUrl,{waitUntil:'domcontentloaded',timeout:remaining()});
@@ -265,5 +290,6 @@ export async function captureOpenLivingViews(page,{
     report.restored=true;
   }
   report.elapsedMs=Date.now()-started;
+  await onProgress?.(report);
   return report;
 }
