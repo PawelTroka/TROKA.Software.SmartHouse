@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
 import {createDimensionOcclusionIndex} from '../src/dimension-occlusion.js';
 import {createAdaptiveMotionQuality,createFramePerformance,frameTimeSummary} from '../src/frame-performance.js';
@@ -79,6 +80,65 @@ test('moving vegetation culls individual instances without adding draw batches a
   assert.equal(culler.getDiagnostics().instances,120,'Re-registering a partially viewed scene never loses source instances');assert.equal(source.count,120);
   culler.prepare(camera);culler.dispose();assert.equal(source.count,120);assert.deepEqual(source.instanceColor.array,originalColors);
   root.traverse(o=>o.isInstancedMesh&&o.dispose());g.dispose();m.dispose();
+});
+
+test('the post-shadow full pass preserves visible GPU instances before the next compacted upload',()=>{
+  // Exercise the pinned renderer's real upload cache, not a second copy of
+  // its frame-number logic. Only the GL buffer storage is represented here.
+  const vendor=readFileSync(new URL('../vendor/three.module.js',import.meta.url),'utf8');
+  const start=vendor.indexOf('function WebGLObjects( '),end=vendor.indexOf('\nclass DepthTexture ',start);
+  assert.ok(start>=0&&end>start,'The pinned Three renderer exposes the expected WebGLObjects definition');
+  const WebGLObjects=new Function(vendor.slice(start,end)+'\nreturn WebGLObjects;')();
+  const root=new THREE.Group(),geometry=new THREE.BoxGeometry(),material=new THREE.MeshBasicMaterial();
+  const mesh=new THREE.InstancedMesh(geometry,material,3),matrix=new THREE.Matrix4();mesh.name='existing-canopies-shadow-transition';
+  for(const [index,x] of [100,200,0].entries()){
+    mesh.setMatrixAt(index,matrix.makeTranslation(x,0,-5));
+    mesh.setColorAt(index,new THREE.Color().setRGB(index/3,.4,.6));
+  }
+  root.add(mesh);root.updateMatrixWorld(true);
+  const originalMatrices=mesh.instanceMatrix.array.slice(),originalColors=mesh.instanceColor.array.slice();
+  const camera=new THREE.PerspectiveCamera(60,1,.1,100);camera.updateMatrixWorld();
+  const culler=createVegetationInstanceCuller();culler.setRoots([root]);
+  const info={render:{frame:10}},gpu=new WeakMap();let attributeUpdates=0;
+  const attributes={update(attribute){
+    attributeUpdates++;const previous=gpu.get(attribute);
+    if(!previous||previous.version!==attribute.version)gpu.set(attribute,{version:attribute.version,array:attribute.array.slice()});
+  },remove(attribute){gpu.delete(attribute);}};
+  const objects=WebGLObjects({ARRAY_BUFFER:34962},{get(object,g){return g;},update(){}},attributes,info);
+  const drawPositions=()=>Array.from({length:mesh.count},(_,index)=>Array.from(gpu.get(mesh.instanceMatrix).array.slice(index*16+12,index*16+15)));
+  const visiblePosition=[0,0,-5];
+
+  let result=culler.prepare(camera,{enabled:true,shadowPassPending:true});
+  assert.equal(result.compacted,false);assert.equal(result.shadowUploadGuard,'shadow-pass');
+  objects.update(mesh);info.render.frame++;objects.update(mesh); // Native main upload → frame increment → shadow upload.
+  culler.restore();
+  const updatesAfterShadow=attributeUpdates;
+  result=culler.prepare(camera,{enabled:true});objects.update(mesh);
+  assert.equal(result.compacted,false);assert.equal(result.shadowUploadGuard,'post-shadow-full-pass');
+  assert.equal(attributeUpdates,updatesAfterShadow,'The real renderer skips this cached-frame upload despite attribute versions');
+  assert.equal(mesh.count,3,'A skipped upload must retain the complete GPU prefix');
+  assert.ok(drawPositions().some(position=>position.every((value,axis)=>value===visiblePosition[axis])),
+    'The only visible tree is the third original GPU instance and must remain in the draw');
+  assert.deepEqual(mesh.instanceMatrix.array,originalMatrices);assert.deepEqual(mesh.instanceColor.array,originalColors);
+  info.render.frame++;culler.restore();
+
+  result=culler.prepare(camera,{enabled:true});objects.update(mesh);
+  assert.equal(result.compacted,true);assert.equal(result.shadowUploadGuard,null);assert.equal(mesh.count,1);
+  assert.deepEqual(drawPositions(),[visiblePosition],'The first compacted draw uses the newly uploaded visible prefix');
+  assert.deepEqual(Array.from(gpu.get(mesh.instanceColor).array.slice(0,3)),Array.from(originalColors.slice(6,9)),
+    'Per-instance colors follow the same uploaded prefix as positions');
+  info.render.frame++;culler.restore();objects.update(mesh);
+  assert.equal(mesh.count,3);assert.deepEqual(gpu.get(mesh.instanceMatrix).array,originalMatrices);
+  assert.deepEqual(gpu.get(mesh.instanceColor).array,originalColors,'The next idle pass uploads the complete original data');
+  culler.dispose();objects.dispose();mesh.dispose();geometry.dispose();material.dispose();
+});
+
+test('consecutive shadow passes extend the guard and an idle full pass consumes it exactly once',()=>{
+  const culler=createVegetationInstanceCuller(),camera=new THREE.PerspectiveCamera();
+  for(let i=0;i<2;i++)assert.equal(culler.prepare(camera,{enabled:false,shadowPassPending:true}).shadowUploadGuard,'shadow-pass');
+  const idle=culler.prepare(camera,{enabled:false});assert.equal(idle.compacted,false);assert.equal(idle.shadowUploadGuard,'post-shadow-full-pass');
+  const moving=culler.prepare(camera,{enabled:true});assert.equal(moving.compacted,true);assert.equal(moving.shadowUploadGuard,null);
+  culler.dispose();
 });
 
 test('vegetation compaction leaves custom instance attributes and stable-instance-ID shaders untouched',()=>{

@@ -17,6 +17,7 @@ import { sampledRoofFaces } from './roof-mesh.js?v=1.40.0';
 import { terrainSurfaceGeometry } from './terrain-mesh.js?v=1.40.0';
 import { renderSurfaceBudgets } from './render-quality.js?v=1.40.0';
 import {createFramePerformance,createAdaptiveMotionQuality} from './frame-performance.js?v=1.40.0';
+import {createGpuSubmissionPacer} from './gpu-submission-pacer.js?v=1.40.0';
 import {createVegetationInstanceCuller} from './scene-spatial-instances.js?v=1.40.0';
 import {createMirrorReflections} from './scene-mirrors.js?v=1.40.0';
 import {livingCinemaDiagnostics} from './living-cinema.js?v=1.40.0';
@@ -317,6 +318,7 @@ export function createScene(container, data, callbacks = {}) {
   scene.fog = new THREE.Fog('#dfe8e8', 145, Math.max(330,contextSpan*1.55));
   const camera = new THREE.PerspectiveCamera(48, 1, 0.08, sceneFar);
   const presentation=svgMode?null:createArchitecturalRenderer(renderer,scene,camera);
+  const gpuPacer=svgMode?null:createGpuSubmissionPacer(renderer.getContext());
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = false;
   controls.minDistance = 3;
@@ -462,7 +464,7 @@ export function createScene(container, data, callbacks = {}) {
   let lastWidth = 0, lastHeight = 0, lastPixelRatio = 0;
   let quality = 'auto', motion = false, presentationVisible = true, intersecting = true;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let interacting = false, interactionTimer = 0, motionTimer = 0, frameHandle = 0;
+  let interacting = false, interactionTimer = 0, motionTimer = 0, frameHandle = 0, motionResizePending = false;
   let frameCount = 0, shadowUpdates = 0, motionFps = 24, lastMotionTime = 0, waveTime = 0;
   let lastInfoTime = -Infinity, statusChanged = true, lastSunPose = '', lastVehiclePose = '';
   let designMaterials = mat, dimensionsVisible, equipmentLabelsVisible, solarSignature='', guidePath=null;
@@ -1505,7 +1507,8 @@ export function createScene(container, data, callbacks = {}) {
       }).filter(Boolean)},
       interiorDimensions:interiorDimensionOverlay.getDiagnostics(),
       gardenDimensions:dimensionOverlay.getDiagnostics(),equipmentLabels:equipmentLabels.getDiagnostics(),
-      performanceTiming:performanceTiming.getDiagnostics(),adaptiveQuality:adaptiveQuality.getDiagnostics(),sceneOptimization:{...sceneOptimization,vegetation:vegetationCulling.getDiagnostics()},
+      performanceTiming:performanceTiming.getDiagnostics(),gpuSubmission:gpuPacer?.getDiagnostics()||null,
+      adaptiveQuality:adaptiveQuality.getDiagnostics(),sceneOptimization:{...sceneOptimization,vegetation:vegetationCulling.getDiagnostics()},
       mirrors:mirrors?.getDiagnostics()||null,
       livingCinema:walkModel?.plans?.ground?livingCinemaDiagnostics(walkModel.plans.ground):null,luxuryKitchen:walkModel?.plans?.ground?.kitchenFitOut||null,
       slidingDoors:{terrace:currentSettings.hstOpen??1,upper:currentSettings.balconyOpen??1},
@@ -1539,9 +1542,27 @@ export function createScene(container, data, callbacks = {}) {
     }
     lastWalkTime=walking||walkSettling?now:0;
     const navigationActive=interacting||walking||walkSettling;
+    // Ending a gesture resets navigation timing even if its settled render
+    // must wait for a GPU slot. A later gesture cannot inherit resting time.
+    if(!navigationActive){performanceTiming.begin(now,false);adaptiveQuality.sample(now,0,false);}
+    // Keep input and the latest camera pose responsive while the GPU completes
+    // earlier frames. A deferred callback submits no reflection, shadow, scene
+    // or output work and never counts as a rendered frame.
+    if(gpuPacer&&!gpuPacer.canSubmit()){
+      if(navigationActive&&adaptiveQuality.pressure(now,gpuPacer.getDiagnostics().oldestPendingMs)){
+        motionResizePending=true;statusChanged=true;
+      }
+      requestRender();
+      if(statusChanged||now-lastInfoTime>=1000){
+        lastInfoTime=now;statusChanged=false;callbacks.onPerformanceInfo?.(getPerformanceInfo());
+      }
+      return;
+    }
     performanceTiming.phase('navigation',performance.now()-cpuStart,navigationActive);
     const deliveredFrame=performanceTiming.begin(now,navigationActive);
-    if(!svgMode&&adaptiveQuality.sample(now,deliveredFrame,navigationActive)){
+    const cadenceChanged=!svgMode&&adaptiveQuality.sample(now,deliveredFrame,navigationActive);
+    if(!svgMode&&(cadenceChanged||motionResizePending)){
+      motionResizePending=false;
       const started=performance.now();statusChanged=true;resize();performanceTiming.phase('adaptiveResize',performance.now()-started,navigationActive);
     }
     let phaseStart=performance.now();
@@ -1579,15 +1600,18 @@ export function createScene(container, data, callbacks = {}) {
       const shadowPassPending=!svgMode&&renderer.shadowMap.enabled&&(renderer.shadowMap.needsUpdate||renderer.shadowMap.autoUpdate)&&
         (sun.visible&&sun.castShadow||gardenNight?.group.visible&&gardenNight.group.children.some(light=>light.isLight&&light.visible&&light.castShadow));
       const optimizeVegetation=!svgMode&&navigationActive&&!shadowPassPending;
-      if(!svgMode)vegetationCulling.prepare(camera,{enabled:optimizeVegetation});
+      const culling=svgMode?null:vegetationCulling.prepare(camera,{enabled:optimizeVegetation,shadowPassPending});
       performanceTiming.phase('instanceCulling',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
       vegetationCulling.withOpaqueDepthOrder(renderer,()=>{
         if(presentation)presentation.render();else renderer.render(scene,camera);
-      },{enabled:optimizeVegetation});
+      },{enabled:!!culling?.compacted});
       performanceTiming.phase('sceneRender',performance.now()-phaseStart,navigationActive);
     }finally{
       phaseStart=performance.now();vegetationCulling.restore();performanceTiming.phase('instanceRestore',performance.now()-phaseStart,navigationActive);
     }
+    // One fence covers the complete main-frame bundle, including any earlier
+    // reflections and post-processing. Settled frames obey the same bound.
+    gpuPacer?.submitted();
     // Publish the completed scene target independently of the fixed display
     // canvas. The live fields let diagnostics observe every adaptive level,
     // including levels between the slower summary updates.
@@ -1598,6 +1622,8 @@ export function createScene(container, data, callbacks = {}) {
     phaseStart=performance.now();
     // A rebuild or visibility callback alone does not replace the visible frame.
     renderedStyle=finishSignature||null;frameCount++;
+    renderer.domElement.dataset.renderedFrameCount=String(frameCount);
+    renderer.domElement.dataset.renderedWalkPosition=mode==='walk'?camera.position.toArray().map(value=>value.toFixed(3)).join(','):'';
     renderLabels();dimensionOverlay.render(camera,lastWidth,lastHeight,mode,{interacting:navigationActive,now,indoor:!!interiorDimensionOverlay.getDiagnostics().floor});
     performanceTiming.phase('gardenLabels',performance.now()-phaseStart,navigationActive);
     performanceTiming.end(performance.now()-cpuStart,navigationActive);
@@ -1630,7 +1656,7 @@ export function createScene(container, data, callbacks = {}) {
     const nextQuality=['auto','high','eco'].includes(options.quality)?options.quality:quality;
     const nextMotion=options.motion===undefined?motion:options.motion===true;
     if(nextQuality===quality&&nextMotion===motion)return;
-    if(quality!==nextQuality){adaptiveQuality.reset();performanceTiming.reset();}
+    if(quality!==nextQuality){adaptiveQuality.reset();performanceTiming.reset();motionResizePending=false;}
     quality=nextQuality;motion=nextMotion;
     if(!motion){waveTime=0;textures?.waterNormal.offset.set(0,0);}
     resize();visibilityChanged();
@@ -2006,7 +2032,7 @@ export function createScene(container, data, callbacks = {}) {
       if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);
     });
     geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
-    gardenNight?.dispose();textures?.dispose();sun.shadow.dispose();presentation?.dispose();reflections?.dispose();
+    gardenNight?.dispose();textures?.dispose();sun.shadow.dispose();presentation?.dispose();reflections?.dispose();gpuPacer?.dispose();
     renderer.dispose?.();renderer.domElement.remove();labelLayer.remove();
   }
   function createInteriorContext(floor,view='room'){

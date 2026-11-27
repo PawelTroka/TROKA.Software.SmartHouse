@@ -190,6 +190,36 @@ async function warmLightDifference(unlit,lit){
     return {width:on.width,height:on.height,changedPixels,warmBrightenedPixels,brightnessGain};
   },{before:unlit.toString('base64'),after:lit.toString('base64')});
 }
+/** The fixed first-floor garden view has a measured tree silhouetted against
+ * clear sky in this region. A sky-relative threshold tolerates HDR color
+ * differences while detecting the complete missing canopy seen in run 81. */
+async function nightCanopyRetention(before,moving){
+  return await page.evaluate(async({before,moving})=>{
+    const decode=async source=>{
+      const picture=new Image();picture.src='data:image/png;base64,'+source;await picture.decode();
+      const canvas=new OffscreenCanvas(picture.width,picture.height),context=canvas.getContext('2d');
+      context.drawImage(picture,0,0);
+      return {width:picture.width,height:picture.height,pixels:context.getImageData(0,0,picture.width,picture.height).data};
+    };
+    const baseline=await decode(before),motion=await decode(moving);
+    if(baseline.width!==motion.width||baseline.height!==motion.height)throw new Error('Night canopy comparison changed screenshot dimensions');
+    const canopyBounds=[.585,.15,.735,.29],skyBounds=[.57,.035,.68,.08];
+    const measure=picture=>{
+      const bounds=region=>region.map((value,index)=>Math.floor(value*(index%2?picture.height:picture.width)));
+      const brightness=(x,y)=>{const i=(y*picture.width+x)*4;return (picture.pixels[i]+picture.pixels[i+1]+picture.pixels[i+2])/3;};
+      const [sx0,sy0,sx1,sy1]=bounds(skyBounds),sky=[];
+      for(let y=sy0;y<sy1;y++)for(let x=sx0;x<sx1;x++)sky.push(brightness(x,y));
+      sky.sort((a,b)=>a-b);const skyMedian=sky[Math.floor(sky.length/2)],darkThreshold=skyMedian*.55;
+      const [x0,y0,x1,y1]=bounds(canopyBounds);let darkPixels=0;
+      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)if(brightness(x,y)<darkThreshold)darkPixels++;
+      const pixels=(x1-x0)*(y1-y0);
+      return {skyMedian,darkThreshold,pixels,darkPixels,darkFraction:darkPixels/pixels};
+    };
+    const beforeResult=measure(baseline),motionResult=measure(motion);
+    return {width:baseline.width,height:baseline.height,canopyBounds,skyBounds,before:beforeResult,motion:motionResult,
+      retainedFraction:beforeResult.darkPixels?motionResult.darkPixels/beforeResult.darkPixels:0,minimumRetainedFraction:.8};
+  },{before:before.toString('base64'),moving:moving.toString('base64')});
+}
 /** Receiving surfaces projected from the current Nadmorska fixture layout.
  * Every near-facing fitting has a foliage and ground probe; its projected
  * shade, bulb and halo envelope is excluded from the measured pixels.
@@ -263,8 +293,10 @@ async function verifyNightMotionTarget(){
   const read=()=>canvas.evaluate(element=>{
     const d=document.querySelector('#render-diagnostics').dataset,c=element.dataset;
     const value=key=>c[key]??d[key],number=value=>value==null||value===''||!Number.isFinite(Number(value))?null:Number(value);
+    let sceneOptimization=null;try{sceneOptimization=JSON.parse(d.sceneOptimization||'null');}catch{}
     const viewport=document.querySelector('#viewport'),bounds=element.getBoundingClientRect();
     return {renderer:d.renderer,interacting:d.interacting==='true',frames:number(d.frames),
+      sceneOptimization,
       motionSupported:value('motionSupported')==='true'?true:value('motionSupported')==='false'?false:null,
       motionUnsupportedReason:d.motionUnsupportedReason||null,
       canvas:{width:element.width,height:element.height,cssWidth:bounds.width,cssHeight:bounds.height},
@@ -306,7 +338,25 @@ async function verifyNightMotionTarget(){
         return d?.interacting==='true'&&Number(d.frames)>frames&&
           c?.renderPath===(supported?'motion-target':'direct')&&(!supported||Number(c.motionSamples)>=2);
       },{frames:pre.frames,supported:pre.motionSupported},{timeout:remaining(),polling:100});
+      evidence.firstMotion=await read();
+      assert.deepEqual(evidence.firstMotion.pose,pre.pose);
+      assert.deepEqual(evidence.firstMotion.lights,pre.lights);
+      // The first moving pass may intentionally retain full instance data
+      // after a shadow upload. Request exactly one further frame at the same
+      // pointer position, so the image verifies actual compacted GPU data.
+      // Public summary diagnostics update at most once per second; leave that
+      // interval before the single request even on fast hardware.
+      await page.waitForTimeout(Math.min(1050,remaining()));
+      await page.mouse.move(bounds.x+bounds.width*.5,bounds.y+bounds.height*.5);
+      await page.waitForFunction(({frames,supported})=>{
+        const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+        let optimization=null;try{optimization=JSON.parse(d?.sceneOptimization||'null');}catch{}
+        return d?.interacting==='true'&&Number(d.frames)>frames&&optimization?.vegetation?.compacted===true&&
+          c?.renderPath===(supported?'motion-target':'direct');
+      },{frames:evidence.firstMotion.frames,supported:pre.motionSupported},{timeout:remaining(),polling:100});
       evidence.motion=await read();
+      assert.ok(evidence.motion.frames>evidence.firstMotion.frames);
+      assert.equal(evidence.motion.sceneOptimization?.vegetation?.compacted,true,'The captured night frame must exercise the actual compacted draw');
       assert.deepEqual(evidence.motion.pose,pre.pose,'Holding the pointer cannot change the night viewpoint');
       assert.deepEqual(evidence.motion.lights,pre.lights);assert.equal(evidence.motion.sunTime,pre.sunTime);
       if(pre.motionSupported){
@@ -324,15 +374,23 @@ async function verifyNightMotionTarget(){
     evidence.settled=await read();
     assert.deepEqual(evidence.settled.canvas,pre.canvas,'Releasing the pointer restores the selected idle canvas');
     assert.deepEqual(evidence.settled.scene,pre.scene,'Releasing the pointer restores the selected idle pipeline');
+    assert.equal(evidence.settled.sceneOptimization?.vegetation?.compacted,false,'The settled frame restores the complete vegetation');
     assert.deepEqual(evidence.settled.pose,pre.pose);assert.deepEqual(evidence.settled.lights,pre.lights);
     assert.equal(evidence.settled.sunTime,pre.sunTime);
     const settled=await capture('sternicza-night-motion-restored');
     evidence.motionPixels=await warmLightDifference(before,moving);
+    evidence.canopyRetention=await nightCanopyRetention(before,moving);
     evidence.restorationPixels=await warmLightDifference(before,settled);
+    assert.ok(evidence.canopyRetention.before.skyMedian>5&&evidence.canopyRetention.motion.skyMedian>5,
+      'The fixed night canopy probe requires a visible clear-sky reference');
+    assert.ok(evidence.canopyRetention.before.darkFraction>=.25&&evidence.canopyRetention.before.darkPixels>500,
+      'The fixed night baseline must contain the measured tree silhouette: '+JSON.stringify(evidence.canopyRetention));
+    assert.ok(evidence.canopyRetention.retainedFraction>=.8,
+      'Compacted motion must retain at least 80% of the visible tree silhouette: '+JSON.stringify(evidence.canopyRetention));
     assert.equal(evidence.restorationPixels.changedPixels,0,'The stationary night view must restore its idle appearance (3-code-value pixel tolerance)');
     remaining();evidence.elapsedMs=Date.now()-started;evidence.status='passed';
-    check(pre.motionSupported?'Night motion renders through the multisample HDR target on a fixed canvas and restores the same idle view':
-      'Unsupported night motion retains the direct renderer and restores the same idle view');
+    check(pre.motionSupported?'Night motion retains the visible canopy through the compacted multisample HDR target on a fixed canvas and restores the same idle view':
+      'Unsupported night motion retains the visible canopy through the compacted direct renderer and restores the same idle view');
   }catch(error){evidence.status='failed';evidence.elapsedMs=Date.now()-started;progress();throw error;}
 }
 async function pngScreenshot(name){

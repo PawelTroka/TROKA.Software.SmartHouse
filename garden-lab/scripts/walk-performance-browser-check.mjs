@@ -31,20 +31,20 @@ const minimumSamples=32,warmupLimitMs=30000,captureLimitMs=60000,initializationL
 const report={status:'running',routeGroup,selectedRoutes,baseline:{commit:'66c096a',version:baselineVersion},candidate:{version:candidateVersion},
   method:'Same Chromium process and software GPU; public Share fixture, room entry, fullscreen and continuous public walking keys. A separately recorded public WebGL2 fence drains initialization work before walking. A lateral shuttle follows the same bounded strip using observed walking positions. Warmup begins before the first movement key and requires elapsed time, delivered frames and a stable observed buffer, subject to a recorded time cap. Each measured RAF/Long Task trace requires minimum elapsed time and delivered samples, with a 60-second cap. No mocked rendering or private app state.',
   limitations:['CI uses SwiftShader on a shared CPU host, not the user’s GPU; absolute FPS must not be generalized to user hardware.',
-    'RAF delivery measures observed navigation cadence, not isolated GPU timer-query time. Public frame counts and changing walking poses verify active rendering.',
+    'RAF delivery measures browser callback cadence, not isolated GPU time or presented-frame cadence. GPU pacing can defer draws while RAFs remain responsive; independent public frame counts and changing walking poses verify actual rendering.',
     'The candidate legacy comparison freezes the old living-room composition and disables equipment labels. The new kitchen remains present, so complete geometry equality is not claimed.',
-    'Warmup may reach its time cap before the scene buffer settles; its actual completion and every measured scene target and canvas buffer are recorded separately. Idle images restore the selected full detail.',
+    'Warmup may reach its time cap before the scene buffer settles; its actual completion and every measured scene target and canvas buffer are recorded separately. Buffer histograms count RAF observations; stable-buffer qualification counts actual published draws. Idle images restore the selected full detail.',
     'One trace per scenario and route is directional shared-host evidence. At the minimum sample count, the 1% low is the worst single delivered interval, not a statistically stable tail estimate.',
     'The shuttle reverses on public position feedback, so dispatch latency can overshoot its target bounds; observed route offsets are retained for comparison.',
     'A time-capped control below the minimum sample count is explicitly sample-limited: no percentile, 1% low or percentage speedup is inferred from it. Adequate candidates must exceed the control qualification rate for a directional throughput comparison.',
-    'Renderer throughput uses the public published-frame counter over the complete observed window. Counter publication is periodic; this is an observed finite-window rate, not a confidence interval or input-to-photon measurement.',
+    'Renderer throughput uses the public published-frame counter over the complete observed window: a live per-draw canvas counter when provided, otherwise the unchanged baseline’s periodic diagnostic counter. This is an observed finite-window submission rate, not a confidence interval or input-to-photon measurement. Candidate trace poses use the last actual draw, separately from the live input pose.',
     'The 250 ms heartbeat and lifecycle events distinguish main-thread availability from delivered RAFs; timer delay alone does not identify a cause.',
     'Optional WebGL2 diagnostics insert and flush one fence at a time and poll without waiting. Fence latency bounds include timer scheduling and earlier queued work; they are not isolated GPU render durations.',
     'Initialization readiness is reported separately and must pass before walking starts. First-motion transitions remain in warmup; no GPU drain or input release separates warmup from capture, so a capped warmup can still leave walking work queued.'],
   instrumentation:{heartbeatIntervalMs:250,gpuDiagnostics,initializationFenceRequired:true,fencePollTimeoutNs:0,fenceMinimumSubmissionIntervalMs:1000,maxOutstandingFences:1,
     motionBufferSource:'Public sceneBufferWidth/sceneBufferHeight on the canvas, then render diagnostics; canvas backing dimensions when scene fields are absent (1.39). Actual canvas dimensions are recorded separately.'},
   fixture,viewport:{width:1280,height:800,deviceScaleFactor:1},durationMs:duration,
-  capturePolicy:{minimumSamples,warmupMinimumMs:4000,warmupLimitMs,captureLimitMs,initializationLimitMs,stableBufferMinimumFrames:12,stableBufferMinimumMs:1500,shuttleHalfWidthM,discardedInitialIntervals:0,regressionEnforced:process.env.ENFORCE_PERFORMANCE_REGRESSION==='1'},
+  capturePolicy:{minimumSamples,warmupMinimumMs:4000,warmupLimitMs,captureLimitMs,initializationLimitMs,stableBufferMinimumFrames:12,stableBufferFrameSource:'public-rendered-frame-counter',stableBufferMinimumMs:1500,shuttleHalfWidthM,discardedInitialIntervals:0,regressionEnforced:process.env.ENFORCE_PERFORMANCE_REGRESSION==='1'},
   host:{platform:os.platform(),release:os.release(),arch:os.arch(),cpuModel:os.cpus()[0]?.model,logicalCpus:os.cpus().length,totalMemoryGB:os.totalmem()/1024**3,node:process.version},
   runs:[],comparisons:[],errors:[],failures:[]};
 const servers=[];let browser;
@@ -68,9 +68,11 @@ async function settled(page,floor){
   },floor,{timeout:120000});
 }
 async function info(page){return page.locator('#render-diagnostics').evaluate(node=>{const data={...node.dataset};
-  for(const key of ['performanceTiming','adaptiveQuality','sceneOptimization','interiorDimensions','equipmentLabels','mirrors','livingCinema','luxuryKitchen'])try{data[key]=JSON.parse(data[key]||'null');}catch{}
+  for(const key of ['performanceTiming','gpuSubmission','adaptiveQuality','sceneOptimization','interiorDimensions','equipmentLabels','mirrors','livingCinema','luxuryKitchen'])try{data[key]=JSON.parse(data[key]||'null');}catch{}
   const c=document.querySelector('#scene-host canvas');data.pose={floor:c?.dataset.walkFloor,position:c?.dataset.walkPosition?.split(',').map(Number),yaw:Number(c?.dataset.walkYaw),pitch:Number(c?.dataset.walkPitch),fov:Number(c?.dataset.walkFov)};
   const live=c?.dataset||{};
+  data.frames=live.renderedFrameCount??data.frames;
+  data.rendererFrameCounterSource=live.renderedFrameCount===undefined?'periodic-render-diagnostics':'live-canvas-draw-counter';
   for(const [key,fallback]of [['sceneBufferWidth',c?.width],['sceneBufferHeight',c?.height],['scenePixelRatio',Number(data.pixelRatio)||c?.width/c?.clientWidth]])data[key]=Number(live[key]??data[key]??fallback);
   for(const key of ['motionSamples','canvasSamples']){const raw=live[key]??data[key];data[key]=raw===undefined?null:Number(raw);}
   const support=live.motionSupported??data.motionSupported;data.motionSupported=support==='true'?true:support==='false'?false:null;
@@ -88,7 +90,7 @@ async function waitForInitializationGpu(page){
       pollTimeoutNs:0,rafCallbacks:0,polls:0,fences:[],errors:[]};
     const state=()=>{const d=document.querySelector('#render-diagnostics')?.dataset,live=canvas?.dataset||{};
       const samples=key=>{const raw=live[key]??d?.[key];return raw===undefined?null:Number(raw);},support=live.motionSupported??d?.motionSupported;return {
-      renderedFrames:Number(d?.frames)||0,interacting:d?.interacting,renderPending:d?.renderPending,drawEnabled:d?.drawEnabled,
+      renderedFrames:Number(canvas?.dataset.renderedFrameCount??d?.frames)||0,interacting:d?.interacting,renderPending:d?.renderPending,drawEnabled:d?.drawEnabled,
       bufferWidth:canvas?.width,bufferHeight:canvas?.height,position:canvas?.dataset.walkPosition,
       canvasWidth:canvas?.width,canvasHeight:canvas?.height,sceneBufferWidth:Number(live.sceneBufferWidth??d?.sceneBufferWidth??canvas?.width),
       sceneBufferHeight:Number(live.sceneBufferHeight??d?.sceneBufferHeight??canvas?.height),scenePixelRatio:Number(live.scenePixelRatio??d?.scenePixelRatio??d?.pixelRatio??canvas?.width/canvas?.clientWidth),
@@ -170,7 +172,7 @@ async function snapshotTrace(page,{stop=false}={}){
     }
     const result={frames:t.frames,longTasks:t.longTasks,elapsedMs:performance.now()-t.start,initialRenderedFrames:t.initialRenderedFrames,
       firstRafAtMs:t.firstRafAtMs,firstRafTimestampMs:t.firstRafTimestampMs,initialKeyDownDispatch:t.initialKeyDownDispatch,inputEvents:t.inputEvents,
-      finalRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,
+      finalRenderedFrames:t.readRenderedFrames(),
       heartbeat:{intervalMs:250,records:t.heartbeats},lifecycleEvents:t.lifecycleEvents,browserState:{initial:t.initialState,final:state},gpuDiagnostics:t.gpu};
     if(stop)delete window.__navigationTrace;return result;
   },stop);
@@ -178,12 +180,13 @@ async function snapshotTrace(page,{stop=false}={}){
 async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBuffer=false,startPosition,onCheckpoint}){
   await page.evaluate(gpuEnabled=>{
     const trace={frames:[],longTasks:[],active:true,handle:0,start:performance.now(),observer:null,
-      initialRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,bufferKey:'',bufferStart:0,bufferFrames:0,
+      initialRenderedFrames:Number(document.querySelector('#scene-host canvas')?.dataset.renderedFrameCount??document.querySelector('#render-diagnostics')?.dataset.frames)||0,bufferKey:'',bufferStart:0,bufferFrames:0,bufferRenderedFrames:0,
       heartbeatHandle:0,heartbeats:[],lifecycleEvents:[],listeners:[],pendingFence:null,lastFenceSubmitted:-Infinity,
       firstRafAtMs:null,firstRafTimestampMs:null,initialKeyDownDispatch:null,inputEvents:[],
       gpu:{enabled:gpuEnabled,available:false,method:'webgl2-nonblocking-fence',pollTimeoutNs:0,minimumSubmissionIntervalMs:1000,
         maxOutstandingFences:1,polls:0,fences:[],errors:[],latencyInterpretation:'Bounds on observed queue completion; includes polling delay and earlier queued GPU work.'}};
     window.__navigationTrace=trace;
+    trace.readRenderedFrames=()=>Number(document.querySelector('#scene-host canvas')?.dataset.renderedFrameCount??document.querySelector('#render-diagnostics')?.dataset.frames)||0;
     const describeElement=element=>element?.tagName?{tag:element.tagName.toLowerCase(),id:element.id||null,
       walkCanvas:element.matches?.('#scene-host canvas')||false}:element===window?{tag:'window'}:element===document?{tag:'document'}:null;
     trace.readBuffers=()=>{
@@ -202,7 +205,7 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
         fullscreenMode:document.body.dataset.modelFullscreen||null,fullscreenTarget:document.body.dataset.fullscreenTarget||null,
         fullscreenPending:Boolean(document.body.dataset.fullscreenPending),fullscreenResizePending:Boolean(document.body.dataset.fullscreenResizePending),
         rendering:{drawEnabled:d?.drawEnabled,canvasIntersecting:d?.canvasIntersecting,presentationVisible:d?.presentationVisible,
-          renderPending:d?.renderPending,interacting:d?.interacting,renderedFrames:Number(d?.frames)||0,
+          renderPending:d?.renderPending,interacting:d?.interacting,renderedFrames:trace.readRenderedFrames(),
           ...trace.readBuffers()}};
     };
     trace.initialState=trace.readState();
@@ -270,10 +273,13 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
     },250);
     try{trace.observer=new PerformanceObserver(list=>{for(const e of list.getEntries())trace.longTasks.push({start:e.startTime,duration:e.duration});});trace.observer.observe({type:'longtask',buffered:false});}catch{}
     let last=0;
-    const frame=now=>{if(!trace.active)return;const c=document.querySelector('#scene-host canvas'),buffers=trace.readBuffers(),key=buffers.sceneBufferWidth+'×'+buffers.sceneBufferHeight;
+    const frame=now=>{if(!trace.active)return;const c=document.querySelector('#scene-host canvas'),buffers=trace.readBuffers(),key=buffers.sceneBufferWidth+'×'+buffers.sceneBufferHeight,renderedFrames=trace.readRenderedFrames();
       if(trace.firstRafAtMs===null){trace.firstRafAtMs=performance.now()-trace.start;trace.firstRafTimestampMs=now-trace.start;}
-      if(key!==trace.bufferKey){trace.bufferKey=key;trace.bufferStart=now;trace.bufferFrames=0;}trace.bufferFrames++;
-      if(last)trace.frames.push({ms:now-last,t:now-trace.start,position:c?.dataset.walkPosition,renderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames),...buffers});
+      if(key!==trace.bufferKey){trace.bufferKey=key;trace.bufferStart=now;trace.bufferFrames=0;}
+      else trace.bufferFrames+=Math.max(0,renderedFrames-trace.bufferRenderedFrames);
+      trace.bufferRenderedFrames=renderedFrames;
+      if(last)trace.frames.push({ms:now-last,t:now-trace.start,position:c?.dataset.renderedWalkPosition||c?.dataset.walkPosition,
+        livePosition:c?.dataset.walkPosition,renderedFrames,...buffers});
       last=now;trace.handle=requestAnimationFrame(frame);
     };trace.handle=requestAnimationFrame(frame);
   },gpuDiagnostics);
@@ -287,7 +293,7 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
     while(true){
       await page.waitForTimeout(150);
       progress=await page.evaluate(()=>{const t=window.__navigationTrace,c=document.querySelector('#scene-host canvas'),now=performance.now();return {
-        elapsedMs:now-t.start,samples:t.frames.length,renderedFrames:(Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0)-t.initialRenderedFrames,
+        elapsedMs:now-t.start,samples:t.frames.length,renderedFrames:t.readRenderedFrames()-t.initialRenderedFrames,
         stableBufferFrames:t.bufferFrames,stableBufferMs:now-t.bufferStart,buffer:t.bufferKey,...t.readBuffers(),position:c?.dataset.walkPosition?.split(',').map(Number)};});
       await shuttle.step(progress.position);
       metMinimum=progress.elapsedMs>=minimumMs&&progress.samples>=minimumSamples&&progress.renderedFrames>=minimumSamples&&
@@ -322,7 +328,7 @@ function traceSummary(trace,shuttle){
   }
   return {summary,sampleAdequate,motionBuffers:[...buffers.values()].sort((a,b)=>b.frames-a.frames),canvasBuffers:[...canvasBuffers.values()].sort((a,b)=>b.frames-a.frames),uniquePoses:uniquePoses.size,
     rendererThroughput:{frames:renderedFrames,elapsedMs:trace.elapsedMs,framesPerSecond:trace.elapsedMs>0?renderedFrames*1000/trace.elapsedMs:0,source:'public-rendered-frame-counter'},
-    actualAverageFps:sampleAdequate&&summary.mean?1000/summary.mean:null,routeOffsetsM:offsets.length?{minimum:Math.min(...offsets),maximum:Math.max(...offsets)}:null,
+    rafDeliveryHz:sampleAdequate&&summary.mean?1000/summary.mean:null,routeOffsetsM:offsets.length?{minimum:Math.min(...offsets),maximum:Math.max(...offsets)}:null,
     longTasks:{count:trace.longTasks.length,totalMs:trace.longTasks.reduce((s,e)=>s+e.duration,0),maxMs:Math.max(0,...trace.longTasks.map(e=>e.duration))}};
 }
 function checkCandidateMotionTarget(run){
@@ -387,7 +393,8 @@ function compareRuns(route,baseline,candidate,current){
   const limitedControl=baseline.status==='sample-limited-control'&&baseline.navigationVerified&&
     baseline.trace.completion.reason==='time-cap'&&baseline.rendererThroughput.frames<minimumSamples;
   const candidates=[candidate,current],adequateCandidates=candidates.map(run=>run.sampleAdequate&&run.navigationVerified);
-  const comparableTails=adequateControl&&adequateCandidates.every(Boolean);
+  const pacedCandidates=candidates.some(run=>run.duringMotion?.gpuSubmission?.enabled||run.duringMotion?.gpuSubmission?.deferredAttempts>0);
+  const comparableTails=adequateControl&&adequateCandidates.every(Boolean)&&!pacedCandidates;
   const p95LimitMs=adequateControl?baseline.summary.p95*1.15+5:null;
   // When the old control cannot deliver even 32 renderer frames in a minute,
   // its four-or-five intervals cannot define a useful p95 gate. Require each
@@ -395,7 +402,11 @@ function compareRuns(route,baseline,candidate,current){
   // have needed to qualify, rather than comparing against its sparse p95.
   // This establishes observed direction only, not a statistical speedup bound.
   const throughputFloorFps=limitedControl?minimumSamples*1000/baseline.rendererThroughput.elapsedMs:null;
-  const passes=candidates.map((run,i)=>Boolean(adequateCandidates[i]&&(adequateControl?run.summary.p95<=p95LimitMs:
+  // Responsive deferred RAFs must not manufacture a performance pass. Retain
+  // the existing RAF p95 gate and additionally bound actual renderer throughput
+  // with the same 15% + 5 ms allowance expressed as a mean-frame period.
+  const pairedRendererFloorFps=adequateControl?1000/(1000/baseline.rendererThroughput.framesPerSecond*1.15+5):null;
+  const passes=candidates.map((run,i)=>Boolean(adequateCandidates[i]&&(adequateControl?run.summary.p95<=p95LimitMs&&run.rendererThroughput.framesPerSecond>=pairedRendererFloorFps:
     limitedControl?run.rendererThroughput.framesPerSecond>throughputFloorFps:false)));
   return {route,status:adequateControl?'sample-adequate-comparison':limitedControl?'sample-limited-control-directional-comparison':'unusable-control',
     baseline:baseline.summary,candidateLegacy:candidate.summary,candidateCurrent:current.summary,
@@ -409,8 +420,9 @@ function compareRuns(route,baseline,candidate,current){
     baselineCanvasBuffers:baseline.canvasBuffers,candidateCanvasBuffers:candidate.canvasBuffers,currentCanvasBuffers:current.canvasBuffers,
     routeOffsetsM:{baseline:baseline.routeOffsetsM,candidateLegacy:candidate.routeOffsetsM,candidateCurrent:current.routeOffsetsM},
     observedRendererThroughput:{baseline:baseline.rendererThroughput,candidateLegacy:candidate.rendererThroughput,candidateCurrent:current.rendererThroughput},
-    regression:{enforced:report.capturePolicy.regressionEnforced,method:adequateControl?'paired-p95':limitedControl?'control-qualification-throughput':'unavailable',
-      p95LimitMs,throughputFloorFps,legacyPass:passes[0],currentPass:passes[1],
+    rafInterpretation:pacedCandidates?'Deferred callbacks remain in RAF statistics; renderer throughput is reported separately and RAF percentage reductions are withheld.':null,
+    regression:{enforced:report.capturePolicy.regressionEnforced,method:adequateControl?'paired-raf-p95-and-renderer-throughput':limitedControl?'control-qualification-throughput':'unavailable',
+      p95LimitMs,pairedRendererFloorFps,throughputFloorFps,legacyPass:passes[0],currentPass:passes[1],
       interpretation:limitedControl?'Adequate candidates exceed the renderer rate needed for the time-capped control to qualify; directional evidence only.':null}};
 }
 try{

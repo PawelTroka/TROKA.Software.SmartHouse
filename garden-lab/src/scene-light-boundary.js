@@ -3,6 +3,15 @@ import * as THREE from '../vendor/three.module.js';
 const MAX_VERTICES=32;
 const ACTIVE_LOCAL_LIGHTS='#if ( NUM_POINT_LIGHTS > 0 ) || ( NUM_SPOT_LIGHTS > 0 )';
 const CACHE_VERSION='garden-local-light-boundary-v1';
+const instanceOrderSafeHooks=new WeakMap();
+
+// This wrapper only derives light coverage from the transformed world point.
+// Permit instance reordering only for the exact pair installed over Three's
+// unmodified hooks; a later shader/cache override invalidates the allowance.
+export function isGardenLightBoundaryOrderSafe(material){
+  const hooks=instanceOrderSafeHooks.get(material);
+  return !!hooks&&material.onBeforeCompile===hooks.compile&&material.customProgramCacheKey===hooks.cacheKey;
+}
 
 function normalizedBoundary(boundary){
   if(!Array.isArray(boundary)||boundary.some(p=>!Array.isArray(p)||p.length<2||!p.slice(0,2).every(Number.isFinite)))
@@ -113,6 +122,8 @@ export function createGardenLightBoundary(boundary){
         ?previousCompile.toString():previousCacheKey.call(this);
       return `${previousKey}|${CACHE_VERSION}:${points.length}`;
     };
+    if(previousCompile===THREE.Material.prototype.onBeforeCompile&&previousCacheKey===THREE.Material.prototype.customProgramCacheKey)
+      instanceOrderSafeHooks.set(material,{compile:material.onBeforeCompile,cacheKey:material.customProgramCacheKey});
     installed.set(material,{vertexCount:points.length});
     material.needsUpdate=true;
   }
