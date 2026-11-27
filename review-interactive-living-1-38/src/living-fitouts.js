@@ -43,7 +43,7 @@ export function guestAndOfficeFixtures({officeCoworking=true,officeGuestBedOpen=
     bedroom(3,1.47,7.82,2.10,1.48,{headboard:[-1,0],approach:[2.86,8.31],access:'foot-only'}),
     guestDesk(3,3.22,7.255,1.00,.46,[0,1],[3.22,8.31]),
     guestChair(3,3.22,7.75,[0,-1]),
-    guestTV(3,3.70,7.475,.42,.94,[-.994,.108],[3.72,7.005]),
+    guestTV(3,3.30,7.475,.42,.94,[-.994,.108],[3.32,7.005]),
   ];
 }
 
