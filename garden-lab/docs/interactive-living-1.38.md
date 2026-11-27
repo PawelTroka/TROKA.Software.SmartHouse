@@ -54,6 +54,8 @@ Each of the three guest rooms contains a **1.40 × 2.00 m mattress**, a compact 
 
 The office uses a **2.60 × 0.70 m desk**, with one or two computer stations. A separate daybed unfolds into a **0.90 × 2.00 m single sleeping place**. Both arrangements use the same room envelope and remain configurable rather than changing with each finish style.
 
+The shared balcony needs its full **10.77 m width** to serve all three rear rooms. A previously saved narrower balcony keeps its width and the existing access warning; the new door controls do not silently enlarge it.
+
 ## Premium compact gym
 
 The fit-out uses the existing **3.87 × 4.40 m room (17.03 m²)** and the proposed **2.30 m clear headroom**. It preserves the technical/laundry room, both garage spaces, and the 0.90 m room openings.

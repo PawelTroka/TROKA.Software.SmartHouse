@@ -15,7 +15,7 @@ import {gardenGroundAt,terrainAt,spaLevels,spaSurfaceAt} from '../src/geometry.j
 import {createGardenPathGroup} from '../src/scene-garden-paths.js';
 import {createSpaAmenityGroup} from '../src/scene-spa.js';
 import {createGardenNightLighting} from '../src/scene-night-lights.js';
-import {designTerrainCutouts} from '../src/scene.js';
+import {designTerrainCutouts,gardenShrubPlacements} from '../src/scene.js';
 import {prepareSunGeometry} from '../src/shade.js';
 import {gardenPathPlanMarkup} from '../src/diagrams.js';
 import {createWalkNavigation} from '../src/house-walk.js';
@@ -27,6 +27,17 @@ const near=(a,b,tolerance=1e-6)=>assert.ok(Math.abs(a-b)<tolerance,`${a} differs
 const material=new THREE.MeshStandardMaterial({color:'#d8ccb6'});
 const materials=Object.fromEntries(['stone','stoneLight','wood','woodLight','metal','basin','linen','waterLight','plinth','treeBark','gold','spaGlow','fireGlow','glass','grass'].map(k=>[k,material]));
 const disposeGroup=group=>{const materials=new Set();group.traverse(o=>{o.geometry?.dispose();if(o.material?.userData?.transient)materials.add(o.material);});for(const m of materials)m.dispose();};
+
+test('generated shrubs leave the entire plunge-cover sweep clear without changing the restored trees',()=>{
+  const trees=structuredClone(settings.screeningTrees),open=gardenShrubPlacements(settings,data);
+  assert.ok(open.length>0,'Boundary planting remains elsewhere in the garden');
+  for(const coldPlungeCoverClosed of [false,true]){
+    const s={...settings,coldPlungeCoverClosed},shrubs=gardenShrubPlacements(s,data),cover=spaLevels(s,data).coldPlunge.cover;
+    assert.deepEqual(shrubs,open,'Shrubs stay fixed while the lid slides');
+    for(const [x,y] of shrubs)assert.ok(closestFootprints([[x,y]],rectCorners(cover.sweptBounds)).distance>=.55-1e-8,'The full shrub crown clears both moving panels and their side parking bay');
+    assert.deepEqual(s.screeningTrees,trees,'The three large trees keep their exact positions and attributes');
+  }
+});
 
 test('all styles connect the six actual destinations without touching water, restored trunks or sunbeds',()=>{
   for(const style of DESIGN_STYLES)for(const sides of [1,2,3]){

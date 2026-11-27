@@ -36,7 +36,7 @@ const degrees=radians=>radians*180/Math.PI;
 const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
 
 /** Daylight evidence through the real room selector, arrangement switches,
- * Share URL, custom observer and WASD controls. No renderer handles or private
+ * Share URL, custom observer and accessible walking controls. No renderer handles or private
  * state. Upstairs poses use room entry plus normal walking: the custom observer
  * is supported by the ground floor and cannot position an upstairs camera.
  *
@@ -109,23 +109,31 @@ export async function captureOpenLivingViews(page,{
     return {drags,afterFrame};
   };
   const walkTo=async(target,floor)=>{
-    const position=frame.toSite(target[0],target[1]),tolerance=.15;
-    let pulses=0,travel=0;
-    for(;pulses<40;pulses++){
-      const before=await pose(),dx=position[0]-before.position[0],dz=position[1]-before.position[2],distance=Math.hypot(dx,dz);
-      if(distance<=tolerance)return {pulses,travel,error:distance};
+    const position=frame.toSite(target[0],target[1]),tolerance=.15,stepDistance=.28;
+    const initial=await pose(),distanceFrom=p=>Math.hypot(position[0]-p.position[0],position[1]-p.position[2]);
+    const initialDistance=distanceFrom(initial),maxSteps=Math.ceil(initialDistance/stepDistance)+2,samples=[];
+    const forward=q('#scene-host .walk-pad').getByRole('button',{name:'Walk forward',exact:true});
+    assert.equal(await forward.count(),1,'The public Walk forward control must be available');
+    await forward.waitFor({state:'visible',timeout:remaining()});
+    let travel=0;
+    for(let steps=0;steps<maxSteps;steps++){
+      const before=await pose(),dx=position[0]-before.position[0],dz=position[1]-before.position[2],distance=distanceFrom(before);
+      if(distance<=tolerance)return {steps,travel,error:distance,initialDistance,stepDistance,maxSteps,samples};
       await turnTo(degrees(Math.atan2(-dx,dz)),0);
-      await canvas().focus({timeout:remaining()});const afterFrame=await frameCount();
-      // Short real key presses remain bounded even on software WebGL. Each
-      // next pulse is based on the observed public camera position, so slow
-      // CI frames cannot turn a wall-clock guess into an uncontrolled move.
-      const duration=Math.min(900,Math.max(75,distance/WALK_COMFORT.speed*650));
-      await page.keyboard.down('w');
-      try{await page.waitForTimeout(Math.min(duration,remaining()));}finally{await page.keyboard.up('w');}
+      const afterFrame=await frameCount();
+      // Keyboard activation of the visible walk pad is a real public input.
+      // Its native accessible click advances exactly 0.28 m, independently of
+      // render speed. Timed WASD pulses can expire before software WebGL has
+      // drawn a movement frame; the caller already tests continuous WASD.
+      await forward.press('Enter',{timeout:remaining()});
       await walking(floor,{timeout:remaining(),settled:true,afterFrame});
-      const after=await pose();travel+=Math.hypot(after.position[0]-before.position[0],after.position[2]-before.position[2]);
+      const after=await pose(),moved=Math.hypot(after.position[0]-before.position[0],after.position[2]-before.position[2]),error=distanceFrom(after);
+      const sample={step:steps+1,before:before.position,after:after.position,yaw:after.yaw,distance,error,moved,frames:[afterFrame,await frameCount()]};
+      samples.push(sample);travel+=moved;
+      assert.ok(Math.abs(moved-stepDistance)<.005&&error<distance,
+        `Public walking failed to advance toward ${floor} viewpoint ${JSON.stringify({target,position,initialDistance,maxSteps,samples})}`);
     }
-    assert.fail(`Normal WASD did not reach ${floor} viewpoint ${JSON.stringify(target)} after ${pulses} bounded moves`);
+    assert.fail(`Public walking did not reach ${floor} viewpoint ${JSON.stringify({target,position,initialDistance,maxSteps,samples})}`);
   };
   const assertExport=(exported,expected)=>{
     const first=exported.interiors.floors.first,ground=exported.interiors.floors.ground,basement=exported.interiors.floors.basement;

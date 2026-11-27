@@ -102,6 +102,7 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   await el('[data-studio-moment="blue"]').first().click({timeout});await sceneVisible(timeout);
   await page.waitForFunction(()=>Number(document.querySelector('#viewport').dataset.nightActivation)>0,null,{timeout});
   info=await sceneInfo();assert.equal(info.gardenLighting.activeRouteLights,7);
+  const nightLighting=info.gardenLighting;
   await shot('garden-living-blue-hour-paths','#scene-host canvas');
   check('Blue hour activates all seven real route downlights without adding route shadow maps');
 
@@ -144,7 +145,7 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   }
   await shot('garden-boundary-mobile-controls','#boundary-fence-controls');
   await page.setViewportSize({width:1280,height:900});
-  report.gardenLiving={baselineTrees:expectedTrees,pool:baseline.gardenLayout.pool,fenceStyles,scene:first,night:info.gardenLighting,
+  report.gardenLiving={baselineTrees:expectedTrees,pool:baseline.gardenLayout.pool,fenceStyles,scene:first,night:nightLighting,
     persistedGates:{pedestrian:restored.settings.pedestrianGateOpen,garage:restored.settings.garageGateOpen}};
   check('The recessed plunge is captured from its approach and all boundary controls fit a 390 px screen');
 }
