@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {houseModelFrame,getHouseFloorPlan} from '../src/house-model.js';
-import {containsPoint} from '../src/interior-geometry.js';
+import {containsPoint,ringBounds} from '../src/interior-geometry.js';
 import {GARAGE_DEFAULTS} from '../src/garage-options.js';
 import {applyPlanExterior} from '../src/plan-exterior.js';
 import {WALK_COMFORT} from '../src/walk-motion.js';
@@ -10,19 +10,51 @@ const VIEWS=Object.freeze([
   // chimney together in the fixed walking lens; the closer kitchen spawn
   // cuts the chimney out of the frame.
   Object.freeze({id:'kitchen-storage-connection',floor:'ground',room:'front-kitchen',x:3.15,z:3.5,eye:1.57,yaw:-2.89,pitch:-.05}),
+  Object.freeze({id:'fitted-kitchen-corner',floor:'ground',room:'front-kitchen',x:2.55,z:6.35,eye:1.57,yaw:2.43,pitch:-.08}),
   Object.freeze({id:'open-stair-guard',floor:'ground',room:'hall',x:5.15,z:5.55,eye:1.57,yaw:Math.PI,pitch:-.18}),
-  Object.freeze({id:'compact-gym',floor:'basement',room:'basement-gym',roomSpawn:true,yaw:-.50,pitch:-.18}),
+  Object.freeze({id:'protected-upper-landing',floor:'first',room:'hall',roomSpawn:true,
+    walkTo:[4.83,6.32],via:[[4.83,4.60]],aim:[6.32,7.36],pitch:-.22}),
+  Object.freeze({id:'integrated-upstairs-chimney',floor:'first',room:'spa-bath',roomSpawn:true,
+    walkTo:[8.55,6.32],aim:[7.47,5.03],pitch:-.08}),
+  Object.freeze({id:'guest-1-double-desk-tv',floor:'first',room:'guest-1',roomSpawn:true,
+    walkTo:[9.47,3.48],aim:[9.96,1.13],pitch:-.22}),
+  Object.freeze({id:'guest-2-double-desk-tv',floor:'first',room:'guest-2',roomSpawn:true,
+    walkTo:[.64,6.31],aim:[3.35,5.65],pitch:-.23}),
+  Object.freeze({id:'guest-3-double-desk-tv',floor:'first',room:'guest-3',roomSpawn:true,
+    walkTo:[.64,8.13],aim:[3.35,7.60],pitch:-.23}),
+  Object.freeze({id:'office-two-workstations',floor:'first',room:'office',roomSpawn:true,
+    walkTo:[7.64,3.43],aim:[4.99,1.85],pitch:-.20,options:{officeCoworking:true,officeGuestBedOpen:false}}),
+  Object.freeze({id:'office-emergency-single',floor:'first',room:'office',roomSpawn:true,
+    walkTo:[5.53,.68],aim:[7.46,2.58],pitch:-.20,options:{officeCoworking:true,officeGuestBedOpen:true}}),
+  Object.freeze({id:'compact-gym-parked',floor:'basement',room:'basement-gym',roomSpawn:true,
+    roomFraction:[.50,.93],aimRoomFraction:[.48,.24],pitch:-.18,options:{gymBenchParked:true}}),
+  Object.freeze({id:'compact-gym-strength-position',floor:'basement',room:'basement-gym',roomSpawn:true,
+    roomFraction:[.80,.90],aimRoomFraction:[.55,.25],pitch:-.20,options:{gymBenchParked:false}}),
   Object.freeze({id:'plant-laundry',floor:'basement',room:'basement-technical',roomSpawn:true,yaw:-1.95,pitch:-.16}),
 ]);
+export const LIVING_FITOUT_GROUPS=Object.freeze({
+  architecture:Object.freeze(VIEWS.slice(0,5).map(view=>view.id)),
+  guests:Object.freeze(VIEWS.slice(5,8).map(view=>view.id)),
+  'office-basement':Object.freeze(VIEWS.slice(8).map(view=>view.id)),
+});
+export function livingFitoutViews({group='all',viewIds=null}={}){
+  assert.ok(group==='all'||Object.hasOwn(LIVING_FITOUT_GROUPS,group),'Unknown living fit-out group: '+group);
+  const ids=viewIds??(group==='all'?VIEWS.map(view=>view.id):LIVING_FITOUT_GROUPS[group]);
+  assert.ok(Array.isArray(ids)&&ids.length>0&&new Set(ids).size===ids.length,'Choose distinct living fit-out view IDs');
+  return ids.map(id=>{const view=VIEWS.find(item=>item.id===id);assert.ok(view,'Unknown living fit-out view: '+id);return view;});
+}
 const degrees=radians=>radians*180/Math.PI;
 const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
 
-/** Four daylight screenshots through the existing room selector, Share URL,
- * custom observer and walking controls. No renderer handles or private state.
+/** Daylight evidence through the real room selector, arrangement switches,
+ * Share URL, custom observer and accessible walking controls. No renderer handles or private
+ * state. Upstairs poses use room entry plus normal walking: the custom observer
+ * is supported by the ground floor and cannot position an upstairs camera.
  *
- * Call after the desktop exports, before the caller reloads its saved share
- * for mobile checks. Plan-only studio visits reuse the exterior WebGL context:
- * this helper never reloads the document or creates an interior 3D renderer.
+ * Each named group can run in its own bounded CI job. `viewIds` selects an
+ * explicit subset, and `onProgress` preserves completed evidence on failure.
+ * Plan-only studio visits reuse the exterior WebGL context: this helper never
+ * reloads the document or creates an interior 3D renderer.
  *
  * `shot(name,selector)`, `walking(floor,options)` and `openInteriors()` are the
  * existing interiors-browser-check helpers. The default leaves the last walk
@@ -30,9 +62,11 @@ const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
  */
 export async function captureOpenLivingViews(page,{
   shot,walking,openInteriors,style='warm-minimal',date='2026-06-21',
-  timeout=120000,maxDurationMs=420000,includePlan=false,restore=false,
+  timeout=120000,maxDurationMs=600000,includePlan=false,restore=false,exportDesign=null,
+  group='all',viewIds=null,onProgress=null,
 }={}){
   assert.equal(typeof shot,'function');assert.equal(typeof walking,'function');assert.equal(typeof openInteriors,'function');
+  const selectedViews=livingFitoutViews({group,viewIds});
   const started=Date.now(),deadline=started+maxDurationMs;
   const remaining=()=>{
     const left=deadline-Date.now();
@@ -88,6 +122,61 @@ export async function captureOpenLivingViews(page,{
       `Normal drag did not reach the requested view: ${JSON.stringify({targetYaw,targetPitch,result})}`);
     return {drags,afterFrame};
   };
+  const walkTo=async(target,floor)=>{
+    const position=frame.toSite(target[0],target[1]),tolerance=.15,stepDistance=.28;
+    const initial=await pose(),distanceFrom=p=>Math.hypot(position[0]-p.position[0],position[1]-p.position[2]);
+    const initialDistance=distanceFrom(initial),maxSteps=Math.ceil(initialDistance/stepDistance)+2,samples=[];
+    const forward=q('#scene-host .walk-pad').getByRole('button',{name:'Walk forward',exact:true});
+    assert.equal(await forward.count(),1,'The public Walk forward control must be available');
+    await forward.waitFor({state:'visible',timeout:remaining()});
+    let travel=0;
+    for(let steps=0;steps<maxSteps;steps++){
+      const before=await pose(),dx=position[0]-before.position[0],dz=position[1]-before.position[2],distance=distanceFrom(before);
+      if(distance<=tolerance)return {steps,travel,error:distance,initialDistance,stepDistance,maxSteps,samples};
+      await turnTo(degrees(Math.atan2(-dx,dz)),0);
+      const afterFrame=await frameCount();
+      // Keyboard activation of the visible walk pad is a real public input.
+      // Its native accessible click advances exactly 0.28 m, independently of
+      // render speed. Timed WASD pulses can expire before software WebGL has
+      // drawn a movement frame; the main interior suite tests continuous WASD.
+      await forward.press('Enter',{timeout:remaining()});
+      // Intermediate steps need an acknowledged public pose, not another
+      // expensive settled-quality frame. The final view below still waits
+      // for its actual WebGL frame, settled altitude and complete assets.
+      await page.waitForFunction(({floor,before})=>{
+        const c=document.querySelector('#scene-host canvas'),p=c?.dataset.walkPosition?.split(',').map(Number);
+        return c?.dataset.walkFloor===floor&&c.dataset.walkNavigation==='free'&&p?.length===3&&
+          Math.hypot(p[0]-before[0],p[2]-before[2])>.001;
+      },{floor,before:before.position},{timeout:remaining(),polling:50});
+      const after=await pose(),moved=Math.hypot(after.position[0]-before.position[0],after.position[2]-before.position[2]),error=distanceFrom(after);
+      const sample={step:steps+1,before:before.position,after:after.position,yaw:after.yaw,distance,error,moved,frames:[afterFrame,await frameCount()]};
+      samples.push(sample);travel+=moved;
+      assert.ok(Math.abs(moved-stepDistance)<.005&&error<distance,
+        `Public walking failed to advance toward ${floor} viewpoint ${JSON.stringify({target,position,initialDistance,maxSteps,samples})}`);
+    }
+    assert.fail(`Public walking did not reach ${floor} viewpoint ${JSON.stringify({target,position,initialDistance,maxSteps,samples})}`);
+  };
+  const assertExport=(exported,expected)=>{
+    const first=exported.interiors.floors.first,ground=exported.interiors.floors.ground,basement=exported.interiors.floors.basement;
+    for(const [key,value] of Object.entries(expected))assert.equal(exported.settings[key],value,'Exported '+key);
+    for(let n=1;n<=3;n++){
+      const room=first.fixtures.filter(f=>f.roomId===`guest-${n}`),bed=room.find(f=>f.id===`guest${n}-bed`);
+      assert.equal(bed?.sleepingCapacity,2);assert.equal(bed.mattressWidth,1.40);assert.equal(bed.mattressLength,2);
+      assert.ok(room.some(f=>f.kind==='desk'&&f.workstations===1),`Guest ${n} has no work desk`);
+      assert.ok(room.some(f=>f.kind==='wallTv'&&f.viewFromId===bed.id),`Guest ${n} has no bed-facing TV`);
+    }
+    assert.ok(!ground.fixtures.some(f=>f.id==='kitchen-sink-header'),'The unwanted over-window cupboard remains in the export');
+    const corner=ground.fixtures.find(f=>f.id==='kitchen-pantry-corner');
+    assert.equal(corner?.kind,'storage');assert.ok(corner.height>2.5&&!corner.baseHeight,'The pantry corner still has an empty counter-height recess');
+    const desk=first.fixtures.find(f=>f.id==='office-desk'),sleeper=first.fixtures.find(f=>f.id==='office-guest-bed');
+    assert.equal(desk.workstations,exported.settings.officeCoworking?2:1);
+    assert.equal(sleeper.open,exported.settings.officeGuestBedOpen);assert.equal(sleeper.sleepingCapacity,1);
+    const gym=basement.fixtures.filter(f=>f.roomId==='basement-gym'),bench=gym.find(f=>f.id==='gym-bench');
+    assert.equal(bench?.parked,exported.settings.gymBenchParked);
+    for(const kind of ['cableTrainer','exerciseBike','exerciseBench','adjustableDumbbells','gymStorage','exerciseMat'])assert.ok(gym.some(f=>f.kind===kind),'Missing gym equipment: '+kind);
+    return {options:{officeCoworking:exported.settings.officeCoworking,officeGuestBedOpen:exported.settings.officeGuestBedOpen,gymBenchParked:exported.settings.gymBenchParked},
+      officeStations:desk.workstations,singleBedOpen:sleeper.open,benchParked:bench.parked,guestBeds:3,gymEquipment: gym.map(f=>f.id)};
+  };
 
   assert.equal(await page.evaluate(()=>Boolean(document.body.dataset.modelFullscreen)),false,
     'Run open-living captures after the existing fullscreen roundtrip has exited');
@@ -95,7 +184,9 @@ export async function captureOpenLivingViews(page,{
   const original={url:restoreUrl,style:await q('#designStyle').inputValue(),
     date:await q('#sun-date').inputValue(),time:await q('#sun-time').inputValue()};
   assert.equal(new URL(restoreUrl).searchParams.get('site'),'sternicza-11');
-  const captureSettings={...GARAGE_DEFAULTS,designStyle:style,basementGarageEnabled:true,garageProgress:100};
+  const captureSettings={...GARAGE_DEFAULTS,designStyle:style,basementGarageEnabled:true,garageProgress:100,
+    firstFloorRise:3.05,atticRise:5.75,officeCoworking:true,officeGuestBedOpen:false,gymBenchParked:true,
+    terraceDepth:4,terraceWidth:10.77,canopyEnabled:true,terraceCoverType:'balcony',canopyDepth:4,canopyWidth:10.77};
   await navigate(restoreUrl,{designStyle:style,interiorView:'plan',interiorEnabled:false,interiorFloor:'ground',
     ...captureSettings,interiorFurniture:true,interiorChanges:false,showDimensions:false,walkNavigation:'free',sceneMotion:false,mode:'orbit'});
   await waitMode('orbit');
@@ -116,32 +207,55 @@ export async function captureOpenLivingViews(page,{
   captureSettings.floorHeight=floorHeight;
   const basementPlan=getHouseFloorPlan({floor:'basement',settings:captureSettings,data:applyPlanExterior(data,captureSettings)});
   assert.ok(basementPlan.basementFitOut,'The public source and selected garage proposal must contain both basement rooms');
-  const report={style,daylight,original,restoreUrl,views:[],plan:null,restored:false};
-  for(const view of VIEWS){
+  const report={group,expectedViews:selectedViews.map(view=>view.id),style,daylight,original,restoreUrl,views:[],arrangements:[],plan:null,restored:false};
+  await onProgress?.(report);
+  for(const view of selectedViews){
     remaining();
-    await openInteriors();
+    await openInteriors({timeout:remaining()});
     assert.equal(await field('canvas').locator('canvas').count(),0,'Plan-only room selection must not create another WebGL context');
     if(await field('floor').inputValue()!==view.floor)await field('floor').selectOption(view.floor,{timeout:remaining()});
     await field('room').selectOption(view.room,{timeout:remaining()});
     assert.equal(await field('room').inputValue(),view.room);
     assert.equal(await field('style').inputValue(),style);
+    if(view.id==='office-two-workstations'&&exportDesign){
+      // Exercise the one-person option once before restoring the requested
+      // coworking arrangement. Both choices are checked against public JSON.
+      await field('officeCoworking').uncheck({timeout:remaining()});
+      await field('close').click({timeout:remaining()});await q('#interior-host').waitFor({state:'hidden',timeout:remaining()});
+      report.arrangements.push({id:'office-single-station',...assertExport(await exportDesign({timeout:remaining()}),{officeCoworking:false})});
+      await openInteriors({timeout:remaining()});
+    }
+    for(const [key,value] of Object.entries(view.options||{})){
+      await field(key).setChecked(value,{timeout:remaining()});assert.equal(await field(key).isChecked(),value);
+      captureSettings[key]=value;
+    }
+    const plan=getHouseFloorPlan({floor:view.floor,settings:captureSettings,data:applyPlanExterior(data,captureSettings)});
+    const room=plan.rooms.find(r=>r.id===view.room);assert.ok(room);
+    const roomBounds=ringBounds(room.polygon),relative=([x,z])=>[roomBounds.x0+x*roomBounds.width,roomBounds.z0+z*roomBounds.depth];
     if(includePlan&&view.id==='kitchen-storage-connection'){
       await field('plan').locator('svg').waitFor({state:'visible',timeout:remaining()});
       report.plan=`ground-${style}-open-living-renovation-plan`;
-      await shot(report.plan,'#interior-host');
+      await shot(report.plan,'#interior-host',{timeout:remaining()});
     }
-    if(view.id==='compact-gym'){
+    if(view.id==='compact-gym-parked'){
       await field('plan').locator('svg').waitFor({state:'visible',timeout:remaining()});
       report.basementPlan=`basement-${style}-gym-technical-plan`;
-      await shot(report.basementPlan,'#interior-host');
+      await shot(report.basementPlan,'#interior-host',{timeout:remaining()});
     }
     await field('enter').click({timeout:remaining()});
     const spawn=await walking(view.floor,{timeout:remaining(),settled:true});
-    const local=view.roomSpawn?frame.toLocal(spawn.position[0],spawn.position[2],spawn.position[1]):[view.x,view.z,view.eye];
+    if(exportDesign&&(view.options||report.arrangements.length===0))report.arrangements.push({id:view.id,...assertExport(await exportDesign({timeout:remaining()}),view.options||{})});
+    const moves=[],target=view.walkTo||(view.roomFraction?relative(view.roomFraction):null);
+    if(target)for(const waypoint of [...(view.via||[]),target])moves.push(await walkTo(waypoint,view.floor));
+    const current=await pose(),actualLocal=frame.toLocal(current.position[0],current.position[2],current.position[1]);
+    const local=view.roomSpawn?(target?[...target,plan.elevation+1.57]:actualLocal):[view.x,view.z,view.eye];
     const p=frame.toSite(...local);
-    const end=frame.toSite(local[0]+Math.sin(view.yaw)*Math.cos(view.pitch),
-      local[1]-Math.cos(view.yaw)*Math.cos(view.pitch),local[2]+Math.sin(view.pitch));
-    const yaw=degrees(Math.atan2(-(end[0]-p[0]),end[1]-p[1])),pitch=degrees(view.pitch);
+    const aim=view.aim||(view.aimRoomFraction?relative(view.aimRoomFraction):null);
+    const localYaw=aim?Math.atan2(aim[0]-actualLocal[0],-(aim[1]-actualLocal[1])):view.yaw;
+    const origin=view.roomSpawn?actualLocal:local,start=frame.toSite(...origin);
+    const end=frame.toSite(origin[0]+Math.sin(localYaw)*Math.cos(view.pitch),
+      origin[1]-Math.cos(localYaw)*Math.cos(view.pitch),origin[2]+Math.sin(view.pitch));
+    const yaw=degrees(Math.atan2(-(end[0]-start[0]),end[1]-start[1])),pitch=degrees(view.pitch);
     let customUrl=null;
     if(!view.roomSpawn){
       customUrl=await navigate(await share(),{mode:'eye',preset:'custom',observerX:p[0],observerY:p[1],
@@ -152,22 +266,23 @@ export async function captureOpenLivingViews(page,{
       await walking(view.floor,{timeout:remaining(),settled:true,afterFrame:beforeWalk});
     }
     const {drags,afterFrame}=await turnTo(yaw,pitch);
-    await walking(view.floor,{timeout:remaining(),settled:true,afterFrame});
+    const finalFrame=afterFrame??moves.at(-1)?.samples.at(-1)?.frames[0]??null;
+    await walking(view.floor,{timeout:remaining(),settled:true,afterFrame:finalFrame});
     const actual=await pose();
     assert.equal(actual.floor,view.floor);assert.equal(actual.navigation,'free');assert.equal(actual.fov,70);
-    assert.ok(Math.hypot(actual.position[0]-p[0],actual.position[2]-p[1])<.015,'Public camera controls must retain the intended interior location');
-    const eye=view.roomSpawn?1.57:view.eye,elevation=view.floor==='basement'?basementPlan.elevation:0;
+    assert.ok(Math.hypot(actual.position[0]-p[0],actual.position[2]-p[1])<(target?.17:.015),'Public camera controls must retain the intended interior location');
+    const eye=view.roomSpawn?1.57:view.eye,elevation=plan.elevation;
     assert.ok(Math.abs(actual.altitude-(frame.floorZ+elevation+eye))<.015,
       'The camera must be 1.57 m above its actual room floor');
     if(view.roomSpawn){
-      const room=basementPlan.rooms.find(r=>r.id===view.room);assert.ok(room);
-      assert.ok(containsPoint(room.polygon,...local.slice(0,2)),'The public room spawn must lie inside the selected basement room');
+      assert.ok(containsPoint(room.polygon,...actualLocal.slice(0,2)),'The public walking viewpoint must lie inside its selected room');
     }
     await canvas().scrollIntoViewIfNeeded({timeout:remaining()});
     const name=`${view.floor}-${style}-${view.id}-daylight`;
-    await shot(name,'#scene-host canvas');
+    await shot(name,'#scene-host canvas',{timeout:remaining()});
     report.views.push({name,room:view.room,requestedLocal:view,requestedSite:{x:p[0],y:p[1],altitude:p[2],yaw,pitch},
-      actual,spawn,drags,customUrl});
+      actual,spawn,moves,drags,customUrl});
+    report.elapsedMs=Date.now()-started;await onProgress?.(report);
   }
   if(restore){
     await page.goto(restoreUrl,{waitUntil:'domcontentloaded',timeout:remaining()});
@@ -175,5 +290,6 @@ export async function captureOpenLivingViews(page,{
     report.restored=true;
   }
   report.elapsedMs=Date.now()-started;
+  await onProgress?.(report);
   return report;
 }

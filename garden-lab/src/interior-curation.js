@@ -1,6 +1,6 @@
 // Movable furniture and light positions, in the same measured local metres as
 // the architectural plan. These arrangements never move walls or wet fittings.
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.38.0';
 const intent=(name,layout,tableWidth,tableDepth,tableX,tableZ,seatSpan,readingX,lamp)=>Object.freeze({
   name,layout,tableWidth,tableDepth,tableX,tableZ,seatSpan,readingX,lamp,
 });
@@ -104,11 +104,12 @@ function firstFixtures(plan,c){
     bed.width=c.bedWidth;bed.x+=shift;
     byId('master-nightstand-west').x-=addedWidth;
   }
-  if(c.office==='floating'){
+  const fixedOffice=byId('office-desk').fixedLayout;
+  if(c.office==='floating'&&!fixedOffice){
     Object.assign(byId('office-desk'),{x:6.27,z:1.97,width:1.72,depth:.74,front:[0,1],label:'Freestanding desk facing the room'});
     Object.assign(byId('office-chair'),{x:6.27,z:2.88,front:[0,-1]});
   }
-  const deskShift=c.office==='floating'?0:(c.tableZ-2.5)*.5;
+  const deskShift=fixedOffice||c.office==='floating'?0:(c.tableZ-2.5)*.5;
   byId('office-desk').z+=deskShift;byId('office-chair').z+=deskShift;
   items.unshift(rug('master-rug','master',2.18+shift,3.35,3.02,2.80));
   items.push(
@@ -116,7 +117,7 @@ function firstFixtures(plan,c){
     f('master-reading-table','sideTable','Bedside reading and tea table','master',1.98,1.25,.40,.40,{height:.42}),
     lamp('master-reading-light','master',.69,.76,c.lamp),
     f('master-bedside-light','tableLamp','Soft bedside lamp','master',byId('master-nightstand-east').x,byId('master-nightstand-east').z,.25,.25,{hostId:'master-nightstand-east',baseHeight:.55,height:.40,lamp:c.lamp}),
-    f('office-task-light','tableLamp','Focused desk light','office',c.office==='floating'?6.84:4.99,c.office==='floating'?1.86:1.58+deskShift,.22,.22,{hostId:'office-desk',baseHeight:.78,height:.42,lamp:c.lamp}),
+    f('office-task-light','tableLamp','Focused desk light','office',fixedOffice?4.91:c.office==='floating'?6.84:4.99,fixedOffice?.70:c.office==='floating'?1.86:1.58+deskShift,.22,.22,{hostId:'office-desk',baseHeight:.78,height:.42,lamp:c.lamp}),
   );
   return items;
 }
@@ -132,6 +133,6 @@ export function curateInteriorPlan(plan,styleId='current'){
   }));
   const dining=fixtures.find(item=>item.kind==='diningTable');
   if(dining)lamps.unshift({id:'dining-pendant',roomId:dining.roomId,x:dining.x,z:dining.z,height:2.15,intensity:3.0,distance:3.2});
-  return {...plan,fixtures,interiorLights:lamps,furnishingConcept:{id:styleId,name:c.name,layout:c.layout,lamp:c.lamp,kitchen:c.kitchen,office:c.office,bedWidth:c.bedWidth,
+  return {...plan,fixtures,interiorLights:lamps,furnishingConcept:{id:styleId,name:c.name,layout:c.layout,lamp:c.lamp,kitchen:c.kitchen,office:fixtures.some(f=>f.id==='office-desk'&&f.fixedLayout)?'shared-desk':c.office,bedWidth:c.bedWidth,
     glazingClearance:1,description:'A composed lounge, a clear route to the garden, practical dining and a quiet bedroom reading corner.'}};
 }

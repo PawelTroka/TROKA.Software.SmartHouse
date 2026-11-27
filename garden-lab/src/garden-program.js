@@ -1,7 +1,7 @@
 /** Proposed garden objects, in the mapped local metre frame. No height model. */
-import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.37.0';
-import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.37.0';
-import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.37.0';
+import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.38.0';
+import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.38.0';
+import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.38.0';
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){
@@ -17,7 +17,7 @@ export function poolBounds(settings={},data){
   // is a conceptual trunk-centre to finished-coping allowance, not a certified
   // root-ball, excavation or maintenance clearance. Historical pools stay fixed.
   const renovation=getRenovationGardenRecipe(settings,data);
-  const pool=summerGardenEnabled(settings,data)?SUMMER_POOL:renovation?renovation.pool:pavilionAlternativeEnabled(settings,data)?{x:2,y:25,width:3.5,length:8}:spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
+  const pool=summerGardenEnabled(settings,data)?summerPoolBounds(settings):renovation?renovation.pool:pavilionAlternativeEnabled(settings,data)?{x:2,y:25,width:3.5,length:8}:spaEnabled(settings,data)?{x:poolGrove?14.52:['spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner'].includes(settings.gardenProgram)?15.7:14.7,
     y:poolGrove?26.30:aligned||screened?19.5:24.5,width:3.5,length:poolGrove?8:aligned?6:screened||grove?7:8}:data.site.pool;
   if(!pool)return null;
   const copingRise=.075;
@@ -105,7 +105,7 @@ export function gardenProgram(settings={},data){
   firepit.viewpoint={x:firepit.x+2.2,y:firepit.y+3.88,eyeHeight:1.1,lookAt:[10.5,21]};
 
   const coldPlunge={id:'coldPlunge',label:'Cold plunge',x:edge?6.6:8.3,y:edge?35.55:33.2,width:2.2,length:1.3,
-    sunken:summer,height:summer?.02:.75,waterOffset:summer?-.06:.68,waterDepth:1.1,rim:.12,pad:.18};
+    sunken:summer,height:summer?0:.75,waterOffset:summer?-.08:.68,waterDepth:1.1,rim:.12,pad:.18};
   coldPlunge.anchor=centre(coldPlunge);coldPlunge.footprint=rectRing(coldPlunge);
   coldPlunge.waterBounds={x:coldPlunge.x+coldPlunge.rim,y:coldPlunge.y+coldPlunge.rim,
     width:coldPlunge.width-2*coldPlunge.rim,length:coldPlunge.length-2*coldPlunge.rim};

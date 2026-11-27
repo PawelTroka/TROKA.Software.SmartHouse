@@ -1,10 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.37.0';
-import {furnishInterior} from './interior-furniture.js?v=1.37.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.37.0';
-import {stairTreads} from './stair-surfaces.js?v=1.37.0';
-import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.37.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.38.0';
+import {furnishInterior} from './interior-furniture.js?v=1.38.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.38.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.38.0';
+import {stairTreads} from './stair-surfaces.js?v=1.38.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.38.0';
+import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.38.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -43,10 +44,10 @@ export function updateHstOpening(root,settings={}){
   let updated=0;
   root?.traverse(node=>{
     const leaf=node.userData.hstLeaf;if(!leaf)return;
-    const panel=hstPanelLayout(leaf.opening,settings).panels[leaf.index];
+    const system=slidingPanelLayout({...leaf.opening,openFraction:leaf.open},settings),panel=system.panels[leaf.index];
     const delta=panel.centre-leaf.centre;
     if(Math.abs(delta)>1e-10){node.translateX(delta);updated++;}
-    node.userData.hstLeaf={...leaf,centre:panel.centre,lo:panel.lo,hi:panel.hi};
+    node.userData.hstLeaf={...leaf,open:system.open,centre:panel.centre,lo:panel.lo,hi:panel.hi};
   });
   return updated;
 }
@@ -88,7 +89,7 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
       box(g,frame,left+w/2,bottom+sillWidth/2,0,w,sillWidth,.098);
       if(o.type==='window')box(g,m.stone,left+w/2,bottom-.014,0,w+.072,.039,th+.127);
       if(['hst','balcony-door'].includes(o.type)){
-        const system=o.type==='hst'?hstPanelLayout({...o,width:w},state):balconyPanelLayout({...o,width:w});
+        const system=slidingPanelLayout({...o,width:w},state);
         for(const panel of system.panels){
           const z=panel.track-.047,fw=panel.frameWidth;
           const leaf=group(g,panel.centre,0,z);
@@ -96,10 +97,8 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
           for(const yy of [bottom+frameWidth*1.5,top-frameWidth*1.5])box(leaf,frame,0,yy,0,panel.width,frameWidth,.042);
           box(leaf,m.glass,0,bottom+h/2,0,panel.width-2*fw,h-4*frameWidth,.009);
           if(!panel.fixed)box(leaf,frame,panel.width/2-fw*2,bottom+Math.min(1.05,h*.48),.032,.014,.22,.025);
-          if(o.type==='hst'){
-            batchGroup(leaf);leaf.name='hst-leaf-'+panel.index;leaf.userData.preserveTransform=true;
-            leaf.userData.hstLeaf={opening:{offset:left,width:w},index:panel.index,centre:panel.centre,lo:panel.lo,hi:panel.hi};
-          }
+          batchGroup(leaf);leaf.name=(o.type==='hst'?'hst':'balcony')+'-leaf-'+panel.index;leaf.userData.preserveTransform=true;
+          leaf.userData.hstLeaf={opening:{type:o.type,offset:left,width:w},control:system.control,open:system.open,index:panel.index,centre:panel.centre,lo:panel.lo,hi:panel.hi};
           box(g,m.dark,left+w/2,bottom+.006,z,w,.012,.012);
         }
         g.userData.hst={...system,openingWidth:w};
@@ -188,11 +187,36 @@ export function addFlight(parent,s,plan,tools,m) {
   }
   for(const a of [-1,1]){
     const x=a*(w/2-.018);rod(g,wood,[x,.01,-length/2],[x,straight*riser-.11,length/2-corner],.047);
-    if(a===1&&s.kind!=='exterior')continue;
-    const railH=s.kind==='exterior'?.86:.81;
-    rod(g,m.wood,[x,railH+riser,-length/2],[x,railH+straight*riser,length/2-corner],.028);
-    for(let i=0;i<straight;i+=2){const y=(i+1)*riser,z=-length/2+(i+.5)*run;rod(g,m.frame,[x,y,z],[x,y+railH,z],.012);}
+    if(a===1&&s.kind!=='exterior'&&plan.layout!=='renovation')continue;
+    const renovated=s.kind!=='exterior'&&plan.layout==='renovation',railH=s.kind==='exterior'?.86:renovated?1.05:.81;
+    rod(g,renovated?m.oak:m.wood,[x,railH+riser,-length/2],[x,railH+straight*riser,length/2-corner],.028);
+    if(renovated){
+      const count=Math.max(1,Math.ceil(straight*run/.105));
+      for(let i=0;i<=count;i++){
+        const t=i/count,z=-length/2+t*straight*run,y=(Math.min(straight-1,Math.floor(t*straight))+1)*riser;
+        rod(g,m.oak,[x,y,z],[x,railH+riser+t*(straight-1)*riser,z],.017);
+      }
+    }else for(let i=0;i<straight;i+=2){const y=(i+1)*riser,z=-length/2+(i+.5)*run;rod(g,m.frame,[x,y,z],[x,y+railH,z],.012);}
   }
+}
+
+function addLandingGuards(parent,plan,tools,m){
+  const guards=stairLandingGuards(plan),{group,box,rod}=tools;
+  for(const guard of guards){
+    const dx=guard.b[0]-guard.a[0],dz=guard.b[1]-guard.a[1],length=Math.hypot(dx,dz),count=Math.max(1,Math.ceil(length/.11));
+    const g=group(parent,guard.a[0],0,guard.a[1],-Math.atan2(dz,dx));g.name=guard.id;
+    const top=t=>landingGuardTop(plan,guard.a[0]+dx*t,guard.a[1]+dz*t,guard.height),width=Math.min(.032,length/3);
+    for(let i=0;i<=count;i++){
+      const t=i/count,height=top(t);if(height<.07)continue;
+      box(g,m.oak,t*length,(height-.025)/2,0,width,Math.max(.035,height-.025),.032);
+    }
+    for(let i=0;i<count;i++){
+      const t0=i/count,t1=(i+1)/count,h0=top(t0),h1=top(t1);if(Math.max(h0,h1)<.07)continue;
+      rod(g,m.oak,[t0*length,Math.max(.025,h0-.025),0],[t1*length,Math.max(.025,h1-.025),0],.025);
+      if(Math.min(h0,h1)>.14)box(g,m.oak,(t0+t1)*length/2,.065,0,length/count+.002,.035,.032);
+    }
+  }
+  return guards;
 }
 function makePendant(g,x,z,y,tools,m,kind) {
   const {rod,cyl,oval,box,group}=tools,h=Math.min(.53,y*.21),lampY=y-h-.09;
@@ -419,10 +443,27 @@ export function buildArchitecture(plan,state,tools,finishes) {
       }
     }
   }
+  const integratedFlues=plan.layout==='renovation'&&design.id!=='current';
   for(const c of plan.cores||[]) {const b=ringBounds(c.polygon),pair=wallPair('partition'),top=attic?roofClearance(plan,b.z):h;
     for(const [node,height] of [[pair.full,top],[pair.cut,Math.min(.79,top)]]){
       box(node,m.brick,b.x,height/2,b.z,b.width,height,b.depth);box(node,m.stone,b.x,height+.013,b.z,b.width+.022,.026,b.depth+.022);
       const n=c.flues||2,along=b.width>b.depth;for(let i=0;i<n;i++){const t=(i+.5)/n-.5;box(node,m.dark,b.x+(along?t*b.width:0),height+.029,b.z+(along?0:t*b.depth),along?b.width/n*.56:b.width*.48,.008,along?b.depth*.51:b.depth/n*.54);}
+      if(integratedFlues){
+        // Retain the surveyed masonry inside a separate mineral finish skin.
+        // Every side follows the selected wall finish, including bathroom,
+        // landing and attic faces outside the ground-floor cabinet enclosure.
+        const skin=.016;
+        for(const side of [-1,1]){
+          box(node,m.wall,b.x+side*(b.width+skin)/2,height/2,b.z,skin,height,b.depth+2*skin);
+          box(node,m.wall,b.x,height/2,b.z+side*(b.depth+skin)/2,b.width,height,skin);
+        }
+        box(node,m.wall,b.x,height+.018,b.z,b.width+2*skin,.036,b.depth+2*skin);
+        const trimHeight=Math.min(.081,height);
+        for(const side of [-1,1]){
+          box(node,m.trim,b.x+side*(b.width+2*skin+.008)/2,trimHeight/2,b.z,.008,trimHeight,b.depth+2*skin+.016);
+          box(node,m.trim,b.x,trimHeight/2,b.z+side*(b.depth+2*skin+.008)/2,b.width+2*skin,trimHeight,.008);
+        }
+      }
       if(c.enclosure?.kind==='cabinet-panels'){
         // Continue the refrigerator wall's cabinetry around the intact stack.
         // Thin removable faces leave the flue volume untouched; their full
@@ -433,6 +474,7 @@ export function buildArchitecture(plan,state,tools,finishes) {
     }
   }
   for(const s of plan.stairs||[]){if(s.kind==='exterior'&&state.showExterior===false)continue;addFlight(s.kind==='exterior'?base:stairs,s,plan,tools,m);if(s.kind==='hatch'&&s.from===floor){const b=ringBounds(s.polygon);for(const side of [-1,1]){box(ceiling,m.trim,b.x+side*b.width/2,h-.052,b.z,.035,.05,b.depth);box(ceiling,m.trim,b.x,h-.052,b.z+side*b.depth/2,b.width,.05,.035);}}}
+  const landingGuards=addLandingGuards(base,plan,tools,m);
   for(const surface of plan.outdoor||[]) {
     if(state.showOutdoor===false||state.showExterior===false&&surface.kind==='landing')continue;
     const b=ringBounds(surface.polygon),mat=surface.kind==='landing'?m.concrete:m.boards;
@@ -478,6 +520,7 @@ export function buildArchitecture(plan,state,tools,finishes) {
   for(const node of [base,ceiling,props,decor,changes,stairs,...[...sides.values()].flatMap(s=>[s.full,s.cut])])batchGroup(node);
   stairs.visible=state.showStairs!==false;
   root.position.y=plan.elevation;root.userData.interiorRecipe=design.id;
+  root.userData.stairLandingGuards=landingGuards;root.userData.integratedFlues=integratedFlues;
   return {root,groups:{base,ceiling,props,decor,changes,stairs,sides}, updateVisibility(view,camera,opts={}){let changed=false;const room=view==='room'||view==='building';ceiling.visible=room&&opts.showCeiling!==false;props.visible=opts.showFurniture!==false;decor.visible=props.visible;const stairsVisible=(opts.showStairs??state.showStairs)!==false;if(stairs.visible!==stairsVisible)changed=true;stairs.visible=stairsVisible;
     for(const [direction,s] of sides){const far=direction==='left'?camera.x>outlineBox.x:direction==='right'?camera.x<outlineBox.x:direction==='rear'?camera.z>outlineBox.z:direction==='front'?camera.z<outlineBox.z:false;
       if(s.full.visible!==(room||far))changed=true;s.full.visible=room||far;s.cut.visible=!s.full.visible;}return changed;

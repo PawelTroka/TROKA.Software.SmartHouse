@@ -90,7 +90,7 @@ test('entering the pool and jacuzzi lowers the eye to water level and exiting re
   assert.equal(pose.swimming,false);near(pose.position[1],gardenGroundAt(pose.position[0],pose.position[2],settings,data)+1.57);
   pose=walk.locateFree([(tub.x0+tub.x1)/2,tub.z+1.57,(tub.y0+tub.y1)/2],{floorHint:'ground'});
   assert.equal(pose.swimming,true);assert.equal(pose.surface,'jacuzzi-water');near(pose.position[1],tub.waterZ+.35);
-  pose=goWorld(walk,pose,[tub.x1+.4,0,(tub.y0+tub.y1)/2]);
+  pose=goWorld(walk,pose,[tub.x0-.4,0,(tub.y0+tub.y1)/2]);
   assert.equal(pose.swimming,false);near(pose.position[1],tub.z+1.57);
   const above=walk.locateFree([(tub.x0+tub.x1)/2,walk.frame.floorZ+walk.plans.first.elevation+1.57,(tub.y0+tub.y1)/2],{floorHint:'first'});
   assert.equal(above.swimming,false,'the tub must not pull the balcony camera down');

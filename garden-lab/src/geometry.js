@@ -3,20 +3,21 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.37.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.37.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.37.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.37.0';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.37.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.37.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.37.0';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.37.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.38.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.38.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.38.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.38.0';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.38.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.38.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.38.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.38.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.37.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.37.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.37.0';
-import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.37.0';
-import {boundaryFenceLayout,firstBoundaryIntersection} from './boundary-fence.js?v=1.37.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.38.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.38.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.38.0';
+import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.38.0';
+import {boundaryFenceLayout,firstBoundaryIntersection} from './boundary-fence.js?v=1.38.0';
+import {jacuzziCoverLayout,coldPlungeCoverLayout,spaCoverSurfaceAt} from './spa-covers.js?v=1.38.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -82,17 +83,24 @@ function plungeGradeProfile(settings,data){
   const key=[settings.gardenProgram,number(settings.gardenRaise),settings.designStyle,settings.styleGardenLayout].join(':');
   const cached=plungeGradeCache.get(data);if(cached?.key===key)return cached.profile;
   const c=gardenProgram(settings,data).coldPlunge;if(!c?.sunken)return null;
-  const bounds=c.surroundBounds,nx=Math.ceil(bounds.width/.25),ny=Math.ceil(bounds.length/.25);
+  const pocket=coldPlungeCoverLayout(c,{rimZ:0}).parkedBounds;
+  const bounds={...c.surroundBounds,width:Math.max(c.surroundBounds.x+c.surroundBounds.width,pocket.x+pocket.width+.06)-c.surroundBounds.x};
+  const nx=Math.ceil(bounds.width/.25),ny=Math.ceil(bounds.length/.25);
   let low=Infinity,high=-Infinity;
   for(let ix=0;ix<=nx;ix++)for(let iy=0;iy<=ny;iy++){
     const z=ungradedGardenGroundAt(bounds.x+bounds.width*ix/nx,bounds.y+bounds.length*iy/ny,settings,data);low=Math.min(low,z);high=Math.max(high,z);
   }
-  const profile={bounds,feather:1.2,groundZ:high,naturalLowZ:low,naturalHighZ:high};
+  // Peg the finished apron to its garden-facing approach. The previous high
+  // corner datum lifted this approach by 24 cm, making an excavated basin read
+  // as a raised tub. Cut back the uphill side instead of building that mound.
+  const approach=[c.anchor[0],c.y-c.pad];
+  const profile={bounds,feather:1.2,groundZ:ungradedGardenGroundAt(...approach,settings,data),
+    approach,naturalLowZ:low,naturalHighZ:high};
   plungeGradeCache.set(data,{key,profile});return profile;
 }
 
 /** Shared finished grade. Only the sunken plunge's small apron is locally
- * levelled, with a smooth 1.2 m feather into the mapped garden. The water
+ * levelled to its approach, with a smooth 1.2 m feather into the mapped garden. The water
  * opening is still excavated by the normal terrain cutout; no trees move. */
 export function gardenGroundAt(x,y,settings,data){
   const natural=ungradedGardenGroundAt(x,y,settings,data),profile=plungeGradeProfile(settings,data);
@@ -175,6 +183,7 @@ export function spaLevels(settings={},data){
     // phantom access stair remains above this small finished stone apron.
     Object.assign(result.coldPlunge,{padBaseZ:cr.low-.08,padTopZ:result.coldPlunge.rimZ,
       entryGroundZ:gardenGroundAt(c.anchor[0],c.y-cp,settings,data),entryRiser:0,steps:[],grading:plungeGradeProfile(settings,data)});
+    result.coldPlunge.cover=coldPlungeCoverLayout(c,result.coldPlunge,settings);
   }else if(edge){
     const entry=entryStepLevels(c.steps,result.coldPlunge.rimZ,settings,data);
     Object.assign(result.coldPlunge,{padBaseZ:cr.low-.08,steps:entry.steps,entryGroundZ:entry.approachZ,entryRiser:entry.riser});
@@ -250,7 +259,7 @@ export function spaLayoutWarnings(settings={},data){
     const expanded=(r,pad)=>footprintOf({x:r.x-pad,y:r.y-pad,width:r.width+2*pad,length:r.length+2*pad});
     const checks=[['pool coping',expanded(program.pool,program.pool.coping),levels.pool.copingTopZ],
       ['sauna floor',program.sauna.footprint,levels.sauna.floorZ],
-      ['cold-plunge pad',expanded(program.coldPlunge,program.coldPlunge.pad),levels.coldPlunge.baseZ+.02]];
+      ['cold-plunge pad',expanded(program.coldPlunge,program.coldPlunge.pad),levels.coldPlunge.padTopZ]];
     const conflicts=checks.filter(([,ring,top])=>ring.slice(0,-1).some((a,i)=>{
       const b=ring[i+1],count=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.25));
       for(let j=0;j<=count;j++)if(bedTop(a[0]+(b[0]-a[0])*j/count,a[1]+(b[1]-a[1])*j/count)>top+.005)return true;
@@ -269,6 +278,7 @@ const withinRect=(x,y,r)=>x>=r.x-EPS&&x<=r.x+r.width+EPS&&y>=r.y-EPS&&y<=r.y+r.l
 export function spaSurfaceAt(x,y,settings={},data){
   const program=gardenProgram(settings,data);if(!program.active)return null;
   const levels=spaLevels(settings,data);
+  const cover=spaCoverSurfaceAt(x,y,levels.coldPlunge?.cover);if(cover)return cover;
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
   const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
   if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
@@ -365,13 +375,20 @@ export function observerForPreset(preset = 'sofa', settings = {}, data) {
     values.firepit=[fp.x,fp.y,fp.eyeHeight,'Fire lounge · seated','firepit'];
   }
   let [x, y, defaultEye, label, surface] = values[preset] || values.custom;
+  let supportingSurface=null;
   if (surface === 'auto') {
     const onTerrace = x >= data.site.terrace.x && x <= data.site.terrace.x + width && y >= rearY && y <= rearY + depth;
-    surface = onTerrace || pointInPolygon([x, y], data.site.house.footprint) ? 'floor' : spaSurfaceAt(x,y,s,data)?.surface||'garden';
+    const onFloor=onTerrace||pointInPolygon([x,y],data.site.house.footprint);
+    // A closed lid or its parked stack is the actual supporting surface,
+    // including the half panels at different elevations. Resolve it before
+    // the underlying terrace/soil; named upper-floor views return above.
+    supportingSurface=spaCoverSurfaceAt(x,y,jacuzziCoverLayout(tub,s))||spaCoverSurfaceAt(x,y,levels?.coldPlunge?.cover)
+      ||(!onFloor?spaSurfaceAt(x,y,s,data):null);
+    surface=supportingSurface?.surface||(onFloor?'floor':'garden');
   }
   const eyeHeight = number(settings.eyeHeight, defaultEye);
-  const groundZ = surface==='floor'?floorElevation(s,data):surface==='sauna'?levels.sauna.floorZ:
-    ['firepit','sauna-entry','plunge-entry'].includes(surface)?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data);
+  const groundZ = supportingSurface?.groundZ??(surface==='floor'?floorElevation(s,data):surface==='sauna'?levels.sauna.floorZ:
+    ['firepit','sauna-entry','plunge-entry'].includes(surface)?spaSurfaceAt(x,y,s,data).groundZ:gardenGroundAt(x,y,s,data));
   const target=program.active&&(preset==='sauna'||preset==='firepit')?program[preset==='sauna'?'sauna':'firepit'].viewpoint.lookAt:null;
   const defaultLookYaw=preset==='front'?number(data.site.streetView?.lookYaw,data.site.streetView?.yaw??180):target?Math.atan2(-(target[0]-x),target[1]-y)*180/Math.PI:0;
   return {x,y,z:groundZ+eyeHeight,preset,label,eyeHeight,groundZ,surface,defaultLookYaw,defaultLookPitch:0};

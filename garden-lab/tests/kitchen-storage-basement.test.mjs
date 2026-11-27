@@ -34,19 +34,22 @@ function furnished(plan,styleId){
   return {root,dispose(){root.traverse(n=>{if(n.geometry&&!n.geometry.userData.sharedPrimitive)n.geometry.dispose();});tools.dispose();Object.values(m).forEach(material=>material.dispose());}};
 }
 
-test('all renovated kitchens close upper and corner gaps while keeping the sink window and 1.18 m entry',()=>{
+test('all renovated kitchens close the pantry corner while leaving the sink window entirely uncapped and the entry 1.18 m wide',()=>{
   for(const styleId of Object.keys(INTERIOR_COMPOSITIONS)){
     const plan=getHouseFloorPlan({settings:{designStyle:styleId}}),byId=id=>plan.fixtures.find(f=>f.id===id);
     const upper=plan.fixtures.filter(f=>f.ceilingFitted);
-    assert.equal(upper.length,7,styleId);
+    assert.equal(upper.length,6,styleId);
     for(const f of upper){near((f.baseHeight||0)+f.height,2.70);near((f.baseHeight||0)+f.height+f.ceilingScribe,plan.clearHeight);}
     const cooking=fixtureBounds(byId('kitchen-wall-storage')),corner=fixtureBounds(byId('kitchen-corner-storage')),
-      header=fixtureBounds(byId('kitchen-sink-header')),side=fixtureBounds(byId('kitchen-sink-side-storage')),
+      side=fixtureBounds(byId('kitchen-sink-side-storage')),
       pantryCorner=fixtureBounds(byId('kitchen-pantry-corner')),pantry=fixtureBounds(byId('east-counter'));
-    near(corner.z1,cooking.z0);near(header.z1,corner.z0);near(side.z1,header.z0);
-    near(pantry.z1,pantryCorner.z0);near(pantryCorner.z1,cooking.z0);
+    near(corner.z1,cooking.z0);near(pantry.z1,pantryCorner.z0);near(pantryCorner.z1,cooking.z1);
+    near(pantryCorner.x0-cooking.x1,.005);
+    assert.equal(byId('kitchen-pantry-corner').kind,'storage');assert.ok(!byId('kitchen-pantry-corner').baseHeight);
+    assert.equal(byId('kitchen-sink-header'),undefined,'the over-window cabinet was explicitly removed');
     const window=plan.walls.find(w=>w.id==='left-facade').openings.find(o=>o.roomId==='front-kitchen');
-    assert.ok(byId('kitchen-sink-header').baseHeight>=window.sill+window.height+.079);
+    const windowStart=plan.walls.find(w=>w.id==='left-facade').a[1]+window.offset,windowEnd=windowStart+window.width;
+    assert.ok(side.z1<windowStart-.05&&corner.z0>windowEnd+.05,'side returns must leave the complete window reveal clear');
     near(byId('kitchen-fridge-top').baseHeight-byId('kitchen-fridge').height,.02);
     const island=byId('kitchen-island'),enclosure=ringBounds(plan.cores.find(c=>c.id==='west-flue').enclosure.polygon);
     near(enclosure.x0-island.x-island.width/2,1.18);near(island.width,2.20);
@@ -56,7 +59,18 @@ test('all renovated kitchens close upper and corner gaps while keeping the sink 
         const object=model.root.children.find(o=>o.userData.fixtureId===f.id),box=new THREE.Box3().setFromObject(object);
         near(box.max.y,plan.clearHeight,2e-5);
         assert.ok(box.min.y>=(f.baseHeight||0)-1e-5,styleId+' upper front or handle hangs below its fitted cabinet');
-        if(f.id==='kitchen-sink-header')assert.ok(box.min.y>window.sill+window.height+.075,styleId+' rendered header covers glazing');
+      }
+      // The screenshot showed an open alcove above the worktop beside the
+      // tall pantry. Test that its actual middle-height front is now closed.
+      const cornerObject=model.root.children.find(o=>o.userData.fixtureId==='kitchen-pantry-corner');
+      for(const y of [1.03,1.20,1.43,2.30]){
+        const ray=new THREE.Raycaster(new THREE.Vector3(3.25,y,8.17),new THREE.Vector3(1,0,0),0,1.1);
+        const hit=ray.intersectObject(cornerObject,true)[0];assert.ok(hit,styleId+' still has an empty pantry-corner recess at '+y);
+        assert.ok(hit.point.x<3.80,styleId+' corner front is recessed behind the adjoining pantry');
+      }
+      for(const y of [window.sill+window.height+.12,plan.clearHeight-.03]){
+        const ray=new THREE.Raycaster(new THREE.Vector3(1.1,y,(windowStart+windowEnd)/2),new THREE.Vector3(-1,0,0),0,.8);
+        assert.equal(ray.intersectObject(model.root,true).length,0,styleId+' still has cabinetry above the sink window');
       }
     }finally{model.dispose();}
   }
@@ -68,7 +82,7 @@ test('ceiling-fitted storage follows edited floor levels without extending throu
   for(const firstFloorRise of [2.70,3.05,3.40]){
     const plan=getHouseFloorPlan({settings:{designStyle:'warm-minimal',firstFloorRise}});
     for(const f of plan.fixtures.filter(f=>f.ceilingFitted))near((f.baseHeight||0)+f.height+f.ceilingScribe,plan.clearHeight);
-    if(firstFloorRise===2.70)assert.ok(!plan.fixtures.some(f=>f.id==='kitchen-sink-header'),'omit a header that cannot fit above the unchanged sink window');
+    assert.ok(!plan.fixtures.some(f=>f.id==='kitchen-sink-header'),'the sink window stays uncapped at every ceiling height');
   }
 });
 
@@ -141,9 +155,14 @@ function circulation(plan){
 }
 
 test('a 0.60 m route reaches every new equipment approach from the retained stair with both mirrored car envelopes present',()=>{
-  const {plan}=setup(),reachable=circulation(plan);
-  for(const f of plan.fixtures.filter(f=>f.approach))assert.ok(reachable(f.approach),f.id+' has no usable route');
-  const mat=plan.fixtures.find(f=>f.activityZone);assert.ok(reachable([mat.x,mat.z]));
+  for(const gymBenchParked of [true,false]){
+    const {plan}=setup({gymBenchParked}),reachable=circulation(plan),bench=plan.fixtures.find(f=>f.id==='gym-bench');
+    assert.equal(bench.parked,gymBenchParked,'the selected bench position reaches the shared house plan');
+    for(const f of plan.fixtures.filter(f=>f.approach))assert.ok(reachable(f.approach),f.id+' has no usable route with bench '+(gymBenchParked?'parked':'in use'));
+    const mat=plan.fixtures.find(f=>f.activityZone);assert.ok(reachable([mat.x,mat.z]));
+    const solid=plan.fixtures.filter(f=>f.kind!=='car'&&!f.wallMounted&&!f.hostId&&!f.nonBlocking);
+    for(const [i,a]of solid.entries())for(const b of solid.slice(i+1))assert.ok(!overlaps(fixtureBounds(a),fixtureBounds(b)),a.id+' overlaps '+b.id);
+  }
 });
 
 test('the real shared walking engine reaches both basement rooms around parked Cybersters and preserves free exploration',()=>{

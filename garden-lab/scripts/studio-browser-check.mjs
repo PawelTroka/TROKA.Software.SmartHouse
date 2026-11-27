@@ -50,7 +50,7 @@ const sceneCaptureSize=()=>el('#scene-host canvas').evaluate(canvas=>{
 const waitFrames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
 const stats=()=>el('#render-diagnostics').evaluate(node=>Object.fromEntries(Object.entries(node.dataset).map(([k,v])=>
   [k,k==='motionActive'?v==='true':Number.isFinite(Number(v))?Number(v):v])));
-const sceneVisible=async(timeout=35000)=>{
+const sceneVisible=async(timeout=SCENE_TRANSITION_TIMEOUT)=>{
   await el('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
   await page.waitForFunction(()=>document.querySelector('#render-diagnostics').dataset.renderer==='webgl'&&
     Number(document.querySelector('#render-diagnostics').dataset.frames)>0,null,{timeout});
@@ -104,10 +104,15 @@ async function shot(name,selector){
   }
   return image;
 }
-async function exportDesign(){
-  const result=page.waitForEvent('download');
-  await el('#export').click();
-  return JSON.parse(await readFile(await (await result).path(),'utf8'));
+async function exportDesign({timeout=SCENE_TRANSITION_TIMEOUT}={}){
+  // A preceding layout change can still be drawing in software WebGL when
+  // this control is scrolled into view. Bound both parts as a scene transition
+  // and attach both rejection handlers before either operation can time out.
+  const [download]=await Promise.all([
+    page.waitForEvent('download',{timeout}),
+    el('#export').click({timeout}),
+  ]);
+  return JSON.parse(await readFile(await download.path(),'utf8'));
 }
 async function pixelChange(a,b){
   const sizeA=sceneCaptures.get(a),sizeB=sceneCaptures.get(b);
@@ -231,7 +236,9 @@ try{
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,
     args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--disable-dev-shm-usage']});
   const ctx=await browser.newContext({viewport:{width:1280,height:900},deviceScaleFactor:1.5,reducedMotion:'reduce',acceptDownloads:true});
-  page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
+  // Scrolling a control into view can resume a full software-WebGL frame.
+  // Use the same bounded transition budget for actions and their render waits.
+  page=await ctx.newPage();page.setDefaultTimeout(SCENE_TRANSITION_TIMEOUT);page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
   let before;
   if(runsGroup('garden-living'))await verifyGardenLiving({page,el,stats,sceneVisible,style,shot,exportDesign,check,report,details,settledInfo,ready});

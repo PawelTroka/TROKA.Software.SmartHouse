@@ -1,7 +1,7 @@
 /** Architectural garden proposals in site metres. These feed the existing pool,
  * excavation, sunlight, privacy, plan and budget models; they are not overlays. */
-import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.37.0';
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
+import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.38.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.38.0';
 const rect=(x,y,width,length)=>Object.freeze({x,y,width,length});
 const scheme=(name,pool,firepit,dining,loungers,path,beds)=>Object.freeze({
   name,pool:rect(...pool),firepit:Object.freeze(firepit),dining:rect(...dining),
@@ -61,6 +61,6 @@ export function getRenovationGardenRecipe(settings={},data){
     (data?.site?.id||settings.siteId||'sternicza-11')!=='sternicza-11'||
     !(settings.gardenProgram||'').startsWith('spa'))return null;
   const recipe=RENOVATION_GARDEN_RECIPES[settings.designStyle]||null;
-  return recipe&&summerGardenEnabled(settings,data)?{...recipe,pool:SUMMER_POOL,firepit:SUMMER_FIREPIT,
+  return recipe&&summerGardenEnabled(settings,data)?{...recipe,pool:summerPoolBounds(settings),firepit:SUMMER_FIREPIT,
     ...summerGardenFurniture(settings),name:`${recipe.name} · left-edge pool`}:recipe;
 }

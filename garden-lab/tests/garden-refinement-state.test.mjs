@@ -15,11 +15,11 @@ const proposal=(screeningTrees=legacyTrees(),extra={})=>model.sanitizeState({
 });
 const oldLink=(state,version=32)=>{const p=new URLSearchParams(model.encodeState(state));p.set('v',String(version));return p.toString();};
 
-test('schema 33 starts with restored planting and resolves current links by property',()=>{
-  assert.equal(STATE_VERSION,33);
+test('schema 34 starts with the compact historical grove and resolves current links by property',()=>{
+  assert.equal(STATE_VERSION,34);
   assert.equal(model.DEFAULTS.poolSunbedSides,1);
-  assert.equal(resolveSiteId('?site=sternicza-11','#v=33&site=nadmorska-17'),'nadmorska-17');
-  assert.deepEqual(model.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[18,35],[14,36],[18,28]]);
+  assert.equal(resolveSiteId('?site=sternicza-11','#v=34&site=nadmorska-17'),'nadmorska-17');
+  assert.deepEqual(model.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[14.2,32.5],[17.6,34.9]]);
   assert.deepEqual(model.decodeState(model.encodeState(model.DEFAULTS)),model.DEFAULTS);
 });
 
@@ -77,8 +77,8 @@ test('manual, partial, mixed and disabled-layout planting is not overwritten by 
 
 test('fence and both gate choices survive share and save round trips, scoped to Sternicza',()=>{
   assert.equal(model.DEFAULTS.perimeterFenceEnabled,true);
-  assert.equal(model.DEFAULTS.pedestrianGateOpen,true);
-  assert.equal(model.DEFAULTS.garageGateOpen,true);
+  assert.equal(model.DEFAULTS.pedestrianGateOpen,false);
+  assert.equal(model.DEFAULTS.garageGateOpen,false);
   for(const perimeterFenceEnabled of [false,true])for(const pedestrianGateOpen of [false,true])for(const garageGateOpen of [false,true]){
     const state=model.sanitizeState({...model.DEFAULTS,perimeterFenceEnabled,pedestrianGateOpen,garageGateOpen});
     assert.deepEqual(model.decodeState(model.encodeState(state)),state);

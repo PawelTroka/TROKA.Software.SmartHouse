@@ -97,7 +97,9 @@ function circulation(plan,start,radius=.30){
     };
     for(const o of traversable){
       part(from,o.offset);from=o.offset+o.width;
-      if(o.type==='door'||o.type==='balcony-door'){
+      // Upper balcony doors now use the same sliding panel mechanism as the
+      // ground HST. They have no inward hinged leaf across the room approach.
+      if(o.type==='door'){
         const t=o.offset+(o.hinge==='end'?o.width:0),hinge=[w.a[0]+t*ux,w.a[1]+t*uz];
         const swing=o.swing===-1?-1:1,end=[hinge[0]-uz*o.width*swing,hinge[1]+ux*o.width*swing];
         leaves.push((x,z)=>segmentDistance(x,z,hinge,end)-.02);
@@ -197,7 +199,7 @@ test('0.60 m routes reach both bathrooms and their individual usable fixture app
 
 test('upper floor furniture leaves a 0.60 m route from the landing to every proposed room',()=>{
   const plan=proposal('first'),reached=circulation(plan,[5.4,4.4]);
-  const points={master:[2.10,2.0],office:[6.1,2.8],'guest-1':[9.00,2.20],'guest-2':[2.90,6.50],
+  const points={master:[2.10,2.0],office:plan.fixtures.find(f=>f.id==='office-desk').approach,'guest-1':plan.fixtures.find(f=>f.id==='guest1-bed').approach,'guest-2':[2.90,6.50],
     'guest-3':[2.90,8.30],wardrobe:[5.30,9.80],'spa-bath':[8.55,7.40],sauna:[9.60,4.38]};
   const disconnected=[];
   for(const [id,point] of Object.entries(points)){
@@ -249,7 +251,7 @@ test('registered garage bounds move the portal, lining, cars and core conflicts 
 
 test('all resort arrangements retain free floor area, fixture approaches and room access',()=>{
   const targets={ground:[[2.75,3.9],[2.4,6.6],[5.35,2],[8.1,1.1]],
-    first:[[2.10,2.0],[6.1,2.8],[9,2.2],[2.9,6.5],[2.9,8.3],[5.3,9.8],[8.55,7.40],[9.6,4.38]]};
+    first:[[2.10,2.0],[6.48,2.85],[8.56,2.72],[2.9,6.5],[2.9,8.3],[5.3,9.8],[8.55,7.40],[9.6,4.38]]};
   for(const styleId of Object.keys(INTERIOR_COMPOSITIONS))for(const floor of ['ground','first']){
     const plan=getInteriorPlan({floor,styleId}),items=solidFixtures(plan),reached=circulation(plan,floor==='ground'?[5.3,4.4]:[5.4,4.4]);
     for(const [i,a] of items.entries())for(const b of items.slice(i+1)){
@@ -260,6 +262,9 @@ test('all resort arrangements retain free floor area, fixture approaches and roo
     if(floor==='ground'){
       const island=plan.fixtures.find(f=>f.id==='kitchen-island');
       roomTargets[1]=[island.x+island.width/2+.45,island.z];
+    }else if(plan.fixtures.find(f=>f.id==='office-desk')?.fixedLayout){
+      roomTargets[1]=plan.fixtures.find(f=>f.id==='office-desk').approach;
+      roomTargets[2]=plan.fixtures.find(f=>f.id==='guest1-bed').approach;
     }else if(plan.furnishingConcept?.office==='floating'){
       const chair=plan.fixtures.find(f=>f.id==='office-chair');roomTargets[1]=[chair.x-chair.width/2-.35,chair.z];
     }

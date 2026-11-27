@@ -93,6 +93,17 @@
 .walk-elevation-pad{position:absolute;bottom:42px;left:14px;display:grid;grid-template-columns:repeat(2,48px);gap:5px;z-index:4}.walk-elevation-pad[hidden]{display:none}.walk-elevation-pad button{min-height:42px;padding:5px 3px;border:1px solid #71816d66;border-radius:10px;background:#f8f9f1eb;color:#233e30;font:inherit;font-size:11px;touch-action:none}.walk-elevation-pad button[data-walk-elevation="follow"]{grid-column:1 / -1}.walk-elevation-pad button:active{background:#dce7d3}.viewport[data-mode="walk"] .view-instructions{max-width:calc(100% - 24px);white-space:normal;line-height:1.4}@media(max-width:760px){.walk-elevation-pad{left:10px}.walk-location-controls select{min-width:0;max-width:100%}.walk-location-controls #walkNavigation{flex:1 1 150px}}
 
 /* Both the browser-native and in-page fullscreen paths use the same model layout. */
+.home-controls{flex:0 0 auto;border-bottom:1px solid var(--line,#dce1d6);background:#f4f6ef}
+.iw-room-fit-note{margin:0;padding:6px 16px 9px;background:#f5f6f0;color:#5b685b;font-size:11px;line-height:1.45;border-top:1px solid #e3e7dc}
+.home-controls>summary{padding:10px 16px;font-size:12px;font-weight:650;cursor:pointer;color:#2d4938;min-height:38px}
+.home-controls>summary>span{float:right;font-size:10px;font-weight:400;color:#6d796b}
+.home-controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 22px;padding:3px 16px 14px;max-height:32vh;max-height:32dvh;overflow:auto;overscroll-behavior:contain}
+.home-controls-grid .field{margin:0}.home-controls-grid .field-note{font-size:10px;margin:7px 0 0}
+.home-control-block h4{margin:0 0 4px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#6a7668}
+.home-controls-grid .switch-row{padding:7px 0;margin:0;min-height:40px;font-size:11px}.home-controls-grid .switch-row small{font-size:10px}
+.door-position-buttons{display:flex;gap:5px;margin-top:8px}.door-position-buttons button{min-height:34px;flex:1;border:1px solid #c6d0bf;border-radius:5px;background:#fff;color:#344d3d;font-size:11px}
+.door-position-buttons button[aria-pressed="true"]{background:#dce8d4;border-color:#829576;font-weight:650}
+@media(max-width:600px){.home-controls-grid{grid-template-columns:1fr;max-height:35dvh}.home-controls>summary{padding:9px 12px}.home-controls>summary>span{display:none}}
 .model-fullscreen-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;min-height:36px;padding:7px 10px;border:1px solid #bcc9b6;border-radius:6px;background:#f5f7ee;color:#2b4537;font-size:11px;font-weight:600;white-space:nowrap}
 .model-fullscreen-button:hover{background:#e5eddd}.model-fullscreen-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .model-fullscreen-button .fullscreen-collapse-icon,.model-fullscreen-button[aria-pressed="true"] .fullscreen-expand-icon{display:none}.model-fullscreen-button[aria-pressed="true"] .fullscreen-collapse-icon{display:block}

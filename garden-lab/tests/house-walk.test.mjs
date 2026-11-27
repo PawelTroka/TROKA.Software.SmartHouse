@@ -43,6 +43,19 @@ test('one continuous walk connects living room, first floor, attic and lowered c
   reached(walk,p,6.44,5.75,'ground');
 });
 
+test('landing guards block physical side entry while free exploration still crosses without collision scans',()=>{
+  const {walk}=build(),height=walk.plans.attic.elevation+1.57;
+  const beside=world(walk,5.15,6.60,height);
+  assert.equal(walk.locate(beside,{maxDistance:.02}),null,'The walker body intersects the visible west attic guard');
+  assert.match(walk.getDiagnostics().lastBlocking,/^landing-guard-attic-/);
+  const start=at(walk,4.90,6.60,'attic'),physical=go(walk,start,5.65,6.60);
+  assert.ok(local(walk,physical)[0]<5.05,'Physical walking passed through the landing balustrade');
+  const scans=walk.getDiagnostics().collisionChecks,target=world(walk,5.65,6.60,height);
+  const free=walk.moveFree(start.position,[target[0]-start.position[0],0,target[2]-start.position[2]],{floorHint:'attic'});
+  near(local(walk,free)[0],5.65,1e-7);near(local(walk,free)[1],6.60,1e-7);
+  assert.equal(free.blocked,false);assert.equal(walk.getDiagnostics().collisionChecks,scans);
+});
+
 test('the visible HST opening is traversable and closed or stacked panels block passage',()=>{
   const open=build(),closed=build({hstOpen:0});
   let p=at(open.walk,8.0,.70,'ground');p=go(open.walk,p,8.0,-1.20);

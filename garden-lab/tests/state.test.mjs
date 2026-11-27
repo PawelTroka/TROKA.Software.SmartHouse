@@ -122,7 +122,7 @@ test('hedge scenarios preserve the selected sun date and time',()=>{
 });
 
 test('v1–v3 sparse links preserve their original garden instead of adopting new defaults',()=>{
- assert.equal(STATE_VERSION,33);
+ assert.equal(STATE_VERSION,34);
  for(const version of [1,2,3]){
   const legacy=decodeState(`#v=${version}`);
   for(const key of ['hedgeRear','hedgeLeft','hedgeRight'])assert.equal(legacy[key],2.5,`v${version} ${key}`);
@@ -395,7 +395,7 @@ test('sparse v17 links and saved designs retain the exact pictured pines indepen
   assert.equal(future.decodeState('v=17&site=sternicza-11').screeningTrees[0].height,10,'Migration must not mutate the frozen historical snapshot');
  }
  assert.deepEqual(future.decodeState('v=18&site=sternicza-11').screeningTrees,STERNICZA_EXCELSA_TREES);
- assert.deepEqual(future.decodeState('v=30&site=sternicza-11').screeningTrees,futureTrees);
+ assert.deepEqual(future.decodeState(`v=${STATE_VERSION}&site=sternicza-11`).screeningTrees,futureTrees);
  assert.equal(future.decodeState('v=18&site=sternicza-11').showDimensions,false);
  const korz=createStateModel(getSiteProfile('korzeniowskiego-40'));
  for(const version of [17,18]){

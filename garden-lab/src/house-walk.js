@@ -1,20 +1,23 @@
-import {getHouseFloorPlan,houseModelFrame} from './house-model.js?v=1.37.0';
-import {containsPoint,wallPanels,ringBounds} from './interior-geometry.js?v=1.37.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.37.0';
-import {stairTreads} from './stair-surfaces.js?v=1.37.0';
-import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.37.0';
-import {gardenGroundAt,terrainAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.37.0';
-import {terraceStairs} from './layout.js?v=1.37.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.37.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.37.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.37.0';
-import {entranceAccessLayout} from './entrance-access.js?v=1.37.0';
-import {boundaryFenceLayout} from './boundary-fence.js?v=1.37.0';
+import {getHouseFloorPlan,houseModelFrame} from './house-model.js?v=1.38.0';
+import {containsPoint,wallPanels,ringBounds} from './interior-geometry.js?v=1.38.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.38.0';
+import {stairTreads} from './stair-surfaces.js?v=1.38.0';
+import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.38.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.38.0';
+import {gardenGroundAt,terrainAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.38.0';
+import {terraceStairs} from './layout.js?v=1.38.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.38.0';
+import {jacuzziCoverLayout,coldPlungeCoverLayout,spaCoverAtProgress} from './spa-covers.js?v=1.38.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.38.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.38.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.38.0';
+import {boundaryFenceLayout} from './boundary-fence.js?v=1.38.0';
 
 const EPS=1e-6,RADIUS=.16,MAX_STEP=.245;
 const rectangle=(x0,z0,x1,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
 const inside=(polygon,x,z)=>pointInPolygon([x,z],polygon);
-function distanceToSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l)):0;return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);}
+function segmentFraction(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],length=dx*dx+dz*dz;return length?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/length)):0;}
+function distanceToSegment(x,z,a,b){const t=segmentFraction(x,z,a,b);return Math.hypot(x-a[0]-t*(b[0]-a[0]),z-a[1]-t*(b[1]-a[1]));}
 const nearPolygon=(polygon,x,z,r=RADIUS)=>inside(polygon,x,z)||polygon.some((a,i)=>distanceToSegment(x,z,a,polygon[(i+1)%polygon.length])<r);
 const inRect=(x,z,r,pad=0)=>x>=r.x-pad&&x<=r.x+r.width+pad&&z>=r.y-pad&&z<=r.y+(r.length??r.depth)+pad;
 const footprint=r=>r.footprint||rectangle(r.x,r.y,r.x+r.width,r.y+(r.length??r.depth));
@@ -45,14 +48,28 @@ export function createWalkNavigation(data,settings={}){
         const bottom=plan.elevation+(o.sill||0),top=bottom+o.height;
         if(o.type==='window')solids.push({a:at(o.offset),b:at(o.offset+o.width),radius:.02,bottom,top,id:'glass-'+wall.id});
         else if(o.type==='hst'||o.type==='balcony-door'){
-          const parts=o.type==='hst'?hstPanelLayout(o,settings):balconyPanelLayout(o);
-          if(o.type==='hst')hstOpenings.push({opening:o,at,bottom,top,id:'glass-'+wall.id});
-          for(const p of parts.blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id:'glass-'+wall.id,hst:o.type==='hst'});
+          const parts=slidingPanelLayout(o,settings);
+          hstOpenings.push({opening:o,at,bottom,top,id:'glass-'+wall.id});
+          for(const p of parts.blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id:'glass-'+wall.id,hst:true});
         }else if(o.type==='door'){
           const end=o.hinge==='end',sign=end?-1:1,hinge=o.offset+(end?o.width-.047:.047),angle=-sign*(o.swing||1)*Math.PI/2;
           const a=at(hinge),along=sign*(o.width-.10)*Math.cos(angle),across=-sign*(o.width-.10)*Math.sin(angle);
           solids.push({a,b:[a[0]+along*dx/length-across*dz/length,a[1]+along*dz/length+across*dx/length],radius:.018,bottom,top,id:'leaf-'+wall.id});
         }
+      }
+    }
+    for(const guard of stairLandingGuards(plan)){
+      const dx=guard.b[0]-guard.a[0],dz=guard.b[1]-guard.a[1],length=Math.hypot(dx,dz),count=Math.max(1,Math.ceil(length/.11));
+      const at=t=>[guard.a[0]+dx*t,guard.a[1]+dz*t];
+      for(let i=0;i<count;i++){
+        const a=at(i/count),b=at((i+1)/count),heights=[a,b].map(p=>landingGuardTop(plan,...p,guard.height));
+        if(Math.max(...heights)<.07)continue;
+        // The rendered cap is a 25 mm rod with a centre at max(25 mm,
+        // height-25 mm). Follow its clipped slope rather than creating a
+        // full-height barrier through the first treads of the rising flight.
+        const topEnds=heights.map(h=>plan.elevation+Math.max(.05,h));
+        solids.push({a,b,radius:.025,bottom:plan.elevation,top:Math.max(...topEnds),topEnds,
+          landingGuard:true,id:guard.id+'-'+i});
       }
     }
     for(const core of plan.cores||[])solids.push({polygon:core.enclosure?.polygon||core.polygon,bottom:plan.elevation,top:plan.elevation+plan.clearHeight,id:core.id});
@@ -70,10 +87,12 @@ export function createWalkNavigation(data,settings={}){
     }
   }
   const ground=(x,y)=>gardenGroundAt(x,y,settings,data);
-  function updateHst(next=settings){
+  let slidingState={hstOpen:settings.hstOpen??1,balconyOpen:settings.balconyOpen??1};
+  function updateHst(next={}){
+    slidingState={...slidingState,...next};
     for(let i=solids.length-1;i>=0;i--)if(solids[i].hst)solids.splice(i,1);
     for(const {opening,at,bottom,top,id}of hstOpenings){
-      for(const p of hstPanelLayout(opening,next).blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id,hst:true});
+      for(const p of slidingPanelLayout(opening,slidingState).blocked)solids.push({a:at(p.lo),b:at(p.hi),radius:.035,bottom,top,id,hst:true});
     }
   }
   const terrace=data.site.terrace,ref=terraceGroundReference(settings,data);
@@ -125,6 +144,20 @@ export function createWalkNavigation(data,settings={}){
     if(program.sauna)outdoorBlocks.push({id:'sauna',polygon:localRing(program.sauna.footprint)});
   }
   if(data.site.garage&&settings.removeGarage===false)outdoorBlocks.push({id:'retained-garage',polygon:localRing(data.site.garage.footprint)});
+  function updateCovers(next=settings,progress={}){
+    for(let i=surfaces.length-1;i>=0;i--)if(surfaces[i].spaCover)surfaces.splice(i,1);
+    const covers=[jacuzziCoverLayout(tub,next),coldPlungeCoverLayout(program.coldPlunge,levels.coldPlunge,next)].filter(Boolean);
+    for(const cover of covers){
+      const key=cover.id==='jacuzzi-cover'?'jacuzzi':'coldPlunge';
+      const layout=Number.isFinite(progress[key])?spaCoverAtProgress(cover,progress[key]):cover;
+      for(const panel of layout.panels){
+        siteSurface(panel.id,panel.footprint,panel.topZ,{floor:key==='jacuzzi'?'ground':'garden',spaCover:cover.id});
+        surfaces.at(-1).bounds=ringBounds(surfaces.at(-1).polygon);
+      }
+    }
+    return covers;
+  }
+  updateCovers(settings);
   for(const tree of settings.screeningTrees||[])if(tree.enabled!==false){const p=frame?frame.toLocal(tree.x,tree.y):[tree.x,tree.y];solids.push({a:p,b:p,radius:.22,bottom:-Infinity,top:Infinity,id:'tree-'+tree.id,outdoor:true});}
   // A cheap bounds rejection avoids polygon work on other wings and flights.
   for(const surface of surfaces)surface.bounds=ringBounds(surface.polygon);
@@ -154,11 +187,17 @@ export function createWalkNavigation(data,settings={}){
   function clearAt(x,z,surface,eyeHeight,showFurniture=true){
     collisionChecks++;
     const feet=surface.height,head=feet+eyeHeight+.11;
-    const solid=solids.find(o=>(showFurniture||!o.furniture)&&o.top>feet+.05&&o.bottom<head&&
-      (o.polygon?nearPolygon(o.polygon,x,z):distanceToSegment(x,z,o.a,o.b)<RADIUS+o.radius));
+    const solid=solids.find(o=>{
+      if((!showFurniture&&o.furniture)||o.bottom>=head)return false;
+      const top=o.topEnds?o.topEnds[0]+(o.topEnds[1]-o.topEnds[0])*segmentFraction(x,z,o.a,o.b):o.top;
+      // A low soffit closure below the first tread is within the same step
+      // limit as that tread; the 1.10 m landing balustrade remains a barrier.
+      if(top<=feet+(o.landingGuard?MAX_STEP:.05))return false;
+      return o.polygon?nearPolygon(o.polygon,x,z):distanceToSegment(x,z,o.a,o.b)<RADIUS+o.radius;
+    });
     if(solid){lastBlocking=solid.id;return false;}
     const outdoor=surface.outdoor||surface.floor==='garden';
-    if(outdoor&&outdoorBlocks.some(o=>nearPolygon(o.polygon,x,z))){lastBlocking='outdoor-object';return false;}
+    if(outdoor&&!surface.spaCover&&outdoorBlocks.some(o=>nearPolygon(o.polygon,x,z))){lastBlocking='outdoor-object';return false;}
     // Floors, ceilings and the underside of the stacked flights are solid.
     for(const plan of Object.values(plans)){
       if(!inside(plan.envelope.outline,x,z))continue;
@@ -213,7 +252,12 @@ export function createWalkNavigation(data,settings={}){
     const below=nearest(candidates.filter(s=>s.height<=feet+MAX_STEP+EPS));
     let surface=tread||sameFloor||entry||(floorHint&&below)||nearest(candidates);
     if(!surface){const world=toWorld(p[0],p[1],0);surface={id:'garden',floor:'garden',outdoor:true,height:relativeHeight(ground(world[0],world[2]))};}
-    const water=waters.find(w=>inside(w.polygon,p[0],p[1])&&surface.height<=relativeHeight(w.waterZ)+.6);
+    // The visible deck is the supporting surface above both an open pocket
+    // and covered water. Do not turn a person standing on its panels into a
+    // swimmer simply because the old water rectangle still exists below.
+    const covering=candidates.filter(s=>s.spaCover&&Math.abs(s.height-surface.height)<.6).sort((a,b)=>b.height-a.height)[0];
+    if(covering)surface=covering;
+    const water=!surface.spaCover&&waters.find(w=>inside(w.polygon,p[0],p[1])&&surface.height<=relativeHeight(w.waterZ)+.6);
     if(water)surface={...water,height:relativeHeight(water.waterZ+water.aboveWater-eyeHeight)};
     return surface;
   }
@@ -259,6 +303,6 @@ export function createWalkNavigation(data,settings={}){
     }
     return null;
   }
-  return{supported,plans,frame,locate,move,locateFree,moveFree,spawnFloor,spawnGarden,updateVehicles,updateHst,
+  return{supported,plans,frame,locate,move,locateFree,moveFree,spawnFloor,spawnGarden,updateVehicles,updateHst,updateCovers,
     getDiagnostics:()=>({lastBlocking,floors:Object.keys(plans),connections:[...new Set(treads.map(t=>t.stairId))],treads:treads.length,surfaces:surfaces.length,collisionObjects:solids.length,stairsAreSharedGeometry:true,freeMoves,physicalMoves,collisionChecks})};
 }

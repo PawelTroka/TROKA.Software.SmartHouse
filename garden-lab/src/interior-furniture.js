@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.37.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.38.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.38.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
@@ -252,6 +252,18 @@ export function furnishInterior(parent,plan,tools,finishes) {
   function bed(g,w,d,f={}) {
     if(f.headboard){const a=Math.atan2(-f.headboard[0],-f.headboard[1]);g=group(g,0,0,0,a);if(Math.abs(f.headboard[0])>.5)[w,d]=[d,w];}
     else if(w>d){const swap=w;w=d;d=swap;g=group(g,0,0,0,Math.PI/2);}
+    const mattressWidth=f.mattressWidth??w*.96,mattressLength=f.mattressLength??d*.95;
+    if(f.underBedStorage){
+      // Lift-up access avoids a drawer sweep into a guest desk or office
+      // bookcase. A recessed foot pull makes that storage provision visible.
+      if(f.storageAccess==='lift-up'){
+        box(g,m.dark,0,.16,d/2+.003,Math.min(.22,w*.24),.027,.008);
+        box(g,m.bronze,0,.165,d/2+.010,Math.min(.17,w*.18),.008,.010);
+      }else for(const side of [-1,1]){
+          box(g,m.wood,side*w*.245,.125,d/2-.003,w*.475,.17,.012);
+          box(g,m.bronze,side*w*.245,.155,d/2+.007,w*.16,.009,.012);
+        }
+    }
     if(renovated){
       const kind=design.bed==='canopy'&&(w<1.2||f.headboardMaxHeight)?'woven':design.bed,low=['platform','platform-wide','slatted-low','plinth','linen-wide'].includes(kind),mattress=low?.25:.38;
       const wood=['canopy','slatted','slatted-low','platform','platform-wide','mission','crossbuck','taper','woven','cane'].includes(kind);
@@ -262,7 +274,9 @@ export function furnishInterior(parent,plan,tools,finishes) {
       else if(kind==='capsule'){rounded(g,m.ceramic,0,.25,0,w,.34,d,.14);}
       else if(kind==='deco'){for(let i=0;i<3;i++)rounded(g,i===1?m.bronze:m.wood,0,.045+i*.065,0,w-i*.025,.065,d-i*.025,.022);}
       else rounded(g,kind==='plinth'?m.stone:m.wood,0,low?.10:.19,0,w,low?.20:.28,d,kind==='sculpted'?.10:.025);
-      rounded(g,m.fabric,0,mattress,0,w*.96,low?.19:.24,d*.95,.060);
+      const pad=rounded(g,m.fabric,0,mattress,0,mattressWidth,low?.19:.24,mattressLength,.060);
+      pad.name=f.id?f.id+'-mattress':'bed-mattress';pad.userData.role='mattress';
+      pad.userData.sleepingDimensions={width:mattressWidth,length:mattressLength,capacity:f.sleepingCapacity??(w>1.2?2:1)};
       rounded(g,m.duvet,0,mattress+.135,d*.13,w*.97,.105,d*.66,.048);
       rounded(g,m.linen,0,mattress+.18,-d*.13,w*.95,.042,d*.13,.02);
       rounded(g,m.accent,0,mattress+.19,d*.33,w*.96,.028,d*.16,.012);
@@ -307,7 +321,10 @@ export function furnishInterior(parent,plan,tools,finishes) {
       return;
     }
     const foot=platform?.12:.18;rounded(g,m.wood,0,foot,0,w,.22,d,.045);
-    rounded(g,m.fabric,0,.335,0,w*.97,.265,d*.97,.071);rounded(g,m.duvet,0,.49,d*.135,w*.985,.115,d*.66,.051);
+    const pad=rounded(g,m.fabric,0,.335,0,f.mattressWidth??w*.97,.265,f.mattressLength??d*.97,.071);
+    pad.name=f.id?f.id+'-mattress':'bed-mattress';pad.userData.role='mattress';
+    pad.userData.sleepingDimensions={width:f.mattressWidth??w*.97,length:f.mattressLength??d*.97,capacity:f.sleepingCapacity??(w>1.2?2:1)};
+    rounded(g,m.duvet,0,.49,d*.135,w*.985,.115,d*.66,.051);
     rounded(g,m.linen,0,.545,-d*.126,w*.96,.052,d*.14,.023);rounded(g,m.accent,0,.554,d*.335,w*.979,.035,d*.16,.014);
     rounded(g,soft?m.fabric:m.oak,0,.56,-d*.485,w,.88,.075,.034);
     const n=w>1.2?2:1;for(let i=0;i<n;i++) {const pillow=rounded(g,m.linen,(i-(n-1)/2)*w*.46,.505,-d*.318,Math.min(.64,w*.75/n),.14,.4,.068);pillow.rotation.x=.1;}
@@ -534,7 +551,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
     for(const a of [-1,1])for(const b of [-1,1]){const wheel=cyl(g,m.dark,a*w*.465,.32,b*d*.305,.315,.315,.13,24);wheel.rotation.z=Math.PI/2;const hub=cyl(g,m.steel,a*w*.505,.32,b*d*.305,.186,.186,.024,16);hub.rotation.z=Math.PI/2;}
     for(const a of [-1,1]) {rounded(g,m.glow,a*w*.294,.724,d*.468,w*.215,.089,.035,.015);rounded(g,m.pot,a*w*.3,.747,-d*.468,w*.185,.075,.035,.014);}
   }
-  function exerciseBike(g,w,d){
+  function exerciseBike(g,w,d,f={}){
     const rubber=m.rubber||m.dark;
     for(const z of [-d*.36,d*.36]){rod(g,m.steel,[-w*.43,.085,z],[w*.43,.085,z],.026);for(const side of [-1,1])cyl(g,rubber,side*w*.43,.045,z,.044,.044,.065,12);}
     rod(g,m.frame,[0,.14,-d*.32],[0,.14,d*.34],.038);
@@ -544,17 +561,129 @@ export function furnishInterior(parent,plan,tools,finishes) {
     rod(g,m.steel,[0,.61,-d*.18],[0,.98,-d*.25],.022);rounded(g,rubber,0,1.00,-d*.25,.26,.075,.24,.025);
     rod(g,m.frame,[0,.17,d*.34],[0,1.15,d*.30],.027);
     for(const side of [-1,1])rod(g,rubber,[0,1.14,d*.28],[side*w*.34,1.19,d*.16],.020);
-    const console=rounded(g,m.blackGlass,0,1.22,d*.29,.20,.11,.025,.009);console.rotation.x=-.25;
+    const console=rounded(g,m.blackGlass,0,1.15,d*.29,.20,.09,.025,.009);console.rotation.x=-.25;
     for(const side of [-1,1]){rod(g,m.steel,[0,.40,0],[side*w*.35,.40,side*.06],.015);box(g,rubber,side*w*.38,.40,side*.06,.14,.035,.085);}
+    if(f.premium){
+      // Drop bars, independent fit adjustments and a central smart resistance
+      // unit distinguish the training bike from the former generic spinner.
+      for(const side of [-1,1]){
+        rod(g,rubber,[side*w*.32,1.17,d*.18],[side*w*.34,1.04,d*.34],.019);
+        rod(g,rubber,[side*w*.34,1.04,d*.34],[side*w*.28,1.01,d*.39],.019);
+        box(g,m.steel,side*.045,.82,d*.30,.027,.11,.025);
+      }
+      rounded(g,m.frame,0,.37,-d*.07,.17,.24,.28,.035);
+      box(g,m.steel,0,.69,-d*.18,.12,.035,.16);
+      cyl(g,m.bronze,.072,.69,-d*.18,.021,.021,.025,12).rotation.z=Math.PI/2;
+    }
   }
-  function exerciseBench(g,w,d){
+  function exerciseBench(g,w,d,f={}){
     const rubber=m.rubber||m.dark;
-    for(const z of [-d*.34,d*.34]){rod(g,m.frame,[0,.09,z],[0,.39,z],.027);rod(g,m.frame,[-w*.43,.07,z],[w*.43,.07,z],.028);}
-    rod(g,m.steel,[0,.31,-d*.39],[0,.31,d*.39],.025);
-    rounded(g,rubber,0,.465,-d*.16,w*.74,.11,d*.61,.035);
-    rounded(g,rubber,0,.465,d*.31,w*.74,.11,d*.27,.035);
-    rod(g,m.steel,[0,.35,-d*.20],[0,.40,d*.12],.018);
+    const top=f.height||.52,padY=top-.05;
+    for(const z of [-d*.34,d*.34]){rod(g,m.frame,[0,.09,z],[0,padY-.07,z],.027);rod(g,m.frame,[-w*.43,.07,z],[w*.43,.07,z],.028);}
+    rod(g,m.steel,[0,.25,-d*.39],[0,.25,d*.39],.025);
+    rounded(g,rubber,0,padY,-d*.16,Math.min(.30,w*.74),.10,d*.61,.035);
+    rounded(g,rubber,0,padY,d*.31,Math.min(.30,w*.74),.10,d*.27,.035);
+    rod(g,m.steel,[0,.27,-d*.20],[0,padY-.04,d*.12],.018);
     for(const side of [-1,1])rod(g,m.frame,[side*w*.36,.12,-d*.39],[side*w*.36,.12,d*.39],.012);
+    if(f.adjustable){
+      for(let i=0;i<6;i++)box(g,m.steel,0,.27,-d*.31+i*d*.065,.12,.035,.024);
+      for(const side of [-1,1])cyl(g,rubber,side*w*.40,.065,-d*.39,.055,.055,.045,16).rotation.z=Math.PI/2;
+      rod(g,m.steel,[-.12,.16,d*.46],[.12,.16,d*.46],.018);
+      cyl(g,m.bronze,.067,.28,-d*.16,.025,.025,.034,12).rotation.z=Math.PI/2;
+    }
+  }
+  function cableTrainer(g,w,d,f){
+    const rubber=m.rubber||m.dark,h=f.height||2.10,back=-d/2+.045,front=d/2-.11;
+    // The shallow frame, dual real stacks, travelling pulley trolleys and
+    // independent handles all stay inside the reserved wall-mounted envelope.
+    for(const side of [-1,1]){
+      const x=side*w*.39;
+      box(g,m.frame,x,.055,0,.20,.11,d);
+      box(g,m.frame,x,h/2,front,.075,h,.075);
+      box(g,m.frame,x,h/2,back,.065,h,.065);
+      for(const yy of [.12,h-.04])box(g,m.frame,x,yy,0,.065,.065,d);
+      for(const xx of [x-.10,x+.10])rod(g,m.steel,[xx,.16,-d*.14],[xx,h-.12,-d*.14],.012);
+      for(let i=0;i<13;i++)box(g,rubber,x,.20+i*.040,-d*.14,.29,.032,.22);
+      box(g,m.steel,x,.76,-d*.14,.27,.055,.21);
+      box(g,m.frame,x,1.17,front+.008,.125,.25,.12);
+      for(const yy of [1.11,1.24,h-.13,.19]){
+        const wheel=cyl(g,m.dark,x,yy,yy>1.3?back+.08:front,.058,.058,.028,16);wheel.rotation.x=Math.PI/2;
+        cyl(g,m.steel,x,yy,yy>1.3?back+.065:front+.018,.018,.018,.035,12).rotation.x=Math.PI/2;
+      }
+      rod(g,m.steel,[x,.78,-d*.14],[x,h-.13,-d*.14],.004);
+      rod(g,m.steel,[x,h-.13,-d*.14],[x,h-.13,front],.004);
+      rod(g,m.steel,[x,h-.13,front],[x,1.12,front],.004);
+      rod(g,m.dark,[x,1.12,front+.035],[x,1.00,front+.075],.008);
+      rod(g,rubber,[x-.075,.97,front+.085],[x+.075,.97,front+.085],.015);
+      for(const yy of [.20,.55,.90,1.35,1.70,h-.10])box(g,m.steel,x,yy,front+.039,.018,.012,.006);
+    }
+    for(const yy of [.12,h-.04])box(g,m.frame,0,yy,back,w,.075,.075);
+    box(g,m.steel,0,h-.035,back+.041,.23,.035,.008);
+  }
+  function adjustableDumbbells(g,w,d){
+    const rubber=m.rubber||m.dark;
+    for(const side of [-1,1]){
+      const x=side*w*.27;
+      for(const z of [-d*.33,d*.33])rod(g,m.frame,[x,.06,z],[x,.50,z*.60],.026);
+      box(g,m.frame,x,.51,0,w*.43,.035,d*.90);
+      box(g,rubber,x,.54,0,w*.40,.025,d*.87);
+      rod(g,m.steel,[x,.64,-d*.19],[x,.64,d*.19],.018);
+      for(const end of [-1,1])for(let i=0;i<5;i++)box(g,rubber,x,.65,end*(d*.17+i*.027),w*.32,.22,.022);
+      box(g,m.steel,x,.76,0,w*.20,.025,.035);
+    }
+    box(g,m.frame,0,.15,-d*.32,w,.045,.05);
+  }
+  function gymStorage(g,w,d,f){
+    const rubber=m.rubber||m.dark,h=f.height||1.36;
+    box(g,m.wood,0,h/2,-d/2+.018,w,h,.035);
+    for(const yy of [.10,.47])box(g,m.wood,0,yy,0,w,.035,d);
+    for(let i=0;i<3;i++){
+      const x=(i-1)*w*.29,r=.066+i*.005;
+      oval(g,rubber,x,.19,0,r*2,.16,r*1.7);
+      const grip=new THREE.Mesh(new THREE.TorusGeometry(.049,.011,6,14),m.frame);grip.position.set(x,.30,0);g.add(grip);
+    }
+    for(const side of [-1,1]){
+      const x=side*w*.31;
+      rod(g,m.steel,[x,h-.13,-d*.41],[x,h-.13,-d*.22],.011);
+      const band=new THREE.Mesh(new THREE.TorusGeometry(.092,.009,5,18),side<0?m.accent:rubber);band.position.set(x,h-.26,-d*.22);band.scale.y=1.7;g.add(band);
+    }
+    cyl(g,rubber,-w*.23,.72,-d*.10,.07,.07,.42,16);
+    cyl(g,m.accent,w*.23,.71,-d*.10,.055,.055,.40,16);
+  }
+  function wallTV(g,f){
+    const facing=f.screenFront||[0,1],length=Math.hypot(...facing),normal=facing.map(v=>v/length),angle=Math.atan2(normal[0],normal[1]);
+    const y=f.mountHeight||1.40,span=f.screenWidth||.84,screenH=f.screenHeight||span*.5625;
+    const anchor=f.wallAnchor||[f.x-normal[0]*.06,f.z-normal[1]*.06],ax=anchor[0]-f.x,az=anchor[1]-f.z;
+    const rear=[-normal[0]*.035,y,-normal[1]*.035],hinge=[ax*.5+rear[0]*.5,y,az*.5+rear[2]*.5];
+    const wallPlate=group(g,ax,y,az,Math.atan2(-ax,-az));box(wallPlate,m.frame,0,0,0,.09,.14,.025);
+    rod(g,m.frame,[ax,y,az],hinge,.014);rod(g,m.frame,hinge,rear,.014);
+    const screen=group(g,0,y,0,angle);screen.name=f.id+'-screen';screen.userData.role='wall-mounted-screen';screen.userData.viewingDirection=normal;
+    rounded(screen,m.frame,0,0,0,span,screenH,.035,.010);
+    box(screen,m.blackGlass,0,0,.021,span-.020,screenH-.020,.006);
+    box(screen,m.steel,0,-screenH/2+.008,.021,.022,.003,.006);
+  }
+  function workDesk(g,w,d,f){
+    rounded(g,m.oak,0,.738,0,w,.055,d,.02);legs(g,w*.84,d*.71,.714,.028);
+    const count=f.workstations===2?2:1;
+    for(let i=0;i<count;i++){
+      const x=(i-(count-1)/2)*(w/2),computer=group(g,x,0,0);computer.userData.role='computer-station';computer.userData.station=i+1;
+      if(f.computer==='laptop'){
+        box(computer,m.steel,0,.779,.035,.36,.014,.24);
+        const screen=group(computer,0,.89,-.071,-0);screen.rotation.x=-.15;
+        rounded(screen,m.blackGlass,0,0,0,.36,.22,.016,.008);screen.userData.role='computer-monitor';
+        box(computer,m.frame,0,.788,.028,.30,.004,.12);
+      }else{
+        box(computer,m.frame,0,.777,-d*.12,.17,.025,.107);box(computer,m.steel,0,.88,-d*.14,.032,.20,.04);
+        const screen=rounded(computer,m.blackGlass,0,1.046,-d*.15,Math.min(w/count*.55,.61),.34,.031,.012);screen.userData.role='computer-monitor';
+        box(computer,m.frame,0,.773,d*.16,Math.min(.36,w/count*.38),.017,.12);
+        oval(computer,m.steel,.25,.779,d*.16,.047,.025,.073);
+        rounded(computer,m.frame,.23,.19,-d*.22,.11,.28,.20,.012);
+      }
+    }
+    if(f.drawer){
+      box(g,m.wood,w*.35,.64,0,w*.22,.15,d*.82);
+      box(g,m.bronze,w*.35,.65,d*.42,w*.09,.009,.014);
+    }else plant(g,-w*.43,.77,-d*.17,.085);
   }
   function weightRack(g,w,d){
     const rubber=m.rubber||m.dark;
@@ -586,7 +715,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
     let w=f.width,d=f.depth;if(!(w>0&&d>0))continue;
     let g=group(parent,f.x,f.kind==='wallCabinet'?(f.baseHeight||0):0,f.z,f.rotation||0);
     g.userData.fixtureId=f.id;g.userData.fixtureKind=f.kind;g.userData.interiorRecipe=design.id;
-    if(['desk','chair','armchair','fridge','nightstand','mirror','spaStep','bookcase','washer','dryer','exerciseBike','exerciseBench','weightRack','plantUnit'].includes(f.kind)&&f.front)[g,w,d]=faceFront(g,f,w,d);
+    if(['desk','chair','armchair','fridge','nightstand','mirror','spaStep','bookcase','washer','dryer','exerciseBike','exerciseBench','weightRack','plantUnit','cableTrainer','adjustableDumbbells','gymStorage'].includes(f.kind)&&f.front)[g,w,d]=faceFront(g,f,w,d);
     else if(f.kind==='desk'&&d>w){g=group(g,0,0,0,Math.PI/2);[w,d]=[d,w];}
     if(f.kind==='sofa'&&f.front){if(f.shape?.toUpperCase()==='U'){const a=Math.atan2(f.front[0],f.front[1])-Math.PI/2;g=group(g,0,0,0,a);if(Math.abs(f.front[1])>.5)[w,d]=[d,w];}else [g,w,d]=faceFront(g,f,w,d);}
     switch(f.kind){
@@ -596,9 +725,12 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'coffeeTable':table(g,w,d,false);break;
       case 'rug':rounded(g,m.rug,0,.021,0,w,.018,d,.008);break;
       case 'exerciseMat':{rounded(g,m.rubber||m.dark,0,.018,0,w,.018,d,.012);for(const side of [-1,1])box(g,m.slate,side*(w/2-.025),.028,0,.012,.002,d-.05);break;}
-      case 'exerciseBike':exerciseBike(g,w,d);break;
-      case 'exerciseBench':exerciseBench(g,w,d);break;
+      case 'exerciseBike':exerciseBike(g,w,d,f);break;
+      case 'exerciseBench':exerciseBench(g,w,d,f);break;
       case 'weightRack':weightRack(g,w,d);break;
+      case 'cableTrainer':cableTrainer(g,w,d,f);break;
+      case 'adjustableDumbbells':adjustableDumbbells(g,w,d);break;
+      case 'gymStorage':gymStorage(g,w,d,f);break;
       case 'plantUnit':plantUnit(g,w,d,f.height||1.95);break;
       case 'worktop':rounded(g,m.stone,0,(f.baseHeight||.88)+(f.height||.038)/2,0,w,f.height||.038,d,.009);break;
       case 'ottoman':{const h=f.height||.36;rounded(g,m.wood,0,.085,0,w*.88,.15,d*.88,.025);rounded(g,m.fabric,0,h-.105,0,w,.21,d,.070);break;}
@@ -606,6 +738,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'floorLamp':case 'tableLamp':shadedLamp(g,f,w,d);break;
       case 'chair':chair(g,0,0,0,w,d);break;
       case 'bed':bed(g,w,d,f);break;
+      case 'sofaBed':if(f.open)bed(g,w,d,f);else {const frame=faceFront(g,f,w,d);sofa(frame[0],frame[1],frame[2]);}break;
       case 'kitchen':case 'counter':kitchen(g,f,w,d);break;
       case 'console':{if(f.variant==='worktable'){const h=f.height||.89;rounded(g,m.stone,0,h,0,w,.055,d,.018);legs(g,w*.83,d*.73,h-.04,.035,m.wood,.012);box(g,m.wood,0,.16,0,w*.83,.048,d*.72);}else{kitchen(g,f,w,d);books(g,w*.25,(f.height||.72)+.03,0,.27);plant(g,w*.05,(f.height||.72)+.03,0,.12);}break;}
       case 'wallCabinet':case 'storage':case 'wardrobe':kitchen(g,f,w,d,true);break;
@@ -619,7 +752,8 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'towelRail':{const y=f.mountHeight??1.18;for(const sign of [-1,1])cyl(g,m.steel,sign*w*.455,y,0,.011,.011,.79,12);for(let i=0;i<8;i++)rod(g,m.steel,[-w*.455,y-.32+i*.092,0],[w*.455,y-.32+i*.092,0],.012);box(g,m.linen,-w*.13,y-.11,-d*.3,w*.39,.33,.019);break;}
       case 'plant':plant(g,0,0,0,Math.min(w,d)*.58);break;
       case 'tv':{let front=g,span=w,dep=d;if(d>w){front=group(g,0,0,0,-Math.PI/2);span=d;dep=w;}rounded(front,m.wood,0,.31,0,span,.48,dep,.031);box(front,m.dark,0,1.13,0,span*.91,Math.min(.84,span*.51),.055);box(front,m.blackGlass,0,1.13,.032,span*.884,Math.min(.81,span*.49),.01);break;}
-      case 'desk':{rounded(g,m.oak,0,.738,0,w,.055,d,.02);legs(g,w*.84,d*.71,.714,.028);box(g,m.frame,0,.777,-d*.12,.17,.025,.107);box(g,m.steel,0,.88,-d*.14,.032,.20,.04);rounded(g,m.blackGlass,0,1.046,-d*.15,Math.min(w*.55,.59),.32,.031,.012);box(g,m.frame,0,.773,d*.16,Math.min(.33,w*.38),.017,.12);plant(g,-w*.34,.77,-d*.14,.105);break;}
+      case 'wallTv':wallTV(g,f);break;
+      case 'desk':workDesk(g,w,d,f);break;
       case 'hob':{if(!f.hostId)kitchen(g,f,w,d);rounded(g,m.blackGlass,0,.937,0,w,.022,d,.008);for(const a of [-1,1])for(const b of [-1,1]){const r=Math.min(w,d)*.14;const ring=new THREE.Mesh(new THREE.TorusGeometry(r,.003,4,20),m.steel);ring.position.set(a*w*.22,.95,b*d*.21);ring.rotation.x=Math.PI/2;g.add(ring);}break;}
       case 'fridge':{rounded(g,m.steel,0,.94,0,w,1.88,d,.037);box(g,m.frame,0,.71,d*.505,w*.94,.012,.012);box(g,m.frame,-w*.33,1.02,d*.515,.022,.31,.031);break;}
       case 'washer':case 'dryer':{rounded(g,m.ceramic,0,.42,0,w,.84,d,.027);const door=cyl(g,m.blackGlass,0,.407,d/2,.205,.205,.042,24);door.rotation.x=Math.PI/2;box(g,m.frame,w*.16,.744,d*.51,w*.27,.056,.016);break;}
