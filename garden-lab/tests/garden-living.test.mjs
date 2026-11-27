@@ -74,7 +74,9 @@ test('older spa programmes remain finite when the current pool toggle is adopted
   }
   for(const designStyle of ['current','warm-minimal','current']){
     const s={...DEFAULTS,gardenProgram:'spa',designStyle},c=gardenProgram(s,data).coldPlunge,z=spaLevels(s,data).coldPlunge;
-    assert.deepEqual(z.grading.bounds,c.surroundBounds,'Local grading follows a changed spa footprint on the same site data');
+    assert.equal(z.grading.bounds.x,c.surroundBounds.x,'Local grading follows a changed spa footprint on the same site data');
+    assert.equal(z.grading.bounds.y,c.surroundBounds.y);
+    assert.ok(z.grading.bounds.x+z.grading.bounds.width>=z.cover.parkedBounds.x+z.cover.parkedBounds.width,'The side pocket shares the approach level');
   }
 });
 
@@ -126,7 +128,8 @@ test('sunken plunge shares flush rim, grade, render, excavation and water receiv
   const p=gardenProgram(settings,data),c=p.coldPlunge,l=spaLevels(settings,data),z=l.coldPlunge;
   assert.equal(c.sunken,true);assert.equal(c.steps.length,0);assert.equal(z.steps.length,0);
   near(z.rimZ,z.padTopZ);near(z.rimZ-z.waterZ,.08);near(z.waterZ-z.bottomZ,1.1);
-  const approach=[c.anchor[0],c.y-c.pad];near(z.rimZ-gardenGroundAt(...approach,settings,data),.02);
+  const approach=[c.anchor[0],c.y-c.pad];near(z.rimZ,gardenGroundAt(...approach,settings,data));
+  near(z.rimZ,terrainAt(...approach,data)+settings.gardenRaise);
   near(spaSurfaceAt(...approach,settings,data).groundZ,z.rimZ);
   // The local fill is feathered continuously rather than creating a hidden
   // stair at the new flush apron, and ends outside that bounded area.

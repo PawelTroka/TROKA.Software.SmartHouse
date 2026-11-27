@@ -1,6 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.37.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.37.0';
+import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.38.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.38.0';
+import {createSpaCoverGroup} from './scene-spa-covers.js?v=1.38.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const ringOpen=ring=>ring.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring;
@@ -114,6 +115,12 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
     for(const [i,step] of levels.coldPlunge.steps.entries()){
       const base=step.baseZ??z;
       box(g,`plunge-access-step-${i}`,step.x,step.y,base,step.width,step.length,step.topZ-base,mat.woodLight,false);
+    }
+    if(levels.coldPlunge.cover){
+      const cover=levels.coldPlunge.cover,pocket=cover.parkedBounds;
+      box(g,'plunge-cover-parking-apron',plunge.x+plunge.width,plunge.y-pad,padTop-.08,
+        pocket.x+pocket.width+.055-plunge.x-plunge.width,plunge.length+2*pad,.08,mat.stone,false);
+      g.add(createSpaCoverGroup(cover,mat,{svgMode}));
     }
   }
 

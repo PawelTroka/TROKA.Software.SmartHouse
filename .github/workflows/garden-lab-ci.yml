@@ -129,8 +129,9 @@ jobs:
   interiors:
     name: Interior layouts, materials and mobile walkthrough
     runs-on: ubuntu-24.04
-    # 34 physical renovations plus room, persistence and mobile checks.
-    timeout-minutes: 20
+    # 34 renovations plus room, persistence, mobile and thirteen direct
+    # daylight views of the newly fitted rooms and protected stair openings.
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: garden-lab
@@ -146,7 +147,7 @@ jobs:
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
       - run: npx --no-install playwright install --with-deps chromium
       - name: Original and renovated interiors in WebGL
-        timeout-minutes: 17
+        timeout-minutes: 25
         run: node scripts/interiors-browser-check.mjs
       - name: Upload interior evidence
         if: always()

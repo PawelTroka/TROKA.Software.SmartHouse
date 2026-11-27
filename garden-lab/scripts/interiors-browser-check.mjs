@@ -331,7 +331,7 @@ try{
   await field('close').click();await q('#interior-host').waitFor({state:'hidden'});assertBalconyShared(await exportDesign(),4);
   check('Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together');
 
-  report.openLiving=await captureOpenLivingViews(page,{shot,walking,openInteriors,timeout:sceneStartupTimeout});
+  report.openLiving=await captureOpenLivingViews(page,{shot,walking,openInteriors,exportDesign,timeout:sceneStartupTimeout,maxDurationMs:600000});
   check('Daylight ceiling-fitted kitchen storage, concealed chimney, open stair guard, compact gym and plant/laundry captured through public room and camera controls');
 
   await page.setViewportSize({width:390,height:844});await page.goto(shared,{waitUntil:'domcontentloaded'});await ready(sceneStartupTimeout);

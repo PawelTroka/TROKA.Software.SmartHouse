@@ -1,8 +1,8 @@
-import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.37.0';
-import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.37.0';
-import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.37.0';
-import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.37.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
+import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.38.0';
+import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.38.0';
+import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.38.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.38.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.38.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -55,6 +55,11 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
           <div class="iw-switches"><label class="iw-switch"><span>Furniture &amp; fittings</span><input type="checkbox" role="switch" data-iw="furniture"></label>
           <label class="iw-switch" data-iw="changes-wrap"><span>Highlight wall changes</span><input type="checkbox" role="switch" data-iw="changes"></label></div>
         </section>
+        <section class="iw-inspector-block" data-iw="room-options"><h3>Room arrangements</h3>
+          <div data-iw="office-options"><label class="iw-switch"><span>Office · two workstations</span><input type="checkbox" role="switch" data-iw="officeCoworking"></label><label class="iw-switch"><span>Office · unfold guest bed</span><input type="checkbox" role="switch" data-iw="officeGuestBedOpen"></label><p class="iw-field-help">Two computers on a 2.60 m desk. The daybed opens into a 0.90 × 2.00 m single bed.</p></div>
+          <div data-iw="gym-options"><label class="iw-switch"><span>Gym · park the bench</span><input type="checkbox" role="switch" data-iw="gymBenchParked"></label><p class="iw-field-help">Park the wheeled bench for cable, cycling and floor work. Switch off to use it at the strength station.</p></div>
+          <label class="iw-switch" data-iw="door-option"><span data-iw="door-label">Terrace doors open</span><input type="checkbox" role="switch" data-iw="doors-open"></label>
+        </section>
         <section class="iw-inspector-block"><div class="iw-section-heading"><h3>Room schedule</h3><span data-iw="count"></span></div>
           <table class="iw-schedule"><thead><tr><th scope="col">Room</th><th scope="col"><abbr title="Area printed on the original drawing">Drawing</abbr></th><th scope="col"><abbr title="Approximate area of the reconstructed room polygon">Model</abbr></th></tr></thead><tbody data-iw="schedule"></tbody></table>
           <p class="iw-field-help">Model areas are approximate. Drawing areas in m² appear where an original room matches.</p>
@@ -81,6 +86,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
         </div>
         <div class="iw-room-bar"><div class="iw-room-field"><label for="iw-room">Selected room</label><select id="iw-room" data-iw="room"></select></div><div class="iw-room-area" data-iw="areas"></div>
           <button class="iw-enter" type="button" data-iw="enter">Enter room ${icon('enter')}</button></div>
+        <p class="iw-room-fit-note" data-iw="room-fit-note" hidden></p>
         <footer class="iw-stage-foot"><span data-iw="instructions"></span><button type="button" data-iw="show-notes">Drawing notes ${icon('notes')}</button></footer>
       </section>
     </div>`;
@@ -141,7 +147,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function loadScene() {
     if (scene || sceneLoad || sceneError) return;
     const token = generation;
-    sceneLoad = import('./scene-interior.js?v=1.37.0').then(({createInteriorScene}) => {
+    sceneLoad = import('./scene-interior.js?v=1.38.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
         getExteriorContext,
@@ -194,7 +200,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     try {
       if (lastSceneKey !== key) {
         scene.setVisible(true);
-        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey,quality:state.renderQuality});
+        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey,quality:state.renderQuality,hstOpen:state.hstOpen,balconyOpen:state.balconyOpen});
         scene.resize(); lastSceneKey = key;
       }
       setStatus('');
@@ -232,6 +238,8 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     }
     q('room').value = room?.id || '';
     q('room').disabled = !room;
+    q('room-fit-note').textContent=room?.fitOutNote||'';
+    q('room-fit-note').hidden=!room?.fitOutNote;
     for (const btn of q('schedule').querySelectorAll('button')) {
       const selected = btn.dataset.scheduleRoom === room?.id;
       btn.setAttribute('aria-pressed',String(selected)); btn.closest('tr').classList.toggle('is-selected',selected);
@@ -258,6 +266,15 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     q('furniture').checked = state.interiorFurniture !== false;
     q('changes').checked = !!state.interiorChanges;
     q('changes-wrap').hidden = !isRenovation;
+    q('room-options').hidden=!isRenovation||!['ground','first','basement'].includes(plan.floor);
+    q('office-options').hidden=plan.floor!=='first';
+    q('gym-options').hidden=plan.floor!=='basement'||!plan.fixtures.some(f=>f.id==='gym-bench');
+    q('gymBenchParked').checked=state.gymBenchParked!==false;
+    q('door-option').hidden=plan.floor==='basement';
+    q('officeCoworking').checked=state.officeCoworking!==false;
+    q('officeGuestBedOpen').checked=state.officeGuestBedOpen===true;
+    q('door-label').textContent=plan.floor==='first'?'Upper terrace doors open':'Terrace doors open';
+    q('doors-open').checked=(plan.floor==='first'?state.balconyOpen:state.hstOpen)>0;
     const recipe=getInteriorStyleRecipe(style.id);
     q('finish-note').textContent = style.id==='current'
       ?`Original house layout and finishes.${state.basementGarageEnabled?' The two-car garage proposal remains selected.':''} Select a style to renovate the house and garden together.`
@@ -337,6 +354,8 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     if (iw === 'room') patch({interiorRoomId:value});
     if (iw === 'furniture') patch({interiorFurniture:checked});
     if (iw === 'changes') patch({interiorChanges:checked});
+    if (iw === 'officeCoworking' || iw === 'officeGuestBedOpen' || iw === 'gymBenchParked') patch({[iw]:checked});
+    if (iw === 'doors-open') patch({[plan.floor==='first'?'balconyOpen':'hstOpen']:checked?1:0});
   });
   listeners(container,'keydown',event => {
     const target = event.target.closest('[data-iw-room]');

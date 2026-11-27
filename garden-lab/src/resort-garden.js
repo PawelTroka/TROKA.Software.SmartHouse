@@ -1,7 +1,8 @@
 /** Movable furnishings and decorative light compositions. These are design
  * proposals, never replacements for surveyed geometry or screening volumes. */
-import {canopySupportBounds} from './geometry.js?v=1.37.0';
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
+import {canopySupportBounds} from './geometry.js?v=1.38.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.38.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.38.0';
 const recipe=(terrace,garden,diningTurn,shift,hedgeCount,pendantCount,treeCount,light,plant)=>Object.freeze({
   terrace,garden,diningTurn,shift:Object.freeze(shift),hedgeCount,pendantCount,treeCount,
   light:Object.freeze(light),plant,
@@ -51,8 +52,14 @@ export function resortTerraceLayout(data,settings,tub,stairs){
       {id:'spa-right-route',x:tub.x0-.82,y,width:.82,length:depth},
       {id:'spa-left-route',x:tub.x1,y,width:.82,length:depth},
     ];
+    const cover=jacuzziCoverLayout(tub,settings);
+    if(cover)clearances.push({id:'jacuzzi-cover-parking',...cover.parkedBounds});
     const bays=[{id:'right',x:x+.16,width:tub.x0-.82-x-.16,back:'west'},
       {id:'left',x:tub.x1+.82,width:x+width-.16-tub.x1-.82,back:'east'}];
+    if(cover){
+      const left=bays[1],end=left.x+left.width;
+      left.x=Math.max(left.x,cover.parkedBounds.x+cover.parkedBounds.width+.08);left.width=Math.max(0,end-left.x);
+    }
     const items=[],length=Math.max(0,depth-2*threshold-.10),startY=y+threshold+.05;
     const add=o=>{if(o.width>.25&&o.length>.25&&!clearances.some(c=>overlaps(o,c))&&!items.some(i=>overlaps(i,o,.06)))items.push(o);};
     for(const bay of bays){

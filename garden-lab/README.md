@@ -2,7 +2,19 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.37.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.37.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.37.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.38.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.38.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.38.0)**
+
+## Doors, sliding spa covers and fitted guest rooms · 1.38.0
+
+**Doors, gates & covers** beside the viewer controls the independent ground/upper terrace doors, both gates, both side-sliding spa covers and the office/gym arrangements. Gates start closed; HST doors retain the two-thirds-open default. The panel stays accessible in fullscreen. Covers update visible geometry, walking support and sunlight together.
+
+The compact rear-left pine grove returns to its earlier coordinates, with the nearest pair **2.00 m apart**. The **3.20 × 6.50 m pool** moves rearward to **(15.50, 24.50)**, just before the grove. The cold plunge meets its garden-facing approach level instead of sitting on a raised apron. Schema **34** preserves manual trees and archived comparison settings while updating the active prior proposal once.
+
+The kitchen window is clear above; fitted corner storage closes the pantry/cooking junction. Renovation finishes cover all retained chimney cores, and open stair-floor edges receive continuous guards. Each guest room has a **1.40 × 2.00 m mattress**, work desk and bed-facing wall TV. The office has a **2.60 m desk with two computers** and an optional **0.90 × 2.00 m single guest bed**.
+
+The basement gym adds a short dual-stack cable station, premium smart bike, adjustable dumbbells, wheeled bench, training screen, mirror and accessory storage. The bench parks beside the wall to free the central activity space. The technical/laundry room and two garage spaces remain.
+
+[Controls, room fit, equipment references and saved-design behavior](docs/interactive-living-1.38.md)
 
 ## Retained trees, garden routes and fitted rooms · 1.37.0
 

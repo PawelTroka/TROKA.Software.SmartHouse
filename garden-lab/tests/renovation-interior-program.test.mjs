@@ -66,7 +66,8 @@ test('kitchen workstations and offices have programme-aware usable approaches',(
     for(let z=c.z0-.45;z<=c.z1+.45+1e-8;z+=.05)
       assert.equal(kitchenWalk(kitchenApproach[0],z,true,.30),true,styleId+' refrigerator-side crossing');
     const chair=byId(first,'office-chair');
-    const officeApproach=office==='floating'?[chair.x-chair.width/2-.35,chair.z]:[chair.x+chair.width/2+.45,chair.z];
+    const desk=byId(first,'office-desk');
+    const officeApproach=desk.fixedLayout?desk.approach:office==='floating'?[chair.x-chair.width/2-.35,chair.z]:[chair.x+chair.width/2+.45,chair.z];
     // The full circulation suite independently traverses these destinations
     // from the hall with a 0.60 m body and checks every door sweep. Here the
     // destinations are tied to usable fixture sides, not their former centres.

@@ -4,18 +4,21 @@ import assert from 'node:assert/strict';
  * emitted by the actual drawn scene. No app state or private renderer hooks. */
 export async function verifyGardenLiving({page,el,sceneVisible,style,shot,exportDesign,check,report,details,settledInfo,ready}){
   const timeout=120000,trees=s=>s.settings.screeningTrees.map(t=>[t.x,t.y]);
-  const expectedTrees=[[18,35],[14,36],[18,28]];
+  const expectedTrees=[[13,34.1],[14.2,32.5],[17.6,34.9]];
   const sceneInfo=async()=>{
     const info=await settledInfo();
-    for(const key of ['boundaryFence','gardenPaths','coldPlunge','gardenLighting'])info[key]=JSON.parse(info[key]);
+    for(const key of ['boundaryFence','gardenPaths','coldPlunge','gardenLighting','spaCovers','slidingDoors'])info[key]=JSON.parse(info[key]);
     return info;
   };
   const gates=(info)=>Object.fromEntries(info.boundaryFence.gates.map(g=>[g.id,g.open]));
+  const homeControls=async open=>{if((await el('#home-controls').getAttribute('open')!==null)!==open)await el('#home-controls > summary').click({timeout});};
+  const doors=async(key,value)=>{await homeControls(true);await el(`[data-door-control="${key}"][data-door-value="${value}"]`).click({timeout});};
   const baseline=await exportDesign();assert.deepEqual(trees(baseline),expectedTrees);
-  assert.equal(baseline.schemaVersion,33);assert.equal(baseline.settings.perimeterFenceEnabled,true);
+  assert.equal(baseline.schemaVersion,34);assert.equal(baseline.settings.perimeterFenceEnabled,true);
   assert.equal(baseline.gardenLayout.pool.length,6.5);assert.equal(baseline.gardenLayout.pool.width,3.2);
-  assert.equal(baseline.gardenLayout.pool.x,15.5);assert.equal(baseline.gardenLayout.pool.y,19.8);
+  assert.equal(baseline.gardenLayout.pool.x,15.5);assert.equal(baseline.gardenLayout.pool.y,24.5);
   assert.equal(baseline.gardenLayout.sunbeds.length,2);
+  assert.equal(baseline.settings.pedestrianGateOpen,false);assert.equal(baseline.settings.garageGateOpen,false);
   await el('#showDimensions').uncheck();
   await details();await style('warm-minimal');
   await el('[data-studio-moment="noon"]').first().click({timeout});
@@ -44,10 +47,16 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   await el('#summerPoolLayout').check();assert.deepEqual(trees(await exportDesign()),expectedTrees);
   check('All three sunbed options keep their long axes parallel to the adjacent pool edge; layout switches leave the trees fixed');
 
+  assert.equal(gates(first)['front-pedestrian-opening'],false);assert.equal(gates(first)['front-vehicle-opening'],false);
+  await el('#home-controls > summary').click({timeout});
+  await el('[data-home-setting="pedestrianGateOpen"]').check();
+  let opened=await sceneInfo();assert.equal(gates(opened)['front-pedestrian-opening'],true);assert.equal(gates(opened)['front-vehicle-opening'],false);
+  await el('#garageGateOpen').check();
   await el('#pedestrianGateOpen').uncheck();
   let info=await sceneInfo();assert.equal(gates(info)['front-pedestrian-opening'],false);assert.equal(gates(info)['front-vehicle-opening'],true);
   await el('#garageGateOpen').uncheck();info=await sceneInfo();
   assert.equal(gates(info)['front-pedestrian-opening'],false);assert.equal(gates(info)['front-vehicle-opening'],false);
+  await homeControls(false);
   await el('[data-preset="front"]').click({timeout});await sceneVisible(timeout);
   await shot('front-gates-warm-minimal-closed','#scene-host canvas');
   const fenceStyles=[];
@@ -78,6 +87,17 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   check('Gate controls act independently, persist after reload, and follow the selected fence style without moving the planting');
 
   await style('warm-minimal');await details();
+  await doors('hstOpen',0);info=await sceneInfo();
+  assert.deepEqual(info.slidingDoors,{terrace:0,upper:1});
+  await doors('balconyOpen',0);info=await sceneInfo();
+  assert.deepEqual(info.slidingDoors,{terrace:0,upper:0});
+  const closedDoorState=await exportDesign();assert.equal(closedDoorState.settings.hstOpen,0);assert.equal(closedDoorState.settings.balconyOpen,0);
+  await homeControls(false);await el('[data-studio-inspect="house"]').click({timeout});await sceneVisible(timeout);
+  await shot('interactive-ground-and-upper-doors-closed','#scene-host canvas');
+  await doors('hstOpen',1);info=await sceneInfo();assert.deepEqual(info.slidingDoors,{terrace:1,upper:0});
+  await doors('balconyOpen',1);info=await sceneInfo();assert.deepEqual(info.slidingDoors,{terrace:1,upper:1});
+  await homeControls(false);await shot('interactive-ground-and-upper-doors-open','#scene-host canvas');
+  check('Ground and upper terrace door controls work independently, with open/closed leaves reflected in the drawn scene and export');
   await el('[data-preset="terrace"]').click({timeout});await el('[data-look-yaw="0"]').click({timeout});
   await el('[data-studio-moment="blue"]').first().click({timeout});await sceneVisible(timeout);
   await page.waitForFunction(()=>Number(document.querySelector('#viewport').dataset.nightActivation)>0,null,{timeout});
@@ -101,6 +121,22 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   await shot('garden-living-sunken-plunge','#scene-host canvas');
   const plungeView=await exportDesign();assert.equal(plungeView.settings.preset,'custom');
   assert.equal(plungeView.settings.observerX,7.7);assert.equal(plungeView.settings.observerY,33.6);
+
+  await homeControls(true);await el('#coldPlungeCoverClosed').check();info=await sceneInfo();
+  assert.equal(info.spaCovers.coldPlunge,1);assert.equal(info.spaCovers.jacuzzi,0);
+  await homeControls(false);await shot('interactive-plunge-cover-closed','#scene-host canvas');
+  await homeControls(true);await el('#jacuzziCoverClosed').check();info=await sceneInfo();
+  assert.equal(info.spaCovers.coldPlunge,1);assert.equal(info.spaCovers.jacuzzi,1);
+  await homeControls(false);await el('[data-studio-inspect="garden"]').click({timeout});await sceneVisible(timeout);
+  await shot('interactive-spa-covers-closed-overview','#scene-host canvas');
+  const covered=await exportDesign();assert.equal(covered.settings.jacuzziCoverClosed,true);assert.equal(covered.settings.coldPlungeCoverClosed,true);
+  await page.reload({waitUntil:'domcontentloaded'});await ready();info=await sceneInfo();
+  assert.equal(info.spaCovers.coldPlunge,1);assert.equal(info.spaCovers.jacuzzi,1);
+  await homeControls(true);await el('#coldPlungeCoverClosed').uncheck();info=await sceneInfo();
+  assert.equal(info.spaCovers.coldPlunge,0);assert.equal(info.spaCovers.jacuzzi,1);
+  await el('#jacuzziCoverClosed').uncheck();await homeControls(false);info=await sceneInfo();
+  assert.equal(info.spaCovers.coldPlunge,0);assert.equal(info.spaCovers.jacuzzi,0);
+  check('Each telescoping spa cover closes, retracts and persists independently; reduced motion reaches the final panel positions immediately');
 
   await page.setViewportSize({width:390,height:844});await el('#boundary-fence-controls').scrollIntoViewIfNeeded({timeout});
   for(const id of ['perimeterFenceEnabled','pedestrianGateOpen','garageGateOpen']){

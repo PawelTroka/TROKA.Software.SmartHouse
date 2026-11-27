@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {gardenGroundAt} from './geometry.js?v=1.37.0';
-import {createStyledDeck} from './scene-style-details.js?v=1.37.0';
-import {finishDeckBox} from './scene-static-details.js?v=1.37.0';
+import {gardenGroundAt} from './geometry.js?v=1.38.0';
+import {createStyledDeck} from './scene-style-details.js?v=1.38.0';
+import {finishDeckBox} from './scene-static-details.js?v=1.38.0';
 
 /** The low landscape furnishings use the same fitted rectangles as the plan.
  * Planting is ornamental; it never creates an analytical privacy barrier. */

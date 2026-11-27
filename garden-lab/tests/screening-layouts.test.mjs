@@ -13,20 +13,21 @@ const korzData=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json'
 const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
-test('fresh Sternicza restores Austrian pines at calculated boundary positions while Korzeniowskiego stays tree-free',()=>{
+test('fresh Sternicza restores Austrian pines in the earlier close grove while Korzeniowskiego stays tree-free',()=>{
   assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-pool-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.deepEqual(sternicza.DEFAULTS.screeningTrees,STERNICZA_SUMMER_TREES);
-  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[18,35],[14,36],[18,28]]);
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[14.2,32.5],[17.6,34.9]]);
   assert.ok(sternicza.DEFAULTS.screeningTrees.every(t=>t.typeId==='austrian-pine-tall'&&t.height===9.5&&t.crownWidth===5&&t.crownDepth===5));
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
   assert.deepEqual(sternicza.sanitizeState().screeningTrees,sternicza.DEFAULTS.screeningTrees);
   assert.deepEqual(sternicza.sanitizeState({screeningTrees:[]}).screeningTrees,[]);
   const volumes=screeningTreeVolumes(sternicza.DEFAULTS,sterniczaData);
   assert.ok(volumes.every(volume=>volume.plantable),'Every default trunk must have a valid planting position');
-  assert.ok(volumes.some(volume=>!volume.crownInside),'Broad edge crowns retain explicit overhang warnings');
+  const edgeTrees=sternicza.DEFAULTS.screeningTrees.map((tree,i)=>i===0?{...tree,x:19.3,y:30.2}:tree);
+  assert.ok(screeningTreeVolumes({...sternicza.DEFAULTS,screeningTrees:edgeTrees},sterniczaData).some(volume=>!volume.crownInside),'Moving a broad crown to the edge still reports its actual overhang');
   const defaultLayout=getScreeningLayouts('sternicza-11','summer')[0];
-  assert.match(defaultLayout.note,/species-specific east\/rear boundary search/);
+  assert.match(defaultLayout.note,/earlier rear-left grove/);
   assert.match(defaultLayout.note,/overhang/i);
   assert.deepEqual(sternicza.decodeState('v=29&site=sternicza-11').screeningTrees,STERNICZA_EXCELSA_TREES);
   const reference=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='reference-pines');

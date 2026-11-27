@@ -1,6 +1,6 @@
 /** A small, connected landscape route in mapped metres. Tree positions are
  * inputs, never outputs. The same polygons drive drawing, meshes and budget. */
-import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.37.0';
+import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.38.0';
 
 const distance=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
 const rectangle=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length]];
@@ -51,7 +51,9 @@ export function gardenPathNetwork({program,stairs,terrace,dining,items=[],bounda
   const width=.82,borderWidth=.06,outerWidth=width+2*borderWidth;
   const stairEnd=[stairs.x+stairs.width/2,stairs.y+stairs.length];
   const hubY=Math.max(stairEnd[1]+.58,terrace.y+terrace.length+.85);
-  const mainX=6.65,fireX=firepit.anchor[0],poolY=pool.y+pool.length-.30;
+  // Reach the near end of the rearward pool in front of the central fire
+  // lounge. A route to its far end would cut through that sunken room.
+  const mainX=6.65,fireX=firepit.anchor[0],poolY=Math.min(pool.y+pool.length-.30,firepit.y-1.05);
   const firstStep=sauna.entrySteps?.[0]?.footprint;
   const saunaEntry=firstStep?mix(firstStep[0],firstStep[1],.5):mix(sauna.door.a,sauna.door.b,.5);
   const nodes={

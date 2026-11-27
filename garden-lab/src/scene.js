@@ -1,62 +1,64 @@
 import * as THREE from '../vendor/three.module.js';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=1.37.0';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=1.38.0';
 import { SVGRenderer } from '../vendor/SVGRenderer.js';
-import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.37.0';
-import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.37.0';
-import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.37.0';
-import {createWalkNavigation} from './house-walk.js?v=1.37.0';
-import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds,smoothWalkElevation} from './walk-motion.js?v=1.37.0';
-import {updateHstOpening} from './interior-architecture.js?v=1.37.0';
-import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.37.0';
-import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.37.0';
-import { addHouseRenovation } from './scene-house-renovation.js?v=1.37.0';
-import { houseAppearanceLayout } from './house-appearance.js?v=1.37.0';
-import { entranceAccessLayout } from './entrance-access.js?v=1.37.0';
-import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.37.0';
-import { sampledRoofFaces } from './roof-mesh.js?v=1.37.0';
-import { terrainSurfaceGeometry } from './terrain-mesh.js?v=1.37.0';
-import { renderBudget } from './render-quality.js?v=1.37.0';
-import {latestIntersectionEntry} from './render-visibility.js?v=1.37.0';
-import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.37.0';
-import { createHedgeVegetation } from './scene-vegetation.js?v=1.37.0';
-import { createPoolReflections } from './scene-reflections.js?v=1.37.0';
-import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.37.0';
-import { getDesignStyle } from './design-styles.js?v=1.37.0';
-import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.37.0';
-import { createRenovationGardenDetails } from './scene-renovation-garden.js?v=1.37.0';
-import {createGardenPathGroup} from './scene-garden-paths.js?v=1.37.0';
-import { resortTerraceLayout } from './resort-garden.js?v=1.37.0';
-import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.37.0';
-import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.37.0';
-import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.37.0';
-import { getSiteProfile } from './sites.js?v=1.37.0';
-import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.37.0';
-import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.37.0';
-import { screeningTreeVolumes } from './screening-trees.js?v=1.37.0';
-import { createScreeningTreeGroup } from './scene-trees.js?v=1.37.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.37.0';
-import { createSpaAmenityGroup } from './scene-spa.js?v=1.37.0';
-import {createJacuzziEffects} from './scene-jacuzzi-effects.js?v=1.37.0';
-import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.37.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.37.0';
-import { gardenDimensions } from './dimensions.js?v=1.37.0';
-import { createDimensionOverlay } from './scene-dimensions.js?v=1.37.0';
-import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.37.0';
-import {existingCanopyRecords} from './existing-vegetation.js?v=1.37.0';
-import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.37.0';
-import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.37.0';
-import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.37.0';
-import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.37.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.37.0';
-import {createContextRoofFeatures} from './scene-context-roof.js?v=1.37.0';
-import {projectContextGroundUVs} from './context-ground.js?v=1.37.0';
-import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.37.0';
-import { createGardenNightLighting } from './scene-night-lights.js?v=1.37.0';
-import { boundaryFenceLayout, BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.37.0';
-import { createBoundaryFenceGroup } from './scene-boundary-fence.js?v=1.37.0';
-import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.37.0';
-import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.37.0';
-import { garageTerrainCutouts,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.37.0';
+import { pointInPolygon, terrainAt, gardenGroundAt, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, spaLevels, privacyStructures, terraceCover, frontHedgeLayout } from './geometry.js?v=1.38.0';
+import {createSharedHouseModel,cloneOwnedScene} from './scene-house-model.js?v=1.38.0';
+import {houseModelFrame,getHouseFloorPlan} from './house-model.js?v=1.38.0';
+import {createWalkNavigation} from './house-walk.js?v=1.38.0';
+import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds,smoothWalkElevation} from './walk-motion.js?v=1.38.0';
+import {updateHstOpening} from './interior-architecture.js?v=1.38.0';
+import { mappedHouseFacadeLayout } from './mapped-house-facades.js?v=1.38.0';
+import {createRenovationFacadeGroup} from './scene-renovation-facades.js?v=1.38.0';
+import { addHouseRenovation } from './scene-house-renovation.js?v=1.38.0';
+import { houseAppearanceLayout } from './house-appearance.js?v=1.38.0';
+import { entranceAccessLayout } from './entrance-access.js?v=1.38.0';
+import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.38.0';
+import { sampledRoofFaces } from './roof-mesh.js?v=1.38.0';
+import { terrainSurfaceGeometry } from './terrain-mesh.js?v=1.38.0';
+import { renderBudget } from './render-quality.js?v=1.38.0';
+import {latestIntersectionEntry} from './render-visibility.js?v=1.38.0';
+import { createArchitecturalRenderer } from './architectural-renderer.js?v=1.38.0';
+import { createHedgeVegetation } from './scene-vegetation.js?v=1.38.0';
+import { createPoolReflections } from './scene-reflections.js?v=1.38.0';
+import { batchGardenBoxes, finishDeckBox, projectWaterUVs, proposedMaterials, disposeProposedMaterials } from './scene-static-details.js?v=1.38.0';
+import { getDesignStyle } from './design-styles.js?v=1.38.0';
+import { createStyledDeck, createStyledLounger, createStyledSideTable, createStyledDining, createStyledCanopyTrim, createStyledResortPiece } from './scene-style-details.js?v=1.38.0';
+import { createRenovationGardenDetails } from './scene-renovation-garden.js?v=1.38.0';
+import {createGardenPathGroup} from './scene-garden-paths.js?v=1.38.0';
+import { resortTerraceLayout } from './resort-garden.js?v=1.38.0';
+import { createSurfaceTextures, configureBasePhotographicMaterials } from './scene-materials.js?v=1.38.0';
+import { onSurfaceAssetsChanged, projectArchitecturalMaterialUVs, surfaceAssetDiagnostics } from './material-assets.js?v=1.38.0';
+import { toWorld, fromWorld, gazeDirection, toWorldTriangle, toWorldRoofTriangle } from './orientation.js?v=1.38.0';
+import { getSiteProfile } from './sites.js?v=1.38.0';
+import { boundsOf, gardenFurniture, terraceStairs, rectanglesOverlap } from './layout.js?v=1.38.0';
+import { localRoofEnvelope, roofEdgeHeight } from './roof-envelope.js?v=1.38.0';
+import { screeningTreeVolumes } from './screening-trees.js?v=1.38.0';
+import { createScreeningTreeGroup } from './scene-trees.js?v=1.38.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.38.0';
+import { createSpaAmenityGroup } from './scene-spa.js?v=1.38.0';
+import {createJacuzziEffects} from './scene-jacuzzi-effects.js?v=1.38.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.38.0';
+import {createSpaCoverGroup,setSpaCoverProgress} from './scene-spa-covers.js?v=1.38.0';
+import { createPrivacyStructureGroup } from './scene-privacy-structures.js?v=1.38.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.38.0';
+import { gardenDimensions } from './dimensions.js?v=1.38.0';
+import { createDimensionOverlay } from './scene-dimensions.js?v=1.38.0';
+import { contextTerrainAt, neighborhoodBounds } from './neighborhood.js?v=1.38.0';
+import {existingCanopyRecords} from './existing-vegetation.js?v=1.38.0';
+import {createExistingVegetationGroup} from './scene-existing-vegetation.js?v=1.38.0';
+import {observedBuildingAppearance,observedFacadePlacements} from './neighborhood-appearance.js?v=1.38.0';
+import {createNeighborhoodAppearanceGroup} from './scene-neighborhood-appearance.js?v=1.38.0';
+import {clipFacadeToVisualRoof} from './observed-neighbor-roofs.js?v=1.38.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.38.0';
+import {createContextRoofFeatures} from './scene-context-roof.js?v=1.38.0';
+import {projectContextGroundUVs} from './context-ground.js?v=1.38.0';
+import { nightLightingState, isWindowLit } from './night-lighting.js?v=1.38.0';
+import { createGardenNightLighting } from './scene-night-lights.js?v=1.38.0';
+import { boundaryFenceLayout, BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.38.0';
+import { createBoundaryFenceGroup } from './scene-boundary-fence.js?v=1.38.0';
+import { createGardenLightBoundary } from './scene-light-boundary.js?v=1.38.0';
+import { garageLayout,garageVehiclePose } from './garage-ramp.js?v=1.38.0';
+import { garageTerrainCutouts,createGarageAwarePaving,createGarageGroup } from './scene-garage.js?v=1.38.0';
 
 // Site coordinates are x = frontage, y = garden depth, z = absolute elevation.
 // The source basis is left-handed. Three uses x, elevation, +gardenDepth.
@@ -439,6 +441,7 @@ export function createScene(container, data, callbacks = {}) {
   let gardenNight=null,nightWindowMesh=null,nightWindowPlacements=[],nightWindowSignature='',lastSolar=null;
   let garageScene=null,currentGarageLayout=null,sharedHouseModel=null,contextRevision=0;
   let jacuzziEffects=null;
+  const spaCoverTransitions=new Map();
   let walkModel=null,walkPose=null,lastWalkTime=0,lastWalkNotice=0,walkFast=false,walkFloating=false,walkSettling=false;
   const walkKeys=new Set();
   const keyDirections=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right'],['KeyE','up'],['PageUp','up'],['KeyQ','down'],['PageDown','down']]);
@@ -947,6 +950,8 @@ export function createScene(container, data, callbacks = {}) {
     tubWater.name='jacuzzi-water';
     jacuzziEffects=createJacuzziEffects(jacuzzi,{svgMode,mood:settings.jacuzziMood||'aurora'});
     terraceGroup.add(jacuzziEffects.group);
+    const cover=jacuzziCoverLayout(jacuzzi,settings);
+    if(cover)terraceGroup.add(createSpaCoverGroup(cover,mat,{svgMode}));
     if(jacuzzi.seatCentres){
       for(const [i,[sx,sy]] of jacuzzi.seatCentres.entries()){
         const seat=roundedSlab(terraceGroup,sx-.23,sy-.23,floor-.43,.46,.46,.10,.13,mat.stoneLight);
@@ -1140,6 +1145,7 @@ export function createScene(container, data, callbacks = {}) {
   function rebuildFinishes(settings,style,rebuildHouse) {
     gardenNight?.dispose();
     jacuzziEffects=null;
+    spaCoverTransitions.clear();
     removeGeometry(finishesGroup);
     if(rebuildHouse){sharedHouseModel?.dispose();sharedHouseModel=null;removeGeometry(houseGroup);}
     disposeProposedMaterials(designMaterials,mat);
@@ -1467,6 +1473,8 @@ export function createScene(container, data, callbacks = {}) {
       gardenPaths:paths?{segments:paths.pathSegments,pavers:paths.paverCount,fixtures:paths.routeFixtures,
         pathLength:paths.pathLength,pavedArea:paths.pavedArea,surfaceArea:paths.surfaceArea,connections:paths.connectedDestinations,blockedRoutes:paths.blockedRoutes}:null,
       coldPlunge:plunge?{sunken:plunge.sunken,...plunge.finishedLevels}:null,
+      spaCovers:{...spaCoverProgress(),moving:spaCoverTransitions.size},
+      slidingDoors:{terrace:currentSettings.hstOpen??1,upper:currentSettings.balconyOpen??1},
       gardenLighting: gardenNight?{
         fixtures:gardenNight.fixtures.length,lights:gardenNight.lightCount,
         routeFixtures:gardenNight.fixtures.filter(f=>f.id?.startsWith('garden-route-light-')).length,
@@ -1482,6 +1490,7 @@ export function createScene(container, data, callbacks = {}) {
   }
   function renderNow(now) {
     renderPending=false;frameHandle=0;if(!canDraw())return;
+    const coversMoving=stepSpaCovers(now);
     const walking=mode==='walk'&&walkKeys.size>0;
     const walkDt=walkFrameSeconds(now,lastWalkTime);
     if(walking){
@@ -1521,7 +1530,7 @@ export function createScene(container, data, callbacks = {}) {
     if(animate&&!motionTimer)motionTimer=setTimeout(()=>{
       motionTimer=0;if(motionActive())requestRender();
     },1000/motionFps);
-    if(walking||walkSettling)requestRender();
+    if(walking||walkSettling||coversMoving)requestRender();
   }
   function requestRender() {
     if(!renderPending&&canDraw()){renderPending=true;frameHandle=requestAnimationFrame(renderNow);}
@@ -1647,14 +1656,61 @@ export function createScene(container, data, callbacks = {}) {
 
   /** Slider ticks move only the existing leaves and their collision spans. */
   function updateHstPreview(settings=currentSettings){
-    currentSettings={...currentSettings,hstOpen:settings.hstOpen};
+    currentSettings={...currentSettings,hstOpen:settings.hstOpen??currentSettings.hstOpen,balconyOpen:settings.balconyOpen??currentSettings.balconyOpen};
     const changed=sharedHouseModel?updateHstOpening(sharedHouseModel.root,currentSettings):0;
     walkModel?.updateHst(currentSettings);
     if(mode==='walk'&&walkNavigation()==='physical'&&walkPose&&!walkModel?.locate(walkPose.position,{eyeHeight:walkPose.eyeHeight,maxDistance:.30})){
       applyWalkPose(walkModel.spawnFloor(walkPose.floor,walkPose.roomId)||walkModel.spawnGarden());
     }
-    if(changed){contextRevision++;shadowBoundsDirty=true;requestRender();}
+    if(changed){contextRevision++;statusChanged=true;shadowBoundsDirty=true;requestRender();}
     return changed;
+  }
+
+  function spaCoverProgress(){
+    const result={};
+    for(const [id,key]of [['jacuzzi-cover','jacuzzi'],['cold-plunge-cover','coldPlunge']]){
+      const value=finishesGroup.getObjectByName(id)?.userData.spaCover?.progress;
+      if(Number.isFinite(value))result[key]=value;
+    }
+    return result;
+  }
+  function syncSpaCoverSurfaces(){
+    const progress=spaCoverProgress();walkModel?.updateCovers(currentSettings,progress);
+    if(jacuzziEffects?.group)jacuzziEffects.group.visible=(progress.jacuzzi??0)<.999;
+    // A lid can slide under a stationary swimmer or out from beneath a person.
+    // Follow the new support with the same comfortable elevation easing as a
+    // normal walking step; do not wait for keyboard input or snap the camera.
+    if(mode==='walk'&&walkNavigation()==='free'&&walkPose&&!walkFloating&&walkModel){
+      const next=walkModel.locateFree(walkPose.position,{eyeHeight:walkPose.eyeHeight,floorHint:walkPose.floor});
+      if(next&&(next.surface!==walkPose.surface||Math.abs(next.position[1]-walkPose.position[1])>.0005)){
+        walkPose=next;walkSettling=Math.abs(camera.position.y-next.position[1])>.0005;notifyWalk(false);
+      }
+    }
+  }
+  function stepSpaCovers(now){
+    if(!spaCoverTransitions.size)return false;
+    for(const [id,move]of spaCoverTransitions){
+      const t=reducedMotion.matches?1:Math.min(1,Math.max(0,(now-move.start)/1100));
+      const eased=t*t*(3-2*t);
+      setSpaCoverProgress(move.group,move.from+(move.to-move.from)*eased);
+      if(t===1)spaCoverTransitions.delete(id);
+    }
+    syncSpaCoverSurfaces();contextRevision++;statusChanged=true;
+    if(renderer.shadowMap)renderer.shadowMap.needsUpdate=true;
+    return spaCoverTransitions.size>0;
+  }
+  function updateSpaCovers(settings=currentSettings){
+    for(const [id,key]of [['jacuzzi-cover','jacuzziCoverClosed'],['cold-plunge-cover','coldPlungeCoverClosed']]){
+      const group=finishesGroup.getObjectByName(id),current=group?.userData.spaCover;
+      if(!current)continue;
+      const target=settings[key]===true?1:0;
+      if(spaCoverTransitions.get(id)?.to===target)continue;
+      if(Math.abs(current.progress-target)<.00001){spaCoverTransitions.delete(id);continue;}
+      if(svgMode||reducedMotion.matches||!canDraw()){
+        setSpaCoverProgress(group,target);spaCoverTransitions.delete(id);contextRevision++;
+      }else spaCoverTransitions.set(id,{group,from:current.progress,to:target,start:performance.now()});
+    }
+    syncSpaCoverSurfaces();statusChanged=true;shadowBoundsDirty=true;requestRender();
   }
 
   function update(settings,observer,analysis,activeData=data) {
@@ -1669,7 +1725,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     currentSettings={...settings};currentObserver=observer;currentAnalysis=analysis;
     syncExistingVegetation(settings);
-    const signature=JSON.stringify([...['summerPoolLayout','poolSunbedSides','jacuzziCentered','jacuzziMood','gardenProgram','designStyle','styleGardenLayout','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
+    const signature=JSON.stringify([...['summerPoolLayout','rearCornerPool','poolSunbedSides','jacuzziCentered','jacuzziMood','gardenProgram','designStyle','styleGardenLayout','poolFreeboard','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','canopyEnabled','terraceCoverType','firstFloorRise','atticRise','interiorLayout','officeCoworking','officeGuestBedOpen','gymBenchParked','jacuzziOverflow','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','terraceDepth','terraceWidth','planExteriorApplied','costSpacing','includeHighFeatures','screeningTrees','treeLeafMode',...PRIVACY_GEOMETRY_KEYS,
       ...BOUNDARY_GEOMETRY_KEYS,'basementGarageEnabled','garageClearHeight','garageSlabThickness','garageExtraDepth','garageSpaces','garageRampWidth','garageInsideRun','garageBottomApron','garageMaxGrade','garageClearanceMm','garageReserveMm'].map(k=>settings[k]), settings.sunDate?.slice(5,7)]);
     const rebuilt=signature!==designSignature;
     if(rebuilt){designSignature=signature;rebuildDesign(settings);}
@@ -1693,6 +1749,7 @@ export function createScene(container, data, callbacks = {}) {
     }
     if(previousNavigation!==walkNavigation())setWalkNavigation(walkNavigation());
     updateHstPreview(settings);
+    updateSpaCovers(settings);
     if(finishesChanged&&!svgMode){projectArchitecturalMaterialUVs(scene);reflections?.setSurface(scene.getObjectByName('pool-water'));}
     if(finishesChanged||dimensionsVisible!==settings.showDimensions){
       dimensionsVisible=settings.showDimensions;

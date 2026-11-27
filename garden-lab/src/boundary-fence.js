@@ -1,7 +1,7 @@
 /** One metric boundary proposal shared by the plan, renderer, physical walk and rays.
  * Coordinates use site x/y and absolute elevation z. No planting is edited here. */
-import {frontHedgeLayout,gardenGroundAt} from './geometry.js?v=1.37.0';
-import {getDesignStyle} from './design-styles.js?v=1.37.0';
+import {frontHedgeLayout,gardenGroundAt} from './geometry.js?v=1.38.0';
+import {getDesignStyle} from './design-styles.js?v=1.38.0';
 
 export const BOUNDARY_HEIGHT=2.2;
 export const BOUNDARY_GEOMETRY_KEYS=Object.freeze(['perimeterFenceEnabled','pedestrianGateOpen','garageGateOpen']);
@@ -175,7 +175,7 @@ export function boundaryFenceLayout(settings={},data,{style:designStyle}={}){
     }
   }
   if(front)for(const gap of front.gaps){
-    const pedestrian=gap.id==='front-pedestrian-opening',open=settings[pedestrian?'pedestrianGateOpen':'garageGateOpen']!==false,u=front.u,n=[-u[1],u[0]],width=gap.width;
+    const pedestrian=gap.id==='front-pedestrian-opening',open=settings[pedestrian?'pedestrianGateOpen':'garageGateOpen']===true,u=front.u,n=[-u[1],u[0]],width=gap.width;
     const gate={...gap,label:pedestrian?'Pedestrian gate':'Garage ramp gate',kind:pedestrian?'pedestrian':'garage',open,clearWidth:width,height:BOUNDARY_HEIGHT,leaves:[]};
     if(pedestrian){
       const hinge=add(gap.a,u.map(v=>-v*.065));

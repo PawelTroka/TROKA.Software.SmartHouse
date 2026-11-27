@@ -5,10 +5,10 @@
  */
 export const HST_FRAME_WIDTH = .028;
 export const HST_TRACK_PITCH = .047;
-function stackingPanelLayout(opening, settings = {}, count = 3) {
+function stackingPanelLayout(opening, settings = {}, count = 3, control = 'hstOpen') {
   const start = Number(opening.offset ?? opening.lo ?? 0);
   const width = Number(opening.width ?? (opening.hi - opening.lo));
-  const raw = Number(settings.hstOpen ?? opening.openFraction ?? 1);
+  const raw = Number(settings[control] ?? opening.openFraction ?? 1);
   const open = Number.isFinite(raw) ? Math.max(0, Math.min(1, raw)) : 1;
   const frame = Math.min(HST_FRAME_WIDTH, Math.max(.005, width / 20));
   const left = start + frame, right = start + width - frame;
@@ -21,10 +21,13 @@ function stackingPanelLayout(opening, settings = {}, count = 3) {
   });
   const clearLo = panels[count-1].hi;
   const clear = {lo: clearLo, hi: right, width: Math.max(0, right - clearLo)};
-  return {open, start, width, frameWidth: frame, panels, clear,
+  return {open, control, start, width, frameWidth: frame, panels, clear,
     blocked: panels.map(({lo, hi}) => ({lo, hi})),
     maximumClearWidth: (count-1) * pitch, stackSide: 'left', tracks: count};
 }
 export const hstPanelLayout=(opening,settings={})=>stackingPanelLayout(opening,settings,3);
-/** Balcony access is shown open, with one leaf stacking over its fixed half. */
-export const balconyPanelLayout=opening=>stackingPanelLayout(opening,{hstOpen:1},2);
+/** Upper doors share the three-track mechanism and the stacked-open default,
+ * but have their own control so the terrace and balcony can operate separately. */
+export const balconyPanelLayout=(opening,settings={})=>stackingPanelLayout(opening,settings,3,'balconyOpen');
+export const slidingPanelLayout=(opening,settings={})=>(opening.type||opening.kind)==='balcony-door'
+  ?balconyPanelLayout(opening,settings):hstPanelLayout(opening,settings);
