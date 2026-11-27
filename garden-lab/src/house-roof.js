@@ -14,7 +14,7 @@
  * fit error must not be represented as the error of this locally altered roof.
  * Chimney caps use the actual two high-return clusters (13.34 m / 13.13 m).
  */
-import {architecturalRoofEnvelope} from './architectural-roof.js?v=1.35.0';
+import {architecturalRoofEnvelope} from './architectural-roof.js?v=1.36.0';
 const cache=new WeakMap(),EPS=1e-8;
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring||[];
 const value=(plane,p)=>plane[0]*p[0]+plane[1]*p[1]+plane[2];

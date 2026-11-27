@@ -1,14 +1,14 @@
 // Surface finishes and architectural reveals in wall-local metres. The same
 // altered aperture records cut the actual house walls in both viewers.
-import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.35.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.35.0';
-import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.35.0';
-import {roofEdgeHeight} from './roof-envelope.js?v=1.35.0';
-import {garageLayout} from './garage-ramp.js?v=1.35.0';
-import {terrainAt} from './geometry.js?v=1.35.0';
-import {getDesignStyle} from './design-styles.js?v=1.35.0';
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.35.0';
-import {getRenovationArchitecture,renovationArchitecturalParts} from './renovation-architecture.js?v=1.35.0';
+import {houseAppearanceLayout,photoHouseSupported} from './house-appearance.js?v=1.36.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.36.0';
+import {mappedHouseFacadeLayout} from './mapped-house-facades.js?v=1.36.0';
+import {roofEdgeHeight} from './roof-envelope.js?v=1.36.0';
+import {garageLayout} from './garage-ramp.js?v=1.36.0';
+import {terrainAt} from './geometry.js?v=1.36.0';
+import {getDesignStyle} from './design-styles.js?v=1.36.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.36.0';
+import {getRenovationArchitecture,renovationArchitecturalParts} from './renovation-architecture.js?v=1.36.0';
 
 function minimumRoof(edge,lo,hi){
   const roof=edge.roofEdge;

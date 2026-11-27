@@ -4,6 +4,18 @@ An interactive, browser-only garden privacy and sunlight simulator for **Sternic
 
 **[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.35.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.35.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.35.0)**
 
+## Fullscreen, connected kitchen and open garden · 1.36.0
+
+**Fullscreen** expands either the main model or the interior studio, using native browser fullscreen where available and a full-window fallback otherwise. **Exit fullscreen** or **Esc** returns to the normal layout while preserving the current model and walking session. The same expanded view follows the interior-to-garden walking handoff.
+
+All **34 renovation styles** now connect the kitchen peninsula to the right-hand sink run. Its **2.20 × 0.85 m** span includes the connection; the refrigerator-side free end retracts **55 cm**, leaving **1.18 m** of modeled entry clearance. Matching full-height cabinet panels conceal the retained chimney. A **1.10 m timber slat guard** opens the stair-side hall while preserving its **1.13 m access opening**. Current keeps the original interior.
+
+The coordinated garden places the **3.5 × 8 m pool along the left/east edge**, with three inward-facing sunbeds and optional front/rear pairs for five or seven beds. The fire lounge becomes the central garden focal point, aligned with the terrace jacuzzi. Outdoor kitchens are removed. Schema **32** preserves custom trees and explicit saved choices while relocating recognized older automatic planting presets around the revised pool.
+
+The preferred left-edge composition has a measured sunlight tradeoff: a bounded comparison of nine dates in June–August 2026 estimates **3.6181 equivalent direct-sun hours/day** averaged over its water, against **6.8906** for the released 1.35 arrangement. This limited area/time sample documents the choice; it does not identify a new sunlight optimum.
+
+[Controls, dimensions, migration and sunlight comparison](docs/open-living-garden-1.36.md) · [Reproducible sunlight report](data/left-edge-pool-verification-1.36.json)
+
 ## Comfortable exploration and minimal design families · 1.35.0
 
 Walking now uses the original interior controller's speed, fixed 70° lens, drag direction and sensitivity both inside and outside. Smooth height transitions replace hard stair and terrain snaps. Free exploration is the default: cross terrace edges, walk into the pool or jacuzzi, pass through objects, and use E/Q or touch controls to move vertically. R / Follow ground resumes floor and terrain following. A separate physical mode remains available for circulation checks.

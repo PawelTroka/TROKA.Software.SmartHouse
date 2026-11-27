@@ -1,9 +1,9 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.35.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.35.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.35.0';
-import {curateInteriorPlan} from './interior-curation.js?v=1.35.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.36.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.36.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.36.0';
+import {curateInteriorPlan} from './interior-curation.js?v=1.36.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -90,7 +90,9 @@ function groundPlan(proposed){
     v('kitchen-hall',4.53,5.04,8.825,.12,[door(6.99,.88,'end',1)]),
     v('wet-room-divider',8.98,5.23,8.825,.10,[door(5.25,.85,'start',-1)]),
   ];
-  const stairWest=v('stair-west',5.85,6.08,8.825,.12,proposed?[passage(7.60,1.13,2.30)]:[],proposed?added:undefined);
+  const stairWest=v('stair-west',5.85,proposed?6.00:6.08,8.825,proposed?.07:.12,
+    proposed?[passage(7.60,1.13,1.10)]:[],proposed?{...added,form:'timber-screen',height:1.10,
+      label:'Open timber stair guard',slatWidth:.035,slatPitch:.12}:undefined);
   const stairEast=v('stair-and-bath-access',7.04,5.23,8.825,.12,[door(5.25,.82,'start',-1)]);
   const originalRooms=[
     room('rear-left','Garden room I','living',rect(.35,.35,5.83,4.85),'1/1',24.57,'Boards'),
@@ -103,7 +105,7 @@ function groundPlan(proposed){
   const newRooms=[
     room('dining','Dining','dining',rect(.35,.35,5.89,4.85)),
     room('lounge','Living room','living',rect(5.89,.35,10.42,4.85)),
-    room('front-kitchen','Open kitchen · island and side-garden sink','kitchen',rect(.35,4.85,4.47,8.65)),
+    room('front-kitchen','Open kitchen · connected peninsula and side-garden sink','kitchen',rect(.35,4.85,4.47,8.65)),
     room('hall','Entry and circulation','hall',[[4.47,4.85],[6.86,4.85],[6.86,6.02],[5.79,6.02],[5.79,8.65],[4.47,8.65]]),
     room('bathroom','Combined bathroom','bathroom',rect(7.10,5.27,10.42,8.65)),
   ];
@@ -112,14 +114,14 @@ function groundPlan(proposed){
     fixture('table','diningTable','Large dining table','dining',3.02,2.75,3.18,1.04,{seats:8}),
     fixture('sofa','sofa','U-shaped sectional facing the TV','lounge',8.13,3.30,2.60,2.70,{shape:'U',openTo:'right',front:[1,0]}),
     fixture('tv','tv','TV on solid right-wall bay','lounge',10.34,4.14,.11,1.34),
-    fixture('west-counter','counter','Sink and dishwasher run facing the side garden','front-kitchen',.675,7.12,.65,1.76,{front:[1,0],drawers:true}),
+    fixture('west-counter','counter','Continuous sink run joining the living-edge peninsula','front-kitchen',.675,6.875,.65,2.25,{front:[1,0],drawers:true,joinedCounter:'kitchen-island'}),
     fixture('street-counter','counter','Cooking and drawer run on the closed street wall','front-kitchen',2.41,8.31,4.08,.62,{front:[0,-1],drawers:true}),
     fixture('east-counter','storage','Full-height pantry and appliance cabinets','front-kitchen',4.10,7.31,.63,1.36,{front:[-1,0],height:2.48,pantry:true}),
     fixture('kitchen-fridge','fridge','Refrigerator in the tall cabinet wall','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0]}),
     fixture('kitchen-fridge-top','wallCabinet','Storage over the refrigerator','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],baseHeight:1.95,height:.53,wallMounted:true}),
     fixture('kitchen-wall-storage','wallCabinet','Closed storage above the street-wall cooking run','front-kitchen',2.10,8.47,2.70,.34,{front:[0,-1],baseHeight:1.48,height:.90,wallMounted:true}),
-    fixture('kitchen-island','counter','Living-edge island with deep drawers and a clear entrance beside it','front-kitchen',2.20,5.325,1.80,.85,{height:.90,front:[0,1],variant:'social-island',drawers:true,
-      approaches:[[2.20,6.30],[3.60,5.325],[.825,5.325]]}),
+    fixture('kitchen-island','counter','Connected peninsula with a wider refrigerator-side entrance','front-kitchen',1.45,5.325,2.20,.85,{height:.90,front:[0,1],variant:'social-peninsula',drawers:true,
+      joinedCounter:'west-counter',waterfallEnds:[1],approaches:[[1.85,6.30],[3.15,5.325]]}),
     fixture('hob','hob','Cooktop on the closed street-wall worktop','front-kitchen',2.30,8.31,.78,.50,{hostId:'street-counter',front:[0,-1]}),
     fixture('kitchen-sink','sink','Sink centered below the side-garden window','front-kitchen',.675,6.94,.48,.88,{hostId:'west-counter',front:[1,0],basins:1,approach:[1.55,6.94]}),
     fixture('ground-tub','tub','Deep freestanding soaking tub','bathroom',9.91,7.66,.88,1.78,{variant:'soaking',height:.68,front:[-1,0],approach:[9.12,7.13]}),
@@ -138,12 +140,21 @@ function groundPlan(proposed){
       h('kitchen-living-opening',.175,4.53,5.04,.12,[passage(.35,3.65,2.60)],added)]:[oldRear,...old])],
     removedWalls:proposed?[oldRear,old[0],old[1],old[3],old[4]]:[],
     outdoor:proposed?[landing,platform('terrace','Garden terrace · 4 m','terrace',rect(0,-4,WIDTH,0),4)]:[landing],
-    fixtures:proposed?fitted:[],cores:flueCores(),stairs:[mainFlight(proposed),interiorStair(),...exteriorStairs()],voids:[mainOpening(true)],
+    fixtures:proposed?fitted:[],cores:flueCores().map(c=>proposed&&c.id==='west-flue'?{...c,
+      enclosure:{kind:'cabinet-panels',label:'Retained flue behind matching removable cabinet panels',
+        polygon:rect(3.73,4.83,4.67,5.93),front:[-1,0],panels:[
+          {id:'flue-kitchen-face',x:3.795,z:5.39,width:.035,depth:1.04,front:[-1,0]},
+          {id:'flue-living-return',x:4.18,z:4.90,width:.82,depth:.035,front:[0,-1]},
+          {id:'flue-hall-return',x:4.60,z:5.39,width:.035,depth:1.04,front:[1,0],plainPanel:true},
+          {id:'flue-appliance-return',x:4.18,z:5.875,width:.82,depth:.035,front:[0,1],plainPanel:true},
+        ]}}:c),
+    stairs:[mainFlight(proposed),interiorStair(),...exteriorStairs()],voids:[mainOpening(true)],
     sources:sources('ground','front','side','structure','section',...(proposed?['ground-markup']:[])),
     issues:proposed?[
       'Opening the transverse wall below existing timber floors and making a 9.97 m glazing aperture need a load-path design, verified supports and flue survey.',
       'The right-wall TV is on the short solid panel in front of the side window. The 4 m terrace crosses the rear cellar areaway; provide retained access and drainage.',
-      'The kitchen opens through a 3.65 m span to living/dining, with one 1.80 × 0.85 m island at that open edge. Its side routes are 0.95 m and 0.90 m wide; the hall wall and retained flue stay in place. Wall storage replaces the former tall cupboard across the living-room side and the central preparation block.',
+      'The kitchen opens through a 3.65 m span to living/dining. A 2.20 × 0.85 m peninsula joins the side-garden sink run, with its free end pulled back 0.55 m to give about 1.18 m beside the concealed chimney and refrigerator. The chimney remains intact behind matching removable cabinet panels; flue clearances, ventilation and inspection access need a coordinated detail.',
+      'The hall-side stair partition becomes a 1.10 m timber slat guard, with a continuous handrail and the retained 1.13 m stair-access opening. The bathroom-side privacy wall remains solid. Guard fixings and the stair edge need a measured construction detail.',
       'One 1.42 m sink window looks into the side garden; the kitchen street window is closed for cabinetry. The kitchen does not touch the rear façade, so the full-width rear HST is retained and the open living/dining space gives the rear-garden outlook. Sink relocation and the closed window need coordinated services and façade design.',
       'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
       'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',

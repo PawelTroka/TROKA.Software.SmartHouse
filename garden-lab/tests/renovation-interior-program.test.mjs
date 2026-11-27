@@ -54,16 +54,23 @@ test('kitchen workstations and offices have programme-aware usable approaches',(
     const ground=getInteriorPlan({floor:'ground',styleId}),first=getInteriorPlan({floor:'first',styleId});
     const centre=byId(ground,'kitchen-island'),c=box(centre),street=box(byId(ground,'street-counter'));
     const wall=ground.walls.find(w=>w.id==='kitchen-living-opening'),opening=wall.openings[0],start=wall.a[0]+opening.offset;
-    assert.ok(c.x0-start>=.95-1e-8,styleId+' left opening route');
-    assert.ok(start+opening.width-c.x1>=.90-1e-8,styleId+' entrance beside island');
+    const sinkRun=box(byId(ground,'west-counter')),enclosure=ground.cores.find(c=>c.id==='west-flue').enclosure.polygon;
+    const entranceEdge=Math.min(start+opening.width,...enclosure.map(([x])=>x));
+    assert.ok(c.x0<sinkRun.x1&&c.x1>sinkRun.x0&&Math.abs(c.z1-sinkRun.z0)<1e-8,styleId+' connected sink-side run');
+    assert.ok(entranceEdge-c.x1>=1.18-1e-8,styleId+' refrigerator-side entrance');
     assert.ok(street.z0-c.z1>=1.20-1e-8,styleId+' cooking work zone');
-    const kitchenApproach=[c.x1+.45,centre.z];
+    const kitchenApproach=[(c.x1+entranceEdge)/2,centre.z],kitchenWalk=walkGeometry(ground);
+    // The sink end is intentionally connected. Traverse the actual open end
+    // with a 0.60 m body from living to the kitchen work zone, including the
+    // retained flue's cabinet enclosure in the navigation obstacles.
+    for(let z=c.z0-.45;z<=c.z1+.45+1e-8;z+=.05)
+      assert.equal(kitchenWalk(kitchenApproach[0],z,true,.30),true,styleId+' refrigerator-side crossing');
     const chair=byId(first,'office-chair');
     const officeApproach=office==='floating'?[chair.x-chair.width/2-.35,chair.z]:[chair.x+chair.width/2+.45,chair.z];
     // The full circulation suite independently traverses these destinations
     // from the hall with a 0.60 m body and checks every door sweep. Here the
     // destinations are tied to usable fixture sides, not their former centres.
-    assert.equal(walkGeometry(ground)(...kitchenApproach,true,.30),true,styleId+' preparation position');
+    assert.equal(kitchenWalk(...kitchenApproach,true,.30),true,styleId+' preparation position');
     assert.equal(walkGeometry(first)(...officeApproach,true,.30),true,styleId+' desk-chair approach');
   }
 });

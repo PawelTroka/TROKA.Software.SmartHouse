@@ -1,0 +1,322 @@
+{
+  "method": {
+    "dates": [
+      "2026-06-01",
+      "2026-06-15",
+      "2026-06-30",
+      "2026-07-01",
+      "2026-07-15",
+      "2026-07-31",
+      "2026-08-01",
+      "2026-08-15",
+      "2026-08-31"
+    ],
+    "timeZone": "Europe/Warsaw",
+    "timeStepMinutes": 30,
+    "sampling": "32 equal-area horizontal water receivers; half-hour midpoints over all 24 local hours on nine dates; only above-horizon instants enter daylight fraction.",
+    "interpretation": "Equivalent direct-sun hours average the lit proportion of the water over time. They do not mean the entire pool is sunlit simultaneously.",
+    "included": "Production registered house, mapped neighbouring roofs, measured summer vegetation, four-metre hedges, specimen trees, pool coping, terrain and garden structures for each version.",
+    "objective": "Document the sunlight tradeoff of the requested left-edge composition; no search or optimality claim.",
+    "limits": "Nine representative dates rather than every summer day; finite receiver/time sampling and simplified dense foliage. No weather, water-temperature, energy-yield or survey-accuracy prediction."
+  },
+  "results": [
+    {
+      "label": "Requested left-edge pool and adjusted boundary pines",
+      "version": "1.36.0",
+      "pool": {
+        "x": 15.1,
+        "y": 23.5,
+        "width": 3.5,
+        "length": 8,
+        "waterZ": 3.321777706193658
+      },
+      "specimenTrees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "x": 18,
+          "y": 20,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "x": 18.5,
+          "y": 33,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "x": 15,
+          "y": 36,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "meanEquivalentDirectSunHours": 3.6181,
+      "daylightFraction": 0.2285,
+      "receivers": 32,
+      "totalRays": 9120,
+      "months": {
+        "2026-06": {
+          "meanEquivalentDirectSunHours": 4.7083,
+          "sampledDays": 3
+        },
+        "2026-07": {
+          "meanEquivalentDirectSunHours": 4.0417,
+          "sampledDays": 3
+        },
+        "2026-08": {
+          "meanEquivalentDirectSunHours": 2.1042,
+          "sampledDays": 3
+        }
+      },
+      "days": [
+        {
+          "date": "2026-06-01",
+          "equivalentDirectSunHours": 4.2656,
+          "daylightFraction": 0.2585
+        },
+        {
+          "date": "2026-06-15",
+          "equivalentDirectSunHours": 4.9688,
+          "daylightFraction": 0.3011
+        },
+        {
+          "date": "2026-06-30",
+          "equivalentDirectSunHours": 4.8906,
+          "daylightFraction": 0.2877
+        },
+        {
+          "date": "2026-07-01",
+          "equivalentDirectSunHours": 4.875,
+          "daylightFraction": 0.2868
+        },
+        {
+          "date": "2026-07-15",
+          "equivalentDirectSunHours": 3.9688,
+          "daylightFraction": 0.2405
+        },
+        {
+          "date": "2026-07-31",
+          "equivalentDirectSunHours": 3.2813,
+          "daylightFraction": 0.2117
+        },
+        {
+          "date": "2026-08-01",
+          "equivalentDirectSunHours": 3.2031,
+          "daylightFraction": 0.2067
+        },
+        {
+          "date": "2026-08-15",
+          "equivalentDirectSunHours": 2.2188,
+          "daylightFraction": 0.153
+        },
+        {
+          "date": "2026-08-31",
+          "equivalentDirectSunHours": 0.8906,
+          "daylightFraction": 0.066
+        }
+      ],
+      "evidence": {
+        "sourceData": {
+          "site-data.json": {
+            "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+          },
+          "sternicza-surrounding-nature.json": {
+            "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+          },
+          "sternicza-neighbor-roofs.json": {
+            "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+          }
+        },
+        "state": "v=32&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18%2C%22y%22%3A20%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18.5%2C%22y%22%3A33%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A15%2C%22y%22%3A36%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove",
+        "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+        "terrace": {
+          "x": 5.358610661552147,
+          "y": 18.117475217542932,
+          "width": 8.5,
+          "depth": 4
+        },
+        "rearMidpoint": [
+          9.608610661552147,
+          18.117475217542932
+        ],
+        "sourceFiles": {
+          "src/summer-garden.js": "dcc23d3964237e7d0e195531a1a356c6dec0b1c1fc7677da45545e55205eb0be",
+          "src/garden-program.js": "5da030f0e9b692e1da864b42aad81bb69c9a09b63e542a0889fd54885c5bcccd",
+          "src/shade.js": "663a5a06294330ae27584dc5facff825824b6b7a63d96dbabbea5e0ef2da103f",
+          "src/geometry.js": "f5f7823363e211d55082617e2d427d201cdc9617483b5c328a4ec2d8088373ef",
+          "src/plan-exterior.js": "840023bae831652b97d62fef803b8acf19091e3b9f49ac4d8929257ed47219cb"
+        }
+      }
+    },
+    {
+      "label": "Released 1.35 transverse pool and boundary pines",
+      "version": "1.35.0",
+      "pool": {
+        "x": 3.25,
+        "y": 25,
+        "width": 8,
+        "length": 3.5,
+        "waterZ": 3.0653084486562427
+      },
+      "specimenTrees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "x": 18,
+          "y": 35,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "x": 14,
+          "y": 36,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "x": 18,
+          "y": 28,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "meanEquivalentDirectSunHours": 6.8906,
+      "daylightFraction": 0.4352,
+      "receivers": 32,
+      "totalRays": 9120,
+      "months": {
+        "2026-06": {
+          "meanEquivalentDirectSunHours": 7.5,
+          "sampledDays": 3
+        },
+        "2026-07": {
+          "meanEquivalentDirectSunHours": 7.2552,
+          "sampledDays": 3
+        },
+        "2026-08": {
+          "meanEquivalentDirectSunHours": 5.9167,
+          "sampledDays": 3
+        }
+      },
+      "days": [
+        {
+          "date": "2026-06-01",
+          "equivalentDirectSunHours": 7.4375,
+          "daylightFraction": 0.4508
+        },
+        {
+          "date": "2026-06-15",
+          "equivalentDirectSunHours": 7.5469,
+          "daylightFraction": 0.4574
+        },
+        {
+          "date": "2026-06-30",
+          "equivalentDirectSunHours": 7.5156,
+          "daylightFraction": 0.4421
+        },
+        {
+          "date": "2026-07-01",
+          "equivalentDirectSunHours": 7.5,
+          "daylightFraction": 0.4412
+        },
+        {
+          "date": "2026-07-15",
+          "equivalentDirectSunHours": 7.2813,
+          "daylightFraction": 0.4413
+        },
+        {
+          "date": "2026-07-31",
+          "equivalentDirectSunHours": 6.9844,
+          "daylightFraction": 0.4506
+        },
+        {
+          "date": "2026-08-01",
+          "equivalentDirectSunHours": 6.9688,
+          "daylightFraction": 0.4496
+        },
+        {
+          "date": "2026-08-15",
+          "equivalentDirectSunHours": 6.4375,
+          "daylightFraction": 0.444
+        },
+        {
+          "date": "2026-08-31",
+          "equivalentDirectSunHours": 4.3438,
+          "daylightFraction": 0.3218
+        }
+      ],
+      "evidence": {
+        "sourceData": {
+          "site-data.json": {
+            "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+          },
+          "sternicza-surrounding-nature.json": {
+            "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+          },
+          "sternicza-neighbor-roofs.json": {
+            "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+          }
+        },
+        "state": "v=31&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18%2C%22y%22%3A35%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A14%2C%22y%22%3A36%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18%2C%22y%22%3A28%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove",
+        "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+        "terrace": {
+          "x": 5.358610661552147,
+          "y": 18.117475217542932,
+          "width": 8.5,
+          "depth": 4
+        },
+        "rearMidpoint": [
+          9.608610661552147,
+          18.117475217542932
+        ],
+        "sourceFiles": {
+          "src/summer-garden.js": "54f9767f16f9f5d826afa979aa9296ac5efe31e74906558eabe85effcbc6628b",
+          "src/garden-program.js": "20ac5dbeff96b9a445f3f9ede3b98640aaf232c3a717a6bb3764178b4d3d8c41",
+          "src/shade.js": "1c9deb4518e7abf5e7560110cfefa39c40ee83b5d19bb18b94c6b4e821e57169",
+          "src/geometry.js": "7a163d10f681a79a9f2722554463a015570124d95c96d30a08f8dc06766999c2",
+          "src/plan-exterior.js": "f1aeaac4a839824cf9f7b7896d8551eb75d759c70fdccfc846ed4f12b609be8e"
+        }
+      }
+    }
+  ]
+}

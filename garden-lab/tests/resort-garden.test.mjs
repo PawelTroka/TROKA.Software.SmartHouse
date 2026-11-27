@@ -10,7 +10,7 @@ import {gardenFurniture,terraceStairs,rectCorners,rectanglesOverlap} from '../sr
 import {jacuzziBounds,terraceGroundReference,canopySupportBounds} from '../src/geometry.js';
 import {footprintFit,overlapArea} from '../src/footprint-fit.js';
 import {RESORT_GARDEN_RECIPES,resortTerraceLayout,resortBalconyLayout} from '../src/resort-garden.js';
-import {createStyledResortPiece} from '../src/scene-style-details.js';
+import {createStyledResortPiece,createStyledLounger} from '../src/scene-style-details.js';
 import {createGardenNightLighting} from '../src/scene-night-lights.js';
 import {applyPlanExterior} from '../src/plan-exterior.js';
 
@@ -95,6 +95,32 @@ test('new furniture has finite batched geometry inside its declared plan rectang
     }
   }
   Object.values(materials).forEach(m=>m.dispose());
+});
+
+test('turned sunbeds render within their real footprint in every style and face the open garden',()=>{
+  const materials=Object.fromEntries(['metal','wood','woodLight','stone','stoneLight','linen','styleAccent','hedge'].map(k=>[k,new THREE.MeshStandardMaterial()]));
+  try{for(const style of DESIGN_STYLES)for(const back of ['north','east','south','west']){
+    const alongX=back==='east'||back==='west';
+    const r={x:12.5,y:23.6,z:3,width:alongX?2:.78,length:alongX?.78:2,back};
+    const g=createStyledLounger(style,materials,r),b=new THREE.Box3().setFromObject(g);
+    try{
+      assert.ok(b.min.x>=r.x-.001&&b.max.x<=r.x+r.width+.001,style.id+' '+back+' footprint x');
+      assert.ok(b.min.z>=r.y-.001&&b.max.z<=r.y+r.length+.001,style.id+' '+back+' footprint y');
+      assert.ok(b.min.y>=r.z-.01&&b.max.y<r.z+1,style.id+' sunbed feet meet the ground within one centimetre');
+      if(style.id==='hidden-bali'&&back==='east'){
+        const point=new THREE.Vector3(),high=[];
+        g.traverse(o=>{if(o.geometry){
+          const positions=o.geometry.getAttribute('position');
+          for(let i=0;i<positions.count;i++){
+            point.fromBufferAttribute(positions,i).applyMatrix4(o.matrixWorld);
+            if(point.y>b.max.y-.025)high.push(point.x);
+          }
+        }});
+        assert.ok(high.length>0&&high.reduce((sum,x)=>sum+x,0)/high.length>r.x+r.width/2,
+          'The raised head cushion lies beside the pool; the feet face the open garden');
+      }
+    }finally{g.traverse(o=>o.geometry?.dispose());}
+  }}finally{Object.values(materials).forEach(m=>m.dispose());}
 });
 
 test('resort lights form a restrained bounded hierarchy and retain all independent switches',()=>{

@@ -1,9 +1,9 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.35.0';
-import {resortGardenFurniture} from './resort-garden.js?v=1.35.0';
-import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.35.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.35.0';
-import {summerGardenEnabled} from './summer-garden.js?v=1.35.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.36.0';
+import {resortGardenFurniture} from './resort-garden.js?v=1.36.0';
+import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.36.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.36.0';
+import {summerGardenEnabled} from './summer-garden.js?v=1.36.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -23,9 +23,8 @@ export function gardenFurniture(data,settings={}) {
   const result=resortGardenFurniture(base,settings,data);
   if(!result.resort)return result;
   // The side selector controls actual individual sunbeds. The older two-seat
-  // style recipe must not collapse four same-side beds into one double daybed.
-  if(summerGardenEnabled(settings,data))result.resort.items=result.loungers.map(([x,y],i)=>({
-    id:`summer-pool-lounger-${i+1}`,kind:'lounger',x,y,width:.78,length:2,back:'north'}));
+  // style recipe must not collapse the inward-facing row into one double bed.
+  if(summerGardenEnabled(settings,data))result.resort.items=result.sunbeds.map(b=>({...b}));
   const t=data.site.terrace,rear=data.site.rearMidpoint[1],depth=Number(settings.terraceDepth)||t.depth;
   const stairs=terraceStairs({...t,y:rear},depth,terraceGroundReference(settings,data).drop,settings,data);
   const program=gardenProgram(settings,data),pool=poolBounds(settings,data);
@@ -44,23 +43,20 @@ export function gardenFurniture(data,settings={}) {
   // zone. Omit that proposal consistently in both plan and rendered scene.
   const diningVisible=(!data.site.garage||settings.removeGarage!==false)&&fits(result.dining);
   const proposal=program.renovation;
-  let kitchen=null,beds=[],pads=[];
+  let beds=[],pads=[];
   if(proposal){
     const furnishings=[...items,...(diningVisible?[result.dining]:[])];
     const clearOfFurniture=r=>!furnishings.some(f=>rectanglesOverlap(r,f,.20));
-    const counter={...proposal.kitchen,id:'garden-kitchen',kind:'kitchen'};
-    const access={x:counter.x-.12,y:counter.y-.95,width:counter.width+.24,length:counter.length+.95};
-    if(fits(access)&&clearOfFurniture(access))kitchen=counter;
     const paths=path.map(([x,y])=>({x,y,width:1.15,length:.9}));
     beds=proposal.beds.filter(r=>fits(r)&&clearOfFurniture(r)&&
-      !(kitchen&&rectanglesOverlap(r,access,.10))&&!paths.some(p=>rectanglesOverlap(r,p,.12))&&
+      !paths.some(p=>rectanglesOverlap(r,p,.12))&&
       !(settings.screeningTrees||[]).some(t=>t.enabled!==false&&t.x>=r.x-1&&t.x<=r.x+r.width+1&&t.y>=r.y-1&&t.y<=r.y+r.length+1))
       .map((r,i)=>({...r,id:`garden-bed-${i+1}`,plant:result.resort.plant}));
     pads=items.filter(p=>['daybed','lounger','sofa'].includes(p.kind)).map((p,i)=>({
       id:`resting-pad-${i+1}`,x:p.x-.16,y:p.y-.16,width:p.width+.32,length:p.length+.32,
     })).filter(fits);
   }
-  return {...result,path,diningVisible,resort:{...result.resort,items,kitchen,beds,pads,scheme:proposal?.name||null}};
+  return {...result,path,diningVisible,resort:{...result.resort,items,kitchen:null,beds,pads,scheme:proposal?.name||null}};
 }
 function baseGardenFurniture(data,settings={}) {
   const program=gardenProgram(settings,data);

@@ -1,5 +1,5 @@
-import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.35.0';
-import {atticHeadroomAt} from './interior-plan.js?v=1.35.0';
+import {containsPoint,ringBounds,wallPanels} from './interior-geometry.js?v=1.36.0';
+import {atticHeadroomAt} from './interior-plan.js?v=1.36.0';
 
 const RADIUS=.16;
 function distanceToSegment(x,z,a,b) {
@@ -20,7 +20,7 @@ export function walkGeometry(plan) {
       solids.push({a,b:[a[0]+along*dx/l-across*dz/l,a[1]+along*dz/l+across*dx/l],r:.018,leaf:true});
     }
   }
-  const obstructions=[...(plan.voids||[]),...(plan.cores||[]).map(c=>c.polygon),...(plan.stairs||[]).filter(s=>s.from===plan.floor&&s.kind!=='hatch').map(s=>s.polygon)];
+  const obstructions=[...(plan.voids||[]),...(plan.cores||[]).map(c=>c.enclosure?.polygon||c.polygon),...(plan.stairs||[]).filter(s=>s.from===plan.floor&&s.kind!=='hatch').map(s=>s.polygon)];
   const outers=[plan.envelope.outline,...(plan.outdoor||[]).map(s=>s.polygon)];
   function clear(x,z,withFurniture=true,r=RADIUS){
     if(!outers.some(ring=>containsPoint(ring,x,z))||obstructions.some(ring=>containsPoint(ring,x,z)))return false;

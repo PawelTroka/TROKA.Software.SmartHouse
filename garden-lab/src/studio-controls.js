@@ -1,9 +1,9 @@
-import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.35.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.35.0';
-import {getResortDesignIntent} from './resort-design-intents.js?v=1.35.0';
-import {getStyleMaterialSamples} from './material-catalogue.js?v=1.35.0';
-import {getRenovationArchitecture} from './renovation-architecture.js?v=1.35.0';
-import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.35.0';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.36.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
+import {getResortDesignIntent} from './resort-design-intents.js?v=1.36.0';
+import {getStyleMaterialSamples} from './material-catalogue.js?v=1.36.0';
+import {getRenovationArchitecture} from './renovation-architecture.js?v=1.36.0';
+import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.36.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};

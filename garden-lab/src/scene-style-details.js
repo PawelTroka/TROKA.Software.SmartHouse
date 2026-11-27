@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.35.0';
-import {projectArchitecturalMaterialUVs} from './material-assets.js?v=1.35.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.35.0';
+import {toWorld} from './orientation.js?v=1.36.0';
+import {projectArchitecturalMaterialUVs} from './material-assets.js?v=1.36.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.36.0';
 
 // Clip joints in local metres against both the terrace perimeter and the actual
 // tub opening. A joint that crosses an opening becomes two independent strokes.
@@ -284,6 +284,18 @@ function base(kit, form, m, w,l,h,x=0,y=0) {
 }
 
 export function createStyledLounger(style,m,r,options) {
+  // Keep the declared footprint authoritative while turning the headrest.
+  // The left-edge pool's wide sunbed rectangles face the open garden.
+  if(r.back&&r.back!=='north'){
+    const alongX=r.back==='east'||r.back==='west';
+    const turned=createStyledLounger(style,m,{...r,x:0,y:0,z:0,
+      width:alongX?r.length:r.width,length:alongX?r.width:r.length,back:'north'},options);
+    const angle=r.back==='east'?-Math.PI/2:r.back==='west'?Math.PI/2:Math.PI;
+    turned.rotation.y=angle;
+    turned.position.set(...toWorld(r.x+(r.back==='west'?0:r.width),
+      r.y+(r.back==='east'?0:r.length),r.z));
+    turned.userData.back=r.back;return turned;
+  }
   const kit=assembly('styled-lounger-'+style.recipe.furniture,r,{...options,upholsteryMaterials:[m.linen,m.fabricAccent??m.styleAccent]});
   const {box,bar,cushion}=kit, {width:w,length:l}=r, form=style.recipe.furniture;
   const accent=m.fabricAccent??m.styleAccent??m.woodLight;

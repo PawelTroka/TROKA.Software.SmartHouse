@@ -23,7 +23,7 @@ const segmentDistance=(x,z,a,b)=>{
 const polygonDistance=(x,z,p)=>Math.min(...p.map((a,i)=>segmentDistance(x,z,a,p[(i+1)%p.length])));
 const rectDistance=(x,z,left,top,right,bottom)=>Math.hypot(Math.max(left-x,0,x-right),Math.max(top-z,0,z-bottom));
 
-test('every renovated kitchen shares an open living edge, one useful island and clear entrances',()=>{
+test('every renovated kitchen shares a connected peninsula and a wider refrigerator-side entrance',()=>{
   for(const styleId of Object.keys(INTERIOR_COMPOSITIONS)){
     const plan=getInteriorPlan({floor:'ground',layout:'renovation',styleId});
     const hallWall=plan.walls.find(w=>w.id==='kitchen-hall-enclosure');
@@ -37,10 +37,15 @@ test('every renovated kitchen shares an open living edge, one useful island and 
     for(const id of ['kitchen-north-storage','kitchen-worktable','dining-console'])assert.ok(!plan.fixtures.some(f=>f.id===id),`${styleId}: ${id} obstructs the open edge`);
     const islands=plan.fixtures.filter(f=>f.id==='kitchen-island');assert.equal(islands.length,1);
     const island=islands[0];assert.equal(island.kind,'counter');assert.ok(island.drawers);
-    near(island.width,1.80);near(island.depth,.85);assert.ok(island.height<=.92);
+    near(island.width,2.20);near(island.depth,.85);assert.ok(island.height<=.92);
     const start=wall.a[0]+opening[0].offset,end=start+opening[0].width;
-    assert.ok(island.x-island.width/2-start>=.95-1e-7,`${styleId}: left opening route`);
-    assert.ok(end-island.x-island.width/2>=.90-1e-7,`${styleId}: right entrance`);
+    const sinkRun=plan.fixtures.find(f=>f.id==='west-counter'),enclosure=plan.cores.find(c=>c.id==='west-flue').enclosure;
+    near(island.x-island.width/2,start);near(sinkRun.x-sinkRun.width/2,start);
+    near(sinkRun.z-sinkRun.depth/2,island.z+island.depth/2);
+    assert.equal(island.joinedCounter,sinkRun.id);assert.equal(sinkRun.joinedCounter,island.id);
+    assert.deepEqual(island.waterfallEnds,[1],'the connected end has no stone divider');
+    near(Math.min(...enclosure.polygon.map(p=>p[0]))-(island.x+island.width/2),1.18);
+    assert.ok(end-island.x-island.width/2>=1.4,`${styleId}: free end narrows the architectural opening`);
     assert.ok(island.z-island.depth/2<wall.a[1]&&island.z+island.depth/2>wall.a[1],`${styleId}: island belongs at the living edge`);
     const tallAtOpening=plan.fixtures.filter(f=>f.roomId==='front-kitchen'&&f.height>1.2&&f.z-f.depth/2<5.85);
     assert.deepEqual(tallAtOpening,[],`${styleId}: tall cabinet blocks the living-room connection`);
@@ -105,7 +110,7 @@ function circulation(plan,start,radius=.30){
     const chair=f.kind==='diningTable'?.50:0;
     shapes.push((x,z)=>rectDistance(x,z,f.x-f.width/2,f.z-f.depth/2-chair,f.x+f.width/2,f.z+f.depth/2+chair));
   }
-  const polygons=[...plan.voids,...plan.cores.map(c=>c.polygon)];
+  const polygons=[...plan.voids,...plan.cores.map(c=>c.enclosure?.polygon||c.polygon)];
   const blocked=(x,z)=>!contains(plan.envelope.outline,x,z)||polygonDistance(x,z,plan.envelope.outline)<radius-1e-8||
     polygons.some(p=>contains(p,x,z)||polygonDistance(x,z,p)<radius-1e-8)||
     shapes.some(distance=>distance(x,z)<radius-1e-8)||leaves.some(distance=>distance(x,z)<radius-1e-8);

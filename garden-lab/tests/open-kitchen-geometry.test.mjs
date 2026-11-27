@@ -25,6 +25,9 @@ test('rendered kitchens have a real recessed sink, aligned tap and bounded islan
     assert.ok(bowlHits.length&&bowlHits[0].point.y>.65&&bowlHits[0].point.y<.85,styleId+' bowl is not recessed below the worktop');
     const solidTop=down(sink.x,7.72,object('west-counter'));
     assert.ok(solidTop.length&&solidTop[0].point.y>.90&&solidTop[0].point.y<.94,styleId+' worktop is missing beside the sink');
+    const peninsulaTop=down(sink.x,5.72,root),joinedSinkTop=down(sink.x,5.78,root);
+    assert.ok(peninsulaTop.length&&joinedSinkTop.length,styleId+' has a gap at the peninsula/sink-run connection');
+    assert.ok(Math.abs(peninsulaTop[0].point.y-joinedSinkTop[0].point.y)<.001,styleId+' connected worktops have a height step');
     const tap=[];
     object('kitchen-sink').traverse(n=>{if(n.isMesh){const p=n.getWorldPosition(new THREE.Vector3());if(p.y>1.10)tap.push(p);}});
     assert.ok(tap.length>=2&&tap.every(p=>Math.abs(p.z-sink.z)<.015),styleId+' high tap fittings drift off the sink/window centre');

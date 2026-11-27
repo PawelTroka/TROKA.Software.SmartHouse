@@ -1,5 +1,5 @@
 /** Camera and display choices for the shared drawing-based house. */
-import {DESIGN_STYLES} from './design-styles.js?v=1.35.0';
+import {DESIGN_STYLES} from './design-styles.js?v=1.36.0';
 
 export const INTERIOR_DEFAULTS=Object.freeze({
   interiorEnabled:false,interiorLayout:'existing',interiorFloor:'ground',

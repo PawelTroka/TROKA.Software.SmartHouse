@@ -91,15 +91,15 @@ test('all style pools, fire rooms and spa approaches fit the parcel and clear ma
   }
 });
 
-test('each default style retains a resting group and cooking counter with clear dining, paths and planting',()=>{
+test('each historical style retains resting groups and clear dining, paths and planting without outdoor kitchens',()=>{
   for(const style of styles){
     const {settings,data,program,furniture:f}=fixture(style.id),r=f.resort;
     assert.ok(r.items.some(p=>['daybed','lounger','sofa'].includes(p.kind)),style.id+' has a resting group');
     assert.equal(f.diningVisible,true,style.id+' has its dining court');
-    assert.ok(r.kitchen,style.id+' has a fitted cooking counter');
-    const kitchenAccess={x:r.kitchen.x-.12,y:r.kitchen.y-.95,width:r.kitchen.width+.24,length:r.kitchen.length+.95};
+    assert.equal(r.kitchen,null,style.id+' has no outdoor kitchen');
+    assert.equal(program.renovation.kitchen,undefined,style.id+' has no hidden kitchen recipe');
     const pieces=[...r.items,{...f.dining,id:'dining'},...f.path.map(([x,y],i)=>({id:'path '+i,x,y,width:1.15,length:.9})),
-      {...kitchenAccess,id:'kitchen and approach'},...(r.beds||[])];
+      ...(r.beds||[])];
     const obstacles=[...fixedObstacles(settings,data),...physicalFeatures(program).map(p=>[p.id,p.ring])];
     for(const piece of pieces){
       const ring=rectCorners(piece),label=style.id+' '+piece.id;

@@ -91,3 +91,38 @@
 
 /* Shared indoor/outdoor exploration: thumb-accessible elevation controls. */
 .walk-elevation-pad{position:absolute;bottom:42px;left:14px;display:grid;grid-template-columns:repeat(2,48px);gap:5px;z-index:4}.walk-elevation-pad[hidden]{display:none}.walk-elevation-pad button{min-height:42px;padding:5px 3px;border:1px solid #71816d66;border-radius:10px;background:#f8f9f1eb;color:#233e30;font:inherit;font-size:11px;touch-action:none}.walk-elevation-pad button[data-walk-elevation="follow"]{grid-column:1 / -1}.walk-elevation-pad button:active{background:#dce7d3}.viewport[data-mode="walk"] .view-instructions{max-width:calc(100% - 24px);white-space:normal;line-height:1.4}@media(max-width:760px){.walk-elevation-pad{left:10px}.walk-location-controls select{min-width:0;max-width:100%}.walk-location-controls #walkNavigation{flex:1 1 150px}}
+
+/* Both the browser-native and in-page fullscreen paths use the same model layout. */
+.model-fullscreen-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;min-height:36px;padding:7px 10px;border:1px solid #bcc9b6;border-radius:6px;background:#f5f7ee;color:#2b4537;font-size:11px;font-weight:600;white-space:nowrap}
+.model-fullscreen-button:hover{background:#e5eddd}.model-fullscreen-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.model-fullscreen-button .fullscreen-collapse-icon,.model-fullscreen-button[aria-pressed="true"] .fullscreen-expand-icon{display:none}.model-fullscreen-button[aria-pressed="true"] .fullscreen-collapse-icon{display:block}
+html.model-fullscreen-open,body.model-fullscreen-open{overflow:hidden!important;overscroll-behavior:none}
+body.model-fullscreen-open .visual-column:has(#viewer.is-model-fullscreen){position:static;z-index:1000}
+#viewer.is-model-fullscreen{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;max-height:none;min-width:0;min-height:0;margin:0;border:0;border-radius:0;overflow:hidden;background:var(--card);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);box-shadow:none}
+#viewer.is-model-fullscreen>.viewport{flex:1 1 0;height:auto!important;min-height:0;max-height:none;width:100%;border-radius:0}
+#viewer.is-model-fullscreen>.viewer-toolbar,#viewer.is-model-fullscreen>.walk-location-controls,#viewer.is-model-fullscreen>.interior-entry{flex:0 0 auto}
+#viewer.is-model-fullscreen>.look-directions,#viewer.is-model-fullscreen>.orientation-note,#viewer.is-model-fullscreen>.viewer-caption,#viewer.is-model-fullscreen>.sun-controls,#viewer.is-model-fullscreen>.night-controls,#viewer.is-model-fullscreen>#sun-renderer-note{display:none}
+#viewer.is-model-fullscreen>.interior-entry{padding:7px 14px;min-height:40px;align-items:center}
+#viewer.is-model-fullscreen>.interior-entry span{display:none}#viewer.is-model-fullscreen>.interior-entry strong{font-size:12px}
+#viewer.is-model-fullscreen>.interior-entry .button{padding:6px 10px;min-height:32px;font-size:11px}
+#viewer.is-model-fullscreen .viewer-toolbar{gap:8px;padding:8px 12px}
+#viewer.is-model-fullscreen .walk-location-controls{gap:5px 8px;padding:7px 12px}
+#viewer.is-model-fullscreen .walk-location-controls #walk-status{font-size:10px}
+#viewer.is-model-fullscreen .mode-tabs{flex:1 1 auto;min-width:0}
+@media(max-width:760px){
+  .viewer-toolbar{flex-wrap:wrap}.viewer-toggles{margin-left:auto}
+  .model-fullscreen-button{min-height:38px}
+  #viewer.is-model-fullscreen .viewer-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;flex-wrap:nowrap;gap:7px;padding:5px 8px}
+  #viewer.is-model-fullscreen .viewer-toggles{margin:0}#viewer.is-model-fullscreen .viewer-toggles label{display:none}
+  #viewer.is-model-fullscreen .mode-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;max-width:100%;padding-bottom:2px}
+  #viewer.is-model-fullscreen .mode-tabs button{flex:none;min-height:36px;padding:6px 9px}
+  #viewer.is-model-fullscreen .model-fullscreen-button{padding:7px}
+  #viewer.is-model-fullscreen .model-fullscreen-button [data-fullscreen-label]{display:none}
+  #viewer.is-model-fullscreen .walk-location-controls{padding:5px 8px;gap:4px 6px}
+  #viewer.is-model-fullscreen .walk-location-controls #walk-status{display:none}
+  #viewer.is-model-fullscreen .walk-location-controls select{min-height:32px;font-size:11px}
+}
+@media(max-height:500px){
+  #viewer.is-model-fullscreen>.interior-entry{display:none}
+  #viewer.is-model-fullscreen .walk-location-controls #walk-status{display:none}
+}

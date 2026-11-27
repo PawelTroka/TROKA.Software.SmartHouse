@@ -17,7 +17,7 @@ test('fresh Sternicza restores Austrian pines at calculated boundary positions w
   assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-pool-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.deepEqual(sternicza.DEFAULTS.screeningTrees,STERNICZA_SUMMER_TREES);
-  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[18,35],[14,36],[18,28]]);
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[18,20],[18.5,33],[15,36]]);
   assert.ok(sternicza.DEFAULTS.screeningTrees.every(t=>t.typeId==='austrian-pine-tall'&&t.height===9.5&&t.crownWidth===5&&t.crownDepth===5));
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
   assert.deepEqual(sternicza.sanitizeState().screeningTrees,sternicza.DEFAULTS.screeningTrees);

@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.35.0';
+import {toWorld} from './orientation.js?v=1.36.0';
 
 const validBox=b=>[b.x0,b.x1,b.y0,b.y1,b.z0,b.z1].every(Number.isFinite)
   &&b.x1>b.x0&&b.y1>b.y0&&b.z1>b.z0;

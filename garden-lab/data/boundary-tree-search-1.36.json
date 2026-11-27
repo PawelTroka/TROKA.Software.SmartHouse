@@ -1,0 +1,1843 @@
+{
+  "method": {
+    "sourceData": {
+      "site-data.json": {
+        "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+      },
+      "sternicza-surrounding-nature.json": {
+        "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+      },
+      "sternicza-neighbor-roofs.json": {
+        "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+      }
+    },
+    "state": "v=32&site=sternicza-11&basementGarageEnabled=true&poolSunbedSides=3&hedgeFullPerimeter=true&screeningTrees=%5B%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove",
+    "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+    "terrace": {
+      "x": 5.358610661552147,
+      "y": 18.117475217542932,
+      "width": 8.5,
+      "depth": 4
+    },
+    "rearMidpoint": [
+      9.608610661552147,
+      18.117475217542932
+    ],
+    "target": "PCK3 / building-9",
+    "grid": 0.5,
+    "beamWidth": 40,
+    "facadeGrid": 1,
+    "objective": "Weighted PCK3 facade sample coverage minus 0.012 × average trunk distance from nearest east/rear boundary. House/terrace/jacuzzi weight 2; pool/fire/sauna/sunbeds/dining weight 1.",
+    "proposal": "1.36 owner-selected long left-edge pool and central fire lounge; all three optional sunbed sides reserved, no outdoor kitchen.",
+    "constraints": "Trunks 1.1–3.7 m from east/rear boundary; 1 m from house, terrace, stairs, pool coping, fixed spa and all seven sunbed/dining footprints; maximum 1 m modeled crown overhang. Minimum spacing depends on catalogue width, bounded to 1.5–3 m.",
+    "limitations": "Finite beam/grid search, ideal dense crown volumes and assumed stock dimensions. Overhang requires agreement/maintenance; not a planting or legal clearance certification. Narrow and lower stock cannot match large pine screening."
+  },
+  "baselines": {
+    "no-specimens": {
+      "weightedCoverage": 0.6099,
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 286,
+          "total": 340,
+          "percent": 84.1176
+        },
+        {
+          "id": "standing",
+          "blocked": 286,
+          "total": 340,
+          "percent": 84.1176
+        },
+        {
+          "id": "terrace",
+          "blocked": 115,
+          "total": 340,
+          "percent": 33.8235
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 116,
+          "total": 340,
+          "percent": 34.1176
+        },
+        {
+          "id": "pool",
+          "blocked": 218,
+          "total": 340,
+          "percent": 64.1176
+        },
+        {
+          "id": "firepit",
+          "blocked": 419,
+          "total": 629,
+          "percent": 66.6137
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 146,
+          "total": 340,
+          "percent": 42.9412
+        },
+        {
+          "id": "dining",
+          "blocked": 295,
+          "total": 629,
+          "percent": 46.8998
+        }
+      ]
+    },
+    "previous-excelsa": {
+      "weightedCoverage": 0.6872,
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 302,
+          "total": 340,
+          "percent": 88.8235
+        },
+        {
+          "id": "standing",
+          "blocked": 302,
+          "total": 340,
+          "percent": 88.8235
+        },
+        {
+          "id": "terrace",
+          "blocked": 154,
+          "total": 340,
+          "percent": 45.2941
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 153,
+          "total": 340,
+          "percent": 45
+        },
+        {
+          "id": "pool",
+          "blocked": 256,
+          "total": 340,
+          "percent": 75.2941
+        },
+        {
+          "id": "firepit",
+          "blocked": 481,
+          "total": 629,
+          "percent": 76.4706
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 182,
+          "total": 340,
+          "percent": 53.5294
+        },
+        {
+          "id": "dining",
+          "blocked": 328,
+          "total": 629,
+          "percent": 52.1463
+        }
+      ]
+    },
+    "same-stock-old-positions": {
+      "weightedCoverage": 0.9397,
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 339,
+          "total": 340,
+          "percent": 99.7059
+        },
+        {
+          "id": "standing",
+          "blocked": 339,
+          "total": 340,
+          "percent": 99.7059
+        },
+        {
+          "id": "terrace",
+          "blocked": 308,
+          "total": 340,
+          "percent": 90.5882
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 303,
+          "total": 340,
+          "percent": 89.1176
+        },
+        {
+          "id": "pool",
+          "blocked": 336,
+          "total": 340,
+          "percent": 98.8235
+        },
+        {
+          "id": "firepit",
+          "blocked": 584,
+          "total": 629,
+          "percent": 92.8458
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 334,
+          "total": 340,
+          "percent": 98.2353
+        },
+        {
+          "id": "dining",
+          "blocked": 462,
+          "total": 629,
+          "percent": 73.4499
+        }
+      ]
+    },
+    "original-pines": {
+      "weightedCoverage": 0.9613,
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 340,
+          "total": 340,
+          "percent": 100
+        },
+        {
+          "id": "standing",
+          "blocked": 340,
+          "total": 340,
+          "percent": 100
+        },
+        {
+          "id": "terrace",
+          "blocked": 325,
+          "total": 340,
+          "percent": 95.5882
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 319,
+          "total": 340,
+          "percent": 93.8235
+        },
+        {
+          "id": "pool",
+          "blocked": 340,
+          "total": 340,
+          "percent": 100
+        },
+        {
+          "id": "firepit",
+          "blocked": 607,
+          "total": 629,
+          "percent": 96.5024
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 337,
+          "total": 340,
+          "percent": 99.1176
+        },
+        {
+          "id": "dining",
+          "blocked": 473,
+          "total": 629,
+          "percent": 75.1987
+        }
+      ]
+    }
+  },
+  "presets": {
+    "thuja-excelsa-9m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "thuja-excelsa-9m",
+          "x": 19,
+          "y": 33,
+          "height": 9,
+          "crownBase": 0.3,
+          "crownWidth": 2,
+          "crownDepth": 2,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "thuja-excelsa-9m",
+          "x": 16,
+          "y": 36,
+          "height": 9,
+          "crownBase": 0.3,
+          "crownWidth": 2,
+          "crownDepth": 2,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "thuja-excelsa-9m",
+          "x": 18,
+          "y": 36,
+          "height": 9,
+          "crownBase": 0.3,
+          "crownWidth": 2,
+          "crownDepth": 2,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.6777,
+      "candidateCount": 97,
+      "minSpacing": 1.5,
+      "boundaryDistances": [
+        1.3102,
+        1.9533,
+        1.9202
+      ],
+      "crownOverhang": [
+        0,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 301,
+          "total": 340,
+          "percent": 88.5294
+        },
+        {
+          "id": "standing",
+          "blocked": 301,
+          "total": 340,
+          "percent": 88.5294
+        },
+        {
+          "id": "terrace",
+          "blocked": 143,
+          "total": 340,
+          "percent": 42.0588
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 143,
+          "total": 340,
+          "percent": 42.0588
+        },
+        {
+          "id": "pool",
+          "blocked": 259,
+          "total": 340,
+          "percent": 76.1765
+        },
+        {
+          "id": "firepit",
+          "blocked": 477,
+          "total": 629,
+          "percent": 75.8347
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 188,
+          "total": 340,
+          "percent": 55.2941
+        },
+        {
+          "id": "dining",
+          "blocked": 323,
+          "total": 629,
+          "percent": 51.3514
+        }
+      ]
+    },
+    "white-fir-9m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "white-fir-9m",
+          "x": 19,
+          "y": 33,
+          "height": 9,
+          "crownBase": 0.4,
+          "crownWidth": 4.5,
+          "crownDepth": 4.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "white-fir-9m",
+          "x": 14,
+          "y": 35,
+          "height": 9,
+          "crownBase": 0.4,
+          "crownWidth": 4.5,
+          "crownDepth": 4.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "white-fir-9m",
+          "x": 17,
+          "y": 36,
+          "height": 9,
+          "crownBase": 0.4,
+          "crownWidth": 4.5,
+          "crownDepth": 4.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.7613,
+      "candidateCount": 97,
+      "minSpacing": 2.475,
+      "boundaryDistances": [
+        1.3102,
+        2.9863,
+        1.9367
+      ],
+      "crownOverhang": [
+        0.9398,
+        0,
+        0.3133
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 319,
+          "total": 340,
+          "percent": 93.8235
+        },
+        {
+          "id": "standing",
+          "blocked": 319,
+          "total": 340,
+          "percent": 93.8235
+        },
+        {
+          "id": "terrace",
+          "blocked": 188,
+          "total": 340,
+          "percent": 55.2941
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 183,
+          "total": 340,
+          "percent": 53.8235
+        },
+        {
+          "id": "pool",
+          "blocked": 289,
+          "total": 340,
+          "percent": 85
+        },
+        {
+          "id": "firepit",
+          "blocked": 540,
+          "total": 629,
+          "percent": 85.8506
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 232,
+          "total": 340,
+          "percent": 68.2353
+        },
+        {
+          "id": "dining",
+          "blocked": 359,
+          "total": 629,
+          "percent": 57.0747
+        }
+      ]
+    },
+    "norway-spruce-9-10m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "norway-spruce-9-10m",
+          "x": 19,
+          "y": 33,
+          "height": 9.5,
+          "crownBase": 0.4,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "norway-spruce-9-10m",
+          "x": 18,
+          "y": 35,
+          "height": 9.5,
+          "crownBase": 0.4,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "norway-spruce-9-10m",
+          "x": 14,
+          "y": 35,
+          "height": 9.5,
+          "crownBase": 0.4,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.7336,
+      "candidateCount": 97,
+      "minSpacing": 1.6500000000000001,
+      "boundaryDistances": [
+        1.3102,
+        2.3137,
+        2.9863
+      ],
+      "crownOverhang": [
+        0.1898,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 315,
+          "total": 340,
+          "percent": 92.6471
+        },
+        {
+          "id": "standing",
+          "blocked": 315,
+          "total": 340,
+          "percent": 92.6471
+        },
+        {
+          "id": "terrace",
+          "blocked": 170,
+          "total": 340,
+          "percent": 50
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 169,
+          "total": 340,
+          "percent": 49.7059
+        },
+        {
+          "id": "pool",
+          "blocked": 273,
+          "total": 340,
+          "percent": 80.2941
+        },
+        {
+          "id": "firepit",
+          "blocked": 526,
+          "total": 629,
+          "percent": 83.6248
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 211,
+          "total": 340,
+          "percent": 62.0588
+        },
+        {
+          "id": "dining",
+          "blocked": 363,
+          "total": 629,
+          "percent": 57.7107
+        }
+      ]
+    },
+    "thuja-brabant-6-7m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "thuja-brabant-6-7m",
+          "x": 19,
+          "y": 33,
+          "height": 6.5,
+          "crownBase": 0.3,
+          "crownWidth": 1.5,
+          "crownDepth": 1.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "thuja-brabant-6-7m",
+          "x": 19,
+          "y": 36,
+          "height": 6.5,
+          "crownBase": 0.3,
+          "crownWidth": 1.5,
+          "crownDepth": 1.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "thuja-brabant-6-7m",
+          "x": 17,
+          "y": 36,
+          "height": 6.5,
+          "crownBase": 0.3,
+          "crownWidth": 1.5,
+          "crownDepth": 1.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.6353,
+      "candidateCount": 97,
+      "minSpacing": 1.5,
+      "boundaryDistances": [
+        1.3102,
+        1.3154,
+        1.9367
+      ],
+      "crownOverhang": [
+        0,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 294,
+          "total": 340,
+          "percent": 86.4706
+        },
+        {
+          "id": "standing",
+          "blocked": 294,
+          "total": 340,
+          "percent": 86.4706
+        },
+        {
+          "id": "terrace",
+          "blocked": 126,
+          "total": 340,
+          "percent": 37.0588
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 124,
+          "total": 340,
+          "percent": 36.4706
+        },
+        {
+          "id": "pool",
+          "blocked": 233,
+          "total": 340,
+          "percent": 68.5294
+        },
+        {
+          "id": "firepit",
+          "blocked": 438,
+          "total": 629,
+          "percent": 69.6343
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 158,
+          "total": 340,
+          "percent": 46.4706
+        },
+        {
+          "id": "dining",
+          "blocked": 304,
+          "total": 629,
+          "percent": 48.3307
+        }
+      ]
+    },
+    "serbian-spruce-7m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "serbian-spruce-7m",
+          "x": 19,
+          "y": 33,
+          "height": 7,
+          "crownBase": 0.4,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "serbian-spruce-7m",
+          "x": 15,
+          "y": 36,
+          "height": 7,
+          "crownBase": 0.4,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "serbian-spruce-7m",
+          "x": 18,
+          "y": 35,
+          "height": 7,
+          "crownBase": 0.4,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.6729,
+      "candidateCount": 97,
+      "minSpacing": 1.6500000000000001,
+      "boundaryDistances": [
+        1.3102,
+        1.9698,
+        2.3137
+      ],
+      "crownOverhang": [
+        0.1898,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 303,
+          "total": 340,
+          "percent": 89.1176
+        },
+        {
+          "id": "standing",
+          "blocked": 303,
+          "total": 340,
+          "percent": 89.1176
+        },
+        {
+          "id": "terrace",
+          "blocked": 139,
+          "total": 340,
+          "percent": 40.8824
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 138,
+          "total": 340,
+          "percent": 40.5882
+        },
+        {
+          "id": "pool",
+          "blocked": 251,
+          "total": 340,
+          "percent": 73.8235
+        },
+        {
+          "id": "firepit",
+          "blocked": 477,
+          "total": 629,
+          "percent": 75.8347
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 185,
+          "total": 340,
+          "percent": 54.4118
+        },
+        {
+          "id": "dining",
+          "blocked": 323,
+          "total": 629,
+          "percent": 51.3514
+        }
+      ]
+    },
+    "austrian-pine-debruyn-8-9m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-debruyn-8-9m",
+          "x": 19,
+          "y": 33,
+          "height": 8.5,
+          "crownBase": 2,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-debruyn-8-9m",
+          "x": 17,
+          "y": 36,
+          "height": 8.5,
+          "crownBase": 2,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-debruyn-8-9m",
+          "x": 14,
+          "y": 36,
+          "height": 8.5,
+          "crownBase": 2,
+          "crownWidth": 3,
+          "crownDepth": 3,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.8266,
+      "candidateCount": 97,
+      "minSpacing": 1.6500000000000001,
+      "boundaryDistances": [
+        1.3102,
+        1.9367,
+        1.9864
+      ],
+      "crownOverhang": [
+        0.1898,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 326,
+          "total": 340,
+          "percent": 95.8824
+        },
+        {
+          "id": "standing",
+          "blocked": 326,
+          "total": 340,
+          "percent": 95.8824
+        },
+        {
+          "id": "terrace",
+          "blocked": 226,
+          "total": 340,
+          "percent": 66.4706
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 220,
+          "total": 340,
+          "percent": 64.7059
+        },
+        {
+          "id": "pool",
+          "blocked": 319,
+          "total": 340,
+          "percent": 93.8235
+        },
+        {
+          "id": "firepit",
+          "blocked": 561,
+          "total": 629,
+          "percent": 89.1892
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 279,
+          "total": 340,
+          "percent": 82.0588
+        },
+        {
+          "id": "dining",
+          "blocked": 400,
+          "total": 629,
+          "percent": 63.593
+        }
+      ]
+    },
+    "nordmann-fir-11m": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "nordmann-fir-11m",
+          "x": 11,
+          "y": 35,
+          "height": 11,
+          "crownBase": 0.4,
+          "crownWidth": 7,
+          "crownDepth": 7,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "nordmann-fir-11m",
+          "x": 17,
+          "y": 19.5,
+          "height": 11,
+          "crownBase": 0.4,
+          "crownWidth": 7,
+          "crownDepth": 7,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "nordmann-fir-11m",
+          "x": 14,
+          "y": 34.5,
+          "height": 11,
+          "crownBase": 0.4,
+          "crownWidth": 7,
+          "crownDepth": 7,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.7371,
+      "candidateCount": 24,
+      "minSpacing": 3,
+      "boundaryDistances": [
+        3.0359,
+        3.3087,
+        3.4862
+      ],
+      "crownOverhang": [
+        0.4641,
+        0.1913,
+        0.0138
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 305,
+          "total": 340,
+          "percent": 89.7059
+        },
+        {
+          "id": "standing",
+          "blocked": 305,
+          "total": 340,
+          "percent": 89.7059
+        },
+        {
+          "id": "terrace",
+          "blocked": 174,
+          "total": 340,
+          "percent": 51.1765
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 171,
+          "total": 340,
+          "percent": 50.2941
+        },
+        {
+          "id": "pool",
+          "blocked": 220,
+          "total": 340,
+          "percent": 64.7059
+        },
+        {
+          "id": "firepit",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 190,
+          "total": 340,
+          "percent": 55.8824
+        },
+        {
+          "id": "dining",
+          "blocked": 477,
+          "total": 629,
+          "percent": 75.8347
+        }
+      ]
+    },
+    "austrian-pine-medium": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-medium",
+          "x": 19,
+          "y": 33,
+          "height": 4.25,
+          "crownBase": 1,
+          "crownWidth": 3.5,
+          "crownDepth": 3.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-medium",
+          "x": 12,
+          "y": 35,
+          "height": 4.25,
+          "crownBase": 1,
+          "crownWidth": 3.5,
+          "crownDepth": 3.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-medium",
+          "x": 16,
+          "y": 36,
+          "height": 4.25,
+          "crownBase": 1,
+          "crownWidth": 3.5,
+          "crownDepth": 3.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.6547,
+      "candidateCount": 97,
+      "minSpacing": 1.9250000000000003,
+      "boundaryDistances": [
+        1.3102,
+        3.0194,
+        1.9533
+      ],
+      "crownOverhang": [
+        0.4398,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 291,
+          "total": 340,
+          "percent": 85.5882
+        },
+        {
+          "id": "standing",
+          "blocked": 291,
+          "total": 340,
+          "percent": 85.5882
+        },
+        {
+          "id": "terrace",
+          "blocked": 123,
+          "total": 340,
+          "percent": 36.1765
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 123,
+          "total": 340,
+          "percent": 36.1765
+        },
+        {
+          "id": "pool",
+          "blocked": 238,
+          "total": 340,
+          "percent": 70
+        },
+        {
+          "id": "firepit",
+          "blocked": 599,
+          "total": 629,
+          "percent": 95.2305
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 164,
+          "total": 340,
+          "percent": 48.2353
+        },
+        {
+          "id": "dining",
+          "blocked": 318,
+          "total": 629,
+          "percent": 50.5564
+        }
+      ]
+    },
+    "austrian-pine-large": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-large",
+          "x": 19,
+          "y": 33,
+          "height": 5.5,
+          "crownBase": 1.3,
+          "crownWidth": 3.5,
+          "crownDepth": 3.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-large",
+          "x": 14,
+          "y": 35,
+          "height": 5.5,
+          "crownBase": 1.3,
+          "crownWidth": 3.5,
+          "crownDepth": 3.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-large",
+          "x": 17,
+          "y": 36,
+          "height": 5.5,
+          "crownBase": 1.3,
+          "crownWidth": 3.5,
+          "crownDepth": 3.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.7273,
+      "candidateCount": 97,
+      "minSpacing": 1.9250000000000003,
+      "boundaryDistances": [
+        1.3102,
+        2.9863,
+        1.9367
+      ],
+      "crownOverhang": [
+        0.4398,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 318,
+          "total": 340,
+          "percent": 93.5294
+        },
+        {
+          "id": "standing",
+          "blocked": 318,
+          "total": 340,
+          "percent": 93.5294
+        },
+        {
+          "id": "terrace",
+          "blocked": 161,
+          "total": 340,
+          "percent": 47.3529
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 159,
+          "total": 340,
+          "percent": 46.7647
+        },
+        {
+          "id": "pool",
+          "blocked": 270,
+          "total": 340,
+          "percent": 79.4118
+        },
+        {
+          "id": "firepit",
+          "blocked": 551,
+          "total": 629,
+          "percent": 87.5994
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 211,
+          "total": 340,
+          "percent": 62.0588
+        },
+        {
+          "id": "dining",
+          "blocked": 340,
+          "total": 629,
+          "percent": 54.0541
+        }
+      ]
+    },
+    "austrian-pine-xl": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-xl",
+          "x": 18,
+          "y": 20,
+          "height": 6.5,
+          "crownBase": 1.6,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-xl",
+          "x": 18.5,
+          "y": 33,
+          "height": 6.5,
+          "crownBase": 1.6,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-xl",
+          "x": 14,
+          "y": 35,
+          "height": 6.5,
+          "crownBase": 1.6,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.8006,
+      "candidateCount": 72,
+      "minSpacing": 2.75,
+      "boundaryDistances": [
+        2.3084,
+        1.8102,
+        2.9863
+      ],
+      "crownOverhang": [
+        0.1916,
+        0.6898,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 328,
+          "total": 340,
+          "percent": 96.4706
+        },
+        {
+          "id": "standing",
+          "blocked": 328,
+          "total": 340,
+          "percent": 96.4706
+        },
+        {
+          "id": "terrace",
+          "blocked": 197,
+          "total": 340,
+          "percent": 57.9412
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 191,
+          "total": 340,
+          "percent": 56.1765
+        },
+        {
+          "id": "pool",
+          "blocked": 319,
+          "total": 340,
+          "percent": 93.8235
+        },
+        {
+          "id": "firepit",
+          "blocked": 573,
+          "total": 629,
+          "percent": 91.097
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 270,
+          "total": 340,
+          "percent": 79.4118
+        },
+        {
+          "id": "dining",
+          "blocked": 392,
+          "total": 629,
+          "percent": 62.3211
+        }
+      ]
+    },
+    "austrian-pine-tall": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "austrian-pine-tall",
+          "x": 18,
+          "y": 20,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "austrian-pine-tall",
+          "x": 18.5,
+          "y": 33,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "austrian-pine-tall",
+          "x": 15,
+          "y": 36,
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.8918,
+      "candidateCount": 72,
+      "minSpacing": 2.75,
+      "boundaryDistances": [
+        2.3084,
+        1.8102,
+        1.9698
+      ],
+      "crownOverhang": [
+        0.1916,
+        0.6898,
+        0.5302
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 328,
+          "total": 340,
+          "percent": 96.4706
+        },
+        {
+          "id": "standing",
+          "blocked": 328,
+          "total": 340,
+          "percent": 96.4706
+        },
+        {
+          "id": "terrace",
+          "blocked": 281,
+          "total": 340,
+          "percent": 82.6471
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 270,
+          "total": 340,
+          "percent": 79.4118
+        },
+        {
+          "id": "pool",
+          "blocked": 329,
+          "total": 340,
+          "percent": 96.7647
+        },
+        {
+          "id": "firepit",
+          "blocked": 550,
+          "total": 629,
+          "percent": 87.4404
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 322,
+          "total": 340,
+          "percent": 94.7059
+        },
+        {
+          "id": "dining",
+          "blocked": 443,
+          "total": 629,
+          "percent": 70.4293
+        }
+      ]
+    },
+    "serbian-spruce": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "serbian-spruce",
+          "x": 19,
+          "y": 36,
+          "height": 6,
+          "crownBase": 0.35,
+          "crownWidth": 1.75,
+          "crownDepth": 1.75,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "serbian-spruce",
+          "x": 19,
+          "y": 33,
+          "height": 6,
+          "crownBase": 0.35,
+          "crownWidth": 1.75,
+          "crownDepth": 1.75,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "serbian-spruce",
+          "x": 17,
+          "y": 36,
+          "height": 6,
+          "crownBase": 0.35,
+          "crownWidth": 1.75,
+          "crownDepth": 1.75,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.633,
+      "candidateCount": 97,
+      "minSpacing": 1.5,
+      "boundaryDistances": [
+        1.3154,
+        1.3102,
+        1.9367
+      ],
+      "crownOverhang": [
+        0,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 294,
+          "total": 340,
+          "percent": 86.4706
+        },
+        {
+          "id": "standing",
+          "blocked": 294,
+          "total": 340,
+          "percent": 86.4706
+        },
+        {
+          "id": "terrace",
+          "blocked": 125,
+          "total": 340,
+          "percent": 36.7647
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 122,
+          "total": 340,
+          "percent": 35.8824
+        },
+        {
+          "id": "pool",
+          "blocked": 232,
+          "total": 340,
+          "percent": 68.2353
+        },
+        {
+          "id": "firepit",
+          "blocked": 437,
+          "total": 629,
+          "percent": 69.4754
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 156,
+          "total": 340,
+          "percent": 45.8824
+        },
+        {
+          "id": "dining",
+          "blocked": 303,
+          "total": 629,
+          "percent": 48.1717
+        }
+      ]
+    },
+    "broad-hornbeam": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "broad-hornbeam",
+          "x": 19,
+          "y": 33,
+          "height": 6,
+          "crownBase": 1.8,
+          "crownWidth": 2.5,
+          "crownDepth": 2.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "broad-hornbeam",
+          "x": 14,
+          "y": 35,
+          "height": 6,
+          "crownBase": 1.8,
+          "crownWidth": 2.5,
+          "crownDepth": 2.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "broad-hornbeam",
+          "x": 17,
+          "y": 36,
+          "height": 6,
+          "crownBase": 1.8,
+          "crownWidth": 2.5,
+          "crownDepth": 2.5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.722,
+      "candidateCount": 97,
+      "minSpacing": 1.5,
+      "boundaryDistances": [
+        1.3102,
+        2.9863,
+        1.9367
+      ],
+      "crownOverhang": [
+        0,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 317,
+          "total": 340,
+          "percent": 93.2353
+        },
+        {
+          "id": "standing",
+          "blocked": 317,
+          "total": 340,
+          "percent": 93.2353
+        },
+        {
+          "id": "terrace",
+          "blocked": 162,
+          "total": 340,
+          "percent": 47.6471
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 158,
+          "total": 340,
+          "percent": 46.4706
+        },
+        {
+          "id": "pool",
+          "blocked": 270,
+          "total": 340,
+          "percent": 79.4118
+        },
+        {
+          "id": "firepit",
+          "blocked": 529,
+          "total": 629,
+          "percent": 84.1017
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 205,
+          "total": 340,
+          "percent": 60.2941
+        },
+        {
+          "id": "dining",
+          "blocked": 337,
+          "total": 629,
+          "percent": 53.5771
+        }
+      ]
+    },
+    "pleached-hornbeam": {
+      "trees": [
+        {
+          "id": "pine-1",
+          "typeId": "pleached-hornbeam",
+          "x": 19,
+          "y": 33,
+          "height": 3.7,
+          "crownBase": 2.2,
+          "crownWidth": 1.5,
+          "crownDepth": 0.4,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-2",
+          "typeId": "pleached-hornbeam",
+          "x": 19,
+          "y": 35,
+          "height": 3.7,
+          "crownBase": 2.2,
+          "crownWidth": 1.5,
+          "crownDepth": 0.4,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        {
+          "id": "pine-3",
+          "typeId": "pleached-hornbeam",
+          "x": 11,
+          "y": 35,
+          "height": 3.7,
+          "crownBase": 2.2,
+          "crownWidth": 1.5,
+          "crownDepth": 0.4,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        }
+      ],
+      "weightedCoverage": 0.6213,
+      "candidateCount": 97,
+      "minSpacing": 1.5,
+      "boundaryDistances": [
+        1.3102,
+        1.3137,
+        3.0359
+      ],
+      "crownOverhang": [
+        0,
+        0,
+        0
+      ],
+      "views": [
+        {
+          "id": "sofa",
+          "blocked": 286,
+          "total": 340,
+          "percent": 84.1176
+        },
+        {
+          "id": "standing",
+          "blocked": 286,
+          "total": 340,
+          "percent": 84.1176
+        },
+        {
+          "id": "terrace",
+          "blocked": 115,
+          "total": 340,
+          "percent": 33.8235
+        },
+        {
+          "id": "jacuzzi",
+          "blocked": 116,
+          "total": 340,
+          "percent": 34.1176
+        },
+        {
+          "id": "pool",
+          "blocked": 226,
+          "total": 340,
+          "percent": 66.4706
+        },
+        {
+          "id": "firepit",
+          "blocked": 484,
+          "total": 629,
+          "percent": 76.9475
+        },
+        {
+          "id": "sauna",
+          "blocked": 629,
+          "total": 629,
+          "percent": 100
+        },
+        {
+          "id": "poolside-loungers",
+          "blocked": 150,
+          "total": 340,
+          "percent": 44.1176
+        },
+        {
+          "id": "dining",
+          "blocked": 301,
+          "total": 629,
+          "percent": 47.8537
+        }
+      ]
+    }
+  }
+}

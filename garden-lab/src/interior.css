@@ -108,6 +108,9 @@ body:has(> .iw-workspace:not([hidden])) > :is(.context-bar,main.workspace,footer
 .iw-stage-foot button {display:inline-flex; align-items:center; gap:5px; background:transparent; border:0; padding:4px 0; white-space:nowrap; font-size:11px; color:var(--iw-ink);}
 .iw-stage-foot svg {width:14px!important; height:14px!important;}
 .iw-workspace .iw-mobile-button,.iw-mobile-heading {display:none;}
+.iw-workspace.is-model-fullscreen{position:fixed;inset:0;z-index:10000;width:100%;height:100vh;height:100dvh;min-height:0;margin:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow:hidden}
+.iw-fullscreen .fullscreen-collapse-icon,.iw-fullscreen[aria-pressed="true"] .fullscreen-expand-icon{display:none}
+.iw-fullscreen[aria-pressed="true"] .fullscreen-collapse-icon{display:block}
 /* All drawing lineweights and text units scale with the plan, in metres. */
 .iw-plan-svg {font-family:Arial,Helvetica,sans-serif;}
 .iw-plan-side {text-anchor:middle; fill:#5a6d5d; font-size:.188px; font-weight:700; letter-spacing:.06px;}
@@ -225,6 +228,12 @@ body:has(> .iw-workspace:not([hidden])) > :is(.context-bar,main.workspace,footer
 .iw-drawing[data-zoomed="true"] .iw-plan:active {cursor:grabbing;}
 @media(max-width:580px){.iw-plan-tools{top:4px;right:4px;}.iw-plan-tools button{min-width:27px;height:26px;}}
 body:has(> .iw-workspace:not([hidden])) .header-actions #interior-open {display:none;}
+@media(max-width:580px){
+  .iw-header{grid-template-columns:minmax(0,1fr) auto auto}
+  .iw-identity{min-width:0}.iw-identity>div{min-width:0}.iw-header h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .iw-workspace .iw-fullscreen{grid-column:3;grid-row:1;min-width:36px;padding:6px}
+  .iw-fullscreen [data-fullscreen-label]{display:none}
+}
 @media(max-width:760px) {
   body:has(> .iw-workspace:not([hidden])) > .header {display:grid; grid-template-columns:auto minmax(0,1fr); gap:5px 10px; min-height:0; height:auto; padding:7px 10px;}
   body:has(> .iw-workspace:not([hidden])) > .header .brand {gap:5px;}
