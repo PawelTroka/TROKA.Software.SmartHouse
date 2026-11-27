@@ -1,0 +1,210 @@
+{
+  "queryUrl": "https://geogdansk.pl/server/rest/services/WUiA/MPZP_APP_GML/MapServer/0/query?f=json&geometry=%7B%22rings%22%3A+%5B%5B%5B476064.831756033%2C+726902.760579949%5D%2C+%5B476083.477007224%2C+726894.680132194%5D%2C+%5B476071.997650043%2C+726868.237330145%5D%2C+%5B476068.411497858%2C+726859.922715501%5D%2C+%5B476049.880342341%2C+726867.59176273%5D%2C+%5B476053.437225993%2C+726875.956766203%5D%2C+%5B476054.923818833%2C+726879.293865758%5D%2C+%5B476064.831756033%2C+726902.760579949%5D%5D%5D%2C+%22spatialReference%22%3A+%7B%22wkid%22%3A+2180%7D%7D&geometryType=esriGeometryPolygon&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=false",
+  "input": {
+    "rings": [
+      [
+        [
+          476064.831756033,
+          726902.760579949
+        ],
+        [
+          476083.477007224,
+          726894.680132194
+        ],
+        [
+          476071.997650043,
+          726868.237330145
+        ],
+        [
+          476068.411497858,
+          726859.922715501
+        ],
+        [
+          476049.880342341,
+          726867.59176273
+        ],
+        [
+          476053.437225993,
+          726875.956766203
+        ],
+        [
+          476054.923818833,
+          726879.293865758
+        ],
+        [
+          476064.831756033,
+          726902.760579949
+        ]
+      ]
+    ],
+    "spatialReference": {
+      "wkid": 2180
+    }
+  },
+  "response": {
+    "displayFieldName": "NUMER",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "NUMER": "Numer planu",
+      "NAZWA": "nazwa",
+      "POW": "pow",
+      "PODJECIE": "podjecie",
+      "DATA_PODJ": "Data uchwały o podjęciu",
+      "ZMIANY": "zmiany",
+      "UCHWALENIE": "Nr uchwały o uchwaleniu",
+      "DATA_UCHW": "Data uchwalenia na sesji RMG",
+      "DATA_PUB": "Data publikacji",
+      "DZ_PUB": "Dz.U.",
+      "DZ_POZ": "Dz. U. pozycja",
+      "DATA_UPR": "Data wejścia w życie",
+      "SKALA": "skala",
+      "LINK_BIP": "Link do BIP",
+      "LINK_APP": "Link do APP",
+      "LINK_UCHW": "Link do uchwały",
+      "LINK_RYS": "Link do rysunku",
+      "LINK_LEG": "Link do legendy",
+      "JEDNOSTKA": "jednostka",
+      "Shape.STArea()": "Shape.STArea()",
+      "Shape.STLength()": "Shape.STLength()"
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "NUMER",
+        "type": "esriFieldTypeString",
+        "alias": "Numer planu",
+        "length": 10
+      },
+      {
+        "name": "NAZWA",
+        "type": "esriFieldTypeString",
+        "alias": "nazwa",
+        "length": 255
+      },
+      {
+        "name": "POW",
+        "type": "esriFieldTypeString",
+        "alias": "pow",
+        "length": 255
+      },
+      {
+        "name": "PODJECIE",
+        "type": "esriFieldTypeString",
+        "alias": "podjecie",
+        "length": 255
+      },
+      {
+        "name": "DATA_PODJ",
+        "type": "esriFieldTypeString",
+        "alias": "Data uchwały o podjęciu",
+        "length": 255
+      },
+      {
+        "name": "ZMIANY",
+        "type": "esriFieldTypeString",
+        "alias": "zmiany",
+        "length": 255
+      },
+      {
+        "name": "UCHWALENIE",
+        "type": "esriFieldTypeString",
+        "alias": "Nr uchwały o uchwaleniu",
+        "length": 255
+      },
+      {
+        "name": "DATA_UCHW",
+        "type": "esriFieldTypeString",
+        "alias": "Data uchwalenia na sesji RMG",
+        "length": 20
+      },
+      {
+        "name": "DATA_PUB",
+        "type": "esriFieldTypeString",
+        "alias": "Data publikacji",
+        "length": 20
+      },
+      {
+        "name": "DZ_PUB",
+        "type": "esriFieldTypeString",
+        "alias": "Dz.U.",
+        "length": 255
+      },
+      {
+        "name": "DZ_POZ",
+        "type": "esriFieldTypeString",
+        "alias": "Dz. U. pozycja",
+        "length": 255
+      },
+      {
+        "name": "DATA_UPR",
+        "type": "esriFieldTypeDate",
+        "alias": "Data wejścia w życie",
+        "length": 8
+      },
+      {
+        "name": "SKALA",
+        "type": "esriFieldTypeString",
+        "alias": "skala",
+        "length": 20
+      },
+      {
+        "name": "LINK_BIP",
+        "type": "esriFieldTypeString",
+        "alias": "Link do BIP",
+        "length": 255
+      },
+      {
+        "name": "LINK_APP",
+        "type": "esriFieldTypeString",
+        "alias": "Link do APP",
+        "length": 255
+      },
+      {
+        "name": "LINK_UCHW",
+        "type": "esriFieldTypeString",
+        "alias": "Link do uchwały",
+        "length": 255
+      },
+      {
+        "name": "LINK_RYS",
+        "type": "esriFieldTypeString",
+        "alias": "Link do rysunku",
+        "length": 255
+      },
+      {
+        "name": "LINK_LEG",
+        "type": "esriFieldTypeString",
+        "alias": "Link do legendy",
+        "length": 255
+      },
+      {
+        "name": "JEDNOSTKA",
+        "type": "esriFieldTypeString",
+        "alias": "jednostka",
+        "length": 255
+      },
+      {
+        "name": "Shape.STArea()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STArea()"
+      },
+      {
+        "name": "Shape.STLength()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STLength()"
+      }
+    ],
+    "features": []
+  },
+  "headers": {
+    "cache-control": "must-revalidate,max-age=0,public",
+    "content-length": "2506",
+    "content-type": "application/json; charset=UTF-8",
+    "etag": "\"e1906da2\"",
+    "date": "Tue, 24 Nov 2026 12:27:49 GMT"
+  }
+}

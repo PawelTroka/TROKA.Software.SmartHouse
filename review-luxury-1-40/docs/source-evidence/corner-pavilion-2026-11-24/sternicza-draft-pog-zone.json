@@ -1,0 +1,188 @@
+{
+  "queryUrl": "https://brg.geogdansk.pl/server/rest/services/Hosted/AplikacjaPogGdanskProjektDoUzgodnienPoKonsultacjach07102026/FeatureServer/4/query?f=json&geometry=%7B%22rings%22%3A+%5B%5B%5B476064.831756033%2C+726902.760579949%5D%2C+%5B476083.477007224%2C+726894.680132194%5D%2C+%5B476071.997650043%2C+726868.237330145%5D%2C+%5B476068.411497858%2C+726859.922715501%5D%2C+%5B476049.880342341%2C+726867.59176273%5D%2C+%5B476053.437225993%2C+726875.956766203%5D%2C+%5B476054.923818833%2C+726879.293865758%5D%2C+%5B476064.831756033%2C+726902.760579949%5D%5D%5D%2C+%22spatialReference%22%3A+%7B%22wkid%22%3A+2180%7D%7D&geometryType=esriGeometryPolygon&inSR=2180&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=false",
+  "input": {
+    "rings": [
+      [
+        [
+          476064.831756033,
+          726902.760579949
+        ],
+        [
+          476083.477007224,
+          726894.680132194
+        ],
+        [
+          476071.997650043,
+          726868.237330145
+        ],
+        [
+          476068.411497858,
+          726859.922715501
+        ],
+        [
+          476049.880342341,
+          726867.59176273
+        ],
+        [
+          476053.437225993,
+          726875.956766203
+        ],
+        [
+          476054.923818833,
+          726879.293865758
+        ],
+        [
+          476064.831756033,
+          726902.760579949
+        ]
+      ]
+    ],
+    "spatialReference": {
+      "wkid": 2180
+    }
+  },
+  "response": {
+    "features": [
+      {
+        "attributes": {
+          "symbol": "SW",
+          "h": "16.0m",
+          "pz": "30.0%",
+          "nazwa": "strefa wielofunkcyjna z zabudową mieszkaniową wielorodzinną",
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "637SW",
+          "pow": "123 512,0 m²",
+          "SHAPE__Length": 2362.310035764111,
+          "profildodatkowy": "teren zabudowy mieszkaniowej jednorodzinnej,teren zieleni naturalnej,teren lasu,teren wód",
+          "objectid": 2691,
+          "SHAPE__Area": 123512.027578065,
+          "profilpodstawowy": "teren zabudowy mieszkaniowej wielorodzinnej,teren usług,teren komunikacji,teren zieleni urządzonej,teren ogrodów działkowych,teren infrastruktury technicznej"
+        }
+      },
+      {
+        "attributes": {
+          "symbol": "SW",
+          "h": "12.0m",
+          "pz": "30.0%",
+          "nazwa": "strefa wielofunkcyjna z zabudową mieszkaniową wielorodzinną",
+          "pbc": "50.0%",
+          "iz": "1,5",
+          "oznaczenie": "649SW",
+          "pow": "37 313,6 m²",
+          "SHAPE__Length": 956.7469270739581,
+          "profildodatkowy": "teren zabudowy mieszkaniowej jednorodzinnej,teren zieleni naturalnej,teren lasu,teren wód",
+          "objectid": 2702,
+          "SHAPE__Area": 37313.64091336,
+          "profilpodstawowy": "teren zabudowy mieszkaniowej wielorodzinnej,teren usług,teren komunikacji,teren zieleni urządzonej,teren ogrodów działkowych,teren infrastruktury technicznej"
+        }
+      }
+    ],
+    "exceededTransferLimit": false,
+    "objectIdFieldName": "objectid",
+    "fields": [
+      {
+        "defaultValue": null,
+        "length": 4,
+        "type": "esriFieldTypeOID",
+        "modelName": "objectid",
+        "name": "objectid",
+        "alias": "OBJECTID"
+      },
+      {
+        "modelName": "oznaczenie",
+        "defaultValue": null,
+        "name": "oznaczenie",
+        "length": 500,
+        "alias": "oznaczenie",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "symbol",
+        "defaultValue": null,
+        "name": "symbol",
+        "length": 500,
+        "alias": "symbol",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "nazwa",
+        "defaultValue": null,
+        "name": "nazwa",
+        "length": 255,
+        "alias": "nazwa",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "profilpodstawowy",
+        "defaultValue": null,
+        "name": "profilpodstawowy",
+        "length": 350,
+        "alias": "profil podstawowy",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "profildodatkowy",
+        "defaultValue": null,
+        "name": "profildodatkowy",
+        "length": 350,
+        "alias": "profil dodatkowy",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "iz",
+        "defaultValue": null,
+        "name": "iz",
+        "length": 255,
+        "alias": "maksymalna nadziemna intensywność zabudowy",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "pz",
+        "defaultValue": null,
+        "name": "pz",
+        "length": 255,
+        "alias": "maksymalny udział powierzchni zabudowy",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "h",
+        "defaultValue": null,
+        "name": "h",
+        "length": 255,
+        "alias": "maksymalna wysokość zabudowy",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "pbc",
+        "defaultValue": null,
+        "name": "pbc",
+        "length": 255,
+        "alias": "minimalny udział powierzchni biologicznie czynnej",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "pow",
+        "defaultValue": null,
+        "name": "pow",
+        "length": 255,
+        "alias": "powierzchnia strefy",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "virtual": true,
+        "defaultValue": null,
+        "name": "SHAPE__Length",
+        "alias": "SHAPE__Length",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "virtual": true,
+        "defaultValue": null,
+        "name": "SHAPE__Area",
+        "alias": "SHAPE__Area",
+        "type": "esriFieldTypeDouble"
+      }
+    ]
+  }
+}
