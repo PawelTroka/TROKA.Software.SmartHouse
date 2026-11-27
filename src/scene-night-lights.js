@@ -1,10 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.36.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.36.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.36.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.36.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.36.0';
-import {getResortGardenRecipe} from './resort-garden.js?v=1.36.0';
+import {toWorld} from './orientation.js?v=1.37.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.37.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.37.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.37.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.37.0';
+import {getResortGardenRecipe} from './resort-garden.js?v=1.37.0';
+import {boundaryFenceLayout} from './boundary-fence.js?v=1.37.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;
@@ -98,7 +99,26 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
     fixtures.push({kind:'tree-uplight',treeId:tree.id,x,y,z:z+.21});
   }
   const furniture=gardenFurniture(data,settings);
-  for(const [i,[x,y]] of furniture.path.slice(0,3).entries())bollard(`path-bollard-${i+1}`,x-.22,y+.45);
+  if(furniture.pathNetwork){
+    const stem=new THREE.CylinderGeometry(.035,.042,.57,8),shade=new THREE.CylinderGeometry(.105,.105,.045,12),lens=new THREE.CylinderGeometry(.065,.065,.015,12);
+    for(const fixture of furniture.pathNetwork.lights.slice(0,7)){
+      const {id,x,y,target,destination}=fixture,z=gardenGroundAt(x,y,settings,data),targetZ=gardenGroundAt(...target,settings,data);
+      mesh(stem,body,id+'-stem',x,y,z+.285);
+      mesh(shade,body,id+'-shield',x,y,z+.58);
+      const diffuser=mesh(lens,warmGlow,id+'-recessed-lens',x,y,z+.553);emitters.push({mesh:diffuser,channel:'garden'});
+      const beam=light('spot',id+'-downlight',x,y,z+.55,warm,4.2*(resort?.light[0]??1),3.1,[...target,targetZ+.02],false);
+      if(beam){beam.angle=1.06;beam.penumbra=.94;beam.userData.routeLight=true;}
+      fixtures.push({id,kind:'shielded-path-light',channel:'garden',destination,x,y,z:z+.58,target:[...target,targetZ+.02],shadow:false});
+    }
+  }else for(const [i,[x,y]] of furniture.path.slice(0,3).entries())bollard(`path-bollard-${i+1}`,x-.22,y+.45);
+  for(const fixture of boundaryFenceLayout(settings,data).fixtures.slice(0,2)){
+    const {id,x,y,z}=fixture,groundZ=gardenGroundAt(x,y,settings,data);
+    mesh(new THREE.BoxGeometry(.14,.12,.12),body,id+'-shield',x,y,z);
+    const diffuser=mesh(new THREE.BoxGeometry(.09,.012,.085),warmGlow,id+'-lens',x,y,z-.064);emitters.push({mesh:diffuser,channel:'garden'});
+    const beam=light('spot',id+'-downlight',x,y,z-.065,warm,6.8,4.0,[x,y+.65,groundZ+.02],false);
+    if(beam){beam.angle=.88;beam.penumbra=.92;}
+    fixtures.push({...fixture,channel:'garden',shadow:false});
+  }
   // Recessed terrace/step strip: it sits below the leading nosing and projects
   // a restrained warm pool onto the first step rather than flooding the plot.
   const terrace=data.site.terrace,rear=data.site.rearMidpoint[1],depth=Number(settings.terraceDepth)||terrace.depth||4.2;
@@ -215,7 +235,8 @@ export function createGardenNightLighting(settings,data,{svgMode=false,style=nul
   group.userData.fixtureSchedule=fixtures;
   group.userData.pendantLayout=pendantLayout;
   group.userData.resortLightRecipe=resort;
-  group.userData.lightingIntent={temperatureK:2400,maximumHedgeAccents:8,pathStrings:pendantLayout.cables.filter(c=>c.kind==='festoon').length};
+  group.userData.lightingIntent={temperatureK:2400,maximumHedgeAccents:8,pathStrings:pendantLayout.cables.filter(c=>c.kind==='festoon').length,
+    maximumRouteLights:7,routeLights:fixtures.filter(f=>f.kind==='shielded-path-light').length,routeShadowMaps:0};
   let applied={garden:-1,pendant:-1,hedge:-1};
   const bounded=value=>Math.max(0,Math.min(1,Number.isFinite(value)?value:0));
   const apply=(strength)=>{

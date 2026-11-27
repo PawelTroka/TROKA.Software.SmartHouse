@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.36.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.36.0';
+import {toWorld, toWorldRoofTriangle, toWorldTriangle} from './orientation.js?v=1.37.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry} from './detailed-geometry.js?v=1.37.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const ringOpen=ring=>ring.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring;
@@ -101,14 +101,16 @@ export function createSpaAmenityGroup(program, levels, materials, svgMode=false)
   if(plunge){
     const g=new THREE.Group();g.name='cold-plunge';group.add(g);
     const z=levels.coldPlunge.baseZ,bottom=levels.coldPlunge.bottomZ,h=levels.coldPlunge.rimZ-bottom,t=plunge.rim??.12;
-    const pad=plunge.pad??.18,padBase=levels.coldPlunge.padBaseZ??z-.10,padTop=z+.02;
+    const pad=plunge.pad??.18,padBase=levels.coldPlunge.padBaseZ??z-.10,padTop=levels.coldPlunge.padTopZ;
+    g.userData.sunken=plunge.sunken===true;g.userData.finishedLevels={...levels.coldPlunge};
     for(const [x,y,w,l] of [[plunge.x-pad,plunge.y-pad,plunge.width+2*pad,pad],[plunge.x-pad,plunge.y+plunge.length,plunge.width+2*pad,pad],[plunge.x-pad,plunge.y,pad,plunge.length],[plunge.x+plunge.width,plunge.y,pad,plunge.length]])box(g,'plunge-pad',x,y,padBase,w,l,padTop-padBase,mat.stone);
     box(g,'plunge-basin-floor',plunge.x,plunge.y,bottom-.10,plunge.width,plunge.length,.10,mat.basin);
     box(g,'plunge-long-side',plunge.x,plunge.y,bottom,plunge.width,t,h,mat.stone);
     box(g,'plunge-long-side',plunge.x,plunge.y+plunge.length-t,bottom,plunge.width,t,h,mat.stone);
     box(g,'plunge-end',plunge.x,plunge.y,bottom,t,plunge.length,h,mat.stone);
     box(g,'plunge-end',plunge.x+plunge.width-t,plunge.y,bottom,t,plunge.length,h,mat.stone);
-    box(g,'cold-plunge-water',plunge.x+t,plunge.y+t,levels.coldPlunge.waterZ-.018,plunge.width-2*t,plunge.length-2*t,.018,mat.waterLight,false);
+    const water=plunge.waterBounds;
+    box(g,'cold-plunge-water',water.x,water.y,levels.coldPlunge.waterZ-.018,water.width,water.length,.018,mat.waterLight,false);
     for(const [i,step] of levels.coldPlunge.steps.entries()){
       const base=step.baseZ??z;
       box(g,`plunge-access-step-${i}`,step.x,step.y,base,step.width,step.length,step.topZ-base,mat.woodLight,false);

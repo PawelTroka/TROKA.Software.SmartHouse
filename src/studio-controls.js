@@ -1,9 +1,9 @@
-import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.36.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
-import {getResortDesignIntent} from './resort-design-intents.js?v=1.36.0';
-import {getStyleMaterialSamples} from './material-catalogue.js?v=1.36.0';
-import {getRenovationArchitecture} from './renovation-architecture.js?v=1.36.0';
-import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.36.0';
+import {DESIGN_STYLES,getDesignStyle,designStyleSearchText} from './design-styles.js?v=1.37.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
+import {getResortDesignIntent} from './resort-design-intents.js?v=1.37.0';
+import {getStyleMaterialSamples} from './material-catalogue.js?v=1.37.0';
+import {getRenovationArchitecture} from './renovation-architecture.js?v=1.37.0';
+import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.37.0';
 
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
@@ -113,6 +113,7 @@ export function createStudioControls({getSettings,onChange,onMoment,onInspect,on
     // Counts come from the actual scene batches, so browser acceptance can
     // verify corrected elevations and resolved roofs without a second model.
     for(const key of ['contextFacades','contextBalconies','contextEnvelopes'])host.dataset[key]=JSON.stringify(value[key]||{});
+    for(const key of ['boundaryFence','gardenPaths','coldPlunge','gardenLighting'])host.dataset[key]=JSON.stringify(value[key]||null);
     $('render-quality-status').textContent=value.rendererType==='webgl'?`${value.quality==='eco'?'Eco':value.quality==='high'?'High detail':'Automatic'} · ${Number(value.pixelRatio||1).toFixed(2)}× display scale`:'Lightweight renderer';
     $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.bufferWidth||0} × ${value.bufferHeight||0} drawing buffer${value.contactShading?' · Contact shading':''}`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';
     $('render-motion-status').textContent=getSettings().sceneMotion?(value.motionActive?'Gentle water movement is active.':'Motion pauses while the scene is hidden, in a diagram, or when reduced motion is preferred.'):'The scene rests between interactions.';

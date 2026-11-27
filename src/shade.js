@@ -3,16 +3,17 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.36.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.36.0';
-import { localRoofEnvelope } from './roof-envelope.js?v=1.36.0';
-import {sampledRoofFaces} from './roof-mesh.js?v=1.36.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.36.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.36.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.36.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.36.0';
-import { terraceStairs } from './layout.js?v=1.36.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.36.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.37.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.37.0';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.37.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.37.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.37.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.37.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.37.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.37.0';
+import { terraceStairs } from './layout.js?v=1.37.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.37.0';
+import { boundaryFenceLayout,boundaryMemberFaces,BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.37.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -122,7 +123,7 @@ function gableFaces(ring,eaves,ridge,axis='x') {
   return [[a,d,f],[a,f,e],[e,f,c],[e,c,b],[a,e,b],[d,c,f]];
 }
 
-export {sampledRoofFaces} from './roof-mesh.js?v=1.36.0';
+export {sampledRoofFaces} from './roof-mesh.js?v=1.37.0';
 
 const contextOccluderCache=new WeakMap();
 
@@ -174,7 +175,7 @@ function spaOccluders(settings,data) {
       {x:c.x-pad,y:c.y+c.length,width:c.width+2*pad,length:pad},
       {x:c.x-pad,y:c.y,width:pad,length:c.length},
       {x:c.x+c.width,y:c.y,width:pad,length:c.length},
-    ])slab('cold-plunge-pad','Cold-plunge raised pad',strip,cz.padBaseZ,cz.baseZ+.02);
+    ])slab('cold-plunge-pad',c.sunken?'Cold-plunge flush surround':'Cold-plunge raised pad',strip,cz.padBaseZ,cz.padTopZ);
   }
   for(const step of cz.steps)slab('cold-plunge-step','Cold-plunge access step',step,step.baseZ??cz.groundZ,step.topZ);
 
@@ -262,6 +263,9 @@ function makeOccluders(settings,data) {
   for(const box of privacyStructures(settings,data).boxes){
     if(box.opaque!==false)add(prism(box.id,box.label,rectangle(box.x0,box.y0,box.x1,box.y1),box.z0,box.z1));
   }
+  for(const member of boundaryFenceLayout(settings,data).members){
+    add(mesh(member.id,member.label||'Perimeter fence / gate',boundaryMemberFaces(member)));
+  }
   return objects;
 }
 
@@ -306,7 +310,7 @@ function makeReceivers(settings,data,size=1){
       let z=zone==='jacuzzi'?tub.waterZ:zone==='terrace'?floor:zone==='pool'?poolZ:zone==='coldPlunge'?levels.coldPlunge.waterZ:zone==='firepit'?(pitStep?.topZ??levels.firepit.floorZ):bedSurface(x,y,gardenGroundAt(x,y,settings,data),settings,segments);
       if(zone==='garden'&&p&&rectContains(x,y,rectBounds(p,-p.coping)))z=levels.pool.copingTopZ;
       if(zone==='garden'&&program.active){
-        if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.baseZ+.02;
+        if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)&&rectContains(x,y,rectBounds(cold,-(cold.pad??.18))))z=levels.coldPlunge.padTopZ;
         const step=levels.coldPlunge.steps.find(r=>rectContains(x,y,rectBounds(r)));
         if(step)z=step.topZ;
         const saunaStep=levels.sauna.entrySteps?.find(r=>pointInPolygon([x,y],r.footprint));
@@ -335,7 +339,7 @@ function makeReceivers(settings,data,size=1){
 }
 
 const geometryCache=new WeakMap();
-const geometryKeys=['summerPoolLayout','poolSunbedSides','jacuzziCentered','hstOpen','poolFreeboard','gardenProgram','designStyle','styleGardenLayout','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS];
+const geometryKeys=['summerPoolLayout','poolSunbedSides','jacuzziCentered','hstOpen','poolFreeboard','gardenProgram','designStyle','styleGardenLayout','hedgeRear','hedgeLeft','hedgeRight','hedgeFront','hedgeFullPerimeter','hedgeInset','gardenRaise','bedRaise','raiseNewHedges','floorHeight','removeGarage','terraceDepth','jacuzziOverflow','canopyEnabled','terraceCoverType','firstFloorRise','canopyDepth','canopyHeight','canopyWidth','fasciaDepth','basementGarageEnabled','garageRampWidth','garageSpaces',...PRIVACY_GEOMETRY_KEYS,...BOUNDARY_GEOMETRY_KEYS];
 /** Time changes reuse geometry; date/leaf mode and tree edits rebuild foliage. */
 export function prepareSunGeometry(settings,data){
   const signature=JSON.stringify([...geometryKeys.map(k=>settings[k]),settings.screeningTrees||[],settings.treeLeafMode||'auto',settings.sunDate||'2026-06-21',settings.existingVegetation,settings.existingCanopyAnalysis,settings.existingLeafMode]);
@@ -405,6 +409,6 @@ export function analyzeSunlight(settings,data,sun){
   for(const zone of Object.values(zones))zone.percent=daylight&&zone.total?zone.sunlit/zone.total*100:null;
   return {status,isDaylight:daylight,cells,zones,cellSize:geometry.cellSize,direction:sun?.direction||null,
     modelNote:'Direct sun on a 1 m outdoor sample grid; pool edge samples use the centre of each clipped water portion. Includes local terrain sampled every 0.5 m along each ray and finite dense proposed and enabled measured existing canopy envelopes. Deciduous auto foliage is May–October, an approximate comparison assumption. Unmapped vegetation, reconstructed existing stems, decorative planting/furniture and distant terrain horizon are not included; no clouds or diffuse/reflected light.',
-    method:'Direct-sun visibility at 1 m outdoor sample centres, using shared resolved neighbouring roof/wall envelopes where supported and mapped LoD1 bodies otherwise, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees and measured existing canopy envelopes with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
+    method:'Direct-sun visibility at 1 m outdoor sample centres, using shared resolved neighbouring roof/wall envelopes where supported and mapped LoD1 bodies otherwise, fixed house/garage roof elevations, local terrain, opaque hedges, the proposed canopy and valid enabled screening trees and measured existing canopy envelopes with seasonal crown geometry. Optional pergola members, explicitly assumed dense established foliage and finite spa screens use the same geometry as privacy rays. The selected perimeter fence and gate leaves use their exact open infill and ground-following faces. Water uses matched levels and excavated openings. The spa proposal adds opaque sauna walls/roof with transparent glazing, cold-plunge rim and steps, and a lowered lounge floor with retaining walls, steps and fixed seating. The sauna interior is excluded from outdoor area.',
     limitations:'No weather, diffuse/reflected light, glass transmission losses, unmapped vegetation, reconstructed existing stems, decorative planting/movable furniture, separately classified optional unverified high-feature targets, or terrain beyond the supplied DTM. Samples approximate surface area; small spa zones have few samples. Rooftop fixture extents, sparse roof interpolation, missing-roof fallbacks and foliage permeability remain estimates.'};
 }

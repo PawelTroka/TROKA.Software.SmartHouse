@@ -11,21 +11,22 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.36.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.36.0';
-import {gazeDirection} from './orientation.js?v=1.36.0';
-import {localSunDirection} from './solar.js?v=1.36.0';
-import {getSiteProfile} from './sites.js?v=1.36.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.36.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.36.0';
-import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.36.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.36.0';
-import {terraceStairs,gardenFurniture} from './layout.js?v=1.36.0';
-import {resortTerraceLayout} from './resort-garden.js?v=1.36.0';
-import {getDesignStyle} from './design-styles.js?v=1.36.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.36.0';
+} from './geometry.js?v=1.37.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.37.0';
+import {gazeDirection} from './orientation.js?v=1.37.0';
+import {localSunDirection} from './solar.js?v=1.37.0';
+import {getSiteProfile} from './sites.js?v=1.37.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.37.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.37.0';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.37.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.37.0';
+import {terraceStairs,gardenFurniture} from './layout.js?v=1.37.0';
+import {resortTerraceLayout} from './resort-garden.js?v=1.37.0';
+import {getDesignStyle} from './design-styles.js?v=1.37.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.37.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.36.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.37.0';
+import {boundaryFenceLayout,boundaryPlanMarkup} from './boundary-fence.js?v=1.37.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -40,6 +41,17 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
 const number = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
 const fmt = (v, digits = 1) => Number.isFinite(v) ? v.toFixed(digits) : '—';
 const distance = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+
+/** Exact continuous route and stone joints, shared with the landscape meshes. */
+export function gardenPathPlanMarkup(data,settings,{X,Y,scale,subtle=false}){
+  const network=gardenFurniture(data,settings).pathNetwork;if(!network)return '';
+  const polygon=ring=>ring.map(p=>`${X(p[0]).toFixed(2)},${Y(p[1]).toFixed(2)}`).join(' ');
+  const base=network.segments.map(p=>`<polygon points="${polygon(p.footprint)}" fill="#c3b8a3"/>`).join('');
+  const stone=network.pavers.map(p=>`<polygon points="${polygon(p.footprint)}" fill="#e6ddca" stroke="#b1a58e" stroke-width=".3"/>`).join('');
+  const planting=network.planting.map(p=>`<rect x="${X(p.x)}" y="${Y(p.y)}" width="${p.width*scale}" height="${p.length*scale}" rx="${.08*scale}" fill="#718363"/>`).join('');
+  const lights=network.lights.map(p=>`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${Math.max(1,.09*scale)}" fill="#9a805b"><title>Shielded warm route light · ${esc(p.destination)}</title></circle>`).join('');
+  return `<g data-garden-path-network="${network.id}" opacity="${subtle?.48:1}" pointer-events="none">${base}${stone}${planting}${lights}</g>`;
+}
 
 /** Movable pieces use the same positions as the rendered garden. */
 export function resortFurniturePlanMarkup(data,settings,{X,Y,scale}){
@@ -88,7 +100,7 @@ export function spaPlanMarkup(program,{X,Y,scale,labels=true,subtle=false}) {
   const {sauna:s,firepit:f,coldPlunge:c}=program;
   const sauna=s?`<g data-spa-object="sauna">${(s.entrySteps||[]).map(step=>`<polygon data-spa-object="sauna-step" points="${poly(step.footprint)}" fill="#c9b391" stroke="#9c8769" stroke-width=".7"/>`).join('')}<polygon points="${poly(s.footprint)}" fill="#9d8065" fill-opacity="${subtle ? .4 : .85}" stroke="#634b39" stroke-width="1.4"/>${(s.benches||[]).map(b=>rect(b,'fill="#d2b594" fill-opacity=".8"')).join('')}${(s.glazing||[]).map(({a,b})=>`<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#6aa8a4" stroke-width="3"/>`).join('')}${labels?text('SAUNA · 6',s.x+s.width*.43,s.y+s.length*.62):''}</g>`:'';
   const pit=f?`<g data-spa-object="firepit">${rect(f,`rx="${.12*scale}" fill="#c9ba9e" fill-opacity="${subtle ? .15 : .8}" stroke="#968267" stroke-width="1.4"`)}${(f.seats||[]).map(b=>rect(b,'fill="#a99272" stroke="#7f705c" stroke-width=".6"')).join('')}${(f.steps||[]).map(step=>rect(step,'fill="none" stroke="#7f705c" stroke-width=".7"')).join('')}<circle cx="${X(f.x+f.width/2)}" cy="${Y(f.y+f.length*.58)}" r="${.45*scale}" fill="#8c5940" stroke="#d3a36d" stroke-width="1.4"/>${labels?text(`FIREPIT −${fmt(f.depth,2)} m`,f.x+f.width/2,f.y+f.length+.65,C.ink,8.5):''}</g>`:'';
-  const plunge=c?`<g data-spa-object="cold-plunge">${(c.steps||[]).map(step=>rect(step,'data-spa-object="plunge-step" fill="#c9b391" stroke="#9c8769" stroke-width=".7"')).join('')}${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text('COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
+  const plunge=c?`<g data-spa-object="cold-plunge" data-sunken="${c.sunken===true}">${(c.steps||[]).map(step=>rect(step,'data-spa-object="plunge-step" fill="#c9b391" stroke="#9c8769" stroke-width=".7"')).join('')}${c.sunken?rect(c.surroundBounds,'fill="#d5c8b1" stroke="#a99a80" stroke-width=".7"'):''}${rect(c,`rx="${.18*scale}" fill="#6b9a9e" fill-opacity="${subtle ? .2 : .9}" stroke="#48757b" stroke-width="2"`)}${labels?text(c.sunken?'SUNKEN PLUNGE':'COLD PLUNGE',c.x+c.width/2,c.y+c.length+.6,C.ink,8):''}</g>`:'';
   return subtle?`<g pointer-events="none">${sauna+pit+plunge}</g>`:sauna+pit+plunge;
 }
 
@@ -287,10 +299,12 @@ export function renderPlan(container, data, settings, observer, analysis, onPick
         ${pool ? rect(pool.x, pool.y, pool.width, pool.length, `rx="2" fill="${C.water}" stroke="#eae5d7" stroke-width="${detail ? 3 : 1.5}"`) : ''}
         ${detail && pool ? `<line x1="${X(pool.x + .35)}" y1="${Y(pool.y + .6)}" x2="${X(pool.x + pool.width - .35)}" y2="${Y(pool.y + .6)}" stroke="#c7dfd9" stroke-width="2"/>` : ''}
         ${detail && pool&&!measured ? `<text transform="translate(${X(pool.x + pool.width / 2)} ${Y(pool.y + pool.length / 2)}) rotate(-90)" text-anchor="middle" font-size="${compact ? 10 : 12}" fill="#f5fffb">POOL</text>` : ''}
+        ${gardenPathPlanMarkup(data,settings,{X,Y,scale})}
         ${spaPlanMarkup(program,{X,Y,scale,labels:detail&&!measured})}
         ${garage}
         ${hedges}
         ${frontOpenings}
+        ${boundaryPlanMarkup(boundaryFenceLayout(settings,data),{X,Y,scale,labels:!detail})}
         ${canopy ? rect(canopy.x0, canopy.y0, canopy.x1 - canopy.x0, canopy.y1 - canopy.y0, 'fill="none" stroke="#967a52" stroke-width="2" stroke-dasharray="6 4"') : ''}
         ${terraceCoverPlanMarkup(cover,{X,Y,scale,labels:detail&&!measured})}
         ${detail?resortFurniturePlanMarkup(data,settings,{X,Y,scale}):''}
@@ -535,7 +549,7 @@ export function renderSection(container, data, settings, observer, analysis, mea
   const existingPath = profilePath('existing');
   const block = data.buildings.find(b => b.id === ray.blockId);
   const sampleType = ray.kind === 'high-feature' ? 'high-feature return' : 'roof point';
-  const blockerLabel = ray.blockedBy === 'existing-canopy' ? 'existing canopy' : ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? cover.type==='balcony'?'balcony':'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'pool-rim' ? 'pool coping or wall' : ray.blockedBy === 'building' ? 'mapped building' : 'hedge';
+  const blockerLabel = ray.blockedBy === 'existing-canopy' ? 'existing canopy' : ray.blockedBy === 'screening-tree' ? 'screening tree' : ray.blockedBy === 'canopy' ? cover.type==='balcony'?'balcony':'canopy' : ray.blockedBy === 'sauna' ? 'sauna construction' : ray.blockedBy === 'privacy-structure' ? ray.privacyStructure?.label||'privacy structure' : ray.blockedBy === 'pool-rim' ? 'pool coping or wall' : ray.blockedBy === 'building' ? 'mapped building' : ray.blockedBy === 'boundary-fence' ? 'perimeter fence or gate' : 'hedge';
   const outcome = `This sampled ${sampleType} is ${ray.visible ? 'exposed' : `hidden by the ${blockerLabel}`}`;
   const treesSvg = treeSectionMarkup(sectionTrees, {origin, direction, minS, maxS, X, Y, scale});
   const privacySvg = privacySectionMarkup(privacyCuts,{X,Y,scale,minS,maxS});

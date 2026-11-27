@@ -1,6 +1,6 @@
 /** Presentation of the editable planning budget; calculations live in costs.js. */
-import {getSiteProfile} from './sites.js?v=1.36.0';
-import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.36.0';
+import {getSiteProfile} from './sites.js?v=1.37.0';
+import {GARDEN_PRICE_REFERENCES} from './garden-budget-catalog.js?v=1.37.0';
 const $=id=>document.getElementById(id);
 const n=(value,d=1)=>Number(value).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=value=>`${Math.round(value).toLocaleString('pl-PL')} zł`;
@@ -31,7 +31,7 @@ export function budgetSideLabels(data){
 
 export function renderBudget(cost,settings,data){
   const h=cost.hedges,e=cost.earthworks,t=cost.screeningTrees;
-  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy,basementGarage=cost.basementGarage,balcony=cost.balcony,style=cost.style;
+  const spa=cost.spa,garden=cost.garden,privacy=cost.privacy,basementGarage=cost.basementGarage,boundaryFence=cost.boundaryFence,balcony=cost.balcony,style=cost.style;
   const balconyMissing=balcony?.unquoted.length?' The first-floor balcony also needs a complete installed quote; its unquoted scope is excluded.':'';
   if($('balcony-cost-summary'))$('balcony-cost-summary').textContent=balcony?.enabled
     ?balcony.unquoted.length?'First-floor balcony: quote required. Its structure, foundations, deck, guards and access door are excluded from the known subtotal, even with planning allowances on.':`First-floor balcony: ${amount(balcony.knownBase)} installed quote, before the shared uncertainty allowance. Replaces the canopy cost.`
@@ -50,7 +50,7 @@ export function renderBudget(cost,settings,data){
   if($('garden-cost'))$('garden-cost').textContent=garden?.enabled?`${amount(garden.total||garden.knownSubtotal,true)}${garden.status==='quote-required'?' + quotes':''}`:money(0);
   if($('garden-quantity'))$('garden-quantity').textContent=garden?.enabled?`${garden.rows.length} garden-work lines · ${n(garden.quantities.terraceNet)} m² terrace finish`:'Additional garden scope not selected';
   if($('garden-cost-detail'))$('garden-cost-detail').innerHTML=garden?.enabled?table('Garden finishes and enabling work',installedRows(garden.rows))+
-    '<p class="field-note">Mapped quantities and design assumptions are shown separately. The 20% ornamental-bed share, 12 baseline lighting fittings and unit rates are provisional. Garden pendants and hedge lanterns add their illustrated quantities using the same generic lighting rate; shade and support prices need a complete installed quote. Replace totals in Budget assumptions. These items exclude spa equipment, hedge / specimen supply and bulk garden fill.</p>':'';
+    '<p class="field-note">Mapped quantities and design assumptions are shown separately. Connected paths include stone, mineral joints and borders, with shared junctions counted once. The 20% ornamental-bed share, other landscape-light allowance and unit rates are provisional. Route lights, gate lights, garden pendants and hedge lanterns use their illustrated counts with the same generic lighting rate. Replace these allowances with complete installed quotes in Budget assumptions. Spa equipment, hedge / specimen supply and bulk garden fill are separate.</p>':'';
   $('hedge-cost').textContent=amount(h.total,true);
   $('earthwork-cost').textContent=amount(e.total,true);
   $('combined-cost').textContent=amount(cost.total,true);
@@ -69,6 +69,8 @@ export function renderBudget(cost,settings,data){
       ?`Selected privacy structures need installed quotes. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price these custom structures. Review the unquoted items in the expanded budget.${balconyMissing}`
       :balcony?.unquoted.length
       ?`The first-floor balcony needs a complete installed project quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Planning allowances do not price its structure, foundations, guards or access door.`
+      :boundaryFence?.unquoted.length
+      ?`The 2.2 m perimeter fence and both front gates need a complete installed quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Hedge and garden allowances do not price the boundary construction.`
       :`Some plants, services or garden installations need a quote. Known costs: ${amount(cost.knownSubtotal,true)}; this is an incomplete subtotal. Enter specimen prices and installed quotes, or enable planning allowances.`
     :`PLN ${garden?.enabled?(h.fullPerimeter?'rear garden + full perimeter hedges':h.sides.some(side=>side.side==='front')?'rear garden + front hedge':'rear-garden'):'planning'} budget. The upper figure includes ${cost.contingencyPercent}% uncertainty allowance once. ${cost.planningEnabled?'Installed ranges are planning assumptions, not received supplier quotes.':'Site allowances and rates are editable.'}`;
   $('cost-status').classList.toggle('needs-quote',cost.status==='quote-required');
@@ -81,6 +83,7 @@ export function renderBudget(cost,settings,data){
   panel.dataset.basementGarageKnownLow=basementGarage?.knownBase.low||0;panel.dataset.basementGarageUnquotedCount=basementGarage?.unquoted.length||0;
   panel.dataset.balconyKnownLow=balcony?.knownBase.low||0;panel.dataset.balconyUnquotedCount=balcony?.unquoted.length||0;
   panel.dataset.styleKnownLow=style?.knownBase.low||0;panel.dataset.styleUnquotedCount=style?.unquoted.length||0;
+  panel.dataset.boundaryFenceKnownLow=boundaryFence?.knownBase.low||0;panel.dataset.boundaryFenceUnquotedCount=boundaryFence?.unquoted.length||0;
   const sideLabel={front:'Front / street',...budgetSideLabels(data)};
   let plants=h.sides.map(s=>row(`${escape(sideLabel[s.side]||s.side)} · ${n(s.height)} m`,
     `${n(s.length)} m · ${s.count} trees${s.count?`<small>${s.unit.source==='custom'?'Your quote':s.unit.source==='unquoted'?'Custom quote required':'Stock price band'}${s.unit.low!==null?` · ${amount(s.unit)} / tree`:''}</small>`:''}`,
@@ -103,6 +106,8 @@ export function renderBudget(cost,settings,data){
       '<p class="field-note">Base finish, furniture and lighting lines remain included. This line covers only the additional installed upgrade after reconciling that base scope. No supplier specification or style premium is inferred from the visual. Zero is unquoted and excluded.</p>':'')+
     (privacy?.enabled?table('Privacy structures · installed quotes',installedRows(privacy.rows))+
       '<p class="field-note">Custom structures are quote-only. Unquoted work is excluded from the known subtotal, even with planning allowances on. The terrace canopy is counted separately in garden finishes.</p>':'')+
+    (boundaryFence?.enabled?table('Perimeter fence and front gates',installedRows(boundaryFence.rows))+
+      '<p class="field-note">The 2.2 m fence, pedestrian gate and garage gate form one installed package. Hedges remain separate. Reconcile any earlier garage or style package so the gates are counted once.</p>':'')+
     (basementGarage?.enabled?table('Basement garage and ramp · separate project quote',installedRows(basementGarage.rows))+
       '<p class="field-note">The clearance model does not establish structural feasibility or an installed price. A zero quote remains unpriced; garden earthworks, drainage and retaining allowances do not cover this conversion.</p>':'')+
     (balcony?.enabled?table('First-floor balcony · separate installed project quote',installedRows(balcony.rows))+

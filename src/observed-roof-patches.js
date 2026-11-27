@@ -1,4 +1,4 @@
-import {sampledRoofFaces} from './roof-mesh.js?v=1.36.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.37.0';
 
 const EPS=1e-7;
 const openRing=ring=>Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<EPS?ring.slice(0,-1):ring.slice();

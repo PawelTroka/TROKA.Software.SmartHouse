@@ -1,9 +1,9 @@
-import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.36.0';
-import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.36.0';
-import {screeningTreeUnitPrice} from './costs.js?v=1.36.0';
-import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.36.0';
-import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.36.0';
-import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.36.0';
+import {TREE_CATALOG, getTreeType, screeningTreeLabel} from './tree-catalog.js?v=1.37.0';
+import {createScreeningTree, screeningTreeVolumes, suggestTreePosition, TREE_LIMITS} from './screening-trees.js?v=1.37.0';
+import {screeningTreeUnitPrice} from './costs.js?v=1.37.0';
+import {analyzeFacadeVisibility} from './facade-visibility.js?v=1.37.0';
+import {surroundingBuildings,buildingViewLabel,isAcrossStreet,defaultViewBuilding,gazeAtBuilding} from './neighborhood.js?v=1.37.0';
+import {replaceTreeSpecies,applyTreeEdit,treeTaxLabel} from './tree-selection.js?v=1.37.0';
 
 const treeLabel = screeningTreeLabel;
 const money = value => `${Math.round(value).toLocaleString('en-GB')} PLN`;
@@ -60,7 +60,7 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
   $('tree-type').value = (getSettings().screeningTrees||[])[0]?.typeId||'austrian-pine-tall';
   const speciesLabel=document.querySelector('label[for="tree-type"]');
   const speciesNote=document.createElement('p');speciesNote.className='muted';
-  speciesNote.textContent='Changing species applies its calculated boundary positions to all three trees. Individual placement remains editable.';
+  speciesNote.textContent='Changing species can load its earlier three-tree planting preset while the current preset is unedited. Custom positions stay in place. Changing the pool, garden style or gates never moves trees.';
   $('tree-type').after(speciesNote);
 
   function selectedTree() { return (getSettings().screeningTrees || []).find(tree => tree.id === selectedId); }
@@ -131,8 +131,10 @@ export function createTreeControls({getSettings, getData, getObserver, getAnalys
     if(!type||!trees.length||(!all&&!selectedTree()))return;
     placing=false;suggestion='';
     const state=getSettings(),optimized=all&&trees.length===3&&state.siteId==='sternicza-11'&&state.summerPoolLayout===true&&!state.pavilionEnabled;
-    changeTrees(replaceTreeSpecies(trees,type.id,all?null:selectedId,{siteId:state.siteId,optimized}));
-    notify(`${all?`${trees.length} trees`:'Selected tree'} changed to ${type.label.split(' · ')[0]}. ${optimized?'Species-specific boundary positions applied automatically.':'Positions kept.'} Listed height, crown defaults and price reference applied.`);
+    const replacement=replaceTreeSpecies(trees,type.id,all?null:selectedId,{siteId:state.siteId,optimized});
+    const moved=replacement.some((tree,i)=>tree.x!==trees[i].x||tree.y!==trees[i].y);
+    changeTrees(replacement);
+    notify(`${all?`${trees.length} trees`:'Selected tree'} changed to ${type.label.split(' · ')[0]}. ${moved?'Earlier species planting preset applied.':'Positions kept.'} Listed height, crown defaults and price reference applied.`);
   }
   $('tree-replace-selected').addEventListener('click',()=>replaceSpecies(false));
   $('tree-replace-all').addEventListener('click',()=>replaceSpecies(true));

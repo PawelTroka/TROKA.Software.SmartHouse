@@ -1,9 +1,9 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.36.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.36.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.36.0';
-import {curateInteriorPlan} from './interior-curation.js?v=1.36.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.37.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.37.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.37.0';
+import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.37.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -116,10 +116,14 @@ function groundPlan(proposed){
     fixture('tv','tv','TV on solid right-wall bay','lounge',10.34,4.14,.11,1.34),
     fixture('west-counter','counter','Continuous sink run joining the living-edge peninsula','front-kitchen',.675,6.875,.65,2.25,{front:[1,0],drawers:true,joinedCounter:'kitchen-island'}),
     fixture('street-counter','counter','Cooking and drawer run on the closed street wall','front-kitchen',2.41,8.31,4.08,.62,{front:[0,-1],drawers:true}),
-    fixture('east-counter','storage','Full-height pantry and appliance cabinets','front-kitchen',4.10,7.31,.63,1.36,{front:[-1,0],height:2.48,pantry:true}),
-    fixture('kitchen-fridge','fridge','Refrigerator in the tall cabinet wall','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0]}),
-    fixture('kitchen-fridge-top','wallCabinet','Storage over the refrigerator','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],baseHeight:1.95,height:.53,wallMounted:true}),
-    fixture('kitchen-wall-storage','wallCabinet','Closed storage above the street-wall cooking run','front-kitchen',2.10,8.47,2.70,.34,{front:[0,-1],baseHeight:1.48,height:.90,wallMounted:true}),
+    fixture('east-counter','storage','Ceiling-height pantry and appliance cabinets','front-kitchen',4.10,7.31,.63,1.36,{front:[-1,0],height:2.70,pantry:true,ceilingFitted:true,ceilingScribe:.05}),
+    fixture('kitchen-fridge','fridge','Refrigerator in the tall cabinet wall','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],height:1.88}),
+    fixture('kitchen-fridge-top','wallCabinet','Ceiling-height storage over the refrigerator','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],baseHeight:1.90,height:.80,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
+    fixture('kitchen-wall-storage','wallCabinet','Continuous ceiling-height storage above the cooking run','front-kitchen',2.41,8.47,4.08,.34,{front:[0,-1],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
+    fixture('kitchen-corner-storage','wallCabinet','Corner return connecting the cooking and sink-side storage','front-kitchen',.52,8.02,.34,.56,{front:[1,0],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
+    fixture('kitchen-sink-header','wallCabinet','Shallow storage above the sink window, clear of its frame','front-kitchen',.52,6.945,.34,1.59,{front:[1,0],baseHeight:2.40,height:.30,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
+    fixture('kitchen-sink-side-storage','wallCabinet','Closed side storage beside the sink window','front-kitchen',.52,5.95,.34,.40,{front:[1,0],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
+    fixture('kitchen-pantry-corner','wallCabinet','Corner bridge from the tall pantry to the cooking cupboards','front-kitchen',4.10,8.145,.63,.31,{front:[-1,0],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
     fixture('kitchen-island','counter','Connected peninsula with a wider refrigerator-side entrance','front-kitchen',1.45,5.325,2.20,.85,{height:.90,front:[0,1],variant:'social-peninsula',drawers:true,
       joinedCounter:'west-counter',waterfallEnds:[1],approaches:[[1.85,6.30],[3.15,5.325]]}),
     fixture('hob','hob','Cooktop on the closed street-wall worktop','front-kitchen',2.30,8.31,.78,.50,{hostId:'street-counter',front:[0,-1]}),
@@ -156,6 +160,7 @@ function groundPlan(proposed){
       'The kitchen opens through a 3.65 m span to living/dining. A 2.20 × 0.85 m peninsula joins the side-garden sink run, with its free end pulled back 0.55 m to give about 1.18 m beside the concealed chimney and refrigerator. The chimney remains intact behind matching removable cabinet panels; flue clearances, ventilation and inspection access need a coordinated detail.',
       'The hall-side stair partition becomes a 1.10 m timber slat guard, with a continuous handrail and the retained 1.13 m stair-access opening. The bathroom-side privacy wall remains solid. Guard fixings and the stair edge need a measured construction detail.',
       'One 1.42 m sink window looks into the side garden; the kitchen street window is closed for cabinetry. The kitchen does not touch the rear façade, so the full-width rear HST is retained and the open living/dining space gives the rear-garden outlook. Sink relocation and the closed window need coordinated services and façade design.',
+      'Fitted kitchen storage follows a 2.70 m cabinet line with a 50 mm ceiling scribe: the street-wall cupboards extend to both corners, shallow side returns frame the sink window, and an above-window cupboard starts at 2.40 m, above the 2.32 m window head. The refrigerator has a 20 mm modeled ventilation reveal; final appliance and flue service clearances follow the selected products and construction detail.',
       'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
       'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',
     ]:['The historical twin approach differs from the photo-informed present-day exterior. Door leaves, front screen details and the exact stair turn need a measured survey.'],
@@ -410,6 +415,57 @@ function garagePlan(settings){
   };
 }
 
+/** Furnish only the measured cellar remainder, never a parking lane. The
+ * shared conversion already lowers the complete basement display floor; this
+ * fit-out makes that assumption explicit for the two occupied side rooms. */
+function basementServiceFitOut(plan){
+  const left=Math.max(plan.garage.x1+.20,5.95),right=10.37,frontLeft=Math.max(plan.garage.x1+.20,7.08);
+  const gymWidth=right-left,technicalWidth=right-frontLeft;
+  if(gymWidth<2.90||technicalWidth<2.80)return {...plan,issues:[...plan.issues,
+    'The edited garage position leaves insufficient width for the illustrated plant/laundry and gym fit-out; those fittings are omitted rather than moved into the parking lanes.']};
+  const doorHeight=Math.min(2.05,plan.clearHeight-.04),walls=plan.walls.map(w=>{
+    if(w.id==='garage-right-lining')return {...w,openings:[...w.openings,
+      {...door(5.10,.90,'end',-1),offset:5.10-w.a[1],height:doorHeight,roomId:'basement-technical'}].map(({start,...o})=>o)};
+    if(/^east-cellar-crosswall(?:-right)?$/.test(w.id))return {...w,openings:[...w.openings,
+      {...door(8.55,.90,'end',1),offset:8.55-w.a[0],height:doorHeight,roomId:'basement-gym',alteration:'new-opening'}].map(({start,...o})=>o)};
+    return w;
+  });
+  const crosswall=plan.walls.find(w=>/^east-cellar-crosswall(?:-right)?$/.test(w.id));
+  const gym=room('basement-gym','Compact gym · bike, bench and mobility','gym',rect(left,.40,right,4.80),null,null,'Rubber exercise flooring');
+  const technical=room('basement-technical','Technical room · plant and laundry','utility',rect(frontLeft,5.20,right,8.60),null,null,'Utility tile');
+  const gymCentre=(left+right)/2,plantX=frontLeft+.37;
+  const fittings=[
+    fixture('gym-bike','exerciseBike','Compact indoor exercise bike','basement-gym',right-.52,1.65,.68,1.18,{front:[0,1],height:1.30,approach:[right-1.30,1.65]}),
+    fixture('gym-bench','exerciseBench','Low adjustable exercise bench','basement-gym',left+.80,1.70,.64,1.48,{front:[0,1],height:.55,approach:[left+1.55,1.70]}),
+    fixture('gym-weights','weightRack','Compact dumbbell rack','basement-gym',right-1.70,.68,1.16,.44,{front:[0,1],height:.78,approach:[right-1.70,1.35]}),
+    fixture('gym-mobility-mat','exerciseMat','Clear floor area for stretching and mobility','basement-gym',gymCentre,3.45,1.80,1.90,{height:.03,nonBlocking:true,activityZone:true}),
+    fixture('gym-mirror','mirror','Wall mirror above the exercise area','basement-gym',gymCentre,.435,Math.min(2.90,gymWidth-.50),.035,{front:[0,1],height:1.30,mountHeight:1.22,wallMounted:true}),
+    fixture('technical-plant','plantUnit','Hydraulic plant and hot-water cylinder allowance','basement-technical',plantX,7.08,.66,1.30,{front:[1,0],height:Math.min(1.95,plan.clearHeight-.12),approach:[plantX+1.05,7.08],serviceDepth:.90}),
+    fixture('technical-washer','washer','Front-loading washing machine','basement-technical',8.22,8.25,.60,.65,{front:[0,-1],height:.84,approach:[8.22,7.20]}),
+    fixture('technical-dryer','dryer','Side-by-side heat-pump dryer allowance','basement-technical',8.86,8.25,.60,.65,{front:[0,-1],height:.84,approach:[8.86,7.20]}),
+    fixture('technical-laundry-top','worktop','Continuous counter over the laundry pair','basement-technical',8.54,8.25,1.28,.65,{baseHeight:.88,height:.038,wallMounted:true}),
+    fixture('technical-sink-base','counter','Utility sink and cleaning cupboard','basement-technical',9.68,8.25,1.00,.65,{front:[0,-1],height:.90,drawers:true}),
+    fixture('technical-sink','sink','Deep utility sink','basement-technical',9.75,8.25,.62,.48,{front:[0,-1],hostId:'technical-sink-base',basins:1,approach:[9.68,7.20]}),
+    fixture('technical-wall-storage','wallCabinet','Closed laundry and cleaning storage','basement-technical',9.00,8.43,2.55,.32,{front:[0,-1],baseHeight:1.50,height:Math.min(.65,plan.clearHeight-1.60),wallMounted:true}),
+    fixture('technical-cleaning-storage','storage','Tall broom and cleaning cupboard','basement-technical',10.04,5.51,.58,.50,{front:[0,1],height:Math.min(2.12,plan.clearHeight-.12),approach:[10.04,6.45]}),
+  ];
+  const lighting=[gym,technical].map(r=>{const xs=r.polygon.map(p=>p[0]),zs=r.polygon.map(p=>p[1]);return{
+    id:r.id+'-ceiling',roomId:r.id,x:(Math.min(...xs)+Math.max(...xs))/2,z:(Math.min(...zs)+Math.max(...zs))/2,
+    height:plan.clearHeight-.13,intensity:5.5,distance:4.6,minStrength:.55,
+  };});
+  return {...plan,walls,rooms:[plan.rooms[0],gym,technical],fixtures:[...plan.fixtures,...fittings],interiorLights:lighting,
+    removedWalls:[...plan.removedWalls,...(crosswall?[sliceWall(crosswall,8.55,9.45,'-gym-opening','removed')]:[])],
+    basementFitOut:{kind:'plant-laundry-and-compact-gym',gymArea:gym.area,technicalArea:technical.area,
+      originalElevation:-2,originalClearHeight:1.70,proposedElevation:plan.elevation,proposedClearHeight:plan.clearHeight,
+      loweringBeyondGarage:true,garageLanesUnchanged:true,exercise:'Seated cycling, low bench work and floor mobility; no overhead lifting allowance.'},
+    issues:[...plan.issues,
+      `The non-garage cellar remainder provides a ${gymWidth.toFixed(2)} × 4.40 m gym (${gym.area.toFixed(2)} m²) and ${technicalWidth.toFixed(2)} × 3.40 m technical/laundry room (${technical.area.toFixed(2)} m²). Neither room occupies the two-car parking strip.`,
+      `These occupied rooms share the conversion floor at ${plan.elevation.toFixed(2)} m and ${plan.clearHeight.toFixed(2)} m modeled clear height. The original cellar has only 1.70 m at −2.00 m. Extending excavation and a new slab beneath the side rooms is an explicit proposal, not established structural feasibility; verify foundations, groundwater, ventilation and damp protection.`,
+      'A new 0.90 m door in the proposed garage lining links the stair-side approach, and a separate 0.90 m opening connects the technical room to the gym through the retained east crosswall, beyond the flue. The crosswall opening needs a designed lintel and load-path check. Stair and chimney footprints are retained, including their existing garage conflicts.',
+      'The gym uses a low bench, compact bike, dumbbell rack and clear floor mat. Its headroom does not include overhead lifting, jumping or a treadmill. Equipment dimensions and plant/laundry service spaces are fit-out allowances; final products, drainage, electrical supply, air paths and access must be coordinated.',
+    ]};
+}
+
 // Gross pitched envelope relative to the chord datum, before roof build-up or trusses.
 export function atticHeadroomAt(z){
   if(!Number.isFinite(z)||z<0||z>DEPTH)return 0;
@@ -438,7 +494,8 @@ export function getInteriorPlan({floor='ground',layout='renovation',styleId='cur
   const converted=floor==='basement'&&proposed&&garageVariant==='two-car';
   const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed),
     first:()=>firstPlan(proposed),attic:()=>atticPlan(proposed)};
-  const detail=builders[floor]();
+  const built=builders[floor]();
+  const detail=converted&&INTERIOR_COMPOSITIONS[styleId]?basementServiceFitOut(built):built;
   const {roof}=INTERIOR_DIMENSIONS,bay=floor==='first'?INTERIOR_DIMENSIONS.firstBay:INTERIOR_DIMENSIONS.bay;
   const bayRight=round(bay.x+bay.width),bayFront=round(DEPTH+bay.depth);
   const outline=floor==='ground'||floor==='first'?[[0,0],[WIDTH,0],[WIDTH,9],[bayRight,9],[bayRight,bayFront],[bay.x,bayFront],[bay.x,9],[0,9]]:rect(0,0,WIDTH,9);

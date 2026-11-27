@@ -3,19 +3,20 @@
  * local x/y; z is absolute PL-EVRF2007-NH elevation. No render-library dependency.
  * Samples and ideal opaque screens are a design study, not a site survey.
  */
-import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.36.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.36.0';
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.36.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.36.0';
-import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.36.0';
-import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.36.0';
-import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.36.0';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.36.0';
+import {screeningTreeVolumes,firstTreeIntersection} from './screening-trees.js?v=1.37.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.37.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.37.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.37.0';
+import {rectCorners,terraceStairs,rectanglesOverlap} from './layout.js?v=1.37.0';
+import {upperFloorPreset,upperFloorWindowPosition} from './viewpoints.js?v=1.37.0';
+import {PRIVACY_DEFAULTS,privacyStructureLayout,firstPrivacyIntersection} from './privacy-structures.js?v=1.37.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.37.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.36.0';
-import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.36.0';
-import {houseWindowAnchor} from './house-appearance.js?v=1.36.0';
-import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.36.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.37.0';
+import {terraceCoverLayout,terraceCoverIntersection,terraceCoverViewpoint} from './terrace-cover.js?v=1.37.0';
+import {houseWindowAnchor} from './house-appearance.js?v=1.37.0';
+import {contextBuildingEnvelope,contextEnvelopeIntersection} from './context-building-envelope.js?v=1.37.0';
+import {boundaryFenceLayout,firstBoundaryIntersection} from './boundary-fence.js?v=1.37.0';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   hedgeRear: 2.5, hedgeLeft: 2.5, hedgeRight: 2.5, hedgeFront: 0, hedgeInset: 0, hedgeFullPerimeter: false,
@@ -69,11 +70,37 @@ export function pointInPolygon(p, polygon) {
 
 function samePoint(a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1]) < EPS; }
 
-/** Existing terrain plus proposed fill, only within the rear garden. */
-export function gardenGroundAt(x, y, settings, data) {
+/** Original grade and the explicit whole-garden fill, before local detailing. */
+function ungradedGardenGroundAt(x, y, settings, data) {
   const fill = y >= data.site.rearMidpoint[1] - EPS && pointInPolygon([x, y], data.site.boundary)
     ? number(settings.gardenRaise) : 0;
   return terrainAt(x, y, data) + fill;
+}
+const plungeGradeCache=new WeakMap();
+function plungeGradeProfile(settings,data){
+  if(settings.summerPoolLayout!==true||settings.pavilionEnabled||(data.site.id||settings.siteId||'sternicza-11')!=='sternicza-11'||!(settings.gardenProgram||'').startsWith('spa'))return null;
+  const key=[settings.gardenProgram,number(settings.gardenRaise),settings.designStyle,settings.styleGardenLayout].join(':');
+  const cached=plungeGradeCache.get(data);if(cached?.key===key)return cached.profile;
+  const c=gardenProgram(settings,data).coldPlunge;if(!c?.sunken)return null;
+  const bounds=c.surroundBounds,nx=Math.ceil(bounds.width/.25),ny=Math.ceil(bounds.length/.25);
+  let low=Infinity,high=-Infinity;
+  for(let ix=0;ix<=nx;ix++)for(let iy=0;iy<=ny;iy++){
+    const z=ungradedGardenGroundAt(bounds.x+bounds.width*ix/nx,bounds.y+bounds.length*iy/ny,settings,data);low=Math.min(low,z);high=Math.max(high,z);
+  }
+  const profile={bounds,feather:1.2,groundZ:high,naturalLowZ:low,naturalHighZ:high};
+  plungeGradeCache.set(data,{key,profile});return profile;
+}
+
+/** Shared finished grade. Only the sunken plunge's small apron is locally
+ * levelled, with a smooth 1.2 m feather into the mapped garden. The water
+ * opening is still excavated by the normal terrain cutout; no trees move. */
+export function gardenGroundAt(x,y,settings,data){
+  const natural=ungradedGardenGroundAt(x,y,settings,data),profile=plungeGradeProfile(settings,data);
+  if(!profile)return natural;
+  const b=profile.bounds,dx=Math.max(b.x-x,0,x-b.x-b.width),dy=Math.max(b.y-y,0,y-b.y-b.length),distance=Math.max(dx,dy);
+  if(distance>=profile.feather||!pointInPolygon([x,y],data.site.boundary))return natural;
+  const t=1-distance/profile.feather,blend=t*t*(3-2*t);
+  return natural+(profile.groundZ-natural)*blend;
 }
 
 export function floorElevation(settings, data) {
@@ -138,11 +165,17 @@ export function spaLevels(settings={},data){
   result.firepit={groundZ:fg,floorZ:ff,rimZ:fg,
     steps:f.steps.map(step=>({...step,topZ:fg-step.depth})),seatZ:ff+f.seatHeight};
   const c=program.coldPlunge,cp=c.pad??.18;
-  const cr=edge?padGradeRange(footprintOf({x:c.x-cp,y:c.y-cp,width:c.width+2*cp,length:c.length+2*cp}),settings,data):null;
+  const cr=edge||c.sunken?padGradeRange(footprintOf(c.surroundBounds),settings,data):null;
   const cg=cr?.high??highest(c),cw=cg+c.waterOffset;
-  result.coldPlunge={groundZ:cg,baseZ:cg,rimZ:cg+c.height,waterZ:cw,bottomZ:cw-c.waterDepth,
+  result.coldPlunge={groundZ:cg,baseZ:cg,rimZ:cg+c.height,padTopZ:cg+.02,waterZ:cw,bottomZ:cw-c.waterDepth,
     steps:edge?[]:c.steps.map(step=>({...step,topZ:cg+step.height}))};
-  if(edge){
+  if(c.sunken){
+    // One flush surround and basin level serves the mesh, walking, cutaway
+    // and solar receivers. Excavation contains the shell; no raised tub or
+    // phantom access stair remains above this small finished stone apron.
+    Object.assign(result.coldPlunge,{padBaseZ:cr.low-.08,padTopZ:result.coldPlunge.rimZ,
+      entryGroundZ:gardenGroundAt(c.anchor[0],c.y-cp,settings,data),entryRiser:0,steps:[],grading:plungeGradeProfile(settings,data)});
+  }else if(edge){
     const entry=entryStepLevels(c.steps,result.coldPlunge.rimZ,settings,data);
     Object.assign(result.coldPlunge,{padBaseZ:cr.low-.08,steps:entry.steps,entryGroundZ:entry.approachZ,entryRiser:entry.riser});
   }
@@ -239,6 +272,8 @@ export function spaSurfaceAt(x,y,settings={},data){
   if(pointInPolygon([x,y],program.sauna.footprint))return {surface:'sauna',groundZ:levels.sauna.floorZ};
   const saunaStep=levels.sauna.entrySteps?.find(step=>pointInPolygon([x,y],step.footprint));
   if(saunaStep)return {surface:'sauna-entry',groundZ:saunaStep.topZ};
+  if(program.coldPlunge.sunken&&withinRect(x,y,program.coldPlunge.surroundBounds)&&!withinRect(x,y,program.coldPlunge.waterBounds))
+    return {surface:'plunge-entry',groundZ:levels.coldPlunge.padTopZ};
   if(['spa-pavilion','spa-edge','spa-compact','spa-screened','spa-grove','spa-aligned','spa-corner','spa-pool-grove'].includes(program.id)){
     const plungeStep=levels.coldPlunge.steps.find(step=>withinRect(x,y,step));
     if(plungeStep)return {surface:'plunge-entry',groundZ:plungeStep.topZ};
@@ -668,6 +703,7 @@ export function analyzeVisibility(observer, settings = {}, data, options = {}) {
   const trees = [...screeningTreeVolumes(s, data),...existingCanopyVolumes(s, data)];
   const saunaFaces=saunaOpaqueFaces(s,data);
   const privacyBoxes=privacyStructures(s,data).boxes.filter(box=>!options.excludePavilion||box.group!=='pavilion');
+  const boundary=boundaryFenceLayout(s,data);
   const cover=s.canopyEnabled?terraceCover(s,data):null;
   const pool=poolBounds(s,data),poolLevel=pool?spaLevels(s,data).pool:null;
   const poolEdges=poolEdgeBoxes(pool,poolLevel);
@@ -699,6 +735,7 @@ export function analyzeVisibility(observer, settings = {}, data, options = {}) {
       const tree = firstTreeIntersection(origin, target, trees);
       const sauna=saunaIntersection(origin,target,s,data,saunaFaces);
       const privacyStructure=firstPrivacyIntersection(origin,target,privacyBoxes);
+      const boundaryFence=firstBoundaryIntersection(origin,target,boundary);
       let buildingHit = null;
       for (const other of blockers) {
         if (other.id === block.id) continue;
@@ -713,11 +750,12 @@ export function analyzeVisibility(observer, settings = {}, data, options = {}) {
       if (tree) possible.push({ t: tree.t, type: tree.type || 'screening-tree', hit: tree });
       if (sauna) possible.push({t:sauna.t,type:'sauna',hit:sauna});
       if (privacyStructure) possible.push({t:privacyStructure.t,type:'privacy-structure',hit:privacyStructure});
+      if (boundaryFence) possible.push({t:boundaryFence.t,type:'boundary-fence',hit:boundaryFence});
       const first = possible.sort((a, b) => a.t - b.t)[0];
       const ray = { origin, target, blockId: block.id, blockLabel: block.label,
         kind: i < block.roofSampleCount ? 'roof' : i >= block.samples.length ? 'high-feature' : 'facade',
         visible: !first, blockedBy: first?.type || null, obstruction: first?.hit || null,
-        screen, canopy, tree, sauna, privacyStructure, poolRim, distance };
+        screen, canopy, tree, sauna, privacyStructure, boundaryFence, poolRim, distance };
       blockRays.push(ray); rays.push(ray);
       if (screen && !buildingHit) {
         worstRequiredHedge[screen.side] = Math.max(worstRequiredHedge[screen.side], screen.requiredHeight);
@@ -726,7 +764,7 @@ export function analyzeVisibility(observer, settings = {}, data, options = {}) {
         }
         // Keep the hedge-alone benchmark above unchanged. This second value
         // only describes the rays still needing a hedge after canopy/trees.
-        if (!canopy && !tree && !sauna && !privacyStructure && !poolRim) {
+        if (!canopy && !tree && !sauna && !privacyStructure && !boundaryFence && !poolRim) {
           remainingRequiredHedge[screen.side] = Math.max(remainingRequiredHedge[screen.side], screen.requiredHeight);
           remainingRequiredHedge.overall = Math.max(remainingRequiredHedge.overall, screen.requiredHeight);
         }
@@ -742,5 +780,5 @@ export function analyzeVisibility(observer, settings = {}, data, options = {}) {
   for (const ray of rays) if (ray.blockedBy) reasons[ray.blockedBy] = (reasons[ray.blockedBy] || 0) + 1;
   return { observer, total, visible, blocked, blockedPercent: total ? 100 * blocked / total : 0,
     byBlock, worstRequiredHedge, remainingRequiredHedge, rays, criticalRay, reasons,
-    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens, finite proposed and enabled existing canopy envelopes and modeled pergola/spa-screen members. Existing stems are reconstructed and receive no numerical screening credit. Dense pergola foliage is an explicit established-planting assumption. Hedge-alone requirements ignore added trees/canopy/privacy structures. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
+    method: 'Unweighted roof/facade sample rays from one eye; ideal opaque boundary screens, finite proposed and enabled existing canopy envelopes and modeled pergola/spa-screen members. Proposed fence and gate rays use the actual slats, frames and clear gaps. Existing stems are reconstructed and receive no numerical screening credit. Dense pergola foliage is an explicit established-planting assumption. Hedge-alone requirements ignore added trees/canopy/privacy structures. Not an area percentage or all-viewpoints/real-foliage guarantee.' };
 }
