@@ -1,21 +1,21 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.36.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.36.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.36.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.36.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.36.0';
-import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.36.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.36.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.36.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.36.0';
-import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.36.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.36.0';
-import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.36.0';
-import {upgradeSummerTreePreset} from './summer-garden.js?v=1.36.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.37.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.37.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.37.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.37.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.37.0';
+import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.37.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.37.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.37.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.37.0';
+import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.37.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.37.0';
+import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.37.0';
+import {restoreSummerTreePreset} from './summer-garden.js?v=1.37.0';
 
-import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.36.0';
-import {changePresentationSettings} from './studio-state.js?v=1.36.0';
+import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.37.0';
+import {changePresentationSettings} from './studio-state.js?v=1.37.0';
 
-export const STATE_VERSION = 32;
+export const STATE_VERSION = 33;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -118,7 +118,8 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     preset:'sofa',mode:'orbit',raiseNewHedges:true,canopyEnabled:false,removeGarage:true,showRays:false,showDimensions:true,includeHighFeatures:false,
     linkedHedges:false,hedgeFullPerimeter:hasFullPerimeterHedges,sunPathVisible:false,costUsePlanningAllowances:siteId===DEFAULT_SITE_ID,jacuzziOverflow:false,
     screeningTrees:Object.freeze([]),treeLeafMode:'auto',existingVegetation:siteId===DEFAULT_SITE_ID,existingCanopyAnalysis:siteId===DEFAULT_SITE_ID,existingLeafMode:'auto',gardenProgram:'classic',terraceCoverType:'canopy',designStyle:DEFAULT_DESIGN_STYLE,styleHouseFinish:false,styleGardenLayout:true,renderQuality:'auto',sceneMotion:true,
-    summerPoolLayout:siteId===DEFAULT_SITE_ID,jacuzziCentered:true,jacuzziMood:'aurora',walkNavigation:'free',...profile.defaults,siteId});
+    summerPoolLayout:siteId===DEFAULT_SITE_ID,jacuzziCentered:true,jacuzziMood:'aurora',walkNavigation:'free',
+    perimeterFenceEnabled:siteId===DEFAULT_SITE_ID,pedestrianGateOpen:true,garageGateOpen:true,...profile.defaults,siteId});
   const V29_DEFAULTS=Object.freeze({...DEFAULTS,summerPoolLayout:false,jacuzziCentered:false,hstOpen:0,sceneMotion:false,
     nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85,
     screeningTrees:siteId===DEFAULT_SITE_ID?STERNICZA_EXCELSA_TREES:DEFAULTS.screeningTrees});
@@ -189,7 +190,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(['aurora','lagoon','amber'].includes(input.jacuzziMood))out.jacuzziMood=input.jacuzziMood;
     if(['canopy','balcony'].includes(input.terraceCoverType))out.terraceCoverType=input.terraceCoverType;
     if(['spa-pool-grove','spa-corner','spa-aligned','spa-grove','spa-screened','spa-compact','spa-edge','spa','classic'].includes(input.gardenProgram))out.gardenProgram=input.gardenProgram;
-    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.privacyPergolaEnabled=false;out.privacyPergolaFoliage=false;out.spaScreensEnabled=false;out.pavilionEnabled=false;out.basementGarageEnabled=false;out.terraceCoverType='canopy';}
+    if(siteId!==DEFAULT_SITE_ID){out.gardenProgram='classic';out.privacyPergolaEnabled=false;out.privacyPergolaFoliage=false;out.spaScreensEnabled=false;out.pavilionEnabled=false;out.basementGarageEnabled=false;out.terraceCoverType='canopy';out.perimeterFenceEnabled=false;}
     if(out.pavilionEnabled)out.removeGarage=true;
     if(out.preset==='balcony'&&(!out.canopyEnabled||out.terraceCoverType!=='balcony')){out.preset='terrace';out.eyeHeight=1.65;}
     if(!hasFrontHedge){out.hedgeFront=0;if(out.preset==='front'){out.preset='garden';out.eyeHeight=1.65;}}
@@ -258,12 +259,12 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     // Older saved proposals keep their chosen pool and excavation locations.
     // Selecting a new renovation explicitly adopts its coordinated garden.
     if(version<29)next.styleGardenLayout=false;
-    // The requested left-edge pool occupies one former automatic tree slot.
-    // Relocate only a complete, recognized v30/v31 species preset; arbitrary
-    // edited trees, removed specimens and historical garden layouts stay put.
-    if(version>=30&&version<32&&siteId===DEFAULT_SITE_ID&&next.summerPoolLayout){
-      const relocated=upgradeSummerTreePreset(next.screeningTrees);
-      if(relocated)next.screeningTrees=relocated;
+    // Restore the owner's planting only when v32 contains a complete known
+    // automatic 1.36 relocation. Earlier presets are already at their original
+    // positions; a single manual move makes the entire custom layout literal.
+    if(version===32&&siteId===DEFAULT_SITE_ID&&next.summerPoolLayout){
+      const restored=restoreSummerTreePreset(next.screeningTrees);
+      if(restored)next.screeningTrees=restored;
     }
     return next;
   }
@@ -334,9 +335,6 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(restoreCurrentGarageProposal===true&&siteId===DEFAULT_SITE_ID&&version>=22&&version<=27)next.basementGarageEnabled=true;
     if(adoptResortUpdate&&version<30&&siteId===DEFAULT_SITE_ID){
       Object.assign(next,{summerPoolLayout:true,jacuzziCentered:true,hstOpen:1,sceneMotion:true});
-      const oldTrees=STERNICZA_EXCELSA_TREES;
-      if(next.screeningTrees.length===oldTrees.length&&next.screeningTrees.every((t,i)=>['typeId','x','y','height','crownBase','crownWidth','crownDepth','rotation','enabled','unitPrice'].every(k=>t[k]===oldTrees[i][k])))
-        next.screeningTrees=DEFAULTS.screeningTrees.map(t=>({...t}));
       for(const [key,old]of [['nightGardenIntensity',75],['nightPendantIntensity',80],['nightHedgeIntensity',85]])
         if(next[key]===old)next[key]=DEFAULTS[key];
     }

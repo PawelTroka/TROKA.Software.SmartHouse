@@ -1,18 +1,23 @@
 import assert from 'node:assert/strict';
-import {houseModelFrame} from '../src/house-model.js';
+import {houseModelFrame,getHouseFloorPlan} from '../src/house-model.js';
+import {containsPoint} from '../src/interior-geometry.js';
+import {GARAGE_DEFAULTS} from '../src/garage-options.js';
+import {applyPlanExterior} from '../src/plan-exterior.js';
 import {WALK_COMFORT} from '../src/walk-motion.js';
 
 const VIEWS=Object.freeze([
   // A step into the living room keeps the connected sink end and concealed
   // chimney together in the fixed walking lens; the closer kitchen spawn
   // cuts the chimney out of the frame.
-  Object.freeze({id:'kitchen-connection',room:'front-kitchen',x:3.15,z:3.5,eye:1.57,yaw:-2.89,pitch:-.15}),
-  Object.freeze({id:'open-stair-guard',room:'hall',x:5.15,z:5.55,eye:1.57,yaw:Math.PI,pitch:-.18}),
+  Object.freeze({id:'kitchen-storage-connection',floor:'ground',room:'front-kitchen',x:3.15,z:3.5,eye:1.57,yaw:-2.89,pitch:-.05}),
+  Object.freeze({id:'open-stair-guard',floor:'ground',room:'hall',x:5.15,z:5.55,eye:1.57,yaw:Math.PI,pitch:-.18}),
+  Object.freeze({id:'compact-gym',floor:'basement',room:'basement-gym',roomSpawn:true,yaw:-.50,pitch:-.18}),
+  Object.freeze({id:'plant-laundry',floor:'basement',room:'basement-technical',roomSpawn:true,yaw:-1.95,pitch:-.16}),
 ]);
 const degrees=radians=>radians*180/Math.PI;
 const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
 
-/** Two daylight screenshots through the existing room selector, Share URL,
+/** Four daylight screenshots through the existing room selector, Share URL,
  * custom observer and walking controls. No renderer handles or private state.
  *
  * Call after the desktop exports, before the caller reloads its saved share
@@ -25,7 +30,7 @@ const angleDifference=(target,current)=>((target-current+540)%360+360)%360-180;
  */
 export async function captureOpenLivingViews(page,{
   shot,walking,openInteriors,style='warm-minimal',date='2026-06-21',
-  timeout=120000,maxDurationMs=240000,includePlan=false,restore=false,
+  timeout=120000,maxDurationMs=420000,includePlan=false,restore=false,
 }={}){
   assert.equal(typeof shot,'function');assert.equal(typeof walking,'function');assert.equal(typeof openInteriors,'function');
   const started=Date.now(),deadline=started+maxDurationMs;
@@ -90,8 +95,9 @@ export async function captureOpenLivingViews(page,{
   const original={url:restoreUrl,style:await q('#designStyle').inputValue(),
     date:await q('#sun-date').inputValue(),time:await q('#sun-time').inputValue()};
   assert.equal(new URL(restoreUrl).searchParams.get('site'),'sternicza-11');
+  const captureSettings={...GARAGE_DEFAULTS,designStyle:style,basementGarageEnabled:true,garageProgress:100};
   await navigate(restoreUrl,{designStyle:style,interiorView:'plan',interiorEnabled:false,interiorFloor:'ground',
-    interiorFurniture:true,interiorChanges:false,walkNavigation:'free',sceneMotion:false,mode:'orbit'});
+    ...captureSettings,interiorFurniture:true,interiorChanges:false,walkNavigation:'free',sceneMotion:false,mode:'orbit'});
   await waitMode('orbit');
   if(await q('#sun-controls').getAttribute('open')===null)await q('#sun-controls > summary').click({timeout:remaining()});
   if(await q('#sun-date').inputValue()!==date){
@@ -107,41 +113,58 @@ export async function captureOpenLivingViews(page,{
   assert.equal(response.ok(),true,'The public site source must load');
   const data=await response.json(),floorHeight=Number(await q('#floorHeight-value').inputValue());
   const frame=houseModelFrame(data,{floorHeight});assert.ok(frame);
+  captureSettings.floorHeight=floorHeight;
+  const basementPlan=getHouseFloorPlan({floor:'basement',settings:captureSettings,data:applyPlanExterior(data,captureSettings)});
+  assert.ok(basementPlan.basementFitOut,'The public source and selected garage proposal must contain both basement rooms');
   const report={style,daylight,original,restoreUrl,views:[],plan:null,restored:false};
   for(const view of VIEWS){
     remaining();
     await openInteriors();
     assert.equal(await field('canvas').locator('canvas').count(),0,'Plan-only room selection must not create another WebGL context');
-    if(await field('floor').inputValue()!=='ground')await field('floor').selectOption('ground',{timeout:remaining()});
+    if(await field('floor').inputValue()!==view.floor)await field('floor').selectOption(view.floor,{timeout:remaining()});
     await field('room').selectOption(view.room,{timeout:remaining()});
     assert.equal(await field('room').inputValue(),view.room);
     assert.equal(await field('style').inputValue(),style);
-    if(includePlan&&view.id==='kitchen-connection'){
+    if(includePlan&&view.id==='kitchen-storage-connection'){
       await field('plan').locator('svg').waitFor({state:'visible',timeout:remaining()});
       report.plan=`ground-${style}-open-living-renovation-plan`;
       await shot(report.plan,'#interior-host');
     }
+    if(view.id==='compact-gym'){
+      await field('plan').locator('svg').waitFor({state:'visible',timeout:remaining()});
+      report.basementPlan=`basement-${style}-gym-technical-plan`;
+      await shot(report.basementPlan,'#interior-host');
+    }
     await field('enter').click({timeout:remaining()});
-    const spawn=await walking('ground',{timeout:remaining(),settled:true});
-    const p=frame.toSite(view.x,view.z,view.eye);
-    const end=frame.toSite(view.x+Math.sin(view.yaw)*Math.cos(view.pitch),
-      view.z-Math.cos(view.yaw)*Math.cos(view.pitch),view.eye+Math.sin(view.pitch));
+    const spawn=await walking(view.floor,{timeout:remaining(),settled:true});
+    const local=view.roomSpawn?frame.toLocal(spawn.position[0],spawn.position[2],spawn.position[1]):[view.x,view.z,view.eye];
+    const p=frame.toSite(...local);
+    const end=frame.toSite(local[0]+Math.sin(view.yaw)*Math.cos(view.pitch),
+      local[1]-Math.cos(view.yaw)*Math.cos(view.pitch),local[2]+Math.sin(view.pitch));
     const yaw=degrees(Math.atan2(-(end[0]-p[0]),end[1]-p[1])),pitch=degrees(view.pitch);
-    const customUrl=await navigate(await share(),{mode:'eye',preset:'custom',observerX:p[0],observerY:p[1],
-      eyeHeight:view.eye,fov:70,interiorEnabled:false,interiorView:'plan'});
-    await waitMode('eye');
-    const beforeWalk=await frameCount();
-    await q('#viewer button[data-mode="walk"]').click({timeout:remaining()});
-    await walking('ground',{timeout:remaining(),settled:true,afterFrame:beforeWalk});
+    let customUrl=null;
+    if(!view.roomSpawn){
+      customUrl=await navigate(await share(),{mode:'eye',preset:'custom',observerX:p[0],observerY:p[1],
+        eyeHeight:view.eye,fov:70,interiorEnabled:false,interiorView:'plan'});
+      await waitMode('eye');
+      const beforeWalk=await frameCount();
+      await q('#viewer button[data-mode="walk"]').click({timeout:remaining()});
+      await walking(view.floor,{timeout:remaining(),settled:true,afterFrame:beforeWalk});
+    }
     const {drags,afterFrame}=await turnTo(yaw,pitch);
-    await walking('ground',{timeout:remaining(),settled:true,afterFrame});
+    await walking(view.floor,{timeout:remaining(),settled:true,afterFrame});
     const actual=await pose();
-    assert.equal(actual.floor,'ground');assert.equal(actual.navigation,'free');assert.equal(actual.fov,70);
-    assert.ok(Math.hypot(actual.position[0]-p[0],actual.position[2]-p[1])<.015,'Public custom observer must reach the intended interior location');
-    assert.ok(Math.abs(actual.altitude-(frame.floorZ+view.eye))<.015,
-      'The camera must be 1.57 m above the living floor, rather than above the garden terrain');
+    assert.equal(actual.floor,view.floor);assert.equal(actual.navigation,'free');assert.equal(actual.fov,70);
+    assert.ok(Math.hypot(actual.position[0]-p[0],actual.position[2]-p[1])<.015,'Public camera controls must retain the intended interior location');
+    const eye=view.roomSpawn?1.57:view.eye,elevation=view.floor==='basement'?basementPlan.elevation:0;
+    assert.ok(Math.abs(actual.altitude-(frame.floorZ+elevation+eye))<.015,
+      'The camera must be 1.57 m above its actual room floor');
+    if(view.roomSpawn){
+      const room=basementPlan.rooms.find(r=>r.id===view.room);assert.ok(room);
+      assert.ok(containsPoint(room.polygon,...local.slice(0,2)),'The public room spawn must lie inside the selected basement room');
+    }
     await canvas().scrollIntoViewIfNeeded({timeout:remaining()});
-    const name=`ground-${style}-${view.id}-daylight`;
+    const name=`${view.floor}-${style}-${view.id}-daylight`;
     await shot(name,'#scene-host canvas');
     report.views.push({name,room:view.room,requestedLocal:view,requestedSite:{x:p[0],y:p[1],altitude:p[2],yaw,pitch},
       actual,spawn,drags,customUrl});

@@ -1,6 +1,6 @@
 // Short design notes for the actual furnishing and lighting recipes. They
 // describe a proposal, not additional rooms, measured planting or quoted work.
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.36.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
 const intent = (headline, retreat, gathering, evening, signature) => Object.freeze({
   headline, retreat, gathering, evening, signature,
 });

@@ -74,6 +74,33 @@ test('the exterior retains all interior furniture vertices and exactly one canon
   }finally{assembled?.dispose();if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
 
+test('the full house keeps the basement gym and technical fittings while leaving both vehicles to the garage renderer',()=>{
+  const previous=globalThis.document;globalThis.document=canvasDocument();let assembled,inside,finishes,tools;
+  try{
+    const options={...settings,designStyle:'warm-minimal',basementGarageEnabled:true},data=applyPlanExterior(source,options);
+    assembled=createSharedHouseModel(data,options,{terrainAt});
+    const plan=getHouseFloorPlan({floor:'basement',settings:options,data});
+    assert.equal(plan.fixtures.filter(f=>f.kind==='car').length,2);
+    const propsOnly={...plan,fixtures:plan.fixtures.filter(f=>f.kind!=='car')};
+    tools=modelTools();finishes=interiorMaterials(options.designStyle);
+    inside=buildArchitecture(propsOnly,{showFurniture:true,showOutdoor:false,showExterior:false},tools,finishes);
+    const actual=vertices(assembled.root.getObjectByName('shared-house-floor-basement')),expected=vertices(inside.groups.props);
+    assert.ok(expected.size>1000,'The occupied cellar must contain the modeled exercise and plant equipment');
+    for(const [point,count]of expected)assert.ok((actual.get(point)||0)>=count,'Basement fitting point '+point+' is absent from the whole-house model');
+    const basementLights=assembled.root.getObjectByName('basement-task-lighting');
+    assert.equal(basementLights.children.length,2);assert.ok(basementLights.children.every(light=>light.intensity>0&&!light.castShadow));
+    assert.equal(assembled.root.getObjectByName('interior-task-lighting').children.length,3);
+    // Neither placeholder car is left in the full-house props. Their upper
+    // cabins would otherwise add vertices well inside the two parking bays.
+    const vertexInsideCar=[];
+    const floor=assembled.root.getObjectByName('shared-house-floor-basement');
+    floor.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;
+      for(let i=0;i<p.count;i++)if(p.getY(i)>.85&&p.getY(i)<1.35&&p.getZ(i)>1.40&&p.getZ(i)<4.10&&p.getX(i)>1&&p.getX(i)<5.50)vertexInsideCar.push(i);
+    });
+    assert.equal(vertexInsideCar.length,0,'Live garage vehicles must not acquire duplicate interior placeholder geometry');
+  }finally{inside?.dispose();assembled?.dispose();finishes?.dispose();tools?.dispose();if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+
 test('HST updates move the actual pane batches without rebuilding the house or its fixed tracks',()=>{
   const previous=globalThis.document;globalThis.document=canvasDocument();let assembled,clone;
   try{

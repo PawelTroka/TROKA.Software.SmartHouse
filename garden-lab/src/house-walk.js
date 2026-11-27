@@ -1,14 +1,15 @@
-import {getHouseFloorPlan,houseModelFrame} from './house-model.js?v=1.36.0';
-import {containsPoint,wallPanels,ringBounds} from './interior-geometry.js?v=1.36.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.36.0';
-import {stairTreads} from './stair-surfaces.js?v=1.36.0';
-import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.36.0';
-import {gardenGroundAt,terrainAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.36.0';
-import {terraceStairs} from './layout.js?v=1.36.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.36.0';
-import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.36.0';
-import {houseAppearanceLayout} from './house-appearance.js?v=1.36.0';
-import {entranceAccessLayout} from './entrance-access.js?v=1.36.0';
+import {getHouseFloorPlan,houseModelFrame} from './house-model.js?v=1.37.0';
+import {containsPoint,wallPanels,ringBounds} from './interior-geometry.js?v=1.37.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.37.0';
+import {stairTreads} from './stair-surfaces.js?v=1.37.0';
+import {hstPanelLayout,balconyPanelLayout} from './hst-system.js?v=1.37.0';
+import {gardenGroundAt,terrainAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.37.0';
+import {terraceStairs} from './layout.js?v=1.37.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.37.0';
+import {garageLayout,garageVehiclePose} from './garage-ramp.js?v=1.37.0';
+import {houseAppearanceLayout} from './house-appearance.js?v=1.37.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.37.0';
+import {boundaryFenceLayout} from './boundary-fence.js?v=1.37.0';
 
 const EPS=1e-6,RADIUS=.16,MAX_STEP=.245;
 const rectangle=(x0,z0,x1,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
@@ -99,6 +100,11 @@ export function createWalkNavigation(data,settings={}){
     }
   }
   updateVehicles();
+  // Fence bays and gate leaves are physical barriers only in Respect walls &
+  // steps. Free exploration continues to use the same unrestricted surfaces.
+  for(const member of boundaryFenceLayout(settings,data).solids)solids.push({
+    id:member.id,polygon:localRing(member.footprint),bottom:relativeHeight(member.baseZ),top:relativeHeight(member.topZ),outdoor:true,
+  });
   const house=supported?houseAppearanceLayout(data,settings,{garageLayout:garage}):null;
   const entrance=house?.supported?entranceAccessLayout(house,{groundAt:(x,y)=>terrainAt(x,y,data)}):null;
   for(const step of entrance?.stairs?.steps||[])siteSurface(step.id,step.footprint,step.topZ,{stair:true,floor:'ground'});
@@ -109,6 +115,8 @@ export function createWalkNavigation(data,settings={}){
   outdoorBlocks.push({id:'terrace-jacuzzi',polygon:localRing(rectangle(tub.x0,tub.y0,tub.x1,tub.y1))});
   if(program.active){
     if(program.coldPlunge)outdoorBlocks.push({id:'cold-plunge',polygon:localRing(footprint(program.coldPlunge))});
+    if(program.coldPlunge?.sunken)siteSurface('cold-plunge-flush-surround',footprint(program.coldPlunge.surroundBounds),levels.coldPlunge.padTopZ,
+      {holes:[localRing(footprint(program.coldPlunge.waterBounds))]});
     const fire=program.firepit;
     if(fire&&levels.firepit){
       siteSurface('fire-lounge',footprint(fire),levels.firepit.floorZ);
@@ -125,7 +133,7 @@ export function createWalkNavigation(data,settings={}){
   if(pool&&levels.pool)water('pool-water',footprint(pool),levels.pool.waterZ,.25);
   const wb=tub.waterBounds;
   water('jacuzzi-water',rectangle(wb.x0,wb.y0,wb.x1,wb.y1),tub.waterZ,.35,'ground');
-  if(program.active&&program.coldPlunge&&levels.coldPlunge)water('cold-plunge-water',footprint(program.coldPlunge),levels.coldPlunge.waterZ,.32);
+  if(program.active&&program.coldPlunge&&levels.coldPlunge)water('cold-plunge-water',footprint(program.coldPlunge.waterBounds),levels.coldPlunge.waterZ,.32);
   function surfaceCandidates(x,z,unrestricted=false){
     const result=surfaces.filter(s=>x>=s.bounds.x0&&x<=s.bounds.x1&&z>=s.bounds.z0&&z<=s.bounds.z1&&inside(s.polygon,x,z)&&!(s.holes||[]).some(h=>inside(h,x,z)));
     const world=toWorld(x,z,0),site=[world[0],world[2]];

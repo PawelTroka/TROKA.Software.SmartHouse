@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.36.0';
-import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.36.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.37.0';
+import {beveledBoxGeometry,cushionGeometry,cushionPipingGeometry,wovenPanelGeometry} from './detailed-geometry.js?v=1.37.0';
 
 // Furniture stays anchored to the metric footprint in the shared plan. Local
 // +z is the chair/cabinet front. A table footprint describes the top itself.
@@ -318,7 +318,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
   }
   const kitchenSinkSize=(w,d)=>[Math.min(.66,w*.78),Math.min(.42,d*.78)];
   function kitchen(g,f,w,d,tall=false) {
-    [g,w,d]=faceFront(g,f,w,d);const h=tall?(f.height||1.95):(f.height||.9);
+    [g,w,d]=faceFront(g,f,w,d);const h=tall?(f.height||1.95):(f.height||.9),wallUnit=f.kind==='wallCabinet'&&!f.panelOnly;
     if(renovated||f.panelOnly){
       const kind=design.cabinet,body=kind==='louvred'?painted:['cane','slatted','shoji','midcentury','framed'].includes(kind)?m.wood:kind==='steel'?m.frame:kind==='gloss'?m.lacquer||m.cabinet:m.cabinet;
       const sink=!tall&&(plan.fixtures||[]).find(item=>item.kind==='sink'&&item.hostId===f.id);
@@ -327,17 +327,17 @@ export function furnishInterior(parent,plan,tools,finishes) {
         // They are thin, backed faces, not a solid cupboard occupying it.
         box(g,body,0,h/2,d/2-.012,w,h,.018);
         if(f.plainPanel)return;
-      }else box(g,m.frame,0,.06,-.012,w*.94,.12,d*.88);
+      }else if(!wallUnit)box(g,m.frame,0,.06,-.012,w*.94,.12,d*.88);
       if(!f.panelOnly&&sink){
         // A real cabinet shell leaves room for the recessed bowl. A solid
         // carcass would otherwise fill the worktop aperture just below its rim.
         box(g,body,0,.114,-.013,w,.032,d-.022);
         box(g,body,0,(h+.13)/2,-d/2+.009,w,h-.13,.018);
         for(const side of [-1,1])box(g,body,side*(w/2-.009),(h+.13)/2,-.013,.018,h-.13,d-.022);
-      }else if(!f.panelOnly){if(kind==='capsule')rounded(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022,.075);else box(g,body,0,(h+.09)/2,-.013,w,h-.09,d-.022);}
+      }else if(!f.panelOnly){const bottom=wallUnit?0:.09;if(kind==='capsule')rounded(g,body,0,(h+bottom)/2,-.013,w,h-bottom,d-.022,Math.min(.075,h*.16));else box(g,body,0,(h+bottom)/2,-.013,w,h-bottom,d-.022);}
       const n=Math.max(1,Math.round(w/(tall?.55:.65)));
       for(let i=0;i<n;i++){
-        const x=-w/2+(i+.5)*w/n,dw=w/n-.014,dh=h-(f.panelOnly?.012:.15),y=f.panelOnly?h/2:(h+.12)/2,z=d/2;
+        const x=-w/2+(i+.5)*w/n,dw=w/n-.014,dh=h-((f.panelOnly||wallUnit)?.012:.15),y=(f.panelOnly||wallUnit)?h/2:(h+.12)/2,z=d/2;
         if(f.drawers&&!tall){
           // Separate fronts give the working runs and island real drawer
           // reveals. The recessed rail/handle follows the selected finish.
@@ -361,7 +361,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
             else louvrePanel(g,x,y,z+.026,dw-.09,dh-.09);
           }
           if(kind==='shoji'){for(let k=1;k<4;k++)box(g,m.wood,x,y-dh/2+k*dh/4,z+.031,dw,.018,.018);box(g,m.wood,x,y,z+.032,.018,dh,.018);}
-          if(kind==='midcentury'){box(g,m.wood,x,y+.17,z+.026,dw,.023,.02);box(g,m.frame,x+dw*.32,y,z+.028,.018,dh*.22,.015);}
+          if(kind==='midcentury'){box(g,m.wood,x,y+Math.min(.17,dh*.20),z+.026,dw,.023,.02);box(g,m.frame,x+dw*.32,y,z+.028,.018,dh*.22,.015);}
           if(kind==='steel')for(const a of [-1,1])for(const b of [-1,1])oval(g,m.steel,x+a*dw*.40,y+b*dh*.43,z+.042,.015,.015,.011);
         }else if(kind==='fluted'){
           const flutes=Math.min(14,Math.max(4,Math.round(dw/.048)));for(let k=0;k<flutes;k++)cyl(g,m.wood,x-dw/2+(k+.5)*dw/flutes,y,z+.024,dw/flutes*.35,dw/flutes*.35,dh-.022,8);
@@ -372,10 +372,12 @@ export function furnishInterior(parent,plan,tools,finishes) {
         }
         if(!f.handleless&&['flush','capsule','gloss'].includes(kind))box(g,m.frame,x,h-.11,z+.018,dw*.75,.012,.013);
         else if(!f.handleless&&!['midcentury','shoji'].includes(kind)){
-          if(['shaker','framed','louvred'].includes(kind))cyl(group(g,x+dw*.30,tall?1.04:h-.14,z+.04,Math.PI/2),m.bronze,0,0,0,.018,.018,.028,12).rotation.x=Math.PI/2;
-          else box(g,kind==='steel'?m.steel:m.bronze,x+dw*.30,tall?1.03:h-.14,z+.043,.015,tall?.20:.09,.025);
+          const handleY=tall?(wallUnit?Math.min(.16,h*.5):Math.min(1.04,h-.10)):h-.14;
+          if(['shaker','framed','louvred'].includes(kind))cyl(group(g,x+dw*.30,handleY,z+.04,Math.PI/2),m.bronze,0,0,0,.018,.018,.028,12).rotation.x=Math.PI/2;
+          else box(g,kind==='steel'?m.steel:m.bronze,x+dw*.30,handleY,z+.043,.015,tall?Math.min(.20,h*.40):.09,.025);
         }
       }
+      if(f.ceilingScribe>0)box(g,body,0,h+f.ceilingScribe/2,-.006,w,f.ceilingScribe,d-.010);
       if(!tall){
         const island=['social-island','social-peninsula'].includes(f.variant),top=island&&!f.joinedCounter ? .028 : .038;
         if(sink){
@@ -532,11 +534,59 @@ export function furnishInterior(parent,plan,tools,finishes) {
     for(const a of [-1,1])for(const b of [-1,1]){const wheel=cyl(g,m.dark,a*w*.465,.32,b*d*.305,.315,.315,.13,24);wheel.rotation.z=Math.PI/2;const hub=cyl(g,m.steel,a*w*.505,.32,b*d*.305,.186,.186,.024,16);hub.rotation.z=Math.PI/2;}
     for(const a of [-1,1]) {rounded(g,m.glow,a*w*.294,.724,d*.468,w*.215,.089,.035,.015);rounded(g,m.pot,a*w*.3,.747,-d*.468,w*.185,.075,.035,.014);}
   }
+  function exerciseBike(g,w,d){
+    const rubber=m.rubber||m.dark;
+    for(const z of [-d*.36,d*.36]){rod(g,m.steel,[-w*.43,.085,z],[w*.43,.085,z],.026);for(const side of [-1,1])cyl(g,rubber,side*w*.43,.045,z,.044,.044,.065,12);}
+    rod(g,m.frame,[0,.14,-d*.32],[0,.14,d*.34],.038);
+    const wheel=cyl(g,rubber,0,.34,d*.15,.225,.225,.10,28);wheel.rotation.z=Math.PI/2;
+    for(const side of [-1,1]){const hub=cyl(g,m.steel,side*.055,.34,d*.15,.17,.17,.012,24);hub.rotation.z=Math.PI/2;}
+    rod(g,m.frame,[0,.18,d*.28],[0,.67,-d*.18],.043);rod(g,m.frame,[0,.18,-d*.30],[0,.67,-d*.18],.035);
+    rod(g,m.steel,[0,.61,-d*.18],[0,.98,-d*.25],.022);rounded(g,rubber,0,1.00,-d*.25,.26,.075,.24,.025);
+    rod(g,m.frame,[0,.17,d*.34],[0,1.15,d*.30],.027);
+    for(const side of [-1,1])rod(g,rubber,[0,1.14,d*.28],[side*w*.34,1.19,d*.16],.020);
+    const console=rounded(g,m.blackGlass,0,1.22,d*.29,.20,.11,.025,.009);console.rotation.x=-.25;
+    for(const side of [-1,1]){rod(g,m.steel,[0,.40,0],[side*w*.35,.40,side*.06],.015);box(g,rubber,side*w*.38,.40,side*.06,.14,.035,.085);}
+  }
+  function exerciseBench(g,w,d){
+    const rubber=m.rubber||m.dark;
+    for(const z of [-d*.34,d*.34]){rod(g,m.frame,[0,.09,z],[0,.39,z],.027);rod(g,m.frame,[-w*.43,.07,z],[w*.43,.07,z],.028);}
+    rod(g,m.steel,[0,.31,-d*.39],[0,.31,d*.39],.025);
+    rounded(g,rubber,0,.465,-d*.16,w*.74,.11,d*.61,.035);
+    rounded(g,rubber,0,.465,d*.31,w*.74,.11,d*.27,.035);
+    rod(g,m.steel,[0,.35,-d*.20],[0,.40,d*.12],.018);
+    for(const side of [-1,1])rod(g,m.frame,[side*w*.36,.12,-d*.39],[side*w*.36,.12,d*.39],.012);
+  }
+  function weightRack(g,w,d){
+    const rubber=m.rubber||m.dark;
+    for(const side of [-1,1]){rod(g,m.frame,[side*w*.41,.04,-d*.35],[side*w*.41,.63,d*.10],.023);rod(g,m.frame,[side*w*.41,.04,d*.36],[side*w*.41,.63,d*.10],.023);}
+    for(const y of [.32,.63]){
+      box(g,m.frame,0,y,0,w,.035,d*.79);
+      for(let i=0;i<3;i++){
+        const x=(i-1)*w*.29;rod(g,m.steel,[x-.095,y+.075,0],[x+.095,y+.075,0],.018);
+        for(const side of [-1,1]){const head=cyl(g,rubber,x+side*.10,y+.075,0,.068,.068,.055,8);head.rotation.z=Math.PI/2;}
+      }
+    }
+  }
+  function plantUnit(g,w,d,h){
+    const tankX=w*.23,tankR=Math.min(d*.41,w*.22),tankH=h-.18;
+    cyl(g,m.frame,tankX,.05,0,tankR*.88,tankR*.88,.10,24);
+    cyl(g,m.painted||m.ceramic,tankX,.10+tankH/2,0,tankR,tankR,tankH,32);
+    cyl(g,m.steel,tankX,.10+tankH,0,tankR*.96,tankR*.96,.035,28);
+    const unitX=-w*.29,unitW=w*.38,unitH=h*.63;
+    rounded(g,m.painted||m.ceramic,unitX,.13+unitH/2,0,unitW,unitH,d*.87,.026);
+    box(g,m.blackGlass,unitX,.13+unitH*.76,d*.442,unitW*.54,.11,.016);
+    for(let i=0;i<5;i++)box(g,m.frame,unitX,.22+i*.032,d*.444,unitW*.68,.009,.015);
+    for(const offset of [-.08,.08]){
+      rod(g,m.bronze,[unitX+offset,.13+unitH,-d*.30],[unitX+offset,h-.02,-d*.30],.012);
+      rod(g,m.bronze,[unitX+offset,h-.02,-d*.30],[tankX+offset,h-.02,-d*.30],.012);
+    }
+    box(g,m.frame,unitX,h-.02,-d*.30,unitW*.90,.035,.035);
+  }
   for(const f of plan.fixtures||[]) {
     let w=f.width,d=f.depth;if(!(w>0&&d>0))continue;
     let g=group(parent,f.x,f.kind==='wallCabinet'?(f.baseHeight||0):0,f.z,f.rotation||0);
     g.userData.fixtureId=f.id;g.userData.fixtureKind=f.kind;g.userData.interiorRecipe=design.id;
-    if(['desk','chair','armchair','fridge','nightstand','mirror','spaStep','bookcase'].includes(f.kind)&&f.front)[g,w,d]=faceFront(g,f,w,d);
+    if(['desk','chair','armchair','fridge','nightstand','mirror','spaStep','bookcase','washer','dryer','exerciseBike','exerciseBench','weightRack','plantUnit'].includes(f.kind)&&f.front)[g,w,d]=faceFront(g,f,w,d);
     else if(f.kind==='desk'&&d>w){g=group(g,0,0,0,Math.PI/2);[w,d]=[d,w];}
     if(f.kind==='sofa'&&f.front){if(f.shape?.toUpperCase()==='U'){const a=Math.atan2(f.front[0],f.front[1])-Math.PI/2;g=group(g,0,0,0,a);if(Math.abs(f.front[1])>.5)[w,d]=[d,w];}else [g,w,d]=faceFront(g,f,w,d);}
     switch(f.kind){
@@ -545,6 +595,12 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'diningTable':table(g,w,d,true,f);break;
       case 'coffeeTable':table(g,w,d,false);break;
       case 'rug':rounded(g,m.rug,0,.021,0,w,.018,d,.008);break;
+      case 'exerciseMat':{rounded(g,m.rubber||m.dark,0,.018,0,w,.018,d,.012);for(const side of [-1,1])box(g,m.slate,side*(w/2-.025),.028,0,.012,.002,d-.05);break;}
+      case 'exerciseBike':exerciseBike(g,w,d);break;
+      case 'exerciseBench':exerciseBench(g,w,d);break;
+      case 'weightRack':weightRack(g,w,d);break;
+      case 'plantUnit':plantUnit(g,w,d,f.height||1.95);break;
+      case 'worktop':rounded(g,m.stone,0,(f.baseHeight||.88)+(f.height||.038)/2,0,w,f.height||.038,d,.009);break;
       case 'ottoman':{const h=f.height||.36;rounded(g,m.wood,0,.085,0,w*.88,.15,d*.88,.025);rounded(g,m.fabric,0,h-.105,0,w,.21,d,.070);break;}
       case 'sideTable':{const h=f.height||.42;turned(g,m.wood,0,0,0,[[.13,.02],[.15,.05],[.065,h-.07]],1,1);cyl(g,m.stone,0,h-.022,0,w*.5,w*.5,.044,32);books(g,0,h+.004,0,w*.50);break;}
       case 'floorLamp':case 'tableLamp':shadedLamp(g,f,w,d);break;
@@ -559,7 +615,7 @@ export function furnishInterior(parent,plan,tools,finishes) {
       case 'sauna':if(f.variant==='heater'){rounded(g,m.frame,0,.30,0,w,.53,d,.035);for(let i=0;i<8;i++)oval(g,m.slate,Math.sin(i*2.4)*w*.29,.57,Math.cos(i*2.4)*d*.29,.079,.056,.082);}else sauna(g,w,d);break;
       case 'bench':bench(g,w,d);break;
       case 'car':car(g,w,d);break;
-      case 'mirror':{const y=f.mountHeight??1.52;if(d>w){box(g,m.bronze,0,y,0,w,.77,d);box(g,m.steel,-w*.52,y,0,.006,.73,d-.042);box(g,m.steel,w*.52,y,0,.006,.73,d-.042);}else{box(g,m.bronze,0,y,0,w,.77,d);box(g,m.steel,0,y,d*.52,w-.042,.73,.006);}break;}
+      case 'mirror':{const y=f.mountHeight??1.52,h=f.height||.77;if(d>w){box(g,m.bronze,0,y,0,w,h,d);box(g,m.steel,-w*.52,y,0,.006,h-.04,d-.042);box(g,m.steel,w*.52,y,0,.006,h-.04,d-.042);}else{box(g,m.bronze,0,y,0,w,h,d);box(g,m.steel,0,y,d*.52,w-.042,h-.04,.006);}break;}
       case 'towelRail':{const y=f.mountHeight??1.18;for(const sign of [-1,1])cyl(g,m.steel,sign*w*.455,y,0,.011,.011,.79,12);for(let i=0;i<8;i++)rod(g,m.steel,[-w*.455,y-.32+i*.092,0],[w*.455,y-.32+i*.092,0],.012);box(g,m.linen,-w*.13,y-.11,-d*.3,w*.39,.33,.019);break;}
       case 'plant':plant(g,0,0,0,Math.min(w,d)*.58);break;
       case 'tv':{let front=g,span=w,dep=d;if(d>w){front=group(g,0,0,0,-Math.PI/2);span=d;dep=w;}rounded(front,m.wood,0,.31,0,span,.48,dep,.031);box(front,m.dark,0,1.13,0,span*.91,Math.min(.84,span*.51),.055);box(front,m.blackGlass,0,1.13,.032,span*.884,Math.min(.81,span*.49),.01);break;}

@@ -21,7 +21,9 @@ const terrace=(d,s)=>resortTerraceLayout(d,s,jacuzziBounds(s,d),terraceStairs({.
 
 test('every renovation has an intentional garden composition; Current preserves its furniture',()=>{
   assert.deepEqual(Object.keys(RESORT_GARDEN_RECIPES).sort(),proposals.map(s=>s.id).sort());
-  assert.deepEqual(gardenFurniture(data,defaults),gardenProgram(defaults,data).furniture);
+  const {pathNetwork,...currentFurniture}=gardenFurniture(data,defaults);
+  assert.deepEqual(currentFurniture,gardenProgram(defaults,data).furniture);
+  assert.ok(pathNetwork.connections.every(c=>c.connected),'The shared current garden also receives the requested continuous paths');
   assert.deepEqual(terrace(data,defaults).items,[]);
   const signatures=proposals.map(style=>JSON.stringify(gardenFurniture(data,{...defaults,designStyle:style.id})));
   assert.equal(new Set(signatures).size,proposals.length,'The complete garden arrangements differ, not just their colours');
@@ -129,7 +131,7 @@ test('resort lights form a restrained bounded hierarchy and retain all independe
     const s={...defaults,designStyle:style.id},lighting=createGardenNightLighting(s,data,{style});
     try{
       const lights=lighting.group.children.filter(o=>o.isLight),r=RESORT_GARDEN_RECIPES[style.id];
-      assert.ok(lighting.lightCount<=27&&lighting.lightCount===lights.length);
+      assert.ok(lighting.lightCount<=30&&lighting.lightCount===lights.length);
       assert.ok(lights.filter(l=>l.userData.nightChannel==='hedge').length<=r.hedgeCount);
       assert.ok(lights.filter(l=>l.castShadow).length<=r.treeCount);
       const nominalPower=lights.reduce((v,l)=>v+l.userData.nominalIntensity,0);

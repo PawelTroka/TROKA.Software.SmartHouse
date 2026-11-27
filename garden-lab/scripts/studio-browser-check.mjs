@@ -7,10 +7,11 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {MINIMAL_STYLE_DEFINITIONS} from '../src/minimal-style-definitions.js';
+import {verifyGardenLiving} from './garden-living-browser-helpers.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const scenarioGroup=process.env.STUDIO_SCENARIO_GROUP||'all';
-if(!['all','styles','styles-minimal','controls','properties'].includes(scenarioGroup))throw new Error('Unknown STUDIO_SCENARIO_GROUP: '+scenarioGroup);
+if(!['all','styles','styles-minimal','controls','properties','garden-living'].includes(scenarioGroup))throw new Error('Unknown STUDIO_SCENARIO_GROUP: '+scenarioGroup);
 const runsGroup=group=>scenarioGroup==='all'||scenarioGroup===group||(group==='styles'&&scenarioGroup==='styles-minimal');
 const minimalIds=new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.id));
 const evidence=path.join(root,'test-results','studio',...(scenarioGroup==='all'?[]:[scenarioGroup]));
@@ -192,8 +193,8 @@ const gardenSettings=settings=>Object.fromEntries(Object.entries(settings).filte
 // Turning renovation off now restores Current for the whole house and garden.
 async function compareHouse(site,id){
   await details();
-  await el('[data-preset="garden"]').click();
-  await el('[data-look-yaw="180"]').click();
+  await el('[data-preset="garden"]').click({timeout:SCENE_TRANSITION_TIMEOUT});
+  await el('[data-look-yaw="180"]').click({timeout:SCENE_TRANSITION_TIMEOUT});
   const view=await cameraTime();
   assert.equal(view.mode,'eye');assert.equal(view.preset,'garden');assert.equal(view.yaw,'180');
   async function renderHouse(active){
@@ -233,6 +234,7 @@ try{
   page=await ctx.newPage();page.setDefaultTimeout(35000);page.on('pageerror',error=>report.errors.push(error.message));
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded'});await ready();
   let before;
+  if(runsGroup('garden-living'))await verifyGardenLiving({page,el,stats,sceneVisible,style,shot,exportDesign,check,report,details,settledInfo,ready});
   if(runsGroup('styles')){
   const options=await el('#designStyle option').evaluateAll(nodes=>nodes.map(n=>n.value));
   assert.equal(new Set(options).size,35);for(const id of minimalIds)assert.ok(options.includes(id),id+' must be selectable');assert.ok(options.includes('current'));assert.ok(options.includes('coastal'));assert.ok(options.includes('beach-house'));

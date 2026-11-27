@@ -1,7 +1,7 @@
 /** Proposed garden objects, in the mapped local metre frame. No height model. */
-import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.36.0';
-import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.36.0';
-import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.36.0';
+import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.37.0';
+import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.37.0';
+import {summerGardenEnabled,SUMMER_POOL,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.37.0';
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){
@@ -105,9 +105,13 @@ export function gardenProgram(settings={},data){
   firepit.viewpoint={x:firepit.x+2.2,y:firepit.y+3.88,eyeHeight:1.1,lookAt:[10.5,21]};
 
   const coldPlunge={id:'coldPlunge',label:'Cold plunge',x:edge?6.6:8.3,y:edge?35.55:33.2,width:2.2,length:1.3,
-    height:.75,waterOffset:.68,waterDepth:1.1,rim:.12,pad:.18};
+    sunken:summer,height:summer?.02:.75,waterOffset:summer?-.06:.68,waterDepth:1.1,rim:.12,pad:.18};
   coldPlunge.anchor=centre(coldPlunge);coldPlunge.footprint=rectRing(coldPlunge);
-  coldPlunge.steps=edge?Array.from({length:5},(_,i)=>({x:coldPlunge.x,y:coldPlunge.y-(5-i)*.3,width:1,length:.3})):
+  coldPlunge.waterBounds={x:coldPlunge.x+coldPlunge.rim,y:coldPlunge.y+coldPlunge.rim,
+    width:coldPlunge.width-2*coldPlunge.rim,length:coldPlunge.length-2*coldPlunge.rim};
+  coldPlunge.surroundBounds={x:coldPlunge.x-coldPlunge.pad,y:coldPlunge.y-coldPlunge.pad,
+    width:coldPlunge.width+2*coldPlunge.pad,length:coldPlunge.length+2*coldPlunge.pad};
+  coldPlunge.steps=summer?[]:edge?Array.from({length:5},(_,i)=>({x:coldPlunge.x,y:coldPlunge.y-(5-i)*.3,width:1,length:.3})):
     [{x:8.3,y:32.6,width:1,length:.3,height:.25},
       {x:8.3,y:32.9,width:1,length:.3,height:.5}];
   const furniture=summer?summerGardenFurniture(settings):{loungers:renovation?renovation.loungers.map(p=>[...p]):pavilion?[[9.7,35],[10.8,35]]:[[12.3,22.7],[13.4,22.7]],

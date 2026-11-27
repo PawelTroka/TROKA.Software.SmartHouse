@@ -50,7 +50,9 @@ test('new controls round-trip while historical shared designs retain their layou
   assert.deepEqual(model.decodeState(model.encodeState(old)),old);
   const adopted=model.migrateSavedState(old,29,{adoptResortUpdate:true});
   assert.equal(adopted.summerPoolLayout,true);assert.equal(adopted.jacuzziCentered,true);assert.equal(adopted.hstOpen,1);
-  assert.deepEqual(adopted.screeningTrees,model.DEFAULTS.screeningTrees);
+  assert.deepEqual(adopted.screeningTrees,old.screeningTrees,'Adopting the new layout preserves the earlier planting');
+  assert.notDeepEqual(adopted.screeningTrees,model.DEFAULTS.screeningTrees,'Current preset pines must not overwrite an earlier active design');
+  assert.deepEqual(model.decodeState(model.encodeState(adopted)),adopted);
   const custom={...old,nightGardenIntensity:19,screeningTrees:old.screeningTrees.map((t,i)=>({...t,crownWidth:i===0?2.7:t.crownWidth}))};
   const kept=model.migrateSavedState(custom,29,{adoptResortUpdate:true});
   assert.deepEqual(kept.screeningTrees,custom.screeningTrees);assert.equal(kept.nightGardenIntensity,19);

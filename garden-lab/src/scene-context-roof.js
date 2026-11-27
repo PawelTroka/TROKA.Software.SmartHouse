@@ -1,6 +1,6 @@
 /** Render the same discrete roof features used by local privacy and shade. */
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.36.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.37.0';
 
 function geometry(faces,roof=false){
   const result=new THREE.BufferGeometry(),convert=roof?toWorldRoofTriangle:toWorldTriangle;

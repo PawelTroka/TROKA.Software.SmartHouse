@@ -7,7 +7,7 @@ import {getSiteProfile} from '../src/sites.js';
 import {getScreeningLayouts} from '../src/screening-layouts.js';
 import {getTreeType,TREE_CATALOG} from '../src/tree-catalog.js';
 import {replaceTreeSpecies} from '../src/tree-selection.js';
-import {SUMMER_POOL,summerGardenFurniture,optimizedScreeningTrees} from '../src/summer-garden.js';
+import {SUMMER_POOL,summerGardenFurniture,optimizedScreeningTrees,LEGACY_SUMMER_TREE_POSITIONS} from '../src/summer-garden.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
 import {gardenFurniture,terraceStairs,rectCorners,rectanglesOverlap} from '../src/layout.js';
 import {footprintFit,overlapArea} from '../src/footprint-fit.js';
@@ -21,13 +21,13 @@ import {applyBuildingOverrides} from '../src/buildings.js';
 const source=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const data=applyPlanExterior(applyBuildingOverrides(source,DEFAULTS),DEFAULTS);
 
-test('fresh Sternicza has the long left-edge pool and inward-facing sunbeds, with old layouts still explicit',()=>{
+test('fresh Sternicza fits a shorter left-edge pool around the restored planting',()=>{
   assert.equal(DEFAULTS.summerPoolLayout,true);assert.equal(DEFAULTS.poolSunbedSides,1);
   assert.ok(DEFAULTS.screeningTrees.every(t=>t.typeId==='austrian-pine-tall'));
   assert.deepEqual(DEFAULTS.screeningTrees,optimizedScreeningTrees());
   for(const style of DESIGN_STYLES){
     const p=poolBounds({...DEFAULTS,designStyle:style.id},data);
-    assert.deepEqual([p.x,p.y,p.width,p.length],[SUMMER_POOL.x,SUMMER_POOL.y,3.5,8]);
+    assert.deepEqual([p.x,p.y,p.width,p.length],[15.5,19.8,3.2,6.5]);
   }
   const old=poolBounds({...DEFAULTS,summerPoolLayout:false,designStyle:'current'},data);
   assert.deepEqual([old.x,old.y,old.width,old.length],[14.52,26.3,3.5,8]);
@@ -39,7 +39,7 @@ test('fresh Sternicza has the long left-edge pool and inward-facing sunbeds, wit
 test('left-edge pool clears the actual rendered hedge and the fire lounge centres the rear garden',()=>{
   const p=poolBounds(DEFAULTS,data),programme=gardenProgram(DEFAULTS,data),tub=jacuzziBounds(DEFAULTS,data);
   const gap=closestBoundary(rectCorners(p,p.coping),data,'left').distance;
-  assert.ok(gap>=1.4&&gap<=1.45,'The coping hugs the left edge with the hedge retained');
+  assert.ok(gap>=1.3&&gap<=1.4,'The coping hugs the left edge with the hedge retained');
   const material=new THREE.MeshStandardMaterial();
   const hedge=createHedgeVegetation(hedgeSegments(DEFAULTS,data).filter(s=>s.side==='left'),{
     groundAt:(x,y,s)=>hedgeGroundAt(x,y,s.side,DEFAULTS,data,s.groundZone),
@@ -48,7 +48,7 @@ test('left-edge pool clears the actual rendered hedge and the fire lounge centre
   try{
     const b=new THREE.Box3().setFromObject(hedge);
     const foliageGap=b.min.x-(p.x+p.width+p.coping);
-    assert.ok(foliageGap>.25&&foliageGap<.40,'Rendered foliage leaves a narrow clear edge beside the coping');
+    assert.ok(foliageGap>.20&&foliageGap<.30,'Rendered foliage leaves a narrow clear edge beside the coping');
   }finally{hedge.traverse(o=>o.geometry?.dispose());material.dispose();}
   assert.ok(Math.abs(programme.firepit.anchor[0]-(tub.x0+tub.x1)/2)<.01,'The fire and jacuzzi share the house axis');
   const rearY=Math.max(...data.site.boundary.map(p=>p[1]));
@@ -63,6 +63,9 @@ test('left-edge pool and all optional sunbed sides keep the stair route, spa roo
     'At least one metre remains between the bottom stair and pool coping');
   const broad={...DEFAULTS,terraceWidth:10.77,canopyWidth:10.77},broadData=applyPlanExterior(source,broad);
   const broadStairs=terraceStairs(broadData.site.terrace,broad.terraceDepth,terraceGroundReference(broad,broadData).drop,broad,broadData);
+  const broadTerrace={...broadData.site.terrace,length:broad.terraceDepth};
+  assert.ok(closestFootprints(rectCorners(p,p.coping),rectCorners(broadTerrace)).distance>.20,'The coping remains clear of the full-width terrace');
+  assert.ok(closestFootprints([[18,28]],rectCorners(p,p.coping)).distance>=1.4,'The original nearer pine keeps its trunk soil clearance');
   assert.ok(closestFootprints(rectCorners(p,p.coping),rectCorners(broadStairs)).distance>=1,
     'The full-width renovated deck also retains the one-metre exit route');
   assert.equal(footprintFit(rectCorners(p,p.coping),data.site.boundary).location,'inside');
@@ -70,7 +73,7 @@ test('left-edge pool and all optional sunbed sides keep the stair route, spa roo
     rectCorners(programme.coldPlunge,.24),...programme.coldPlunge.steps.map(s=>rectCorners(s))];
   for(let sides=1;sides<=3;sides++){
     const f=summerGardenFurniture({poolSunbedSides:sides});assert.equal(f.loungerSides.length,sides);
-    assert.equal(f.sunbeds.length,[3,5,7][sides-1]);
+    assert.equal(f.sunbeds.length,[2,3,4][sides-1]);
     assert.deepEqual(f.loungers,f.sunbeds.map(b=>[b.x,b.y]));
     for(const r of f.sunbeds){
       assert.equal(footprintFit(rectCorners(r,1),data.site.boundary).location,'inside');
@@ -78,9 +81,9 @@ test('left-edge pool and all optional sunbed sides keep the stair route, spa roo
       assert.ok(obstacles.every(o=>overlapArea(rectCorners(r,.1),o)<1e-8));
       assert.ok(r.x+r.width<p.x+p.width,'No sunbed is trapped between the water and boundary hedge');
     }
-    assert.ok(f.sunbeds.slice(0,3).every(b=>b.back==='east'&&b.x+b.width<p.x-p.coping),
-      'The primary row faces west into the open garden from the inward long pool edge');
-    const last=f.sunbeds[2];
+    assert.ok(f.sunbeds.slice(0,2).every(b=>b.back==='north'&&b.width===.78&&b.length===2&&b.x+b.width<p.x-p.coping),
+      'The narrow primary chaises run parallel to the long pool edge on its garden side');
+    const last=f.sunbeds[1];
     assert.ok(closestFootprints(rectCorners(last),programme.firepit.outerFootprint).distance>=1,
       'An open approach remains between the sunbed row and central fire lounge');
   }
@@ -89,7 +92,7 @@ test('left-edge pool and all optional sunbed sides keep the stair route, spa roo
 test('every renovation style retains selected sunbeds and dining without outdoor kitchens or blocked paths',()=>{
   for(const style of DESIGN_STYLES.filter(s=>s.id!=='current'))for(const sides of [1,2,3]){
     const s={...DEFAULTS,designStyle:style.id,poolSunbedSides:sides},f=gardenFurniture(data,s);
-    assert.equal(f.resort.items.filter(i=>i.kind==='lounger'||i.kind==='daybed').length,[3,5,7][sides-1],style.id);
+    assert.equal(f.resort.items.filter(i=>i.kind==='lounger'||i.kind==='daybed').length,[2,3,4][sides-1],style.id);
     assert.equal(f.diningVisible,true,`${style.id} dining is fitted`);
     assert.equal(f.resort.kitchen,null,`${style.id} has no outdoor kitchen`);
     assert.equal(gardenProgram(s,data).renovation.kitchen,undefined);
@@ -108,30 +111,25 @@ test('every renovation style retains selected sunbeds and dining without outdoor
   }
 });
 
-test('one species change installs its own calculated boundary positions and valid stock dimensions',()=>{
+test('species presets restore 1.35 positions and species changes preserve customized planting',()=>{
   const original=optimizedScreeningTrees();original[0].x=8;original[0].y=24;original[0].unitPrice=61000;
   const snapshot=structuredClone(original);
-  const programme=gardenProgram({...DEFAULTS,poolSunbedSides:3},data);
-  const reserved=[rectCorners(programme.pool,programme.pool.coping),programme.firepit.outerFootprint,
-    programme.sauna.footprint,rectCorners(programme.coldPlunge,programme.coldPlunge.pad),
-    rectCorners(programme.furniture.dining),...programme.furniture.sunbeds.map(b=>rectCorners(b)),
-    ...programme.sauna.entrySteps.map(st=>st.footprint),...programme.coldPlunge.steps.map(st=>rectCorners(st))];
   for(const type of TREE_CATALOG){
     const changed=replaceTreeSpecies(original,type.id,null,{siteId:'sternicza-11',optimized:true});
-    assert.deepEqual(changed.map(t=>[t.x,t.y]),optimizedScreeningTrees(type.id).map(t=>[t.x,t.y]));
+    assert.deepEqual(changed.map(t=>[t.x,t.y]),original.map(t=>[t.x,t.y]),`${type.id} keeps custom positions`);
     assert.deepEqual(changed.map(t=>t.id),original.map(t=>t.id));
     assert.ok(changed.every(t=>t.typeId===type.id&&t.unitPrice===0&&t.height===getTreeType(type.id).dimensions.height));
-    const volumes=screeningTreeVolumes({...DEFAULTS,screeningTrees:changed},data);
-    assert.ok(volumes.every(v=>v.plantable),type.id);
-    for(const tree of changed){
-      const p=[[tree.x,tree.y]],distance=Math.min(closestBoundary(p,data,'left').distance,closestBoundary(p,data,'rear').distance);
-      assert.ok(distance>=1.1&&distance<=3.7,`${type.id} stays in the boundary band`);
-      assert.ok(reserved.every(r=>closestFootprints(p,r).distance>=1-1e-7),`${type.id} leaves one metre around fixed features and every optional sunbed`);
-    }
+    const preset=optimizedScreeningTrees(type.id);
+    assert.deepEqual(preset.map(t=>[t.x,t.y]),LEGACY_SUMMER_TREE_POSITIONS[type.id]);
+    const chosen=replaceTreeSpecies(optimizedScreeningTrees(),type.id,null,{siteId:'sternicza-11',optimized:true});
+    assert.deepEqual(chosen.map(t=>[t.x,t.y]),LEGACY_SUMMER_TREE_POSITIONS[type.id],'Explicit species changes still switch an unedited preset');
   }
   assert.deepEqual(original,snapshot,'Species presets never mutate a saved garden');
   const one=replaceTreeSpecies(original,'white-fir-9m',original[0].id,{siteId:'sternicza-11',optimized:true});
   assert.equal(one[0].x,8,'Individual edits keep manual placement');
+  const nordmann=optimizedScreeningTrees('nordmann-fir-11m');
+  const conflict=screeningTreeVolumes({...DEFAULTS,screeningTrees:nordmann},data).find(t=>!t.plantable);
+  assert.ok(conflict&&conflict.warnings.some(w=>w.includes('pool')),'The original Nordmann conflict stays visible; it is not silently relocated');
 });
 
 test('other properties do not acquire the Sternicza pool or species defaults',()=>{

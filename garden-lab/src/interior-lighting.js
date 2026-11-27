@@ -7,11 +7,12 @@ export function createInteriorTaskLights(specs,color,{limit=3}={}){
   const lamps=specs.slice(0,Math.max(0,Math.min(3,limit))).map(spec=>{
     const light=new THREE.PointLight(color,0,spec.distance,2);light.name='task-light-'+spec.id;
     light.position.set(spec.x,spec.height+(spec.elevation||0),spec.z);light.castShadow=false;
-    light.userData.taskIntensity=spec.intensity;root.add(light);return light;
+    light.userData.taskIntensity=spec.intensity;
+    light.userData.minStrength=Math.max(0,Math.min(1,Number(spec.minStrength)||0));root.add(light);return light;
   });
   return {root,update(strength){const factor=Math.max(0,Math.min(1,Number.isFinite(strength)?strength:0));
-    for(const light of lamps)light.intensity=light.userData.taskIntensity*factor;
-    root.visible=factor>.001;
+    for(const light of lamps)light.intensity=light.userData.taskIntensity*Math.max(factor,light.userData.minStrength);
+    root.visible=lamps.some(light=>light.intensity>.001);
   },get count(){return lamps.length;},dispose(){root.removeFromParent();root.clear();}};
 }
 

@@ -3,11 +3,11 @@
  * Clearances are between finished footprints and the actual mapped parcel
  * segments. These are concept-model values, not surveyed construction setbacks.
  */
-import {footprintFit} from './footprint-fit.js?v=1.36.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.36.0';
-import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.36.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.36.0';
-import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.36.0';
+import {footprintFit} from './footprint-fit.js?v=1.37.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.37.0';
+import {gardenGroundAt, floorElevation, terraceGroundReference, jacuzziBounds, spaLevels, hedgeSegments, frontHedgeLayout, boundaryAccessLayout, terraceCover} from './geometry.js?v=1.37.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.37.0';
+import {applyBuildingOverrides,footprintCentroid} from './buildings.js?v=1.37.0';
 
 const EPS=1e-9;
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
@@ -263,7 +263,7 @@ export function gardenDimensions(settings={},data){
       anchor:[c.x+c.width*.7,c.y+c.length*.6,levels.coldPlunge.rimZ+.15],planText:`water ${formatDimension(c.waterDepth)}`,sceneText:null,
       planAnchor:[c.x+c.width/2,c.y+c.length/2],priority:3});
     addProposalGap('cold-plunge-boundary','cold-plunge',rect(c,finite(c.pad,.18)),'rear','Cold plunge outer pad to mapped rear parcel boundary');
-    if(Number.isFinite(levels.coldPlunge.entryGroundZ)){
+    if(levels.coldPlunge.steps?.length&&Number.isFinite(levels.coldPlunge.entryGroundZ)){
       const first=levels.coldPlunge.steps[0],rise=levels.coldPlunge.rimZ-levels.coldPlunge.entryGroundZ;
       addVertical('cold-plunge-entry-rise','cold-plunge','rise',[first.x-.15,first.y],levels.coldPlunge.entryGroundZ,levels.coldPlunge.rimZ,{description:'Cold plunge approach total rise',datum:'outer stair approach to plunge rim',
         planText:`entry +${formatDimension(rise)}`,sceneText:null,priority:3});

@@ -1,6 +1,6 @@
 // Physical interior renovation choices. These are construction/furniture
 // archetypes, not paint aliases. Every choice stays inside the measured plan.
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.36.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.37.0';
 const recipe=(id,seating,chair,table,bed,cabinet,wall,ceiling,pendant,floor,wetFloor,wallSurface,upholstery,features)=>Object.freeze({
   id,seating,chair,table,bed,cabinet,wall,ceiling,pendant,floor,wetFloor,wallSurface,upholstery,features:Object.freeze(features),
 });
