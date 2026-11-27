@@ -8,6 +8,7 @@ import {guestAndOfficeFixtures,GYM_EQUIPMENT_REFERENCES} from '../src/living-fit
 import {getDesignStyle} from '../src/design-styles.js';
 import {getInteriorStyleRecipe} from '../src/interior-style-recipes.js';
 import {furnishInterior} from '../src/interior-furniture.js';
+import {buildArchitecture} from '../src/interior-architecture.js';
 import {modelTools,ringBounds} from '../src/interior-geometry.js';
 import {walkGeometry} from '../src/interior-navigation.js';
 import {drawInteriorPlan} from '../src/interior-plan-view.js';
@@ -19,9 +20,10 @@ import {applyPlanExterior} from '../src/plan-exterior.js';
 const near=(a,b,tolerance=1e-5)=>assert.ok(Math.abs(a-b)<=tolerance,`${a} differs from ${b}`);
 const byId=(plan,id)=>plan.fixtures.find(f=>f.id===id);
 const rooms=new Set(['guest-1','guest-2','guest-3','office']);
+const materialKeys='wall ceiling cut trim wood oak boards tiles stone slate frame dark blackGlass steel bronze cabinet fabric accent linen duvet rug ceramic water glass leaf leafLight pot paper art glow addition removed concrete brick plinth brickFloor earth cane lacquer spaWater spaGlow bubbles floor painted lampShade rubber';
+const testMaterials=()=>Object.fromEntries(materialKeys.split(' ').map(key=>[key,new THREE.MeshStandardMaterial()]));
 function furnished(plan,styleId){
-  const keys='wall ceiling cut trim wood oak boards tiles stone slate frame dark blackGlass steel bronze cabinet fabric accent linen duvet rug ceramic water glass leaf leafLight pot paper art glow addition removed concrete brick plinth brickFloor earth cane lacquer spaWater spaGlow bubbles floor painted lampShade rubber';
-  const m=Object.fromEntries(keys.split(' ').map(key=>[key,new THREE.MeshStandardMaterial()])),root=new THREE.Group(),tools=modelTools();
+  const m=testMaterials(),root=new THREE.Group(),tools=modelTools();
   furnishInterior(root,plan,tools,{m,style:getDesignStyle(styleId),interiorRecipe:getInteriorStyleRecipe(styleId)});root.updateMatrixWorld(true);
   return {root,dispose(){root.traverse(n=>{if(n.geometry&&!n.geometry.userData.sharedPrimitive)n.geometry.dispose();});tools.dispose();Object.values(m).forEach(v=>v.dispose());}};
 }
@@ -49,6 +51,29 @@ test('every guest receives a physically double-sized mattress, lift-up storage, 
       }
     }finally{model.dispose();}
   }
+});
+
+test('guest III can see the full TV face from both pillows with the actual room door open',()=>{
+  const styleId='warm-minimal',plan=getInteriorPlan({floor:'first',styleId}),tv=byId(plan,'guest3-tv'),m=testMaterials(),tools=modelTools();
+  const model=buildArchitecture(plan,{showFurniture:true,showStairs:true,showOutdoor:true,showCeiling:true},tools,
+    {m,architecturalFloor:m.boards,style:getDesignStyle(styleId),interiorRecipe:getInteriorStyleRecipe(styleId)});
+  try{
+    // Include the real open door, walls and guards, not only furniture. The
+    // original screen position passed a centre ray but its face crossed the
+    // guest III door leaf and was partly hidden from both sleeping positions.
+    model.root.position.y=0;model.updateVisibility('room',new THREE.Vector3(.80,.95,7.82));model.root.updateMatrixWorld(true);
+    const meshes=[];model.root.traverseVisible(n=>{if(n.isMesh)meshes.push(n);});
+    const normal=new THREE.Vector3(tv.screenFront[0],0,tv.screenFront[1]).normalize(),right=new THREE.Vector3(normal.z,0,-normal.x);
+    const centre=new THREE.Vector3(tv.x,tv.mountHeight,tv.z).addScaledVector(normal,.024);
+    for(const pillowZ of [7.48,8.16]){
+      const eye=new THREE.Vector3(.80,.95,pillowZ);
+      for(let row=0;row<5;row++)for(let column=0;column<9;column++){
+        const target=centre.clone().addScaledVector(right,(column/8-.5)*(tv.screenWidth-.04));target.y+=(row/4-.5)*(tv.screenHeight-.04);
+        const distance=eye.distanceTo(target),ray=new THREE.Raycaster(eye,target.clone().sub(eye).normalize(),0,distance+.03),hit=ray.intersectObjects(meshes,false)[0];
+        assert.ok(hit&&Math.abs(hit.distance-distance)<.03,`TV face [${column},${row}] is obstructed from pillow z=${pillowZ}`);
+      }
+    }
+  }finally{model.dispose();tools.dispose();Object.values(m).forEach(v=>v.dispose());}
 });
 
 test('the office toggles actual computer stations and a real emergency single, while preserving its full-length desk',()=>{

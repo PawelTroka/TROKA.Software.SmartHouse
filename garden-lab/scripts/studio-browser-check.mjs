@@ -104,10 +104,15 @@ async function shot(name,selector){
   }
   return image;
 }
-async function exportDesign(){
-  const result=page.waitForEvent('download');
-  await el('#export').click();
-  return JSON.parse(await readFile(await (await result).path(),'utf8'));
+async function exportDesign({timeout=SCENE_TRANSITION_TIMEOUT}={}){
+  // A preceding layout change can still be drawing in software WebGL when
+  // this control is scrolled into view. Bound both parts as a scene transition
+  // and attach both rejection handlers before either operation can time out.
+  const [download]=await Promise.all([
+    page.waitForEvent('download',{timeout}),
+    el('#export').click({timeout}),
+  ]);
+  return JSON.parse(await readFile(await download.path(),'utf8'));
 }
 async function pixelChange(a,b){
   const sizeA=sceneCaptures.get(a),sizeB=sceneCaptures.get(b);
