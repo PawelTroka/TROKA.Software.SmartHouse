@@ -97,6 +97,26 @@ function contains(x, y, ring) {
   return inside;
 }
 
+/** Illustrative boundary shrubs leave the full moving plunge-cover bay clear. */
+export function gardenShrubPlacements(settings,data) {
+  const placements=[];
+  const program=gardenProgram(settings,data),pool=poolBounds(settings,data),t=data.site.terrace;
+  const cover=program.active?spaLevels(settings,data).coldPlunge?.cover?.sweptBounds:null;
+  for(const {a,b} of hedgeSegments(settings,data)){
+    const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),n=Math.max(1,Math.floor(len/1.45));
+    for(let i=0;i<n;i++){
+      const u=(i+.5)/n,x=a[0]+dx*u-dy/len*.85,y=a[1]+dy*u+dx/len*.85;
+      if(!contains(x,y,data.site.boundary)||contains(x,y,data.site.house.footprint))continue;
+      if(x>pool.x-.75&&x<pool.x+pool.width+.75&&y>pool.y-.75&&y<pool.y+pool.length+.75)continue;
+      if(x>t.x-.6&&x<t.x+t.width+.6&&y>t.y-.6&&y<t.y+num(settings.terraceDepth,t.depth)+.6)continue;
+      if(program.active&&[program.sauna,program.firepit,program.coldPlunge].some(r=>x>r.x-.8&&x<r.x+r.width+.8&&y>r.y-.8&&y<r.y+r.length+.8))continue;
+      if(cover&&x>cover.x-.55&&x<cover.x+cover.width+.55&&y>cover.y-.55&&y<cover.y+cover.length+.55)continue;
+      placements.push([x,y,.35+(Math.sin(x+y)*.5+.5)*.3]);
+    }
+  }
+  return placements;
+}
+
 function geometryFromTriangles(triangles) {
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(triangles.flat(2), 3));
@@ -845,19 +865,7 @@ export function createScene(container, data, callbacks = {}) {
   }
 
   function addShrubs(group,settings) {
-    const placements=[];
-    const program=gardenProgram(settings,data),pool=poolBounds(settings,data),t=data.site.terrace;
-    for(const {a,b} of hedgeSegments(settings,data)){
-      const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),n=Math.max(1,Math.floor(len/1.45));
-      for(let i=0;i<n;i++){
-        const u=(i+.5)/n,x=a[0]+dx*u-dy/len*.85,y=a[1]+dy*u+dx/len*.85;
-        if(!contains(x,y,data.site.boundary)||contains(x,y,data.site.house.footprint))continue;
-        if(x>pool.x-.75&&x<pool.x+pool.width+.75&&y>pool.y-.75&&y<pool.y+pool.length+.75)continue;
-        if(x>t.x-.6&&x<t.x+t.width+.6&&y>t.y-.6&&y<t.y+num(settings.terraceDepth,t.depth)+.6)continue;
-        if(program.active&&[program.sauna,program.firepit,program.coldPlunge].some(r=>x>r.x-.8&&x<r.x+r.width+.8&&y>r.y-.8&&y<r.y+r.length+.8))continue;
-        placements.push([x,y,.35+(Math.sin(x+y)*.5+.5)*.3]);
-      }
-    }
+    const placements=gardenShrubPlacements(settings,data);
     if(svgMode){
       placements.filter((_,i)=>i%3===0).forEach(([x,y,h])=>{const shrub=new THREE.Mesh(new THREE.IcosahedronGeometry(1,0),mat.leaf);shrub.position.copy(point(x,y,gardenGroundAt(x,y,settings,data)+h*.48));shrub.scale.set(.53,h,.53);group.add(shrub);});
       return;
