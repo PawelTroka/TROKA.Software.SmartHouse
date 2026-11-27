@@ -1,10 +1,10 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.38.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.38.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.38.0';
-import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.38.0';
-import {guestAndOfficeFixtures,compactGymFixtures,LIVING_FIT_OUT_NOTES,GYM_EQUIPMENT_REFERENCES} from './living-fitouts.js?v=1.38.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.39.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.39.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.39.0';
+import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.39.0';
+import {guestAndOfficeFixtures,compactGymFixtures,LIVING_FIT_OUT_NOTES,GYM_EQUIPMENT_REFERENCES} from './living-fitouts.js?v=1.39.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -74,7 +74,7 @@ const rearLights=()=>[windowAt(2.96),windowAt(6.54)];
 function groundPlan(proposed){
   const shell=[
     ...mainSides(.35,roomLights()).map(w=>proposed&&w.id==='left-facade'?{
-      ...w,openings:[w.openings[0],{...windowAt(6.23,1.42,1.04,1.28),offset:6.23-w.a[1],
+      ...w,openings:[w.openings[0],{...windowAt(5.79,2.30,1.04,1.46),offset:5.79-w.a[1],
         service:'kitchen-sink',roomId:'front-kitchen',outlook:'side-garden'}].map(({start,...o})=>o),
     }:w),
     h('street-facade',.175,10.595,8.825,.35,[
@@ -121,8 +121,6 @@ function groundPlan(proposed){
     fixture('kitchen-fridge','fridge','Refrigerator in the tall cabinet wall','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],height:1.88}),
     fixture('kitchen-fridge-top','wallCabinet','Ceiling-height storage over the refrigerator','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],baseHeight:1.90,height:.80,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
     fixture('kitchen-wall-storage','wallCabinet','Continuous ceiling-height storage above the cooking run','front-kitchen',2.075,8.47,3.41,.34,{front:[0,-1],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
-    fixture('kitchen-corner-storage','wallCabinet','Corner return connecting the cooking and sink-side storage','front-kitchen',.52,8.02,.34,.56,{front:[1,0],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
-    fixture('kitchen-sink-side-storage','wallCabinet','Closed side storage beside the sink window','front-kitchen',.52,5.95,.34,.40,{front:[1,0],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
     fixture('kitchen-pantry-corner','storage','Full-height corner pantry continuing the tall cabinetry to the street wall','front-kitchen',4.10,8.315,.63,.65,{front:[-1,0],height:2.70,pantry:true,corner:true,ceilingFitted:true,ceilingScribe:.05}),
     fixture('kitchen-island','counter','Connected peninsula with a wider refrigerator-side entrance','front-kitchen',1.45,5.325,2.20,.85,{height:.90,front:[0,1],variant:'social-peninsula',drawers:true,
       joinedCounter:'west-counter',waterfallEnds:[1],approaches:[[1.85,6.30],[3.15,5.325]]}),
@@ -159,9 +157,10 @@ function groundPlan(proposed){
       'The right-wall TV is on the short solid panel in front of the side window. The 4 m terrace crosses the rear cellar areaway; provide retained access and drainage.',
       'The kitchen opens through a 3.65 m span to living/dining. A 2.20 × 0.85 m peninsula joins the side-garden sink run, with its free end pulled back 0.55 m to give about 1.18 m beside the concealed chimney and refrigerator. The chimney remains intact behind matching removable cabinet panels; flue clearances, ventilation and inspection access need a coordinated detail.',
       'The hall-side stair partition becomes a 1.10 m timber slat guard. Additional guards close the exposed slab edges and the space below the rising flight, while both flight sides have handrails and the actual stair entry and arrival ends stay open. The bathroom-side privacy wall remains solid. Guard fixings and the stair edge need a measured construction detail.',
-      'One 1.42 m sink window looks into the side garden; the kitchen street window is closed for cabinetry. The kitchen does not touch the rear façade, so the full-width rear HST is retained and the open living/dining space gives the rear-garden outlook. Sink relocation and the closed window need coordinated services and façade design.',
-      'Fitted kitchen storage follows a 2.70 m cabinet line with a 50 mm ceiling scribe. The cooking run meets a full-height corner pantry, closing the former recess beside the tall cabinets. The single sink window has side cupboards and an entirely clear wall above it. The refrigerator has a 20 mm modeled ventilation reveal; final appliance and flue service clearances follow the selected products and construction detail.',
+      'One 2.30 × 1.46 m picture window is centered over the sink and looks into the side garden. Both former window-side upper cabinets are removed, leaving a clean reveal and a clear wall above. The kitchen street window stays closed for cabinetry. The kitchen does not touch the rear façade; its open connection to living/dining retains the rear-garden outlook.',
+      'Fitted kitchen storage follows a 2.70 m cabinet line with a 50 mm ceiling scribe. The cooking run meets the retained full-height pantry corner, closing the former recess beside the tall cabinets. The refrigerator has a 20 mm modeled ventilation reveal; final appliance and flue service clearances follow the selected products and construction detail.',
       'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
+      'Both bathroom windows use clear picture glass with a 0.98 m sill and 1.44 m height. Their wider openings remain within the retained room boundaries and keep the vanity, mirror and towel-rail mounting bays solid.',
       'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',
     ]:['The historical twin approach differs from the photo-informed present-day exterior. Door leaves, front screen details and the exact stair turn need a measured survey.'],
   };
@@ -169,7 +168,10 @@ function groundPlan(proposed){
 
 function firstPlan(proposed,fitOut={}){
   const t=.34, shell=[
-    ...mainSides(t,roomLights()),
+    ...mainSides(t,roomLights()).map(w=>proposed&&w.id==='right-facade'?{
+      ...w,openings:[w.openings[0],{...windowAt(4.13,.96,1.05,1.30),offset:4.13-w.a[1],
+        service:'indoor-sauna',roomId:'sauna',outlook:'side-garden'},w.openings[1]].map(({start,...o})=>o),
+    }:w),
     h('street-left',.17,3.68,8.83,t,[windowAt(1.84)],exterior),
     h('street-right',7.09,10.60,8.83,t,[windowAt(7.68)],exterior),
     v('bay-left',3.68,8.83,10.51,t,[windowAt(9.39,.60)],exterior),
@@ -267,7 +269,9 @@ function firstPlan(proposed,fitOut={}){
       'A compact stair replaces the folding attic ladder in the renovation, with an enlarged opening beside the main stair. Its top reaches the central roof zone; structure, headroom and stair pitch require a measured design.',
       'The bay is printed 3.07 × 1.68 m inside. The proposed 10 cm wardrobe partition leaves about 3.07 × 1.59 m clear; retaining the full depth would move it about 9 cm toward the hall and require the adjoining door routes to be checked.',
       'Moving the new sauna partition 0.36 m into the bath gives approximately 1.28 × 1.30 m clear. A 1.20 × 1.24 m cabin footprint fits that allowance, but lining, heater separation, ventilation, service access and the selected product still need checking.',
+      'A 0.96 × 1.30 m clear picture window opens the indoor sauna to the side-garden view. Its 1.05 m sill stays above the bench and heater envelope; the final sauna glazing, edge detail and heater separation follow the selected cabin system.',
       'The bathroom has a 1.80 × 0.90 m hydromassage bath, 0.62 m high, with discreet jets instead of an outdoor-spa shell. The 1.20 × 1.62 m two-person shower, vanity and WC remain; the smaller bath opens a wider central route and needs no entry step.',
+      'The upper bathroom has larger clear picture windows with a 0.98 m sill and 1.44 m height. The side window stays beside the vanity mirror, and the new sauna window occupies its own separate wall bay.',
       'The old glazed kitchen/stair partition is closed for bathroom privacy. Verify filled spa loads on the historic timber floor, delivery access, equipment maintenance, waterproofing, humidity control and the exact product before installation.',
       'Tall bay wardrobes flank the new door instead of covering the side windows. The main bed faces the balcony, and guest room II keeps a low headboard below the side-window sill.',
       'The third rear door is new. Verify structure, independent support, waterproofing, guards and thresholds for the 4 m balcony.',

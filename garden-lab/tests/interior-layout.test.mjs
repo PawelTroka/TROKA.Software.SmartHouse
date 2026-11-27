@@ -58,7 +58,7 @@ test('all renovation styles keep one side-garden window centered over the sink a
     const windows=plan.walls.flatMap(w=>w.openings.filter(o=>o.type==='window'&&o.roomId==='front-kitchen').map(o=>({wall:w,opening:o})));
     assert.equal(windows.length,1,styleId+' has one kitchen window');
     const {wall,opening}=windows[0];assert.equal(wall.id,'left-facade');assert.equal(opening.outlook,'side-garden');
-    near(wall.a[1]+opening.offset+opening.width/2,sink.z);near(opening.width,1.42);
+    near(wall.a[1]+opening.offset+opening.width/2,sink.z);near(opening.width,2.30);near(opening.height,1.46);
     assert.equal(opening.panes,1);assert.equal(opening.transoms,0);assert.ok(opening.sill>1);
     const host=plan.fixtures.find(f=>f.id===sink.hostId);
     assert.ok(sink.x-sink.width/2>=host.x-host.width/2&&sink.x+sink.width/2<=host.x+host.width/2);

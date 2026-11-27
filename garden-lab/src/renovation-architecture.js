@@ -2,7 +2,7 @@
  * These opening records cut the actual walls in both views. Measurements of the
  * original footprint, roof, floors and stairs are never edited by a style.
  */
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.38.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.39.0';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,f=0)=>Number.isFinite(Number(x))?Number(x):f;
 const EPS=1e-7;
@@ -27,7 +27,7 @@ export const RENOVATION_ARCHITECTURES=Object.freeze({
   coastal:recipe('coastal','Paired divided-light French windows and deep white projecting casings around the garden HST.',2.08,2.07,.42,-.04,2,2,.083,3,2,.44,.25,.23,'french',1.10),
   'gdansk-brick':recipe('gdansk-brick','Narrow tall steel-divided windows and deep brick reveals around the full-width garden HST.',1.48,2.29,.26,.09,2,3,.047,3,2,.64,.30,.18,'steel-grid',1.02),
   'danish-midcentury':recipe('danish-midcentury','Long three-part timber picture windows, higher sills and a wide garden slider beneath a strong horizontal head.',3.02,1.71,.68,-.15,3,0,.068,1,4,.30,.21,.33,'ribbon',1.13),
-  'finnish-sauna':recipe('finnish-sauna','Quiet square picture windows, protected high bathroom lights and deep cedar reveals around the garden HST.',1.72,1.76,.67,.03,1,0,.071,2,2,.62,.35,.28,'picture',1.04),
+  'finnish-sauna':recipe('finnish-sauna','Quiet square picture windows, clear bathroom glazing and deep cedar reveals around the garden HST.',1.72,1.76,.67,.03,1,0,.071,2,2,.62,.35,.28,'picture',1.04),
   'riviera-deco':recipe('riviera-deco','Tall three-part windows, high transoms and stepped projecting heads above the garden HST.',2.28,2.22,.29,-.10,3,1,.062,3,3,.48,.31,.29,'deco-grid',1.16),
   'arts-and-crafts':recipe('arts-and-crafts','Broad paired timber casements with upper divided lights and crafted timber reveals around the garden HST.',2.18,1.98,.51,.07,2,2,.089,3,2,.60,.29,.26,'casement',1.08),
   'palm-springs':recipe('palm-springs','Very broad low-sill picture windows and one open garden frontage under long protective sun heads.',3.36,2.08,.24,.17,1,0,.045,1,4,.26,.20,.39,'picture',1.20),
@@ -150,12 +150,13 @@ export function renovatePlanOpenings(plan,{styleId='current'}={}){
     const source=wall.architectureSourceOpenings||wall.openings,length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]);
     const rooms=roomIntervals(plan,wall),fixtures=fixtureWallIntervals(plan,wall),openings=[],sign=directionSign([wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]]);
     for(const [i,o]of source.entries()){
-      if(o.service==='kitchen-sink'){
-        // The single kitchen window belongs to the sink layout, not the style's
-        // general glazing rhythm. Keep its clear span centered on the bowl and
-        // leave the newly closed street wall available for fitted storage.
+      if(['kitchen-sink','indoor-sauna'].includes(o.service)){
+        // Service windows are sized around the sink and sauna fit-out. They
+        // remain clear picture apertures in every renovation style, with the
+        // chosen frame finish but no cabinetry, privacy film or grid over them.
         openings.push({...o,...styleOpeningDetails(o,r.id),panes:1,transoms:0,
-          operation:'tilt-turn',roomId:'front-kitchen',source:'side-garden-sink-window-proposal'});
+          height:Math.min(o.height,wall.height-o.sill-.18),glazing:'clear',privacy:false,operation:'picture',
+          source:o.service==='kitchen-sink'?'side-garden-sink-window-proposal':'indoor-sauna-window-proposal'});
         continue;
       }
       if(o.type==='hst'){
@@ -175,15 +176,15 @@ export function renovatePlanOpenings(plan,{styleId='current'}={}){
       }
       if(!['window','balcony-door','door'].includes(o.type)){openings.push({...o});continue;}
       const centre=o.offset+o.width/2,room=rooms.filter(room=>centre>=room.lo-EPS&&centre<=room.hi+EPS).sort((a,b)=>(a.hi-a.lo)-(b.hi-b.lo))[0];
-      let bounds=retainPartitionJunctions(plan,wall,openingBounds(source,i,length,room),centre);const privacy=['bathroom','sauna'].includes(room?.kind);
+      let bounds=retainPartitionJunctions(plan,wall,openingBounds(source,i,length,room),centre);const bathroom=room?.kind==='bathroom';
       const access=o.type!=='window',entry=o.type==='door';
       const headboardSill=Math.max(0,...fixtures.filter(f=>f.lowHeadboard&&f.lo<bounds.hi&&f.hi>bounds.lo).map(f=>f.top+.08));
-      const sill=access?0:privacy?r.privacySill:room?.kind==='kitchen'?Math.max(1,r.sill):Math.max(r.sill,headboardSill);
-      const height=Math.min(entry?r.doorHeight:access?r.gardenHeight:privacy?.68:r.height,wall.height-sill-.18);
+      const sill=access?0:bathroom?.98:room?.kind==='kitchen'?Math.max(1,r.sill):Math.max(r.sill,headboardSill);
+      const height=Math.min(entry?r.doorHeight:access?r.gardenHeight:bathroom?1.44:r.height,wall.height-sill-.18);
       if(height<.35)continue;
       if(!entry)bounds=clearFixtureSpan(bounds,fixtures,sill,sill+height,centre);
       if(!bounds)continue;
-      const width=Math.min(entry?r.doorWidth:privacy?Math.min(1.1,r.width*.5):o.type==='balcony-door'?Math.min(2.45,r.width):r.width,
+      const width=Math.min(entry?r.doorWidth:bathroom?clamp(r.width,1.8,2.3):o.type==='balcony-door'?Math.min(2.45,r.width):r.width,
         entry?Math.max(0,Math.min(centre-bounds.lo,bounds.hi-centre)*2):bounds.hi-bounds.lo);
       if(width<.35)continue;
       // Keep the existing entry tied to its landing; other windows may shift
@@ -191,8 +192,8 @@ export function renovatePlanOpenings(plan,{styleId='current'}={}){
       const rank=source.filter(other=>sign*(other.offset+other.width/2-centre)<-EPS).length;
       const target=centre+(entry?0:r.shift*(rank%2?-1:1)*sign);
       const offset=clamp(target-width/2,bounds.lo,bounds.hi-width);
-      openings.push({...o,...styleOpeningDetails({...o,privacy},r.id),offset,width,sill,height,privacy,roomId:room?.roomId,
-        ...(privacy?{panes:1,transoms:0,operation:'clerestory'}:{})});
+      openings.push({...o,...styleOpeningDetails({...o,privacy:false},r.id),offset,width,sill,height,privacy:false,roomId:room?.roomId,
+        ...(bathroom?{panes:1,transoms:0,operation:'picture',source:'clear-bathroom-window-proposal'}:{})});
     }
     return {...wall,openings,architectureSourceOpenings:source.map(o=>({...o}))};
   });

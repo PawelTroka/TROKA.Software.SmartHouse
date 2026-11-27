@@ -13,13 +13,13 @@ const legacyTrees=(typeId='austrian-pine-tall')=>V136_SUMMER_TREE_POSITIONS[type
 const proposal=(screeningTrees=legacyTrees(),extra={})=>model.sanitizeState({
   ...model.DEFAULTS,screeningTrees,summerPoolLayout:true,gardenProgram:'spa-pool-grove',poolSunbedSides:3,...extra,
 });
-const oldLink=(state,version=32)=>{const p=new URLSearchParams(model.encodeState(state));p.set('v',String(version));return p.toString();};
+const oldLink=(state,version=32)=>{const p=new URLSearchParams(model.encodeState(state));p.set('v',String(version));p.set('poolSunbedSides',String(state.poolSunbedSides));return p.toString();};
 
-test('schema 34 starts with the compact historical grove and resolves current links by property',()=>{
-  assert.equal(STATE_VERSION,34);
-  assert.equal(model.DEFAULTS.poolSunbedSides,1);
+test('schema 35 starts with the boundary screening pine and resolves current links by property',()=>{
+  assert.equal(STATE_VERSION,35);
+  assert.equal(model.DEFAULTS.poolSunbedSides,2);
   assert.equal(resolveSiteId('?site=sternicza-11','#v=34&site=nadmorska-17'),'nadmorska-17');
-  assert.deepEqual(model.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[14.2,32.5],[17.6,34.9]]);
+  assert.deepEqual(model.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[19.3,32.25],[17.6,34.9]]);
   assert.deepEqual(model.decodeState(model.encodeState(model.DEFAULTS)),model.DEFAULTS);
 });
 

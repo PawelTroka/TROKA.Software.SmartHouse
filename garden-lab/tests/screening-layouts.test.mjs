@@ -13,11 +13,11 @@ const korzData=JSON.parse(readFileSync(new URL('../data/korzeniowskiego-40.json'
 const sternicza=createStateModel(getSiteProfile('sternicza-11',sterniczaData));
 const korz=createStateModel(getSiteProfile('korzeniowskiego-40',korzData));
 
-test('fresh Sternicza restores Austrian pines in the earlier close grove while Korzeniowskiego stays tree-free',()=>{
+test('fresh Sternicza returns the nearest Austrian pine to the left boundary while Korzeniowskiego stays tree-free',()=>{
   assert.equal(sternicza.DEFAULTS.gardenProgram,'spa-pool-grove');
   assert.equal(korz.DEFAULTS.gardenProgram,'classic');
   assert.deepEqual(sternicza.DEFAULTS.screeningTrees,STERNICZA_SUMMER_TREES);
-  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[14.2,32.5],[17.6,34.9]]);
+  assert.deepEqual(sternicza.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[19.3,32.25],[17.6,34.9]]);
   assert.ok(sternicza.DEFAULTS.screeningTrees.every(t=>t.typeId==='austrian-pine-tall'&&t.height===9.5&&t.crownWidth===5&&t.crownDepth===5));
   assert.deepEqual(korz.DEFAULTS.screeningTrees,[]);
   assert.deepEqual(sternicza.sanitizeState().screeningTrees,sternicza.DEFAULTS.screeningTrees);
@@ -27,7 +27,7 @@ test('fresh Sternicza restores Austrian pines in the earlier close grove while K
   const edgeTrees=sternicza.DEFAULTS.screeningTrees.map((tree,i)=>i===0?{...tree,x:19.3,y:30.2}:tree);
   assert.ok(screeningTreeVolumes({...sternicza.DEFAULTS,screeningTrees:edgeTrees},sterniczaData).some(volume=>!volume.crownInside),'Moving a broad crown to the edge still reports its actual overhang');
   const defaultLayout=getScreeningLayouts('sternicza-11','summer')[0];
-  assert.match(defaultLayout.note,/earlier rear-left grove/);
+  assert.match(defaultLayout.note,/other two stay in place/);
   assert.match(defaultLayout.note,/overhang/i);
   assert.deepEqual(sternicza.decodeState('v=29&site=sternicza-11').screeningTrees,STERNICZA_EXCELSA_TREES);
   const reference=getScreeningLayouts('sternicza-11').find(layout=>layout.id==='reference-pines');

@@ -1,0 +1,396 @@
+{
+  "target": "PCK3 / building-9",
+  "facadeSpacing": 0.25,
+  "method": "The public named jacuzzi preset and three additional fixed spa positions, using the same mapped building, registered house, existing vegetation, terrain, hedges and finite purchased-size tree crowns as the app. Only pine-2 moves; its stock and both other pines are fixed.",
+  "limitations": "Facade sample counts are geometric screening estimates, not visible area. Ideal dense crown volumes cannot guarantee continuous real foliage. PCK3 remains partly visible. Crown overhang remains explicit; the illustrative trunk-to-coping gap is not a certified root-ball or excavation clearance.",
+  "before": [
+    {
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "id": "pine-1",
+      "x": 13,
+      "y": 34.1
+    },
+    {
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "id": "pine-2",
+      "x": 14.2,
+      "y": 32.5
+    },
+    {
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "id": "pine-3",
+      "x": 17.6,
+      "y": 34.9
+    }
+  ],
+  "after": [
+    {
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "id": "pine-1",
+      "x": 13,
+      "y": 34.1
+    },
+    {
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "id": "pine-2",
+      "x": 19.3,
+      "y": 32.25
+    },
+    {
+      "typeId": "austrian-pine-tall",
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0,
+      "id": "pine-3",
+      "x": 17.6,
+      "y": 34.9
+    }
+  ],
+  "studies": [
+    {
+      "id": "original-finish-default",
+      "style": "current",
+      "terraceWidth": 8.5,
+      "terraceDepth": 4,
+      "terraceCoverType": "canopy",
+      "canopyEnabled": true,
+      "evidence": {
+        "sourceData": {
+          "site-data.json": {
+            "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+          },
+          "sternicza-surrounding-nature.json": {
+            "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+          },
+          "sternicza-neighbor-roofs.json": {
+            "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+          }
+        },
+        "state": "v=35&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A13%2C%22y%22%3A34.1%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A14.2%2C%22y%22%3A32.5%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A17.6%2C%22y%22%3A34.9%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&gardenProgram=spa-pool-grove",
+        "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+        "terrace": {
+          "x": 5.358610661552147,
+          "y": 18.117475217542932,
+          "width": 8.5,
+          "depth": 4
+        },
+        "rearMidpoint": [
+          9.608610661552147,
+          18.117475217542932
+        ]
+      },
+      "views": [
+        {
+          "id": "jacuzzi-seated-preset",
+          "observer": {
+            "x": 9.608610661552147,
+            "y": 20.117475217542932,
+            "z": 4.33755850309423,
+            "eyeHeight": 0.7,
+            "surface": "floor"
+          },
+          "before": {
+            "blocked": 3978,
+            "visible": 1236,
+            "total": 5214,
+            "blockedPercent": 76.2946
+          },
+          "after": {
+            "blocked": 4893,
+            "visible": 321,
+            "total": 5214,
+            "blockedPercent": 93.8435
+          }
+        },
+        {
+          "id": "jacuzzi-water-eye",
+          "observer": {
+            "x": 9.608610661552147,
+            "y": 20.117475217542932,
+            "z": 3.9225585030942294,
+            "eyeHeight": 0.32,
+            "surface": "jacuzzi-water"
+          },
+          "before": {
+            "blocked": 4042,
+            "visible": 1172,
+            "total": 5214,
+            "blockedPercent": 77.5221
+          },
+          "after": {
+            "blocked": 4954,
+            "visible": 260,
+            "total": 5214,
+            "blockedPercent": 95.0134
+          }
+        },
+        {
+          "id": "jacuzzi-east-seat",
+          "observer": {
+            "x": 10.438610661552147,
+            "y": 20.117475217542932,
+            "z": 4.33755850309423,
+            "eyeHeight": 0.7,
+            "surface": "floor"
+          },
+          "before": {
+            "blocked": 3925,
+            "visible": 1289,
+            "total": 5214,
+            "blockedPercent": 75.2781
+          },
+          "after": {
+            "blocked": 4824,
+            "visible": 390,
+            "total": 5214,
+            "blockedPercent": 92.5201
+          }
+        },
+        {
+          "id": "jacuzzi-west-seat",
+          "observer": {
+            "x": 8.778610661552147,
+            "y": 20.117475217542932,
+            "z": 4.33755850309423,
+            "eyeHeight": 0.7,
+            "surface": "floor"
+          },
+          "before": {
+            "blocked": 4037,
+            "visible": 1177,
+            "total": 5214,
+            "blockedPercent": 77.4262
+          },
+          "after": {
+            "blocked": 4975,
+            "visible": 239,
+            "total": 5214,
+            "blockedPercent": 95.4162
+          }
+        }
+      ],
+      "nearestPine": {
+        "id": "pine-2",
+        "before": [
+          14.2,
+          32.5
+        ],
+        "after": [
+          19.3,
+          32.25
+        ],
+        "stock": {
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        "trunkToLeftBoundary": 1.0089,
+        "trunkToCoping": 1.0214,
+        "plantable": true,
+        "crownInside": false,
+        "warnings": [
+          "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+          "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+          "The crown overlaps Austrian pine · 9.5 m tall (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      }
+    },
+    {
+      "id": "scandinavian-adoption",
+      "style": "scandinavian",
+      "terraceWidth": 10.77,
+      "terraceDepth": 4,
+      "terraceCoverType": "balcony",
+      "canopyEnabled": true,
+      "evidence": {
+        "sourceData": {
+          "site-data.json": {
+            "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+          },
+          "sternicza-surrounding-nature.json": {
+            "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+          },
+          "sternicza-neighbor-roofs.json": {
+            "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+          }
+        },
+        "state": "v=35&site=sternicza-11&interiorLayout=renovation&planExteriorApplied=true&basementGarageEnabled=true&terraceWidth=10.77&canopyWidth=10.77&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A13%2C%22y%22%3A34.1%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A14.2%2C%22y%22%3A32.5%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A17.6%2C%22y%22%3A34.9%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&gardenProgram=spa-pool-grove&terraceCoverType=balcony&designStyle=scandinavian&styleHouseFinish=true",
+        "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+        "terrace": {
+          "x": 4.223610661552147,
+          "y": 18.117475217542932,
+          "width": 10.77,
+          "depth": 4
+        },
+        "rearMidpoint": [
+          9.608610661552147,
+          18.117475217542932
+        ]
+      },
+      "views": [
+        {
+          "id": "jacuzzi-seated-preset",
+          "observer": {
+            "x": 9.608610661552147,
+            "y": 20.117475217542932,
+            "z": 4.33755850309423,
+            "eyeHeight": 0.7,
+            "surface": "floor"
+          },
+          "before": {
+            "blocked": 3978,
+            "visible": 1236,
+            "total": 5214,
+            "blockedPercent": 76.2946
+          },
+          "after": {
+            "blocked": 4893,
+            "visible": 321,
+            "total": 5214,
+            "blockedPercent": 93.8435
+          }
+        },
+        {
+          "id": "jacuzzi-water-eye",
+          "observer": {
+            "x": 9.608610661552147,
+            "y": 20.117475217542932,
+            "z": 3.9225585030942294,
+            "eyeHeight": 0.32,
+            "surface": "jacuzzi-water"
+          },
+          "before": {
+            "blocked": 4042,
+            "visible": 1172,
+            "total": 5214,
+            "blockedPercent": 77.5221
+          },
+          "after": {
+            "blocked": 4954,
+            "visible": 260,
+            "total": 5214,
+            "blockedPercent": 95.0134
+          }
+        },
+        {
+          "id": "jacuzzi-east-seat",
+          "observer": {
+            "x": 10.438610661552147,
+            "y": 20.117475217542932,
+            "z": 4.33755850309423,
+            "eyeHeight": 0.7,
+            "surface": "floor"
+          },
+          "before": {
+            "blocked": 3925,
+            "visible": 1289,
+            "total": 5214,
+            "blockedPercent": 75.2781
+          },
+          "after": {
+            "blocked": 4824,
+            "visible": 390,
+            "total": 5214,
+            "blockedPercent": 92.5201
+          }
+        },
+        {
+          "id": "jacuzzi-west-seat",
+          "observer": {
+            "x": 8.778610661552147,
+            "y": 20.117475217542932,
+            "z": 4.33755850309423,
+            "eyeHeight": 0.7,
+            "surface": "floor"
+          },
+          "before": {
+            "blocked": 4037,
+            "visible": 1177,
+            "total": 5214,
+            "blockedPercent": 77.4262
+          },
+          "after": {
+            "blocked": 4975,
+            "visible": 239,
+            "total": 5214,
+            "blockedPercent": 95.4162
+          }
+        }
+      ],
+      "nearestPine": {
+        "id": "pine-2",
+        "before": [
+          14.2,
+          32.5
+        ],
+        "after": [
+          19.3,
+          32.25
+        ],
+        "stock": {
+          "typeId": "austrian-pine-tall",
+          "height": 9.5,
+          "crownBase": 2.5,
+          "crownWidth": 5,
+          "crownDepth": 5,
+          "rotation": 0,
+          "enabled": true,
+          "unitPrice": 0
+        },
+        "trunkToLeftBoundary": 1.0089,
+        "trunkToCoping": 1.0214,
+        "plantable": true,
+        "crownInside": false,
+        "warnings": [
+          "The modeled crown extends beyond the property. Allow room for growth and discuss boundary clearance with the landscape designer.",
+          "The crown overhangs a building, terrace, stairs, pool or spa feature. Check clearance and maintenance access.",
+          "The crown overlaps Austrian pine · 9.5 m tall (pine-3). Check future growth, planting clearance and maintenance access; crown overlap does not guarantee dense foliage."
+        ]
+      }
+    }
+  ]
+}

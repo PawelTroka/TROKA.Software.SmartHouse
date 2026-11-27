@@ -107,12 +107,12 @@ test('all shared exterior records match actual interior holes while retaining wa
   }
 });
 
-test('bathroom privacy, kitchen worktops, retained partitions and solid furniture bays constrain the openings',()=>{
+test('larger clear bathroom windows preserve kitchen worktops, retained partitions and solid furniture bays',()=>{
   for(const designStyle of styleIds){
     const plans=['ground','first'].map(floor=>getHouseFloorPlan({floor,settings:{...settings,designStyle}}));
     for(const plan of plans){
-      const privacy=plan.walls.flatMap(w=>w.openings).filter(o=>o.privacy);
-      assert.equal(privacy.length,2);assert.ok(privacy.every(o=>o.sill>=1.5&&o.glazing==='privacy'&&o.height<=.68&&o.operation==='clerestory'));
+      const bathrooms=plan.walls.flatMap(w=>w.openings).filter(o=>['bathroom','spa-bath'].includes(o.roomId));
+      assert.equal(bathrooms.length,2);assert.ok(bathrooms.every(o=>o.sill===.98&&o.glazing==='clear'&&o.height===1.44&&o.width>=1.4&&o.operation==='picture'&&!o.privacy));
       assert.ok(plan.walls.flatMap(w=>w.openings).filter(o=>o.roomId==='front-kitchen').every(o=>o.sill>=1));
       for(const wall of plan.walls.filter(w=>w.exterior))for(const o of wall.openings.filter(o=>o.roomId)){
         const room=plan.rooms.find(r=>r.id===o.roomId),length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]),ux=(wall.b[0]-wall.a[0])/length,uy=(wall.b[1]-wall.a[1])/length;

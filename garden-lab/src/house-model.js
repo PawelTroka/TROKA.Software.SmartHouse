@@ -1,9 +1,9 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.38.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.38.0';
-import {renovatePlanOpenings} from './renovation-architecture.js?v=1.38.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.39.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.39.0';
+import {renovatePlanOpenings} from './renovation-architecture.js?v=1.39.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -38,7 +38,8 @@ export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   if(floor==='first')plan.clearHeight=Math.max(.05,attic-first);
   if(['ground','first'].includes(floor)&&plan.clearHeight<2.3)plan.issues.unshift('The edited floor levels leave only '+plan.clearHeight.toFixed(2)+' m of clear room height. Furniture and use need reconsideration; the model does not increase the available space.');
   // Ceiling-fitted kitchen cupboards follow edited room heights. The sink
-  // window stays open above; only its side returns and pantry meet the ceiling.
+  // window stays clear above and on both sides; the cooking and pantry runs
+  // alone meet the ceiling.
   plan.fixtures=plan.fixtures.flatMap(f=>{
     if(!f.ceilingFitted)return [f];
     const height=Math.round((plan.clearHeight-(f.baseHeight||0)-(f.ceilingScribe||0))*1e6)/1e6;

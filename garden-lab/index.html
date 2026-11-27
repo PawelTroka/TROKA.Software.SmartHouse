@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.38.0">
+  <meta name="application-version" content="1.39.0">
   <meta name="application-revision" content="20261126-continuous-walk-and-summer-garden">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
   <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
   <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/privacy.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/garage.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/studio.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/interior.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/neighborhood.css?v=1.38.0">
-  <link rel="stylesheet" href="./src/sea.css?v=1.38.0">
+  <link rel="stylesheet" href="./style.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/privacy.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/garage.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/studio.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/interior.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/neighborhood.css?v=1.39.0">
+  <link rel="stylesheet" href="./src/sea.css?v=1.39.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
@@ -195,7 +195,7 @@
           <div class="home-controls-grid">
             <div id="hst-controls" class="field"><div class="field-top"><label for="hstOpen">Terrace doors</label><output id="hst-opening-value" for="hstOpen">100%</output></div><input id="hstOpen" type="range" min="0" max="1" step="0.01" value="1"><div class="range-labels"><span>Closed</span><span>Two panels stacked left</span></div><div class="door-position-buttons"><button type="button" data-door-control="hstOpen" data-door-value="0">Close</button><button type="button" data-door-control="hstOpen" data-door-value="1">Open</button></div><p class="field-note">Three full-height panels, slim frames and up to two-thirds clear opening.</p></div>
             <div id="balcony-controls" class="field"><div class="field-top"><label for="balconyOpen">Upper terrace doors</label><output id="balcony-opening-value" for="balconyOpen">100%</output></div><input id="balconyOpen" type="range" min="0" max="1" step="0.01" value="1"><div class="range-labels"><span>Closed</span><span>Two panels stacked left</span></div><div class="door-position-buttons"><button type="button" data-door-control="balconyOpen" data-door-value="0">Close</button><button type="button" data-door-control="balconyOpen" data-door-value="1">Open</button></div><p class="field-note">All upper rear doors move together. Open is the default.</p></div>
-            <div id="home-covers" class="home-control-block"><h4>Sliding spa covers</h4><label class="switch-row"><span>Cover the jacuzzi<small>Two panels slide in from the side.</small></span><input id="jacuzziCoverClosed" type="checkbox" role="switch"></label><label id="home-plunge-control" class="switch-row"><span>Cover the cold plunge<small>Retracts into the adjoining side bay.</small></span><input id="coldPlungeCoverClosed" type="checkbox" role="switch"></label></div>
+            <div id="home-covers" class="home-control-block"><h4>Concealed spa covers</h4><label class="switch-row"><span>Cover the jacuzzi<small>Retracts into a hidden pocket below the terrace.</small></span><input id="jacuzziCoverClosed" type="checkbox" role="switch"></label><label id="home-plunge-control" class="switch-row"><span>Cover the cold plunge<small>Stows below its flush stone surround.</small></span><input id="coldPlungeCoverClosed" type="checkbox" role="switch"></label></div>
             <div id="home-gates" class="home-control-block"><h4>Front gates</h4><label class="switch-row"><span>Pedestrian gate open</span><input data-home-setting="pedestrianGateOpen" type="checkbox" role="switch"></label><label class="switch-row"><span>Garage gate open</span><input data-home-setting="garageGateOpen" type="checkbox" role="switch"></label><p class="field-note">Both gates start closed. Open them independently.</p></div>
             <div id="home-gym" class="home-control-block"><h4>Gym arrangement</h4><label class="switch-row"><span>Park the gym bench<small>Clear the centre for cables, cycling and floor work. Switch off to move the bench to the station.</small></span><input id="gymBenchParked" type="checkbox" role="switch" checked></label></div>
             <div id="home-office" class="home-control-block"><h4>Office arrangement</h4><label class="switch-row"><span>Two workstations<small>Shared 2.60 m desk with two computers.</small></span><input id="officeCoworking" type="checkbox" role="switch" checked></label><label class="switch-row"><span>Unfold the guest bed<small>Emergency single sleeper, 0.90 × 2.00 m.</small></span><input id="officeGuestBedOpen" type="checkbox" role="switch"></label></div>
@@ -277,7 +277,7 @@
   <dialog id="style-dialog" class="style-dialog" aria-labelledby="style-dialog-title"><div class="style-dialog-heading"><div><span class="eyebrow">A DIFFERENT WAY TO LIVE</span><h2 id="style-dialog-title">Find your property’s character.</h2><p id="style-catalogue-description">Explore complete designs for your home and garden.</p></div><button id="style-close" class="button subtle" type="button" aria-label="Close design styles">×</button></div><div class="style-filters"><label for="style-search">Find a style<input id="style-search" type="search" placeholder="Beach House, Bali, Japandi…" autocomplete="off"></label><label for="style-family">Design family<select id="style-family"><option value="">All families</option></select></label><span id="style-result-count" role="status"></span></div><div class="style-grid" id="style-grid"></div><p id="style-empty" hidden>No matching design. Try another word or choose All families.</p><p class="style-gallery-note">These are actual photographic surface samples from the model. Select a style to change window sizes and patterns, façades, room arrangements, furniture and the garden. Use House details and Daylight to compare designs from the same view. Current house restores the original layout. The retained house, shared terrace and balcony remain consistent between both viewers; garden dimensions and planting remain editable.</p></dialog>
   <dialog id="about" aria-label="Model and sources"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.38.0"></script>
+  <script type="module" src="./src/app.js?v=1.39.0"></script>
 <div id="interior-host" role="region" aria-label="Sternicza 11 interior studio" hidden></div>
 </body>
 </html>

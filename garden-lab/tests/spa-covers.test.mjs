@@ -15,6 +15,7 @@ import {resortTerraceLayout} from '../src/resort-garden.js';
 import {terraceStairs,rectCorners} from '../src/layout.js';
 import {overlapArea,footprintFit} from '../src/footprint-fit.js';
 import {DESIGN_STYLES} from '../src/design-styles.js';
+import {spaCoverPlanMarkup} from '../src/diagrams.js';
 
 const source=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const settings={...DEFAULTS,summerPoolLayout:true,jacuzziCoverClosed:false,coldPlungeCoverClosed:false};
@@ -22,11 +23,18 @@ const data=applyPlanExterior(source,settings);
 const near=(a,b,tolerance=1e-5)=>assert.ok(Math.abs(a-b)<tolerance,`${a} != ${b}`);
 const covers=s=>{const levels=spaLevels(s,data);return [jacuzziCoverLayout(jacuzziBounds(s,data),s),coldPlungeCoverLayout(gardenProgram(s,data).coldPlunge,levels.coldPlunge,s)];};
 
-test('both covers park completely beside the water and close without a gap or furniture collision',()=>{
+test('both covers stow entirely below their surrounds and close without a water gap',()=>{
   const tub=jacuzziBounds(settings,data),stairs=terraceStairs(data.site.terrace,settings.terraceDepth,terraceGroundReference(settings,data).drop,settings,data);
   for(const cover of covers(settings)){
     assert.equal(cover.progress,0);
-    for(const panel of cover.panels)assert.equal(overlapArea(rectCorners(panel),rectCorners(cover.basin)),0);
+    assert.equal(cover.storage,'concealed-side-cassette');
+    for(const panel of cover.panels){
+      assert.equal(overlapArea(rectCorners(panel),rectCorners(cover.basin)),0);
+      assert.equal(panel.visible,false);assert.equal(panel.exposedBounds,null);assert.deepEqual(panel.footprint,[]);
+      assert.ok(panel.topZ<cover.surroundZ-.10,'No parked leaf remains on the terrace or apron');
+      assert.equal(spaCoverSurfaceAt(panel.x+panel.width/2,panel.y+panel.length/2,cover),null,'The hidden cassette is not a phantom walking deck');
+    }
+    assert.ok(cover.rails.every(r=>r.topZ<cover.surroundZ-.15),'Tracks are hidden below the finished surface');
     assert.equal(footprintFit(rectCorners(cover.parkedBounds),data.site.boundary).location,'inside');
     const closed=spaCoverAtProgress(cover,1),r=cover.basin;
     for(let x=r.x+.01;x<r.x+r.width;x+=.11)for(let y=r.y+.01;y<r.y+r.length;y+=.13)
@@ -39,25 +47,46 @@ test('both covers park completely beside the water and close without a gap or fu
   }
 });
 
-test('telescoping meshes follow their actual swept footprints and retain a small draw-call budget',()=>{
+test('moving meshes expose only the aperture portion and fully disappear inside the cassette',()=>{
   const deck=new THREE.MeshStandardMaterial(),metal=new THREE.MeshStandardMaterial(),materials={deck,metal};
   for(const layout of covers(settings))for(const svgMode of [false,true]){
     const group=createSpaCoverGroup(layout,materials,{svgMode});
     try{
-      let meshes=0;group.traverse(o=>{if(o.isMesh)meshes++;});assert.equal(meshes,5,'Two meshes per movable panel plus one rail batch');
+      let meshes=0;group.traverse(o=>{if(o.isMesh)meshes++;});assert.equal(meshes,4,'Two material batches per leaf, no exposed track meshes');
       for(const progress of [0,.25,.5,.75,1,0]){
         const current=setSpaCoverProgress(group,progress);
         for(const panel of current.panels){
           const mesh=group.getObjectByName(panel.id),b=new THREE.Box3().setFromObject(mesh);
-          near(b.min.x,panel.x);near(b.max.x,panel.x+panel.width);
-          near(b.min.z,panel.y);near(b.max.z,panel.y+panel.length);
-          near(b.min.y,panel.baseZ);near(b.max.y,panel.topZ+.0025);
+          assert.equal(mesh.visible,panel.visible);
+          if(!panel.visible)continue;
+          near(b.min.x,panel.exposedBounds.x);near(b.max.x,panel.exposedBounds.x+panel.exposedBounds.width);
+          near(b.min.z,panel.exposedBounds.y);near(b.max.z,panel.exposedBounds.y+panel.exposedBounds.length);
+          near(b.min.y,panel.baseZ);near(b.max.y,panel.topZ);
           mesh.traverse(o=>{if(o.geometry)for(const attr of Object.values(o.geometry.attributes))assert.ok([...attr.array].every(Number.isFinite));});
         }
       }
     }finally{group.traverse(o=>o.geometry?.dispose());}
   }
   deck.dispose();metal.dispose();
+});
+
+test('retracting below the coping never pulls a walker down through solid terrace or apron',()=>{
+  const walk=createWalkNavigation(data,settings);
+  for(const cover of covers(settings)){
+    const x=cover.basin.x+cover.basin.width+.02,y=cover.basin.y+cover.basin.length/2;
+    const floorHint=cover.id==='jacuzzi-cover'?'ground':'garden',position=[x,cover.rimZ+1.57,y];
+    walk.updateCovers(settings,{jacuzzi:0,coldPlunge:0});
+    const before=walk.locateFree(position,{floorHint});
+    for(const progress of [.25,.5,.75,.9,.99]){
+      walk.updateCovers(settings,{jacuzzi:progress,coldPlunge:progress});
+      const next=walk.locateFree(position,{floorHint});
+      near(next.position[1],before.position[1]);assert.equal(next.swimming,false);
+      const moving=spaCoverAtProgress(cover,progress);
+      assert.equal(spaCoverSurfaceAt(x,y,moving),null);
+    }
+    assert.equal(spaCoverAtProgress(cover,1).closed,true);
+    assert.equal(spaCoverAtProgress(cover,0).closed,false);
+  }
 });
 
 test('the plunge rim meets its original approach grade instead of sitting on a raised mound',()=>{
@@ -83,7 +112,7 @@ test('independent cover updates keep covered walking dry and retain swimming in 
     });
   }
   const mid=spaCoverAtProgress(covers(settings)[1],.5),p=mid.panels[0];
-  const x=p.x+.1,y=p.y+p.length/2;walk.updateCovers(settings,{coldPlunge:.5,jacuzzi:0});
+  const x=p.exposedBounds.x+p.exposedBounds.width/2,y=p.y+p.length/2;walk.updateCovers(settings,{coldPlunge:.5,jacuzzi:0});
   const pose=walk.locateFree([x,p.topZ+1.57,y],{floorHint:'garden'});
   assert.equal(pose.swimming,false);near(pose.position[1]-pose.eyeHeight,spaCoverSurfaceAt(x,y,mid).groundZ);
 });
@@ -101,12 +130,13 @@ test('closed cover panels block sunlight at the real water level and invalidate 
   assert.notEqual(prepareSunGeometry(settings,data),closed);
 });
 
-test('custom viewpoint eye heights follow closed and parked lid panels rather than the terrace or soil underneath',()=>{
+test('custom viewpoint eye heights follow exposed covers while concealed leaves leave the surround unchanged',()=>{
   for(const jacuzziCoverClosed of [false,true])for(const coldPlungeCoverClosed of [false,true]){
     const s={...settings,jacuzziCoverClosed,coldPlungeCoverClosed};
     for(const cover of covers(s))for(const panel of cover.panels)for(const fraction of [.25,.75]){
       const x=panel.x+panel.width*fraction,y=panel.y+panel.length/2,support=spaCoverSurfaceAt(x,y,cover);
       const observer=observerForPreset('custom',{...s,observerX:x,observerY:y,eyeHeight:1.2},data);
+      if(!panel.visible){assert.notEqual(observer.surface,cover.id);assert.equal(support,null);continue;}
       assert.equal(observer.surface,cover.id);
       near(observer.groundZ,support.groundZ);near(observer.z,support.groundZ+1.2);
     }
@@ -116,6 +146,15 @@ test('custom viewpoint eye heights follow closed and parked lid panels rather th
     const observer=observerForPreset('custom',{...settings,observerX:basin.x+basin.width/2,observerY:basin.y+basin.length/2},data);
     assert.ok(!observer.surface.endsWith('-cover'),'An open basin must not retain the lid support');
   }
+});
+
+test('open covers leave no parked rectangles in either plan drawing',()=>{
+  const viewport={X:x=>x,Y:y=>y,scale:10};
+  const open=spaCoverPlanMarkup(settings,data,viewport);
+  assert.equal((open.match(/<rect /g)||[]).length,0);
+  assert.equal((open.match(/data-cover-storage="concealed"/g)||[]).length,2);
+  const closed=spaCoverPlanMarkup({...settings,jacuzziCoverClosed:true,coldPlungeCoverClosed:true},data,viewport);
+  assert.equal((closed.match(/<rect /g)||[]).length,4);
 });
 
 test('cover switches leave upper-floor and named seated viewpoints independent from garden supports',()=>{

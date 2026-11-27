@@ -1,4 +1,4 @@
-import {ringBounds,wallPanels} from './interior-geometry.js?v=1.38.0';
+import {ringBounds,wallPanels} from './interior-geometry.js?v=1.39.0';
 
 export const LANDING_GUARD_HEIGHT=1.10;
 const EPS=1e-7;

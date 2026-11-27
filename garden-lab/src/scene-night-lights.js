@@ -1,11 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.38.0';
-import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.38.0';
-import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.38.0';
-import {gardenProgram,poolBounds} from './garden-program.js?v=1.38.0';
-import {pendantLightingLayout} from './pendant-layout.js?v=1.38.0';
-import {getResortGardenRecipe} from './resort-garden.js?v=1.38.0';
-import {boundaryFenceLayout} from './boundary-fence.js?v=1.38.0';
+import {toWorld} from './orientation.js?v=1.39.0';
+import {gardenGroundAt,terraceGroundReference,jacuzziBounds,spaLevels,pointInPolygon} from './geometry.js?v=1.39.0';
+import {gardenFurniture,terraceStairs,boundsOf} from './layout.js?v=1.39.0';
+import {gardenProgram,poolBounds} from './garden-program.js?v=1.39.0';
+import {pendantLightingLayout} from './pendant-layout.js?v=1.39.0';
+import {getResortGardenRecipe} from './resort-garden.js?v=1.39.0';
+import {boundaryFenceLayout} from './boundary-fence.js?v=1.39.0';
 
 const point=(x,y,z)=>new THREE.Vector3(...toWorld(x,y,z));
 const rectContains=(x,y,r,pad=0)=>r&&x>=r.x-pad&&x<=r.x+r.width+pad&&y>=r.y-pad&&y<=r.y+r.length+pad;

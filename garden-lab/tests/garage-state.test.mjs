@@ -13,8 +13,8 @@ const models=SITE_OPTIONS.map(site=>{
   return {site,data,model:createStateModel(getSiteProfile(site.id,data))};
 });
 
-test('schema 34 starts Sternicza with the two-car proposal and leaves other properties unchanged',()=>{
-  assert.equal(STATE_VERSION,34);
+test('schema 35 starts Sternicza with the two-car proposal and leaves other properties unchanged',()=>{
+  assert.equal(STATE_VERSION,35);
   for(const {site,model} of models){
     assert.equal(model.DEFAULTS.basementGarageEnabled,site.id==='sternicza-11',site.id);
     assert.equal(model.sanitizeState().basementGarageEnabled,site.id==='sternicza-11',site.id);

@@ -11,23 +11,23 @@ import {
   spaLevels,
   saunaOpaqueFaces,
   privacyStructures,
-} from './geometry.js?v=1.38.0';
-import {neighborhoodBounds} from './neighborhood.js?v=1.38.0';
-import {gazeDirection} from './orientation.js?v=1.38.0';
-import {localSunDirection} from './solar.js?v=1.38.0';
-import {getSiteProfile} from './sites.js?v=1.38.0';
-import {screeningTreeVolumes} from './screening-trees.js?v=1.38.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.38.0';
-import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.38.0';
-import {gardenProgram, poolBounds} from './garden-program.js?v=1.38.0';
-import {terraceStairs,gardenFurniture} from './layout.js?v=1.38.0';
-import {resortTerraceLayout} from './resort-garden.js?v=1.38.0';
-import {getDesignStyle} from './design-styles.js?v=1.38.0';
-import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.38.0';
+} from './geometry.js?v=1.39.0';
+import {neighborhoodBounds} from './neighborhood.js?v=1.39.0';
+import {gazeDirection} from './orientation.js?v=1.39.0';
+import {localSunDirection} from './solar.js?v=1.39.0';
+import {getSiteProfile} from './sites.js?v=1.39.0';
+import {screeningTreeVolumes} from './screening-trees.js?v=1.39.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.39.0';
+import {treePlanMarkup, treeSectionMarkup, crownSliceInterval} from './tree-drawing.js?v=1.39.0';
+import {gardenProgram, poolBounds} from './garden-program.js?v=1.39.0';
+import {terraceStairs,gardenFurniture} from './layout.js?v=1.39.0';
+import {resortTerraceLayout} from './resort-garden.js?v=1.39.0';
+import {getDesignStyle} from './design-styles.js?v=1.39.0';
+import {gardenDimensions, dimensionsForScope, nearbyDimensionBuildings, dimensionPlanMarkup, dimensionScheduleMarkup, formatDimension} from './dimensions.js?v=1.39.0';
 
-import {garagePlanFrame} from './garage-ramp.js?v=1.38.0';
-import {boundaryFenceLayout,boundaryPlanMarkup} from './boundary-fence.js?v=1.38.0';
-import {jacuzziCoverLayout} from './spa-covers.js?v=1.38.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.39.0';
+import {boundaryFenceLayout,boundaryPlanMarkup} from './boundary-fence.js?v=1.39.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.39.0';
 
 const C = {
   paper: '#f5f3ec', ink: '#24382e', muted: '#6c766c', line: '#d6dbd0',
@@ -109,7 +109,7 @@ export function spaPlanMarkup(program,{X,Y,scale,labels=true,subtle=false}) {
 export function spaCoverPlanMarkup(settings,data,{X,Y,scale,subtle=false}){
   const covers=[jacuzziCoverLayout(jacuzziBounds(settings,data),settings),spaLevels(settings,data).coldPlunge?.cover].filter(Boolean);
   const color=getDesignStyle(settings.designStyle).palette.surface||C.stone;
-  return covers.map(cover=>`<g data-spa-cover="${esc(cover.id)}" data-cover-closed="${cover.closed}" pointer-events="none">${cover.panels.slice().sort((a,b)=>a.topZ-b.topZ).map(panel=>`<rect x="${X(panel.x)}" y="${Y(panel.y)}" width="${panel.width*scale}" height="${panel.length*scale}" fill="${color}" fill-opacity="${subtle?.7:1}" stroke="#827964" stroke-width=".7"><title>${esc(cover.id==='jacuzzi-cover'?'Jacuzzi sliding cover':'Cold plunge sliding cover')} · ${cover.closed?'closed':'parked at the side'}</title></rect>`).join('')}</g>`).join('');
+  return covers.map(cover=>`<g data-spa-cover="${esc(cover.id)}" data-cover-closed="${cover.closed}" data-cover-storage="concealed" pointer-events="none">${cover.panels.filter(panel=>panel.visible).sort((a,b)=>a.topZ-b.topZ).map(panel=>{const r=panel.exposedBounds;return `<rect x="${X(r.x)}" y="${Y(r.y)}" width="${r.width*scale}" height="${r.length*scale}" fill="${color}" fill-opacity="${subtle?.7:1}" stroke="#827964" stroke-width=".7"><title>${esc(cover.id==='jacuzzi-cover'?'Jacuzzi sliding cover':'Cold plunge sliding cover')} · closed</title></rect>`;}).join('')}</g>`).join('');
 }
 
 /** Top-down projections of actual opaque members, shared by both plan maps. */

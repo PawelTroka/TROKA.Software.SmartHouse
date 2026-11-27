@@ -7,7 +7,7 @@ import {getSiteProfile} from '../src/sites.js';
 import {getScreeningLayouts} from '../src/screening-layouts.js';
 import {getTreeType,TREE_CATALOG} from '../src/tree-catalog.js';
 import {replaceTreeSpecies} from '../src/tree-selection.js';
-import {SUMMER_POOL,SUMMER_POOL_V137,summerGardenFurniture,optimizedScreeningTrees,CURRENT_SUMMER_TREE_POSITIONS,CLOSE_GROVE_TREE_POSITIONS,LEGACY_SUMMER_TREE_POSITIONS,V136_SUMMER_TREE_POSITIONS,restoreCloseGrovePreset} from '../src/summer-garden.js';
+import {SUMMER_POOL,SUMMER_POOL_V137,summerGardenFurniture,optimizedScreeningTrees,CURRENT_SUMMER_TREE_POSITIONS,CLOSE_GROVE_TREE_POSITIONS,BOUNDARY_PINE_TREE_POSITIONS,LEGACY_SUMMER_TREE_POSITIONS,V136_SUMMER_TREE_POSITIONS,restoreCloseGrovePreset,restoreBoundaryPinePreset} from '../src/summer-garden.js';
 import {gardenProgram,poolBounds} from '../src/garden-program.js';
 import {gardenFurniture,terraceStairs,rectCorners,rectanglesOverlap} from '../src/layout.js';
 import {footprintFit,overlapArea} from '../src/footprint-fit.js';
@@ -22,7 +22,7 @@ const source=JSON.parse(readFileSync(new URL('../data/site-data.json',import.met
 const data=applyPlanExterior(applyBuildingOverrides(source,DEFAULTS),DEFAULTS);
 
 test('fresh Sternicza fits a shorter left-edge pool around the restored planting',()=>{
-  assert.equal(DEFAULTS.summerPoolLayout,true);assert.equal(DEFAULTS.poolSunbedSides,1);
+  assert.equal(DEFAULTS.summerPoolLayout,true);assert.equal(DEFAULTS.poolSunbedSides,2);
   assert.ok(DEFAULTS.screeningTrees.every(t=>t.typeId==='austrian-pine-tall'));
   assert.deepEqual(DEFAULTS.screeningTrees,optimizedScreeningTrees());
   for(const style of DESIGN_STYLES){
@@ -33,7 +33,7 @@ test('fresh Sternicza fits a shorter left-edge pool around the restored planting
   assert.deepEqual([old.x,old.y,old.width,old.length],[14.52,26.3,3.5,8]);
   assert.equal(getScreeningLayouts('sternicza-11','spa-pool-grove')[0].trees[0].typeId,'thuja-excelsa-9m');
   assert.equal(getScreeningLayouts('sternicza-11','spa-pool-grove',DEFAULTS)[0].trees[0].typeId,'austrian-pine-tall');
-  assert.equal(getScreeningLayouts('sternicza-11','spa-pool-grove',DEFAULTS)[0].settings.poolSunbedSides,1);
+  assert.equal(getScreeningLayouts('sternicza-11','spa-pool-grove',DEFAULTS)[0].settings.poolSunbedSides,2);
 });
 
 test('left-edge pool clears the actual rendered hedge and the fire lounge centres the rear garden',()=>{
@@ -75,7 +75,8 @@ test('left-edge pool and all optional sunbed sides keep the stair route, spa roo
   const broadStairs=terraceStairs(broadData.site.terrace,broad.terraceDepth,terraceGroundReference(broad,broadData).drop,broad,broadData);
   const broadTerrace={...broadData.site.terrace,length:broad.terraceDepth};
   assert.ok(closestFootprints(rectCorners(p,p.coping),rectCorners(broadTerrace)).distance>.20,'The coping remains clear of the full-width terrace');
-  assert.ok(closestFootprints([[14.2,32.5]],rectCorners(p,p.coping)).distance>=1.4,'The close grove keeps its nearer trunk soil clearance');
+  const nearPine=DEFAULTS.screeningTrees.find(t=>t.id==='pine-2');
+  assert.ok(closestFootprints([[nearPine.x,nearPine.y]],rectCorners(p,p.coping)).distance>=1,'The boundary-side pine keeps its trunk soil clearance');
   assert.ok(closestFootprints(rectCorners(p,p.coping),rectCorners(broadStairs)).distance>=1,
     'The full-width renovated deck also retains the one-metre exit route');
   assert.equal(footprintFit(rectCorners(p,p.coping),data.site.boundary).location,'inside');
@@ -142,7 +143,7 @@ test('new species presets clear the rear pool and species changes preserve custo
 });
 
 test('close-grove adoption recognizes only the complete known pine triplets and preserves specimen identity',()=>{
-  assert.deepEqual(optimizedScreeningTrees().map(t=>[t.x,t.y]),[[13,34.1],[14.2,32.5],[17.6,34.9]]);
+  assert.deepEqual(optimizedScreeningTrees().map(t=>[t.x,t.y]),BOUNDARY_PINE_TREE_POSITIONS);
   assert.ok(Math.abs(Math.hypot(13-14.2,34.1-32.5)-2)<1e-8,'The historical close pair remains exactly 2 m apart');
   for(const preset of [LEGACY_SUMMER_TREE_POSITIONS,V136_SUMMER_TREE_POSITIONS]){
     const trees=preset['austrian-pine-tall'].map(([x,y],i)=>({...optimizedScreeningTrees()[i],id:`owned-${i}`,x,y,height:9+i/10,unitPrice:60000+i})).reverse();
@@ -154,6 +155,38 @@ test('close-grove adoption recognizes only the complete known pine triplets and 
     assert.equal(restoreCloseGrovePreset(snapshot.slice(0,2)),null);
   }
   assert.equal(restoreCloseGrovePreset(optimizedScreeningTrees()),null,'The restored grove is not repeatedly migrated');
+});
+
+test('the compact L follows two pool edges and keeps the lit access gap open',()=>{
+  const furniture=summerGardenFurniture(),[a,b,c]=furniture.sunbeds;
+  assert.deepEqual(furniture.loungerSides,['garden','front']);
+  assert.equal(furniture.sunbeds.length,3,'Full-length loungers fit without filling the compact pool end');
+  assert.equal(a.x,b.x,'The long-edge loungers sit in one narrow line, not a broad bank');
+  assert.ok(b.y-(a.y+a.length)>=1.3,'A clear gap admits the path to the pool');
+  assert.deepEqual([a.width,a.length,b.width,b.length],[.78,2,.78,2]);
+  assert.deepEqual([c.width,c.length],[2,.78]);
+  assert.ok(c.x>=SUMMER_POOL.x&&c.x+c.width<=SUMMER_POOL.x+SUMMER_POOL.width);
+  assert.ok(SUMMER_POOL.x-a.x<=1.4,'The arrangement leaves more of the garden open');
+  const archived=summerGardenFurniture({poolSunbedSides:2,edgeAlignedSunbeds:false});
+  assert.deepEqual(archived.sunbeds.map(b=>[b.x,b.y]),[[13.05,28.05],[14.15,28.05],[16.1,23.15]],'Archived 1.38 geometry remains literal');
+});
+
+test('boundary-pine adoption moves only the recognized nearest specimen and leaves manual planting authoritative',()=>{
+  const trees=CLOSE_GROVE_TREE_POSITIONS.map(([x,y],i)=>({...optimizedScreeningTrees()[i],id:`owned-${i}`,x,y,height:9+i/10,unitPrice:60000+i})).reverse();
+  const snapshot=structuredClone(trees),restored=restoreBoundaryPinePreset(trees);
+  assert.deepEqual(restored.filter((t,i)=>t.x!==trees[i].x||t.y!==trees[i].y).map(t=>[t.id,t.x,t.y]),[['owned-1',19.3,32.25]]);
+  restored.forEach((tree,i)=>{const {x,y,...attributes}=tree,{x:oldX,y:oldY,...original}=trees[i];assert.deepEqual(attributes,original);});
+  assert.deepEqual(trees,snapshot);
+  trees[0].x+=.01;assert.equal(restoreBoundaryPinePreset(trees),null,'A one-centimetre manual edit prevents automatic movement');
+  assert.equal(restoreBoundaryPinePreset(snapshot.slice(0,2)),null);
+  assert.equal(restoreBoundaryPinePreset(snapshot.map((t,i)=>i===1?{...t,typeId:'white-fir-9m'}:t)),null);
+  assert.equal(restoreBoundaryPinePreset(restored),null,'Adoption is idempotent');
+  const pine=optimizedScreeningTrees()[1],p=poolBounds(DEFAULTS,data),volume=screeningTreeVolumes({...DEFAULTS,screeningTrees:[pine]},data)[0];
+  assert.ok(volume.plantable);
+  assert.ok(closestBoundary([[pine.x,pine.y]],data,'left').distance>1);
+  assert.ok(closestBoundary([[pine.x,pine.y]],data,'left').distance<1.02);
+  assert.ok(closestFootprints([[pine.x,pine.y]],rectCorners(p,p.coping)).distance>=1);
+  assert.equal(volume.crownInside,false,'The honest crown-overhang warning remains visible');
 });
 
 test('other properties do not acquire the Sternicza pool or species defaults',()=>{
