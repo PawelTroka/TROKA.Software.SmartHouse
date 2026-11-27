@@ -380,9 +380,12 @@ jobs:
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
       - run: python3 scripts/install-ci-browser.py
       - name: Compare identical continuous navigation routes
-        timeout-minutes: 12
+        # Slow baseline frames still need a useful sample; each measured route
+        # has its own bounded warmup/capture deadline and retains failure data.
+        timeout-minutes: 16
         env:
           BASELINE_DIR: ../.walk-baseline/garden-lab
+          ENFORCE_PERFORMANCE_REGRESSION: '1'
         run: node scripts/walk-performance-browser-check.mjs
       - name: Upload walking performance evidence
         if: always()

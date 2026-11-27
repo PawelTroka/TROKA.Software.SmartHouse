@@ -351,13 +351,25 @@ try{
   await shot('mobile-floor-plan');await chooseView('dollhouse');await rendered('hidden-bali','dollhouse');await shot('mobile-dollhouse');
   await chooseView('room');await walking('ground');
   const pad=q('#scene-host .walk-pad');assert.equal(await pad.isVisible(),true);assert.equal(await pad.locator('button').count(),4);
-  let padDistance=0;
+  let padDistance=0;report.mobile.padMoves=[];
   for(const label of ['Walk forward','Step left','Step back','Step right']){
+    await walking('ground',{timeout:sceneStartupTimeout,settled:true});
     const button=pad.getByRole('button',{name:label,exact:true}),bounds=await button.boundingBox();assert.ok(bounds);
     assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390&&bounds.height>=40,'Walk controls must fit the narrow screen with usable touch targets');
     const before=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);
-    await page.mouse.move(bounds.x+bounds.width/2,bounds.y+bounds.height/2);await page.mouse.down();await page.waitForTimeout(350);await page.mouse.up();
-    const after=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);padDistance+=Math.hypot(after[0]-before[0],after[2]-before[2]);
+    const started=Date.now();
+    await page.mouse.move(bounds.x+bounds.width/2,bounds.y+bounds.height/2);await page.mouse.down();
+    // A fixed 350 ms hold can end before SwiftShader delivers a second frame.
+    // Keep the actual pointer held until this direction has visibly advanced,
+    // with a bounded deadline, just as the elevation controls below do. Each
+    // button must now pass the former total-distance requirement on its own.
+    try{await page.waitForFunction(before=>{
+      const position=document.querySelector('#scene-host canvas')?.dataset.walkPosition?.split(',').map(Number);
+      return position&&Math.hypot(position[0]-before[0],position[2]-before[2])>.08;
+    },before,{timeout:30000});}finally{await page.mouse.up();}
+    const after=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number),distance=Math.hypot(after[0]-before[0],after[2]-before[2]);
+    assert.ok(distance>.08,`${label} moved only ${distance} m`);
+    report.mobile.padMoves.push({label,before,after,distance,elapsedMs:Date.now()-started});padDistance+=distance;
   }
   assert.ok(padDistance>.08,`On-screen walking controls moved only ${padDistance} m`);report.mobile.padDistance=padDistance;
 

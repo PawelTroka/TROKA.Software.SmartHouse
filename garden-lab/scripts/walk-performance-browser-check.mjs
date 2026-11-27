@@ -21,13 +21,17 @@ const fixture=baselineState.sanitizeState({...baselineState.DEFAULTS,designStyle
   showDimensions:true,showRays:false,showLabels:false,existingVegetation:true,sunEnabled:true,sunDate:'2026-06-21',sunMinutes:780,
   mode:'orbit',interiorEnabled:false,walkNavigation:'free'});
 const hash=baselineState.encodeState(fixture),duration=Math.max(6000,Math.min(20000,Number(process.env.BENCHMARK_DURATION_MS)||8000));
+const minimumSamples=32,warmupLimitMs=30000,captureLimitMs=60000,shuttleHalfWidthM=.35;
 const report={status:'running',baseline:{commit:'66c096a',version:baselineVersion},candidate:{version:candidateVersion},
-  method:'Same Chromium process and software GPU; public Share fixture, room entry, fullscreen and held walking keys. Four-second continuous warmup precedes each eight-second RAF/Long Task trace. No mocked rendering or private app state.',
+  method:'Same Chromium process and software GPU; public Share fixture, room entry, fullscreen and continuous public walking keys. A lateral shuttle follows the same bounded strip using observed walking positions. Warmup requires elapsed time, delivered frames and a stable observed buffer, subject to a recorded time cap. Each measured RAF/Long Task trace requires minimum elapsed time and delivered samples, with a 60-second cap. No mocked rendering or private app state.',
   limitations:['CI uses SwiftShader on a shared CPU host, not the user’s GPU; absolute FPS must not be generalized to user hardware.',
     'RAF delivery measures observed navigation cadence, not isolated GPU timer-query time. Public frame counts and changing walking poses verify active rendering.',
     'The candidate legacy comparison freezes the old living-room composition and disables equipment labels. The new kitchen remains present, so complete geometry equality is not claimed.',
-    'Adaptive resolution is warmed before capture and its delivered backing buffer is recorded. Idle images restore the selected full detail.'],
+    'Warmup may reach its time cap before the buffer settles; its actual completion and every measured buffer are recorded. Idle images restore the selected full detail.',
+    'One trace per scenario and route is directional shared-host evidence. At the minimum sample count, the 1% low is the worst single delivered interval, not a statistically stable tail estimate.',
+    'The shuttle reverses on public position feedback, so dispatch latency can overshoot its target bounds; observed route offsets are retained for comparison.'],
   fixture,viewport:{width:1280,height:800,deviceScaleFactor:1},durationMs:duration,
+  capturePolicy:{minimumSamples,warmupMinimumMs:4000,warmupLimitMs,captureLimitMs,stableBufferMinimumFrames:12,stableBufferMinimumMs:1500,shuttleHalfWidthM,discardedInitialIntervals:0,regressionEnforced:process.env.ENFORCE_PERFORMANCE_REGRESSION==='1'},
   host:{platform:os.platform(),release:os.release(),arch:os.arch(),cpuModel:os.cpus()[0]?.model,logicalCpus:os.cpus().length,totalMemoryGB:os.totalmem()/1024**3,node:process.version},
   runs:[],comparisons:[],errors:[]};
 const servers=[];let browser;
@@ -61,41 +65,92 @@ async function enterLiving(page){
   await host.locator('[data-view="plan"]').click();await field('floor').selectOption('ground');await field('room').selectOption('lounge');
   await host.locator('[data-view="room"]').click();await settled(page,'ground');
 }
-async function oscillate(page,ms){
-  const end=Date.now()+ms;let direction='a';
-  while(Date.now()<end){
-    const held=Math.min(500,end-Date.now());if(held<=0)break;
-    await page.keyboard.down(direction);await page.waitForTimeout(held);await page.keyboard.up(direction);direction=direction==='a'?'d':'a';
+function continuousShuttle(page,pose){
+  const angle=Math.PI+pose.yaw*Math.PI/180,axis=[-Math.cos(angle),0,-Math.sin(angle)];let held=null;
+  return {
+    async step(position){
+      const offset=position?.length===3?position.reduce((sum,value,i)=>sum+(value-pose.position[i])*axis[i],0):0;
+      const next=!held?'a':held==='a'&&offset>=shuttleHalfWidthM?'d':held==='d'&&offset<=-shuttleHalfWidthM?'a':held;
+      if(next!==held){
+        // Press the new direction before releasing the old one: the app never
+        // sees an empty held-key set and cannot restore its idle render target.
+        await page.keyboard.down(next);if(held)await page.keyboard.up(held);held=next;
+      }
+    },
+    async stop(){await page.keyboard.up('a');await page.keyboard.up('d');held=null;},
+    offset(position){return position?.length===3?position.reduce((sum,value,i)=>sum+(value-pose.position[i])*axis[i],0):null;},
+  };
+}
+async function snapshotTrace(page,{stop=false}={}){
+  return page.evaluate(stop=>{const t=window.__navigationTrace;if(!t)return null;
+    if(stop){t.active=false;cancelAnimationFrame(t.handle);for(const e of t.observer?.takeRecords()||[])t.longTasks.push({start:e.startTime,duration:e.duration});t.observer?.disconnect();}
+    const result={frames:t.frames,longTasks:t.longTasks,elapsedMs:performance.now()-t.start,initialRenderedFrames:t.initialRenderedFrames};
+    if(stop)delete window.__navigationTrace;return result;
+  },stop);
+}
+async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBuffer=false,onCheckpoint}){
+  await page.evaluate(()=>{
+    const trace={frames:[],longTasks:[],active:true,handle:0,start:performance.now(),observer:null,
+      initialRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,bufferKey:'',bufferStart:0,bufferFrames:0};window.__navigationTrace=trace;
+    try{trace.observer=new PerformanceObserver(list=>{for(const e of list.getEntries())trace.longTasks.push({start:e.startTime,duration:e.duration});});trace.observer.observe({type:'longtask',buffered:false});}catch{}
+    let last=0;
+    const frame=now=>{if(!trace.active)return;const c=document.querySelector('#scene-host canvas'),key=c?.width+'×'+c?.height;
+      if(key!==trace.bufferKey){trace.bufferKey=key;trace.bufferStart=now;trace.bufferFrames=0;}trace.bufferFrames++;
+      if(last)trace.frames.push({ms:now-last,t:now-trace.start,position:c?.dataset.walkPosition,renderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames),bufferWidth:c?.width,bufferHeight:c?.height});
+      last=now;trace.handle=requestAnimationFrame(frame);
+    };trace.handle=requestAnimationFrame(frame);
+  });
+  let progress=null,checkpointAt=Date.now()+5000,metMinimum=false;
+  try{
+    while(true){
+      await page.waitForTimeout(150);
+      progress=await page.evaluate(()=>{const t=window.__navigationTrace,c=document.querySelector('#scene-host canvas'),now=performance.now();return {
+        elapsedMs:now-t.start,samples:t.frames.length,renderedFrames:(Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0)-t.initialRenderedFrames,
+        stableBufferFrames:t.bufferFrames,stableBufferMs:now-t.bufferStart,buffer:t.bufferKey,position:c?.dataset.walkPosition?.split(',').map(Number)};});
+      await shuttle.step(progress.position);
+      metMinimum=progress.elapsedMs>=minimumMs&&progress.samples>=minimumSamples&&progress.renderedFrames>=minimumSamples&&
+        (!requireStableBuffer||(progress.stableBufferFrames>=12&&progress.stableBufferMs>=1500));
+      if(metMinimum||progress.elapsedMs>=maximumMs)break;
+      if(Date.now()>=checkpointAt){await onCheckpoint?.(await snapshotTrace(page));checkpointAt=Date.now()+5000;}
+    }
+  }finally{
+    // Preserve raw evidence even when driving/polling fails. The surrounding
+    // run is saved before any frame-count, pose, settling or screenshot gate.
+    const partial=await snapshotTrace(page);if(partial)await onCheckpoint?.(partial);
   }
+  const trace=await snapshotTrace(page,{stop:true});
+  return {...trace,completion:{metMinimum,reason:metMinimum?'minimums-met':'time-cap',minimumMs,maximumMs,minimumSamples,requireStableBuffer,...progress}};
+}
+function traceSummary(trace,shuttle){
+  const summary=frameTimeSummary(trace.frames.map(f=>f.ms)),uniquePoses=new Set(trace.frames.map(f=>f.position).filter(Boolean)),buffers=new Map();
+  const offsets=trace.frames.map(frame=>shuttle.offset(frame.position?.split(',').map(Number))).filter(Number.isFinite);
+  for(const frame of trace.frames){const key=frame.bufferWidth+'×'+frame.bufferHeight;if(!buffers.has(key))buffers.set(key,{width:frame.bufferWidth,height:frame.bufferHeight,pixels:frame.bufferWidth*frame.bufferHeight,frames:0});buffers.get(key).frames++;}
+  return {summary,motionBuffers:[...buffers.values()].sort((a,b)=>b.frames-a.frames),uniquePoses:uniquePoses.size,
+    actualAverageFps:summary.mean?1000/summary.mean:0,routeOffsetsM:offsets.length?{minimum:Math.min(...offsets),maximum:Math.max(...offsets)}:null,
+    longTasks:{count:trace.longTasks.length,totalMs:trace.longTasks.reduce((s,e)=>s+e.duration,0),maxMs:Math.max(0,...trace.longTasks.map(e=>e.duration))}};
 }
 async function capture(page,caseId,route){
   const before=await info(page);assert.equal(before.pose.fov,70);assert.equal(await page.locator('#showDimensions').isChecked(),true);
   await page.locator('#scene-host canvas').focus();
-  // This warmup allows shaders, vertex uploads and the stable adaptive buffer
-  // to settle under the same continuous-input workload as the measured trace.
-  await oscillate(page,4000);
-  await page.evaluate(()=>{
-    const trace={frames:[],longTasks:[],active:true,handle:0,start:performance.now(),observer:null};window.__navigationTrace=trace;
-    try{trace.observer=new PerformanceObserver(list=>{for(const e of list.getEntries())trace.longTasks.push({start:e.startTime,duration:e.duration});});trace.observer.observe({type:'longtask',buffered:false});}catch{}
-    let last=0;
-    const frame=now=>{if(!trace.active)return;if(last){const c=document.querySelector('#scene-host canvas');trace.frames.push({ms:now-last,t:now-trace.start,position:c?.dataset.walkPosition,renderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames),bufferWidth:c?.width,bufferHeight:c?.height});}last=now;trace.handle=requestAnimationFrame(frame);};
-    trace.handle=requestAnimationFrame(frame);
-  });
-  await oscillate(page,duration);
-  const trace=await page.evaluate(()=>{const t=window.__navigationTrace;t.active=false;cancelAnimationFrame(t.handle);t.observer?.disconnect();const result={frames:t.frames,longTasks:t.longTasks,elapsedMs:performance.now()-t.start};delete window.__navigationTrace;return result;});
-  const duringMotion=await info(page);
-  // One post-input publication proves that all navigation frames completed and
-  // records the final timing statistics rather than a stale pending snapshot.
-  await settled(page,route==='living'?'ground':'garden');const after=await info(page);
-  const intervals=trace.frames.slice(2).map(f=>f.ms),summary=frameTimeSummary(intervals),uniquePoses=new Set(trace.frames.map(f=>f.position));
-  const buffers=new Map();for(const frame of trace.frames.slice(2)){const key=frame.bufferWidth+'×'+frame.bufferHeight;if(!buffers.has(key))buffers.set(key,{width:frame.bufferWidth,height:frame.bufferHeight,pixels:frame.bufferWidth*frame.bufferHeight,frames:0});buffers.get(key).frames++;}
-  const motionBuffers=[...buffers.values()].sort((a,b)=>b.frames-a.frames);
-  assert.ok(summary.samples>=12,`${caseId}/${route}: insufficient delivered navigation frames`);
-  assert.ok(uniquePoses.size>=3,`${caseId}/${route}: public walking positions did not change`);
-  assert.ok(Number(after.frames)>Number(before.frames)+10,`${caseId}/${route}: real renderer did not produce navigation frames`);
-  const name=caseId+'-'+route+'.png';await page.locator('#scene-host').screenshot({path:path.join(output,name),scale:'css',animations:'disabled'});
-  const run={case:caseId,route,before,duringMotion,after,motionBuffers,summary,actualAverageFps:1000/summary.mean,longTasks:{count:trace.longTasks.length,totalMs:trace.longTasks.reduce((s,e)=>s+e.duration,0),maxMs:Math.max(0,...trace.longTasks.map(e=>e.duration))},uniquePoses:uniquePoses.size,screenshot:name,trace};
-  report.runs.push(run);await save();console.log('WALK_PERFORMANCE '+JSON.stringify({case:caseId,route,...summary,motionBuffers,idleBuffer:after.viewport,adaptive:after.adaptiveQuality}));
+  const run={case:caseId,route,status:'running',before},shuttle=continuousShuttle(page,before.pose);report.runs.push(run);await save();
+  try{
+    await shuttle.step(before.pose.position);
+    run.warmup=await traceNavigation(page,shuttle,{minimumMs:4000,maximumMs:warmupLimitMs,requireStableBuffer:true,onCheckpoint:async trace=>{run.warmup=trace;await save();}});
+    await save();
+    run.trace=await traceNavigation(page,shuttle,{minimumMs:duration,maximumMs:captureLimitMs,onCheckpoint:async trace=>{run.trace=trace;Object.assign(run,traceSummary(trace,shuttle));await save();}});
+    Object.assign(run,traceSummary(run.trace,shuttle));await save();
+    run.duringMotion=await info(page);
+  }catch(error){run.status='failed';run.failure=error.message;throw error;}
+  finally{await snapshotTrace(page,{stop:true});await shuttle.stop();await save();}
+  try{
+    assert.ok(run.trace.completion.metMinimum,`${caseId}/${route}: trace hit ${captureLimitMs} ms cap before ${minimumSamples} RAF and rendered frames (${run.summary.samples} RAF / ${run.trace.completion.renderedFrames} rendered)`);
+    assert.ok(run.uniquePoses>=3,`${caseId}/${route}: public walking positions did not change`);
+    await settled(page,route==='living'?'ground':'garden');run.after=await info(page);await save();
+    assert.ok(Number(run.after.frames)>=Number(run.before.frames)+minimumSamples,`${caseId}/${route}: real renderer did not produce navigation frames`);
+    const name=caseId+'-'+route+'.png';await page.locator('#scene-host').screenshot({path:path.join(output,name),scale:'css',animations:'disabled'});run.screenshot=name;run.status='passed';
+  }catch(error){run.status='failed';run.failure=error.message;throw error;}
+  finally{await save();}
+  console.log('WALK_PERFORMANCE '+JSON.stringify({case:caseId,route,...run.summary,motionBuffers:run.motionBuffers,routeOffsetsM:run.routeOffsetsM,warmup:run.warmup.completion,capture:run.trace.completion,idleBuffer:run.after.viewport,adaptive:run.after.adaptiveQuality}));
 }
 try{
   const baseline=await serve(baselineRoot),candidate=await serve(root);
@@ -121,9 +176,11 @@ try{
       initialPoseDeltaM:Math.hypot(...candidate.before.pose.position.map((v,i)=>v-baseline.before.pose.position[i])),
       initialYawDelta:Math.abs(candidate.before.pose.yaw-baseline.before.pose.yaw)};
     comparison.baselineMotionBuffers=baseline.motionBuffers;comparison.candidateMotionBuffers=candidate.motionBuffers;comparison.currentMotionBuffers=current.motionBuffers;
-    report.comparisons.push(comparison);
+    comparison.regression={enforced:report.capturePolicy.regressionEnforced,p95LimitMs:baseline.summary.p95*1.15+5,legacyPass:candidate.summary.p95<=baseline.summary.p95*1.15+5,currentPass:current.summary.p95<=baseline.summary.p95*1.15+5};
+    comparison.routeOffsetsM={baseline:baseline.routeOffsetsM,candidateLegacy:candidate.routeOffsetsM,candidateCurrent:current.routeOffsetsM};
+    report.comparisons.push(comparison);await save();
     assert.ok(comparison.initialPoseDeltaM<.03&&comparison.initialYawDelta<.1,`${route}: legacy baseline/candidate camera fixtures must match`);
-    if(process.env.ENFORCE_PERFORMANCE_REGRESSION==='1')assert.ok(candidate.summary.p95<=baseline.summary.p95*1.15+5,`${route}: candidate p95 regressed beyond shared-host tolerance`);
+    if(comparison.regression.enforced)assert.ok(comparison.regression.legacyPass&&comparison.regression.currentPass,`${route}: candidate legacy/current p95 regressed beyond shared-host tolerance`);
   }
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){report.status='failed';report.failure={message:error.message,stack:error.stack};process.exitCode=1;console.error(error);}
