@@ -1526,7 +1526,7 @@ export function createScene(container, data, callbacks = {}) {
       ...presentation?.getDiagnostics(),...reflections?.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};
   }
   function renderNow(now) {
-    renderPending=false;frameHandle=0;if(!canDraw())return;
+    renderPending=false;renderer.domElement.dataset.renderPending='false';frameHandle=0;if(!canDraw())return;
     const cpuStart=performance.now();
     const coversMoving=stepSpaCovers(now);
     const walking=mode==='walk'&&walkKeys.size>0;
@@ -1641,14 +1641,16 @@ export function createScene(container, data, callbacks = {}) {
     if(walking||walkSettling||coversMoving)requestRender();
   }
   function requestRender() {
-    if(!renderPending&&canDraw()){renderPending=true;frameHandle=requestAnimationFrame(renderNow);}
+    if(!renderPending&&canDraw()){
+      renderPending=true;renderer.domElement.dataset.renderPending='true';frameHandle=requestAnimationFrame(renderNow);
+    }
   }
   function visibilityChanged(){
     clearTimeout(motionTimer);motionTimer=0;lastMotionTime=0;statusChanged=true;
     if(canDraw())requestRender();
     else {
       stopWalking();
-      cancelAnimationFrame(frameHandle);frameHandle=0;renderPending=false;
+      cancelAnimationFrame(frameHandle);frameHandle=0;renderPending=false;renderer.domElement.dataset.renderPending='false';
       callbacks.onPerformanceInfo?.(getPerformanceInfo());
     }
   }
