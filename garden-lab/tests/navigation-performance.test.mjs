@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createDimensionOcclusionIndex} from '../src/dimension-occlusion.js';
 import {createAdaptiveMotionQuality,createFramePerformance,frameTimeSummary} from '../src/frame-performance.js';
-import {partitionVegetationInstances} from '../src/scene-spatial-instances.js';
+import {createVegetationInstanceCuller} from '../src/scene-spatial-instances.js';
 import {renderBudget} from '../src/render-quality.js';
 import {updateMirrorCamera,installMirrorMaterial} from '../src/scene-mirrors.js';
 import {batchRepeatedGardenDetails} from '../src/scene-static-details.js';
@@ -30,6 +30,10 @@ test('navigation telemetry excludes resting frames and adaptive quality cannot o
   const timing=createFramePerformance(12);timing.begin(10,false);timing.begin(5000,true);timing.begin(5030,true);timing.end(12,true);timing.begin(5060,true);timing.begin(20000,false);
   assert.equal(timing.getDiagnostics().frameTimeMs.mean,30);assert.equal(timing.getDiagnostics().frameTimeMs.samples,2);
   const stats=frameTimeSummary([10,20,30,60,120,300]);assert.equal(stats.stalls50ms,3);assert.equal(stats.stalls100ms,2);assert.equal(stats.stalls250ms,1);assert.equal(stats.onePercentLowFps,1000/300);
+  timing.phase('sceneRender',12,true);timing.phase('adaptiveResize',22550,true);timing.phase('idleRender',5000,false);
+  assert.equal(timing.getDiagnostics().phasesMs.sceneRender.mean,12);assert.equal(timing.getDiagnostics().phasesMs.adaptiveResize.mean,22550);
+  assert.equal(timing.getDiagnostics().phasesMs.idleRender,undefined,'Resting render work cannot contaminate navigation phase timings');
+  timing.reset();assert.deepEqual(timing.getDiagnostics().phasesMs,{});
   const adaptive=createAdaptiveMotionQuality();let previous=1,changes=0;
   for(let i=1;i<220;i++){if(adaptive.sample(i*34,34,true))changes++;assert.ok(adaptive.scale<=previous);previous=adaptive.scale;}
   assert.equal(changes,3);assert.equal(adaptive.scale,.54);
@@ -40,19 +44,49 @@ test('navigation telemetry excludes resting frames and adaptive quality cannot o
   adaptive.reset();assert.equal(adaptive.scale,1);
 });
 
-test('spatial vegetation batches preserve every instance exactly and cull distant geometry',()=>{
+test('moving vegetation culls individual instances without adding draw batches and restores exact full geometry for other passes',()=>{
   const root=new THREE.Group(),g=new THREE.IcosahedronGeometry(1,2),m=new THREE.MeshBasicMaterial(),source=new THREE.InstancedMesh(g,m,120),matrix=new THREE.Matrix4();source.name='existing-canopies-near-0';
-  const expected=[];
-  for(let i=0;i<120;i++){matrix.makeTranslation((i%12-6)*20,3,Math.floor(i/12)*20);source.setMatrixAt(i,matrix);source.setColorAt(i,new THREE.Color().setRGB(i/120,.6,.3));expected.push(Array.from(matrix.elements).join(','));}
-  root.add(source);const result=partitionVegetationInstances(root);assert.equal(result.instances,120);assert.equal(result.positionsChanged,false);assert.ok(result.spatialBatches>10);
-  const actual=[];for(const mesh of root.children)for(let i=0;i<mesh.count;i++){mesh.getMatrixAt(i,matrix);actual.push(Array.from(matrix.elements).join(','));}
-  assert.deepEqual(actual.sort(),expected.sort());assert.ok(root.children.every(mesh=>mesh.geometry===g&&mesh.material===m));
-  const camera=new THREE.PerspectiveCamera(70,1.4,.05,300);camera.position.set(0,2,90);camera.lookAt(0,2,140);camera.updateMatrixWorld();root.updateMatrixWorld(true);
-  const frustum=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
-  const visible=root.children.filter(mesh=>frustum.intersectsObject(mesh)).reduce((s,mesh)=>s+mesh.count,0);
-  assert.ok(visible<120*.7,`${visible} / 120 instances survive the actual camera frustum`);
-  assert.equal(partitionVegetationInstances(root).sourceBatches,0,'Repeated style refreshes do not partition already bounded batches');
+  root.position.set(7,1,-9);root.rotation.y=.31;root.scale.setScalar(1.2);source.position.x=3;
+  for(let i=0;i<120;i++){matrix.makeTranslation((i%12-6)*20,3,Math.floor(i/12)*20);source.setMatrixAt(i,matrix);source.setColorAt(i,new THREE.Color().setRGB(i/120,.6,.3));}
+  root.add(source);root.updateMatrixWorld(true);
+  const originalMatrices=source.instanceMatrix.array.slice(),originalColors=source.instanceColor.array.slice(),originalMatrixAttribute=source.instanceMatrix;
+  const culler=createVegetationInstanceCuller();culler.setRoots([root]);
+  const camera=new THREE.PerspectiveCamera(70,1.4,.05,300);camera.position.set(0,2,90);
+  const expectedFor=target=>{
+    camera.lookAt(...target);camera.updateMatrixWorld();root.updateMatrixWorld(true);
+    const frustum=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse)),sphere=new THREE.Sphere(),expected=[];
+    for(let i=0;i<120;i++){
+      matrix.fromArray(originalMatrices,i*16);sphere.copy(g.boundingSphere).applyMatrix4(matrix).applyMatrix4(source.matrixWorld);
+      if(frustum.intersectsSphere(sphere))expected.push(i);
+    }
+    return expected;
+  };
+  for(const target of [[0,2,140],[0,2,-80]]){
+    const expected=expectedFor(target),result=culler.prepare(camera);
+    assert.ok(source.count>0&&source.count<120*.7);assert.equal(source.count,expected.length);
+    for(const [packed,original] of expected.entries()){
+      assert.deepEqual(source.instanceMatrix.array.slice(packed*16,packed*16+16),originalMatrices.slice(original*16,original*16+16));
+      assert.deepEqual(source.instanceColor.array.slice(packed*3,packed*3+3),originalColors.slice(original*3,original*3+3));
+    }
+    assert.equal(result.sourceBatches,1);assert.equal(result.nonemptyBatches,1);assert.equal(result.drawCallsAdded,0);
+    assert.equal(root.children.length,1);assert.equal(source.geometry,g);assert.equal(source.material,m);assert.equal(source.instanceMatrix,originalMatrixAttribute);
+    culler.restore();assert.equal(source.count,120);assert.deepEqual(source.instanceMatrix.array,originalMatrices);assert.deepEqual(source.instanceColor.array,originalColors);
+  }
+  culler.prepare(camera);culler.prepare(camera,{enabled:false});
+  assert.equal(source.count,120,'Shadow and idle passes retain offscreen casters');assert.deepEqual(source.instanceMatrix.array,originalMatrices);
+  culler.prepare(camera);culler.setRoots([root]);
+  assert.equal(culler.getDiagnostics().instances,120,'Re-registering a partially viewed scene never loses source instances');assert.equal(source.count,120);
+  culler.prepare(camera);culler.dispose();assert.equal(source.count,120);assert.deepEqual(source.instanceColor.array,originalColors);
   root.traverse(o=>o.isInstancedMesh&&o.dispose());g.dispose();m.dispose();
+});
+
+test('vegetation compaction leaves custom instance attributes and stable-instance-ID shaders untouched',()=>{
+  const root=new THREE.Group(),g=new THREE.BoxGeometry(),m=new THREE.MeshBasicMaterial(),custom=new THREE.InstancedMesh(g,m,4),stable=new THREE.InstancedMesh(new THREE.BoxGeometry(),m,4);
+  custom.name='hedge-sprays-custom';g.setAttribute('windPhase',new THREE.InstancedBufferAttribute(new Float32Array(4),1));
+  stable.name='existing-canopies-custom';stable.userData.requiresStableInstanceId=true;root.add(custom,stable);
+  const culler=createVegetationInstanceCuller();culler.setRoots([root]);culler.prepare(new THREE.PerspectiveCamera());
+  assert.equal(culler.getDiagnostics().sourceBatches,0);assert.equal(custom.count,4);assert.equal(stable.count,4);culler.dispose();
+  custom.dispose();stable.dispose();g.dispose();stable.geometry.dispose();m.dispose();
 });
 
 test('hall mirror reflects the real camera and clips geometry behind its arbitrary wall plane',()=>{

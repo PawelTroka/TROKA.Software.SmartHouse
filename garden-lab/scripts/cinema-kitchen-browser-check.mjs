@@ -10,11 +10,14 @@ import {houseModelFrame} from '../src/house-model.js';
 import {WALK_COMFORT} from '../src/walk-motion.js';
 
 assert.notEqual(process.env.SITES_MANAGED_LINUX_CONTAINER,'1','Run real-WebGL browser acceptance in GitHub Actions.');
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),output=path.join(root,'test-results','cinema-kitchen');
+const group=process.env.CINEMA_KITCHEN_GROUP||'all';
+assert.ok(['all','layouts','kitchen'].includes(group),'Unknown cinema/kitchen group: '+group);
+const runs=name=>group==='all'||group===name;
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),output=path.join(root,'test-results','cinema-kitchen',group);
 await mkdir(output,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version,started=Date.now(),deadline=started+600000;
 const remaining=()=>{assert.ok(Date.now()<deadline,'Cinema/kitchen acceptance exceeded ten minutes');return Math.max(1,Math.min(120000,deadline-Date.now()));};
-const report={version,status:'running',checks:[],layouts:[],screenshots:[],views:[],errors:[]};
+const report={version,group,status:'running',checks:[],layouts:[],screenshots:[],views:[],errors:[]};
 const save=()=>writeFile(path.join(output,'browser-report.json'),JSON.stringify({...report,elapsedMs:Date.now()-started},null,2));
 const check=async text=>{report.checks.push(text);console.log('CINEMA_KITCHEN_CHECK '+text);await save();};
 let browser,page,server,frame;
@@ -106,48 +109,56 @@ try{
   report.kitchen=ground.kitchenFitOut;report.planting=initial.settings.screeningTrees;
   await check('Two real 600 mm dishwasher niches, 67 L steam oven, separate microwave, four-door fridge, wine cooler, concealed pantry, workstation sink and giant mirror are exported from the drawn plan');
 
-  for(const id of ['right-media','left-media','garden-salon','crosswall-media']){
-    await changeLayout(id);
-    const design=await exportDesign(),plan=design.interiors.floors.ground,cinema=plan.livingCinema;
-    assert.equal(design.settings.livingCinemaLayout,id);assert.equal(cinema.id,id);
-    const channels=plan.fixtures.filter(f=>f.channel),tv=plan.fixtures.find(f=>f.id==='tv');
-    assert.equal(channels.length,id==='garden-salon'?0:13);assert.equal(Boolean(tv),id!=='garden-salon');
-    if(tv){assert.equal(tv.screenDiagonalInches,85);assert.equal(channels.filter(f=>f.layer==='overhead').length,4);assert.equal(channels.filter(f=>f.layer==='ear-level').length,7);}
-    for(const [wall,enabled]of [['left-facade',id!=='left-media'],['right-facade',id!=='right-media']])assert.equal(plan.walls.find(w=>w.id===wall).openings.some(o=>o.service==='living-picture'),enabled);
-    assert.deepEqual(design.settings.screeningTrees,initial.settings.screeningTrees);
-    await openInterior();await q('#interior-host [data-view="dollhouse"]').click({timeout:remaining()});await interiorReady();
-    const renderer=await q('#interior-host').evaluate(h=>h.getInteriorDiagnostics());report.layouts.push({id,cinema,renderer:renderer.scene});
-    await screenshot('living-'+id,'#interior-host [data-iw="canvas"]');
-    await q('#interior-host [data-view="plan"]').click({timeout:remaining()});
-    await screenshot('plan-'+id,'#interior-host [data-iw="plan"]');
-    await field('close').click({timeout:remaining()});await sharedReady();
+  // Independent CI groups keep every rendered check within the same ten-minute
+  // budget; each starts from the verified fresh right-media configuration above.
+  if(runs('layouts')){
+    for(const id of ['right-media','left-media','garden-salon','crosswall-media']){
+      await changeLayout(id);
+      const design=await exportDesign(),plan=design.interiors.floors.ground,cinema=plan.livingCinema;
+      assert.equal(design.settings.livingCinemaLayout,id);assert.equal(cinema.id,id);
+      const channels=plan.fixtures.filter(f=>f.channel),tv=plan.fixtures.find(f=>f.id==='tv');
+      assert.equal(channels.length,id==='garden-salon'?0:13);assert.equal(Boolean(tv),id!=='garden-salon');
+      if(tv){assert.equal(tv.screenDiagonalInches,85);assert.equal(channels.filter(f=>f.layer==='overhead').length,4);assert.equal(channels.filter(f=>f.layer==='ear-level').length,7);}
+      for(const [wall,enabled]of [['left-facade',id!=='left-media'],['right-facade',id!=='right-media']])assert.equal(plan.walls.find(w=>w.id===wall).openings.some(o=>o.service==='living-picture'),enabled);
+      assert.deepEqual(design.settings.screeningTrees,initial.settings.screeningTrees);
+      await openInterior();await q('#interior-host [data-view="dollhouse"]').click({timeout:remaining()});await interiorReady();
+      const renderer=await q('#interior-host').evaluate(h=>h.getInteriorDiagnostics());report.layouts.push({id,cinema,renderer:renderer.scene});
+      await screenshot('living-'+id,'#interior-host [data-iw="canvas"]');
+      await q('#interior-host [data-view="plan"]').click({timeout:remaining()});
+      await screenshot('plan-'+id,'#interior-host [data-iw="plan"]');
+      await field('close').click({timeout:remaining()});await sharedReady();
+    }
+    await check('A/B swap furniture and solid/window sides, C removes all thirteen audio devices and screen, and D keeps both windows; every choice renders in WebGL and plan');
+    await changeLayout('right-media');
+    await roomView('living-cinema-screen-view','lounge',[7.58,2.75],[10.34,2.75],1);
   }
-  await check('A/B swap furniture and solid/window sides, C removes all thirteen audio devices and screen, and D keeps both windows; every choice renders in WebGL and plan');
-  await changeLayout('right-media');
-  await roomView('living-cinema-screen-view','lounge',[7.58,2.75],[10.34,2.75],1);
-  await roomView('kitchen-workstation-and-two-dishwashers','front-kitchen',[2.65,6.88],[.20,6.88],-10);
-  const kitchenLabels=await q('#scene-host .equipment-label').evaluateAll(nodes=>nodes.filter(n=>!n.hidden).map(n=>n.textContent));
-  assert.ok(kitchenLabels.some(text=>text.includes('Dishwasher')));report.kitchenLabels=kitchenLabels;
-  await roomView('kitchen-tall-appliances-and-pantry','front-kitchen',[2.50,6.95],[4.1,7.35],-4);
-  await roomView('hall-giant-mirror','hall',[5.82,7.18],[4.608,7.295],-3);
-  const mirror=JSON.parse(await q('#render-diagnostics').getAttribute('data-mirrors')||'null');report.mirror=mirror;
-  assert.equal(mirror?.count,1);assert.equal(mirror?.captured,true);assert.ok(mirror.frames>=1);assert.equal(mirror.updateMode,'settled-only');assert.equal(mirror.updatesWhileMoving,0);
-  await check('Public room entry and walking expose the integrated kitchen, hidden equipment labels and the full-height reflecting wall');
+  if(runs('kitchen')){
+    await roomView('kitchen-workstation-and-two-dishwashers','front-kitchen',[2.65,6.88],[.20,6.88],-10);
+    const kitchenLabels=await q('#scene-host .equipment-label').evaluateAll(nodes=>nodes.filter(n=>!n.hidden).map(n=>n.textContent));
+    assert.ok(kitchenLabels.some(text=>text.includes('Dishwasher')));report.kitchenLabels=kitchenLabels;
+    await roomView('kitchen-tall-appliances-and-pantry','front-kitchen',[2.50,6.95],[4.1,7.35],-4);
+    await roomView('hall-giant-mirror','hall',[5.82,7.18],[4.608,7.295],-3);
+    const mirror=JSON.parse(await q('#render-diagnostics').getAttribute('data-mirrors')||'null');report.mirror=mirror;
+    assert.equal(mirror?.count,1);assert.equal(mirror?.captured,true);assert.ok(mirror.frames>=1);assert.equal(mirror.updateMode,'settled-only');assert.equal(mirror.updatesWhileMoving,0);
+    await check('Public room entry and walking expose the integrated kitchen, hidden equipment labels and the full-height reflecting wall');
+  }
 
-  await openInterior('front-kitchen');await q('#interior-host [data-view="dollhouse"]').click({timeout:remaining()});await interiorReady();
-  await field('equipment').uncheck({timeout:remaining()});await interiorReady();
-  await page.waitForFunction(()=>document.querySelector('#interior-host')?.getInteriorDiagnostics?.().scene?.equipmentLabels?.enabled===false,null,{timeout:remaining()});
-  assert.equal(await field('dimensions').isChecked(),false);
-  await field('equipment').check({timeout:remaining()});await field('cinema').selectOption('garden-salon',{timeout:remaining()});await interiorReady();
-  await field('close').click({timeout:remaining()});await sharedReady();
-  await q('#share').click({timeout:remaining()});const sharedURL=page.url();assert.equal(new URLSearchParams(new URL(sharedURL).hash.slice(1)).get('livingCinemaLayout'),'garden-salon');
-  await page.reload({waitUntil:'domcontentloaded',timeout:remaining()});await q('#loading').waitFor({state:'hidden',timeout:remaining()});await sharedReady();
-  const restored=await exportDesign();assert.equal(restored.settings.livingCinemaLayout,'garden-salon');assert.equal(restored.settings.showEquipmentLabels,true);assert.equal(restored.settings.showDimensions,false);
-  await check('Layout selection and independent equipment-label setting survive Share and reload without moving any trees');
-  await page.setViewportSize({width:390,height:844});
-  await q('#home-controls > summary').click({timeout:remaining()});await q('#livingCinemaLayout').scrollIntoViewIfNeeded({timeout:remaining()});
-  for(const id of ['livingCinemaLayout','showEquipmentLabels']){const b=await q('#'+id).boundingBox();assert.ok(b&&b.x>=0&&b.x+b.width<=390,id+' fits mobile');}
-  await screenshot('mobile-living-layout-controls','#home-controls');
+  if(runs('layouts')){
+    await openInterior('front-kitchen');await q('#interior-host [data-view="dollhouse"]').click({timeout:remaining()});await interiorReady();
+    await field('equipment').uncheck({timeout:remaining()});await interiorReady();
+    await page.waitForFunction(()=>document.querySelector('#interior-host')?.getInteriorDiagnostics?.().scene?.equipmentLabels?.enabled===false,null,{timeout:remaining()});
+    assert.equal(await field('dimensions').isChecked(),false);
+    await field('equipment').check({timeout:remaining()});await field('cinema').selectOption('garden-salon',{timeout:remaining()});await interiorReady();
+    await field('close').click({timeout:remaining()});await sharedReady();
+    await q('#share').click({timeout:remaining()});const sharedURL=page.url();assert.equal(new URLSearchParams(new URL(sharedURL).hash.slice(1)).get('livingCinemaLayout'),'garden-salon');
+    await page.reload({waitUntil:'domcontentloaded',timeout:remaining()});await q('#loading').waitFor({state:'hidden',timeout:remaining()});await sharedReady();
+    const restored=await exportDesign();assert.equal(restored.settings.livingCinemaLayout,'garden-salon');assert.equal(restored.settings.showEquipmentLabels,true);assert.equal(restored.settings.showDimensions,false);
+    await check('Layout selection and independent equipment-label setting survive Share and reload without moving any trees');
+    await page.setViewportSize({width:390,height:844});
+    await q('#home-controls > summary').click({timeout:remaining()});await q('#livingCinemaLayout').scrollIntoViewIfNeeded({timeout:remaining()});
+    for(const id of ['livingCinemaLayout','showEquipmentLabels']){const b=await q('#'+id).boundingBox();assert.ok(b&&b.x>=0&&b.x+b.width<=390,id+' fits mobile');}
+    await screenshot('mobile-living-layout-controls','#home-controls');
+  }
   assert.deepEqual(report.errors,[]);report.status='passed';
 }catch(error){report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);
   if(page){try{report.failure={url:page.url(),diagnostics:await q('#render-diagnostics').evaluate(el=>({...el.dataset})),interior:await q('#interior-host').evaluate(h=>h.getInteriorDiagnostics?.())};await page.screenshot({path:path.join(output,'failure.png'),timeout:20000});report.screenshots.push('failure.png');}catch{}}

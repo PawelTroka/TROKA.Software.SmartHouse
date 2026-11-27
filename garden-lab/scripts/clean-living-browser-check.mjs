@@ -1,6 +1,8 @@
 // Focused 1.39 evidence through the same public controls, Share links and
 // diagnostics as the open-living and garden-living browser suites. Run in CI;
 // the managed ChatGPT workspace uses its approved preview browser instead.
+// CLEAN_LIVING_GROUP=garden|interiors selects an independent scenario with
+// its own 600-second process budget. The default all retains the full sequence.
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
@@ -12,16 +14,19 @@ import {WALK_COMFORT} from '../src/walk-motion.js';
 
 assert.notEqual(process.env.SITES_MANAGED_LINUX_CONTAINER,'1','Use the approved managed preview; this real-WebGL runner belongs in GitHub Actions.');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const output=path.join(root,'test-results','clean-living');
+const group=process.env.CLEAN_LIVING_GROUP||'all';
+assert.ok(['all','garden','interiors'].includes(group),'CLEAN_LIVING_GROUP must be all, garden or interiors');
+const selectedGroups=group==='all'?['garden','interiors']:[group];
+const output=path.join(root,'test-results','clean-living',group);
 await mkdir(output,{recursive:true});
 const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
 const STYLE='scandinavian',BUDGET=600000,SCENE_TIMEOUT=120000;
 const started=Date.now(),deadline=started+BUDGET;
-const remaining=()=>{const left=deadline-Date.now();assert.ok(left>0,'Clean-living evidence exceeded its 600 second budget');return Math.max(1,Math.min(SCENE_TIMEOUT,left));};
-const report={version,style:STYLE,status:'running',checks:[],screenshots:[],sceneCaptures:[],views:[],errors:[],
+const remaining=()=>{const left=deadline-Date.now();assert.ok(left>0,`Clean-living ${group} evidence exceeded its 600 second budget`);return Math.max(1,Math.min(SCENE_TIMEOUT,left));};
+const report={version,group,selectedGroups,completedGroups:[],style:STYLE,status:'running',checks:[],screenshots:[],sceneCaptures:[],views:[],errors:[],
   sceneEvidence:'Actual WebGL frames through public garden controls, Share URLs, interior room selectors, accessible walking and drag look. No private app state or camera control hooks.'};
 const save=()=>writeFile(path.join(output,'browser-report.json'),JSON.stringify({...report,elapsedMs:Date.now()-started},null,2));
-const check=async label=>{report.checks.push(label);console.log('CLEAN_LIVING_CHECK '+label);await save();};
+const check=async label=>{report.checks.push(label);console.log(`CLEAN_LIVING_CHECK [${group}] ${label}`);await save();};
 let browser,server,page,frame,base=process.env.BASE_URL?.replace(/\/$/,'');
 const q=selector=>page.locator(selector),field=id=>q(`#interior-host [data-iw="${id}"]`);
 const near=(a,b,tol=1e-5)=>assert.ok(Math.abs(a-b)<tol,`${a} differs from ${b}`);
@@ -178,48 +183,65 @@ try{
   report.exported={schema:initial.schemaVersion,trees:initial.settings.screeningTrees,pool,sunbeds:beds,kitchenWindow:sinkWindow,saunaWindow:sauna};
   const response=await page.request.get(new URL('./data/site-data.json',page.url()).href,{timeout:remaining()});assert.ok(response.ok());frame=houseModelFrame(await response.json(),initial.settings);
   await check('Fresh Scandinavian defaults preserve two pines, restore only the boundary pine, use three chaises along two pool edges and export the actual clear apertures');
-  await q('#viewer button[data-mode="plan"]').click({timeout:remaining()});await q('#plan-host svg').waitFor({state:'visible',timeout:remaining()});await shot('garden-two-edge-loungers-and-boundary-pine','#plan-host','plan');
-  await q('#viewer button[data-mode="orbit"]').click({timeout:remaining()});await q('#showDimensions').uncheck({timeout:remaining()});
-  if(await q('#sun-controls').getAttribute('open')===null)await q('#sun-controls > summary').click({timeout:remaining()});
-  await q('#sun-date').fill('2026-06-21',{timeout:remaining()});await q('#sun-date').press('Tab',{timeout:remaining()});await q('#preview-day').click({timeout:remaining()});
-  await q('[data-studio-inspect="garden"]').click({timeout:remaining()});await sceneReady();assertCovers(await sceneInfo(),0,0);await shot('garden-overview-covers-concealed');
-  await q('[data-preset="jacuzzi"]').click({timeout:remaining()});await q('[data-look-yaw="0"]').click({timeout:remaining()});await sceneReady();
-  const jacuzzi=await exportDesign();assert.equal(jacuzzi.settings.preset,'jacuzzi');near(jacuzzi.settings.eyeHeight,.70);report.jacuzziView={observer:jacuzzi.summary?.observer,summary:jacuzzi.summary};await shot('jacuzzi-seated-pck3-screening');
-  await q('[data-studio-inspect="garden"]').click({timeout:remaining()});await cover('jacuzziCoverClosed',true);assertCovers(await sceneInfo(),1,0);
-  await cover('coldPlungeCoverClosed',true);assertCovers(await sceneInfo(),1,1);await shot('garden-both-spa-covers-closed');
-  await cover('jacuzziCoverClosed',false);assertCovers(await sceneInfo(),0,1);
-  await cover('coldPlungeCoverClosed',false);assertCovers(await sceneInfo(),0,0);await shot('garden-both-spa-covers-retracted');
-  await sharePatch({mode:'eye',preset:'custom',observerX:7.7,observerY:33.6,eyeHeight:1.25,lookYaw:0,lookPitch:-30,sceneMotion:false,interiorView:'plan',interiorEnabled:false,walkNavigation:'free'});
-  await sceneReady();assertCovers(await sceneInfo(),0,0);await shot('cold-plunge-clear-flush-surround');
-  await cover('coldPlungeCoverClosed',true);assertCovers(await sceneInfo(),0,1);await shot('cold-plunge-flush-cover-closed');
-  await cover('coldPlungeCoverClosed',false);assertCovers(await sceneInfo(),0,0);
-  await check('Both actual spa lids independently close and retract completely below their surrounds; seated jacuzzi and close plunge views are captured');
+  if(selectedGroups.includes('garden')){
+    await q('#viewer button[data-mode="plan"]').click({timeout:remaining()});await q('#plan-host svg').waitFor({state:'visible',timeout:remaining()});await shot('garden-two-edge-loungers-and-boundary-pine','#plan-host','plan');
+    await q('#viewer button[data-mode="orbit"]').click({timeout:remaining()});await q('#showDimensions').uncheck({timeout:remaining()});
+    if(await q('#sun-controls').getAttribute('open')===null)await q('#sun-controls > summary').click({timeout:remaining()});
+    await q('#sun-date').fill('2026-06-21',{timeout:remaining()});await q('#sun-date').press('Tab',{timeout:remaining()});await q('#preview-day').click({timeout:remaining()});
+    await q('[data-studio-inspect="garden"]').click({timeout:remaining()});await sceneReady();assertCovers(await sceneInfo(),0,0);await shot('garden-overview-covers-concealed');
+    await q('[data-preset="jacuzzi"]').click({timeout:remaining()});await q('[data-look-yaw="0"]').click({timeout:remaining()});await sceneReady();
+    const jacuzzi=await exportDesign();assert.equal(jacuzzi.settings.preset,'jacuzzi');near(jacuzzi.settings.eyeHeight,.70);report.jacuzziView={observer:jacuzzi.summary?.observer,summary:jacuzzi.summary};await shot('jacuzzi-seated-pck3-screening');
+    await q('[data-studio-inspect="garden"]').click({timeout:remaining()});await cover('jacuzziCoverClosed',true);assertCovers(await sceneInfo(),1,0);
+    await cover('coldPlungeCoverClosed',true);assertCovers(await sceneInfo(),1,1);await shot('garden-both-spa-covers-closed');
+    await cover('jacuzziCoverClosed',false);assertCovers(await sceneInfo(),0,1);
+    await cover('coldPlungeCoverClosed',false);assertCovers(await sceneInfo(),0,0);await shot('garden-both-spa-covers-retracted');
+    await sharePatch({mode:'eye',preset:'custom',observerX:7.7,observerY:33.6,eyeHeight:1.25,lookYaw:0,lookPitch:-30,sceneMotion:false,interiorView:'plan',interiorEnabled:false,walkNavigation:'free'});
+    await sceneReady();assertCovers(await sceneInfo(),0,0);await shot('cold-plunge-clear-flush-surround');
+    await cover('coldPlungeCoverClosed',true);assertCovers(await sceneInfo(),0,1);await shot('cold-plunge-flush-cover-closed');
+    await cover('coldPlungeCoverClosed',false);assertCovers(await sceneInfo(),0,0);
+    await check('Both actual spa lids independently close and retract completely below their surrounds; seated jacuzzi and close plunge views are captured');
+    report.completedGroups.push('garden');await save();
+  }
 
-  await roomView({id:'kitchen-wide-clear-window',floor:'ground',room:'front-kitchen',position:[2.80,6.94],aim:[.175,6.94]});
-  await q('#showDimensions').check({timeout:remaining()});await walking('ground');report.roomDimensions=await dimensionState({floor:'ground'});await shot('kitchen-room-dimensions');
-  const before=await pose();await q('#scene-host .walk-pad').getByRole('button',{name:'Walk forward',exact:true}).press('Enter',{timeout:remaining()});
-  await walking('ground');const after=await pose();near(Math.hypot(after.position[0]-before.position[0],after.position[2]-before.position[2]),.28,.005);
-  report.walkDimensions=await dimensionState({floor:'ground'});await shot('kitchen-walking-dimensions');
-  await q('#showDimensions').uncheck({timeout:remaining()});await sceneReady();await dimensionState({enabled:false});await shot('kitchen-dimensions-off');
-  await check('Interior dimensions follow real room entry and walking, stay on the occupied floor, and disappear through the public Dimensions switch');
-  await roomView({id:'ground-bathroom-clear-window',floor:'ground',room:'bathroom',position:[8.70,6.45],aim:[10.595,6.45]});
-  await roomView({id:'upper-bathroom-clear-window',floor:'first',room:'spa-bath',position:[8.65,6.28],aim:[10.60,6.28]});
-  await roomView({id:'indoor-sauna-picture-window',floor:'first',room:'sauna',position:[9.47,4.61],aim:[10.60,4.61]});
-  await openPlan('ground','front-kitchen');await field('dimensions').check({timeout:remaining()});
-  await q('#interior-host button[data-view="dollhouse"]').click({timeout:remaining()});
-  await page.waitForFunction(()=>{const h=document.querySelector('#interior-host'),s=h?.getInteriorDiagnostics?.().scene,a=s?.surfaceAssets;
-    return s?.available&&s.visible&&s.view==='dollhouse'&&s.floor==='ground'&&s.styleId==='scandinavian'&&s.frames>0&&!s.framePending&&!s.interacting&&s.triangles>0&&a?.requested>0&&a.loaded===a.requested&&a.failed.length===0;
-  },undefined,{timeout:remaining()});
-  report.cutawayDimensions=await dimensionState({floor:'ground',interior:true});assert.ok(report.cutawayDimensions.some(d=>d.kind==='room'&&/m²/.test(d.text)));
-  await shot('ground-cutaway-room-and-furniture-dimensions','#interior-host [data-iw="canvas"]','interior');
-  await field('dimensions').uncheck({timeout:remaining()});await dimensionState({enabled:false,interior:true});
-  await shot('ground-cutaway-dimensions-off','#interior-host [data-iw="canvas"]','interior');
-  await check('Cutaway room areas, dimensions and detail labels use the same master switch as walking and remain optional');
+  if(selectedGroups.includes('interiors')){
+    // A separate interiors process must start from the same public shared
+    // state reached by the garden scenario, without spending its budget on
+    // garden screenshots, cover animations or the seated screening view.
+    if(!selectedGroups.includes('garden')){
+      await q('#showDimensions').uncheck({timeout:remaining()});
+      if(await q('#sun-controls').getAttribute('open')===null)await q('#sun-controls > summary').click({timeout:remaining()});
+      await q('#sun-date').fill('2026-06-21',{timeout:remaining()});await q('#sun-date').press('Tab',{timeout:remaining()});await q('#preview-day').click({timeout:remaining()});
+      await sharePatch({mode:'eye',preset:'custom',observerX:7.7,observerY:33.6,eyeHeight:1.25,lookYaw:0,lookPitch:-30,sceneMotion:false,interiorView:'plan',interiorEnabled:false,walkNavigation:'free'});
+      await sceneReady();assertCovers(await sceneInfo(),0,0);
+    }
+    await roomView({id:'kitchen-wide-clear-window',floor:'ground',room:'front-kitchen',position:[2.80,6.94],aim:[.175,6.94]});
+    await q('#showDimensions').check({timeout:remaining()});await walking('ground');report.roomDimensions=await dimensionState({floor:'ground'});await shot('kitchen-room-dimensions');
+    const before=await pose();await q('#scene-host .walk-pad').getByRole('button',{name:'Walk forward',exact:true}).press('Enter',{timeout:remaining()});
+    await walking('ground');const after=await pose();near(Math.hypot(after.position[0]-before.position[0],after.position[2]-before.position[2]),.28,.005);
+    report.walkDimensions=await dimensionState({floor:'ground'});await shot('kitchen-walking-dimensions');
+    await q('#showDimensions').uncheck({timeout:remaining()});await sceneReady();await dimensionState({enabled:false});await shot('kitchen-dimensions-off');
+    await check('Interior dimensions follow real room entry and walking, stay on the occupied floor, and disappear through the public Dimensions switch');
+    await roomView({id:'ground-bathroom-clear-window',floor:'ground',room:'bathroom',position:[8.70,6.45],aim:[10.595,6.45]});
+    await roomView({id:'upper-bathroom-clear-window',floor:'first',room:'spa-bath',position:[8.65,6.28],aim:[10.60,6.28]});
+    await roomView({id:'indoor-sauna-picture-window',floor:'first',room:'sauna',position:[9.47,4.61],aim:[10.60,4.61]});
+    await openPlan('ground','front-kitchen');await field('dimensions').check({timeout:remaining()});
+    await q('#interior-host button[data-view="dollhouse"]').click({timeout:remaining()});
+    await page.waitForFunction(()=>{const h=document.querySelector('#interior-host'),s=h?.getInteriorDiagnostics?.().scene,a=s?.surfaceAssets;
+      return s?.available&&s.visible&&s.view==='dollhouse'&&s.floor==='ground'&&s.styleId==='scandinavian'&&s.frames>0&&!s.framePending&&!s.interacting&&s.triangles>0&&a?.requested>0&&a.loaded===a.requested&&a.failed.length===0;
+    },undefined,{timeout:remaining()});
+    report.cutawayDimensions=await dimensionState({floor:'ground',interior:true});assert.ok(report.cutawayDimensions.some(d=>d.kind==='room'&&/m²/.test(d.text)));
+    await shot('ground-cutaway-room-and-furniture-dimensions','#interior-host [data-iw="canvas"]','interior');
+    await field('dimensions').uncheck({timeout:remaining()});await dimensionState({enabled:false,interior:true});
+    await shot('ground-cutaway-dimensions-off','#interior-host [data-iw="canvas"]','interior');
+    await check('Cutaway room areas, dimensions and detail labels use the same master switch as walking and remain optional');
+    report.completedGroups.push('interiors');await save();
+  }
+  assert.deepEqual(report.completedGroups,selectedGroups);
   assert.deepEqual(report.errors,[]);report.status='passed';assert.ok(Date.now()-started<BUDGET);
 }catch(error){
   report.status='failed';report.error=error.stack||String(error);process.exitCode=1;console.error(report.error);
   if(page){try{report.failureState={diagnostics:await rawInfo(),url:page.url(),interior:await q('#interior-host').evaluate(h=>h.getInteriorDiagnostics?.())};}catch{}
     try{const file='failure.png';await page.screenshot({path:path.join(output,file),timeout:30000});report.screenshots.push(file);}catch{}}
 }finally{
-  await save();await browser?.close();if(server)await new Promise(resolve=>server.close(resolve));console.log('CLEAN_LIVING_RESULT '+report.status);
+  await save();await browser?.close();if(server)await new Promise(resolve=>server.close(resolve));console.log(`CLEAN_LIVING_RESULT ${report.status} group=${group}`);
 }

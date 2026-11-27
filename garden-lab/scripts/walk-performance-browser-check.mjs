@@ -1,6 +1,8 @@
 // Reproducible, real WebGL baseline/candidate walking traces on one CI browser.
 // Camera entry, movement, labels and fullscreen use public UI/Share controls.
 // RAF and Long Task observers are instrumentation only; no private app hooks.
+// WALK_PERFORMANCE_ROUTE=living|garden selects one paired route (default all).
+// BENCHMARK_GPU_DIAGNOSTICS=1 adds optional nonblocking public WebGL2 fences.
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
@@ -13,7 +15,11 @@ import {frameTimeSummary} from '../src/frame-performance.js';
 assert.notEqual(process.env.SITES_MANAGED_LINUX_CONTAINER,'1','Run real WebGL performance evidence in GitHub Actions; use the approved preview in the managed workspace.');
 assert.ok(process.env.BASELINE_DIR,'BASELINE_DIR must name the built 66c096a garden-lab checkout.');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),baselineRoot=path.resolve(process.env.BASELINE_DIR);
-const output=path.join(root,'test-results','walk-performance');await mkdir(output,{recursive:true});
+const routeGroup=process.env.WALK_PERFORMANCE_ROUTE||'all';
+assert.ok(['all','living','garden'].includes(routeGroup),'WALK_PERFORMANCE_ROUTE must be all, living or garden');
+const selectedRoutes=routeGroup==='all'?['living','garden']:[routeGroup];
+const gpuDiagnostics=process.env.BENCHMARK_GPU_DIAGNOSTICS==='1';
+const output=path.join(root,'test-results','walk-performance',routeGroup);await mkdir(output,{recursive:true});
 const baselineState=await import(pathToFileURL(path.join(baselineRoot,'src/state.js')).href);
 const baselineVersion=JSON.parse(await readFile(path.join(baselineRoot,'package.json'),'utf8')).version;
 const candidateVersion=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
@@ -22,7 +28,7 @@ const fixture=baselineState.sanitizeState({...baselineState.DEFAULTS,designStyle
   mode:'orbit',interiorEnabled:false,walkNavigation:'free'});
 const hash=baselineState.encodeState(fixture),duration=Math.max(6000,Math.min(20000,Number(process.env.BENCHMARK_DURATION_MS)||8000));
 const minimumSamples=32,warmupLimitMs=30000,captureLimitMs=60000,shuttleHalfWidthM=.35;
-const report={status:'running',baseline:{commit:'66c096a',version:baselineVersion},candidate:{version:candidateVersion},
+const report={status:'running',routeGroup,selectedRoutes,baseline:{commit:'66c096a',version:baselineVersion},candidate:{version:candidateVersion},
   method:'Same Chromium process and software GPU; public Share fixture, room entry, fullscreen and continuous public walking keys. A lateral shuttle follows the same bounded strip using observed walking positions. Warmup requires elapsed time, delivered frames and a stable observed buffer, subject to a recorded time cap. Each measured RAF/Long Task trace requires minimum elapsed time and delivered samples, with a 60-second cap. No mocked rendering or private app state.',
   limitations:['CI uses SwiftShader on a shared CPU host, not the user’s GPU; absolute FPS must not be generalized to user hardware.',
     'RAF delivery measures observed navigation cadence, not isolated GPU timer-query time. Public frame counts and changing walking poses verify active rendering.',
@@ -31,7 +37,10 @@ const report={status:'running',baseline:{commit:'66c096a',version:baselineVersio
     'One trace per scenario and route is directional shared-host evidence. At the minimum sample count, the 1% low is the worst single delivered interval, not a statistically stable tail estimate.',
     'The shuttle reverses on public position feedback, so dispatch latency can overshoot its target bounds; observed route offsets are retained for comparison.',
     'A time-capped control below the minimum sample count is explicitly sample-limited: no percentile, 1% low or percentage speedup is inferred from it. Adequate candidates must exceed the control qualification rate for a directional throughput comparison.',
-    'Renderer throughput uses the public published-frame counter over the complete observed window. Counter publication is periodic; this is an observed finite-window rate, not a confidence interval or input-to-photon measurement.'],
+    'Renderer throughput uses the public published-frame counter over the complete observed window. Counter publication is periodic; this is an observed finite-window rate, not a confidence interval or input-to-photon measurement.',
+    'The 250 ms heartbeat and lifecycle events distinguish main-thread availability from delivered RAFs; timer delay alone does not identify a cause.',
+    'Optional WebGL2 diagnostics insert and flush one fence at a time and poll without waiting. Fence latency bounds include timer scheduling and earlier queued work; they are not isolated GPU render durations.'],
+  instrumentation:{heartbeatIntervalMs:250,gpuDiagnostics,fencePollTimeoutNs:0,fenceMinimumSubmissionIntervalMs:1000,maxOutstandingFences:1},
   fixture,viewport:{width:1280,height:800,deviceScaleFactor:1},durationMs:duration,
   capturePolicy:{minimumSamples,warmupMinimumMs:4000,warmupLimitMs,captureLimitMs,stableBufferMinimumFrames:12,stableBufferMinimumMs:1500,shuttleHalfWidthM,discardedInitialIntervals:0,regressionEnforced:process.env.ENFORCE_PERFORMANCE_REGRESSION==='1'},
   host:{platform:os.platform(),release:os.release(),arch:os.arch(),cpuModel:os.cpus()[0]?.model,logicalCpus:os.cpus().length,totalMemoryGB:os.totalmem()/1024**3,node:process.version},
@@ -85,16 +94,97 @@ function continuousShuttle(page,pose){
 }
 async function snapshotTrace(page,{stop=false}={}){
   return page.evaluate(stop=>{const t=window.__navigationTrace;if(!t)return null;
-    if(stop){t.active=false;cancelAnimationFrame(t.handle);for(const e of t.observer?.takeRecords()||[])t.longTasks.push({start:e.startTime,duration:e.duration});t.observer?.disconnect();}
+    const state=t.readState();
+    if(stop){
+      t.active=false;cancelAnimationFrame(t.handle);clearInterval(t.heartbeatHandle);
+      for(const [target,type,listener,capture]of t.listeners)target.removeEventListener(type,listener,capture);
+      for(const e of t.observer?.takeRecords()||[])t.longTasks.push({start:e.startTime,duration:e.duration});t.observer?.disconnect();
+      t.pollFence(true);
+    }
     const result={frames:t.frames,longTasks:t.longTasks,elapsedMs:performance.now()-t.start,initialRenderedFrames:t.initialRenderedFrames,
-      finalRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0};
+      finalRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,
+      heartbeat:{intervalMs:250,records:t.heartbeats},lifecycleEvents:t.lifecycleEvents,browserState:{initial:t.initialState,final:state},gpuDiagnostics:t.gpu};
     if(stop)delete window.__navigationTrace;return result;
   },stop);
 }
 async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBuffer=false,onCheckpoint}){
-  await page.evaluate(()=>{
+  await page.evaluate(gpuEnabled=>{
     const trace={frames:[],longTasks:[],active:true,handle:0,start:performance.now(),observer:null,
-      initialRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,bufferKey:'',bufferStart:0,bufferFrames:0};window.__navigationTrace=trace;
+      initialRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,bufferKey:'',bufferStart:0,bufferFrames:0,
+      heartbeatHandle:0,heartbeats:[],lifecycleEvents:[],listeners:[],pendingFence:null,lastFenceSubmitted:-Infinity,
+      gpu:{enabled:gpuEnabled,available:false,method:'webgl2-nonblocking-fence',pollTimeoutNs:0,minimumSubmissionIntervalMs:1000,
+        maxOutstandingFences:1,polls:0,fences:[],errors:[],latencyInterpretation:'Bounds on observed queue completion; includes polling delay and earlier queued GPU work.'}};
+    window.__navigationTrace=trace;
+    const describeElement=element=>element?.tagName?{tag:element.tagName.toLowerCase(),id:element.id||null,
+      walkCanvas:element.matches?.('#scene-host canvas')||false}:element===window?{tag:'window'}:element===document?{tag:'document'}:null;
+    trace.readState=()=>{
+      const canvas=document.querySelector('#scene-host canvas'),d=document.querySelector('#render-diagnostics')?.dataset;
+      return {t:performance.now()-trace.start,visibilityState:document.visibilityState,hidden:document.hidden,hasFocus:document.hasFocus(),
+        activeElement:describeElement(document.activeElement),fullscreenElement:describeElement(document.fullscreenElement),
+        fullscreenMode:document.body.dataset.modelFullscreen||null,fullscreenTarget:document.body.dataset.fullscreenTarget||null,
+        fullscreenPending:Boolean(document.body.dataset.fullscreenPending),fullscreenResizePending:Boolean(document.body.dataset.fullscreenResizePending),
+        rendering:{drawEnabled:d?.drawEnabled,canvasIntersecting:d?.canvasIntersecting,presentationVisible:d?.presentationVisible,
+          renderPending:d?.renderPending,interacting:d?.interacting,renderedFrames:Number(d?.frames)||0,
+          bufferWidth:canvas?.width,bufferHeight:canvas?.height}};
+    };
+    trace.initialState=trace.readState();
+    for(const [target,type,capture]of [[document,'visibilitychange',false],[document,'fullscreenchange',false],
+      [window,'focus',true],[window,'blur',true],[window,'pagehide',false],[window,'pageshow',false]]){
+      const listener=event=>{if(trace.active)trace.lifecycleEvents.push({type,target:describeElement(event.target),...trace.readState()});};
+      target.addEventListener(type,listener,capture);trace.listeners.push([target,type,listener,capture]);
+    }
+    let gl=null;
+    if(gpuEnabled){
+      try{
+        // The ready scene already owns this public context. Reusing it does
+        // not access private renderer state or create an additional canvas.
+        gl=document.querySelector('#scene-host canvas')?.getContext('webgl2');
+        trace.gpu.available=Boolean(gl&&typeof gl.fenceSync==='function'&&typeof gl.clientWaitSync==='function');
+        if(!trace.gpu.available)trace.gpu.unavailableReason='The rendered canvas does not expose a WebGL2 fence context.';
+      }catch(error){trace.gpu.errors.push({t:performance.now()-trace.start,stage:'context',message:String(error)});}
+    }
+    const finishFence=(status,now)=>{
+      const pending=trace.pendingFence;if(!pending)return;
+      pending.record.status=status;pending.record.finishedAtMs=now-trace.start;
+      pending.record.elapsedMs=now-pending.submitted;
+      if(status==='signaled')pending.record.completionLatencyBoundsMs={
+        lower:Math.max(0,(pending.lastUnsignaled??pending.submitted)-pending.submitted),upper:now-pending.submitted};
+      try{gl.deleteSync(pending.sync);}catch(error){trace.gpu.errors.push({t:now-trace.start,stage:'delete',message:String(error)});}
+      trace.pendingFence=null;
+    };
+    trace.pollFence=(stopping=false)=>{
+      if(!trace.gpu.available)return;
+      let now=performance.now();
+      try{
+        if(gl.isContextLost()){finishFence('context-lost',now);trace.gpu.available=false;trace.gpu.unavailableReason='Context lost during the trace.';return;}
+        if(trace.pendingFence){
+          // A zero timeout never waits for GPU completion on the main thread.
+          const status=gl.clientWaitSync(trace.pendingFence.sync,0,0);trace.gpu.polls++;now=performance.now();
+          trace.pendingFence.record.lastPolledAtMs=now-trace.start;
+          if(status===gl.ALREADY_SIGNALED||status===gl.CONDITION_SATISFIED)finishFence('signaled',now);
+          else if(status===gl.WAIT_FAILED){finishFence('wait-failed',now);trace.gpu.available=false;trace.gpu.unavailableReason='WebGL fence wait failed.';}
+          else{trace.pendingFence.lastUnsignaled=now;trace.pendingFence.record.lastUnsignaledAtMs=now-trace.start;}
+        }
+        if(stopping){finishFence('not-completed-at-trace-end',performance.now());return;}
+        if(trace.active&&trace.gpu.available&&!trace.pendingFence&&now-trace.lastFenceSubmitted>=1000){
+          const sync=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);
+          if(!sync){trace.gpu.available=false;trace.gpu.unavailableReason='WebGL did not allocate a fence.';return;}
+          const record={id:trace.gpu.fences.length+1,status:'pending',submittedAtMs:now-trace.start};
+          trace.gpu.fences.push(record);trace.pendingFence={sync,record,submitted:now};trace.lastFenceSubmitted=now;
+          gl.flush();
+        }
+      }catch(error){
+        trace.gpu.errors.push({t:performance.now()-trace.start,stage:'poll-or-submit',message:String(error)});
+        finishFence('error',performance.now());trace.gpu.available=false;
+      }
+    };
+    let lastHeartbeat=trace.start;
+    trace.heartbeatHandle=setInterval(()=>{
+      if(!trace.active)return;
+      const now=performance.now(),intervalMs=now-lastHeartbeat;lastHeartbeat=now;
+      trace.heartbeats.push({intervalMs,delayMs:Math.max(0,intervalMs-250),...trace.readState()});
+      trace.pollFence();
+    },250);
     try{trace.observer=new PerformanceObserver(list=>{for(const e of list.getEntries())trace.longTasks.push({start:e.startTime,duration:e.duration});});trace.observer.observe({type:'longtask',buffered:false});}catch{}
     let last=0;
     const frame=now=>{if(!trace.active)return;const c=document.querySelector('#scene-host canvas'),key=c?.width+'×'+c?.height;
@@ -102,7 +192,7 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
       if(last)trace.frames.push({ms:now-last,t:now-trace.start,position:c?.dataset.walkPosition,renderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames),bufferWidth:c?.width,bufferHeight:c?.height});
       last=now;trace.handle=requestAnimationFrame(frame);
     };trace.handle=requestAnimationFrame(frame);
-  });
+  },gpuDiagnostics);
   let progress=null,checkpointAt=Date.now()+5000,metMinimum=false;
   try{
     while(true){
@@ -209,14 +299,20 @@ try{
     const params=new URLSearchParams(hash);params.set('livingCinemaLayout',scenario.layout);params.set('showEquipmentLabels',String(scenario.equipment));
     let ready=false;
     try{
-      for(const route of ['living','garden']){
+      for(const route of selectedRoutes){
         try{
           if(!ready){
             await page.goto(scenario.url+'/?site=sternicza-11#'+params,{waitUntil:'domcontentloaded'});await page.locator('#loading').waitFor({state:'hidden'});await settled(page);ready=true;
             if(!report.host.webgl)report.host.webgl=await page.locator('#scene-host canvas').evaluate(canvas=>{const gl=canvas.getContext('webgl2')||canvas.getContext('webgl'),ext=gl?.getExtension('WEBGL_debug_renderer_info');return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl?.getParameter(gl.RENDERER),vendor:ext?gl.getParameter(ext.UNMASKED_VENDOR_WEBGL):gl?.getParameter(gl.VENDOR)};});
           }
           if(route==='living')await enterLiving(page);
-          else{await page.locator('#walk-location').selectOption('garden');await page.locator('#walk-start').click();await settled(page,'garden');}
+          else{
+            // The combined sequence keeps the living-room heading when it
+            // enters the garden. Reproduce that public camera setup in a
+            // garden-only job instead of silently changing the measured view.
+            if(!selectedRoutes.includes('living'))await enterLiving(page);
+            await page.locator('#walk-location').selectOption('garden');await page.locator('#walk-start').click();await settled(page,'garden');
+          }
           if(await page.locator('#viewer-fullscreen').getAttribute('aria-pressed')!=='true')await page.locator('#viewer-fullscreen').click();await settled(page,route==='living'?'ground':'garden');
           await capture(page,scenario.id,route);
         }catch(error){
@@ -231,7 +327,7 @@ try{
       }
     }finally{await context.close();}
   }
-  for(const route of ['living','garden']){
+  for(const route of selectedRoutes){
     const baseline=report.runs.find(r=>r.case==='baseline-1.39'&&r.route===route),candidate=report.runs.find(r=>r.case==='candidate-legacy'&&r.route===route),current=report.runs.find(r=>r.case==='candidate-current'&&r.route===route);
     const comparison=compareRuns(route,baseline,candidate,current);
     report.comparisons.push(comparison);await save();

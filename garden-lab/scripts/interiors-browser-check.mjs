@@ -359,7 +359,9 @@ try{
     await pad.scrollIntoViewIfNeeded({timeout:sceneStartupTimeout});
     await walking('ground',{timeout:sceneStartupTimeout,settled:true});
     const button=pad.getByRole('button',{name:label,exact:true}),bounds=await button.boundingBox();assert.ok(bounds);
-    assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390&&bounds.y>=0&&bounds.y+bounds.height<=844&&bounds.height>=40,
+    // Native scroll alignment rounds CSS pixel offsets; allow the same one-pixel
+    // edge tolerance as fullscreen while requiring an exact centre hit below.
+    assert.ok(bounds.x>=-1&&bounds.x+bounds.width<=391&&bounds.y>=-1&&bounds.y+bounds.height<=845&&bounds.height>=40,
       `${label} must fit the viewport with a usable touch target: ${JSON.stringify(bounds)}`);
     assert.equal(await button.evaluate(node=>{const b=node.getBoundingClientRect();return node.contains(document.elementFromPoint(b.x+b.width/2,b.y+b.height/2));}),true,`${label} must receive pointer input at its visible centre`);
     const before=(await walkCanvas().getAttribute('data-walk-position')).split(',').map(Number);
@@ -384,7 +386,7 @@ try{
   for(const direction of ['up','down']){
     await elevation.scrollIntoViewIfNeeded({timeout:sceneStartupTimeout});
     const button=elevation.locator(`[data-walk-elevation="${direction}"]`),bounds=await button.boundingBox();assert.ok(bounds);
-    assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390&&bounds.y>=0&&bounds.y+bounds.height<=844&&bounds.height>=40,'Elevation controls must fit the mobile screen');
+    assert.ok(bounds.x>=-1&&bounds.x+bounds.width<=391&&bounds.y>=-1&&bounds.y+bounds.height<=845&&bounds.height>=40,'Elevation controls must fit the mobile screen');
     const before=Number(await walkCanvas().getAttribute('data-walk-altitude'));
     await page.mouse.move(bounds.x+bounds.width/2,bounds.y+bounds.height/2);await page.mouse.down();
     try{await page.waitForFunction(({before,direction})=>{

@@ -196,9 +196,16 @@ jobs:
           retention-days: 7
 
   clean-living:
-    name: Concealed covers, glazing and interior dimensions
+    name: Covers and glazing · ${{ matrix.group }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    # Each sequence retains its 600-second capture budget and every assertion.
+    # Their combined run exhausted that budget after the bathroom views on
+    # shared software-GPU runners, before the final sauna/cutaway captures.
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [garden, interiors]
     defaults:
       run:
         working-directory: garden-lab
@@ -215,13 +222,15 @@ jobs:
       - run: python3 scripts/install-ci-browser.py
       - name: Inspect the clean living refinement in real WebGL
         timeout-minutes: 12
+        env:
+          CLEAN_LIVING_GROUP: ${{ matrix.group }}
         run: node scripts/clean-living-browser-check.mjs
       - name: Upload clean living evidence
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: clean-living-evidence
-          path: garden-lab/test-results/clean-living/
+          name: clean-living-evidence-${{ matrix.group }}
+          path: garden-lab/test-results/clean-living/${{ matrix.group }}/
           if-no-files-found: ignore
           retention-days: 7
 
@@ -323,9 +332,15 @@ jobs:
           retention-days: 7
 
   cinema-kitchen:
-    name: Cinema alternatives, luxury kitchen and mirror
+    name: Cinema and kitchen · ${{ matrix.group }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    # Keep the complete layout and room-entry evidence within independent
+    # ten-minute capture budgets on software-GPU runners.
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [layouts, kitchen]
     defaults:
       run:
         working-directory: garden-lab
@@ -342,20 +357,28 @@ jobs:
       - run: python3 scripts/install-ci-browser.py
       - name: Inspect physical layouts and equipment in real WebGL
         timeout-minutes: 12
+        env:
+          CINEMA_KITCHEN_GROUP: ${{ matrix.group }}
         run: node scripts/cinema-kitchen-browser-check.mjs
       - name: Upload cinema and kitchen evidence
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: cinema-kitchen-evidence
-          path: garden-lab/test-results/cinema-kitchen/
+          name: cinema-kitchen-evidence-${{ matrix.group }}
+          path: garden-lab/test-results/cinema-kitchen/${{ matrix.group }}/
           if-no-files-found: ignore
           retention-days: 7
 
   walk-performance:
-    name: Before and after walking performance
+    name: Walking performance · ${{ matrix.route }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    # Each route compares all three versions in one browser on one runner.
+    # Independent routes keep slow controls from cancelling later candidates.
+    strategy:
+      fail-fast: false
+      matrix:
+        route: [living, garden]
     defaults:
       run:
         working-directory: garden-lab
@@ -385,13 +408,15 @@ jobs:
         timeout-minutes: 16
         env:
           BASELINE_DIR: ../.walk-baseline/garden-lab
+          WALK_PERFORMANCE_ROUTE: ${{ matrix.route }}
+          BENCHMARK_GPU_DIAGNOSTICS: '1'
           ENFORCE_PERFORMANCE_REGRESSION: '1'
         run: node scripts/walk-performance-browser-check.mjs
       - name: Upload walking performance evidence
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: walk-performance-evidence
-          path: garden-lab/test-results/walk-performance/
+          name: walk-performance-evidence-${{ matrix.route }}
+          path: garden-lab/test-results/walk-performance/${{ matrix.route }}/
           if-no-files-found: ignore
           retention-days: 7

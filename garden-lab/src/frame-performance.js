@@ -12,12 +12,19 @@ export function frameTimeSummary(values){
  * renderer's seconds between frames are never misreported as frame stalls. */
 export function createFramePerformance(capacity=360){
   const intervals=new Float64Array(capacity),cpu=new Float64Array(capacity);let count=0,cpuCount=0,index=0,cpuIndex=0,last=0;
+  const phases=new Map();
   return {
     begin(now,active){const delta=active&&last?now-last:0;last=active?now:0;if(delta>0){intervals[index++%capacity]=delta;count++;}return delta;},
     end(milliseconds,active){if(active&&Number.isFinite(milliseconds)){cpu[cpuIndex++%capacity]=milliseconds;cpuCount++;}},
-    reset(){count=cpuCount=index=cpuIndex=last=0;},
+    phase(name,milliseconds,active){
+      if(!active||!Number.isFinite(milliseconds)||milliseconds<0)return;
+      if(!phases.has(name))phases.set(name,{values:new Float64Array(capacity),count:0});
+      const phase=phases.get(name);phase.values[phase.count++%capacity]=milliseconds;
+    },
+    reset(){count=cpuCount=index=cpuIndex=last=0;phases.clear();},
     getDiagnostics(){return {scope:'continuous-navigation',windowFrames:capacity,totalNavigationFrames:count,
-      frameTimeMs:frameTimeSummary(intervals.subarray(0,Math.min(count,capacity))),cpuFrameMs:frameTimeSummary(cpu.subarray(0,Math.min(cpuCount,capacity)))};},
+      frameTimeMs:frameTimeSummary(intervals.subarray(0,Math.min(count,capacity))),cpuFrameMs:frameTimeSummary(cpu.subarray(0,Math.min(cpuCount,capacity))),
+      phasesMs:Object.fromEntries([...phases].map(([name,phase])=>[name,frameTimeSummary(phase.values.subarray(0,Math.min(phase.count,capacity)))]))};},
   };
 }
 
