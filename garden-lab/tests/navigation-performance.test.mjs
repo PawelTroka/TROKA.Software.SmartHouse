@@ -7,6 +7,7 @@ import {createVegetationInstanceCuller} from '../src/scene-spatial-instances.js'
 import {renderBudget} from '../src/render-quality.js';
 import {updateMirrorCamera,installMirrorMaterial} from '../src/scene-mirrors.js';
 import {batchRepeatedGardenDetails} from '../src/scene-static-details.js';
+import {createFoliageMaterial} from '../src/scene-vegetation.js';
 
 test('accelerated measurement rays match native triangle intersections through a transformed aperture',()=>{
   const root=new THREE.Group(),mat=new THREE.MeshBasicMaterial({side:THREE.DoubleSide});root.position.set(2,.8,-3);root.rotation.y=.37;
@@ -87,6 +88,59 @@ test('vegetation compaction leaves custom instance attributes and stable-instanc
   const culler=createVegetationInstanceCuller();culler.setRoots([root]);culler.prepare(new THREE.PerspectiveCamera());
   assert.equal(culler.getDiagnostics().sourceBatches,0);assert.equal(custom.count,4);assert.equal(stable.count,4);culler.dispose();
   custom.dispose();stable.dispose();g.dispose();stable.geometry.dispose();m.dispose();
+});
+
+test('moving opaque order draws architecture before foliage while preserving explicit priorities and restoring the renderer',()=>{
+  const root=new THREE.Group(),g=new THREE.BoxGeometry(),leafMaterial=new THREE.MeshStandardMaterial({alphaTest:.3}),wallMaterial=new THREE.MeshStandardMaterial();
+  const foliage=new THREE.InstancedMesh(g,leafMaterial,2),wall=new THREE.Mesh(g,wallMaterial);foliage.name='existing-canopies-depth-order';root.add(foliage,wall);
+  const culler=createVegetationInstanceCuller();culler.setRoots([root]);
+  const item=(object,{groupOrder=0,renderOrder=object.renderOrder,z=0,id=object.id}={})=>({object,material:object.material,groupOrder,renderOrder,z,id});
+  let sorter=null;const changes=[],renderer={setOpaqueSort(value){sorter=value;changes.push(value);}};
+  const originalLeaf=leafMaterial.toJSON(),originalWall=wallMaterial.toJSON(),originalMatrices=foliage.instanceMatrix.array.slice();
+  foliage.count=1; // A compacted single-instance batch still belongs last.
+  culler.withOpaqueDepthOrder(renderer,()=>{
+    assert.equal(typeof sorter,'function');
+    const leaf=item(foliage,{z:.1}),architecture=item(wall,{z:.8});
+    assert.ok(leafMaterial.id<wallMaterial.id,'Default material order would draw this foliage first');
+    assert.deepEqual([leaf,architecture].sort(sorter),[architecture,leaf]);
+    assert.ok(sorter(item(foliage,{groupOrder:-1}),architecture)<0,'Explicit group priority wins');
+    assert.ok(sorter(item(foliage,{renderOrder:-1}),architecture)<0,'Explicit object priority wins');
+    assert.ok(sorter(leaf,item(wall,{renderOrder:999}))<0,'Late sky and overlays keep their explicit order');
+    const near=item(wall,{z:.1,id:20}),far=item(wall,{z:.8,id:10}),tied=item(wall,{z:.1,id:30});
+    assert.deepEqual([far,tied,near].sort(sorter),[near,tied,far],'Ordinary opaque depth and ID tie-breaks remain unchanged');
+    assert.ok(sorter(item(foliage,{renderOrder:2}),item(wall,{renderOrder:3}))<0);
+    assert.equal(culler.getDiagnostics().opaqueOrder,'architecture-before-vegetation');
+  },{enabled:true});
+  assert.equal(sorter,null,'Default opaque ordering is restored before any other pass');
+  assert.throws(()=>culler.withOpaqueDepthOrder(renderer,()=>{throw new Error('render failed');},{enabled:true}),/render failed/);
+  assert.equal(sorter,null,'A failed render cannot leak moving order into reflection or idle passes');
+  const previousChanges=changes.length;
+  culler.withOpaqueDepthOrder(renderer,()=>{assert.equal(sorter,null);},{enabled:false});
+  assert.equal(changes.length,previousChanges,'Shadow/idle passes do not replace the default sorter');
+  assert.equal(culler.getDiagnostics().opaqueOrder,'default');
+  assert.deepEqual(leafMaterial.toJSON(),originalLeaf);assert.deepEqual(wallMaterial.toJSON(),originalWall);
+  assert.deepEqual(foliage.instanceMatrix.array,originalMatrices);assert.equal(foliage.geometry,g);assert.equal(foliage.renderOrder,0);
+  culler.dispose();foliage.dispose();g.dispose();leafMaterial.dispose();wallMaterial.dispose();
+});
+
+test('moving depth order covers botanical meshes outside the compaction registry and respects material guards',()=>{
+  const g=new THREE.BoxGeometry(),base=new THREE.MeshStandardMaterial(),botanical=createFoliageMaterial(base,'pine'),wallMaterial=new THREE.MeshStandardMaterial();
+  const pine=new THREE.Mesh(g,botanical),wall=new THREE.Mesh(g,wallMaterial),root=new THREE.Group();pine.name='focal-screening-pine';root.add(pine,wall);
+  const culler=createVegetationInstanceCuller();culler.setRoots([root]);assert.equal(culler.getDiagnostics().sourceBatches,0);
+  const item=object=>({object,material:object.material,id:object.id,groupOrder:0,renderOrder:0,z:.5});
+  const pineItem=item(pine),wallItem=item(wall);let sorter=null;
+  culler.withOpaqueDepthOrder({setOpaqueSort(value){sorter=value;}},()=>{
+    assert.ok(botanical.id<wallMaterial.id,'The default material order would put this focal pine ahead of the wall');
+    assert.deepEqual([pineItem,wallItem].sort(sorter),[wallItem,pineItem]);
+    for(const [key,value] of [['depthWrite',false],['depthTest',false],['transparent',true]]){
+      const original=botanical[key];botanical[key]=value;
+      assert.deepEqual([wallItem,pineItem].sort(sorter),[pineItem,wallItem],`${key} guard keeps an ineligible material in the native order`);
+      botanical[key]=original;
+    }
+    assert.equal(pine.geometry,g);assert.equal(pine.material,botanical);assert.equal(pine.renderOrder,0);
+  },{enabled:true});
+  assert.equal(sorter,null);assert.equal(botanical.userData.botanicalCutouts,true);
+  culler.dispose();g.dispose();base.dispose();botanical.dispose();wallMaterial.dispose();
 });
 
 test('hall mirror reflects the real camera and clips geometry behind its arbitrary wall plane',()=>{

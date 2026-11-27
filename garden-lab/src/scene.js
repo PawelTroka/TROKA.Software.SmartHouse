@@ -1578,9 +1578,12 @@ export function createScene(container, data, callbacks = {}) {
       // an unlit night scene forever.
       const shadowPassPending=!svgMode&&renderer.shadowMap.enabled&&(renderer.shadowMap.needsUpdate||renderer.shadowMap.autoUpdate)&&
         (sun.visible&&sun.castShadow||gardenNight?.group.visible&&gardenNight.group.children.some(light=>light.isLight&&light.visible&&light.castShadow));
-      if(!svgMode)vegetationCulling.prepare(camera,{enabled:navigationActive&&!shadowPassPending});
+      const optimizeVegetation=!svgMode&&navigationActive&&!shadowPassPending;
+      if(!svgMode)vegetationCulling.prepare(camera,{enabled:optimizeVegetation});
       performanceTiming.phase('instanceCulling',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
-      if(presentation)presentation.render();else renderer.render(scene,camera);
+      vegetationCulling.withOpaqueDepthOrder(renderer,()=>{
+        if(presentation)presentation.render();else renderer.render(scene,camera);
+      },{enabled:optimizeVegetation});
       performanceTiming.phase('sceneRender',performance.now()-phaseStart,navigationActive);
     }finally{
       phaseStart=performance.now();vegetationCulling.restore();performanceTiming.phase('instanceRestore',performance.now()-phaseStart,navigationActive);

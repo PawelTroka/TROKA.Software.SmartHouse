@@ -27,9 +27,9 @@ const fixture=baselineState.sanitizeState({...baselineState.DEFAULTS,designStyle
   showDimensions:true,showRays:false,showLabels:false,existingVegetation:true,sunEnabled:true,sunDate:'2026-06-21',sunMinutes:780,
   mode:'orbit',interiorEnabled:false,walkNavigation:'free'});
 const hash=baselineState.encodeState(fixture),duration=Math.max(6000,Math.min(20000,Number(process.env.BENCHMARK_DURATION_MS)||8000));
-const minimumSamples=32,warmupLimitMs=30000,captureLimitMs=60000,shuttleHalfWidthM=.35;
+const minimumSamples=32,warmupLimitMs=30000,captureLimitMs=60000,initializationLimitMs=60000,shuttleHalfWidthM=.35;
 const report={status:'running',routeGroup,selectedRoutes,baseline:{commit:'66c096a',version:baselineVersion},candidate:{version:candidateVersion},
-  method:'Same Chromium process and software GPU; public Share fixture, room entry, fullscreen and continuous public walking keys. A lateral shuttle follows the same bounded strip using observed walking positions. Warmup requires elapsed time, delivered frames and a stable observed buffer, subject to a recorded time cap. Each measured RAF/Long Task trace requires minimum elapsed time and delivered samples, with a 60-second cap. No mocked rendering or private app state.',
+  method:'Same Chromium process and software GPU; public Share fixture, room entry, fullscreen and continuous public walking keys. A separately recorded public WebGL2 fence drains initialization work before walking. A lateral shuttle follows the same bounded strip using observed walking positions. Warmup begins before the first movement key and requires elapsed time, delivered frames and a stable observed buffer, subject to a recorded time cap. Each measured RAF/Long Task trace requires minimum elapsed time and delivered samples, with a 60-second cap. No mocked rendering or private app state.',
   limitations:['CI uses SwiftShader on a shared CPU host, not the user’s GPU; absolute FPS must not be generalized to user hardware.',
     'RAF delivery measures observed navigation cadence, not isolated GPU timer-query time. Public frame counts and changing walking poses verify active rendering.',
     'The candidate legacy comparison freezes the old living-room composition and disables equipment labels. The new kitchen remains present, so complete geometry equality is not claimed.',
@@ -39,10 +39,11 @@ const report={status:'running',routeGroup,selectedRoutes,baseline:{commit:'66c09
     'A time-capped control below the minimum sample count is explicitly sample-limited: no percentile, 1% low or percentage speedup is inferred from it. Adequate candidates must exceed the control qualification rate for a directional throughput comparison.',
     'Renderer throughput uses the public published-frame counter over the complete observed window. Counter publication is periodic; this is an observed finite-window rate, not a confidence interval or input-to-photon measurement.',
     'The 250 ms heartbeat and lifecycle events distinguish main-thread availability from delivered RAFs; timer delay alone does not identify a cause.',
-    'Optional WebGL2 diagnostics insert and flush one fence at a time and poll without waiting. Fence latency bounds include timer scheduling and earlier queued work; they are not isolated GPU render durations.'],
-  instrumentation:{heartbeatIntervalMs:250,gpuDiagnostics,fencePollTimeoutNs:0,fenceMinimumSubmissionIntervalMs:1000,maxOutstandingFences:1},
+    'Optional WebGL2 diagnostics insert and flush one fence at a time and poll without waiting. Fence latency bounds include timer scheduling and earlier queued work; they are not isolated GPU render durations.',
+    'Initialization readiness is reported separately and must pass before walking starts. First-motion transitions remain in warmup; no GPU drain or input release separates warmup from capture, so a capped warmup can still leave walking work queued.'],
+  instrumentation:{heartbeatIntervalMs:250,gpuDiagnostics,initializationFenceRequired:true,fencePollTimeoutNs:0,fenceMinimumSubmissionIntervalMs:1000,maxOutstandingFences:1},
   fixture,viewport:{width:1280,height:800,deviceScaleFactor:1},durationMs:duration,
-  capturePolicy:{minimumSamples,warmupMinimumMs:4000,warmupLimitMs,captureLimitMs,stableBufferMinimumFrames:12,stableBufferMinimumMs:1500,shuttleHalfWidthM,discardedInitialIntervals:0,regressionEnforced:process.env.ENFORCE_PERFORMANCE_REGRESSION==='1'},
+  capturePolicy:{minimumSamples,warmupMinimumMs:4000,warmupLimitMs,captureLimitMs,initializationLimitMs,stableBufferMinimumFrames:12,stableBufferMinimumMs:1500,shuttleHalfWidthM,discardedInitialIntervals:0,regressionEnforced:process.env.ENFORCE_PERFORMANCE_REGRESSION==='1'},
   host:{platform:os.platform(),release:os.release(),arch:os.arch(),cpuModel:os.cpus()[0]?.model,logicalCpus:os.cpus().length,totalMemoryGB:os.totalmem()/1024**3,node:process.version},
   runs:[],comparisons:[],errors:[],failures:[]};
 const servers=[];let browser;
@@ -70,6 +71,57 @@ async function info(page){return page.locator('#render-diagnostics').evaluate(no
   const c=document.querySelector('#scene-host canvas');data.pose={floor:c?.dataset.walkFloor,position:c?.dataset.walkPosition?.split(',').map(Number),yaw:Number(c?.dataset.walkYaw),pitch:Number(c?.dataset.walkPitch),fov:Number(c?.dataset.walkFov)};
   data.viewport={width:c?.clientWidth,height:c?.clientHeight,bufferWidth:c?.width,bufferHeight:c?.height};return data;
 });}
+async function waitForInitializationGpu(page){
+  return page.evaluate(maximumMs=>new Promise(resolve=>{
+    const start=performance.now(),canvas=document.querySelector('#scene-host canvas'),gl=canvas?.getContext('webgl2');
+    const result={status:'waiting',method:'public-webgl2-fence-after-idle-animation-callbacks',maximumMs,pollIntervalMs:250,
+      pollTimeoutNs:0,rafCallbacks:0,polls:0,fences:[],errors:[]};
+    const state=()=>{const d=document.querySelector('#render-diagnostics')?.dataset;return {
+      renderedFrames:Number(d?.frames)||0,interacting:d?.interacting,renderPending:d?.renderPending,drawEnabled:d?.drawEnabled,
+      bufferWidth:canvas?.width,bufferHeight:canvas?.height,position:canvas?.dataset.walkPosition,
+      fullscreenPending:Boolean(document.body.dataset.fullscreenPending),fullscreenResizePending:Boolean(document.body.dataset.fullscreenResizePending)};};
+    const idle=s=>s.drawEnabled==='true'&&s.interacting==='false'&&s.renderPending==='false'&&!s.fullscreenPending&&!s.fullscreenResizePending;
+    result.initial=state();let timer=0,raf=0,pending=null;
+    const finish=status=>{
+      clearTimeout(timer);cancelAnimationFrame(raf);result.status=status;result.elapsedMs=performance.now()-start;result.final=state();
+      if(pending){pending.record.status='not-completed-at-readiness-end';pending.record.finishedAtMs=result.elapsedMs;
+        try{gl.deleteSync(pending.sync);}catch(error){result.errors.push(String(error));}pending=null;}
+      resolve(result);
+    };
+    if(!gl||typeof gl.fenceSync!=='function'||typeof gl.clientWaitSync!=='function'){
+      result.errors.push('The rendered canvas does not expose public WebGL2 fences.');finish('unavailable');return;
+    }
+    // Let already-scheduled scene/fullscreen callbacks submit their work before
+    // inserting a fence. These callbacks and the drain belong to setup, while
+    // the first movement key is dispatched only after the warmup recorder starts.
+    const frame=()=>{result.rafCallbacks++;if(result.rafCallbacks<2)raf=requestAnimationFrame(frame);};
+    raf=requestAnimationFrame(frame);
+    const poll=()=>{
+      try{
+        let now=performance.now();const current=state();
+        if(now-start>=maximumMs){finish('time-cap');return;}
+        if(gl.isContextLost()){finish('context-lost');return;}
+        if(pending){
+          const status=gl.clientWaitSync(pending.sync,0,0);result.polls++;now=performance.now();pending.record.lastPolledAtMs=now-start;
+          if(status===gl.WAIT_FAILED){finish('wait-failed');return;}
+          if(status===gl.ALREADY_SIGNALED||status===gl.CONDITION_SATISFIED){
+            pending.record.status='signaled';pending.record.finishedAtMs=now-start;pending.record.elapsedMs=now-pending.submitted;
+            const unchanged=JSON.stringify(current)===pending.state;gl.deleteSync(pending.sync);pending=null;
+            if(unchanged&&idle(current)){finish(now-start<maximumMs?'passed':'time-cap');return;}
+          }else pending.record.lastUnsignaledAtMs=now-start;
+        }
+        if(!pending&&result.rafCallbacks>=2&&idle(current)){
+          const sync=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);
+          if(!sync){finish('unavailable');return;}
+          const record={id:result.fences.length+1,status:'pending',submittedAtMs:now-start,state:current};result.fences.push(record);
+          pending={sync,record,submitted:now,state:JSON.stringify(current)};gl.flush();
+        }
+        timer=setTimeout(poll,250);
+      }catch(error){result.errors.push(String(error));finish('error');}
+    };
+    timer=setTimeout(poll,0);
+  }),initializationLimitMs);
+}
 async function enterLiving(page){
   await page.locator('#interior-open').click();const host=page.locator('#interior-host');await host.waitFor({state:'visible'});
   const field=id=>host.locator(`[data-iw="${id}"]`);
@@ -102,16 +154,18 @@ async function snapshotTrace(page,{stop=false}={}){
       t.pollFence(true);
     }
     const result={frames:t.frames,longTasks:t.longTasks,elapsedMs:performance.now()-t.start,initialRenderedFrames:t.initialRenderedFrames,
+      firstRafAtMs:t.firstRafAtMs,firstRafTimestampMs:t.firstRafTimestampMs,initialKeyDownDispatch:t.initialKeyDownDispatch,inputEvents:t.inputEvents,
       finalRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,
       heartbeat:{intervalMs:250,records:t.heartbeats},lifecycleEvents:t.lifecycleEvents,browserState:{initial:t.initialState,final:state},gpuDiagnostics:t.gpu};
     if(stop)delete window.__navigationTrace;return result;
   },stop);
 }
-async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBuffer=false,onCheckpoint}){
+async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBuffer=false,startPosition,onCheckpoint}){
   await page.evaluate(gpuEnabled=>{
     const trace={frames:[],longTasks:[],active:true,handle:0,start:performance.now(),observer:null,
       initialRenderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames)||0,bufferKey:'',bufferStart:0,bufferFrames:0,
       heartbeatHandle:0,heartbeats:[],lifecycleEvents:[],listeners:[],pendingFence:null,lastFenceSubmitted:-Infinity,
+      firstRafAtMs:null,firstRafTimestampMs:null,initialKeyDownDispatch:null,inputEvents:[],
       gpu:{enabled:gpuEnabled,available:false,method:'webgl2-nonblocking-fence',pollTimeoutNs:0,minimumSubmissionIntervalMs:1000,
         maxOutstandingFences:1,polls:0,fences:[],errors:[],latencyInterpretation:'Bounds on observed queue completion; includes polling delay and earlier queued GPU work.'}};
     window.__navigationTrace=trace;
@@ -132,6 +186,11 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
       [window,'focus',true],[window,'blur',true],[window,'pagehide',false],[window,'pageshow',false]]){
       const listener=event=>{if(trace.active)trace.lifecycleEvents.push({type,target:describeElement(event.target),...trace.readState()});};
       target.addEventListener(type,listener,capture);trace.listeners.push([target,type,listener,capture]);
+    }
+    for(const type of ['keydown','keyup']){
+      const listener=event=>{if(trace.active&&['a','d'].includes(event.key.toLowerCase()))
+        trace.inputEvents.push({type,key:event.key,repeat:event.repeat,t:performance.now()-trace.start});};
+      window.addEventListener(type,listener,true);trace.listeners.push([window,type,listener,true]);
     }
     let gl=null;
     if(gpuEnabled){
@@ -188,6 +247,7 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
     try{trace.observer=new PerformanceObserver(list=>{for(const e of list.getEntries())trace.longTasks.push({start:e.startTime,duration:e.duration});});trace.observer.observe({type:'longtask',buffered:false});}catch{}
     let last=0;
     const frame=now=>{if(!trace.active)return;const c=document.querySelector('#scene-host canvas'),key=c?.width+'×'+c?.height;
+      if(trace.firstRafAtMs===null){trace.firstRafAtMs=performance.now()-trace.start;trace.firstRafTimestampMs=now-trace.start;}
       if(key!==trace.bufferKey){trace.bufferKey=key;trace.bufferStart=now;trace.bufferFrames=0;}trace.bufferFrames++;
       if(last)trace.frames.push({ms:now-last,t:now-trace.start,position:c?.dataset.walkPosition,renderedFrames:Number(document.querySelector('#render-diagnostics')?.dataset.frames),bufferWidth:c?.width,bufferHeight:c?.height});
       last=now;trace.handle=requestAnimationFrame(frame);
@@ -195,6 +255,11 @@ async function traceNavigation(page,shuttle,{minimumMs,maximumMs,requireStableBu
   },gpuDiagnostics);
   let progress=null,checkpointAt=Date.now()+5000,metMinimum=false;
   try{
+    if(startPosition){
+      await page.evaluate(()=>{const t=window.__navigationTrace;t.initialKeyDownDispatch={requestedAtMs:performance.now()-t.start,completedAtMs:null};});
+      await shuttle.step(startPosition);
+      await page.evaluate(()=>{const t=window.__navigationTrace;t.initialKeyDownDispatch.completedAtMs=performance.now()-t.start;});
+    }
     while(true){
       await page.waitForTimeout(150);
       progress=await page.evaluate(()=>{const t=window.__navigationTrace,c=document.querySelector('#scene-host canvas'),now=performance.now();return {
@@ -231,16 +296,18 @@ function traceSummary(trace,shuttle){
 async function capture(page,caseId,route){
   const before=await info(page);assert.equal(before.pose.fov,70);assert.equal(await page.locator('#showDimensions').isChecked(),true);
   await page.locator('#scene-host canvas').focus();
-  const run={case:caseId,route,status:'running',before},shuttle=continuousShuttle(page,before.pose);report.runs.push(run);await save();
+  const run={case:caseId,route,status:'running',before};let shuttle;report.runs.push(run);await save();
   try{
-    await shuttle.step(before.pose.position);
-    run.warmup=await traceNavigation(page,shuttle,{minimumMs:4000,maximumMs:warmupLimitMs,requireStableBuffer:true,onCheckpoint:async trace=>{run.warmup=trace;await save();}});
+    run.initialization=await waitForInitializationGpu(page);await save();
+    assert.equal(run.initialization.status,'passed',`${caseId}/${route}: initialization GPU readiness ${run.initialization.status} after ${Math.round(run.initialization.elapsedMs)} ms`);
+    run.before=await info(page);shuttle=continuousShuttle(page,run.before.pose);
+    run.warmup=await traceNavigation(page,shuttle,{minimumMs:4000,maximumMs:warmupLimitMs,requireStableBuffer:true,startPosition:run.before.pose.position,onCheckpoint:async trace=>{run.warmup=trace;await save();}});
     await save();
     run.trace=await traceNavigation(page,shuttle,{minimumMs:duration,maximumMs:captureLimitMs,onCheckpoint:async trace=>{run.trace=trace;Object.assign(run,traceSummary(trace,shuttle));await save();}});
     Object.assign(run,traceSummary(run.trace,shuttle));await save();
     run.duringMotion=await info(page);
   }catch(error){run.status='failed';run.failure=error.message;throw error;}
-  finally{await snapshotTrace(page,{stop:true});await shuttle.stop();await save();}
+  finally{await snapshotTrace(page,{stop:true});await shuttle?.stop();await save();}
   try{
     const control=caseId==='baseline-1.39';
     const activePoses=new Set([...run.warmup.frames,...run.trace.frames].map(frame=>frame.position).filter(Boolean));
@@ -318,7 +385,7 @@ try{
         }catch(error){
           let run=report.runs.find(run=>run.case===scenario.id&&run.route===route);
           if(!run){run={case:scenario.id,route};report.runs.push(run);}run.status='failed';run.failure=error.message;
-          report.failures.push({case:scenario.id,route,stage:run.trace?'capture-or-review':'setup',message:error.message});
+          report.failures.push({case:scenario.id,route,stage:run.initialization&&run.initialization.status!=='passed'?'initialization-gpu-readiness':run.trace?'capture-or-review':'setup',message:error.message});
           await save();console.error('WALK_ROUTE_FAILED '+JSON.stringify({case:scenario.id,route,message:error.message}));
           // A failed route must not prevent independent evidence from being
           // collected. Reload before the next route if navigation/setup broke.

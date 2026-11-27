@@ -20,7 +20,31 @@ function supported(mesh){
 export function createVegetationInstanceCuller(){
   const entries=new Map(),matrix=new THREE.Matrix4(),projection=new THREE.Matrix4(),cameraProjection=new THREE.Matrix4(),frustum=new THREE.Frustum(),sphere=new THREE.Sphere();
   let diagnostics={method:'instance-frustum-compaction',sourceBatches:0,nonemptyBatches:0,instances:0,visibleInstances:0,culledInstances:0,
-    compacted:false,passes:0,drawCallsAdded:0,geometryChanged:false,positionsChanged:false};
+    compacted:false,passes:0,opaqueOrder:'default',drawCallsAdded:0,geometryChanged:false,positionsChanged:false};
+  function opaqueDepthOrder(a,b){
+    // Keep explicit scene priorities, then let solid architecture establish
+    // depth before expensive foliage. Material batching and every remaining
+    // tie-break match Three r160's default opaque order. Registry membership
+    // survives compaction down to a single visible instance; the material
+    // tag also covers focal pines and boundary conifers outside that registry.
+    if(a.groupOrder!==b.groupOrder)return a.groupOrder-b.groupOrder;
+    if(a.renderOrder!==b.renderOrder)return a.renderOrder-b.renderOrder;
+    const foliageA=(entries.has(a.object)||a.material.userData.botanicalCutouts===true)&&a.material.depthWrite&&a.material.depthTest&&!a.material.transparent;
+    const foliageB=(entries.has(b.object)||b.material.userData.botanicalCutouts===true)&&b.material.depthWrite&&b.material.depthTest&&!b.material.transparent;
+    if(foliageA!==foliageB)return Number(foliageA)-Number(foliageB);
+    if(a.material.id!==b.material.id)return a.material.id-b.material.id;
+    if(a.z!==b.z)return a.z-b.z;
+    return a.id-b.id;
+  }
+  function withOpaqueDepthOrder(renderer,render,{enabled=false}={}){
+    diagnostics.opaqueOrder=enabled?'architecture-before-vegetation':'default';
+    if(!enabled)return render();
+    // This scene owns its renderer and otherwise uses the default sorter.
+    // Scope the override to one moving main pass: shadow/reflection/idle
+    // renders must never inherit it, including after an exception.
+    renderer.setOpaqueSort(opaqueDepthOrder);
+    try{return render();}finally{renderer.setOpaqueSort(null);}
+  }
   function restoreEntry(entry){
     if(!entry.compacted)return;
     const {mesh}=entry;mesh.count=entry.count;
@@ -80,5 +104,5 @@ export function createVegetationInstanceCuller(){
     }
     return diagnostics;
   }
-  return {setRoots,prepare,restore,getDiagnostics:()=>({...diagnostics}),dispose(){restore();entries.clear();}};
+  return {setRoots,prepare,restore,withOpaqueDepthOrder,getDiagnostics:()=>({...diagnostics}),dispose(){restore();entries.clear();}};
 }
