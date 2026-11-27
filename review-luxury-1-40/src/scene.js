@@ -317,7 +317,10 @@ export function createScene(container, data, callbacks = {}) {
   scene.background = new THREE.Color('#dfe8e8');
   scene.fog = new THREE.Fog('#dfe8e8', 145, Math.max(330,contextSpan*1.55));
   const camera = new THREE.PerspectiveCamera(48, 1, 0.08, sceneFar);
-  const presentation=svgMode?null:createArchitecturalRenderer(renderer,scene,camera);
+  const presentation=svgMode?null:createArchitecturalRenderer(renderer,scene,camera,{
+    gpuPhaseDiagnostics:callbacks.gpuPhaseDiagnostics===true||new URLSearchParams(window.location.search).get('gpuPhaseProfile')==='1',
+    onGpuPhaseUpdate:()=>queueMicrotask(()=>callbacks.onPerformanceInfo?.(getPerformanceInfo())),
+  });
   const gpuPacer=svgMode?null:createGpuSubmissionPacer(renderer.getContext());
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = false;

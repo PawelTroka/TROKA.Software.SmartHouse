@@ -3,6 +3,7 @@ import {EffectComposer} from '../vendor/addons/postprocessing/EffectComposer.js'
 import {RenderPass} from '../vendor/addons/postprocessing/RenderPass.js';
 import {GTAOPass} from '../vendor/addons/postprocessing/GTAOPass.js';
 import {OutputPass} from '../vendor/addons/postprocessing/OutputPass.js';
+import {createGpuPhaseProfiler} from './gpu-phase-profiler.js?v=1.40.0';
 
 /** Contact shading is a presentation effect, in metres. It never changes the
  * analytical sun/privacy geometry. Small screens and Eco retain direct idle
@@ -44,11 +45,12 @@ class ArchitecturalAO extends GTAOPass{
   dispose(){super.dispose();this.gtaoMaterial.dispose();this.blendMaterial.dispose();}
 }
 
-export function createArchitecturalRenderer(renderer,scene,camera,{interior=false}={}){
+export function createArchitecturalRenderer(renderer,scene,camera,{interior=false,gpuPhaseDiagnostics=false,onGpuPhaseUpdate=null}={}){
   const supported=renderer.capabilities.isWebGL2&&renderer.extensions.has('EXT_color_buffer_float');
   // The main scene has an opaque canvas and a separately sized display buffer.
   // The transparent interior/dollhouse renderer keeps its existing pipeline.
   const gl=renderer.getContext?.();let motionSupported=false,motionSampleCount=0;
+  const gpuPhases=gpuPhaseDiagnostics===true&&!interior?createGpuPhaseProfiler(gl,{enabled:true,onUpdate:onGpuPhaseUpdate}):null;
   let motionUnsupportedReason=interior?'interior-renderer':!renderer.capabilities.isWebGL2?'webgl2-unavailable':
     !supported?'float-color-buffer-unavailable':!(renderer.capabilities.maxSamples>=2)?'multisampling-unavailable':
       !gl?.getInternalformatParameter?'format-sample-query-unavailable':null;
@@ -74,7 +76,7 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
   }
   let composer=null,ao=null,colorPass=null,output=null,enabled=false,width=0,height=0,ratio=0,
     lastSamples=0,lastAOSamples=0,sceneInfo=null,disposed=false,
-    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,sceneWidth=0,sceneHeight=0,sceneRatio=1;
+    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,motionDepthResolveSkipped=false,sceneWidth=0,sceneHeight=0,sceneRatio=1;
   function initialise(){
     if(composer||!supported)return;
     const target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
@@ -134,16 +136,37 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
   function renderMotion(){
     const previousTarget=renderer.getRenderTarget(),previousFace=renderer.getActiveCubeFace(),previousMip=renderer.getActiveMipmapLevel();
     const previousAutoClear=renderer.autoClear,previousAlpha=renderer.getClearAlpha();renderer.getClearColor(savedClearColor);
+    // The pinned r160 resolver exposes this per-target flag for WebXR. Our
+    // dedicated motion target also needs only resolved color: OutputPass never
+    // samples depth, and the next RenderPass clears its multisampled depth.
+    // Retain that attachment for all scene depth tests, but discard it before
+    // the color resolve instead of copying an unused full-size depth buffer.
+    // setSize() disposes renderer properties, so reapply before every render.
+    motionDepthResolveSkipped=!!renderer.properties?.get&&motionTarget.depthBuffer===true&&!motionTarget.depthTexture&&!motionTarget.stencilBuffer&&
+      motionColorPass.clear===true&&renderer.autoClearDepth===true;
+    if(renderer.properties?.get)renderer.properties.get(motionTarget).__ignoreDepthValues=motionDepthResolveSkipped;
+    let profile=null;
+    if(gpuPhases){
+      const published=Number(renderer.domElement?.dataset?.renderedFrameCount);
+      profile=gpuPhases.beginFrame({renderPath:'motion-target',sceneBufferWidth:motionTarget.width,sceneBufferHeight:motionTarget.height,
+        scenePixelRatio:sceneRatio,motionSamples:motionSampleCount,canvasWidth:renderer.domElement?.width,canvasHeight:renderer.domElement?.height,
+        motionDepthResolveSkipped,
+        expectedPublicFrame:Number.isFinite(published)?published+1:null,cameraPosition:camera.position?.toArray(),cameraQuaternion:camera.quaternion?.toArray()});
+    }
     try{
       // r160 resolves the target's MSAA at the end of renderer.render(). Its
       // ordinary offscreen scene shader writes linear HDR; OutputPass applies
       // the existing AgX/exposure/sRGB transform exactly once, as at idle.
       motionColorPass.render(renderer,null,motionTarget);
       sceneInfo={...renderer.info.render};
+      gpuPhases?.sceneComplete(profile,sceneInfo);
       // Keep the HDR scene clear above, but avoid clearing the multisampled
       // display color/depth immediately before overwriting every color pixel.
       renderer.autoClear=false;
       motionOutput.render(renderer,null,motionTarget);
+      gpuPhases?.completeFrame(profile);
+    }catch(error){
+      gpuPhases?.abortFrame(profile,error);throw error;
     }finally{
       // RenderPass's normal restoration does not run if a draw throws.
       renderer.autoClear=previousAutoClear;
@@ -169,7 +192,9 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       motionSupported,motionUnsupportedReason,
       // GL rounds requested samples up to a supported count. Report the
       // matching per-format result, independently of the default canvas.
-      motionSamples:motionEnabled?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,canvasSamples};
+      motionSamples:motionEnabled?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,canvasSamples,
+      motionDepthResolveSkipped:motionEnabled&&motionDepthResolveSkipped,
+      ...(gpuPhases?{gpuPhases:gpuPhases.getDiagnostics()}:{} )};
   }
   return {
     resize,
@@ -182,6 +207,6 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     get motionSupported(){return motionSupported;},
     get sceneInfo(){return sceneInfo;},
     getDiagnostics,
-    dispose(){if(disposed)return;disposed=true;ao?.dispose();output?.dispose();composer?.dispose();motionTarget?.dispose();motionColorPass?.dispose();motionOutput?.dispose();}
+    dispose(){if(disposed)return;disposed=true;gpuPhases?.dispose();ao?.dispose();output?.dispose();composer?.dispose();motionTarget?.dispose();motionColorPass?.dispose();motionOutput?.dispose();}
   };
 }
