@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
+import {indexExactFoliageGeometry} from './foliage-vertex-index.js?v=1.40.0';
 
 const TAU = Math.PI * 2;
 const atlasPixels = new Map();
@@ -326,8 +327,12 @@ export function createHedgeVegetation(segments, {
   for (const {band, variant, trim, plants} of buckets.values()) {
     const key=`${band}:${variant}`;
     if(!specimens.has(key))specimens.set(key,hedgeSpecimen(variant,band));
-    const source=specimens.get(key),geometry=clippedHedgeSpecimen(source,trim);
-    if(trim===null)originalsUsed.add(source);
+    const source=specimens.get(key),clipped=clippedHedgeSpecimen(source,trim);
+    const geometry=indexExactFoliageGeometry(clipped);
+    // Keep the canonical expanded source until every trim variant exists.
+    // Indexing returns a separate geometry and never changes clipper input.
+    if(geometry===source)originalsUsed.add(source);
+    else if(clipped!==source&&geometry!==clipped)clipped.dispose();
     const mesh = new THREE.InstancedMesh(geometry, foliageMaterial, plants.length);
     mesh.name = `hedge-sprays-${band}-${variant}`;
     const color = new THREE.Color();

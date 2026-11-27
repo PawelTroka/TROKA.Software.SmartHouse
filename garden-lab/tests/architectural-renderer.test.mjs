@@ -33,7 +33,7 @@ test('unsupported WebGL retains the direct renderer and accurate scene diagnosti
 });
 
 function motionRenderer(scene,{webgl2=true,float=true,maxSamples=4,colorSamples=[4,2],depthSamples=[4,2]}={}){
-  const state={target:null,face:0,mip:0,clearColor:new THREE.Color('#123456'),clearAlpha:.35,draws:[],queries:0,throwAt:null};
+  const state={target:null,face:0,mip:0,clearColor:new THREE.Color('#123456'),clearAlpha:.35,draws:[],clears:[],queries:0,throwAt:null};
   const gl={RENDERBUFFER:1,RGBA16F:2,DEPTH_COMPONENT24:3,SAMPLES:4,
     getParameter(name){assert.equal(name,this.SAMPLES);state.queries++;return 4;},
     getInternalformatParameter(target,format,name){assert.equal(target,this.RENDERBUFFER);assert.equal(name,this.SAMPLES);return new Int32Array(format===this.RGBA16F?colorSamples:depthSamples);}};
@@ -44,9 +44,9 @@ function motionRenderer(scene,{webgl2=true,float=true,maxSamples=4,colorSamples=
     setRenderTarget(target,face=0,mip=0){state.target=target;state.face=face;state.mip=mip;},
     getClearColor:target=>target.copy(state.clearColor),getClearAlpha:()=>state.clearAlpha,
     setClearColor(color,alpha=state.clearAlpha){state.clearColor.set(color);state.clearAlpha=alpha;},
-    getPixelRatio:()=>1,getDrawingBufferSize:target=>target.set(1280,584),clear(){},
+    getPixelRatio:()=>1,getDrawingBufferSize:target=>target.set(1280,584),clear(){state.clears.push(state.target);},
     render(object,camera){
-      const stage=object===scene?'scene':'output';state.draws.push({stage,target:state.target,object,camera});
+      const stage=object===scene?'scene':'output';state.draws.push({stage,target:state.target,object,camera,autoClear:this.autoClear});
       if(state.throwAt===stage){renderer.setClearColor('#abcdef',.9);throw new Error(stage+' draw failed');}
       this.info.render=stage==='scene'?{calls:501,triangles:825968}:{calls:1,triangles:1};
     }};
@@ -62,6 +62,10 @@ test('motion renders into a cached two-sample HDR target at the scene scale with
   assert.equal(target.width,1075);assert.equal(target.height,490);assert.equal(target.samples,2);assert.equal(target.texture.type,THREE.HalfFloatType);
   assert.equal(state.draws[0].object,scene);assert.equal(state.draws[1].target,null);
   assert.equal(output.uniforms.tDiffuse.value,target.texture);assert.equal(output.uniforms.toneMappingExposure.value,1.05);
+  assert.equal(output.depthTest,false);assert.equal(output.depthWrite,false);
+  assert.equal(state.draws[1].autoClear,false,'The final full-display triangle needs no prior clear');
+  assert.deepEqual(state.clears,[target],'The HDR scene retains its explicit color/depth clear');
+  assert.equal(renderer.autoClear,true,'The display-only override is restored');
   assert.ok('AGX_TONE_MAPPING' in output.defines&&'SRGB_TRANSFER' in output.defines,'Existing OutputPass applies the idle HDR output transform');
   assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968},'The output triangle cannot replace scene statistics');
   assert.deepEqual(presentation.getDiagnostics(),{contactShading:false,contactShadingSupported:true,aoWidth:0,aoHeight:0,msaaSamples:0,toneMapping:'AgX',

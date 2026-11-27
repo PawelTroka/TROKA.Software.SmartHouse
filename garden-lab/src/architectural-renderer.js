@@ -106,6 +106,9 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
         motionTarget.texture.name='ArchitecturalMotion.color';
         motionColorPass=new RenderPass(scene,camera);
         motionOutput=new OutputPass();motionOutput.renderToScreen=true;
+        // The final triangle replaces the whole opaque display image. Nothing
+        // consumes its depth, and an old display depth value must not reject it.
+        motionOutput.material.depthTest=false;motionOutput.material.depthWrite=false;
       }else if(motionTarget.width!==mw||motionTarget.height!==mh)motionTarget.setSize(mw,mh);
       return;
     }
@@ -137,6 +140,9 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       // the existing AgX/exposure/sRGB transform exactly once, as at idle.
       motionColorPass.render(renderer,null,motionTarget);
       sceneInfo={...renderer.info.render};
+      // Keep the HDR scene clear above, but avoid clearing the multisampled
+      // display color/depth immediately before overwriting every color pixel.
+      renderer.autoClear=false;
       motionOutput.render(renderer,null,motionTarget);
     }finally{
       // RenderPass's normal restoration does not run if a draw throws.

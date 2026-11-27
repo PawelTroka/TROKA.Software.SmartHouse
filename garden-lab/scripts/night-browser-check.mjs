@@ -65,6 +65,88 @@ async function runScenario(name,verify){
 async function frames(){
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 }
+function captureRemaining(deadline){
+  const remaining=deadline-Date.now();
+  assert.ok(remaining>0,'Scene capture exceeded its existing 120 s deadline');
+  return remaining;
+}
+async function waitSceneCaptureReady(deadline){
+  // RAF can continue while the app deliberately defers GPU submission. Observe
+  // actual completed CPU submissions, then drain that same public WebGL context
+  // without a blocking GPU wait before attributing pixels to its latest frame.
+  return await page.evaluate(async timeout=>{
+    const started=performance.now(),deadline=started+timeout;
+    const pause=async()=>{
+      if(performance.now()>=deadline)throw new Error('Scene capture readiness exceeded its deadline');
+      await new Promise(resolve=>setTimeout(resolve,25));
+    };
+    const read=()=>{
+      const canvas=document.querySelector('#scene-host canvas'),data=canvas?.dataset;
+      return {canvas,frame:Number(data?.renderedFrameCount),pending:data?.renderPending,
+        width:canvas?.width,height:canvas?.height,path:data?.renderPath};
+    };
+    const valid=state=>state.canvas&&state.pending==='false'&&Number.isInteger(state.frame)&&state.frame>0;
+    const same=(before,after)=>valid(after)&&before.canvas===after.canvas&&before.frame===after.frame&&
+      before.width===after.width&&before.height===after.height&&before.path===after.path;
+    let polls=0,restarts=0,fencePolls=0,fenceElapsedMs=0;
+    while(performance.now()<deadline){
+      const state=read();polls++;
+      if(!valid(state)){await pause();continue;}
+      const gl=state.canvas.getContext('webgl2');
+      let outcome='webgl1-no-fence';
+      if(gl){
+        if(gl.isContextLost())throw new Error('Scene capture WebGL context was lost');
+        const sync=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);
+        if(!sync)throw new Error('Scene capture could not allocate its completion fence');
+        const fenceStarted=performance.now();
+        try{
+          gl.flush();outcome='pending';
+          while(performance.now()<deadline){
+            const result=gl.clientWaitSync(sync,0,0);fencePolls++;
+            if(result===gl.ALREADY_SIGNALED||result===gl.CONDITION_SATISFIED){outcome='signaled';break;}
+            if(result===gl.WAIT_FAILED||gl.isContextLost())throw new Error('Scene capture completion fence failed');
+            if(!same(state,read())){outcome='superseded';break;}
+            await pause();
+          }
+          if(outcome==='pending')throw new Error('Scene capture completion fence exceeded its deadline');
+        }finally{
+          fenceElapsedMs+=performance.now()-fenceStarted;
+          gl.deleteSync(sync);
+        }
+      }else{
+        // WebGL1 has no public sync objects. Its non-paced renderer still must
+        // have submitted the current frame and remain stable across this yield.
+        await pause();
+      }
+      if(outcome==='superseded'||!same(state,read())){restarts++;continue;}
+      return {frame:state.frame,pending:false,width:state.width,height:state.height,path:state.path,
+        fence:outcome,polls,restarts,fencePolls,fenceElapsedMs,elapsedMs:performance.now()-started};
+    }
+    throw new Error('Scene capture readiness exceeded its deadline');
+  },captureRemaining(deadline));
+}
+async function renderedScreenshot(selector,options={},label='scene',deadline=Date.now()+SCENE_CAPTURE_TIMEOUT){
+  const started=Date.now(),evidence={name:label,status:'waiting',deadlineMs:deadline-started,attempts:0};
+  (report.sceneCaptures??=[]).push(evidence);
+  try{
+    const target=page.locator(selector);
+    await target.scrollIntoViewIfNeeded({timeout:captureRemaining(deadline)});
+    while(true){
+      evidence.attempts++;
+      evidence.readiness=await waitSceneCaptureReady(deadline);
+      const buffer=await target.screenshot({...options,timeout:captureRemaining(deadline)});
+      const after=await page.locator('#scene-host canvas').evaluate(canvas=>({
+        frame:Number(canvas.dataset.renderedFrameCount),pending:canvas.dataset.renderPending,
+        width:canvas.width,height:canvas.height,path:canvas.dataset.renderPath,
+      }),null,{timeout:captureRemaining(deadline)});
+      const ready=evidence.readiness;
+      if(after.pending!=='false'||after.frame!==ready.frame||after.width!==ready.width||
+        after.height!==ready.height||after.path!==ready.path){captureRemaining(deadline);continue;}
+      captureRemaining(deadline);evidence.status='passed';evidence.elapsedMs=Date.now()-started;
+      return buffer;
+    }
+  }catch(error){evidence.status='failed';evidence.elapsedMs=Date.now()-started;evidence.error=String(error);progress();throw error;}
+}
 async function waitReady(){
   await page.locator('#loading').waitFor({state:'hidden',timeout:60000});
   await page.locator('#scene-host canvas').waitFor({state:'visible',timeout:60000});
@@ -134,11 +216,9 @@ async function setNumber(id,value){
 async function screenshot(name,log=true){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
-  await page.locator('#viewport').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await frames();
-  const buffer=await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,
+  const buffer=await renderedScreenshot('#viewport',{
     path:path.join(resultsRoot,name+'.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
-  });
+  },name);
   report.screenshots.push(name+'.jpg');
   if(log)console.log('GARDEN_SCREENSHOT_B64 '+name+' image/jpeg '+buffer.toString('base64'));
   return buffer;
@@ -276,11 +356,9 @@ async function hedgeSurfaceDifference(unlit,lit,probes){
   },{before:unlit.toString('base64'),after:lit.toString('base64'),probes});
 }
 async function scenePngScreenshot(name){
-  await page.locator('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await frames();
-  const buffer=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,
+  const buffer=await renderedScreenshot('#scene-host',{
     path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css',
-  });
+  },name);
   report.screenshots.push(name+'.png');
   return buffer;
 }
@@ -314,8 +392,8 @@ async function verifyNightMotionTarget(){
         [key,number(viewport.dataset[key])])),sunTime:document.querySelector('#sun-time')?.value};
   },null,{timeout:remaining()});
   const capture=async name=>{
-    const filename=name+'.png',buffer=await page.locator('#scene-host').screenshot({
-      timeout:remaining(),path:path.join(resultsRoot,filename),type:'png',animations:'disabled',scale:'css'});
+    const filename=name+'.png',buffer=await renderedScreenshot('#scene-host',{
+      path:path.join(resultsRoot,filename),type:'png',animations:'disabled',scale:'css'},name,deadline);
     report.screenshots.push(filename);return buffer;
   };
   await canvas.scrollIntoViewIfNeeded({timeout:remaining()});
@@ -396,9 +474,7 @@ async function verifyNightMotionTarget(){
 async function pngScreenshot(name){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
-  await page.locator('#viewport').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await frames();
-  await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css'});
+  await renderedScreenshot('#viewport',{path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css'},name);
   report.screenshots.push(name+'.png');
 }
 async function chooseProperty(id){
@@ -436,12 +512,12 @@ async function verifyPendantLighting(){
   await page.locator('#nightHedgeLights').uncheck();
   await waitLight('nightPendants','zero');await waitLight('nightHedge','zero');
   await frames();
-  const noPendants=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const noPendants=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'pendants-all-off');
 
   await page.locator('#nightPendantLights').check();
   await waitLight('nightPendants','positive');
   await frames();
-  const gardenOnly=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const gardenOnly=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'pendants-garden-only');
   const pendantPixels=await warmLightDifference(noPendants,gardenOnly);
   assert.ok(pendantPixels.changedPixels>30&&pendantPixels.warmBrightenedPixels>12,
     'Garden pendants must visibly brighten warm scene pixels: '+JSON.stringify(pendantPixels));
@@ -453,7 +529,7 @@ async function verifyPendantLighting(){
   await page.locator('#nightHedgeLights').check();
   await waitLight('nightHedge','positive');
   await frames();
-  const hedgeOnly=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const hedgeOnly=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'pendants-hedge-only');
   const hedgePixels=await warmLightDifference(noPendants,hedgeOnly);
   assert.ok(hedgePixels.changedPixels>30&&hedgePixels.warmBrightenedPixels>12,
     'Thuja-side lanterns must visibly brighten warm scene pixels: '+JSON.stringify(hedgePixels));
@@ -607,7 +683,7 @@ async function verifyBasementGarage(){
     assert.equal(await page.locator('#basement-garage-controls [data-garage-preset="'+id+'"]').getAttribute('aria-pressed'),'true');
     return result();
   };
-  const frame=async()=>{await page.locator('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});await frames();return page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});};
+  const frame=()=>renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'garage-scene-pose');
   const slider=async(value)=>{
     const input=page.locator('#garageProgress'),reverse=value>50,steps=reverse?100-value:value;
     await input.focus();await input.press(reverse?'End':'Home');
@@ -927,18 +1003,18 @@ async function verifyNadmorska(){
   const windowActivityOriginal=Number(await page.locator('#nightWindowActivity-value').inputValue());
   assert.equal(windowActivityOriginal,70);
   await setNumber('nightWindowActivity-value',0);
-  const noWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const noWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-none');
   await setNumber('nightWindowActivity-value',100);
-  const allWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const allWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-all');
   assert.ok(!noWindows.equals(allWindows),'Nadmorska across-street window activity must visibly change its WebGL scene');
 
   // Compare the previous and new evening activity in the same street view.
   // Only the occupancy control changes; the camera and every light dimmer stay fixed.
   const fixedView={observer:await page.locator('#observer-readout').innerText(),lights:await lightState()};
   await setNumber('nightWindowActivity-value',35);
-  const quieterWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const quieterWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-quieter');
   await setNumber('nightWindowActivity-value',windowActivityOriginal);
-  const busierWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const busierWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-busier');
   const windowActivityPixels=await warmLightDifference(quieterWindows,busierWindows);
   assert.ok(windowActivityPixels.warmBrightenedPixels>50,
     'Increasing window activity from 35% to 70% must visibly add warm lit windows: '+JSON.stringify(windowActivityPixels));
@@ -973,11 +1049,11 @@ async function verifyNadmorska(){
   await waitLight('nightGarden','zero');
   assert.ok((await lightState()).windows>0,'Garden lights must not disable neighbouring windows');
   await frames();
-  const unlitWater=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const unlitWater=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-water-unlit');
   await page.locator('#nightGardenLights').check();
   await waitLight('nightGarden','positive');
   await frames();
-  const litWater=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const litWater=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-water-lit');
   report.nadmorska.waterGlow=await waterGlowDifference(unlitWater,litWater);
   assert.ok(report.nadmorska.waterGlow.brighterAquaPixels>20,'The WebGL water glow must brighten visible blue-green pixels: '+JSON.stringify(report.nadmorska.waterGlow));
   assert.equal(await page.locator('#sun-time').inputValue(),'23:30');
@@ -1117,11 +1193,11 @@ async function verifySterniczaViewpointsAndNight(){
   await setNumber('nightWindowActivity-value',0);
   assert.ok((await page.locator('#night-status').innerText()).includes('about 0% active'));
   await frames();
-  const noWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const noWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'sternicza-windows-none');
   await setNumber('nightWindowActivity-value',100);
   assert.ok((await page.locator('#night-status').innerText()).includes('about 100% active'));
   await frames();
-  const allWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const allWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'sternicza-windows-all');
   assert.ok(!noWindows.equals(allWindows),'Changing window activity must visibly change the rendered street scene');
   await setNumber('nightWindowActivity-value',activityOriginal);
   check('All three dimmers respond, including an actual rendered change from 0% to 100% active windows');
@@ -1136,7 +1212,7 @@ async function verifySterniczaViewpointsAndNight(){
   await waitLight('nightWindows','zero');
   report.daylight=await lightState();
   await frames();
-  const dayImage=await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'jpeg',quality:65,animations:'disabled',scale:'css'});
+  const dayImage=await renderedScreenshot('#viewport',{type:'jpeg',quality:65,animations:'disabled',scale:'css'},'sternicza-day-comparison');
   assert.ok(!dayImage.equals(nightImage),'Daylight restoration must visibly change the rendered scene');
   check('Daylight restores the sun clock and turns simulated artificial lights off');
 
@@ -1176,9 +1252,9 @@ async function verifySterniczaViewpointsAndNight(){
   }));
   assert.ok(report.mobile.scrollWidth<=report.mobile.width+2,JSON.stringify(report.mobile));
   assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
-  await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,
+  await renderedScreenshot('#viewport',{
     path:path.join(resultsRoot,'mobile-night.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
-  });
+  },'mobile-night');
   check('Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow');
 
 }
