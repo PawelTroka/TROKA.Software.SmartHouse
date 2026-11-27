@@ -1,11 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.38.0';
-import {furnishInterior} from './interior-furniture.js?v=1.38.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.38.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.38.0';
-import {stairTreads} from './stair-surfaces.js?v=1.38.0';
-import {slidingPanelLayout} from './hst-system.js?v=1.38.0';
-import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.38.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.39.0';
+import {furnishInterior} from './interior-furniture.js?v=1.39.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.39.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.39.0';
+import {stairTreads} from './stair-surfaces.js?v=1.39.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.39.0';
+import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.39.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {

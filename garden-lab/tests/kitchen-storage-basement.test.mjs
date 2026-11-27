@@ -38,18 +38,19 @@ test('all renovated kitchens close the pantry corner while leaving the sink wind
   for(const styleId of Object.keys(INTERIOR_COMPOSITIONS)){
     const plan=getHouseFloorPlan({settings:{designStyle:styleId}}),byId=id=>plan.fixtures.find(f=>f.id===id);
     const upper=plan.fixtures.filter(f=>f.ceilingFitted);
-    assert.equal(upper.length,6,styleId);
+    assert.equal(upper.length,4,styleId);
     for(const f of upper){near((f.baseHeight||0)+f.height,2.70);near((f.baseHeight||0)+f.height+f.ceilingScribe,plan.clearHeight);}
-    const cooking=fixtureBounds(byId('kitchen-wall-storage')),corner=fixtureBounds(byId('kitchen-corner-storage')),
-      side=fixtureBounds(byId('kitchen-sink-side-storage')),
+    const cooking=fixtureBounds(byId('kitchen-wall-storage')),
       pantryCorner=fixtureBounds(byId('kitchen-pantry-corner')),pantry=fixtureBounds(byId('east-counter'));
-    near(corner.z1,cooking.z0);near(pantry.z1,pantryCorner.z0);near(pantryCorner.z1,cooking.z1);
+    near(pantry.z1,pantryCorner.z0);near(pantryCorner.z1,cooking.z1);
     near(pantryCorner.x0-cooking.x1,.005);
     assert.equal(byId('kitchen-pantry-corner').kind,'storage');assert.ok(!byId('kitchen-pantry-corner').baseHeight);
     assert.equal(byId('kitchen-sink-header'),undefined,'the over-window cabinet was explicitly removed');
+    assert.equal(byId('kitchen-corner-storage'),undefined,'the upper return beside the window was explicitly removed');
+    assert.equal(byId('kitchen-sink-side-storage'),undefined,'the upper cabinet beside the window was explicitly removed');
     const window=plan.walls.find(w=>w.id==='left-facade').openings.find(o=>o.roomId==='front-kitchen');
     const windowStart=plan.walls.find(w=>w.id==='left-facade').a[1]+window.offset,windowEnd=windowStart+window.width;
-    assert.ok(side.z1<windowStart-.05&&corner.z0>windowEnd+.05,'side returns must leave the complete window reveal clear');
+    near(window.width,2.30);assert.ok(cooking.z0>windowEnd+.20,'the remaining cooking wall cabinet leaves the wider window reveal clear');
     near(byId('kitchen-fridge-top').baseHeight-byId('kitchen-fridge').height,.02);
     const island=byId('kitchen-island'),enclosure=ringBounds(plan.cores.find(c=>c.id==='west-flue').enclosure.polygon);
     near(enclosure.x0-island.x-island.width/2,1.18);near(island.width,2.20);

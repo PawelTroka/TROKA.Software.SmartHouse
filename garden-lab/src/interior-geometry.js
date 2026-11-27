@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {projectArchitecturalMaterialUVs} from './material-assets.js?v=1.38.0';
+import {projectArchitecturalMaterialUVs} from './material-assets.js?v=1.39.0';
 
 const EPS = 1e-7;
 const cross = (a, b, p) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]);

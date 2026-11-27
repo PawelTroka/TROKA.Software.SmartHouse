@@ -101,6 +101,7 @@ body:has(> .iw-workspace:not([hidden])) > :is(.context-bar,main.workspace,footer
 .iw-room-area > div {display:flex; flex-direction:column; gap:2px;}
 .iw-room-area span {color:var(--iw-muted); font-size:10px;}
 .iw-room-area strong {font:500 14px/1.35 Arial,sans-serif; font-variant-numeric:tabular-nums; white-space:nowrap;}
+.iw-room-measures text{font-size:.19px;font-weight:500;fill:#53634f;paint-order:stroke;stroke:#f8f6ed;stroke-width:.045;stroke-linejoin:round}
 .iw-workspace .iw-enter {display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-left:auto; border:1px solid #2b4537; border-radius:5px; background:#344f3e; color:white; padding:8px 11px; font-size:12px; font-weight:600; min-height:36px;}
 .iw-enter:hover {background:#48694c;}
 .iw-enter svg {width:15px!important; height:15px!important;}

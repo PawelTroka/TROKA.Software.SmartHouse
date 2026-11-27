@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {boundaryMemberFaces} from './boundary-fence.js?v=1.38.0';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.38.0';
-import {getMaterialForFinish} from './material-catalogue.js?v=1.38.0';
+import {boundaryMemberFaces} from './boundary-fence.js?v=1.39.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.39.0';
+import {getMaterialForFinish} from './material-catalogue.js?v=1.39.0';
 
 /** Metric infill is merged by finish, including the shadow-casting slats.
  * Hundreds of repeat battens create a handful of draw calls, not one each. */

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
  * emitted by the actual drawn scene. No app state or private renderer hooks. */
 export async function verifyGardenLiving({page,el,sceneVisible,style,shot,exportDesign,check,report,details,settledInfo,ready}){
   const timeout=120000,trees=s=>s.settings.screeningTrees.map(t=>[t.x,t.y]);
-  const expectedTrees=[[13,34.1],[14.2,32.5],[17.6,34.9]];
+  const expectedTrees=[[13,34.1],[19.3,32.25],[17.6,34.9]];
   const sceneInfo=async()=>{
     const info=await settledInfo();
     for(const key of ['boundaryFence','gardenPaths','coldPlunge','gardenLighting','spaCovers','slidingDoors'])info[key]=JSON.parse(info[key]);
@@ -14,10 +14,10 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   const homeControls=async open=>{if((await el('#home-controls').getAttribute('open')!==null)!==open)await el('#home-controls > summary').click({timeout});};
   const doors=async(key,value)=>{await homeControls(true);await el(`[data-door-control="${key}"][data-door-value="${value}"]`).click({timeout});};
   const baseline=await exportDesign();assert.deepEqual(trees(baseline),expectedTrees);
-  assert.equal(baseline.schemaVersion,34);assert.equal(baseline.settings.perimeterFenceEnabled,true);
+  assert.equal(baseline.schemaVersion,35);assert.equal(baseline.settings.perimeterFenceEnabled,true);
   assert.equal(baseline.gardenLayout.pool.length,6.5);assert.equal(baseline.gardenLayout.pool.width,3.2);
   assert.equal(baseline.gardenLayout.pool.x,15.5);assert.equal(baseline.gardenLayout.pool.y,24.5);
-  assert.equal(baseline.gardenLayout.sunbeds.length,2);
+  assert.equal(baseline.gardenLayout.sunbeds.length,3);
   assert.equal(baseline.settings.pedestrianGateOpen,false);assert.equal(baseline.settings.garageGateOpen,false);
   await el('#showDimensions').uncheck();
   await details();await style('warm-minimal');

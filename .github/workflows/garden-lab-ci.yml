@@ -195,6 +195,36 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  clean-living:
+    name: Concealed covers, glazing and interior dimensions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: python3 scripts/install-ci-browser.py
+      - name: Inspect the clean living refinement in real WebGL
+        timeout-minutes: 12
+        run: node scripts/clean-living-browser-check.mjs
+      - name: Upload clean living evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: clean-living-evidence
+          path: garden-lab/test-results/clean-living/
+          if-no-files-found: ignore
+          retention-days: 7
+
   architectural-rendering:
     name: Architectural rendering comparison
     runs-on: ubuntu-24.04

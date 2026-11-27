@@ -2,7 +2,15 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.38.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.38.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.38.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.39.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.39.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.39.0)**
+
+## Concealed covers, clearer glazing and interior dimensions · 1.39.0
+
+Spa covers now stow below the terrace and plunge surround, leaving no visible parked lids or rails. Three slim chaises follow the pool's long and near short edges in a compact L. Only the nearest pine returns toward the left boundary, improving sampled seated-jacuzzi PCK3 screening from **76.29% to 93.84%** while the other two pines stay fixed.
+
+The kitchen's two window-side upper cabinets are removed in favor of a **2.30 × 1.46 m** clear window. Bathrooms have larger clear glazing, and the indoor sauna gains a **0.96 × 1.30 m** window. Optional interior labels show current room sizes/areas/headroom, furniture footprints, openings and stairs in plans, dollhouse views and walking. Schema **35** preserves custom planting and archived comparisons.
+
+[Controls, dimensions, geometry and sightline evidence](docs/clean-living-1.39.md)
 
 ## Doors, sliding spa covers and fitted guest rooms · 1.38.0
 

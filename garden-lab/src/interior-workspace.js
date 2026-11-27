@@ -1,8 +1,8 @@
-import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.38.0';
-import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.38.0';
-import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.38.0';
-import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.38.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.38.0';
+import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.39.0';
+import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.39.0';
+import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.39.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.39.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.39.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -53,6 +53,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
         <section class="iw-inspector-block"><div class="iw-field-heading"><label for="iw-style">Whole-house style</label><div class="iw-swatches" data-iw="swatches" aria-hidden="true"></div></div>
           <select id="iw-style" data-iw="style"></select><p class="iw-field-help" data-iw="finish-note"></p>
           <div class="iw-switches"><label class="iw-switch"><span>Furniture &amp; fittings</span><input type="checkbox" role="switch" data-iw="furniture"></label>
+          <label class="iw-switch"><span>Dimensions · rooms &amp; fittings</span><input type="checkbox" role="switch" data-iw="dimensions"></label>
           <label class="iw-switch" data-iw="changes-wrap"><span>Highlight wall changes</span><input type="checkbox" role="switch" data-iw="changes"></label></div>
         </section>
         <section class="iw-inspector-block" data-iw="room-options"><h3>Room arrangements</h3>
@@ -147,7 +148,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function loadScene() {
     if (scene || sceneLoad || sceneError) return;
     const token = generation;
-    sceneLoad = import('./scene-interior.js?v=1.38.0').then(({createInteriorScene}) => {
+    sceneLoad = import('./scene-interior.js?v=1.39.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
         getExteriorContext,
@@ -162,10 +163,10 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   }
 
   function drawPlan() {
-    const key = [planKey,room?.id,style.id,state.interiorFurniture !== false,state.interiorChanges === true].join('|');
+    const key = [planKey,room?.id,style.id,state.interiorFurniture !== false,state.interiorChanges === true,state.showDimensions!==false].join('|');
     if (key !== drawnPlan) {
       const focusRoom = document.activeElement?.closest?.('[data-iw-room]')?.dataset.iwRoom;
-      planBounds = drawInteriorPlan(q('plan'),plan,{roomId:room?.id,showFurniture:state.interiorFurniture !== false,showChanges:state.interiorChanges === true && plan.layout === 'renovation',palette:style.palette});
+      planBounds = drawInteriorPlan(q('plan'),plan,{roomId:room?.id,showFurniture:state.interiorFurniture !== false,showDimensions:state.showDimensions!==false,showChanges:state.interiorChanges === true && plan.layout === 'renovation',palette:style.palette});
       positionPlan(); drawnPlan = key; drawnRevision++;
       if (focusRoom) [...q('plan').querySelectorAll('[data-iw-room]')].find(el => el.dataset.iwRoom === focusRoom)?.focus({preventScroll:true});
     }
@@ -196,11 +197,11 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     if (sceneError) {setStatus('3D is unavailable on this device. Showing the floor plan.',true); return;}
     if (!scene) {setStatus('Opening the 3D view…'); loadScene(); return;}
     const contextKey=getContextKey?.()||'';
-    const key = [planKey,style.id,view,room?.id,state.interiorFurniture !== false,!!state.interiorChanges,contextKey,state.renderQuality].join('|');
+    const key = [planKey,style.id,view,room?.id,state.interiorFurniture !== false,!!state.interiorChanges,state.showDimensions!==false,contextKey,state.renderQuality].join('|');
     try {
       if (lastSceneKey !== key) {
         scene.setVisible(true);
-        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey,quality:state.renderQuality,hstOpen:state.hstOpen,balconyOpen:state.balconyOpen});
+        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showDimensions:state.showDimensions!==false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey,quality:state.renderQuality,hstOpen:state.hstOpen,balconyOpen:state.balconyOpen});
         scene.resize(); lastSceneKey = key;
       }
       setStatus('');
@@ -264,6 +265,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     q('floor').value = plan.floor;
     q('style').value = state.designStyle || 'current';
     q('furniture').checked = state.interiorFurniture !== false;
+    q('dimensions').checked = state.showDimensions !== false;
     q('changes').checked = !!state.interiorChanges;
     q('changes-wrap').hidden = !isRenovation;
     q('room-options').hidden=!isRenovation||!['ground','first','basement'].includes(plan.floor);
@@ -353,6 +355,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     if (iw === 'garage') patch({basementGarageEnabled:checked});
     if (iw === 'room') patch({interiorRoomId:value});
     if (iw === 'furniture') patch({interiorFurniture:checked});
+    if (iw === 'dimensions') patch({showDimensions:checked});
     if (iw === 'changes') patch({interiorChanges:checked});
     if (iw === 'officeCoworking' || iw === 'officeGuestBedOpen' || iw === 'gymBenchParked') patch({[iw]:checked});
     if (iw === 'doors-open') patch({[plan.floor==='first'?'balconyOpen':'hstOpen']:checked?1:0});

@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import { toWorld } from './orientation.js?v=1.38.0';
-import {pointInPolygon} from './geometry.js?v=1.38.0';
-import {subtractGarageOpenings} from './scene-garage.js?v=1.38.0';
+import { toWorld } from './orientation.js?v=1.39.0';
+import {pointInPolygon} from './geometry.js?v=1.39.0';
+import {subtractGarageOpenings} from './scene-garage.js?v=1.39.0';
 
 // Terrain is a continuous surface. Share exactly equal plan coordinates whilst
 // preserving clipped intersections, triangle winding, physical UVs and heights.
