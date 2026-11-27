@@ -464,7 +464,7 @@ export function createScene(container, data, callbacks = {}) {
   let lastWidth = 0, lastHeight = 0, lastPixelRatio = 0;
   let quality = 'auto', motion = false, presentationVisible = true, intersecting = true;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let interacting = false, interactionTimer = 0, motionTimer = 0, frameHandle = 0, motionResizePending = false;
+  let interacting = false, interactionTimer = 0, motionTimer = 0, frameHandle = 0, motionResizePending = false, gpuFrameDeferred = false;
   let frameCount = 0, shadowUpdates = 0, motionFps = 24, lastMotionTime = 0, waveTime = 0;
   let lastInfoTime = -Infinity, statusChanged = true, lastSunPose = '', lastVehiclePose = '';
   let designMaterials = mat, dimensionsVisible, equipmentLabelsVisible, solarSignature='', guidePath=null;
@@ -1549,6 +1549,7 @@ export function createScene(container, data, callbacks = {}) {
     // earlier frames. A deferred callback submits no reflection, shadow, scene
     // or output work and never counts as a rendered frame.
     if(gpuPacer&&!gpuPacer.canSubmit()){
+      gpuFrameDeferred=true;
       if(navigationActive&&adaptiveQuality.pressure(now,gpuPacer.getDiagnostics().oldestPendingMs)){
         motionResizePending=true;statusChanged=true;
       }
@@ -1558,6 +1559,10 @@ export function createScene(container, data, callbacks = {}) {
       }
       return;
     }
+    // A deferred callback may have just published renderPending=true. The
+    // final admitted idle frame must publish its completed state even inside
+    // the ordinary one-second summary interval, before RAF scheduling rests.
+    if(gpuFrameDeferred){gpuFrameDeferred=false;statusChanged=true;}
     performanceTiming.phase('navigation',performance.now()-cpuStart,navigationActive);
     const deliveredFrame=performanceTiming.begin(now,navigationActive);
     const cadenceChanged=!svgMode&&adaptiveQuality.sample(now,deliveredFrame,navigationActive);
