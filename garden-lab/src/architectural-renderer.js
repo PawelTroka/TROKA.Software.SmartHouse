@@ -76,7 +76,7 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
   }
   let composer=null,ao=null,colorPass=null,output=null,enabled=false,width=0,height=0,ratio=0,
     lastSamples=0,lastAOSamples=0,sceneInfo=null,disposed=false,
-    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,sceneWidth=0,sceneHeight=0,sceneRatio=1;
+    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,motionDepthResolveSkipped=false,sceneWidth=0,sceneHeight=0,sceneRatio=1;
   function initialise(){
     if(composer||!supported)return;
     const target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
@@ -136,11 +136,21 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
   function renderMotion(){
     const previousTarget=renderer.getRenderTarget(),previousFace=renderer.getActiveCubeFace(),previousMip=renderer.getActiveMipmapLevel();
     const previousAutoClear=renderer.autoClear,previousAlpha=renderer.getClearAlpha();renderer.getClearColor(savedClearColor);
+    // The pinned r160 resolver exposes this per-target flag for WebXR. Our
+    // dedicated motion target also needs only resolved color: OutputPass never
+    // samples depth, and the next RenderPass clears its multisampled depth.
+    // Retain that attachment for all scene depth tests, but discard it before
+    // the color resolve instead of copying an unused full-size depth buffer.
+    // setSize() disposes renderer properties, so reapply before every render.
+    motionDepthResolveSkipped=!!renderer.properties?.get&&motionTarget.depthBuffer===true&&!motionTarget.depthTexture&&!motionTarget.stencilBuffer&&
+      motionColorPass.clear===true&&renderer.autoClearDepth===true;
+    if(renderer.properties?.get)renderer.properties.get(motionTarget).__ignoreDepthValues=motionDepthResolveSkipped;
     let profile=null;
     if(gpuPhases){
       const published=Number(renderer.domElement?.dataset?.renderedFrameCount);
       profile=gpuPhases.beginFrame({renderPath:'motion-target',sceneBufferWidth:motionTarget.width,sceneBufferHeight:motionTarget.height,
         scenePixelRatio:sceneRatio,motionSamples:motionSampleCount,canvasWidth:renderer.domElement?.width,canvasHeight:renderer.domElement?.height,
+        motionDepthResolveSkipped,
         expectedPublicFrame:Number.isFinite(published)?published+1:null,cameraPosition:camera.position?.toArray(),cameraQuaternion:camera.quaternion?.toArray()});
     }
     try{
@@ -148,8 +158,8 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       // ordinary offscreen scene shader writes linear HDR; OutputPass applies
       // the existing AgX/exposure/sRGB transform exactly once, as at idle.
       motionColorPass.render(renderer,null,motionTarget);
-      gpuPhases?.sceneComplete(profile);
       sceneInfo={...renderer.info.render};
+      gpuPhases?.sceneComplete(profile,sceneInfo);
       // Keep the HDR scene clear above, but avoid clearing the multisampled
       // display color/depth immediately before overwriting every color pixel.
       renderer.autoClear=false;
@@ -183,6 +193,7 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       // GL rounds requested samples up to a supported count. Report the
       // matching per-format result, independently of the default canvas.
       motionSamples:motionEnabled?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,canvasSamples,
+      motionDepthResolveSkipped:motionEnabled&&motionDepthResolveSkipped,
       ...(gpuPhases?{gpuPhases:gpuPhases.getDiagnostics()}:{} )};
   }
   return {

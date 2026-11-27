@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {architecturalRenderBudget,contributesToContactShading,createArchitecturalRenderer} from '../src/architectural-renderer.js';
 
@@ -33,7 +34,7 @@ test('unsupported WebGL retains the direct renderer and accurate scene diagnosti
 });
 
 function motionRenderer(scene,{webgl2=true,float=true,maxSamples=4,colorSamples=[4,2],depthSamples=[4,2]}={}){
-  const state={target:null,face:0,mip:0,clearColor:new THREE.Color('#123456'),clearAlpha:.35,draws:[],clears:[],queries:0,throwAt:null};
+  const state={target:null,face:0,mip:0,clearColor:new THREE.Color('#123456'),clearAlpha:.35,draws:[],clears:[],clearOptions:[],queries:0,throwAt:null};
   const gl={RENDERBUFFER:1,RGBA16F:2,DEPTH_COMPONENT24:3,SAMPLES:4,
     getParameter(name){assert.equal(name,this.SAMPLES);state.queries++;return 4;},
     getInternalformatParameter(target,format,name){assert.equal(target,this.RENDERBUFFER);assert.equal(name,this.SAMPLES);return new Int32Array(format===this.RGBA16F?colorSamples:depthSamples);}};
@@ -44,7 +45,7 @@ function motionRenderer(scene,{webgl2=true,float=true,maxSamples=4,colorSamples=
     setRenderTarget(target,face=0,mip=0){state.target=target;state.face=face;state.mip=mip;},
     getClearColor:target=>target.copy(state.clearColor),getClearAlpha:()=>state.clearAlpha,
     setClearColor(color,alpha=state.clearAlpha){state.clearColor.set(color);state.clearAlpha=alpha;},
-    getPixelRatio:()=>1,getDrawingBufferSize:target=>target.set(1280,584),clear(){state.clears.push(state.target);},
+    getPixelRatio:()=>1,getDrawingBufferSize:target=>target.set(1280,584),clear(...options){state.clears.push(state.target);state.clearOptions.push(options);},
     render(object,camera){
       const stage=object===scene?'scene':'output';state.draws.push({stage,target:state.target,object,camera,autoClear:this.autoClear});
       if(state.throwAt===stage){renderer.setClearColor('#abcdef',.9);throw new Error(stage+' draw failed');}
@@ -69,7 +70,7 @@ test('motion renders into a cached two-sample HDR target at the scene scale with
   assert.ok('AGX_TONE_MAPPING' in output.defines&&'SRGB_TRANSFER' in output.defines,'Existing OutputPass applies the idle HDR output transform');
   assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968},'The output triangle cannot replace scene statistics');
   assert.deepEqual(presentation.getDiagnostics(),{contactShading:false,contactShadingSupported:true,aoWidth:0,aoHeight:0,msaaSamples:0,toneMapping:'AgX',
-    renderPath:'motion-target',sceneBufferWidth:1075,sceneBufferHeight:490,scenePixelRatio:.84,motionSupported:true,motionUnsupportedReason:null,motionSamples:2,motionRequestedSamples:2,canvasSamples:4});
+    renderPath:'motion-target',sceneBufferWidth:1075,sceneBufferHeight:490,scenePixelRatio:.84,motionSupported:true,motionUnsupportedReason:null,motionSamples:2,motionRequestedSamples:2,canvasSamples:4,motionDepthResolveSkipped:false});
   let targetDisposals=0,outputDisposals=0;target.addEventListener('dispose',()=>targetDisposals++);output.addEventListener('dispose',()=>outputDisposals++);
   presentation.resize(1280,584,.84,'high',{interacting:true});presentation.render();
   assert.equal(state.draws[2].target,target);assert.equal(state.draws[3].object.material,output);assert.equal(targetDisposals,0);
@@ -83,6 +84,51 @@ test('motion renders into a cached two-sample HDR target at the scene scale with
   assert.equal(state.draws.at(-2).target,target,'Eco motion reuses the supported target; its direct idle path stays unchanged');
   assert.equal(state.queries,1,'Default-canvas samples are queried once, not during moving draws');
   presentation.dispose();presentation.dispose();assert.equal(targetDisposals,2);assert.equal(outputDisposals,1);
+});
+
+test('the actual r160 resolver skips only unused motion depth copies and reapplies its flag after resize',async()=>{
+  const vendor=await readFile(new URL('../vendor/three.module.js',import.meta.url),'utf8');
+  const start=vendor.indexOf('\tfunction updateMultisampleRenderTarget( renderTarget ) {');
+  const end=vendor.indexOf('\n\tfunction getRenderTargetSamples(',start);
+  assert.ok(start>=0&&end>start,'This integration is explicitly pinned to the installed r160 resolver');
+  const scene=new THREE.Scene(),{renderer,state}=motionRenderer(scene),records=new WeakMap(),watched=new WeakSet(),blits=[],invalidations=[];
+  const properties={get(target){
+    if(!records.has(target))records.set(target,{__webglFramebuffer:{resolved:target},__webglMultisampledFramebuffer:{multisampled:target}});
+    if(!watched.has(target)){watched.add(target);target.addEventListener('dispose',()=>records.delete(target));}
+    return records.get(target);
+  }};
+  renderer.properties=properties;
+  const gl={COLOR_BUFFER_BIT:0x4000,DEPTH_BUFFER_BIT:0x100,STENCIL_BUFFER_BIT:0x400,READ_FRAMEBUFFER:0x8ca8,DRAW_FRAMEBUFFER:0x8ca9,
+    COLOR_ATTACHMENT0:0x8ce0,DEPTH_ATTACHMENT:0x8d00,DEPTH_STENCIL_ATTACHMENT:0x821a,NEAREST:0x2600,
+    blitFramebuffer(...args){blits.push(args);},invalidateFramebuffer(...args){invalidations.push(args);}};
+  const resolve=Function('_gl','isWebGL2','useMultisampledRTT','properties','state','supportsInvalidateFramebuffer',
+    vendor.slice(start,end)+'\nreturn updateMultisampleRenderTarget;')(gl,true,()=>false,properties,{bindFramebuffer(){}},true);
+  const ordinary=new THREE.WebGLRenderTarget(16,16,{samples:2});resolve(ordinary);
+  assert.equal(blits.at(-1)[8],gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT,'Unmodified targets retain their normal color/depth resolve');
+  const draw=renderer.render.bind(renderer);
+  renderer.render=(object,camera)=>{draw(object,camera);if(object===scene&&state.target)resolve(state.target);};
+  const presentation=createArchitecturalRenderer(renderer,scene,new THREE.PerspectiveCamera());
+  for(const scale of [.84,.54,.68]){
+    presentation.resize(1280,584,scale,'auto',{interacting:true});presentation.render();
+    const target=state.draws.at(-2).target;
+    assert.equal(target.depthBuffer,true,'MSAA scene drawing still has its depth attachment');
+    assert.equal(target.stencilBuffer,false);assert.equal(target.depthTexture,null);
+    assert.deepEqual(state.clearOptions.at(-1),[true,true,true],'Every new scene clears depth before drawing');
+    assert.equal(properties.get(target).__ignoreDepthValues,true,'Resize disposal must not lose the resolve-only flag');
+    assert.equal(blits.at(-1)[8],gl.COLOR_BUFFER_BIT);
+    assert.deepEqual(blits.at(-1).slice(0,8),[0,0,target.width,target.height,0,0,target.width,target.height]);
+    assert.ok(invalidations.some(([binding,attachments])=>binding===gl.READ_FRAMEBUFFER&&attachments.length===1&&attachments[0]===gl.DEPTH_ATTACHMENT));
+    assert.equal(presentation.getDiagnostics().motionDepthResolveSkipped,true);
+    assert.equal(state.draws.at(-1).object.material.uniforms.tDiffuse.value,target.texture,'Output still consumes the resolved HDR color');
+  }
+  renderer.autoClearDepth=false;presentation.render();
+  assert.equal(blits.at(-1)[8],gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT,'A pass without an explicit depth clear retains its normal resolve');
+  assert.equal(presentation.getDiagnostics().motionDepthResolveSkipped,false);
+  renderer.autoClearDepth=true;
+  assert.equal(properties.get(ordinary).__ignoreDepthValues,undefined,'Other target consumers remain untouched');
+  const count=blits.length;presentation.resize(1280,584,1,'eco',{interacting:false});presentation.render();
+  assert.equal(blits.length,count);assert.equal(presentation.getDiagnostics().motionDepthResolveSkipped,false);
+  presentation.dispose();ordinary.dispose();
 });
 
 test('motion output restores target, cube face, mip, clearing and colors after either draw fails',()=>{
@@ -120,14 +166,16 @@ test('optional phase marks surround the scene/resolve and output with the exact 
     fenceSync(){const handle={id:fences.length+1};fences.push(handle);events.push('fence-'+handle.id);return handle;},
     clientWaitSync(handle,flags,timeout){assert.equal(timeout,0);return this.TIMEOUT_EXPIRED;},deleteSync:handle=>deleted.push(handle),flush:()=>events.push('flush')});
   renderer.domElement.dataset={renderedFrameCount:'17'};
-  renderer.render=(object,...args)=>{events.push(object===scene?'scene-and-resolve':'output');return draw(object,...args);};
+  renderer.render=(object,...args)=>{events.push(object===scene?'scene-and-resolve':'output');draw(object,...args);
+    if(object===scene)Object.assign(renderer.info.render,{points:0,lines:317,frame:35});};
   const presentation=createArchitecturalRenderer(renderer,scene,camera,{gpuPhaseDiagnostics:true});
   presentation.resize(1280,584,.54,'auto',{interacting:true});presentation.render();
   assert.deepEqual(events,['fence-1','scene-and-resolve','fence-2','output','fence-3','flush']);
   const sample=presentation.getDiagnostics().gpuPhases.pending[0];
   assert.deepEqual(sample.metadata,{renderPath:'motion-target',sceneBufferWidth:691,sceneBufferHeight:315,scenePixelRatio:.54,
-    motionSamples:2,canvasWidth:1280,canvasHeight:584,expectedPublicFrame:18,cameraPosition:[0,0,0],cameraQuaternion:[0,0,0,1]});
-  assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968});
+    motionSamples:2,canvasWidth:1280,canvasHeight:584,motionDepthResolveSkipped:false,expectedPublicFrame:18,cameraPosition:[0,0,0],cameraQuaternion:[0,0,0,1],
+    sceneInfo:{calls:501,triangles:825968,points:0,lines:317,rendererFrame:35}});
+  assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968,points:0,lines:317,frame:35});
   presentation.dispose();assert.equal(deleted.length,3);assert.equal(new Set(deleted).size,3);
 });
 

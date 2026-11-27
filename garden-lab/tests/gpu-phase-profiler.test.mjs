@@ -42,10 +42,12 @@ test('two sequential timer intervals retain exact metadata and read results only
   assert.deepEqual(f.events,['extension','begin-1','scene-and-msaa-resolve','end-1','begin-2','output','end-2','flush']);
   f.tick(50);assert.equal(p.getDiagnostics().completedSamples,0);assert.equal(f.scheduled.size,1);
   f.queries[0].available=true;f.queries[0].ns=3123456789;f.queries[1].available=true;f.queries[1].ns=123456789;
+  for(const fence of f.fences)fence.at=100;
   f.tick(100);const d=p.getDiagnostics(),sample=d.samples[0];
   assert.equal(d.method,'ext-timer-query');assert.equal(d.completedSamples,1);assert.equal(sample.status,'completed');
   assert.deepEqual(sample.metadata,metadata);assert.equal(sample.phases.scene.elapsedMs,3123.456789);assert.equal(sample.phases.output.elapsedMs,123.456789);
-  assert.equal(f.deletedQueries.length,2);assert.equal(f.scheduled.size,0);assert.equal(f.current,null);assert.equal(f.updates,1);
+  assert.equal(f.deletedQueries.length,2);assert.equal(f.deletedFences.length,3);assert.equal(sample.fenceInconclusive,true);
+  assert.equal(f.scheduled.size,0);assert.equal(f.current,null);assert.equal(f.updates,1);
   sample.metadata.scenePixelRatio=10;assert.equal(p.getDiagnostics().samples[0].metadata.scenePixelRatio,.54);
   p.dispose();assert.equal(f.deletedQueries.length,2);
 });
@@ -65,6 +67,7 @@ test('disjoint queries, aborted phases, context loss and observation failures re
     p.poll();p.dispose();
     assert.equal(f.current,null,failure);assert.equal(f.scheduled.size,0,failure);
     assert.equal(new Set(f.deletedQueries).size,f.queries.length,failure);assert.equal(f.deletedQueries.length,f.queries.length,failure);
+    assert.equal(new Set(f.deletedFences).size,f.fences.length,failure);assert.equal(f.deletedFences.length,f.fences.length,failure);
     assert.equal(p.getDiagnostics().completedSamples,0,failure);
   }
 });
@@ -72,6 +75,7 @@ test('disjoint queries, aborted phases, context loss and observation failures re
 test('a disjoint exposed while reading availability invalidates every staged and partial timer result',()=>{
   const f=fake(),p=createGpuPhaseProfiler(f.gl,f.options);render(p);render(p);
   for(const q of f.queries){q.available=true;q.ns=123e6;}
+  for(const fence of f.fences)fence.at=40;
   const get=f.gl.getQueryParameter.bind(f.gl);
   f.gl.getQueryParameter=(query,name)=>{
     if(query===f.queries[2]&&name===f.gl.QUERY_RESULT_AVAILABLE)f.setDisjoint();
@@ -80,7 +84,35 @@ test('a disjoint exposed while reading availability invalidates every staged and
   f.tick(50);const d=p.getDiagnostics();
   assert.equal(d.completedSamples,0);assert.equal(d.disjointEvents,1);assert.equal(d.discardedSamples,2);
   assert.ok(d.samples.every(sample=>sample.status==='disjoint'&&Object.keys(sample.phases).length===0));
-  assert.equal(f.deletedQueries.length,4);assert.equal(new Set(f.deletedQueries).size,4);assert.equal(f.scheduled.size,0);p.dispose();
+  assert.equal(f.deletedQueries.length,4);assert.equal(new Set(f.deletedQueries).size,4);
+  assert.equal(f.deletedFences.length,6);assert.equal(new Set(f.deletedFences).size,6);assert.equal(f.scheduled.size,0);p.dispose();
+});
+
+test('timer intervals retain independent fence observations and an immutable actual scene inventory',()=>{
+  const f=fake(),p=createGpuPhaseProfiler(f.gl,f.options),sceneInfo={calls:604,triangles:933947,points:0,lines:317,frame:21};
+  const frame=p.beginFrame({expectedPublicFrame:11});p.sceneComplete(frame,sceneInfo);p.completeFrame(frame);
+  sceneInfo.calls=1;sceneInfo.triangles=1;sceneInfo.frame=22;
+  f.queries[0].available=true;f.queries[0].ns=1000;f.queries[1].available=true;f.queries[1].ns=20e6;
+  f.fences[0].at=40;f.fences[1].at=3040;f.fences[2].at=3090;
+  f.tick(50);assert.equal(p.getDiagnostics().completedSamples,0,'Ready timer results cannot bypass pending independent fences');
+  assert.equal(f.deletedQueries.length,2);assert.equal(f.deletedFences.length,1);
+  f.tick(3000);f.tick(3050);assert.equal(p.getDiagnostics().completedSamples,0);f.tick(3100);
+  const sample=p.getDiagnostics().samples[0];
+  assert.deepEqual(sample.metadata.sceneInfo,{calls:604,triangles:933947,points:0,lines:317,rendererFrame:21});
+  assert.deepEqual(sample.phases,{scene:{elapsedMs:.001,source:'ext-timer-query'},output:{elapsedMs:20,source:'ext-timer-query'}},'Raw timer values are never rewritten from fences');
+  assert.deepEqual(sample.fencePhases.scene,{source:'fence-availability',availabilityGapBoundsMs:{lower:2950,upper:3050},inconclusive:false});
+  assert.deepEqual(sample.fencePhases.output,{source:'fence-availability',availabilityGapBoundsMs:{lower:0,upper:100},inconclusive:false});
+  assert.equal(sample.fenceInconclusive,false);assert.equal(f.deletedQueries.length,2);assert.equal(f.deletedFences.length,3);
+  assert.equal(f.scheduled.size,0);p.dispose();
+});
+
+test('valid timer queries remain usable when independent fences are unavailable',()=>{
+  const f=fake();delete f.gl.fenceSync;
+  const p=createGpuPhaseProfiler(f.gl,f.options);render(p);
+  for(const query of f.queries){query.available=true;query.ns=1e6;}f.tick(50);
+  const d=p.getDiagnostics();assert.equal(d.method,'ext-timer-query');assert.equal(d.fenceSupported,false);
+  assert.equal(d.completedSamples,1);assert.deepEqual(d.samples[0].marks,[]);assert.deepEqual(d.samples[0].fencePhases,{});
+  assert.equal(f.deletedQueries.length,2);assert.equal(f.scheduled.size,0);p.dispose();
 });
 
 test('fallback fences bracket observed phase availability and identify simultaneous observations as inconclusive',()=>{
@@ -112,19 +144,20 @@ test('a throwing initial disjoint capability query selects the available fence f
 test('pending work, lifetime samples, retained evidence and timers remain bounded',()=>{
   const f=fake(),p=createGpuPhaseProfiler(f.gl,{...f.options,maxSamples:4,retainedSamples:2});
   render(p);render(p);assert.equal(p.beginFrame(),null);assert.equal(p.getDiagnostics().pending.length,2);
-  for(const q of f.queries){q.available=true;q.ns=1e6;}f.tick(50);
-  render(p);render(p);for(const q of f.queries){q.available=true;q.ns=1e6;}f.tick(100);
+  for(const q of f.queries){q.available=true;q.ns=1e6;}for(const fence of f.fences)fence.at=50;f.tick(50);
+  render(p);render(p);for(const q of f.queries){q.available=true;q.ns=1e6;}for(const fence of f.fences)fence.at=100;f.tick(100);
   for(let i=0;i<20;i++)assert.equal(p.beginFrame(),null);
   const d=p.getDiagnostics();assert.equal(d.startedSamples,4);assert.equal(d.completedSamples,4);assert.equal(d.samples.length,2);
   assert.equal(d.peakPendingSamples,2);assert.equal(d.status,'complete');assert.equal(f.queries.length,8);assert.equal(f.deletedQueries.length,8);assert.equal(f.scheduled.size,0);
+  assert.equal(f.fences.length,12);assert.equal(f.deletedFences.length,12);
   p.dispose();
   const limits=createGpuPhaseProfiler(null,{maxSamples:NaN,maxPending:Infinity,maximumPendingMs:Infinity}).getDiagnostics();
   assert.equal(limits.maxSamples,32);assert.equal(limits.maxPending,2);assert.equal(limits.maximumPendingMs,60000);
 });
 
-test('fallback failures and time caps clean up while leaving the renderer free to continue',()=>{
-  for(const failure of ['null-fence','wait-failed','poll-throw','context-lost','time-cap','dispose']){
-    const f=fake({timers:false}),p=createGpuPhaseProfiler(f.gl,{...f.options,maximumPendingMs:100});
+test('fence failures and time caps clean up both timer and fallback paths without affecting rendering',()=>{
+  for(const timers of [false,true])for(const failure of ['null-fence','wait-failed','poll-throw','context-lost','time-cap','dispose']){
+    const f=fake({timers}),p=createGpuPhaseProfiler(f.gl,{...f.options,maximumPendingMs:100});
     if(failure==='null-fence')f.gl.fenceSync=()=>null;
     render(p);
     if(failure==='wait-failed')f.gl.clientWaitSync=()=>f.gl.WAIT_FAILED;
@@ -135,5 +168,6 @@ test('fallback failures and time caps clean up while leaving the renderer free t
     p.dispose();p.dispose();
     assert.equal(f.scheduled.size,0,failure);assert.equal(f.deletedFences.length,f.fences.length,failure);
     assert.equal(new Set(f.deletedFences).size,f.fences.length,failure);assert.equal(p.getDiagnostics().completedSamples,0,failure);
+    assert.equal(f.deletedQueries.length,f.queries.length,failure);assert.equal(new Set(f.deletedQueries).size,f.queries.length,failure);
   }
 });

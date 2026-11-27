@@ -152,8 +152,13 @@ async function acquire(){
           separatelyObservedFenceBounds:phases.filter(phase=>phase.source==='fence-availability'&&!phase.inconclusive).length,
           inconclusiveFenceBounds:phases.filter(phase=>phase.source==='fence-availability'&&phase.inconclusive).length}];
       })),
-      allFenceMarksObservedTogetherSamples:qualified.filter(sample=>sample.inconclusive===true).length,
-      phaseEvidenceInterpretation:'Only timerIntervals are device elapsed durations. Separately observed fence bounds still include browser observation and polling; inconclusive fences cannot separate the phase costs.',
+      independentFenceEvidence:Object.fromEntries(['scene','output'].map(name=>{
+        const phases=qualified.map(sample=>sample.fencePhases?.[name]).filter(Boolean);
+        return [name,{separatelyObservedBounds:phases.filter(phase=>!phase.inconclusive).length,
+          inconclusiveBounds:phases.filter(phase=>phase.inconclusive).length}];
+      })),
+      allFenceMarksObservedTogetherSamples:qualified.filter(sample=>sample.fenceInconclusive===true||sample.inconclusive===true).length,
+      phaseEvidenceInterpretation:'Timer intervals are raw device-reported values and must be checked against actual scene inventory and independent completion evidence before attributing cost. Fence bounds include browser observation and polling; marks first observed together cannot separate phase costs. Collection success is not timer-validity or walking acceptance.',
       routeOffsetsM:{minimum:Math.min(...report.observations.map(item=>shuttle.offset(item.livePosition))),
         maximum:Math.max(...report.observations.map(item=>shuttle.offset(item.livePosition)))}};
     await save();

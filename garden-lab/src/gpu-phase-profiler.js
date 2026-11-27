@@ -1,6 +1,6 @@
 /** Optional, bounded diagnostics for the two motion-rendering phases.
- * Device timer queries are preferred. Fence fallbacks bracket observable
- * availability only; they never become isolated GPU-duration estimates.
+ * Device timer queries retain their raw results alongside independent fences.
+ * Fence observations bracket availability, never isolated GPU durations.
  */
 export function createGpuPhaseProfiler(gl,{enabled=false,onUpdate=null,now=()=>performance.now(),
   schedule=(callback,ms)=>setTimeout(callback,ms),cancel=handle=>clearTimeout(handle),
@@ -62,6 +62,30 @@ export function createGpuPhaseProfiler(gl,{enabled=false,onUpdate=null,now=()=>p
     if(timer!==null||!active||disposed||!pending.length)return;
     timer=schedule(()=>{timer=null;poll();},limits.pollIntervalMs);
   }
+  function observeFences(entry){
+    if(!entry.marks.length)return true;
+    for(const mark of entry.marks){
+      if(mark.record.status==='signaled')continue;
+      const status=gl.clientWaitSync(mark.handle,0,0),observedAtMs=now();
+      if(status===gl.ALREADY_SIGNALED||status===gl.CONDITION_SATISFIED){
+        Object.assign(mark.record,{status:'signaled',observedAtMs,observedPoll:polls});
+        gl.deleteSync(mark.handle);mark.handle=null;
+      }else if(status===gl.TIMEOUT_EXPIRED)mark.record.lastUnsignaledAtMs=observedAtMs;
+      else throw new Error(status===gl.WAIT_FAILED?'Phase fence wait failed':'Unexpected phase fence status');
+    }
+    if(entry.marks.length!==3||entry.marks.some(mark=>mark.record.status!=='signaled'))return false;
+    const [start,scene,output]=entry.marks.map(mark=>mark.record);
+    const gap=(a,b)=>({source:'fence-availability',availabilityGapBoundsMs:{
+      lower:Math.max(0,(b.lastUnsignaledAtMs??b.submittedAtMs)-a.observedAtMs),
+      upper:Math.max(0,b.observedAtMs-(a.lastUnsignaledAtMs??a.submittedAtMs))},
+      inconclusive:a.observedPoll===b.observedPoll});
+    entry.record.fencePhases={scene:gap(start,scene),output:gap(scene,output)};
+    entry.record.fenceInconclusive=start.observedPoll===scene.observedPoll&&scene.observedPoll===output.observedPoll;
+    if(method==='fence-availability'){
+      entry.record.phases=entry.record.fencePhases;entry.record.inconclusive=entry.record.fenceInconclusive;
+    }
+    return true;
+  }
   function invalidateDisjoint(){
     disjointEvents++;
     for(const entry of [...pending]){
@@ -91,30 +115,11 @@ export function createGpuPhaseProfiler(gl,{enabled=false,onUpdate=null,now=()=>p
             entry.record.phases[query.phase]={elapsedMs:query.elapsedMs,source:'ext-timer-query'};
             gl.deleteQuery(query.handle);query.handle=null;
           }
-          if(entry.queries.length===2&&entry.queries.every(query=>query.elapsedMs!==null)){
+          const fencesReady=observeFences(entry);
+          if(entry.queries.length===2&&entry.queries.every(query=>query.elapsedMs!==null)&&fencesReady){
             ready.push(entry);
           }
-        }else{
-          for(const mark of entry.marks){
-            if(mark.record.status==='signaled')continue;
-            const status=gl.clientWaitSync(mark.handle,0,0),observedAtMs=now();
-            if(status===gl.ALREADY_SIGNALED||status===gl.CONDITION_SATISFIED){
-              Object.assign(mark.record,{status:'signaled',observedAtMs,observedPoll:polls});
-              gl.deleteSync(mark.handle);mark.handle=null;
-            }else if(status===gl.TIMEOUT_EXPIRED)mark.record.lastUnsignaledAtMs=observedAtMs;
-            else throw new Error(status===gl.WAIT_FAILED?'Phase fence wait failed':'Unexpected phase fence status');
-          }
-          if(entry.marks.length===3&&entry.marks.every(mark=>mark.record.status==='signaled')){
-            const [start,scene,output]=entry.marks.map(mark=>mark.record);
-            const gap=(a,b)=>({source:'fence-availability',availabilityGapBoundsMs:{
-              lower:Math.max(0,(b.lastUnsignaledAtMs??b.submittedAtMs)-a.observedAtMs),
-              upper:Math.max(0,b.observedAtMs-(a.lastUnsignaledAtMs??a.submittedAtMs))},
-              inconclusive:a.observedPoll===b.observedPoll});
-            entry.record.phases={scene:gap(start,scene),output:gap(scene,output)};
-            entry.record.inconclusive=start.observedPoll===scene.observedPoll&&scene.observedPoll===output.observedPoll;
-            finish(entry,'completed');changed=true;
-          }
-        }
+        }else if(observeFences(entry)){finish(entry,'completed');changed=true;}
       }
       if(method==='ext-timer-query'){
         // Availability/result reads can themselves expose a disjoint. Stage
@@ -135,24 +140,34 @@ export function createGpuPhaseProfiler(gl,{enabled=false,onUpdate=null,now=()=>p
       // Never interfere with a query owned by another diagnostics consumer.
       if(method==='ext-timer-query'&&gl.getQuery(extension.TIME_ELAPSED_EXT,gl.CURRENT_QUERY)!==null){skippedAttempts++;return null;}
       const record={id:++startedSamples,status:'pending',currentPhase:'scene',metadata:{...metadata},startedAtMs:now(),sceneSubmittedAtMs:null,
-        submittedAtMs:null,observedAtMs:null,phases:{},marks:[]};
+        submittedAtMs:null,observedAtMs:null,phases:{},fencePhases:{},marks:[]};
       const entry={record,queries:[],marks:[],activeQuery:null,finished:false};pending.push(entry);current=entry;
       peakPendingSamples=Math.max(peakPendingSamples,pending.length);
-      if(method==='ext-timer-query')beginQuery(entry,'scene');else fence(entry,'start');
+      if(fenceSupported)fence(entry,'start');
+      if(method==='ext-timer-query')beginQuery(entry,'scene');
       return entry;
     }catch(error){disable('phase-start-failed',error);return null;}
   }
-  function sceneComplete(entry){
+  function sceneComplete(entry,sceneInfo=null){
     if(!entry||!active||current!==entry)return;
     try{
-      if(method==='ext-timer-query'){endQuery(entry);beginQuery(entry,'output');}else fence(entry,'scene');
+      if(method==='ext-timer-query')endQuery(entry);
+      if(fenceSupported)fence(entry,'scene');
+      if(method==='ext-timer-query')beginQuery(entry,'output');
+      if(sceneInfo){
+        const snapshot={};
+        for(const key of ['calls','triangles','points','lines'])if(Number.isFinite(sceneInfo[key]))snapshot[key]=sceneInfo[key];
+        if(Number.isFinite(sceneInfo.frame))snapshot.rendererFrame=sceneInfo.frame;
+        entry.record.metadata.sceneInfo=snapshot;
+      }
       entry.record.sceneSubmittedAtMs=now();entry.record.currentPhase='output';
     }catch(error){disable('scene-phase-end-failed',error);}
   }
   function completeFrame(entry){
     if(!entry||!active||current!==entry)return;
     try{
-      if(method==='ext-timer-query')endQuery(entry);else fence(entry,'output');
+      if(method==='ext-timer-query')endQuery(entry);
+      if(fenceSupported)fence(entry,'output');
       entry.finished=true;entry.record.submittedAtMs=now();entry.record.currentPhase='submitted';current=null;
       gl.flush();schedulePoll();
     }catch(error){disable('output-phase-end-failed',error);}
@@ -166,7 +181,7 @@ export function createGpuPhaseProfiler(gl,{enabled=false,onUpdate=null,now=()=>p
       startedSamples>=limits.maxSamples&&!pending.length?'complete':'collecting',reason,timerQuerySupported,timerUnsupportedReason,fenceSupported,
       ...limits,startedSamples,completedSamples,discardedSamples,skippedAttempts,peakPendingSamples,polls,disjointEvents,
       pending:pending.map(entry=>JSON.parse(JSON.stringify(entry.record))),samples:history.map(record=>JSON.parse(JSON.stringify(record))),errors:[...errors],
-      interpretation:method==='ext-timer-query'?'Device-reported elapsed query intervals for the scene including MSAA resolve and final output. Results exclude earlier queued work; they are not CPU or presentation latency. Disjoint results are discarded.':
+      interpretation:method==='ext-timer-query'?'Raw device-reported elapsed query intervals for the scene including MSAA resolve and final output. Independent fencePhases, where available, bracket observable availability and may reveal inconsistent timer attribution. Neither method measures CPU or presentation latency. Disjoint timer results are discarded; coalesced fence observations are inconclusive.':
         'Bounds on differences in observable fence availability, including browser status caching and polling delay. They are not isolated GPU durations. Marks first observed together are inconclusive.'};
   }
   return {beginFrame,sceneComplete,completeFrame,abortFrame,poll,getDiagnostics,
