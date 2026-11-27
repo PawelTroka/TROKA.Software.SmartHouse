@@ -43,8 +43,8 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
     for(const bed of design.gardenLayout.sunbeds.slice(0,2))assert.ok(bed.length>bed.width,'Garden-side sunbeds run along the long pool edge');
     for(const bed of design.gardenLayout.sunbeds.slice(2))assert.ok(bed.width>bed.length,'End sunbeds run along the short pool edge');
   }
-  await el('#summerPoolLayout').uncheck();assert.deepEqual(trees(await exportDesign()),expectedTrees);
-  await el('#summerPoolLayout').check();assert.deepEqual(trees(await exportDesign()),expectedTrees);
+  await el('#summerPoolLayout').uncheck({timeout});assert.deepEqual(trees(await exportDesign()),expectedTrees);
+  await el('#summerPoolLayout').check({timeout});assert.deepEqual(trees(await exportDesign()),expectedTrees);
   check('All three sunbed options keep their long axes parallel to the adjacent pool edge; layout switches leave the trees fixed');
 
   assert.equal(gates(first)['front-pedestrian-opening'],false);assert.equal(gates(first)['front-vehicle-opening'],false);
