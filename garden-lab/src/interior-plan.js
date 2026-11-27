@@ -1,10 +1,12 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.39.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.39.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.39.0';
-import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.39.0';
-import {guestAndOfficeFixtures,compactGymFixtures,LIVING_FIT_OUT_NOTES,GYM_EQUIPMENT_REFERENCES} from './living-fitouts.js?v=1.39.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.40.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.40.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.40.0';
+import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.40.0';
+import {guestAndOfficeFixtures,compactGymFixtures,LIVING_FIT_OUT_NOTES,GYM_EQUIPMENT_REFERENCES} from './living-fitouts.js?v=1.40.0';
+import {applyLivingCinema} from './living-cinema.js?v=1.40.0';
+import {luxuryKitchenFixtures,luxuryKitchenSummary} from './luxury-kitchen.js?v=1.40.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -71,7 +73,7 @@ const mainSides=(t,lights)=>[
 const roomLights=()=>[windowAt(2.2),windowAt(5.65)];
 const rearLights=()=>[windowAt(2.96),windowAt(6.54)];
 
-function groundPlan(proposed){
+function groundPlan(proposed,fitOut={}){
   const shell=[
     ...mainSides(.35,roomLights()).map(w=>proposed&&w.id==='left-facade'?{
       ...w,openings:[w.openings[0],{...windowAt(5.79,2.30,1.04,1.46),offset:5.79-w.a[1],
@@ -115,17 +117,7 @@ function groundPlan(proposed){
     fixture('table','diningTable','Large dining table','dining',3.02,2.75,3.18,1.04,{seats:8}),
     fixture('sofa','sofa','U-shaped sectional facing the TV','lounge',8.13,3.30,2.60,2.70,{shape:'U',openTo:'right',front:[1,0]}),
     fixture('tv','tv','TV on solid right-wall bay','lounge',10.34,4.14,.11,1.34),
-    fixture('west-counter','counter','Continuous sink run joining the living-edge peninsula','front-kitchen',.675,6.875,.65,2.25,{front:[1,0],drawers:true,joinedCounter:'kitchen-island'}),
-    fixture('street-counter','counter','Cooking and drawer run meeting the fitted pantry corner','front-kitchen',2.075,8.31,3.41,.62,{front:[0,-1],drawers:true}),
-    fixture('east-counter','storage','Ceiling-height pantry and appliance cabinets','front-kitchen',4.10,7.31,.63,1.36,{front:[-1,0],height:2.70,pantry:true,ceilingFitted:true,ceilingScribe:.05}),
-    fixture('kitchen-fridge','fridge','Refrigerator in the tall cabinet wall','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],height:1.88}),
-    fixture('kitchen-fridge-top','wallCabinet','Ceiling-height storage over the refrigerator','front-kitchen',4.10,6.25,.63,.68,{front:[-1,0],baseHeight:1.90,height:.80,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
-    fixture('kitchen-wall-storage','wallCabinet','Continuous ceiling-height storage above the cooking run','front-kitchen',2.075,8.47,3.41,.34,{front:[0,-1],baseHeight:1.48,height:1.22,wallMounted:true,ceilingFitted:true,ceilingScribe:.05}),
-    fixture('kitchen-pantry-corner','storage','Full-height corner pantry continuing the tall cabinetry to the street wall','front-kitchen',4.10,8.315,.63,.65,{front:[-1,0],height:2.70,pantry:true,corner:true,ceilingFitted:true,ceilingScribe:.05}),
-    fixture('kitchen-island','counter','Connected peninsula with a wider refrigerator-side entrance','front-kitchen',1.45,5.325,2.20,.85,{height:.90,front:[0,1],variant:'social-peninsula',drawers:true,
-      joinedCounter:'west-counter',waterfallEnds:[1],approaches:[[1.85,6.30],[3.15,5.325]]}),
-    fixture('hob','hob','Cooktop on the closed street-wall worktop','front-kitchen',2.30,8.31,.78,.50,{hostId:'street-counter',front:[0,-1]}),
-    fixture('kitchen-sink','sink','Sink centered below the side-garden window','front-kitchen',.675,6.94,.48,.88,{hostId:'west-counter',front:[1,0],basins:1,approach:[1.55,6.94]}),
+    ...luxuryKitchenFixtures(fitOut),
     fixture('ground-tub','tub','Deep freestanding soaking tub','bathroom',9.91,7.66,.88,1.78,{variant:'soaking',height:.68,front:[-1,0],approach:[9.12,7.13]}),
     fixture('ground-shower','shower','Walk-in shower with north-wall fittings','bathroom',9.71,6.02,1.30,1.36,{front:[-1,0],headWall:[0,-1],approach:[8.73,6.02]}),
     fixture('ground-basin','basin','Dual vanity on the solid stair wall','bathroom',7.42,7.00,.56,1.50,{front:[1,0],basins:2,approaches:[[8.02,6.625],[8.02,7.375]]}),
@@ -142,7 +134,7 @@ function groundPlan(proposed){
       h('kitchen-living-opening',.175,4.53,5.04,.12,[passage(.35,3.65,2.60)],added)]:[oldRear,...old])],
     removedWalls:proposed?[oldRear,old[0],old[1],old[3],old[4]]:[],
     outdoor:proposed?[landing,platform('terrace','Garden terrace · 4 m','terrace',rect(0,-4,WIDTH,0),4)]:[landing],
-    fixtures:proposed?fitted:[],cores:flueCores().map(c=>proposed&&c.id==='west-flue'?{...c,
+    fixtures:proposed?fitted:[],...(proposed?{kitchenFitOut:luxuryKitchenSummary(fitOut)}:{}),cores:flueCores().map(c=>proposed&&c.id==='west-flue'?{...c,
       enclosure:{kind:'cabinet-panels',label:'Retained flue behind matching removable cabinet panels',
         polygon:rect(3.73,4.83,4.67,5.93),front:[-1,0],panels:[
           {id:'flue-kitchen-face',x:3.795,z:5.39,width:.035,depth:1.04,front:[-1,0]},
@@ -158,7 +150,8 @@ function groundPlan(proposed){
       'The kitchen opens through a 3.65 m span to living/dining. A 2.20 × 0.85 m peninsula joins the side-garden sink run, with its free end pulled back 0.55 m to give about 1.18 m beside the concealed chimney and refrigerator. The chimney remains intact behind matching removable cabinet panels; flue clearances, ventilation and inspection access need a coordinated detail.',
       'The hall-side stair partition becomes a 1.10 m timber slat guard. Additional guards close the exposed slab edges and the space below the rising flight, while both flight sides have handrails and the actual stair entry and arrival ends stay open. The bathroom-side privacy wall remains solid. Guard fixings and the stair edge need a measured construction detail.',
       'One 2.30 × 1.46 m picture window is centered over the sink and looks into the side garden. Both former window-side upper cabinets are removed, leaving a clean reveal and a clear wall above. The kitchen street window stays closed for cabinetry. The kitchen does not touch the rear façade; its open connection to living/dining retains the rear-garden outlook.',
-      'Fitted kitchen storage follows a 2.70 m cabinet line with a 50 mm ceiling scribe. The cooking run meets the retained full-height pantry corner, closing the former recess beside the tall cabinets. The refrigerator has a 20 mm modeled ventilation reveal; final appliance and flue service clearances follow the selected products and construction detail.',
+      'Fitted kitchen storage follows a 2.70 m cabinet line with a 50 mm ceiling scribe. The 2.25 m wet run includes two clear 600 mm dishwasher niches, a 1010 mm sink cabinet and two 20 mm end panels. A 600 mm stacked oven tower, 550 mm hidden nutrition pantry and filled tall corner use the opposite wall. The four-door refrigerator has a wider bay, rear allowance and 100 mm top reveal; final product drawings govern hinge, ventilation and service clearances.',
+      'A continuous 2.55 × 2.34 m mirror fills the hall-facing kitchen wall beyond the concealed chimney. The workstation sink, waste pull-out, wine-cooler ventilation, drawer assignments and corner access are included in the fitted-kitchen schedule.',
       'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
       'Both bathroom windows use clear picture glass with a 0.98 m sill and 1.44 m height. Their wider openings remain within the retained room boundaries and keep the vanity, mirror and towel-rail mounting bays solid.',
       'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',
@@ -484,12 +477,12 @@ function atticPlan(proposed=false){
       'A folding stair is drawn on the floor below. No attic room partitions or habitable area are documented. The front bay roof detail and exact truss spacing are inferred.'],
   };
 }
-export function getInteriorPlan({floor='ground',layout='renovation',styleId='current',garageVariant='cellar',garageSettings={},officeCoworking=true,officeGuestBedOpen=false,gymBenchParked=true}={}){
+export function getInteriorPlan({floor='ground',layout='renovation',styleId='current',garageVariant='cellar',garageSettings={},officeCoworking=true,officeGuestBedOpen=false,gymBenchParked=true,livingCinemaLayout='legacy',secondaryDishwasherWidth=.60}={}){
   if(!INTERIOR_FLOORS.includes(floor))throw new RangeError('Unknown interior floor: '+floor);
   if(!INTERIOR_LAYOUTS.includes(layout))throw new RangeError('Unknown interior layout: '+layout);
   const proposed=layout==='renovation';
   const converted=floor==='basement'&&proposed&&garageVariant==='two-car';
-  const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed),
+  const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed,{secondaryDishwasherWidth}),
     first:()=>firstPlan(proposed,{officeCoworking,officeGuestBedOpen}),attic:()=>atticPlan(proposed)};
   const built=builders[floor]();
   const detail=converted&&INTERIOR_COMPOSITIONS[styleId]?basementServiceFitOut(built,{gymBenchParked}):built;
@@ -500,5 +493,5 @@ export function getInteriorPlan({floor='ground',layout='renovation',styleId='cur
     roof:{...roof},...INTERIOR_DIMENSIONS.levels[floor],conflicts:[],...detail};
   plan.walls=plan.walls.map(w=>({...w,height:w.height??plan.clearHeight}));
   plan.removedWalls=plan.removedWalls.map(w=>({...w,height:w.height??INTERIOR_DIMENSIONS.levels[floor].clearHeight,status:'removed'}));
-  return curateInteriorPlan(plan,styleId);
+  return applyLivingCinema(curateInteriorPlan(plan,styleId),livingCinemaLayout);
 }

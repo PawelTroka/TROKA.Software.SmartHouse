@@ -321,3 +321,74 @@ jobs:
           path: garden-lab/test-results/pavilion/
           if-no-files-found: ignore
           retention-days: 7
+
+  cinema-kitchen:
+    name: Cinema alternatives, luxury kitchen and mirror
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: python3 scripts/install-ci-browser.py
+      - name: Inspect physical layouts and equipment in real WebGL
+        timeout-minutes: 12
+        run: node scripts/cinema-kitchen-browser-check.mjs
+      - name: Upload cinema and kitchen evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: cinema-kitchen-evidence
+          path: garden-lab/test-results/cinema-kitchen/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  walk-performance:
+    name: Before and after walking performance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check out the published 1.39 baseline
+        uses: actions/checkout@v6
+        with:
+          ref: 66c096a94b6ada93e015a98bce07b4b3a643f933
+          path: .walk-baseline
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - name: Build the baseline unchanged
+        run: npm run build
+        working-directory: .walk-baseline/garden-lab
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: python3 scripts/install-ci-browser.py
+      - name: Compare identical continuous navigation routes
+        timeout-minutes: 12
+        env:
+          BASELINE_DIR: ../.walk-baseline/garden-lab
+        run: node scripts/walk-performance-browser-check.mjs
+      - name: Upload walking performance evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: walk-performance-evidence
+          path: garden-lab/test-results/walk-performance/
+          if-no-files-found: ignore
+          retention-days: 7

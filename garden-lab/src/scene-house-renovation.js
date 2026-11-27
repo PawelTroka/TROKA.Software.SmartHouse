@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.39.0';
-import {facadePoint} from './house-appearance.js?v=1.39.0';
-import {houseRenovationParts,houseGableRenovation,summarizeHouseRenovation} from './house-renovation.js?v=1.39.0';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.39.0';
-import {getMaterialForFinish} from './material-catalogue.js?v=1.39.0';
+import {toWorld} from './orientation.js?v=1.40.0';
+import {facadePoint} from './house-appearance.js?v=1.40.0';
+import {houseRenovationParts,houseGableRenovation,summarizeHouseRenovation} from './house-renovation.js?v=1.40.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.40.0';
+import {getMaterialForFinish} from './material-catalogue.js?v=1.40.0';
 
 const flatSvgDetails=new Set(['brick','stone','panels','soldier-lintel','shutter-louvre']);
 

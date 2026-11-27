@@ -10,7 +10,7 @@ for(const name of ['index.html','style.css','favicon.svg','.nojekyll','src','dat
   await cp(path.join(root,name),path.join(output,name),{recursive:true});
 }
 await mkdir(path.join(output,'docs'),{recursive:true});
-for(const name of ['sternicza-nature-provenance.md','sternicza-appearance-observations.md','sea-visibility-1.30.md','sternicza-realism-1-30.md','resort-living-1.31.md','design-style-research.md','corner-pavilion-study-1.32.md','renovation-depth-1.33.md','summer-garden-1.34.md','resort-update-1.34.md','comfortable-exploration-1.35.md','open-living-garden-1.36.md','garden-and-basement-1.37.md','interactive-living-1.38.md','clean-living-1.39.md','renovation-materials.md','material-transfer-budget.json','material-reference-board.jpg']){
+for(const name of ['sternicza-nature-provenance.md','sternicza-appearance-observations.md','sea-visibility-1.30.md','sternicza-realism-1-30.md','resort-living-1.31.md','design-style-research.md','corner-pavilion-study-1.32.md','renovation-depth-1.33.md','summer-garden-1.34.md','resort-update-1.34.md','comfortable-exploration-1.35.md','open-living-garden-1.36.md','garden-and-basement-1.37.md','interactive-living-1.38.md','clean-living-1.39.md','luxury-living-1.40.md','renovation-materials.md','material-transfer-budget.json','material-reference-board.jpg']){
   await cp(path.join(root,'docs',name),path.join(output,'docs',name));
 }
 await cp(path.join(root,'docs','source-evidence'),path.join(output,'docs','source-evidence'),{recursive:true});

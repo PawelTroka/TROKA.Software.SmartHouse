@@ -1,11 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.39.0';
-import {furnishInterior} from './interior-furniture.js?v=1.39.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.39.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.39.0';
-import {stairTreads} from './stair-surfaces.js?v=1.39.0';
-import {slidingPanelLayout} from './hst-system.js?v=1.39.0';
-import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.39.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.40.0';
+import {furnishInterior} from './interior-furniture.js?v=1.40.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.40.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.40.0';
+import {stairTreads} from './stair-surfaces.js?v=1.40.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.40.0';
+import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.40.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -268,6 +268,7 @@ export function interiorWallFeatures(plan) {
   const result=new Map(),eligible=['living','bedroom','guest','dining','office','bathroom','bath','kitchen'];
   for(const room of plan.rooms){
     if(!eligible.includes(room.kind))continue;
+    if(room.id==='lounge'&&plan.livingCinema?.hasCinema)continue;
     const fixtures=(plan.fixtures||[]).filter(f=>f.roomId===room.id),bed=fixtures.find(f=>f.kind==='bed'),anchor=bed||fixtures.find(f=>f.kind==='tv')||fixtures.find(f=>f.kind==='desk')||fixtures.find(f=>f.kind==='basin'),rb=ringBounds(room.polygon);
     const head=bed?.headboard||[0,-1],target=bed?[bed.x+head[0]*(Math.abs(head[0])>.5?bed.width:bed.depth)/2,bed.z+head[1]*(Math.abs(head[1])>.5?bed.depth:bed.width)/2]:anchor?[anchor.x,anchor.z]:[rb.x,rb.z];
     let chosen=null;
@@ -339,9 +340,26 @@ function finishFeatureWall(parent,wall,feature,height,tools,m,design) {
   }
 }
 
-// Clip board runs to the room and leave a conservative margin around the
-// actual stair openings. A board never bridges a void or an L-shaped notch.
+// Leave small clear apertures through decorative boards and battens for the
+// four actual flush ceiling speakers; the retained ceiling itself stays whole.
+export function ceilingPanelsAroundDevices(panels,plan){
+  const devices=(plan.fixtures||[]).filter(f=>f.ceilingMounted);
+  if(!devices.length)return panels;
+  let pieces=panels;
+  for(const f of devices){
+    const r=.145,left=f.x-r,right=f.x+r,top=f.z-r,bottom=f.z+r;
+    pieces=pieces.flatMap(p=>{
+      const x0=p.x-p.width/2,x1=p.x+p.width/2,z0=p.z-p.depth/2,z1=p.z+p.depth/2;
+      const a=Math.max(x0,left),b=Math.min(x1,right),c=Math.max(z0,top),d=Math.min(z1,bottom);
+      if(a>=b||c>=d)return [p];
+      return [[x0,z0,a,z1],[b,z0,x1,z1],[a,z0,b,c],[a,d,b,z1]].filter(([l,t,r,b])=>r-l>.008&&b-t>.008)
+        .map(([l,t,r,b])=>({...p,x:(l+r)/2,z:(t+b)/2,width:r-l,depth:b-t}));
+    });
+  }
+  return pieces;
+}
 export function coastalCeilingPanels(room,plan) {
+  // Board runs also respect the room outline and actual stair openings.
   const b=ringBounds(room.polygon),holes=(plan.stairs||[]).filter(s=>s.from===plan.floor&&s.kind!=='hatch').map(s=>ringBounds(s.polygon));
   if(b.width<.18||b.depth<.18)return [];
   const zMin=b.z0+.035,zMax=b.z1-.035,zCuts=new Set([zMin,zMax]);
@@ -359,7 +377,7 @@ export function coastalCeilingPanels(room,plan) {
     }
     flush();
   }
-  return result;
+  return ceilingPanelsAroundDevices(result,plan);
 }
 
 function finishCeiling(parent,room,plan,tools,m,design){
@@ -374,10 +392,10 @@ function finishCeiling(parent,room,plan,tools,m,design){
     for(let i=0;i<n;i++)for(const offset of kind==='paired'?[-.045,.045]:[0]){
       const x=b.x0+(i+.5)*b.width/n+offset,z0=b.z0+.055,z1=b.z1-.055;
       if(![z0,(z0+z1)/2,z1].every(z=>safe(x,z)))continue;
-      box(parent,kind==='girder'?m.frame:m.wood,x,h-depth/2-.009,(z0+z1)/2,width,depth,z1-z0);
-      if(kind==='girder')for(const y of [h-.12,h-.015])box(parent,m.frame,x,y,(z0+z1)/2,.14,.015,z1-z0);
+      for(const p of ceilingPanelsAroundDevices([{x,z:(z0+z1)/2,width,depth:z1-z0}],plan))box(parent,kind==='girder'?m.frame:m.wood,p.x,h-depth/2-.009,p.z,p.width,depth,p.depth);
+      if(kind==='girder')for(const y of [h-.12,h-.015])for(const p of ceilingPanelsAroundDevices([{x,z:(z0+z1)/2,width:.14,depth:z1-z0}],plan))box(parent,m.frame,p.x,y,p.z,p.width,.015,p.depth);
     }
-    if(kind==='coffers')for(let z=b.z0+.55;z<b.z1-.1;z+=1.10)if([b.x0+.05,b.x,b.x1-.05].every(x=>safe(x,z)))box(parent,m.wood,b.x,h-.04,z,b.width-.10,.07,.065);
+    if(kind==='coffers')for(let z=b.z0+.55;z<b.z1-.1;z+=1.10)if([b.x0+.05,b.x,b.x1-.05].every(x=>safe(x,z)))for(const p of ceilingPanelsAroundDevices([{x:b.x,z,width:b.width-.10,depth:.065}],plan))box(parent,m.wood,p.x,h-.04,p.z,p.width,.07,p.depth);
   }else if(kind==='rings'){
     if(!safe(b.x,b.z))return;
     for(const r of [.42,.65]){const ring=new THREE.Mesh(new THREE.TorusGeometry(r,.018,7,40),m.glow);ring.rotation.x=Math.PI/2;ring.position.set(b.x,h-.18,b.z);parent.add(ring);}
@@ -432,7 +450,7 @@ export function buildArchitecture(plan,state,tools,finishes) {
         const toward=dir==='left'?[1,0]:dir==='right'?[-1,0]:[0,-1];const room=plan.rooms.find(r=>containsPoint(r.polygon,px+toward[0]*.45,pz+toward[1]*.45));
         // Keep the picture's 70 cm span clear of the TV on the same solid bay.
         const tvOverlap=room&&(plan.fixtures||[]).some(f=>{
-          if(f.kind!=='tv'||f.roomId!==room.id)return false;
+          if(!['tv','wallTv','cinemaPanel'].includes(f.kind)||f.roomId!==room.id)return false;
           const x=px+toward[0]*(w.thickness/2+.018)-f.x,z=pz+toward[1]*(w.thickness/2+.018)-f.z,a=f.rotation||0,c=Math.cos(a),s=Math.sin(a);
           return Math.abs(x*c-z*s)<f.width/2+.38&&Math.abs(x*s+z*c)<f.depth/2+.38;
         });
@@ -501,7 +519,9 @@ export function buildArchitecture(plan,state,tools,finishes) {
     }
     rod(base,m.wood,[0,roofClearance(plan,ridge)-.095,ridge],[plan.envelope.width,roofClearance(plan,ridge)-.095,ridge],.084);
   }else floorMesh(ceiling,outline,m.ceiling,h,plan.stairs?.filter(s=>s.from===floor).map(s=>s.polygon)||[]);
-  furnishInterior(props,plan,tools,finishes);
+  const fixtures=plan.fixtures||[],overheads=fixtures.filter(f=>f.ceilingMounted);
+  furnishInterior(props,{...plan,fixtures:fixtures.filter(f=>!f.ceilingMounted)},tools,finishes);
+  if(overheads.length)furnishInterior(ceiling,{...plan,fixtures:overheads},tools,finishes);
   for(const r of plan.rooms) {
     if(attic||plan.layout!=='renovation')continue;
     if(floor==='basement'){

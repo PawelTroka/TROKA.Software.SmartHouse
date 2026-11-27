@@ -161,7 +161,7 @@ try{
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded',timeout:remaining()});
   await q('#loading').waitFor({state:'hidden',timeout:remaining()});assert.equal(await q('meta[name="application-version"]').getAttribute('content'),version);
   await q('#designStyle').selectOption(STYLE,{timeout:remaining()});await sceneReady();
-  const initial=await exportDesign();assert.equal(initial.schemaVersion,35);assert.equal(initial.settings.poolSunbedSides,2);
+  const initial=await exportDesign();assert.equal(initial.schemaVersion,36);assert.equal(initial.settings.poolSunbedSides,2);
   assert.deepEqual(initial.settings.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[19.3,32.25],[17.6,34.9]]);
   const pool=initial.gardenLayout.pool,beds=initial.gardenLayout.sunbeds;
   near(pool.x,15.5);near(pool.y,24.5);near(pool.width,3.2);near(pool.length,6.5);assert.equal(beds.length,3);

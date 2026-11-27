@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.39.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.39.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.39.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.40.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.40.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.40.0)**
+
+## Walking performance, fitted luxury kitchen and four cinema layouts · 1.40.0
+
+Walking now uses cached triangle visibility queries, bounded measurement updates, spatial vegetation batches and a measured motion-resolution budget. The 70° field of view and comfortable walking speeds remain. The new hall mirror captures a real reflection after movement settles and reuses it during navigation. The same-browser baseline/candidate runner records frame cadence, long tasks, actual motion buffers and restored still-image quality separately.
+
+The connected kitchen fits **two 60 cm dishwashers**, a **67 L plumbed Miele combi-steam oven**, a separate **43 L microwave/speed oven**, four-door fridge-freezer, wine cooler, workstation sink and concealed nutrition/storage modules. A **2.55 × 2.34 m mirror** fills the stair-facing wall. Independent equipment labels and an appliance schedule identify flush fronts without cluttering the design with all dimension lines.
+
+**Layouts, equipment & house controls** and Interior studio both select A (cinema right), B (cinema left), C (two picture windows and no cinema) or D (crosswall cinema retaining both windows). A/B/D include **7 ear-level speakers, 2 subwoofers and 4 ceiling speakers** around the modeled listener. The 85-inch screen is a reserved design envelope; the documented OLED/Dolby Vision 2 Max reference is an 83-inch candidate whose final installation sheet needs confirmation. Schema **36** preserves older linked compositions and saved comparisons while adopting A once for the active prior session.
+
+[Kitchen module schedule, cinema geometry and official product references](docs/luxury-living-1.40.md)
 
 ## Concealed covers, clearer glazing and interior dimensions · 1.39.0
 

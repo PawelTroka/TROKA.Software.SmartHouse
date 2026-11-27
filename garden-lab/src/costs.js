@@ -3,17 +3,17 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.39.0';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.39.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.39.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.39.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.39.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.39.0';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.39.0';
-import { getDesignStyle } from './design-styles.js?v=1.39.0';
-import { upgradeSingleCarGarage } from './garage-options.js?v=1.39.0';
-import { boundaryFenceLayout } from './boundary-fence.js?v=1.39.0';
-import { pathUnionArea } from './garden-paths.js?v=1.39.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.40.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.40.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.40.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.40.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.40.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.40.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.40.0';
+import { getDesignStyle } from './design-styles.js?v=1.40.0';
+import { upgradeSingleCarGarage } from './garage-options.js?v=1.40.0';
+import { boundaryFenceLayout } from './boundary-fence.js?v=1.40.0';
+import { pathUnionArea } from './garden-paths.js?v=1.40.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',

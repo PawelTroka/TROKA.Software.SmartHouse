@@ -51,7 +51,7 @@ test('all renovated kitchens close the pantry corner while leaving the sink wind
     const window=plan.walls.find(w=>w.id==='left-facade').openings.find(o=>o.roomId==='front-kitchen');
     const windowStart=plan.walls.find(w=>w.id==='left-facade').a[1]+window.offset,windowEnd=windowStart+window.width;
     near(window.width,2.30);assert.ok(cooking.z0>windowEnd+.20,'the remaining cooking wall cabinet leaves the wider window reveal clear');
-    near(byId('kitchen-fridge-top').baseHeight-byId('kitchen-fridge').height,.02);
+    near(byId('kitchen-fridge-top').baseHeight-byId('kitchen-fridge').height,.10);
     const island=byId('kitchen-island'),enclosure=ringBounds(plan.cores.find(c=>c.id==='west-flue').enclosure.polygon);
     near(enclosure.x0-island.x-island.width/2,1.18);near(island.width,2.20);
     const model=furnished({...plan,fixtures:upper},styleId);

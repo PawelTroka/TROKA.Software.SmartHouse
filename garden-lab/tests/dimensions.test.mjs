@@ -125,16 +125,18 @@ test('label occlusion excludes instanced decorations and caches a stationary cam
     const scene=new THREE.Scene(),root=new THREE.Group(),material=new THREE.MeshBasicMaterial();
     const decorated=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),material,1500);
     decorated.raycast=()=>{decoratedRays++;};
-    const wall=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),material);wall.raycast=()=>{solidRays++;};
+    const wall=new THREE.Mesh(new THREE.BoxGeometry(3,3,.15),material);wall.position.set(0,2,-3);wall.raycast=()=>{solidRays++;};
     root.add(decorated,wall);scene.add(root);
     const overlay=createDimensionOverlay(node(),scene,()=>[root]);
     const record={id:'test',kind:'width',feature:'test',value:2,text:'2.00 m',sceneText:'2.00 m',priority:1,
       a:[-1,0,1],b:[1,0,1],lineA:[-1,0,1],lineB:[1,0,1],anchor:[0,0,1]};
     overlay.update([record]);
     const camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(0,4,-8);camera.lookAt(0,1,0);camera.updateMatrixWorld();
-    overlay.render(camera,600,600);assert.equal(solidRays,1);assert.equal(decoratedRays,0);
-    overlay.render(camera,600,600);assert.equal(solidRays,1,'A stationary camera must reuse label occlusion');
-    camera.position.x=.2;camera.updateMatrixWorld();overlay.render(camera,600,600);assert.equal(solidRays,2);
+    overlay.render(camera,600,600);assert.equal(overlay.getDiagnostics().occlusion.queries,1);assert.equal(overlay.getDiagnostics().occlusion.meshes,1);assert.equal(overlay.getDiagnostics().visible,0);
+    overlay.render(camera,600,600);assert.equal(overlay.getDiagnostics().occlusion.queries,1,'A stationary camera must reuse label occlusion');
+    camera.position.x=.2;camera.updateMatrixWorld();overlay.render(camera,600,600);assert.equal(overlay.getDiagnostics().occlusion.queries,2);
+    wall.visible=false;camera.position.x=.3;camera.updateMatrixWorld();overlay.render(camera,600,600);assert.equal(overlay.getDiagnostics().visible,1,'Hidden cutaway parents do not occlude labels');
+    assert.equal(solidRays,0,'The cached triangle hierarchy avoids full native mesh scans');assert.equal(decoratedRays,0);
     overlay.dispose();
   }finally{globalThis.document=previous;}
 });
