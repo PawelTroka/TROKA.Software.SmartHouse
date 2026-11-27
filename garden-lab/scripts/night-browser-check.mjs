@@ -254,6 +254,87 @@ async function scenePngScreenshot(name){
   report.screenshots.push(name+'.png');
   return buffer;
 }
+async function verifyNightMotionTarget(){
+  // Reuse the already lit eye view. A stationary held pointer selects the
+  // moving pipeline without changing its camera, lights, or saved design.
+  const started=Date.now(),deadline=started+SCENE_CAPTURE_TIMEOUT;
+  const remaining=()=>{const ms=deadline-Date.now();assert.ok(ms>0,'Night motion capture exceeded its scene deadline');return ms;};
+  const canvas=page.locator('#scene-host canvas');
+  const read=()=>canvas.evaluate(element=>{
+    const d=document.querySelector('#render-diagnostics').dataset,c=element.dataset;
+    const value=key=>c[key]??d[key],number=value=>value==null||value===''||!Number.isFinite(Number(value))?null:Number(value);
+    const viewport=document.querySelector('#viewport'),bounds=element.getBoundingClientRect();
+    return {renderer:d.renderer,interacting:d.interacting==='true',frames:number(d.frames),
+      motionSupported:value('motionSupported')==='true'?true:value('motionSupported')==='false'?false:null,
+      motionUnsupportedReason:d.motionUnsupportedReason||null,
+      canvas:{width:element.width,height:element.height,cssWidth:bounds.width,cssHeight:bounds.height},
+      scene:{width:number(value('sceneBufferWidth')),height:number(value('sceneBufferHeight')),
+        pixelRatio:number(value('scenePixelRatio')),path:value('renderPath'),
+        motionSamples:number(value('motionSamples')),canvasSamples:number(value('canvasSamples'))},
+      pose:{source:'public viewpoint controls and readouts',mode:viewport.dataset.mode,
+        preset:document.querySelector('[data-preset][aria-pressed="true"]')?.dataset.preset||null,
+        observer:document.querySelector('#observer-readout')?.textContent,
+        view:document.querySelector('#view-badge-text')?.textContent,
+        lookYaw:number(document.querySelector('[data-look-yaw][aria-pressed="true"]')?.dataset.lookYaw),
+        controls:Object.fromEntries(['observerX','observerY','eyeHeight','firstFloorRise','atticRise'].map(key=>
+          [key,number(document.getElementById(key+'-value')?.value)]))},
+      lights:Object.fromEntries(['nightActivation','nightGarden','nightPendants','nightHedge','nightWindows'].map(key=>
+        [key,number(viewport.dataset[key])])),sunTime:document.querySelector('#sun-time')?.value};
+  },null,{timeout:remaining()});
+  const capture=async name=>{
+    const filename=name+'.png',buffer=await page.locator('#scene-host').screenshot({
+      timeout:remaining(),path:path.join(resultsRoot,filename),type:'png',animations:'disabled',scale:'css'});
+    report.screenshots.push(filename);return buffer;
+  };
+  await canvas.scrollIntoViewIfNeeded({timeout:remaining()});
+  await page.waitForFunction(()=>{
+    const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+    return d?.renderer==='webgl'&&d.interacting==='false'&&d.renderPending==='false'&&Number(d.frames)>0&&
+      ['true','false'].includes(c?.motionSupported)&&Number(c.sceneBufferWidth)>0&&c.renderPath!=='motion-target';
+  },null,{timeout:remaining(),polling:100});
+  const pre=await read();assert.equal(pre.pose.mode,'eye');assert.ok(pre.lights.nightActivation>0);
+  const evidence=report.nightMotion={status:'running',deadlineMs:SCENE_CAPTURE_TIMEOUT,pre};progress();
+  let before,moving;
+  try{
+    before=await capture('sternicza-night-before-motion');
+    const bounds=await canvas.boundingBox();assert.ok(bounds&&bounds.width>0&&bounds.height>0);
+    await page.mouse.move(bounds.x+bounds.width*.5,bounds.y+bounds.height*.5);
+    try{
+      await page.mouse.down({button:'left'});
+      await page.waitForFunction(({frames,supported})=>{
+        const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+        return d?.interacting==='true'&&Number(d.frames)>frames&&
+          c?.renderPath===(supported?'motion-target':'direct')&&(!supported||Number(c.motionSamples)>=2);
+      },{frames:pre.frames,supported:pre.motionSupported},{timeout:remaining(),polling:100});
+      evidence.motion=await read();
+      assert.deepEqual(evidence.motion.pose,pre.pose,'Holding the pointer cannot change the night viewpoint');
+      assert.deepEqual(evidence.motion.lights,pre.lights);assert.equal(evidence.motion.sunTime,pre.sunTime);
+      if(pre.motionSupported){
+        assert.deepEqual(evidence.motion.canvas,pre.canvas,'Supported motion targets retain the full display canvas');
+        assert.ok(evidence.motion.scene.width>0&&evidence.motion.scene.width<=pre.canvas.width);
+        assert.ok(evidence.motion.scene.height>0&&evidence.motion.scene.height<=pre.canvas.height);
+        assert.ok(evidence.motion.scene.motionSamples>=2,'Cutout foliage retains multisample coverage');
+      }
+      moving=await capture('sternicza-night-motion-target');
+    }finally{await page.mouse.up({button:'left'});}
+    await page.waitForFunction(({frames,path})=>{
+      const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+      return d?.interacting==='false'&&d.renderPending==='false'&&Number(d.frames)>frames&&c?.renderPath===path;
+    },{frames:evidence.motion.frames,path:pre.scene.path},{timeout:remaining(),polling:100});
+    evidence.settled=await read();
+    assert.deepEqual(evidence.settled.canvas,pre.canvas,'Releasing the pointer restores the selected idle canvas');
+    assert.deepEqual(evidence.settled.scene,pre.scene,'Releasing the pointer restores the selected idle pipeline');
+    assert.deepEqual(evidence.settled.pose,pre.pose);assert.deepEqual(evidence.settled.lights,pre.lights);
+    assert.equal(evidence.settled.sunTime,pre.sunTime);
+    const settled=await capture('sternicza-night-motion-restored');
+    evidence.motionPixels=await warmLightDifference(before,moving);
+    evidence.restorationPixels=await warmLightDifference(before,settled);
+    assert.equal(evidence.restorationPixels.changedPixels,0,'The stationary night view must restore its idle appearance (3-code-value pixel tolerance)');
+    remaining();evidence.elapsedMs=Date.now()-started;evidence.status='passed';
+    check(pre.motionSupported?'Night motion renders through the multisample HDR target on a fixed canvas and restores the same idle view':
+      'Unsupported night motion retains the direct renderer and restores the same idle view');
+  }catch(error){evidence.status='failed';evidence.elapsedMs=Date.now()-started;progress();throw error;}
+}
 async function pngScreenshot(name){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
@@ -990,6 +1071,7 @@ async function verifySterniczaViewpointsAndNight(){
   await details('#night-adjustments',false);
   await selectPreset(firstStanding);
   const nightImage=await screenshot('first-floor-garden-night');
+  await verifyNightMotionTarget();
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
   await waitLight('nightGarden','zero');

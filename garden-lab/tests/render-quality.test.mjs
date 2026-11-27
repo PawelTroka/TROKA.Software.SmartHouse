@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {renderBudget} from '../src/render-quality.js';
+import {renderBudget,renderSurfaceBudgets} from '../src/render-quality.js';
 import {terrainVertexBuffer} from '../src/terrain-mesh.js';
 import {createDetailMaps} from '../src/scene-materials.js';
 import {batchGardenBoxes,finishDeckBox,projectWaterUVs,proposedMaterials,disposeProposedMaterials} from '../src/scene-static-details.js';
@@ -28,6 +28,22 @@ test('High uses the same bounded motion buffer as Auto while retaining its stabl
   assert.ok(still.pixelRatio**2*viewport[0]*viewport[1]>3900000);
   assert.ok(moving.pixelRatio**2*viewport[0]*viewport[1]<=900001);
   assert.equal(moving.pixelRatio,auto.pixelRatio);assert.equal(moving.shadowSize,still.shadowSize);
+});
+
+test('adaptive scene targets retain one display allocation and restore the selected idle quality',()=>{
+  for(const quality of ['eco','auto','high'])for(const viewport of [[1280,584,1],[390,583,3],[2560,1440,2]]){
+    const idle=renderSurfaceBudgets(quality,...viewport,{separateMotionTarget:true});
+    for(const motionScale of [1,.84,.68,.54]){
+      const moving=renderSurfaceBudgets(quality,...viewport,{separateMotionTarget:true,interacting:true,motionScale});
+      assert.equal(moving.canvas.pixelRatio,idle.canvas.pixelRatio,'Input and adaptive levels cannot resize the displayed canvas');
+      assert.equal(moving.scene.shadowSize,idle.scene.shadowSize,'Changing scene resolution cannot reallocate shadows');
+      assert.ok(moving.scene.pixelRatio<=moving.canvas.pixelRatio);
+      const restored=renderSurfaceBudgets(quality,...viewport,{separateMotionTarget:true,interacting:false,motionScale});
+      assert.equal(restored.scene.pixelRatio,idle.scene.pixelRatio);
+    }
+    const fallback=renderSurfaceBudgets(quality,...viewport,{separateMotionTarget:false,interacting:true,motionScale:.54});
+    assert.equal(fallback.canvas,fallback.scene,'Unsupported renderers retain their bounded direct drawing buffer');
+  }
 });
 
 test('indexed terrain samples each distinct plan coordinate once and preserves triangle order, UVs and slopes',()=>{

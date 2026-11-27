@@ -15,3 +15,13 @@ export function renderBudget(quality, width, height, deviceRatio = 1, options = 
   const shadowSize = Math.min(target, 2 ** Math.floor(Math.log2(hardwareLimit)));
   return {pixelRatio, shadowSize, motionFps: mode === 'eco' || constrained ? 15 : 24};
 }
+
+/** A separate motion target can change scene resolution without reallocating
+ * the browser's displayed drawing buffer during each navigation gesture. */
+export function renderSurfaceBudgets(quality,width,height,deviceRatio=1,options={}){
+  const scene=renderBudget(quality,width,height,deviceRatio,options);
+  const canvas=options.separateMotionTarget
+    ?renderBudget(quality,width,height,deviceRatio,{...options,interacting:false,motionScale:1})
+    :scene;
+  return {scene,canvas};
+}

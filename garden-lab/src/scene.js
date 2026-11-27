@@ -15,7 +15,7 @@ import { entranceAccessLayout } from './entrance-access.js?v=1.40.0';
 import { createTerraceCoverGroup } from './scene-terrace-cover.js?v=1.40.0';
 import { sampledRoofFaces } from './roof-mesh.js?v=1.40.0';
 import { terrainSurfaceGeometry } from './terrain-mesh.js?v=1.40.0';
-import { renderBudget } from './render-quality.js?v=1.40.0';
+import { renderSurfaceBudgets } from './render-quality.js?v=1.40.0';
 import {createFramePerformance,createAdaptiveMotionQuality} from './frame-performance.js?v=1.40.0';
 import {createVegetationInstanceCuller} from './scene-spatial-instances.js?v=1.40.0';
 import {createMirrorReflections} from './scene-mirrors.js?v=1.40.0';
@@ -1588,6 +1588,13 @@ export function createScene(container, data, callbacks = {}) {
     }finally{
       phaseStart=performance.now();vegetationCulling.restore();performanceTiming.phase('instanceRestore',performance.now()-phaseStart,navigationActive);
     }
+    // Publish the completed scene target independently of the fixed display
+    // canvas. The live fields let diagnostics observe every adaptive level,
+    // including levels between the slower summary updates.
+    const output=presentation?.getDiagnostics()||{sceneBufferWidth:renderer.domElement.width||lastWidth,
+      sceneBufferHeight:renderer.domElement.height||lastHeight,scenePixelRatio:1,renderPath:'svg',motionSupported:false,motionSamples:0,canvasSamples:0};
+    for(const key of ['sceneBufferWidth','sceneBufferHeight','scenePixelRatio','renderPath','motionSupported','motionSamples','canvasSamples'])
+      renderer.domElement.dataset[key]=String(output[key]);
     phaseStart=performance.now();
     // A rebuild or visibility callback alone does not replace the visible frame.
     renderedStyle=finishSignature||null;frameCount++;
@@ -1872,8 +1879,9 @@ export function createScene(container, data, callbacks = {}) {
     const bounds=container.getBoundingClientRect();
     if(bounds.width<1||bounds.height<1)return;
     const width=Math.round(bounds.width),height=Math.round(bounds.height);
-    const budget=renderBudget(quality,width,height,window.devicePixelRatio,{
-      memoryGB:globalThis.navigator?.deviceMemory,maxTextureSize:renderer.capabilities?.maxTextureSize,interacting,motionScale:adaptiveQuality.scale
+    const {scene:budget,canvas:canvasBudget}=renderSurfaceBudgets(quality,width,height,window.devicePixelRatio,{
+      memoryGB:globalThis.navigator?.deviceMemory,maxTextureSize:renderer.capabilities?.maxTextureSize,
+      interacting,motionScale:adaptiveQuality.scale,separateMotionTarget:!!presentation?.motionSupported
     });
     motionFps=budget.motionFps;
     if(!svgMode&&sun.shadow.mapSize.x!==budget.shadowSize){
@@ -1881,8 +1889,8 @@ export function createScene(container, data, callbacks = {}) {
       sun.shadow.map?.dispose();sun.shadow.map=null;
       sun.shadow.mapSize.set(budget.shadowSize,budget.shadowSize);shadowCameraDirty=true;
     }
-    const ratio=svgMode?1:budget.pixelRatio;
-    presentation?.resize(width,height,ratio,quality,{memoryGB:globalThis.navigator?.deviceMemory,interacting});
+    const ratio=svgMode?1:canvasBudget.pixelRatio;
+    presentation?.resize(width,height,budget.pixelRatio,quality,{memoryGB:globalThis.navigator?.deviceMemory,interacting});
     if(width===lastWidth&&height===lastHeight&&ratio===lastPixelRatio)return;
     lastWidth=width;lastHeight=height;lastPixelRatio=ratio;statusChanged=true;
     if(svgMode)renderer.setSize(width,height);

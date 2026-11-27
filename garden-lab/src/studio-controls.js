@@ -98,7 +98,11 @@ export function createStudioControls({getSettings,onChange,onMoment,onInspect,on
   function performanceInfo(value){
     stats=value;if(!value)return;
     const host=$('render-diagnostics');
-    for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','shadowSize','houseRenovationParts','houseRenovationProjection','houseOpeningCount','gardenKitchens','gardenPlantingBeds','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
+    for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','sceneBufferWidth','sceneBufferHeight','scenePixelRatio','motionSamples','canvasSamples','shadowSize','houseRenovationParts','houseRenovationProjection','houseOpeningCount','gardenKitchens','gardenPlantingBeds','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
+    for(const [key,fallback]of [['canvasWidth','bufferWidth'],['canvasHeight','bufferHeight']])if(Number.isFinite(value[key]??value[fallback]))host.dataset[key]=String(value[key]??value[fallback]);
+    host.dataset.renderPath=value.renderPath||'direct';
+    host.dataset.motionSupported=String(Boolean(value.motionSupported));
+    host.dataset.motionUnsupportedReason=value.motionUnsupportedReason||'';
     host.dataset.renderedStyle=value.renderedStyle||'pending';
     host.dataset.gardenScheme=value.gardenScheme||'manual';host.dataset.windowPattern=value.windowPattern||'original';
     for(const key of ['drawEnabled','canvasIntersecting','presentationVisible','renderPending'])host.dataset[key]=String(Boolean(value[key]));
@@ -114,8 +118,8 @@ export function createStudioControls({getSettings,onChange,onMoment,onInspect,on
     // verify corrected elevations and resolved roofs without a second model.
     for(const key of ['contextFacades','contextBalconies','contextEnvelopes'])host.dataset[key]=JSON.stringify(value[key]||{});
     for(const key of ['boundaryFence','gardenPaths','coldPlunge','gardenLighting','spaCovers','slidingDoors','interiorDimensions','gardenDimensions','equipmentLabels','livingCinema','luxuryKitchen','performanceTiming','adaptiveQuality','sceneOptimization','mirrors'])host.dataset[key]=JSON.stringify(value[key]||null);
-    $('render-quality-status').textContent=value.rendererType==='webgl'?`${value.quality==='eco'?'Eco':value.quality==='high'?'High detail':'Automatic'} · ${Number(value.pixelRatio||1).toFixed(2)}× display scale`:'Lightweight renderer';
-    $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.bufferWidth||0} × ${value.bufferHeight||0} drawing buffer${value.contactShading?' · Contact shading':''}`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';
+    $('render-quality-status').textContent=value.rendererType==='webgl'?`${value.quality==='eco'?'Eco':value.quality==='high'?'High detail':'Automatic'} · ${Number(value.scenePixelRatio??value.pixelRatio??1).toFixed(2)}× scene scale`:'Lightweight renderer';
+    $('render-statistics').textContent=value.rendererType==='webgl'?`${(value.calls||0).toLocaleString()} draw calls · ${(value.triangles||0).toLocaleString()} triangles · ${value.sceneBufferWidth??value.bufferWidth??0} × ${value.sceneBufferHeight??value.bufferHeight??0} scene buffer${value.contactShading?' · Contact shading':''}`:'Surface lighting and material depth require WebGL. Plan and calculations remain available.';
     $('render-motion-status').textContent=getSettings().sceneMotion?(value.motionActive?'Gentle water movement is active.':'Motion pauses while the scene is hidden, in a diagram, or when reduced motion is preferred.'):'The scene rests between interactions.';
   }
   function history({canUndo,canRedo}){$('studio-undo').disabled=!canUndo;$('studio-redo').disabled=!canRedo;}
