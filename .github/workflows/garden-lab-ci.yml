@@ -39,7 +39,7 @@ jobs:
       - name: Install ephemeral browser test dependency
         run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
       - name: Install Chromium and system dependencies
-        run: npx --no-install playwright install --with-deps chromium
+        run: python3 scripts/install-ci-browser.py
       - name: Terrace, balcony and two-car browser checks
         timeout-minutes: 8
         run: node scripts/refinements-browser-check.mjs
@@ -74,7 +74,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - name: Functional WebGL regression and screenshots
         timeout-minutes: 12
         env:
@@ -113,7 +113,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - run: node scripts/studio-browser-check.mjs
         env:
           STUDIO_SCENARIO_GROUP: ${{ matrix.scenario }}
@@ -145,7 +145,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - name: Original and renovated interiors in WebGL
         timeout-minutes: 25
         run: node scripts/interiors-browser-check.mjs
@@ -180,7 +180,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - name: Requested fit-outs and protected openings in WebGL
         timeout-minutes: 15
         env:
@@ -218,7 +218,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - name: Compare real rendered scenes and check photographic asset loading
         env:
           RENDER_BASELINE: ../.render-baseline/garden-lab
@@ -249,7 +249,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - name: Check measured trees, sea controls and mobile layout in WebGL
         timeout-minutes: 12
         run: node scripts/check-neighborhood-realism.mjs
@@ -279,7 +279,7 @@ jobs:
           package-manager-cache: false
       - run: npm run build
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: python3 scripts/install-ci-browser.py
       - name: Compare pavilion placements, heights, persistence and mobile controls
         timeout-minutes: 14
         run: node scripts/pavilion-browser-check.mjs
