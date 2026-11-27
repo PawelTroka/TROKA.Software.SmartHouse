@@ -1,0 +1,611 @@
+{
+  "version": "1.40.0",
+  "group": "kitchen",
+  "status": "passed",
+  "checks": [
+    "Two real 600 mm dishwasher niches, 67 L steam oven, separate microwave, four-door fridge, wine cooler, concealed pantry, workstation sink and giant mirror are exported from the drawn plan",
+    "Public room entry and walking expose the integrated kitchen, hidden equipment labels and the full-height reflecting wall"
+  ],
+  "layouts": [],
+  "screenshots": [
+    "kitchen-workstation-and-two-dishwashers.png",
+    "kitchen-tall-appliances-and-pantry.png",
+    "hall-giant-mirror.png"
+  ],
+  "views": [
+    {
+      "name": "kitchen-workstation-and-two-dishwashers",
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.37,
+          5.208,
+          11.248
+        ],
+        "yaw": -89.7681,
+        "pitch": -10
+      },
+      "equipmentLabels": {
+        "enabled": true,
+        "total": 19,
+        "visible": 4,
+        "floor": "ground",
+        "layoutPasses": 3,
+        "occlusion": {
+          "meshes": 179,
+          "queries": 22,
+          "triangleTests": 1155,
+          "boxTests": 6383,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "mirrors": {
+        "count": 1,
+        "captured": false,
+        "frames": 0,
+        "width": 0,
+        "height": 0,
+        "updateMode": "settled-only",
+        "updatesWhileMoving": 0
+      }
+    },
+    {
+      "name": "kitchen-tall-appliances-and-pantry",
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.454,
+          5.208,
+          11.294
+        ],
+        "yaw": -251.1982,
+        "pitch": -4
+      },
+      "equipmentLabels": {
+        "enabled": true,
+        "total": 19,
+        "visible": 3,
+        "floor": "ground",
+        "layoutPasses": 6,
+        "occlusion": {
+          "meshes": 179,
+          "queries": 44,
+          "triangleTests": 2406,
+          "boxTests": 12522,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "mirrors": {
+        "count": 1,
+        "captured": false,
+        "frames": 0,
+        "width": 0,
+        "height": 0,
+        "updateMode": "settled-only",
+        "updatesWhileMoving": 0
+      }
+    },
+    {
+      "name": "hall-giant-mirror",
+      "pose": {
+        "floor": "ground",
+        "position": [
+          9.269,
+          5.208,
+          10.852
+        ],
+        "yaw": -91.3211,
+        "pitch": -3
+      },
+      "equipmentLabels": {
+        "enabled": true,
+        "total": 19,
+        "visible": 0,
+        "floor": "ground",
+        "layoutPasses": 9,
+        "occlusion": {
+          "meshes": 179,
+          "queries": 61,
+          "triangleTests": 3254,
+          "boxTests": 14164,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "mirrors": {
+        "count": 1,
+        "captured": true,
+        "frames": 2,
+        "width": 256,
+        "height": 152,
+        "updateMode": "settled-only",
+        "updatesWhileMoving": 0
+      }
+    }
+  ],
+  "errors": [],
+  "kitchen": {
+    "kind": "fitted-luxury-kitchen",
+    "schedule": [
+      {
+        "id": "kitchen-dishwasher-1",
+        "label": "Dishwasher 1 · 60 cm",
+        "width": 0.6,
+        "depth": 0.65,
+        "height": 0.845,
+        "detail": "Fully integrated XXL AutoDos; 600 mm clear niche beside the sink.",
+        "reference": "Miele G 7985 SCVi XXL AutoDos K2O",
+        "url": "https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack",
+        "hidden": true,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-dishwasher-2",
+        "label": "Dishwasher 2 · 60 cm",
+        "width": 0.6,
+        "depth": 0.65,
+        "height": 0.845,
+        "detail": "Second full-size XXL dishwasher; the pair fits the measured wet run.",
+        "reference": "Miele G 7985 SCVi XXL AutoDos K2O",
+        "url": "https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack",
+        "hidden": true,
+        "category": "appliance"
+      },
+      {
+        "id": "sink-base",
+        "label": "Workstation sink and waste · 101 cm",
+        "width": 1.01,
+        "depth": 0.65,
+        "height": 0.9,
+        "detail": "860 × 510 mm two-bowl workstation sink; waste-sorting pull-out and cleaning storage below.",
+        "reference": "Franke Box Center BWX 220-54-27",
+        "url": "https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html",
+        "hidden": true,
+        "category": "worktop"
+      },
+      {
+        "id": "kitchen-steam-oven",
+        "label": "Combi-steam oven · 67 L",
+        "width": 0.6,
+        "depth": 0.63,
+        "height": 0.596,
+        "detail": "Plumbed Miele Diamond oven with HydroClean, installed in a 600 mm tower.",
+        "reference": "Miele DGC 7865 HC Pro",
+        "url": "https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-speed-oven",
+        "label": "Microwave / speed oven · 43 L",
+        "width": 0.6,
+        "depth": 0.63,
+        "height": 0.456,
+        "detail": "Separate compact oven with 1000 W microwave above the combi-steam oven.",
+        "reference": "Miele H 7840 BM",
+        "url": "https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-fridge",
+        "label": "Four-door fridge-freezer · 96 cm bay",
+        "width": 0.96,
+        "depth": 0.79,
+        "height": 1.83,
+        "detail": "905 mm product in a wider ventilated bay; 731 mm body depth plus rear allowance. Final hinge clearances follow its installation drawing.",
+        "reference": "Bosch KFN96AXEA four-door fridge-freezer",
+        "url": "https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-wine-cooler",
+        "label": "Wine cooler · 60 cm",
+        "width": 0.6,
+        "depth": 0.85,
+        "height": 0.816,
+        "detail": "Undercounter two-zone cooler in the peninsula; modeled grille gives at least 430 cm² free ventilation.",
+        "reference": "Miele KWT 6322 UG-1",
+        "url": "https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-nutrition-pantry",
+        "label": "Hidden nutrition pantry · 55 cm",
+        "width": 0.55,
+        "depth": 0.63,
+        "height": 2.7,
+        "detail": "Closed, labelled storage for powder tubs, supplements, a blender and compact appliances; deep pull-outs keep the contents reachable.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "kitchen-pantry-corner",
+        "label": "Full-height corner pantry · 55 cm",
+        "width": 0.55,
+        "depth": 0.63,
+        "height": 2.7,
+        "detail": "Fills the retained corner with bulk-food and occasional-appliance storage.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "peninsula-drawers",
+        "label": "Peninsula drawers · 90 cm",
+        "width": 0.9,
+        "depth": 0.85,
+        "height": 0.9,
+        "detail": "Cutlery above, crockery in the middle and deep pan drawers below.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "cooking-corner",
+        "label": "Corner pull-out · 120 cm",
+        "width": 1.2,
+        "depth": 0.62,
+        "height": 0.9,
+        "detail": "A 520 mm access front serves swing-out baskets in the blind corner.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "cooking-drawers",
+        "label": "Cooking and preparation drawers · 180 cm",
+        "width": 1.8,
+        "depth": 0.62,
+        "height": 0.9,
+        "detail": "Two 900 mm drawer stacks divide utensils, boards, pots and food containers; 410 mm spice pull-out alongside.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "hob",
+        "label": "Induction cooking · 80 cm",
+        "width": 0.8,
+        "depth": 0.52,
+        "height": 0.03,
+        "detail": "80 cm induction allowance with flush glass and concealed extraction; final appliance and duct route remain selectable.",
+        "reference": null,
+        "url": null,
+        "hidden": false,
+        "category": "worktop"
+      },
+      {
+        "id": "kitchen-hall-selfie-mirror",
+        "label": "Hall-facing mirror · 255 × 234 cm",
+        "width": 2.55,
+        "depth": 0.026,
+        "height": 2.34,
+        "detail": "Continuous full-height mirror on the stair-facing kitchen wall, clear of the chimney enclosure and entry.",
+        "reference": null,
+        "url": null,
+        "hidden": false,
+        "category": "mirror"
+      }
+    ],
+    "modules": [
+      {
+        "id": "wet-end-front",
+        "run": "sink",
+        "width": 0.02,
+        "kind": "end-panel"
+      },
+      {
+        "id": "dishwasher-1",
+        "run": "sink",
+        "width": 0.6,
+        "kind": "clear-niche",
+        "assignment": "Main dishwasher"
+      },
+      {
+        "id": "sink-base",
+        "run": "sink",
+        "width": 1.01,
+        "kind": "cabinet",
+        "sideThickness": 0.018,
+        "assignment": "Workstation sink, waste sorting and cleaning pull-outs"
+      },
+      {
+        "id": "dishwasher-2",
+        "run": "sink",
+        "width": 0.6,
+        "kind": "clear-niche",
+        "assignment": "Second dishwasher"
+      },
+      {
+        "id": "wet-end-rear",
+        "run": "sink",
+        "width": 0.02,
+        "kind": "end-panel"
+      },
+      {
+        "id": "peninsula-corner",
+        "run": "peninsula",
+        "width": 0.65,
+        "kind": "blind-corner",
+        "assignment": "Access from dining side for serving dishes"
+      },
+      {
+        "id": "peninsula-drawers",
+        "run": "peninsula",
+        "width": 0.9,
+        "kind": "drawers",
+        "assignment": "Cutlery top, daily crockery middle, deep pans below"
+      },
+      {
+        "id": "wine-cooler",
+        "run": "peninsula",
+        "width": 0.6,
+        "kind": "clear-niche",
+        "assignment": "Two-zone wine storage with front ventilation"
+      },
+      {
+        "id": "peninsula-end",
+        "run": "peninsula",
+        "width": 0.05,
+        "kind": "end-panel"
+      },
+      {
+        "id": "cooking-corner",
+        "run": "cooking",
+        "width": 1.2,
+        "kind": "blind-corner",
+        "assignment": "Swing-out corner baskets through a 520 mm access front"
+      },
+      {
+        "id": "hob-drawers",
+        "run": "cooking",
+        "width": 0.9,
+        "kind": "drawers",
+        "assignment": "Utensils and pots below the induction hob"
+      },
+      {
+        "id": "preparation-drawers",
+        "run": "cooking",
+        "width": 0.9,
+        "kind": "drawers",
+        "assignment": "Knives, boards, food containers and pans"
+      },
+      {
+        "id": "spice-pullout",
+        "run": "cooking",
+        "width": 0.41,
+        "kind": "pull-out",
+        "assignment": "Oils, spices and tall bottles"
+      },
+      {
+        "id": "fridge-bay",
+        "run": "tall",
+        "width": 0.96,
+        "kind": "appliance-bay",
+        "assignment": "Four-door fridge-freezer with side and rear allowances"
+      },
+      {
+        "id": "oven-tower",
+        "run": "tall",
+        "width": 0.6,
+        "kind": "tower",
+        "assignment": "Full combi-steam oven and separate microwave/speed oven"
+      },
+      {
+        "id": "nutrition-pantry",
+        "run": "tall",
+        "width": 0.55,
+        "kind": "pantry",
+        "assignment": "Hidden protein powders, supplements and small appliances"
+      },
+      {
+        "id": "pantry-corner",
+        "run": "tall",
+        "width": 0.55,
+        "kind": "corner-pantry",
+        "assignment": "Filled corner for bulk supplies and occasional appliances"
+      }
+    ],
+    "equipment": {
+      "dishwasher": {
+        "name": "Miele G 7985 SCVi XXL AutoDos K2O",
+        "width": 0.598,
+        "height": 0.845,
+        "depth": 0.55,
+        "nicheWidth": 0.6,
+        "nicheHeight": [
+          0.845,
+          0.91
+        ],
+        "nicheDepth": 0.55,
+        "openDepth": 1.205,
+        "url": "https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack"
+      },
+      "steamOven": {
+        "name": "Miele DGC 7865 HC Pro",
+        "width": 0.595,
+        "height": 0.596,
+        "depth": 0.567,
+        "capacityLitres": 67,
+        "nicheWidth": [
+          0.56,
+          0.568
+        ],
+        "nicheHeight": [
+          0.59,
+          0.595
+        ],
+        "nicheDepth": 0.55,
+        "plumbed": true,
+        "url": "https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack"
+      },
+      "speedOven": {
+        "name": "Miele H 7840 BM",
+        "width": 0.595,
+        "height": 0.456,
+        "depth": 0.563,
+        "capacityLitres": 43,
+        "microwaveWatts": 1000,
+        "nicheWidth": [
+          0.56,
+          0.568
+        ],
+        "nicheHeight": [
+          0.45,
+          0.452
+        ],
+        "nicheDepth": 0.55,
+        "url": "https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal"
+      },
+      "fridge": {
+        "name": "Bosch KFN96AXEA four-door fridge-freezer",
+        "width": 0.905,
+        "height": 1.83,
+        "depth": 0.731,
+        "url": "https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA"
+      },
+      "sink": {
+        "name": "Franke Box Center BWX 220-54-27",
+        "width": 0.86,
+        "depth": 0.51,
+        "height": 0.2,
+        "minimumBase": 0.9,
+        "bowlWidths": [
+          0.54,
+          0.27
+        ],
+        "url": "https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html"
+      },
+      "wineCooler": {
+        "name": "Miele KWT 6322 UG-1",
+        "width": 0.596,
+        "height": 0.816,
+        "depth": 0.57,
+        "nicheWidth": 0.6,
+        "nicheHeight": [
+          0.82,
+          0.87
+        ],
+        "nicheDepth": 0.58,
+        "minimumVentAreaCm2": 430,
+        "url": "https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf"
+      }
+    },
+    "clearances": {
+      "wetRun": 2.25,
+      "dishwasherClearNiches": [
+        0.6,
+        0.6
+      ],
+      "sinkBase": 1.01,
+      "wetEndPanels": 0.02,
+      "cabinetHeightDatum": 0.9,
+      "worktopHeight": 0.919,
+      "worktopUnderside": 0.881,
+      "dishwasherHeight": 0.845,
+      "remainingAboveDishwasher": 0.036,
+      "peninsulaLength": 2.2,
+      "entryBesideChimney": 1.18,
+      "counterToFridge": 2.66,
+      "openDishwasherAisle": 2.005,
+      "fridgeBay": {
+        "width": 0.96,
+        "depth": 0.79,
+        "bodyWidth": 0.905,
+        "bodyDepth": 0.731,
+        "rearAllowance": 0.059,
+        "combinedSideAllowance": 0.055
+      },
+      "wineVentFreeAreaCm2": 436.8,
+      "installationNote": "Planning envelopes; final appliance drawings govern ventilation, hinge openings, services, worktop cut-outs and mounting."
+    },
+    "mirror": {
+      "width": 2.55,
+      "height": 2.34,
+      "bottom": 0.18,
+      "top": 2.52,
+      "wall": "Hall face of kitchen enclosure",
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    "storage": [
+      "Waste sorting and cleaning under sink",
+      "900 mm cutlery / crockery / pan drawers in peninsula",
+      "900 mm utensils / pots below hob",
+      "900 mm preparation drawers",
+      "410 mm spice pull-out",
+      "1200 mm blind corner with swing-out baskets",
+      "550 mm hidden nutrition and appliance pantry",
+      "550 mm full-height corner pantry",
+      "Cooking-wall and refrigerator-top cupboards"
+    ]
+  },
+  "planting": [
+    {
+      "id": "pine-1",
+      "typeId": "austrian-pine-tall",
+      "x": 13,
+      "y": 34.1,
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0
+    },
+    {
+      "id": "pine-2",
+      "typeId": "austrian-pine-tall",
+      "x": 19.3,
+      "y": 32.25,
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0
+    },
+    {
+      "id": "pine-3",
+      "typeId": "austrian-pine-tall",
+      "x": 17.6,
+      "y": 34.9,
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0
+    }
+  ],
+  "kitchenLabels": [
+    "Workstation sink + wasteTwo bowls · sorting pull-out below",
+    "Dishwasher 1 · 60 cmMiele AutoDos · hidden",
+    "Dishwasher 2 · 60 cmMiele AutoDos · hidden",
+    "Corner swing-out baskets52 cm access · 120 cm corner"
+  ],
+  "mirror": {
+    "count": 1,
+    "captured": true,
+    "frames": 2,
+    "width": 256,
+    "height": 152,
+    "updateMode": "settled-only",
+    "updatesWhileMoving": 0
+  },
+  "elapsedMs": 132774
+}

@@ -1,0 +1,1673 @@
+{
+  "version": "1.40.0",
+  "scenarioGroup": "nadmorska",
+  "renderQuality": "eco",
+  "status": "passed",
+  "startedAt": "2026-11-27T22:57:15.087Z",
+  "scenarios": [
+    {
+      "name": "nadmorska",
+      "status": "passed",
+      "startedAt": "2026-11-27T22:57:27.088Z",
+      "firstCheck": 2,
+      "durationMs": 231237,
+      "checks": 15
+    }
+  ],
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+    "The property selector exposes all three independently named properties",
+    "Switching to Korzeniowskiego preserves its own floor height and upstairs view",
+    "Sternicza privacy comparisons and quotes stay hidden on the other two properties",
+    "Nadmorska WebGL load uses its own plot, floor and final LiDAR roof evidence",
+    "Nadmorska first-floor street control points +90 degrees and shares that exact direction",
+    "The busier 70% evening visibly lights more neighbouring windows than 35% in the same WebGL street view",
+    "Nadmorska window activity, independent light switches and visible WebGL water glow work after dark",
+    "Garden pendants and thuja lanterns each brighten the actual WebGL scene independently of landscape accents",
+    "Garden master switches both hanging-light channels off while retaining their settings and neighbouring windows",
+    "Pendant switches and dimmers survive Share and reload without changing the property or garden layout",
+    "Isolated hedge lanterns light foliage and ground around every retained near-facing fixture, respond to the dimmer and restore all channels",
+    "At 25% and 85%, isolated hedge lanterns leave three exterior ground patches beyond the plot effectively unchanged",
+    "Nadmorska whole-plot plan shows 709.29 square metres, pool sizes and both side access openings",
+    "Nadmorska plot, property selector and eight upstairs controls fit a 390px mobile page",
+    "The 390px mobile night scene renders all active hedge lighting and visibly responds to its switch in WebGL",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [],
+  "screenshots": [
+    "nadmorska-street-busy-evening.png",
+    "nadmorska-day.png",
+    "nadmorska-night.png",
+    "nadmorska-pendants-night.png",
+    "nadmorska-hedge-isolated-off.png",
+    "nadmorska-hedge-isolated-low.png",
+    "nadmorska-hedge-isolated-on.png",
+    "nadmorska-plan.png",
+    "nadmorska-mobile-plan.png",
+    "nadmorska-mobile-hedge-off.png",
+    "nadmorska-mobile-night.png"
+  ],
+  "nadmorska": {
+    "roofPoints": 3182,
+    "surroundingBuildings": 52,
+    "roofTopZ": 14.29,
+    "street": {
+      "id": "first-street-standing",
+      "eye": "Eye 6.15 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Assumed first floor: +3.00 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. Calibrate the heights below."
+    },
+    "windowActivityComparison": {
+      "from": 35,
+      "to": 70,
+      "width": 982,
+      "height": 573,
+      "changedPixels": 7121,
+      "warmBrightenedPixels": 4666,
+      "brightnessGain": 711717.333333338
+    },
+    "windowActivityVisible": true,
+    "waterGlow": {
+      "width": 982,
+      "height": 573,
+      "aquaPixels": 321076,
+      "brighterAquaPixels": 7890,
+      "brightnessGain": 398069.5
+    },
+    "night": {
+      "activation": 1,
+      "garden": 0.45,
+      "pendants": 0.65,
+      "hedge": 0.3,
+      "windows": 0.6,
+      "mode": "orbit"
+    },
+    "pendantLighting": {
+      "gardenPixels": {
+        "width": 982,
+        "height": 573,
+        "changedPixels": 12519,
+        "warmBrightenedPixels": 4076,
+        "brightnessGain": 416864.9999999998
+      },
+      "hedgePixels": {
+        "width": 982,
+        "height": 573,
+        "changedPixels": 32992,
+        "warmBrightenedPixels": 4304,
+        "brightnessGain": 158753.99999999974
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.45,
+        "pendants": 0.65,
+        "hedge": 0.3,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "restoredWindowActivity": 70,
+      "sharedReloadPassed": true
+    },
+    "hedgeSurfaceLighting": {
+      "lowPercent": 25,
+      "highPercent": 85,
+      "probes": {
+        "fixtures": [
+          {
+            "id": "hedge-pendant-1-2",
+            "side": "left",
+            "x": 28.42320179030769,
+            "y": 6.005849835085002,
+            "z": 5.071493054963253,
+            "boundaryPoint": [
+              29.4231828718779,
+              6.012000973327204
+            ]
+          },
+          {
+            "id": "hedge-pendant-4-1",
+            "side": "left",
+            "x": 29.459080123994028,
+            "y": 21.744233377798718,
+            "z": 4.7789946134684165,
+            "boundaryPoint": [
+              30.455816056638,
+              21.663502463172733
+            ]
+          },
+          {
+            "id": "hedge-pendant-5-4",
+            "side": "rear",
+            "x": 19.84748975655706,
+            "y": 24.08964019777429,
+            "z": 4.886920303109059,
+            "boundaryPoint": [
+              20.00321784253591,
+              25.077440158918936
+            ]
+          },
+          {
+            "id": "hedge-pendant-5-7",
+            "side": "rear",
+            "x": 11.359737066108588,
+            "y": 25.4277466289729,
+            "z": 4.969545978039225,
+            "boundaryPoint": [
+              11.51546515208744,
+              26.415546590117547
+            ]
+          }
+        ],
+        "patches": [
+          {
+            "id": "hedge-pendant-1-2-foliage",
+            "fixtureId": "hedge-pendant-1-2",
+            "side": "left",
+            "surface": "foliage",
+            "bounds": [
+              0.8893729684069922,
+              0.4619485733497422,
+              0.9050558497460199,
+              0.5081832031114976
+            ],
+            "worldPolygon": [
+              [
+                29.069806367295115,
+                6.559837669806049,
+                3.604091031034477
+              ],
+              [
+                29.069806367295115,
+                6.559837669806049,
+                4.504091031034477
+              ],
+              [
+                29.076572619361535,
+                5.459858480078818,
+                3.604091031034477
+              ],
+              [
+                29.076572619361535,
+                5.459858480078818,
+                4.504091031034477
+              ]
+            ],
+            "fittingBounds": [
+              0.8825326163452719,
+              0.4312778551701419,
+              0.9006928710170934,
+              0.4605166146806381
+            ]
+          },
+          {
+            "id": "hedge-pendant-1-2-ground",
+            "fixtureId": "hedge-pendant-1-2",
+            "side": "left",
+            "surface": "ground",
+            "bounds": [
+              0.8553563399605382,
+              0.4840072469303107,
+              0.8887219234211756,
+              0.5294354030384353
+            ],
+            "worldPolygon": [
+              [
+                27.82320179030769,
+                5.405849835085002,
+                2.920595888181248
+              ],
+              [
+                29.02320179030769,
+                5.405849835085002,
+                2.778281105977164
+              ],
+              [
+                29.02320179030769,
+                6.605849835085001,
+                2.8069345529651035
+              ],
+              [
+                27.82320179030769,
+                6.605849835085001,
+                2.886311879757114
+              ]
+            ],
+            "fittingBounds": [
+              0.8825326163452719,
+              0.4312778551701419,
+              0.9006928710170934,
+              0.4605166146806381
+            ]
+          },
+          {
+            "id": "hedge-pendant-4-1-foliage",
+            "fixtureId": "hedge-pendant-4-1",
+            "side": "left",
+            "surface": "foliage",
+            "bounds": [
+              0.7696375092951488,
+              0.9252077453000087,
+              0.7890891457817656,
+              0.9942297142182988
+            ],
+            "worldPolygon": [
+              [
+                30.151360483256898,
+                22.239963046246014,
+                3.3611922332448065
+              ],
+              [
+                30.151360483256898,
+                22.239963046246014,
+                4.261192233244806
+              ],
+              [
+                30.062556477168318,
+                21.143553520337644,
+                3.3611922332448065
+              ],
+              [
+                30.062556477168318,
+                21.143553520337644,
+                4.261192233244806
+              ]
+            ],
+            "fittingBounds": [
+              0.7562880916074441,
+              0.8942245805632345,
+              0.7795079287963447,
+              0.9380524878596954
+            ]
+          },
+          {
+            "id": "hedge-pendant-4-1-ground",
+            "fixtureId": "hedge-pendant-4-1",
+            "side": "left",
+            "surface": "ground",
+            "bounds": [
+              0.7246720873023026,
+              0.9280289904980825,
+              0.7734120508598286,
+              1
+            ],
+            "worldPolygon": [
+              [
+                28.859080123994026,
+                21.144233377798717,
+                2.5318773903802128
+              ],
+              [
+                30.05908012399403,
+                21.144233377798717,
+                2.537335718125792
+              ],
+              [
+                30.05908012399403,
+                22.34423337779872,
+                2.5520286969838817
+              ],
+              [
+                28.859080123994026,
+                22.34423337779872,
+                2.5610945363400317
+              ]
+            ],
+            "fittingBounds": [
+              0.7562880916074441,
+              0.8942245805632345,
+              0.7795079287963447,
+              0.9380524878596954
+            ]
+          },
+          {
+            "id": "hedge-pendant-5-4-foliage",
+            "fixtureId": "hedge-pendant-5-4",
+            "side": "rear",
+            "surface": "foliage",
+            "bounds": [
+              0.4640903520105544,
+              0.739242981974527,
+              0.4902467713212581,
+              0.7859802886645464
+            ],
+            "worldPolygon": [
+              [
+                19.405423033813758,
+                24.817360619806678,
+                3.5063089650864767
+              ],
+              [
+                19.405423033813758,
+                24.817360619806678,
+                4.406308965086477
+              ],
+              [
+                20.49200299107287,
+                24.64605972522994,
+                3.5063089650864767
+              ],
+              [
+                20.49200299107287,
+                24.64605972522994,
+                4.406308965086477
+              ]
+            ],
+            "fittingBounds": [
+              0.4774820736835842,
+              0.6965352245004814,
+              0.4948861145225369,
+              0.7334394032935089
+            ]
+          },
+          {
+            "id": "hedge-pendant-5-4-ground",
+            "fixtureId": "hedge-pendant-5-4",
+            "side": "rear",
+            "surface": "ground",
+            "bounds": [
+              0.46499681612866006,
+              0.7432544167988833,
+              0.509069478093805,
+              0.8071926897917499
+            ],
+            "worldPolygon": [
+              [
+                19.24748975655706,
+                23.48964019777429,
+                2.604685144898393
+              ],
+              [
+                20.44748975655706,
+                23.48964019777429,
+                2.5764497992757205
+              ],
+              [
+                20.44748975655706,
+                24.689640197774292,
+                2.6699753867355747
+              ],
+              [
+                19.24748975655706,
+                24.689640197774292,
+                2.6549551975603323
+              ]
+            ],
+            "fittingBounds": [
+              0.4774820736835842,
+              0.6965352245004814,
+              0.4948861145225369,
+              0.7334394032935089
+            ]
+          },
+          {
+            "id": "hedge-pendant-5-7-foliage",
+            "fixtureId": "hedge-pendant-5-7",
+            "side": "rear",
+            "surface": "foliage",
+            "bounds": [
+              0.2885766554791127,
+              0.5823843447535719,
+              0.31306904039825245,
+              0.6249137050302583
+            ],
+            "worldPolygon": [
+              [
+                10.917670343365286,
+                26.15546705100529,
+                3.558323736724645
+              ],
+              [
+                10.917670343365286,
+                26.15546705100529,
+                4.458323736724645
+              ],
+              [
+                12.004250300624397,
+                25.98416615642855,
+                3.558323736724645
+              ],
+              [
+                12.004250300624397,
+                25.98416615642855,
+                4.458323736724645
+              ]
+            ],
+            "fittingBounds": [
+              0.29820628244665603,
+              0.5434703031741127,
+              0.31588048450372525,
+              0.575178184770187
+            ]
+          },
+          {
+            "id": "hedge-pendant-5-7-ground",
+            "fixtureId": "hedge-pendant-5-7",
+            "side": "rear",
+            "surface": "ground",
+            "bounds": [
+              0.2976465439687571,
+              0.5973240953827208,
+              0.33767715126779807,
+              0.6456413141359415
+            ],
+            "worldPolygon": [
+              [
+                10.759737066108588,
+                24.8277466289729,
+                2.648365808632196
+              ],
+              [
+                11.959737066108588,
+                24.8277466289729,
+                2.6982188479122082
+              ],
+              [
+                11.959737066108588,
+                26.027746628972903,
+                2.776678386390271
+              ],
+              [
+                10.759737066108588,
+                26.027746628972903,
+                2.738404302146581
+              ]
+            ],
+            "fittingBounds": [
+              0.29820628244665603,
+              0.5434703031741127,
+              0.31588048450372525,
+              0.575178184770187
+            ]
+          }
+        ],
+        "projection": {
+          "width": 982,
+          "height": 572,
+          "position": [
+            29.15093236,
+            24.416892445929623,
+            34.479887136
+          ],
+          "target": [
+            15.49234675,
+            4.063155469929622,
+            18.089584404
+          ],
+          "fov": 48
+        }
+      },
+      "lowSurface": {
+        "width": 982,
+        "height": 573,
+        "patches": [
+          {
+            "id": "hedge-pendant-1-2-foliage",
+            "fixtureId": "hedge-pendant-1-2",
+            "surface": "foliage",
+            "bounds": [
+              0.8893729684069922,
+              0.4619485733497422,
+              0.9050558497460199,
+              0.5081832031114976
+            ],
+            "worldPolygon": [
+              [
+                29.069806367295115,
+                6.559837669806049,
+                3.604091031034477
+              ],
+              [
+                29.069806367295115,
+                6.559837669806049,
+                4.504091031034477
+              ],
+              [
+                29.076572619361535,
+                5.459858480078818,
+                3.604091031034477
+              ],
+              [
+                29.076572619361535,
+                5.459858480078818,
+                4.504091031034477
+              ]
+            ],
+            "pixels": 416,
+            "brightenedPixels": 80,
+            "brightnessGain": 1062.3333333333335
+          },
+          {
+            "id": "hedge-pendant-1-2-ground",
+            "fixtureId": "hedge-pendant-1-2",
+            "surface": "ground",
+            "bounds": [
+              0.8553563399605382,
+              0.4840072469303107,
+              0.8887219234211756,
+              0.5294354030384353
+            ],
+            "worldPolygon": [
+              [
+                27.82320179030769,
+                5.405849835085002,
+                2.920595888181248
+              ],
+              [
+                29.02320179030769,
+                5.405849835085002,
+                2.778281105977164
+              ],
+              [
+                29.02320179030769,
+                6.605849835085001,
+                2.8069345529651035
+              ],
+              [
+                27.82320179030769,
+                6.605849835085001,
+                2.886311879757114
+              ]
+            ],
+            "pixels": 858,
+            "brightenedPixels": 594,
+            "brightnessGain": 13564.99999999999
+          },
+          {
+            "id": "hedge-pendant-4-1-foliage",
+            "fixtureId": "hedge-pendant-4-1",
+            "surface": "foliage",
+            "bounds": [
+              0.7696375092951488,
+              0.9252077453000087,
+              0.7890891457817656,
+              0.9942297142182988
+            ],
+            "worldPolygon": [
+              [
+                30.151360483256898,
+                22.239963046246014,
+                3.3611922332448065
+              ],
+              [
+                30.151360483256898,
+                22.239963046246014,
+                4.261192233244806
+              ],
+              [
+                30.062556477168318,
+                21.143553520337644,
+                3.3611922332448065
+              ],
+              [
+                30.062556477168318,
+                21.143553520337644,
+                4.261192233244806
+              ]
+            ],
+            "pixels": 688,
+            "brightenedPixels": 152,
+            "brightnessGain": 2800.6666666666674
+          },
+          {
+            "id": "hedge-pendant-4-1-ground",
+            "fixtureId": "hedge-pendant-4-1",
+            "surface": "ground",
+            "bounds": [
+              0.7246720873023026,
+              0.9280289904980825,
+              0.7734120508598286,
+              1
+            ],
+            "worldPolygon": [
+              [
+                28.859080123994026,
+                21.144233377798717,
+                2.5318773903802128
+              ],
+              [
+                30.05908012399403,
+                21.144233377798717,
+                2.537335718125792
+              ],
+              [
+                30.05908012399403,
+                22.34423337779872,
+                2.5520286969838817
+              ],
+              [
+                28.859080123994026,
+                22.34423337779872,
+                2.5610945363400317
+              ]
+            ],
+            "pixels": 1831,
+            "brightenedPixels": 468,
+            "brightnessGain": 5975.000000000001
+          },
+          {
+            "id": "hedge-pendant-5-4-foliage",
+            "fixtureId": "hedge-pendant-5-4",
+            "surface": "foliage",
+            "bounds": [
+              0.4640903520105544,
+              0.739242981974527,
+              0.4902467713212581,
+              0.7859802886645464
+            ],
+            "worldPolygon": [
+              [
+                19.405423033813758,
+                24.817360619806678,
+                3.5063089650864767
+              ],
+              [
+                19.405423033813758,
+                24.817360619806678,
+                4.406308965086477
+              ],
+              [
+                20.49200299107287,
+                24.64605972522994,
+                3.5063089650864767
+              ],
+              [
+                20.49200299107287,
+                24.64605972522994,
+                4.406308965086477
+              ]
+            ],
+            "pixels": 650,
+            "brightenedPixels": 258,
+            "brightnessGain": 6996.666666666659
+          },
+          {
+            "id": "hedge-pendant-5-4-ground",
+            "fixtureId": "hedge-pendant-5-4",
+            "surface": "ground",
+            "bounds": [
+              0.46499681612866006,
+              0.7432544167988833,
+              0.509069478093805,
+              0.8071926897917499
+            ],
+            "worldPolygon": [
+              [
+                19.24748975655706,
+                23.48964019777429,
+                2.604685144898393
+              ],
+              [
+                20.44748975655706,
+                23.48964019777429,
+                2.5764497992757205
+              ],
+              [
+                20.44748975655706,
+                24.689640197774292,
+                2.6699753867355747
+              ],
+              [
+                19.24748975655706,
+                24.689640197774292,
+                2.6549551975603323
+              ]
+            ],
+            "pixels": 1591,
+            "brightenedPixels": 444,
+            "brightnessGain": 8909.999999999995
+          },
+          {
+            "id": "hedge-pendant-5-7-foliage",
+            "fixtureId": "hedge-pendant-5-7",
+            "surface": "foliage",
+            "bounds": [
+              0.2885766554791127,
+              0.5823843447535719,
+              0.31306904039825245,
+              0.6249137050302583
+            ],
+            "worldPolygon": [
+              [
+                10.917670343365286,
+                26.15546705100529,
+                3.558323736724645
+              ],
+              [
+                10.917670343365286,
+                26.15546705100529,
+                4.458323736724645
+              ],
+              [
+                12.004250300624397,
+                25.98416615642855,
+                3.558323736724645
+              ],
+              [
+                12.004250300624397,
+                25.98416615642855,
+                4.458323736724645
+              ]
+            ],
+            "pixels": 576,
+            "brightenedPixels": 217,
+            "brightnessGain": 5444.000000000004
+          },
+          {
+            "id": "hedge-pendant-5-7-ground",
+            "fixtureId": "hedge-pendant-5-7",
+            "surface": "ground",
+            "bounds": [
+              0.2976465439687571,
+              0.5973240953827208,
+              0.33767715126779807,
+              0.6456413141359415
+            ],
+            "worldPolygon": [
+              [
+                10.759737066108588,
+                24.8277466289729,
+                2.648365808632196
+              ],
+              [
+                11.959737066108588,
+                24.8277466289729,
+                2.6982188479122082
+              ],
+              [
+                11.959737066108588,
+                26.027746628972903,
+                2.776678386390271
+              ],
+              [
+                10.759737066108588,
+                26.027746628972903,
+                2.738404302146581
+              ]
+            ],
+            "pixels": 1120,
+            "brightenedPixels": 246,
+            "brightnessGain": 3595.666666666667
+          }
+        ],
+        "outsidePatches": [
+          {
+            "id": "outside-rear-west-ground",
+            "bounds": [
+              0.28,
+              0.74,
+              0.3,
+              0.775
+            ],
+            "pixelBounds": [
+              275,
+              424,
+              295,
+              444
+            ],
+            "pixels": 400,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-rear-middle-ground",
+            "bounds": [
+              0.405,
+              0.88,
+              0.43,
+              0.92
+            ],
+            "pixelBounds": [
+              398,
+              504,
+              422,
+              527
+            ],
+            "pixels": 552,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-side-lane-ground",
+            "bounds": [
+              0.921,
+              0.526,
+              0.944,
+              0.57
+            ],
+            "pixelBounds": [
+              904,
+              301,
+              927,
+              327
+            ],
+            "pixels": 598,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          }
+        ]
+      },
+      "surface": {
+        "width": 982,
+        "height": 573,
+        "patches": [
+          {
+            "id": "hedge-pendant-1-2-foliage",
+            "fixtureId": "hedge-pendant-1-2",
+            "surface": "foliage",
+            "bounds": [
+              0.8893729684069922,
+              0.4619485733497422,
+              0.9050558497460199,
+              0.5081832031114976
+            ],
+            "worldPolygon": [
+              [
+                29.069806367295115,
+                6.559837669806049,
+                3.604091031034477
+              ],
+              [
+                29.069806367295115,
+                6.559837669806049,
+                4.504091031034477
+              ],
+              [
+                29.076572619361535,
+                5.459858480078818,
+                3.604091031034477
+              ],
+              [
+                29.076572619361535,
+                5.459858480078818,
+                4.504091031034477
+              ]
+            ],
+            "pixels": 416,
+            "brightenedPixels": 96,
+            "brightnessGain": 3084.333333333333
+          },
+          {
+            "id": "hedge-pendant-1-2-ground",
+            "fixtureId": "hedge-pendant-1-2",
+            "surface": "ground",
+            "bounds": [
+              0.8553563399605382,
+              0.4840072469303107,
+              0.8887219234211756,
+              0.5294354030384353
+            ],
+            "worldPolygon": [
+              [
+                27.82320179030769,
+                5.405849835085002,
+                2.920595888181248
+              ],
+              [
+                29.02320179030769,
+                5.405849835085002,
+                2.778281105977164
+              ],
+              [
+                29.02320179030769,
+                6.605849835085001,
+                2.8069345529651035
+              ],
+              [
+                27.82320179030769,
+                6.605849835085001,
+                2.886311879757114
+              ]
+            ],
+            "pixels": 858,
+            "brightenedPixels": 628,
+            "brightnessGain": 33559.33333333335
+          },
+          {
+            "id": "hedge-pendant-4-1-foliage",
+            "fixtureId": "hedge-pendant-4-1",
+            "surface": "foliage",
+            "bounds": [
+              0.7696375092951488,
+              0.9252077453000087,
+              0.7890891457817656,
+              0.9942297142182988
+            ],
+            "worldPolygon": [
+              [
+                30.151360483256898,
+                22.239963046246014,
+                3.3611922332448065
+              ],
+              [
+                30.151360483256898,
+                22.239963046246014,
+                4.261192233244806
+              ],
+              [
+                30.062556477168318,
+                21.143553520337644,
+                3.3611922332448065
+              ],
+              [
+                30.062556477168318,
+                21.143553520337644,
+                4.261192233244806
+              ]
+            ],
+            "pixels": 688,
+            "brightenedPixels": 174,
+            "brightnessGain": 6129.333333333332
+          },
+          {
+            "id": "hedge-pendant-4-1-ground",
+            "fixtureId": "hedge-pendant-4-1",
+            "surface": "ground",
+            "bounds": [
+              0.7246720873023026,
+              0.9280289904980825,
+              0.7734120508598286,
+              1
+            ],
+            "worldPolygon": [
+              [
+                28.859080123994026,
+                21.144233377798717,
+                2.5318773903802128
+              ],
+              [
+                30.05908012399403,
+                21.144233377798717,
+                2.537335718125792
+              ],
+              [
+                30.05908012399403,
+                22.34423337779872,
+                2.5520286969838817
+              ],
+              [
+                28.859080123994026,
+                22.34423337779872,
+                2.5610945363400317
+              ]
+            ],
+            "pixels": 1831,
+            "brightenedPixels": 505,
+            "brightnessGain": 15753.66666666667
+          },
+          {
+            "id": "hedge-pendant-5-4-foliage",
+            "fixtureId": "hedge-pendant-5-4",
+            "surface": "foliage",
+            "bounds": [
+              0.4640903520105544,
+              0.739242981974527,
+              0.4902467713212581,
+              0.7859802886645464
+            ],
+            "worldPolygon": [
+              [
+                19.405423033813758,
+                24.817360619806678,
+                3.5063089650864767
+              ],
+              [
+                19.405423033813758,
+                24.817360619806678,
+                4.406308965086477
+              ],
+              [
+                20.49200299107287,
+                24.64605972522994,
+                3.5063089650864767
+              ],
+              [
+                20.49200299107287,
+                24.64605972522994,
+                4.406308965086477
+              ]
+            ],
+            "pixels": 650,
+            "brightenedPixels": 264,
+            "brightnessGain": 14156.333333333334
+          },
+          {
+            "id": "hedge-pendant-5-4-ground",
+            "fixtureId": "hedge-pendant-5-4",
+            "surface": "ground",
+            "bounds": [
+              0.46499681612866006,
+              0.7432544167988833,
+              0.509069478093805,
+              0.8071926897917499
+            ],
+            "worldPolygon": [
+              [
+                19.24748975655706,
+                23.48964019777429,
+                2.604685144898393
+              ],
+              [
+                20.44748975655706,
+                23.48964019777429,
+                2.5764497992757205
+              ],
+              [
+                20.44748975655706,
+                24.689640197774292,
+                2.6699753867355747
+              ],
+              [
+                19.24748975655706,
+                24.689640197774292,
+                2.6549551975603323
+              ]
+            ],
+            "pixels": 1591,
+            "brightenedPixels": 482,
+            "brightnessGain": 19821.000000000025
+          },
+          {
+            "id": "hedge-pendant-5-7-foliage",
+            "fixtureId": "hedge-pendant-5-7",
+            "surface": "foliage",
+            "bounds": [
+              0.2885766554791127,
+              0.5823843447535719,
+              0.31306904039825245,
+              0.6249137050302583
+            ],
+            "worldPolygon": [
+              [
+                10.917670343365286,
+                26.15546705100529,
+                3.558323736724645
+              ],
+              [
+                10.917670343365286,
+                26.15546705100529,
+                4.458323736724645
+              ],
+              [
+                12.004250300624397,
+                25.98416615642855,
+                3.558323736724645
+              ],
+              [
+                12.004250300624397,
+                25.98416615642855,
+                4.458323736724645
+              ]
+            ],
+            "pixels": 576,
+            "brightenedPixels": 224,
+            "brightnessGain": 11363.33333333333
+          },
+          {
+            "id": "hedge-pendant-5-7-ground",
+            "fixtureId": "hedge-pendant-5-7",
+            "surface": "ground",
+            "bounds": [
+              0.2976465439687571,
+              0.5973240953827208,
+              0.33767715126779807,
+              0.6456413141359415
+            ],
+            "worldPolygon": [
+              [
+                10.759737066108588,
+                24.8277466289729,
+                2.648365808632196
+              ],
+              [
+                11.959737066108588,
+                24.8277466289729,
+                2.6982188479122082
+              ],
+              [
+                11.959737066108588,
+                26.027746628972903,
+                2.776678386390271
+              ],
+              [
+                10.759737066108588,
+                26.027746628972903,
+                2.738404302146581
+              ]
+            ],
+            "pixels": 1120,
+            "brightenedPixels": 301,
+            "brightnessGain": 9180.333333333332
+          }
+        ],
+        "outsidePatches": [
+          {
+            "id": "outside-rear-west-ground",
+            "bounds": [
+              0.28,
+              0.74,
+              0.3,
+              0.775
+            ],
+            "pixelBounds": [
+              275,
+              424,
+              295,
+              444
+            ],
+            "pixels": 400,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-rear-middle-ground",
+            "bounds": [
+              0.405,
+              0.88,
+              0.43,
+              0.92
+            ],
+            "pixelBounds": [
+              398,
+              504,
+              422,
+              527
+            ],
+            "pixels": 552,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          },
+          {
+            "id": "outside-side-lane-ground",
+            "bounds": [
+              0.921,
+              0.526,
+              0.944,
+              0.57
+            ],
+            "pixelBounds": [
+              904,
+              301,
+              927,
+              327
+            ],
+            "pixels": 598,
+            "brightenedPixels": 0,
+            "meanLumaGain": 0,
+            "meanPositiveLumaGain": 0,
+            "meanRgbGain": 0,
+            "meanPositiveRgbGain": 0,
+            "maxLumaGain": 0
+          }
+        ]
+      },
+      "outsideLimits": {
+        "meanPositiveLumaGain": 0.5,
+        "brightenedPixelFraction": 0.01,
+        "lumaPixelThreshold": 3
+      },
+      "isolated": {
+        "activation": 1,
+        "garden": 0,
+        "pendants": 0,
+        "hedge": 0.85,
+        "windows": 0,
+        "mode": "orbit"
+      },
+      "restored": {
+        "activation": 1,
+        "garden": 0.45,
+        "pendants": 0.65,
+        "hedge": 0.3,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "allOtherLightsOff": true
+    },
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    "mobileNight": {
+      "renderer": "WebGL",
+      "lights": {
+        "activation": 1,
+        "garden": 0.45,
+        "pendants": 0.65,
+        "hedge": 0.3,
+        "windows": 0.6,
+        "mode": "orbit"
+      },
+      "hedgePixels": {
+        "width": 360,
+        "height": 448,
+        "changedPixels": 9414,
+        "warmBrightenedPixels": 1903,
+        "brightnessGain": 48709.00000000007
+      }
+    }
+  },
+  "sceneCaptures": [
+    {
+      "name": "nadmorska-windows-none",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 6,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 91,
+        "fenceElapsedMs": 2274.399999999994,
+        "elapsedMs": 2274.5
+      },
+      "elapsedMs": 4175
+    },
+    {
+      "name": "nadmorska-windows-all",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 7,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 57,
+        "fenceElapsedMs": 1416.3000000000175,
+        "elapsedMs": 1416.3999999999942
+      },
+      "elapsedMs": 1631
+    },
+    {
+      "name": "nadmorska-windows-quieter",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 8,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 55,
+        "fenceElapsedMs": 1368.6999999999825,
+        "elapsedMs": 1368.7999999999884
+      },
+      "elapsedMs": 1564
+    },
+    {
+      "name": "nadmorska-windows-busier",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 9,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 53,
+        "fenceElapsedMs": 1307.5,
+        "elapsedMs": 1307.5999999999767
+      },
+      "elapsedMs": 1529
+    },
+    {
+      "name": "nadmorska-street-busy-evening",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 11,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 100,
+        "fenceElapsedMs": 2490,
+        "elapsedMs": 2490
+      },
+      "elapsedMs": 2717
+    },
+    {
+      "name": "nadmorska-day",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 13,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 305,
+        "fenceElapsedMs": 7668.299999999988,
+        "elapsedMs": 7668.5
+      },
+      "elapsedMs": 7933
+    },
+    {
+      "name": "nadmorska-water-unlit",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 17,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 2,
+        "restarts": 0,
+        "fencePolls": 295,
+        "fenceElapsedMs": 7420.100000000006,
+        "elapsedMs": 8492.799999999988
+      },
+      "elapsedMs": 8745
+    },
+    {
+      "name": "nadmorska-water-lit",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 18,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 135,
+        "fenceElapsedMs": 3373.899999999994,
+        "elapsedMs": 3373.899999999994
+      },
+      "elapsedMs": 3623
+    },
+    {
+      "name": "nadmorska-night",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 20,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 364,
+        "fenceElapsedMs": 9134.299999999988,
+        "elapsedMs": 9134.299999999988
+      },
+      "elapsedMs": 9360
+    },
+    {
+      "name": "pendants-all-off",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 23,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 101,
+        "restarts": 0,
+        "fencePolls": 304,
+        "fenceElapsedMs": 7625.299999999988,
+        "elapsedMs": 10156.600000000006
+      },
+      "elapsedMs": 10392
+    },
+    {
+      "name": "pendants-garden-only",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 24,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 159,
+        "fenceElapsedMs": 3973,
+        "elapsedMs": 3973.1999999999825
+      },
+      "elapsedMs": 4221
+    },
+    {
+      "name": "pendants-hedge-only",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 26,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 242,
+        "fenceElapsedMs": 6068,
+        "elapsedMs": 6068.1999999999825
+      },
+      "elapsedMs": 6325
+    },
+    {
+      "name": "nadmorska-pendants-night",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 4,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 464,
+        "fenceElapsedMs": 11660.400000000023,
+        "elapsedMs": 11660.5
+      },
+      "elapsedMs": 11935
+    },
+    {
+      "name": "nadmorska-hedge-isolated-off",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 8,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 310,
+        "fenceElapsedMs": 7821.700000000012,
+        "elapsedMs": 7822.599999999977
+      },
+      "elapsedMs": 13163
+    },
+    {
+      "name": "nadmorska-hedge-isolated-low",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 10,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 282,
+        "fenceElapsedMs": 7068.099999999977,
+        "elapsedMs": 7068.200000000012
+      },
+      "elapsedMs": 7314
+    },
+    {
+      "name": "nadmorska-hedge-isolated-on",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 11,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 142,
+        "fenceElapsedMs": 3559.7999999999884,
+        "elapsedMs": 3560.0999999999767
+      },
+      "elapsedMs": 3786
+    },
+    {
+      "name": "nadmorska-plan",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 15,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 53,
+        "fenceElapsedMs": 1333.7000000000116,
+        "elapsedMs": 1333.899999999965
+      },
+      "elapsedMs": 1629
+    },
+    {
+      "name": "nadmorska-mobile-plan",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 15,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 11,
+        "fenceElapsedMs": 251.40000000002328,
+        "elapsedMs": 251.59999999997672
+      },
+      "elapsedMs": 513
+    },
+    {
+      "name": "nadmorska-mobile-hedge-off",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 18,
+        "pending": false,
+        "width": 360,
+        "height": 447,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 45,
+        "restarts": 0,
+        "fencePolls": 135,
+        "fenceElapsedMs": 3379.3000000000466,
+        "elapsedMs": 6418.200000000012
+      },
+      "elapsedMs": 6581
+    },
+    {
+      "name": "nadmorska-mobile-night",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 20,
+        "pending": false,
+        "width": 360,
+        "height": 447,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 3,
+        "restarts": 1,
+        "fencePolls": 175,
+        "fenceElapsedMs": 4351.399999999965,
+        "elapsedMs": 4376.600000000035
+      },
+      "elapsedMs": 4560
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": []
+}

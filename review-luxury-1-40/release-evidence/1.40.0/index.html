@@ -19,7 +19,7 @@
 <p class="intro">Compare the four living-room arrangements, explore the fitted kitchen, and inspect the new hall mirror. These are captures from the 1.40 application, with the same furniture and openings used in the interactive house.</p>
 <div class="actions"><a class="button primary" href="../../?site=sternicza-11&amp;v=1.40.0">Open the house </a><a class="button" href="../../docs/luxury-living-1.40.md">Full dimensions &amp; equipment notes</a><a href="https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/42">Release PR #42</a></div>
 </header>
-<nav class="section-nav" aria-label="Evidence sections"><a href="#layouts">Four layouts</a><a href="#kitchen">Kitchen fit-out</a><a href="#mirror">Hall mirror</a><a href="#verification">Verification</a></nav>
+<nav class="section-nav" aria-label="Evidence sections"><a href="#layouts">Four layouts</a><a href="#kitchen">Kitchen fit-out</a><a href="#mirror">Hall mirror</a><a href="#performance">Walking</a><a href="#verification">Verification</a></nav>
 <main id="main">
 <section id="layouts" aria-labelledby="layouts-title">
 <p class="eyebrow">01 / Living &amp; dining</p><h2 id="layouts-title">Four complete arrangements</h2>
@@ -72,14 +72,28 @@
 <div class="mirror-copy"><h3>2.55 m wide × 2.34 m high</h3><p>The mirror fills the hall face of the kitchen enclosure, clear of the retained chimney and entrance. Its lower edge sits 180 mm above the floor.</p><p>The reflection shows the actual modeled hall. It refreshes after movement settles and keeps its last image while walking.</p><p class="small">The verified browser capture records one active mirror, a completed reflection and no reflection updates while moving.</p></div>
 </div>
 </section>
-<!-- ROOT_RELEASE_RESULTS_INSERTION: optional measured walking and final CI section goes here. -->
+<!-- WALK_RESULTS_START -->
+<section id="performance" aria-labelledby="performance-title">
+<p class="eyebrow">04 / Walking validation</p><h2 id="performance-title">Performance review is still open</h2>
+<p class="section-intro">The kitchen, four layouts, mobile interiors, retained garden features and completed-frame night comparisons pass their browser checks. Walking on the software-GPU test runner still falls short of the required actual-rendered-frame sample. This preview remains a release candidate while the remaining graphics cost is measured.</p>
+<p><a href="https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/46079586400">Review the complete validation run</a> · <a href="gallery-provenance.json">Capture provenance and checksums</a></p>
+</section>
+<!-- WALK_RESULTS_END -->
 <section id="verification" aria-labelledby="verification-title">
-<p class="eyebrow">04 / Evidence</p><h2 id="verification-title">What these captures establish</h2>
-<div class="evidence-grid"><div><div class="status">Kitchen &amp; cinema browser acceptance passed</div><ul><li>All four layouts render in WebGL and in the measured plan.</li><li>The exported design contains the actual appliance envelopes, screen reservation and speaker channels.</li><li>Room entry and walking expose the kitchen labels and captured hall reflection.</li><li>The layout and independent equipment-label setting survive Share and reload.</li></ul><p><a href="browser-report.json">Download the complete browser report</a> · <a href="https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/42">Review the implementation</a></p><p class="small">These functional captures do not by themselves establish a frame-rate improvement. Dimensions describe the planning model.</p></div>
+<p class="eyebrow">05 / Evidence</p><h2 id="verification-title">What these captures establish</h2>
+<div class="evidence-grid"><div><div class="status">Kitchen &amp; cinema browser acceptance passed</div><ul><li>All four layouts render in WebGL and in the measured plan.</li><li>The exported design contains the actual appliance envelopes, screen reservation and speaker channels.</li><li>Room entry and walking expose the kitchen labels and captured hall reflection.</li><li>The layout and independent equipment-label setting survive Share and reload.</li></ul><p><a href="cinema-layouts-report.json">Layout browser report</a> · <a href="kitchen-mirror-report.json">Kitchen &amp; mirror report</a> · <a href="https://github.com/PawelTroka/TROKA.Software.SmartHouse/pull/42">Review the implementation</a></p><p><strong>1,011 automated tests pass.</strong> The retained garden and glazing checks cover the concealed spa lids, pine and loungers, clear kitchen and bathroom windows, sauna glazing, and independent dimension controls.</p><p><a href="covers-garden-report.json">Garden regression report</a> · <a href="covers-interiors-report.json">Glazing &amp; dimensions report</a> · <a href="interiors-mobile-report.json">Interiors &amp; mobile report</a></p><p class="small">Functional captures establish the modeled features and controls. Walking measurements are reported separately; dimensions describe the planning model.</p></div>
 <details><summary>Mobile layout controls</summary><figure><a href="mobile-living-layout-controls.png"><img src="mobile-living-layout-controls.png" width="360" height="335" loading="lazy" alt="Living-room layout and equipment-label controls fitting a mobile viewport." /></a><figcaption>The selector and equipment-label switch are checked at a 390 px viewport. <a href="mobile-living-layout-controls.png">Open full capture</a>.</figcaption></figure></details></div>
+<details style="margin-top:24px"><summary>Inspect the garden during movement and after settling</summary>
+<p style="margin-top:16px">These images use the same night viewpoint. Each capture waits for its WebGL frame to finish. The background tree silhouette remains visible during movement, and the restored image is byte-for-byte identical to the original settled view.</p>
+<div class="grid">
+<figure><a href="sternicza-night-motion-target.png"><img style="max-width:982px" src="sternicza-night-motion-target.png" width="982" height="573" loading="lazy" alt="Completed moving garden frame retaining the distant tree silhouettes and illuminated planting." /></a><figcaption>During movement · <a href="sternicza-night-motion-target.png">Open full capture</a></figcaption></figure>
+<figure><a href="sternicza-night-motion-restored.png"><img style="max-width:982px" src="sternicza-night-motion-restored.png" width="982" height="573" loading="lazy" alt="Restored full-resolution garden view with the original trees, planting and night lighting." /></a><figcaption>After settling · <a href="sternicza-night-motion-restored.png">Open full capture</a></figcaption></figure>
+</div>
+<p class="small" style="margin-top:16px"><a href="sternicza-night-before-motion.png">Original settled image</a> · <a href="sternicza-browser-report.json">Sternicza night report</a> · <a href="nadmorska-browser-report.json">Nadmorska night report</a></p>
+</details>
 </section>
 </main>
-<footer><p>SmartHouse 1.40.0 · Sternicza 11 · Captured application evidence, 27 November 2026</p><p><a href="../../?site=sternicza-11&amp;v=1.40.0">Return to the interactive house</a> · <a href="../../docs/luxury-living-1.40.md">Detailed planning notes</a></p></footer>
+<footer><p>SmartHouse 1.40.0 · Sternicza 11 · Captured application evidence, 27–28 November 2026</p><p><a href="../../?site=sternicza-11&amp;v=1.40.0">Return to the interactive house</a> · <a href="../../docs/luxury-living-1.40.md">Detailed planning notes</a></p></footer>
 </div>
 </body>
 </html>

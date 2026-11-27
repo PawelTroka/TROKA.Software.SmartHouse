@@ -1,10 +1,10 @@
 {
   "version": "1.40.0",
+  "group": "layouts",
   "status": "passed",
   "checks": [
     "Two real 600 mm dishwasher niches, 67 L steam oven, separate microwave, four-door fridge, wine cooler, concealed pantry, workstation sink and giant mirror are exported from the drawn plan",
     "A/B swap furniture and solid/window sides, C removes all thirteen audio devices and screen, and D keeps both windows; every choice renders in WebGL and plan",
-    "Public room entry and walking expose the integrated kitchen, hidden equipment labels and the full-height reflecting wall",
     "Layout selection and independent equipment-label setting survive Share and reload without moving any trees"
   ],
   "layouts": [
@@ -729,15 +729,16 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 4893.79999999993,
-            "p95": 4893.79999999993,
-            "p99": 4893.79999999993,
-            "mean": 4893.79999999993,
-            "onePercentLowFps": 0.2043401855408914,
+            "p50": 5131.799999999988,
+            "p95": 5131.799999999988,
+            "p99": 5131.799999999988,
+            "mean": 5131.799999999988,
+            "onePercentLowFps": 0.19486340075607045,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
-          }
+          },
+          "phasesMs": {}
         },
         "adaptiveQuality": {
           "mode": "measured-motion-buffer",
@@ -748,6 +749,9 @@
           "targetMs": 24,
           "minimumScale": 0.54,
           "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
           "recoversAtRest": true
         },
         "contactShading": true,
@@ -756,6 +760,15 @@
         "aoHeight": 233,
         "msaaSamples": 2,
         "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "canvasSamples": 4,
         "surfaceAssets": {
           "requested": 45,
           "loaded": 45,
@@ -1488,15 +1501,16 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 1317,
-            "p95": 1317,
-            "p99": 1317,
-            "mean": 1317,
-            "onePercentLowFps": 0.7593014426727411,
+            "p50": 1333.2999999999884,
+            "p95": 1333.2999999999884,
+            "p99": 1333.2999999999884,
+            "mean": 1333.2999999999884,
+            "onePercentLowFps": 0.7500187504687683,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
-          }
+          },
+          "phasesMs": {}
         },
         "adaptiveQuality": {
           "mode": "measured-motion-buffer",
@@ -1507,6 +1521,9 @@
           "targetMs": 24,
           "minimumScale": 0.54,
           "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
           "recoversAtRest": true
         },
         "contactShading": true,
@@ -1515,6 +1532,15 @@
         "aoHeight": 233,
         "msaaSamples": 2,
         "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "canvasSamples": 4,
         "surfaceAssets": {
           "requested": 45,
           "loaded": 45,
@@ -1730,15 +1756,16 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 1395.8000000000466,
-            "p95": 1395.8000000000466,
-            "p99": 1395.8000000000466,
-            "mean": 1395.8000000000466,
-            "onePercentLowFps": 0.7164350193437217,
+            "p50": 1331.600000000035,
+            "p95": 1331.600000000035,
+            "p99": 1331.600000000035,
+            "mean": 1331.600000000035,
+            "onePercentLowFps": 0.7509762691498751,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
-          }
+          },
+          "phasesMs": {}
         },
         "adaptiveQuality": {
           "mode": "measured-motion-buffer",
@@ -1749,6 +1776,9 @@
           "targetMs": 24,
           "minimumScale": 0.54,
           "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
           "recoversAtRest": true
         },
         "contactShading": true,
@@ -1757,6 +1787,15 @@
         "aoHeight": 233,
         "msaaSamples": 2,
         "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "canvasSamples": 4,
         "surfaceAssets": {
           "requested": 45,
           "loaded": 45,
@@ -2489,15 +2528,16 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 1335.7000000000698,
-            "p95": 1335.7000000000698,
-            "p99": 1335.7000000000698,
-            "mean": 1335.7000000000698,
-            "onePercentLowFps": 0.7486711087818729,
+            "p50": 1308,
+            "p95": 1308,
+            "p99": 1308,
+            "mean": 1308,
+            "onePercentLowFps": 0.764525993883792,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
-          }
+          },
+          "phasesMs": {}
         },
         "adaptiveQuality": {
           "mode": "measured-motion-buffer",
@@ -2508,6 +2548,9 @@
           "targetMs": 24,
           "minimumScale": 0.54,
           "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
           "recoversAtRest": true
         },
         "contactShading": true,
@@ -2516,6 +2559,15 @@
         "aoHeight": 233,
         "msaaSamples": 2,
         "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "canvasSamples": 4,
         "surfaceAssets": {
           "requested": 45,
           "loaded": 45,
@@ -2538,9 +2590,6 @@
     "living-crosswall-media.png",
     "plan-crosswall-media.png",
     "living-cinema-screen-view.png",
-    "kitchen-workstation-and-two-dishwashers.png",
-    "kitchen-tall-appliances-and-pantry.png",
-    "hall-giant-mirror.png",
     "mobile-living-layout-controls.png"
   ],
   "views": [
@@ -2561,12 +2610,12 @@
         "total": 19,
         "visible": 2,
         "floor": "ground",
-        "layoutPasses": 8,
+        "layoutPasses": 5,
         "occlusion": {
           "meshes": 179,
-          "queries": 4,
-          "triangleTests": 628,
-          "boxTests": 1426,
+          "queries": 3,
+          "triangleTests": 472,
+          "boxTests": 1071,
           "method": "cached-triangle-bvh"
         }
       },
@@ -2574,114 +2623,6 @@
         "count": 1,
         "captured": true,
         "frames": 1,
-        "width": 256,
-        "height": 152,
-        "updateMode": "settled-only",
-        "updatesWhileMoving": 0
-      }
-    },
-    {
-      "name": "kitchen-workstation-and-two-dishwashers",
-      "pose": {
-        "floor": "ground",
-        "position": [
-          12.37,
-          5.208,
-          11.248
-        ],
-        "yaw": -89.7681,
-        "pitch": -10
-      },
-      "equipmentLabels": {
-        "enabled": true,
-        "total": 19,
-        "visible": 4,
-        "floor": "ground",
-        "layoutPasses": 13,
-        "occlusion": {
-          "meshes": 179,
-          "queries": 34,
-          "triangleTests": 2473,
-          "boxTests": 10364,
-          "method": "cached-triangle-bvh"
-        }
-      },
-      "mirrors": {
-        "count": 1,
-        "captured": true,
-        "frames": 1,
-        "width": 256,
-        "height": 152,
-        "updateMode": "settled-only",
-        "updatesWhileMoving": 0
-      }
-    },
-    {
-      "name": "kitchen-tall-appliances-and-pantry",
-      "pose": {
-        "floor": "ground",
-        "position": [
-          12.454,
-          5.208,
-          11.294
-        ],
-        "yaw": -251.1982,
-        "pitch": -4
-      },
-      "equipmentLabels": {
-        "enabled": true,
-        "total": 19,
-        "visible": 3,
-        "floor": "ground",
-        "layoutPasses": 20,
-        "occlusion": {
-          "meshes": 179,
-          "queries": 69,
-          "triangleTests": 4551,
-          "boxTests": 20844,
-          "method": "cached-triangle-bvh"
-        }
-      },
-      "mirrors": {
-        "count": 1,
-        "captured": true,
-        "frames": 1,
-        "width": 256,
-        "height": 152,
-        "updateMode": "settled-only",
-        "updatesWhileMoving": 0
-      }
-    },
-    {
-      "name": "hall-giant-mirror",
-      "pose": {
-        "floor": "ground",
-        "position": [
-          9.269,
-          5.208,
-          10.852
-        ],
-        "yaw": -91.3211,
-        "pitch": -3
-      },
-      "equipmentLabels": {
-        "enabled": true,
-        "total": 19,
-        "visible": 0,
-        "floor": "ground",
-        "layoutPasses": 26,
-        "occlusion": {
-          "meshes": 179,
-          "queries": 105,
-          "triangleTests": 7007,
-          "boxTests": 24618,
-          "method": "cached-triangle-bvh"
-        }
-      },
-      "mirrors": {
-        "count": 1,
-        "captured": true,
-        "frames": 5,
         "width": 256,
         "height": 152,
         "updateMode": "settled-only",
@@ -3159,20 +3100,5 @@
       "unitPrice": 0
     }
   ],
-  "kitchenLabels": [
-    "Workstation sink + wasteTwo bowls · sorting pull-out below",
-    "Dishwasher 1 · 60 cmMiele AutoDos · hidden",
-    "Dishwasher 2 · 60 cmMiele AutoDos · hidden",
-    "Corner swing-out baskets52 cm access · 120 cm corner"
-  ],
-  "mirror": {
-    "count": 1,
-    "captured": true,
-    "frames": 5,
-    "width": 256,
-    "height": 152,
-    "updateMode": "settled-only",
-    "updatesWhileMoving": 0
-  },
-  "elapsedMs": 462803
+  "elapsedMs": 224676
 }

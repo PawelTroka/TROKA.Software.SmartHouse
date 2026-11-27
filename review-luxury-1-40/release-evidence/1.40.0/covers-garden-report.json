@@ -1,0 +1,522 @@
+{
+  "version": "1.40.0",
+  "group": "garden",
+  "selectedGroups": [
+    "garden"
+  ],
+  "completedGroups": [
+    "garden"
+  ],
+  "style": "scandinavian",
+  "status": "passed",
+  "checks": [
+    "Fresh Scandinavian defaults preserve two pines, restore only the boundary pine, use three chaises along two pool edges and export the actual clear apertures",
+    "Both actual spa lids independently close and retract completely below their surrounds; seated jacuzzi and close plunge views are captured"
+  ],
+  "screenshots": [
+    "garden-two-edge-loungers-and-boundary-pine.png",
+    "garden-overview-covers-concealed.png",
+    "jacuzzi-seated-pck3-screening.png",
+    "garden-both-spa-covers-closed.png",
+    "garden-both-spa-covers-retracted.png",
+    "cold-plunge-clear-flush-surround.png",
+    "cold-plunge-flush-cover-closed.png"
+  ],
+  "sceneCaptures": [
+    {
+      "file": "garden-overview-covers-concealed.png",
+      "renderer": "webgl",
+      "frames": 6,
+      "triangles": 1356360,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "jacuzzi-seated-pck3-screening.png",
+      "renderer": "webgl",
+      "frames": 9,
+      "triangles": 1042339,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "garden-both-spa-covers-closed.png",
+      "renderer": "webgl",
+      "frames": 12,
+      "triangles": 1355184,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 1,
+        "coldPlunge": 1,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 1,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 2,
+            "hiddenPanels": 0,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 1,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 2,
+            "hiddenPanels": 0,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "garden-both-spa-covers-retracted.png",
+      "renderer": "webgl",
+      "frames": 14,
+      "triangles": 1356360,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "cold-plunge-clear-flush-surround.png",
+      "renderer": "webgl",
+      "frames": 16,
+      "triangles": 863573,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "cold-plunge-flush-cover-closed.png",
+      "renderer": "webgl",
+      "frames": 17,
+      "triangles": 863813,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 1,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 1,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 2,
+            "hiddenPanels": 0,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    }
+  ],
+  "views": [],
+  "errors": [],
+  "sceneEvidence": "Actual WebGL frames through public garden controls, Share URLs, interior room selectors, accessible walking and drag look. No private app state or camera control hooks.",
+  "exported": {
+    "schema": 36,
+    "trees": [
+      {
+        "id": "pine-1",
+        "typeId": "austrian-pine-tall",
+        "x": 13,
+        "y": 34.1,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "pine-2",
+        "typeId": "austrian-pine-tall",
+        "x": 19.3,
+        "y": 32.25,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "pine-3",
+        "typeId": "austrian-pine-tall",
+        "x": 17.6,
+        "y": 34.9,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      }
+    ],
+    "pool": {
+      "x": 15.5,
+      "y": 24.5,
+      "width": 3.2,
+      "length": 6.5,
+      "waterDepth": 1.4,
+      "waterOffset": -0.02500000000000001,
+      "freeboard": 0.1,
+      "copingRise": 0.075,
+      "coping": 0.28
+    },
+    "sunbeds": [
+      {
+        "x": 14.120000000000001,
+        "y": 24,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-1",
+        "kind": "lounger"
+      },
+      {
+        "x": 14.120000000000001,
+        "y": 27.4,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-2",
+        "kind": "lounger"
+      },
+      {
+        "x": 16.1,
+        "y": 23.15,
+        "width": 2,
+        "length": 0.78,
+        "back": "east",
+        "poolEdge": "front",
+        "id": "garden-sunbed-3",
+        "kind": "lounger"
+      }
+    ],
+    "kitchenWindow": {
+      "width": 2.3,
+      "sill": 1.04,
+      "height": 1.46,
+      "type": "window",
+      "offset": 5.615,
+      "service": "kitchen-sink",
+      "roomId": "front-kitchen",
+      "outlook": "side-garden",
+      "panes": 1,
+      "transoms": 0,
+      "frameWidth": 0.067,
+      "operation": "picture",
+      "glazing": "clear",
+      "architectureStyle": "scandinavian",
+      "source": "side-garden-sink-window-proposal",
+      "privacy": false
+    },
+    "saunaWindow": {
+      "width": 0.96,
+      "sill": 1.05,
+      "height": 1.3,
+      "type": "window",
+      "offset": 3.96,
+      "service": "indoor-sauna",
+      "roomId": "sauna",
+      "outlook": "side-garden",
+      "panes": 1,
+      "transoms": 0,
+      "frameWidth": 0.067,
+      "operation": "picture",
+      "glazing": "clear",
+      "architectureStyle": "scandinavian",
+      "source": "indoor-sauna-window-proposal",
+      "privacy": false
+    }
+  },
+  "jacuzziView": {
+    "observer": {
+      "x": 9.608610661552147,
+      "y": 20.117475217542932,
+      "z": 4.33755850309423,
+      "preset": "jacuzzi",
+      "label": "Jacuzzi · seated",
+      "eyeHeight": 0.7,
+      "groundZ": 3.6375585030942297,
+      "surface": "floor",
+      "defaultLookYaw": 0,
+      "defaultLookPitch": 0
+    },
+    "summary": {
+      "observer": {
+        "x": 9.608610661552147,
+        "y": 20.117475217542932,
+        "z": 4.33755850309423,
+        "preset": "jacuzzi",
+        "label": "Jacuzzi · seated",
+        "eyeHeight": 0.7,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "visible": 58,
+      "total": 1646,
+      "blockedPercent": 96.47630619684082,
+      "worstRequiredHedge": {
+        "rear": 11.986215146292675,
+        "left": 11.498161652763873,
+        "right": 0,
+        "front": 0,
+        "overall": 11.986215146292675
+      }
+    }
+  },
+  "elapsedMs": 82723
+}

@@ -1,0 +1,321 @@
+{
+  "workflowRun": 46079586400,
+  "runNumber": 84,
+  "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+  "gallery": "/tmp/smarthouse-release-evidence-140",
+  "validationScope": "All seven listed functional jobs passed. Overall workflow and walking performance remain independently gated.",
+  "artifacts": [
+    {
+      "name": "cinema-kitchen-evidence-layouts",
+      "artifactId": 15237465481,
+      "archiveDigest": "sha256:a2a3c119b52116a0cba1ce5fb4104735443fc88b507c4487c6ec7039ef71dd2a",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T23:03:17Z",
+      "directory": "/tmp/cinema-kitchen-84/layouts",
+      "galleryReport": "cinema-layouts-report.json",
+      "reportSha256": "bb847b6d6edc62ddb284e5731f96e8118ddbd01d2df8d75d7b318529d208bb41",
+      "galleryPngs": [
+        {
+          "file": "living-cinema-screen-view.png",
+          "sha256": "2739ec4de3019ced14c479c82b9cc3872f175801a41db697bb15478d961578dd"
+        },
+        {
+          "file": "living-crosswall-media.png",
+          "sha256": "3b6d76cdbb476c6bc839703f25307e72658b1e3ebb06cd1bbdcd804067ab5186"
+        },
+        {
+          "file": "living-garden-salon.png",
+          "sha256": "193011e7d4eece875843349c3ad0a50cec3a29a7e48a34ba91d0dffe412d2553"
+        },
+        {
+          "file": "living-left-media.png",
+          "sha256": "02bf1f9a1a54c38d6da973bdc62ad9cae571a094a7d3dc87e03b93f928a024b4"
+        },
+        {
+          "file": "living-right-media.png",
+          "sha256": "1a0d93d95299863936f65e44a3240bec57e05a5ce0c20c16be5134f209f15041"
+        },
+        {
+          "file": "mobile-living-layout-controls.png",
+          "sha256": "d4d1524bf0d6f788a761ee4a2eb5a86645766f864f12518283c7f3320baa5b06"
+        },
+        {
+          "file": "plan-crosswall-media.png",
+          "sha256": "a945d843cf307adc0129eace4a2bb368b5fc9b31fac28de44890711f81c4cb85"
+        },
+        {
+          "file": "plan-garden-salon.png",
+          "sha256": "13773c8e607dab754c5dc2837dbdf5b4469c82d246078b6645a338d26d776eed"
+        },
+        {
+          "file": "plan-left-media.png",
+          "sha256": "cc95a3ee9ff0222d1c30fdac47085654f3fb092f14e4e5b4e59ed82987327c8e"
+        },
+        {
+          "file": "plan-right-media.png",
+          "sha256": "d835209d25c48b5ec24377e2d0dba7c8d58324c98d95815d2dfd910a614642f1"
+        }
+      ],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": 224676
+    },
+    {
+      "name": "cinema-kitchen-evidence-kitchen",
+      "artifactId": 15236811142,
+      "archiveDigest": "sha256:5d71f68b881bdc8a59a6b4bb172ec8ee5708156689eadee92c69f2295562a4e9",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T22:59:12Z",
+      "directory": "/tmp/cinema-kitchen-84/kitchen",
+      "galleryReport": "kitchen-mirror-report.json",
+      "reportSha256": "560e7eaba93a8713624895d2eda168855ef926316aef1b7f4eeb6b8580048bf2",
+      "galleryPngs": [
+        {
+          "file": "hall-giant-mirror.png",
+          "sha256": "d4590e9e7cea5b7b1f3f961b026414273be2ba15ae9474ed9c49db1e20f22e5d"
+        },
+        {
+          "file": "kitchen-tall-appliances-and-pantry.png",
+          "sha256": "ed8d5efe86254cf19309859fb6fba52b1fd311b598aef857b251d028d42367d5"
+        },
+        {
+          "file": "kitchen-workstation-and-two-dishwashers.png",
+          "sha256": "d17283172c1e6e719836439321446b50b9efb650b4ea8c363d91dbe18a968a3d"
+        }
+      ],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": 132774
+    },
+    {
+      "name": "interior-evidence",
+      "artifactId": 15237002144,
+      "archiveDigest": "sha256:f2426224adad51638ea78450433d0d468c7cf64d7c951ffa1becf3cc7c25ac4d",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T23:07:32Z",
+      "directory": "/tmp/interior-evidence-84",
+      "galleryReport": "interiors-mobile-report.json",
+      "reportSha256": "fd3431cbd7ec24f5753ed3a45575b8f06d7e06adc70b8fb42705edf9dddd0a87",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": null
+    },
+    {
+      "name": "clean-living-evidence-garden",
+      "artifactId": 15237305325,
+      "archiveDigest": "sha256:8734365e9a8e1fce45287b26f5c9c79d78e995f17e2bc4aa5ccfd5612996db7d",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T22:58:20Z",
+      "directory": "/tmp/clean-living-84/garden",
+      "galleryReport": "covers-garden-report.json",
+      "reportSha256": "a5cd5d1ef290be4095d0fcb3bcd4694210e6240d5da5dc63fadc0e512bbf06f6",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": 82723
+    },
+    {
+      "name": "clean-living-evidence-interiors",
+      "artifactId": 15236436313,
+      "archiveDigest": "sha256:15ca2f240f13cb4916cdab2b17bd7916e696ad04eead081ce407db6d0bd9a71e",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T22:59:27Z",
+      "directory": "/tmp/clean-living-84/interiors",
+      "galleryReport": "covers-interiors-report.json",
+      "reportSha256": "8fcb5f512dc84aa8c40f9aa3a3b7d5fc4a9901bb229be66fd70c1f282b207576",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": 147052
+    },
+    {
+      "name": "garden-lab-browser-sternicza",
+      "artifactId": 15236681479,
+      "archiveDigest": "sha256:ae0bcc33a4c7e8c9f180bf37b3e30ddabecf0d28634bfae933df639dffe1a7fa",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T23:02:09Z",
+      "directory": "/tmp/night-evidence-84/sternicza",
+      "galleryReport": "sternicza-browser-report.json",
+      "reportSha256": "234dcba5318631e5746b13cd40f354307a5f904f50ebd9c761598bb6af121183",
+      "galleryPngs": [
+        {
+          "file": "sternicza-night-before-motion.png",
+          "sha256": "0fceaa7526a61f9c80895128ca1ed2db87370cd572b7c183a0a3995ab9579e75"
+        },
+        {
+          "file": "sternicza-night-motion-restored.png",
+          "sha256": "0fceaa7526a61f9c80895128ca1ed2db87370cd572b7c183a0a3995ab9579e75"
+        },
+        {
+          "file": "sternicza-night-motion-target.png",
+          "sha256": "f27422d8e0481a8a7b43ce46954ace4c77bc9aff77835c28c3066016834285ed"
+        }
+      ],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": null
+    },
+    {
+      "name": "garden-lab-browser-nadmorska",
+      "artifactId": 15237021354,
+      "archiveDigest": "sha256:16a62b92c11d34df589ac8098f308bbdee1a345f152600a1ef9eadd2b996ecb7",
+      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
+      "createdAt": "2026-11-27T23:01:21Z",
+      "directory": "/tmp/night-evidence-84/nadmorska",
+      "galleryReport": "nadmorska-browser-report.json",
+      "reportSha256": "1b461d17034d8c2797724e1521baaa7f89978d8ec0377f02f06cff8d1138e6d3",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": [],
+      "elapsedMs": null
+    }
+  ],
+  "nightValidation": {
+    "status": "passed-with-GPU-completion-fences",
+    "motionFrame": 18,
+    "compacted": true,
+    "visibleInstances": 875,
+    "totalInstances": 4829,
+    "orderedBatches": 12,
+    "fixedCanvas": {
+      "width": 982,
+      "height": 572,
+      "cssWidth": 982,
+      "cssHeight": 572
+    },
+    "motionScene": {
+      "width": 824,
+      "height": 480,
+      "pixelRatio": 0.84,
+      "path": "motion-target",
+      "motionSamples": 4,
+      "canvasSamples": 4
+    },
+    "canopyRetainedFraction": 1.0031179138321995,
+    "restorationChangedPixels": 0,
+    "idlePngSha256": "0fceaa7526a61f9c80895128ca1ed2db87370cd572b7c183a0a3995ab9579e75",
+    "idlePngByteIdenticalAcrossRuns": [
+      83,
+      84
+    ],
+    "elapsedMs": 41936,
+    "captures": [
+      {
+        "name": "sternicza-night-before-motion",
+        "status": "passed",
+        "deadlineMs": 119942,
+        "attempts": 1,
+        "readiness": {
+          "frame": 16,
+          "pending": false,
+          "width": 982,
+          "height": 572,
+          "path": "direct",
+          "fence": "signaled",
+          "polls": 1,
+          "restarts": 0,
+          "fencePolls": 7,
+          "fenceElapsedMs": 150.70000000006985,
+          "elapsedMs": 150.80000000004657
+        },
+        "elapsedMs": 433
+      },
+      {
+        "name": "sternicza-night-motion-target",
+        "status": "passed",
+        "deadlineMs": 112490,
+        "attempts": 1,
+        "readiness": {
+          "frame": 18,
+          "pending": false,
+          "width": 982,
+          "height": 572,
+          "path": "motion-target",
+          "fence": "signaled",
+          "polls": 1,
+          "restarts": 0,
+          "fencePolls": 618,
+          "fenceElapsedMs": 15521.599999999977,
+          "elapsedMs": 15521.599999999977
+        },
+        "elapsedMs": 15819
+      },
+      {
+        "name": "sternicza-night-motion-restored",
+        "status": "passed",
+        "deadlineMs": 96445,
+        "attempts": 1,
+        "readiness": {
+          "frame": 20,
+          "pending": false,
+          "width": 982,
+          "height": 572,
+          "path": "direct",
+          "fence": "signaled",
+          "polls": 1,
+          "restarts": 0,
+          "fencePolls": 702,
+          "fenceElapsedMs": 17622.300000000047,
+          "elapsedMs": 17622.300000000047
+        },
+        "elapsedMs": 17869
+      }
+    ]
+  },
+  "nadmorskaValidation": {
+    "status": "passed-with-GPU-completion-fences",
+    "waterGlow": {
+      "width": 982,
+      "height": 573,
+      "aquaPixels": 321076,
+      "brighterAquaPixels": 7890,
+      "brightnessGain": 398069.5
+    },
+    "waterCaptures": [
+      {
+        "name": "nadmorska-water-unlit",
+        "status": "passed",
+        "deadlineMs": 120000,
+        "attempts": 1,
+        "readiness": {
+          "frame": 17,
+          "pending": false,
+          "width": 982,
+          "height": 572,
+          "path": "direct",
+          "fence": "signaled",
+          "polls": 2,
+          "restarts": 0,
+          "fencePolls": 295,
+          "fenceElapsedMs": 7420.100000000006,
+          "elapsedMs": 8492.799999999988
+        },
+        "elapsedMs": 8745
+      },
+      {
+        "name": "nadmorska-water-lit",
+        "status": "passed",
+        "deadlineMs": 120000,
+        "attempts": 1,
+        "readiness": {
+          "frame": 18,
+          "pending": false,
+          "width": 982,
+          "height": 572,
+          "path": "direct",
+          "fence": "signaled",
+          "polls": 1,
+          "restarts": 0,
+          "fencePolls": 135,
+          "fenceElapsedMs": 3373.899999999994,
+          "elapsedMs": 3373.899999999994
+        },
+        "elapsedMs": 3623
+      }
+    ],
+    "sceneCaptureCount": 20,
+    "allSceneFencesSignaled": true
+  },
+  "indexHtmlUnchangedSha256": "cdeb8c1c34bccde976c9a81daa342fc2a8a4327f5928d6301214eeb875e03431"
+}

@@ -1,0 +1,1470 @@
+{
+  "version": "1.40.0",
+  "checks": [
+    "Opening a shared floor plan creates no interior WebGL context or renderer import",
+    "Fullscreen and the unsupported-API fallback expand the existing floor plan, preserve lazy rendering, and restore its size and focus on Escape",
+    "Coastal, Current and Original drawings retain two cars; the independent garage switch remains available on every floor",
+    "Original and renovated plans expose schedules, openings and headroom; the explicit shared two-car switch reveals retained garage conflicts",
+    "Current renders the original dwelling and chosen styles render its renovation on all four floors using the actual shared site context",
+    "All 34 renovations have physical features and varied rendered geometry; Beach House, Coastal and Baltic Dune are distinct, and Current restores the original layout/image",
+    "Room entry opens the full house-and-garden walker, releases the room renderer and responds to WASD and arrow keys",
+    "Interior-to-walking handoff keeps fullscreen; desktop entry and Escape retain the same camera, lens, canvas and keyboard walking mode",
+    "The walking location control reaches basement, living floor, first floor, attic and garden in the same visible scene",
+    "Free exploration is the default; E/Q change height, R follows ground, drag matches the original interior controller, the lens stays fixed, and physical mode remains optional",
+    "Returning to the dollhouse preserves the selected floor, releases walking input and leaves both renderers idle",
+    "Save A, return to B, shared links and local reload preserve the whole-house style and interior navigation settings",
+    "Exports contain the ground soaking bath and a compact 0.90 × 1.80 m upstairs hydromassage bath; both views share the 4 m balcony and all 3 doors",
+    "Changing balcony depth outdoors updates the actual interior plan; restoring marked decks updates both views together",
+    "390 px plan, dollhouse and unified walk fit the viewport; all four direction buttons and the rise, lower and ground-following controls are reachable and move the camera",
+    "Mobile fullscreen keeps the model, location/navigation selectors and all seven walking controls inside the screen, with visible keyboard focus and a stable camera"
+  ],
+  "screenshots": [
+    "first-floor-renovation-plan.png",
+    "basement-conversion-conflicts.png",
+    "ground-hidden-bali-dollhouse.png",
+    "ground-japandi-dollhouse.png",
+    "ground-space-age-dollhouse.png",
+    "ground-coastal-dollhouse.png",
+    "ground-beach-house-dollhouse.png",
+    "ground-nordic-minimal-dollhouse.png",
+    "ground-warm-minimal-dollhouse.png",
+    "ground-organic-limestone-dollhouse.png",
+    "ground-bali-stone-dollhouse.png",
+    "ground-beach-house-living-walk.png",
+    "desktop-fullscreen-walk.png",
+    "first-floor-master-eye-level.png",
+    "first-floor-hydromassage-bath-walk.png",
+    "first-floor-japandi-dollhouse.png",
+    "ground-soaking-bath-eye-level.png",
+    "mobile-fullscreen-plan.png",
+    "mobile-floor-plan.png",
+    "mobile-dollhouse.png",
+    "mobile-house-garden-walk.png",
+    "mobile-fullscreen-walk.png"
+  ],
+  "plans": [
+    {
+      "layout": "existing",
+      "floor": "ground",
+      "zones": 6
+    },
+    {
+      "layout": "existing",
+      "floor": "first",
+      "zones": 7
+    },
+    {
+      "layout": "existing",
+      "floor": "basement",
+      "zones": 5
+    },
+    {
+      "layout": "existing",
+      "floor": "attic",
+      "zones": 1
+    },
+    {
+      "layout": "renovation",
+      "floor": "ground",
+      "zones": 5
+    },
+    {
+      "layout": "renovation",
+      "floor": "first",
+      "zones": 9
+    },
+    {
+      "layout": "renovation",
+      "floor": "basement",
+      "zones": 5
+    },
+    {
+      "layout": "renovation",
+      "floor": "attic",
+      "zones": 1
+    }
+  ],
+  "styles": [
+    {
+      "id": "organic-modern",
+      "meshes": 120,
+      "triangles": 111727,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Sculpted stone furniture bases",
+        "Curved upholstered headboards",
+        "Fluted joinery and travertine feature panels"
+      ]
+    },
+    {
+      "id": "hidden-bali",
+      "meshes": 129,
+      "triangles": 290507,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Teak canopy beds and woven seating",
+        "Cane cabinet doors and timber screens",
+        "Battened ceilings with basket pendants"
+      ],
+      "difference": {
+        "changed": 77482,
+        "fraction": 0.17086956425857358
+      }
+    },
+    {
+      "id": "mediterranean-villa",
+      "meshes": 123,
+      "triangles": 116583,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Built-in plaster seating",
+        "Ironwork beds and dining chairs",
+        "Arched surrounds, exposed beams and terracotta floors"
+      ]
+    },
+    {
+      "id": "modern-minimal",
+      "meshes": 125,
+      "triangles": 91331,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Cantilever chairs and waterfall tables",
+        "Floating platform beds and handleless joinery",
+        "Large wall panels with recessed linear lighting"
+      ]
+    },
+    {
+      "id": "scandinavian",
+      "meshes": 116,
+      "triangles": 106095,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Open timber seating and spindle chairs",
+        "Slatted oak headboards and framed cabinetry",
+        "Painted wall boarding and broad ceiling rafters"
+      ]
+    },
+    {
+      "id": "japandi",
+      "meshes": 123,
+      "triangles": 125427,
+      "furnitureCount": 39,
+      "expectedFurnitureCount": 39,
+      "features": [
+        "Low timber platform furniture",
+        "Shoji-panel doors and built-in wardrobes",
+        "Paired ceiling battens and paper lanterns"
+      ],
+      "difference": {
+        "changed": 65785,
+        "fraction": 0.1450743951466181
+      }
+    },
+    {
+      "id": "organic-scandinavian",
+      "meshes": 125,
+      "triangles": 123687,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Bentwood dining chairs and runner sofas",
+        "Curved headboards and ribbed joinery",
+        "Herringbone floors and soft mineral surfaces"
+      ]
+    },
+    {
+      "id": "organic-japandi",
+      "meshes": 121,
+      "triangles": 133787,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Low asymmetric stone seating bases",
+        "Wide walnut platforms and slatted storage",
+        "Clay walls with widely spaced timber screens"
+      ]
+    },
+    {
+      "id": "space-age",
+      "meshes": 120,
+      "triangles": 84447,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Moulded pod sofas and tulip pedestal chairs",
+        "Capsule beds and rounded cabinetry",
+        "Porthole feature panels and suspended light rings"
+      ],
+      "difference": {
+        "changed": 71272,
+        "fraction": 0.15717477070593242
+      }
+    },
+    {
+      "id": "party-club",
+      "meshes": 127,
+      "triangles": 117999,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Channel-tufted banquettes and headboards",
+        "Chrome-based tables with glossy fitted joinery",
+        "Upholstered wall channels and luminous ceiling coves"
+      ]
+    },
+    {
+      "id": "baltic-dune",
+      "meshes": 114,
+      "triangles": 126623,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Canvas sling chairs and open timber seating",
+        "Woven headboards with weathered-board joinery",
+        "Limewashed walls and exposed beach-house beams"
+      ]
+    },
+    {
+      "id": "coastal",
+      "meshes": 126,
+      "triangles": 148823,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Tailored slipcover seating and cross-back cane chairs",
+        "Louvred white joinery and beadboard beds",
+        "Painted board ceilings with linen drum pendants"
+      ],
+      "difference": {
+        "changed": 68229,
+        "fraction": 0.15046410133706173
+      }
+    },
+    {
+      "id": "beach-house",
+      "meshes": 130,
+      "triangles": 231871,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Relaxed linen daybeds and rope-backed chairs",
+        "Low linen beds, bleached oak and cane storage",
+        "Soft limestone tables, plaster niches and woven drum lights"
+      ],
+      "difference": {
+        "changed": 72812,
+        "fraction": 0.1605709030845262
+      }
+    },
+    {
+      "id": "gdansk-brick",
+      "meshes": 123,
+      "triangles": 116411,
+      "furnitureCount": 39,
+      "expectedFurnitureCount": 39,
+      "features": [
+        "Leather cushions on metal frames",
+        "Oak trestle tables and mission headboards",
+        "Clinker feature walls and exposed steel ceiling channels"
+      ]
+    },
+    {
+      "id": "danish-midcentury",
+      "meshes": 113,
+      "triangles": 115903,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Tapered teak frames and wishbone chairs",
+        "Raised upholstered beds and sliding-panel cabinetry",
+        "Bookmatched teak walls and spun saucer pendants"
+      ]
+    },
+    {
+      "id": "finnish-sauna",
+      "meshes": 114,
+      "triangles": 151735,
+      "furnitureCount": 39,
+      "expectedFurnitureCount": 39,
+      "features": [
+        "Timber bench sofas and slatted dining seats",
+        "Low board headboards and ventilated joinery",
+        "Continuous sauna-board wall and ceiling linings"
+      ]
+    },
+    {
+      "id": "riviera-deco",
+      "meshes": 125,
+      "triangles": 128375,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Scalloped chairs and stepped stone table bases",
+        "Fan headboards and brass-inlaid joinery",
+        "Stepped wall mouldings and tiered pendant lights"
+      ]
+    },
+    {
+      "id": "arts-and-crafts",
+      "meshes": 130,
+      "triangles": 102631,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Mission oak frames with visible timber rails",
+        "Cross-braced tables and framed cabinet doors",
+        "Panelled wainscoting and coffered ceilings"
+      ]
+    },
+    {
+      "id": "palm-springs",
+      "meshes": 118,
+      "triangles": 129715,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Low sling seating and open wire dining chairs",
+        "Cane headboards and airy slatted cabinetry",
+        "Decorative breeze-block panels and globe lights"
+      ]
+    },
+    {
+      "id": "desert-modern",
+      "meshes": 115,
+      "triangles": 86855,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Monolithic stone tables and built-in block seating",
+        "Deep plinth beds and flush recessed joinery",
+        "Layered earth feature walls and clay pendants"
+      ]
+    },
+    {
+      "id": "alpine-lodge",
+      "meshes": 124,
+      "triangles": 106587,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Cross-braced timber sofas, tables and beds",
+        "Substantial framed oak storage",
+        "Broad timber linings and exposed ceiling beams"
+      ]
+    },
+    {
+      "id": "industrial-loft",
+      "meshes": 133,
+      "triangles": 142227,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Black steel and leather furniture",
+        "Workshop tables and steel-frame beds",
+        "Concrete feature panels, exposed girders and cage pendants"
+      ]
+    },
+    {
+      "id": "nordic-minimal",
+      "meshes": 127,
+      "triangles": 83303,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Slender open sofas and spindle dining chairs",
+        "Floating beds with flush pale-ash storage",
+        "Quiet white boarding, honed stone and small bell lights"
+      ],
+      "difference": {
+        "changed": 63396,
+        "fraction": 0.13980597939826708
+      }
+    },
+    {
+      "id": "nordic-blackwood",
+      "meshes": 127,
+      "triangles": 96959,
+      "furnitureCount": 39,
+      "expectedFurnitureCount": 39,
+      "features": [
+        "Low cedar platforms and slatted dining furniture",
+        "Dark flush storage beside low timber headboards",
+        "Warm cedar feature walls with restrained recessed ceilings"
+      ]
+    },
+    {
+      "id": "warm-minimal",
+      "meshes": 131,
+      "triangles": 110959,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Low linen sofas and oak wishbone chairs",
+        "Waterfall dining table and flush oak storage",
+        "Wide upholstered beds, cream plaster and diffused linen lights"
+      ],
+      "difference": {
+        "changed": 67578,
+        "fraction": 0.149028463558838
+      }
+    },
+    {
+      "id": "soft-minimal",
+      "meshes": 126,
+      "triangles": 101111,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Soft pebble seating and curved dining chairs",
+        "Oval limestone tables with flush pale joinery",
+        "Curved headboards, smooth floors and diffused ceiling coves"
+      ]
+    },
+    {
+      "id": "belgian-minimal",
+      "meshes": 123,
+      "triangles": 122555,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Relaxed slipcovered sofas and substantial stone tables",
+        "Deep plinth beds with simple framed oak storage",
+        "Textured mineral feature walls, wide oak floors and linen lights"
+      ]
+    },
+    {
+      "id": "monolithic-white",
+      "meshes": 125,
+      "triangles": 102115,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Low block seating with cantilever dining chairs",
+        "Waterfall tables, floating beds and flush white joinery",
+        "Continuous pale floors, broad panels and recessed linear lights"
+      ]
+    },
+    {
+      "id": "glass-stone-modern",
+      "meshes": 124,
+      "triangles": 103715,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Open sled sofas, cantilever chairs and metal-based tables",
+        "Wide floating platforms and raised walnut cabinetry",
+        "Large mineral panels with fine linear lighting"
+      ]
+    },
+    {
+      "id": "sculptural-concrete",
+      "meshes": 134,
+      "triangles": 105455,
+      "furnitureCount": 39,
+      "expectedFurnitureCount": 39,
+      "features": [
+        "Monolithic low seating with warm bentwood chairs",
+        "Stone tables and low walnut platform beds",
+        "Board-marked concrete walls and flush joinery under shallow saucers"
+      ]
+    },
+    {
+      "id": "organic-limestone",
+      "meshes": 121,
+      "triangles": 114175,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Low rounded seating with oval limestone tables",
+        "Sculpted upholstered beds and softly fluted oak storage",
+        "Honed stone panels, warm oak floors and oval diffused lights"
+      ],
+      "difference": {
+        "changed": 69274,
+        "fraction": 0.1527686197368218
+      }
+    },
+    {
+      "id": "japanese-minimal",
+      "meshes": 128,
+      "triangles": 151779,
+      "furnitureCount": 39,
+      "expectedFurnitureCount": 39,
+      "features": [
+        "Low oak platforms and slender spindle chairs",
+        "Wide platform beds with simple slatted storage",
+        "Quiet shoji feature panels, paired battens and paper lanterns"
+      ]
+    },
+    {
+      "id": "bali-stone",
+      "meshes": 130,
+      "triangles": 263003,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Built-in mineral seating, cane chairs and boulder tables",
+        "Teak canopy beds and woven cabinet doors",
+        "Deep timber screens with honed spa stone and basket lights"
+      ],
+      "difference": {
+        "changed": 72315,
+        "fraction": 0.15947487854416184
+      }
+    },
+    {
+      "id": "tropical-minimal",
+      "meshes": 126,
+      "triangles": 162179,
+      "furnitureCount": 40,
+      "expectedFurnitureCount": 40,
+      "features": [
+        "Low linen platforms with open rope-backed chairs",
+        "Teak tables, floating beds and slatted storage",
+        "Sparse timber screens, pale plaster and shaded woven drum lights"
+      ]
+    }
+  ],
+  "errors": [],
+  "fullscreen": {
+    "plan": {
+      "before": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 94,
+          "width": 1240,
+          "height": 774
+        },
+        "surface": {
+          "x": 293.078125,
+          "y": 283.421875,
+          "width": 922.921875,
+          "height": 436.3125
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      },
+      "expanded": {
+        "mode": "native",
+        "target": "interior-host",
+        "native": true,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1240,
+          "height": 868
+        },
+        "surface": {
+          "x": 293.078125,
+          "y": 189.421875,
+          "width": 922.921875,
+          "height": 530.3125
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      },
+      "restored": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 94,
+          "width": 1240,
+          "height": 774
+        },
+        "surface": {
+          "x": 293.078125,
+          "y": 283.421875,
+          "width": 922.921875,
+          "height": 436.3125
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      }
+    },
+    "fallback": {
+      "before": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 94,
+          "width": 1240,
+          "height": 774
+        },
+        "surface": {
+          "x": 293.078125,
+          "y": 283.421875,
+          "width": 922.921875,
+          "height": 436.3125
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      },
+      "expanded": {
+        "mode": "expanded",
+        "target": "interior-host",
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1240,
+          "height": 868
+        },
+        "surface": {
+          "x": 293.078125,
+          "y": 189.421875,
+          "width": 922.921875,
+          "height": 530.3125
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      },
+      "restored": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 94,
+          "width": 1240,
+          "height": 774
+        },
+        "surface": {
+          "x": 293.078125,
+          "y": 283.421875,
+          "width": 922.921875,
+          "height": 436.3125
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      }
+    },
+    "handoff": {
+      "before": {
+        "mode": "native",
+        "native": true
+      },
+      "after": {
+        "mode": "native",
+        "native": true
+      }
+    },
+    "walk": {
+      "before": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 416,
+          "y": 20.0625,
+          "width": 794,
+          "height": 991.640625
+        },
+        "surface": {
+          "x": 417,
+          "y": 327.8125,
+          "width": 792,
+          "height": 477.390625
+        },
+        "workspaceInert": false,
+        "frames": 6,
+        "pose": {
+          "walkPosition": "4.899,5.208,17.389",
+          "walkAltitude": "5.208",
+          "walkYaw": "-127.9243",
+          "walkPitch": "-8.9259",
+          "walkFov": "70",
+          "walkFloor": "ground",
+          "walkNavigation": "free",
+          "walkFloating": "false"
+        },
+        "focusInModel": true
+      },
+      "expanded": {
+        "mode": "native",
+        "target": "viewer",
+        "native": true,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1240,
+          "height": 868
+        },
+        "surface": {
+          "x": 0,
+          "y": 216,
+          "width": 1240,
+          "height": 652
+        },
+        "workspaceInert": false,
+        "frames": 7,
+        "pose": {
+          "walkPosition": "4.899,5.208,17.389",
+          "walkAltitude": "5.208",
+          "walkYaw": "-127.9243",
+          "walkPitch": "-8.9259",
+          "walkFov": "70",
+          "walkFloor": "ground",
+          "walkNavigation": "free",
+          "walkFloating": "false"
+        },
+        "focusInModel": true
+      },
+      "restored": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 1240,
+          "height": 868
+        },
+        "bounds": {
+          "x": 416,
+          "y": 20.0625,
+          "width": 794,
+          "height": 991.640625
+        },
+        "surface": {
+          "x": 417,
+          "y": 327.8125,
+          "width": 792,
+          "height": 477.390625
+        },
+        "workspaceInert": false,
+        "frames": 9,
+        "pose": {
+          "walkPosition": "4.899,5.208,17.389",
+          "walkAltitude": "5.208",
+          "walkYaw": "-127.9243",
+          "walkPitch": "-8.9259",
+          "walkFov": "70",
+          "walkFloor": "ground",
+          "walkNavigation": "free",
+          "walkFloating": "false"
+        },
+        "focusInModel": true
+      }
+    },
+    "mobilePlan": {
+      "before": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": {
+          "x": 0,
+          "y": 101,
+          "width": 390,
+          "height": 743
+        },
+        "surface": {
+          "x": 2,
+          "y": 290.1875,
+          "width": 386,
+          "height": 428.625
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      },
+      "expanded": {
+        "mode": "native",
+        "target": "interior-host",
+        "native": true,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844
+        },
+        "surface": {
+          "x": 2,
+          "y": 189.1875,
+          "width": 386,
+          "height": 529.625
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      },
+      "restored": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": {
+          "x": 0,
+          "y": 101,
+          "width": 390,
+          "height": 743
+        },
+        "surface": {
+          "x": 2,
+          "y": 290.1875,
+          "width": 386,
+          "height": 428.625
+        },
+        "workspaceInert": true,
+        "frames": 0,
+        "pose": {},
+        "focusInModel": true
+      }
+    },
+    "mobileWalk": {
+      "before": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": {
+          "x": 14,
+          "y": -45.21875,
+          "width": 362,
+          "height": 1156.28125
+        },
+        "surface": {
+          "x": 15,
+          "y": 439.15625,
+          "width": 360,
+          "height": 447.3125
+        },
+        "workspaceInert": false,
+        "frames": 11,
+        "pose": {
+          "walkPosition": "4.897,5.208,17.462",
+          "walkAltitude": "5.208",
+          "walkYaw": "-127.9243",
+          "walkPitch": "-8.9259",
+          "walkFov": "70",
+          "walkFloor": "ground",
+          "walkNavigation": "free",
+          "walkFloating": "false"
+        },
+        "focusInModel": true
+      },
+      "expanded": {
+        "mode": "native",
+        "target": "viewer",
+        "native": true,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844
+        },
+        "surface": {
+          "x": 0,
+          "y": 261,
+          "width": 390,
+          "height": 583
+        },
+        "workspaceInert": false,
+        "frames": 12,
+        "pose": {
+          "walkPosition": "4.897,5.208,17.462",
+          "walkAltitude": "5.208",
+          "walkYaw": "-127.9243",
+          "walkPitch": "-8.9259",
+          "walkFov": "70",
+          "walkFloor": "ground",
+          "walkNavigation": "free",
+          "walkFloating": "false"
+        },
+        "focusInModel": true
+      },
+      "restored": {
+        "mode": null,
+        "target": null,
+        "native": false,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": {
+          "x": 14,
+          "y": -45.21875,
+          "width": 362,
+          "height": 1156.28125
+        },
+        "surface": {
+          "x": 15,
+          "y": 439.15625,
+          "width": 360,
+          "height": 447.3125
+        },
+        "workspaceInert": false,
+        "frames": 14,
+        "pose": {
+          "walkPosition": "4.897,5.208,17.462",
+          "walkAltitude": "5.208",
+          "walkYaw": "-127.9243",
+          "walkPitch": "-8.9259",
+          "walkFov": "70",
+          "walkFloor": "ground",
+          "walkNavigation": "free",
+          "walkFloating": "false"
+        },
+        "focusInModel": true
+      }
+    }
+  },
+  "models": [
+    {
+      "floor": "ground",
+      "layout": "existing",
+      "meshes": 63,
+      "triangles": 11032
+    },
+    {
+      "floor": "first",
+      "layout": "existing",
+      "meshes": 67,
+      "triangles": 11427
+    },
+    {
+      "floor": "basement",
+      "layout": "existing",
+      "meshes": 52,
+      "triangles": 2406
+    },
+    {
+      "floor": "attic",
+      "layout": "existing",
+      "meshes": 32,
+      "triangles": 2546
+    },
+    {
+      "floor": "ground",
+      "layout": "renovation",
+      "meshes": 129,
+      "triangles": 290507
+    },
+    {
+      "floor": "first",
+      "layout": "renovation",
+      "meshes": 137,
+      "triangles": 312711
+    },
+    {
+      "floor": "basement",
+      "layout": "renovation",
+      "meshes": 49,
+      "triangles": 4502
+    },
+    {
+      "floor": "attic",
+      "layout": "renovation",
+      "meshes": 37,
+      "triangles": 8664
+    }
+  ],
+  "restoration": {
+    "changed": 0,
+    "fraction": 0
+  },
+  "walking": {
+    "ground": {
+      "floor": "ground",
+      "position": [
+        9.537,
+        5.208,
+        13.605
+      ]
+    },
+    "keyboardDistance": 1.9325101655355077,
+    "basement": {
+      "floor": "basement",
+      "position": [
+        9.486,
+        3.208,
+        9.722
+      ]
+    },
+    "attic": {
+      "floor": "attic",
+      "position": [
+        14.426,
+        10.958,
+        11.764
+      ]
+    },
+    "first": {
+      "floor": "first",
+      "position": [
+        10.774,
+        8.258,
+        17.441
+      ]
+    },
+    "garden": {
+      "floor": "garden",
+      "position": [
+        13.378,
+        4.616,
+        23.917
+      ]
+    },
+    "comfort": {
+      "beforeRise": 4.616,
+      "beforeHeightControls": {
+        "walk": {
+          "engine": "three.js r160",
+          "renderPending": "false",
+          "walkFloor": "garden",
+          "walkPosition": "13.378,4.616,23.917",
+          "walkNavigation": "free",
+          "walkFloating": "false",
+          "walkSwimming": "false",
+          "walkAltitude": "4.616",
+          "walkYaw": "-52.4345",
+          "walkPitch": "-9.7241",
+          "walkFov": "70",
+          "sceneBufferWidth": "792",
+          "sceneBufferHeight": "477",
+          "scenePixelRatio": "1",
+          "renderPath": "ao-composer",
+          "motionSupported": "true",
+          "motionSamples": "0",
+          "canvasSamples": "4",
+          "renderedFrameCount": "16",
+          "renderedWalkPosition": "13.378,4.616,23.917"
+        },
+        "render": {
+          "frames": "16",
+          "shadowUpdates": "4",
+          "calls": "182",
+          "triangles": "940481",
+          "geometries": "881",
+          "textures": "83",
+          "pixelRatio": "1",
+          "bufferWidth": "792",
+          "bufferHeight": "477",
+          "sceneBufferWidth": "792",
+          "sceneBufferHeight": "477",
+          "scenePixelRatio": "1",
+          "motionSamples": "0",
+          "canvasSamples": "4",
+          "shadowSize": "2048",
+          "houseRenovationParts": "976",
+          "houseRenovationProjection": "0.27",
+          "houseOpeningCount": "25",
+          "gardenKitchens": "0",
+          "gardenPlantingBeds": "2",
+          "garageVehicles": "0",
+          "canvasWidth": "792",
+          "canvasHeight": "477",
+          "renderPath": "ao-composer",
+          "motionSupported": "true",
+          "motionUnsupportedReason": "",
+          "renderedStyle": "japandi",
+          "gardenScheme": "Pool and sheltered retreat",
+          "windowPattern": "basement-left-facade-0:0.92:0.51:2:0|basement-left-facade-1:0.92:0.51:2:0|basement-right-facade-0:0.92:0.51:2:0|basement-right-facade-1:0.92:0.51:2:0|ground-left-facade-0:2.42:1.78:2:0|ground-left-facade-1:2.3:1.46:1:0|ground-right-facade-0:2.42:1.78:2:0|ground-right-facade-1:2.3:1.44:1:0|ground-street-facade-2:2.3:1.44:1:0|ground-street-bay-screen-0:1.435:1.78:2:0|ground-street-bay-screen-1:0.99:1.78:2:0|rear-hst-0:10.36:2.5:3:0|first-left-facade-0:2.42:1.78:2:0|first-left-facade-1:1.728:1.72:2:0|first-right-facade-0:1.945:1.78:2:0|first-right-facade-1:0.96:1.3:1:0|first-right-facade-2:1.46:1.44:1:0|first-street-left-0:2.42:1.78:2:0|first-street-right-0:2.3:1.44:1:0|first-bay-left-0:0.75:1.78:2:0|first-bay-right-0:0.75:1.78:2:0|first-bay-front-0:2.42:1.78:2:0|rear-balcony-room-0:2.42:2.03:3:0|rear-balcony-room-1:2.1:2.03:3:0|rear-balcony-room-2:2:2.03:3:0",
+          "drawEnabled": "true",
+          "canvasIntersecting": "true",
+          "presentationVisible": "true",
+          "renderPending": "false",
+          "renderer": "webgl",
+          "motionActive": "false",
+          "contactShading": "true",
+          "interacting": "false",
+          "toneMapping": "AgX",
+          "poolReflections": "false",
+          "surfaceAssetsRequested": "54",
+          "surfaceAssetsLoaded": "54",
+          "surfaceAssetsFailed": "0",
+          "contextFacades": "{\"building-2:front:0\":2,\"building-2:front:1\":6,\"building-2:rear:0\":3,\"building-2:rear:1\":3,\"building-3:front:0\":1,\"building-3:front:1\":1,\"building-3:rear:0\":1,\"building-3:rear:1\":2,\"building-5:rear:0\":3,\"building-5:rear:1\":2,\"building-6:rear:0\":3,\"building-6:rear:1\":3,\"building-7:rear:0\":3,\"building-7:rear:1\":2,\"building-8:front:0\":3,\"building-8:front:1\":3,\"building-8:front:2\":3,\"building-9:front:0\":4,\"building-9:front:1\":4,\"building-9:front:2\":4,\"building-9:front:3\":4,\"building-9:front:4\":4,\"building-9:rear:0\":3,\"building-9:rear:1\":4,\"building-9:rear:2\":4,\"building-9:rear:3\":4,\"building-9:rear:4\":4,\"building-9:east:0\":6,\"building-9:east:1\":6,\"building-9:east:2\":6,\"building-9:east:3\":6,\"building-9:east:4\":6,\"building-9:east:-1\":3,\"building-9:west:0\":6,\"building-9:west:1\":6,\"building-9:west:2\":6,\"building-9:west:3\":6,\"building-9:west:4\":6,\"building-10:front:0\":3,\"building-10:front:1\":3,\"building-10:front:2\":1,\"building-15:front:0\":4,\"building-15:front:1\":4,\"building-15:front:2\":4,\"building-15:front:3\":4,\"building-15:front:4\":4,\"building-15:rear:0\":3,\"building-15:rear:1\":4,\"building-15:rear:2\":4,\"building-15:rear:3\":4,\"building-15:rear:4\":4,\"building-15:east:0\":6,\"building-15:east:1\":6,\"building-15:east:2\":6,\"building-15:east:3\":6,\"building-15:east:4\":6,\"building-15:east:-1\":3,\"building-15:west:0\":6,\"building-15:west:1\":6,\"building-15:west:2\":6,\"building-15:west:3\":6,\"building-15:west:4\":6,\"building-19:front:0\":3,\"building-19:front:1\":3,\"building-19:front:2\":3,\"building-29:front:0\":4,\"building-29:front:1\":4,\"building-29:front:2\":4,\"building-29:front:3\":4,\"building-29:front:4\":4,\"building-29:rear:0\":3,\"building-29:rear:1\":4,\"building-29:rear:2\":4,\"building-29:rear:3\":4,\"building-29:rear:4\":4,\"building-29:east:0\":6,\"building-29:east:1\":6,\"building-29:east:2\":6,\"building-29:east:3\":6,\"building-29:east:4\":6,\"building-29:east:-1\":3,\"building-29:west:0\":6,\"building-29:west:1\":6,\"building-29:west:2\":6,\"building-29:west:3\":6,\"building-29:west:4\":6}",
+          "contextBalconies": "{\"building-2:rear:projecting\":2,\"building-3:rear:recessed\":1,\"building-5:rear:recessed\":1,\"building-7:rear:recessed\":1,\"building-9:east:projecting\":15,\"building-9:west:projecting\":15,\"building-15:east:projecting\":15,\"building-15:west:projecting\":15,\"building-29:east:projecting\":15,\"building-29:west:projecting\":15}",
+          "contextEnvelopes": "{\"building-2\":{\"wallTriangles\":116,\"roofTriangles\":306,\"features\":{}},\"building-3\":{\"wallTriangles\":102,\"roofTriangles\":239,\"features\":{}},\"building-4\":{\"wallTriangles\":330,\"roofTriangles\":477,\"features\":{}},\"building-5\":{\"wallTriangles\":112,\"roofTriangles\":256,\"features\":{}},\"building-6\":{\"wallTriangles\":112,\"roofTriangles\":258,\"features\":{}},\"building-7\":{\"wallTriangles\":112,\"roofTriangles\":256,\"features\":{}},\"building-8\":{\"wallTriangles\":118,\"roofTriangles\":307,\"features\":{}},\"building-9\":{\"wallTriangles\":8,\"roofTriangles\":104,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":3}},\"building-10\":{\"wallTriangles\":124,\"roofTriangles\":342,\"features\":{}},\"building-15\":{\"wallTriangles\":8,\"roofTriangles\":144,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":7}},\"building-19\":{\"wallTriangles\":120,\"roofTriangles\":346,\"features\":{}},\"building-29\":{\"wallTriangles\":8,\"roofTriangles\":144,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":7}}}",
+          "boundaryFence": "{\"enabled\":true,\"height\":2.2,\"styleId\":\"japandi\",\"members\":905,\"meshes\":3,\"gates\":[{\"id\":\"front-pedestrian-opening\",\"open\":true,\"width\":1.1999999999999993},{\"id\":\"front-vehicle-opening\",\"open\":true,\"width\":4}]}",
+          "gardenPaths": "null",
+          "coldPlunge": "{\"sunken\":false,\"groundZ\":3.436306555301225,\"baseZ\":3.436306555301225,\"rimZ\":4.1863065553012255,\"padTopZ\":3.456306555301225,\"waterZ\":4.116306555301225,\"bottomZ\":3.016306555301225,\"steps\":[{\"x\":6.6,\"y\":34.05,\"width\":1,\"length\":0.3,\"baseZ\":2.9800319664492485,\"topZ\":3.290237221884902},{\"x\":6.6,\"y\":34.349999999999994,\"width\":1,\"length\":0.3,\"baseZ\":3.0095894775140044,\"topZ\":3.469451088568167},{\"x\":6.6,\"y\":34.65,\"width\":1,\"length\":0.3,\"baseZ\":3.0430873992773746,\"topZ\":3.6486649552514314},{\"x\":6.6,\"y\":34.949999999999996,\"width\":1,\"length\":0.3,\"baseZ\":3.0804661715822292,\"topZ\":3.827878821934696},{\"x\":6.6,\"y\":35.25,\"width\":1,\"length\":0.3,\"baseZ\":3.112519979420991,\"topZ\":4.007092688617961}],\"padBaseZ\":3.116185339875668,\"entryGroundZ\":3.1110233552016373,\"entryRiser\":0.1792138666832647}",
+          "gardenLighting": "{\"fixtures\":22,\"lights\":22,\"routeFixtures\":0,\"gateFixtures\":2,\"activeRouteLights\":0,\"routeShadowMaps\":0}",
+          "spaCovers": "{\"moving\":0,\"covers\":[]}",
+          "slidingDoors": "{\"terrace\":0,\"upper\":1}",
+          "interiorDimensions": "{\"enabled\":true,\"total\":116,\"visible\":0,\"floor\":null,\"roomId\":null,\"layouts\":14,\"projectionFrames\":1,\"refreshIntervalMs\":100,\"occlusion\":{\"meshes\":144,\"queries\":42,\"triangleTests\":3712,\"boxTests\":7628,\"method\":\"cached-triangle-bvh\"}}",
+          "gardenDimensions": "{\"total\":67,\"visible\":10,\"layouts\":1,\"projectionFrames\":0,\"refreshIntervalMs\":100,\"occlusion\":{\"meshes\":703,\"queries\":11,\"triangleTests\":57,\"boxTests\":7688,\"method\":\"cached-triangle-bvh\"}}",
+          "equipmentLabels": "{\"enabled\":false,\"total\":0,\"visible\":0,\"floor\":null,\"layoutPasses\":0,\"occlusion\":null}",
+          "livingCinema": "null",
+          "luxuryKitchen": "{\"kind\":\"fitted-luxury-kitchen\",\"schedule\":[{\"id\":\"kitchen-dishwasher-1\",\"label\":\"Dishwasher 1 · 60 cm\",\"width\":0.6,\"depth\":0.65,\"height\":0.845,\"detail\":\"Fully integrated XXL AutoDos; 600 mm clear niche beside the sink.\",\"reference\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\",\"hidden\":true,\"category\":\"appliance\"},{\"id\":\"kitchen-dishwasher-2\",\"label\":\"Dishwasher 2 · 60 cm\",\"width\":0.6,\"depth\":0.65,\"height\":0.845,\"detail\":\"Second full-size XXL dishwasher; the pair fits the measured wet run.\",\"reference\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\",\"hidden\":true,\"category\":\"appliance\"},{\"id\":\"sink-base\",\"label\":\"Workstation sink and waste · 101 cm\",\"width\":1.01,\"depth\":0.65,\"height\":0.9,\"detail\":\"860 × 510 mm two-bowl workstation sink; waste-sorting pull-out and cleaning storage below.\",\"reference\":\"Franke Box Center BWX 220-54-27\",\"url\":\"https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html\",\"hidden\":true,\"category\":\"worktop\"},{\"id\":\"kitchen-steam-oven\",\"label\":\"Combi-steam oven · 67 L\",\"width\":0.6,\"depth\":0.63,\"height\":0.596,\"detail\":\"Plumbed Miele Diamond oven with HydroClean, installed in a 600 mm tower.\",\"reference\":\"Miele DGC 7865 HC Pro\",\"url\":\"https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-speed-oven\",\"label\":\"Microwave / speed oven · 43 L\",\"width\":0.6,\"depth\":0.63,\"height\":0.456,\"detail\":\"Separate compact oven with 1000 W microwave above the combi-steam oven.\",\"reference\":\"Miele H 7840 BM\",\"url\":\"https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-fridge\",\"label\":\"Four-door fridge-freezer · 96 cm bay\",\"width\":0.96,\"depth\":0.79,\"height\":1.83,\"detail\":\"905 mm product in a wider ventilated bay; 731 mm body depth plus rear allowance. Final hinge clearances follow its installation drawing.\",\"reference\":\"Bosch KFN96AXEA four-door fridge-freezer\",\"url\":\"https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-wine-cooler\",\"label\":\"Wine cooler · 60 cm\",\"width\":0.6,\"depth\":0.85,\"height\":0.816,\"detail\":\"Undercounter two-zone cooler in the peninsula; modeled grille gives at least 430 cm² free ventilation.\",\"reference\":\"Miele KWT 6322 UG-1\",\"url\":\"https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-nutrition-pantry\",\"label\":\"Hidden nutrition pantry · 55 cm\",\"width\":0.55,\"depth\":0.63,\"height\":2.7,\"detail\":\"Closed, labelled storage for powder tubs, supplements, a blender and compact appliances; deep pull-outs keep the contents reachable.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"kitchen-pantry-corner\",\"label\":\"Full-height corner pantry · 55 cm\",\"width\":0.55,\"depth\":0.63,\"height\":2.7,\"detail\":\"Fills the retained corner with bulk-food and occasional-appliance storage.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"peninsula-drawers\",\"label\":\"Peninsula drawers · 90 cm\",\"width\":0.9,\"depth\":0.85,\"height\":0.9,\"detail\":\"Cutlery above, crockery in the middle and deep pan drawers below.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"cooking-corner\",\"label\":\"Corner pull-out · 120 cm\",\"width\":1.2,\"depth\":0.62,\"height\":0.9,\"detail\":\"A 520 mm access front serves swing-out baskets in the blind corner.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"cooking-drawers\",\"label\":\"Cooking and preparation drawers · 180 cm\",\"width\":1.8,\"depth\":0.62,\"height\":0.9,\"detail\":\"Two 900 mm drawer stacks divide utensils, boards, pots and food containers; 410 mm spice pull-out alongside.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"hob\",\"label\":\"Induction cooking · 80 cm\",\"width\":0.8,\"depth\":0.52,\"height\":0.03,\"detail\":\"80 cm induction allowance with flush glass and concealed extraction; final appliance and duct route remain selectable.\",\"reference\":null,\"url\":null,\"hidden\":false,\"category\":\"worktop\"},{\"id\":\"kitchen-hall-selfie-mirror\",\"label\":\"Hall-facing mirror · 255 × 234 cm\",\"width\":2.55,\"depth\":0.026,\"height\":2.34,\"detail\":\"Continuous full-height mirror on the stair-facing kitchen wall, clear of the chimney enclosure and entry.\",\"reference\":null,\"url\":null,\"hidden\":false,\"category\":\"mirror\"}],\"modules\":[{\"id\":\"wet-end-front\",\"run\":\"sink\",\"width\":0.02,\"kind\":\"end-panel\"},{\"id\":\"dishwasher-1\",\"run\":\"sink\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Main dishwasher\"},{\"id\":\"sink-base\",\"run\":\"sink\",\"width\":1.01,\"kind\":\"cabinet\",\"sideThickness\":0.018,\"assignment\":\"Workstation sink, waste sorting and cleaning pull-outs\"},{\"id\":\"dishwasher-2\",\"run\":\"sink\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Second dishwasher\"},{\"id\":\"wet-end-rear\",\"run\":\"sink\",\"width\":0.02,\"kind\":\"end-panel\"},{\"id\":\"peninsula-corner\",\"run\":\"peninsula\",\"width\":0.65,\"kind\":\"blind-corner\",\"assignment\":\"Access from dining side for serving dishes\"},{\"id\":\"peninsula-drawers\",\"run\":\"peninsula\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Cutlery top, daily crockery middle, deep pans below\"},{\"id\":\"wine-cooler\",\"run\":\"peninsula\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Two-zone wine storage with front ventilation\"},{\"id\":\"peninsula-end\",\"run\":\"peninsula\",\"width\":0.05,\"kind\":\"end-panel\"},{\"id\":\"cooking-corner\",\"run\":\"cooking\",\"width\":1.2,\"kind\":\"blind-corner\",\"assignment\":\"Swing-out corner baskets through a 520 mm access front\"},{\"id\":\"hob-drawers\",\"run\":\"cooking\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Utensils and pots below the induction hob\"},{\"id\":\"preparation-drawers\",\"run\":\"cooking\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Knives, boards, food containers and pans\"},{\"id\":\"spice-pullout\",\"run\":\"cooking\",\"width\":0.41,\"kind\":\"pull-out\",\"assignment\":\"Oils, spices and tall bottles\"},{\"id\":\"fridge-bay\",\"run\":\"tall\",\"width\":0.96,\"kind\":\"appliance-bay\",\"assignment\":\"Four-door fridge-freezer with side and rear allowances\"},{\"id\":\"oven-tower\",\"run\":\"tall\",\"width\":0.6,\"kind\":\"tower\",\"assignment\":\"Full combi-steam oven and separate microwave/speed oven\"},{\"id\":\"nutrition-pantry\",\"run\":\"tall\",\"width\":0.55,\"kind\":\"pantry\",\"assignment\":\"Hidden protein powders, supplements and small appliances\"},{\"id\":\"pantry-corner\",\"run\":\"tall\",\"width\":0.55,\"kind\":\"corner-pantry\",\"assignment\":\"Filled corner for bulk supplies and occasional appliances\"}],\"equipment\":{\"dishwasher\":{\"name\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"width\":0.598,\"height\":0.845,\"depth\":0.55,\"nicheWidth\":0.6,\"nicheHeight\":[0.845,0.91],\"nicheDepth\":0.55,\"openDepth\":1.205,\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\"},\"steamOven\":{\"name\":\"Miele DGC 7865 HC Pro\",\"width\":0.595,\"height\":0.596,\"depth\":0.567,\"capacityLitres\":67,\"nicheWidth\":[0.56,0.568],\"nicheHeight\":[0.59,0.595],\"nicheDepth\":0.55,\"plumbed\":true,\"url\":\"https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack\"},\"speedOven\":{\"name\":\"Miele H 7840 BM\",\"width\":0.595,\"height\":0.456,\"depth\":0.563,\"capacityLitres\":43,\"microwaveWatts\":1000,\"nicheWidth\":[0.56,0.568],\"nicheHeight\":[0.45,0.452],\"nicheDepth\":0.55,\"url\":\"https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal\"},\"fridge\":{\"name\":\"Bosch KFN96AXEA four-door fridge-freezer\",\"width\":0.905,\"height\":1.83,\"depth\":0.731,\"url\":\"https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA\"},\"sink\":{\"name\":\"Franke Box Center BWX 220-54-27\",\"width\":0.86,\"depth\":0.51,\"height\":0.2,\"minimumBase\":0.9,\"bowlWidths\":[0.54,0.27],\"url\":\"https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html\"},\"wineCooler\":{\"name\":\"Miele KWT 6322 UG-1\",\"width\":0.596,\"height\":0.816,\"depth\":0.57,\"nicheWidth\":0.6,\"nicheHeight\":[0.82,0.87],\"nicheDepth\":0.58,\"minimumVentAreaCm2\":430,\"url\":\"https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf\"}},\"clearances\":{\"wetRun\":2.25,\"dishwasherClearNiches\":[0.6,0.6],\"sinkBase\":1.01,\"wetEndPanels\":0.02,\"cabinetHeightDatum\":0.9,\"worktopHeight\":0.919,\"worktopUnderside\":0.881,\"dishwasherHeight\":0.845,\"remainingAboveDishwasher\":0.036,\"peninsulaLength\":2.2,\"entryBesideChimney\":1.18,\"counterToFridge\":2.66,\"openDishwasherAisle\":2.005,\"fridgeBay\":{\"width\":0.96,\"depth\":0.79,\"bodyWidth\":0.905,\"bodyDepth\":0.731,\"rearAllowance\":0.059,\"combinedSideAllowance\":0.055},\"wineVentFreeAreaCm2\":436.8,\"installationNote\":\"Planning envelopes; final appliance drawings govern ventilation, hinge openings, services, worktop cut-outs and mounting.\"},\"mirror\":{\"width\":2.55,\"height\":2.34,\"bottom\":0.18,\"top\":2.52,\"wall\":\"Hall face of kitchen enclosure\",\"normal\":[1,0,0]},\"storage\":[\"Waste sorting and cleaning under sink\",\"900 mm cutlery / crockery / pan drawers in peninsula\",\"900 mm utensils / pots below hob\",\"900 mm preparation drawers\",\"410 mm spice pull-out\",\"1200 mm blind corner with swing-out baskets\",\"550 mm hidden nutrition and appliance pantry\",\"550 mm full-height corner pantry\",\"Cooking-wall and refrigerator-top cupboards\"]}",
+          "performanceTiming": "{\"scope\":\"continuous-navigation\",\"windowFrames\":360,\"totalNavigationFrames\":1,\"frameTimeMs\":{\"samples\":1,\"p50\":16.70000000001164,\"p95\":16.70000000001164,\"p99\":16.70000000001164,\"mean\":16.70000000001164,\"onePercentLowFps\":59.88023952091634,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"cpuFrameMs\":{\"samples\":4,\"p50\":9.700000000011642,\"p95\":10.400000000023283,\"p99\":10.400000000023283,\"mean\":11.525000000008731,\"onePercentLowFps\":51.81347150262193,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"phasesMs\":{\"navigation\":{\"samples\":2,\"p50\":0.20000000001164153,\"p95\":0.20000000001164153,\"p99\":0.20000000001164153,\"mean\":0.35000000000582077,\"onePercentLowFps\":2000,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"sceneUpdates\":{\"samples\":4,\"p50\":0.09999999997671694,\"p95\":0.1000000000349246,\"p99\":0.1000000000349246,\"mean\":0.125,\"onePercentLowFps\":4999.999999708962,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"interiorLabels\":{\"samples\":4,\"p50\":0.5999999999767169,\"p95\":0.7999999999883585,\"p99\":0.7999999999883585,\"mean\":0.7999999999883585,\"onePercentLowFps\":625.000000009095,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"reflections\":{\"samples\":1,\"p50\":0.1000000000349246,\"p95\":0.1000000000349246,\"p99\":0.1000000000349246,\"mean\":0.1000000000349246,\"onePercentLowFps\":9999.99999650754,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"instanceCulling\":{\"samples\":4,\"p50\":1.2000000000116415,\"p95\":1.6000000000349246,\"p99\":1.6000000000349246,\"mean\":2.5750000000116415,\"onePercentLowFps\":156.25000000085265,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"sceneRender\":{\"samples\":4,\"p50\":6.899999999965075,\"p95\":8.199999999953434,\"p99\":8.199999999953434,\"mean\":7.599999999991269,\"onePercentLowFps\":94.3396226411986,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"instanceRestore\":{\"samples\":0,\"p50\":0,\"p95\":0,\"p99\":0,\"mean\":0,\"onePercentLowFps\":0,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"gardenLabels\":{\"samples\":3,\"p50\":0.20000000001164153,\"p95\":0.20000000001164153,\"p99\":0.20000000001164153,\"mean\":0.16666666668606922,\"onePercentLowFps\":4999.999999708962,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0}}}",
+          "gpuSubmission": "{\"scope\":\"main-render-submission-queue\",\"supported\":true,\"enabled\":true,\"reason\":null,\"disposed\":false,\"maxInFlight\":2,\"attempts\":1096,\"submittedFrames\":16,\"fencedFrames\":16,\"completedFrames\":14,\"deferredAttempts\":1080,\"pendingFrames\":2,\"peakPendingFrames\":2,\"abandonedFences\":0,\"untrackedFrames\":0,\"polls\":1103,\"lastObservedAtMs\":477522.2,\"oldestPendingMs\":5412.599999999977,\"completionLatencyBoundsMs\":{\"samples\":14,\"capacity\":64,\"meanLower\":3956.1785714285716,\"meanUpper\":15086.185714285717,\"maxUpper\":25008.70000000001},\"recentCompletions\":[{\"frame\":7,\"queueDepthAtSubmission\":2,\"submittedAtMs\":383014.3,\"observedCompletedAtMs\":399486.39999999997,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":16472.099999999977,\"observedCompletionGapMs\":0},{\"frame\":8,\"queueDepthAtSubmission\":1,\"submittedAtMs\":399493,\"observedCompletedAtMs\":424319.89999999997,\"completionLatencyLowerMs\":183.5,\"completionLatencyUpperMs\":24826.899999999965,\"observedCompletionGapMs\":24833.5},{\"frame\":9,\"queueDepthAtSubmission\":2,\"submittedAtMs\":399708.89999999997,\"observedCompletedAtMs\":424319.89999999997,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":24611,\"observedCompletionGapMs\":0},{\"frame\":10,\"queueDepthAtSubmission\":1,\"submittedAtMs\":425510.6,\"observedCompletedAtMs\":439944.6,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":14434,\"observedCompletionGapMs\":15624.700000000012},{\"frame\":11,\"queueDepthAtSubmission\":1,\"submittedAtMs\":440625.2,\"observedCompletedAtMs\":459215.2,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":18590,\"observedCompletionGapMs\":19270.600000000035},{\"frame\":12,\"queueDepthAtSubmission\":1,\"submittedAtMs\":459251.8,\"observedCompletedAtMs\":465162.8,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":5911,\"observedCompletionGapMs\":5947.599999999977},{\"frame\":13,\"queueDepthAtSubmission\":1,\"submittedAtMs\":465194.39999999997,\"observedCompletedAtMs\":472106.99999999994,\"completionLatencyLowerMs\":6903.300000000047,\"completionLatencyUpperMs\":6912.599999999977,\"observedCompletionGapMs\":6944.199999999953},{\"frame\":14,\"queueDepthAtSubmission\":2,\"submittedAtMs\":465456.89999999997,\"observedCompletedAtMs\":477522.2,\"completionLatencyLowerMs\":6650.099999999977,\"completionLatencyUpperMs\":12065.300000000047,\"observedCompletionGapMs\":5415.20000000007}],\"errors\":[],\"interpretation\":\"Bounds bracket observable fence availability, including queueing, browser status caching and polling delay; they are not isolated GPU durations or presentation times. Pending counts unretired handles, which may complete before the next observation.\"}",
+          "adaptiveQuality": "{\"mode\":\"measured-motion-buffer\",\"level\":2,\"scale\":0.68,\"changes\":2,\"lastP75Ms\":0,\"targetMs\":24,\"minimumScale\":0.54,\"cooldownMs\":900,\"pressureChanges\":2,\"lastPressureAgeMs\":1171.3000000000466,\"pressureThresholdMs\":250,\"recoversAtRest\":true}",
+          "sceneOptimization": "{\"repeatedGardenDetails\":{\"parts\":172,\"savedDrawCalls\":165},\"dimensionOcclusion\":\"cached-triangle-bvh\",\"dimensionLayoutHz\":10,\"vegetation\":{\"method\":\"instance-frustum-compaction\",\"sourceBatches\":17,\"nonemptyBatches\":17,\"instances\":4828,\"visibleInstances\":4828,\"culledInstances\":0,\"compacted\":false,\"shadowUploadGuard\":null,\"orderedBatches\":0,\"orderedInstances\":0,\"passes\":16,\"opaqueOrder\":\"default\",\"drawCallsAdded\":0,\"geometryChanged\":false,\"positionsChanged\":false}}",
+          "mirrors": "{\"count\":1,\"captured\":true,\"frames\":6,\"width\":256,\"height\":154,\"updateMode\":\"settled-only\",\"updatesWhileMoving\":0}"
+        }
+      },
+      "raised": 4.784,
+      "beforeGround": {
+        "walk": {
+          "engine": "three.js r160",
+          "renderPending": "true",
+          "walkFloor": "garden",
+          "walkPosition": "13.378,4.504,23.917",
+          "walkNavigation": "free",
+          "walkFloating": "true",
+          "walkSwimming": "false",
+          "walkAltitude": "4.504",
+          "walkYaw": "-52.4345",
+          "walkPitch": "-9.7241",
+          "walkFov": "70",
+          "sceneBufferWidth": "792",
+          "sceneBufferHeight": "477",
+          "scenePixelRatio": "1",
+          "renderPath": "ao-composer",
+          "motionSupported": "true",
+          "motionSamples": "0",
+          "canvasSamples": "4",
+          "renderedFrameCount": "16",
+          "renderedWalkPosition": "13.378,4.616,23.917"
+        },
+        "render": {
+          "frames": "16",
+          "shadowUpdates": "4",
+          "calls": "182",
+          "triangles": "940481",
+          "geometries": "881",
+          "textures": "83",
+          "pixelRatio": "1",
+          "bufferWidth": "792",
+          "bufferHeight": "477",
+          "sceneBufferWidth": "538",
+          "sceneBufferHeight": "324",
+          "scenePixelRatio": "0.68",
+          "motionSamples": "4",
+          "canvasSamples": "4",
+          "shadowSize": "2048",
+          "houseRenovationParts": "976",
+          "houseRenovationProjection": "0.27",
+          "houseOpeningCount": "25",
+          "gardenKitchens": "0",
+          "gardenPlantingBeds": "2",
+          "garageVehicles": "0",
+          "canvasWidth": "792",
+          "canvasHeight": "477",
+          "renderPath": "motion-target",
+          "motionSupported": "true",
+          "motionUnsupportedReason": "",
+          "renderedStyle": "japandi",
+          "gardenScheme": "Pool and sheltered retreat",
+          "windowPattern": "basement-left-facade-0:0.92:0.51:2:0|basement-left-facade-1:0.92:0.51:2:0|basement-right-facade-0:0.92:0.51:2:0|basement-right-facade-1:0.92:0.51:2:0|ground-left-facade-0:2.42:1.78:2:0|ground-left-facade-1:2.3:1.46:1:0|ground-right-facade-0:2.42:1.78:2:0|ground-right-facade-1:2.3:1.44:1:0|ground-street-facade-2:2.3:1.44:1:0|ground-street-bay-screen-0:1.435:1.78:2:0|ground-street-bay-screen-1:0.99:1.78:2:0|rear-hst-0:10.36:2.5:3:0|first-left-facade-0:2.42:1.78:2:0|first-left-facade-1:1.728:1.72:2:0|first-right-facade-0:1.945:1.78:2:0|first-right-facade-1:0.96:1.3:1:0|first-right-facade-2:1.46:1.44:1:0|first-street-left-0:2.42:1.78:2:0|first-street-right-0:2.3:1.44:1:0|first-bay-left-0:0.75:1.78:2:0|first-bay-right-0:0.75:1.78:2:0|first-bay-front-0:2.42:1.78:2:0|rear-balcony-room-0:2.42:2.03:3:0|rear-balcony-room-1:2.1:2.03:3:0|rear-balcony-room-2:2:2.03:3:0",
+          "drawEnabled": "true",
+          "canvasIntersecting": "true",
+          "presentationVisible": "true",
+          "renderPending": "true",
+          "renderer": "webgl",
+          "motionActive": "false",
+          "contactShading": "false",
+          "interacting": "true",
+          "toneMapping": "AgX",
+          "poolReflections": "false",
+          "surfaceAssetsRequested": "54",
+          "surfaceAssetsLoaded": "54",
+          "surfaceAssetsFailed": "0",
+          "contextFacades": "{\"building-2:front:0\":2,\"building-2:front:1\":6,\"building-2:rear:0\":3,\"building-2:rear:1\":3,\"building-3:front:0\":1,\"building-3:front:1\":1,\"building-3:rear:0\":1,\"building-3:rear:1\":2,\"building-5:rear:0\":3,\"building-5:rear:1\":2,\"building-6:rear:0\":3,\"building-6:rear:1\":3,\"building-7:rear:0\":3,\"building-7:rear:1\":2,\"building-8:front:0\":3,\"building-8:front:1\":3,\"building-8:front:2\":3,\"building-9:front:0\":4,\"building-9:front:1\":4,\"building-9:front:2\":4,\"building-9:front:3\":4,\"building-9:front:4\":4,\"building-9:rear:0\":3,\"building-9:rear:1\":4,\"building-9:rear:2\":4,\"building-9:rear:3\":4,\"building-9:rear:4\":4,\"building-9:east:0\":6,\"building-9:east:1\":6,\"building-9:east:2\":6,\"building-9:east:3\":6,\"building-9:east:4\":6,\"building-9:east:-1\":3,\"building-9:west:0\":6,\"building-9:west:1\":6,\"building-9:west:2\":6,\"building-9:west:3\":6,\"building-9:west:4\":6,\"building-10:front:0\":3,\"building-10:front:1\":3,\"building-10:front:2\":1,\"building-15:front:0\":4,\"building-15:front:1\":4,\"building-15:front:2\":4,\"building-15:front:3\":4,\"building-15:front:4\":4,\"building-15:rear:0\":3,\"building-15:rear:1\":4,\"building-15:rear:2\":4,\"building-15:rear:3\":4,\"building-15:rear:4\":4,\"building-15:east:0\":6,\"building-15:east:1\":6,\"building-15:east:2\":6,\"building-15:east:3\":6,\"building-15:east:4\":6,\"building-15:east:-1\":3,\"building-15:west:0\":6,\"building-15:west:1\":6,\"building-15:west:2\":6,\"building-15:west:3\":6,\"building-15:west:4\":6,\"building-19:front:0\":3,\"building-19:front:1\":3,\"building-19:front:2\":3,\"building-29:front:0\":4,\"building-29:front:1\":4,\"building-29:front:2\":4,\"building-29:front:3\":4,\"building-29:front:4\":4,\"building-29:rear:0\":3,\"building-29:rear:1\":4,\"building-29:rear:2\":4,\"building-29:rear:3\":4,\"building-29:rear:4\":4,\"building-29:east:0\":6,\"building-29:east:1\":6,\"building-29:east:2\":6,\"building-29:east:3\":6,\"building-29:east:4\":6,\"building-29:east:-1\":3,\"building-29:west:0\":6,\"building-29:west:1\":6,\"building-29:west:2\":6,\"building-29:west:3\":6,\"building-29:west:4\":6}",
+          "contextBalconies": "{\"building-2:rear:projecting\":2,\"building-3:rear:recessed\":1,\"building-5:rear:recessed\":1,\"building-7:rear:recessed\":1,\"building-9:east:projecting\":15,\"building-9:west:projecting\":15,\"building-15:east:projecting\":15,\"building-15:west:projecting\":15,\"building-29:east:projecting\":15,\"building-29:west:projecting\":15}",
+          "contextEnvelopes": "{\"building-2\":{\"wallTriangles\":116,\"roofTriangles\":306,\"features\":{}},\"building-3\":{\"wallTriangles\":102,\"roofTriangles\":239,\"features\":{}},\"building-4\":{\"wallTriangles\":330,\"roofTriangles\":477,\"features\":{}},\"building-5\":{\"wallTriangles\":112,\"roofTriangles\":256,\"features\":{}},\"building-6\":{\"wallTriangles\":112,\"roofTriangles\":258,\"features\":{}},\"building-7\":{\"wallTriangles\":112,\"roofTriangles\":256,\"features\":{}},\"building-8\":{\"wallTriangles\":118,\"roofTriangles\":307,\"features\":{}},\"building-9\":{\"wallTriangles\":8,\"roofTriangles\":104,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":3}},\"building-10\":{\"wallTriangles\":124,\"roofTriangles\":342,\"features\":{}},\"building-15\":{\"wallTriangles\":8,\"roofTriangles\":144,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":7}},\"building-19\":{\"wallTriangles\":120,\"roofTriangles\":346,\"features\":{}},\"building-29\":{\"wallTriangles\":8,\"roofTriangles\":144,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":7}}}",
+          "boundaryFence": "{\"enabled\":true,\"height\":2.2,\"styleId\":\"japandi\",\"members\":905,\"meshes\":3,\"gates\":[{\"id\":\"front-pedestrian-opening\",\"open\":true,\"width\":1.1999999999999993},{\"id\":\"front-vehicle-opening\",\"open\":true,\"width\":4}]}",
+          "gardenPaths": "null",
+          "coldPlunge": "{\"sunken\":false,\"groundZ\":3.436306555301225,\"baseZ\":3.436306555301225,\"rimZ\":4.1863065553012255,\"padTopZ\":3.456306555301225,\"waterZ\":4.116306555301225,\"bottomZ\":3.016306555301225,\"steps\":[{\"x\":6.6,\"y\":34.05,\"width\":1,\"length\":0.3,\"baseZ\":2.9800319664492485,\"topZ\":3.290237221884902},{\"x\":6.6,\"y\":34.349999999999994,\"width\":1,\"length\":0.3,\"baseZ\":3.0095894775140044,\"topZ\":3.469451088568167},{\"x\":6.6,\"y\":34.65,\"width\":1,\"length\":0.3,\"baseZ\":3.0430873992773746,\"topZ\":3.6486649552514314},{\"x\":6.6,\"y\":34.949999999999996,\"width\":1,\"length\":0.3,\"baseZ\":3.0804661715822292,\"topZ\":3.827878821934696},{\"x\":6.6,\"y\":35.25,\"width\":1,\"length\":0.3,\"baseZ\":3.112519979420991,\"topZ\":4.007092688617961}],\"padBaseZ\":3.116185339875668,\"entryGroundZ\":3.1110233552016373,\"entryRiser\":0.1792138666832647}",
+          "gardenLighting": "{\"fixtures\":22,\"lights\":22,\"routeFixtures\":0,\"gateFixtures\":2,\"activeRouteLights\":0,\"routeShadowMaps\":0}",
+          "spaCovers": "{\"moving\":0,\"covers\":[]}",
+          "slidingDoors": "{\"terrace\":0,\"upper\":1}",
+          "interiorDimensions": "{\"enabled\":true,\"total\":116,\"visible\":0,\"floor\":null,\"roomId\":null,\"layouts\":14,\"projectionFrames\":1,\"refreshIntervalMs\":100,\"occlusion\":{\"meshes\":144,\"queries\":42,\"triangleTests\":3712,\"boxTests\":7628,\"method\":\"cached-triangle-bvh\"}}",
+          "gardenDimensions": "{\"total\":67,\"visible\":10,\"layouts\":1,\"projectionFrames\":0,\"refreshIntervalMs\":100,\"occlusion\":{\"meshes\":703,\"queries\":11,\"triangleTests\":57,\"boxTests\":7688,\"method\":\"cached-triangle-bvh\"}}",
+          "equipmentLabels": "{\"enabled\":false,\"total\":0,\"visible\":0,\"floor\":null,\"layoutPasses\":0,\"occlusion\":null}",
+          "livingCinema": "null",
+          "luxuryKitchen": "{\"kind\":\"fitted-luxury-kitchen\",\"schedule\":[{\"id\":\"kitchen-dishwasher-1\",\"label\":\"Dishwasher 1 · 60 cm\",\"width\":0.6,\"depth\":0.65,\"height\":0.845,\"detail\":\"Fully integrated XXL AutoDos; 600 mm clear niche beside the sink.\",\"reference\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\",\"hidden\":true,\"category\":\"appliance\"},{\"id\":\"kitchen-dishwasher-2\",\"label\":\"Dishwasher 2 · 60 cm\",\"width\":0.6,\"depth\":0.65,\"height\":0.845,\"detail\":\"Second full-size XXL dishwasher; the pair fits the measured wet run.\",\"reference\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\",\"hidden\":true,\"category\":\"appliance\"},{\"id\":\"sink-base\",\"label\":\"Workstation sink and waste · 101 cm\",\"width\":1.01,\"depth\":0.65,\"height\":0.9,\"detail\":\"860 × 510 mm two-bowl workstation sink; waste-sorting pull-out and cleaning storage below.\",\"reference\":\"Franke Box Center BWX 220-54-27\",\"url\":\"https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html\",\"hidden\":true,\"category\":\"worktop\"},{\"id\":\"kitchen-steam-oven\",\"label\":\"Combi-steam oven · 67 L\",\"width\":0.6,\"depth\":0.63,\"height\":0.596,\"detail\":\"Plumbed Miele Diamond oven with HydroClean, installed in a 600 mm tower.\",\"reference\":\"Miele DGC 7865 HC Pro\",\"url\":\"https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-speed-oven\",\"label\":\"Microwave / speed oven · 43 L\",\"width\":0.6,\"depth\":0.63,\"height\":0.456,\"detail\":\"Separate compact oven with 1000 W microwave above the combi-steam oven.\",\"reference\":\"Miele H 7840 BM\",\"url\":\"https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-fridge\",\"label\":\"Four-door fridge-freezer · 96 cm bay\",\"width\":0.96,\"depth\":0.79,\"height\":1.83,\"detail\":\"905 mm product in a wider ventilated bay; 731 mm body depth plus rear allowance. Final hinge clearances follow its installation drawing.\",\"reference\":\"Bosch KFN96AXEA four-door fridge-freezer\",\"url\":\"https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-wine-cooler\",\"label\":\"Wine cooler · 60 cm\",\"width\":0.6,\"depth\":0.85,\"height\":0.816,\"detail\":\"Undercounter two-zone cooler in the peninsula; modeled grille gives at least 430 cm² free ventilation.\",\"reference\":\"Miele KWT 6322 UG-1\",\"url\":\"https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-nutrition-pantry\",\"label\":\"Hidden nutrition pantry · 55 cm\",\"width\":0.55,\"depth\":0.63,\"height\":2.7,\"detail\":\"Closed, labelled storage for powder tubs, supplements, a blender and compact appliances; deep pull-outs keep the contents reachable.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"kitchen-pantry-corner\",\"label\":\"Full-height corner pantry · 55 cm\",\"width\":0.55,\"depth\":0.63,\"height\":2.7,\"detail\":\"Fills the retained corner with bulk-food and occasional-appliance storage.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"peninsula-drawers\",\"label\":\"Peninsula drawers · 90 cm\",\"width\":0.9,\"depth\":0.85,\"height\":0.9,\"detail\":\"Cutlery above, crockery in the middle and deep pan drawers below.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"cooking-corner\",\"label\":\"Corner pull-out · 120 cm\",\"width\":1.2,\"depth\":0.62,\"height\":0.9,\"detail\":\"A 520 mm access front serves swing-out baskets in the blind corner.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"cooking-drawers\",\"label\":\"Cooking and preparation drawers · 180 cm\",\"width\":1.8,\"depth\":0.62,\"height\":0.9,\"detail\":\"Two 900 mm drawer stacks divide utensils, boards, pots and food containers; 410 mm spice pull-out alongside.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"hob\",\"label\":\"Induction cooking · 80 cm\",\"width\":0.8,\"depth\":0.52,\"height\":0.03,\"detail\":\"80 cm induction allowance with flush glass and concealed extraction; final appliance and duct route remain selectable.\",\"reference\":null,\"url\":null,\"hidden\":false,\"category\":\"worktop\"},{\"id\":\"kitchen-hall-selfie-mirror\",\"label\":\"Hall-facing mirror · 255 × 234 cm\",\"width\":2.55,\"depth\":0.026,\"height\":2.34,\"detail\":\"Continuous full-height mirror on the stair-facing kitchen wall, clear of the chimney enclosure and entry.\",\"reference\":null,\"url\":null,\"hidden\":false,\"category\":\"mirror\"}],\"modules\":[{\"id\":\"wet-end-front\",\"run\":\"sink\",\"width\":0.02,\"kind\":\"end-panel\"},{\"id\":\"dishwasher-1\",\"run\":\"sink\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Main dishwasher\"},{\"id\":\"sink-base\",\"run\":\"sink\",\"width\":1.01,\"kind\":\"cabinet\",\"sideThickness\":0.018,\"assignment\":\"Workstation sink, waste sorting and cleaning pull-outs\"},{\"id\":\"dishwasher-2\",\"run\":\"sink\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Second dishwasher\"},{\"id\":\"wet-end-rear\",\"run\":\"sink\",\"width\":0.02,\"kind\":\"end-panel\"},{\"id\":\"peninsula-corner\",\"run\":\"peninsula\",\"width\":0.65,\"kind\":\"blind-corner\",\"assignment\":\"Access from dining side for serving dishes\"},{\"id\":\"peninsula-drawers\",\"run\":\"peninsula\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Cutlery top, daily crockery middle, deep pans below\"},{\"id\":\"wine-cooler\",\"run\":\"peninsula\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Two-zone wine storage with front ventilation\"},{\"id\":\"peninsula-end\",\"run\":\"peninsula\",\"width\":0.05,\"kind\":\"end-panel\"},{\"id\":\"cooking-corner\",\"run\":\"cooking\",\"width\":1.2,\"kind\":\"blind-corner\",\"assignment\":\"Swing-out corner baskets through a 520 mm access front\"},{\"id\":\"hob-drawers\",\"run\":\"cooking\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Utensils and pots below the induction hob\"},{\"id\":\"preparation-drawers\",\"run\":\"cooking\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Knives, boards, food containers and pans\"},{\"id\":\"spice-pullout\",\"run\":\"cooking\",\"width\":0.41,\"kind\":\"pull-out\",\"assignment\":\"Oils, spices and tall bottles\"},{\"id\":\"fridge-bay\",\"run\":\"tall\",\"width\":0.96,\"kind\":\"appliance-bay\",\"assignment\":\"Four-door fridge-freezer with side and rear allowances\"},{\"id\":\"oven-tower\",\"run\":\"tall\",\"width\":0.6,\"kind\":\"tower\",\"assignment\":\"Full combi-steam oven and separate microwave/speed oven\"},{\"id\":\"nutrition-pantry\",\"run\":\"tall\",\"width\":0.55,\"kind\":\"pantry\",\"assignment\":\"Hidden protein powders, supplements and small appliances\"},{\"id\":\"pantry-corner\",\"run\":\"tall\",\"width\":0.55,\"kind\":\"corner-pantry\",\"assignment\":\"Filled corner for bulk supplies and occasional appliances\"}],\"equipment\":{\"dishwasher\":{\"name\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"width\":0.598,\"height\":0.845,\"depth\":0.55,\"nicheWidth\":0.6,\"nicheHeight\":[0.845,0.91],\"nicheDepth\":0.55,\"openDepth\":1.205,\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\"},\"steamOven\":{\"name\":\"Miele DGC 7865 HC Pro\",\"width\":0.595,\"height\":0.596,\"depth\":0.567,\"capacityLitres\":67,\"nicheWidth\":[0.56,0.568],\"nicheHeight\":[0.59,0.595],\"nicheDepth\":0.55,\"plumbed\":true,\"url\":\"https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack\"},\"speedOven\":{\"name\":\"Miele H 7840 BM\",\"width\":0.595,\"height\":0.456,\"depth\":0.563,\"capacityLitres\":43,\"microwaveWatts\":1000,\"nicheWidth\":[0.56,0.568],\"nicheHeight\":[0.45,0.452],\"nicheDepth\":0.55,\"url\":\"https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal\"},\"fridge\":{\"name\":\"Bosch KFN96AXEA four-door fridge-freezer\",\"width\":0.905,\"height\":1.83,\"depth\":0.731,\"url\":\"https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA\"},\"sink\":{\"name\":\"Franke Box Center BWX 220-54-27\",\"width\":0.86,\"depth\":0.51,\"height\":0.2,\"minimumBase\":0.9,\"bowlWidths\":[0.54,0.27],\"url\":\"https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html\"},\"wineCooler\":{\"name\":\"Miele KWT 6322 UG-1\",\"width\":0.596,\"height\":0.816,\"depth\":0.57,\"nicheWidth\":0.6,\"nicheHeight\":[0.82,0.87],\"nicheDepth\":0.58,\"minimumVentAreaCm2\":430,\"url\":\"https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf\"}},\"clearances\":{\"wetRun\":2.25,\"dishwasherClearNiches\":[0.6,0.6],\"sinkBase\":1.01,\"wetEndPanels\":0.02,\"cabinetHeightDatum\":0.9,\"worktopHeight\":0.919,\"worktopUnderside\":0.881,\"dishwasherHeight\":0.845,\"remainingAboveDishwasher\":0.036,\"peninsulaLength\":2.2,\"entryBesideChimney\":1.18,\"counterToFridge\":2.66,\"openDishwasherAisle\":2.005,\"fridgeBay\":{\"width\":0.96,\"depth\":0.79,\"bodyWidth\":0.905,\"bodyDepth\":0.731,\"rearAllowance\":0.059,\"combinedSideAllowance\":0.055},\"wineVentFreeAreaCm2\":436.8,\"installationNote\":\"Planning envelopes; final appliance drawings govern ventilation, hinge openings, services, worktop cut-outs and mounting.\"},\"mirror\":{\"width\":2.55,\"height\":2.34,\"bottom\":0.18,\"top\":2.52,\"wall\":\"Hall face of kitchen enclosure\",\"normal\":[1,0,0]},\"storage\":[\"Waste sorting and cleaning under sink\",\"900 mm cutlery / crockery / pan drawers in peninsula\",\"900 mm utensils / pots below hob\",\"900 mm preparation drawers\",\"410 mm spice pull-out\",\"1200 mm blind corner with swing-out baskets\",\"550 mm hidden nutrition and appliance pantry\",\"550 mm full-height corner pantry\",\"Cooking-wall and refrigerator-top cupboards\"]}",
+          "performanceTiming": "{\"scope\":\"continuous-navigation\",\"windowFrames\":360,\"totalNavigationFrames\":1,\"frameTimeMs\":{\"samples\":1,\"p50\":16.70000000001164,\"p95\":16.70000000001164,\"p99\":16.70000000001164,\"mean\":16.70000000001164,\"onePercentLowFps\":59.88023952091634,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"cpuFrameMs\":{\"samples\":4,\"p50\":9.700000000011642,\"p95\":10.400000000023283,\"p99\":10.400000000023283,\"mean\":11.525000000008731,\"onePercentLowFps\":51.81347150262193,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"phasesMs\":{\"navigation\":{\"samples\":2,\"p50\":0.20000000001164153,\"p95\":0.20000000001164153,\"p99\":0.20000000001164153,\"mean\":0.35000000000582077,\"onePercentLowFps\":2000,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"sceneUpdates\":{\"samples\":4,\"p50\":0.09999999997671694,\"p95\":0.1000000000349246,\"p99\":0.1000000000349246,\"mean\":0.125,\"onePercentLowFps\":4999.999999708962,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"interiorLabels\":{\"samples\":4,\"p50\":0.5999999999767169,\"p95\":0.7999999999883585,\"p99\":0.7999999999883585,\"mean\":0.7999999999883585,\"onePercentLowFps\":625.000000009095,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"reflections\":{\"samples\":1,\"p50\":0.1000000000349246,\"p95\":0.1000000000349246,\"p99\":0.1000000000349246,\"mean\":0.1000000000349246,\"onePercentLowFps\":9999.99999650754,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"instanceCulling\":{\"samples\":4,\"p50\":1.2000000000116415,\"p95\":1.6000000000349246,\"p99\":1.6000000000349246,\"mean\":2.5750000000116415,\"onePercentLowFps\":156.25000000085265,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"sceneRender\":{\"samples\":4,\"p50\":6.899999999965075,\"p95\":8.199999999953434,\"p99\":8.199999999953434,\"mean\":7.599999999991269,\"onePercentLowFps\":94.3396226411986,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"instanceRestore\":{\"samples\":0,\"p50\":0,\"p95\":0,\"p99\":0,\"mean\":0,\"onePercentLowFps\":0,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"gardenLabels\":{\"samples\":3,\"p50\":0.20000000001164153,\"p95\":0.20000000001164153,\"p99\":0.20000000001164153,\"mean\":0.16666666668606922,\"onePercentLowFps\":4999.999999708962,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0}}}",
+          "gpuSubmission": "{\"scope\":\"main-render-submission-queue\",\"supported\":true,\"enabled\":true,\"reason\":null,\"disposed\":false,\"maxInFlight\":2,\"attempts\":1097,\"submittedFrames\":16,\"fencedFrames\":16,\"completedFrames\":14,\"deferredAttempts\":1081,\"pendingFrames\":2,\"peakPendingFrames\":2,\"abandonedFences\":0,\"untrackedFrames\":0,\"polls\":1104,\"lastObservedAtMs\":477617.99999999994,\"oldestPendingMs\":5490.29999999993,\"completionLatencyBoundsMs\":{\"samples\":14,\"capacity\":64,\"meanLower\":3956.1785714285716,\"meanUpper\":15086.185714285717,\"maxUpper\":25008.70000000001},\"recentCompletions\":[{\"frame\":7,\"queueDepthAtSubmission\":2,\"submittedAtMs\":383014.3,\"observedCompletedAtMs\":399486.39999999997,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":16472.099999999977,\"observedCompletionGapMs\":0},{\"frame\":8,\"queueDepthAtSubmission\":1,\"submittedAtMs\":399493,\"observedCompletedAtMs\":424319.89999999997,\"completionLatencyLowerMs\":183.5,\"completionLatencyUpperMs\":24826.899999999965,\"observedCompletionGapMs\":24833.5},{\"frame\":9,\"queueDepthAtSubmission\":2,\"submittedAtMs\":399708.89999999997,\"observedCompletedAtMs\":424319.89999999997,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":24611,\"observedCompletionGapMs\":0},{\"frame\":10,\"queueDepthAtSubmission\":1,\"submittedAtMs\":425510.6,\"observedCompletedAtMs\":439944.6,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":14434,\"observedCompletionGapMs\":15624.700000000012},{\"frame\":11,\"queueDepthAtSubmission\":1,\"submittedAtMs\":440625.2,\"observedCompletedAtMs\":459215.2,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":18590,\"observedCompletionGapMs\":19270.600000000035},{\"frame\":12,\"queueDepthAtSubmission\":1,\"submittedAtMs\":459251.8,\"observedCompletedAtMs\":465162.8,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":5911,\"observedCompletionGapMs\":5947.599999999977},{\"frame\":13,\"queueDepthAtSubmission\":1,\"submittedAtMs\":465194.39999999997,\"observedCompletedAtMs\":472106.99999999994,\"completionLatencyLowerMs\":6903.300000000047,\"completionLatencyUpperMs\":6912.599999999977,\"observedCompletionGapMs\":6944.199999999953},{\"frame\":14,\"queueDepthAtSubmission\":2,\"submittedAtMs\":465456.89999999997,\"observedCompletedAtMs\":477522.2,\"completionLatencyLowerMs\":6650.099999999977,\"completionLatencyUpperMs\":12065.300000000047,\"observedCompletionGapMs\":5415.20000000007}],\"errors\":[],\"interpretation\":\"Bounds bracket observable fence availability, including queueing, browser status caching and polling delay; they are not isolated GPU durations or presentation times. Pending counts unretired handles, which may complete before the next observation.\"}",
+          "adaptiveQuality": "{\"mode\":\"measured-motion-buffer\",\"level\":3,\"scale\":0.54,\"changes\":3,\"lastP75Ms\":0,\"targetMs\":24,\"minimumScale\":0.54,\"cooldownMs\":900,\"pressureChanges\":3,\"lastPressureAgeMs\":5489.899999999907,\"pressureThresholdMs\":250,\"recoversAtRest\":true}",
+          "sceneOptimization": "{\"repeatedGardenDetails\":{\"parts\":172,\"savedDrawCalls\":165},\"dimensionOcclusion\":\"cached-triangle-bvh\",\"dimensionLayoutHz\":10,\"vegetation\":{\"method\":\"instance-frustum-compaction\",\"sourceBatches\":17,\"nonemptyBatches\":17,\"instances\":4828,\"visibleInstances\":4828,\"culledInstances\":0,\"compacted\":false,\"shadowUploadGuard\":null,\"orderedBatches\":0,\"orderedInstances\":0,\"passes\":16,\"opaqueOrder\":\"default\",\"drawCallsAdded\":0,\"geometryChanged\":false,\"positionsChanged\":false}}",
+          "mirrors": "{\"count\":1,\"captured\":true,\"frames\":6,\"width\":256,\"height\":154,\"updateMode\":\"settled-only\",\"updatesWhileMoving\":0}"
+        }
+      },
+      "grounded": {
+        "walk": {
+          "engine": "three.js r160",
+          "renderPending": "false",
+          "walkFloor": "garden",
+          "walkPosition": "13.378,4.616,23.917",
+          "walkNavigation": "free",
+          "walkFloating": "false",
+          "walkSwimming": "false",
+          "walkAltitude": "4.616",
+          "walkYaw": "-52.4345",
+          "walkPitch": "-9.7241",
+          "walkFov": "70",
+          "sceneBufferWidth": "792",
+          "sceneBufferHeight": "477",
+          "scenePixelRatio": "1",
+          "renderPath": "ao-composer",
+          "motionSupported": "true",
+          "motionSamples": "0",
+          "canvasSamples": "4",
+          "renderedFrameCount": "19",
+          "renderedWalkPosition": "13.378,4.616,23.917"
+        },
+        "render": {
+          "frames": "19",
+          "shadowUpdates": "4",
+          "calls": "237",
+          "triangles": "940481",
+          "geometries": "928",
+          "textures": "83",
+          "pixelRatio": "1",
+          "bufferWidth": "792",
+          "bufferHeight": "477",
+          "sceneBufferWidth": "792",
+          "sceneBufferHeight": "477",
+          "scenePixelRatio": "1",
+          "motionSamples": "0",
+          "canvasSamples": "4",
+          "shadowSize": "2048",
+          "houseRenovationParts": "976",
+          "houseRenovationProjection": "0.27",
+          "houseOpeningCount": "25",
+          "gardenKitchens": "0",
+          "gardenPlantingBeds": "2",
+          "garageVehicles": "0",
+          "canvasWidth": "792",
+          "canvasHeight": "477",
+          "renderPath": "ao-composer",
+          "motionSupported": "true",
+          "motionUnsupportedReason": "",
+          "renderedStyle": "japandi",
+          "gardenScheme": "Pool and sheltered retreat",
+          "windowPattern": "basement-left-facade-0:0.92:0.51:2:0|basement-left-facade-1:0.92:0.51:2:0|basement-right-facade-0:0.92:0.51:2:0|basement-right-facade-1:0.92:0.51:2:0|ground-left-facade-0:2.42:1.78:2:0|ground-left-facade-1:2.3:1.46:1:0|ground-right-facade-0:2.42:1.78:2:0|ground-right-facade-1:2.3:1.44:1:0|ground-street-facade-2:2.3:1.44:1:0|ground-street-bay-screen-0:1.435:1.78:2:0|ground-street-bay-screen-1:0.99:1.78:2:0|rear-hst-0:10.36:2.5:3:0|first-left-facade-0:2.42:1.78:2:0|first-left-facade-1:1.728:1.72:2:0|first-right-facade-0:1.945:1.78:2:0|first-right-facade-1:0.96:1.3:1:0|first-right-facade-2:1.46:1.44:1:0|first-street-left-0:2.42:1.78:2:0|first-street-right-0:2.3:1.44:1:0|first-bay-left-0:0.75:1.78:2:0|first-bay-right-0:0.75:1.78:2:0|first-bay-front-0:2.42:1.78:2:0|rear-balcony-room-0:2.42:2.03:3:0|rear-balcony-room-1:2.1:2.03:3:0|rear-balcony-room-2:2:2.03:3:0",
+          "drawEnabled": "true",
+          "canvasIntersecting": "true",
+          "presentationVisible": "true",
+          "renderPending": "false",
+          "renderer": "webgl",
+          "motionActive": "false",
+          "contactShading": "true",
+          "interacting": "false",
+          "toneMapping": "AgX",
+          "poolReflections": "false",
+          "surfaceAssetsRequested": "54",
+          "surfaceAssetsLoaded": "54",
+          "surfaceAssetsFailed": "0",
+          "contextFacades": "{\"building-2:front:0\":2,\"building-2:front:1\":6,\"building-2:rear:0\":3,\"building-2:rear:1\":3,\"building-3:front:0\":1,\"building-3:front:1\":1,\"building-3:rear:0\":1,\"building-3:rear:1\":2,\"building-5:rear:0\":3,\"building-5:rear:1\":2,\"building-6:rear:0\":3,\"building-6:rear:1\":3,\"building-7:rear:0\":3,\"building-7:rear:1\":2,\"building-8:front:0\":3,\"building-8:front:1\":3,\"building-8:front:2\":3,\"building-9:front:0\":4,\"building-9:front:1\":4,\"building-9:front:2\":4,\"building-9:front:3\":4,\"building-9:front:4\":4,\"building-9:rear:0\":3,\"building-9:rear:1\":4,\"building-9:rear:2\":4,\"building-9:rear:3\":4,\"building-9:rear:4\":4,\"building-9:east:0\":6,\"building-9:east:1\":6,\"building-9:east:2\":6,\"building-9:east:3\":6,\"building-9:east:4\":6,\"building-9:east:-1\":3,\"building-9:west:0\":6,\"building-9:west:1\":6,\"building-9:west:2\":6,\"building-9:west:3\":6,\"building-9:west:4\":6,\"building-10:front:0\":3,\"building-10:front:1\":3,\"building-10:front:2\":1,\"building-15:front:0\":4,\"building-15:front:1\":4,\"building-15:front:2\":4,\"building-15:front:3\":4,\"building-15:front:4\":4,\"building-15:rear:0\":3,\"building-15:rear:1\":4,\"building-15:rear:2\":4,\"building-15:rear:3\":4,\"building-15:rear:4\":4,\"building-15:east:0\":6,\"building-15:east:1\":6,\"building-15:east:2\":6,\"building-15:east:3\":6,\"building-15:east:4\":6,\"building-15:east:-1\":3,\"building-15:west:0\":6,\"building-15:west:1\":6,\"building-15:west:2\":6,\"building-15:west:3\":6,\"building-15:west:4\":6,\"building-19:front:0\":3,\"building-19:front:1\":3,\"building-19:front:2\":3,\"building-29:front:0\":4,\"building-29:front:1\":4,\"building-29:front:2\":4,\"building-29:front:3\":4,\"building-29:front:4\":4,\"building-29:rear:0\":3,\"building-29:rear:1\":4,\"building-29:rear:2\":4,\"building-29:rear:3\":4,\"building-29:rear:4\":4,\"building-29:east:0\":6,\"building-29:east:1\":6,\"building-29:east:2\":6,\"building-29:east:3\":6,\"building-29:east:4\":6,\"building-29:east:-1\":3,\"building-29:west:0\":6,\"building-29:west:1\":6,\"building-29:west:2\":6,\"building-29:west:3\":6,\"building-29:west:4\":6}",
+          "contextBalconies": "{\"building-2:rear:projecting\":2,\"building-3:rear:recessed\":1,\"building-5:rear:recessed\":1,\"building-7:rear:recessed\":1,\"building-9:east:projecting\":15,\"building-9:west:projecting\":15,\"building-15:east:projecting\":15,\"building-15:west:projecting\":15,\"building-29:east:projecting\":15,\"building-29:west:projecting\":15}",
+          "contextEnvelopes": "{\"building-2\":{\"wallTriangles\":116,\"roofTriangles\":306,\"features\":{}},\"building-3\":{\"wallTriangles\":102,\"roofTriangles\":239,\"features\":{}},\"building-4\":{\"wallTriangles\":330,\"roofTriangles\":477,\"features\":{}},\"building-5\":{\"wallTriangles\":112,\"roofTriangles\":256,\"features\":{}},\"building-6\":{\"wallTriangles\":112,\"roofTriangles\":258,\"features\":{}},\"building-7\":{\"wallTriangles\":112,\"roofTriangles\":256,\"features\":{}},\"building-8\":{\"wallTriangles\":118,\"roofTriangles\":307,\"features\":{}},\"building-9\":{\"wallTriangles\":8,\"roofTriangles\":104,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":3}},\"building-10\":{\"wallTriangles\":124,\"roofTriangles\":342,\"features\":{}},\"building-15\":{\"wallTriangles\":8,\"roofTriangles\":144,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":7}},\"building-19\":{\"wallTriangles\":120,\"roofTriangles\":346,\"features\":{}},\"building-29\":{\"wallTriangles\":8,\"roofTriangles\":144,\"features\":{\"pyramid\":1,\"chimney\":6,\"high-fixture\":7}}}",
+          "boundaryFence": "{\"enabled\":true,\"height\":2.2,\"styleId\":\"japandi\",\"members\":905,\"meshes\":3,\"gates\":[{\"id\":\"front-pedestrian-opening\",\"open\":true,\"width\":1.1999999999999993},{\"id\":\"front-vehicle-opening\",\"open\":true,\"width\":4}]}",
+          "gardenPaths": "null",
+          "coldPlunge": "{\"sunken\":false,\"groundZ\":3.436306555301225,\"baseZ\":3.436306555301225,\"rimZ\":4.1863065553012255,\"padTopZ\":3.456306555301225,\"waterZ\":4.116306555301225,\"bottomZ\":3.016306555301225,\"steps\":[{\"x\":6.6,\"y\":34.05,\"width\":1,\"length\":0.3,\"baseZ\":2.9800319664492485,\"topZ\":3.290237221884902},{\"x\":6.6,\"y\":34.349999999999994,\"width\":1,\"length\":0.3,\"baseZ\":3.0095894775140044,\"topZ\":3.469451088568167},{\"x\":6.6,\"y\":34.65,\"width\":1,\"length\":0.3,\"baseZ\":3.0430873992773746,\"topZ\":3.6486649552514314},{\"x\":6.6,\"y\":34.949999999999996,\"width\":1,\"length\":0.3,\"baseZ\":3.0804661715822292,\"topZ\":3.827878821934696},{\"x\":6.6,\"y\":35.25,\"width\":1,\"length\":0.3,\"baseZ\":3.112519979420991,\"topZ\":4.007092688617961}],\"padBaseZ\":3.116185339875668,\"entryGroundZ\":3.1110233552016373,\"entryRiser\":0.1792138666832647}",
+          "gardenLighting": "{\"fixtures\":22,\"lights\":22,\"routeFixtures\":0,\"gateFixtures\":2,\"activeRouteLights\":0,\"routeShadowMaps\":0}",
+          "spaCovers": "{\"moving\":0,\"covers\":[]}",
+          "slidingDoors": "{\"terrace\":0,\"upper\":1}",
+          "interiorDimensions": "{\"enabled\":true,\"total\":116,\"visible\":0,\"floor\":null,\"roomId\":null,\"layouts\":14,\"projectionFrames\":1,\"refreshIntervalMs\":100,\"occlusion\":{\"meshes\":144,\"queries\":42,\"triangleTests\":3712,\"boxTests\":7628,\"method\":\"cached-triangle-bvh\"}}",
+          "gardenDimensions": "{\"total\":67,\"visible\":10,\"layouts\":4,\"projectionFrames\":0,\"refreshIntervalMs\":100,\"occlusion\":{\"meshes\":703,\"queries\":44,\"triangleTests\":228,\"boxTests\":30752,\"method\":\"cached-triangle-bvh\"}}",
+          "equipmentLabels": "{\"enabled\":false,\"total\":0,\"visible\":0,\"floor\":null,\"layoutPasses\":0,\"occlusion\":null}",
+          "livingCinema": "null",
+          "luxuryKitchen": "{\"kind\":\"fitted-luxury-kitchen\",\"schedule\":[{\"id\":\"kitchen-dishwasher-1\",\"label\":\"Dishwasher 1 · 60 cm\",\"width\":0.6,\"depth\":0.65,\"height\":0.845,\"detail\":\"Fully integrated XXL AutoDos; 600 mm clear niche beside the sink.\",\"reference\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\",\"hidden\":true,\"category\":\"appliance\"},{\"id\":\"kitchen-dishwasher-2\",\"label\":\"Dishwasher 2 · 60 cm\",\"width\":0.6,\"depth\":0.65,\"height\":0.845,\"detail\":\"Second full-size XXL dishwasher; the pair fits the measured wet run.\",\"reference\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\",\"hidden\":true,\"category\":\"appliance\"},{\"id\":\"sink-base\",\"label\":\"Workstation sink and waste · 101 cm\",\"width\":1.01,\"depth\":0.65,\"height\":0.9,\"detail\":\"860 × 510 mm two-bowl workstation sink; waste-sorting pull-out and cleaning storage below.\",\"reference\":\"Franke Box Center BWX 220-54-27\",\"url\":\"https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html\",\"hidden\":true,\"category\":\"worktop\"},{\"id\":\"kitchen-steam-oven\",\"label\":\"Combi-steam oven · 67 L\",\"width\":0.6,\"depth\":0.63,\"height\":0.596,\"detail\":\"Plumbed Miele Diamond oven with HydroClean, installed in a 600 mm tower.\",\"reference\":\"Miele DGC 7865 HC Pro\",\"url\":\"https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-speed-oven\",\"label\":\"Microwave / speed oven · 43 L\",\"width\":0.6,\"depth\":0.63,\"height\":0.456,\"detail\":\"Separate compact oven with 1000 W microwave above the combi-steam oven.\",\"reference\":\"Miele H 7840 BM\",\"url\":\"https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-fridge\",\"label\":\"Four-door fridge-freezer · 96 cm bay\",\"width\":0.96,\"depth\":0.79,\"height\":1.83,\"detail\":\"905 mm product in a wider ventilated bay; 731 mm body depth plus rear allowance. Final hinge clearances follow its installation drawing.\",\"reference\":\"Bosch KFN96AXEA four-door fridge-freezer\",\"url\":\"https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-wine-cooler\",\"label\":\"Wine cooler · 60 cm\",\"width\":0.6,\"depth\":0.85,\"height\":0.816,\"detail\":\"Undercounter two-zone cooler in the peninsula; modeled grille gives at least 430 cm² free ventilation.\",\"reference\":\"Miele KWT 6322 UG-1\",\"url\":\"https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf\",\"hidden\":false,\"category\":\"appliance\"},{\"id\":\"kitchen-nutrition-pantry\",\"label\":\"Hidden nutrition pantry · 55 cm\",\"width\":0.55,\"depth\":0.63,\"height\":2.7,\"detail\":\"Closed, labelled storage for powder tubs, supplements, a blender and compact appliances; deep pull-outs keep the contents reachable.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"kitchen-pantry-corner\",\"label\":\"Full-height corner pantry · 55 cm\",\"width\":0.55,\"depth\":0.63,\"height\":2.7,\"detail\":\"Fills the retained corner with bulk-food and occasional-appliance storage.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"peninsula-drawers\",\"label\":\"Peninsula drawers · 90 cm\",\"width\":0.9,\"depth\":0.85,\"height\":0.9,\"detail\":\"Cutlery above, crockery in the middle and deep pan drawers below.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"cooking-corner\",\"label\":\"Corner pull-out · 120 cm\",\"width\":1.2,\"depth\":0.62,\"height\":0.9,\"detail\":\"A 520 mm access front serves swing-out baskets in the blind corner.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"cooking-drawers\",\"label\":\"Cooking and preparation drawers · 180 cm\",\"width\":1.8,\"depth\":0.62,\"height\":0.9,\"detail\":\"Two 900 mm drawer stacks divide utensils, boards, pots and food containers; 410 mm spice pull-out alongside.\",\"reference\":null,\"url\":null,\"hidden\":true,\"category\":\"storage\"},{\"id\":\"hob\",\"label\":\"Induction cooking · 80 cm\",\"width\":0.8,\"depth\":0.52,\"height\":0.03,\"detail\":\"80 cm induction allowance with flush glass and concealed extraction; final appliance and duct route remain selectable.\",\"reference\":null,\"url\":null,\"hidden\":false,\"category\":\"worktop\"},{\"id\":\"kitchen-hall-selfie-mirror\",\"label\":\"Hall-facing mirror · 255 × 234 cm\",\"width\":2.55,\"depth\":0.026,\"height\":2.34,\"detail\":\"Continuous full-height mirror on the stair-facing kitchen wall, clear of the chimney enclosure and entry.\",\"reference\":null,\"url\":null,\"hidden\":false,\"category\":\"mirror\"}],\"modules\":[{\"id\":\"wet-end-front\",\"run\":\"sink\",\"width\":0.02,\"kind\":\"end-panel\"},{\"id\":\"dishwasher-1\",\"run\":\"sink\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Main dishwasher\"},{\"id\":\"sink-base\",\"run\":\"sink\",\"width\":1.01,\"kind\":\"cabinet\",\"sideThickness\":0.018,\"assignment\":\"Workstation sink, waste sorting and cleaning pull-outs\"},{\"id\":\"dishwasher-2\",\"run\":\"sink\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Second dishwasher\"},{\"id\":\"wet-end-rear\",\"run\":\"sink\",\"width\":0.02,\"kind\":\"end-panel\"},{\"id\":\"peninsula-corner\",\"run\":\"peninsula\",\"width\":0.65,\"kind\":\"blind-corner\",\"assignment\":\"Access from dining side for serving dishes\"},{\"id\":\"peninsula-drawers\",\"run\":\"peninsula\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Cutlery top, daily crockery middle, deep pans below\"},{\"id\":\"wine-cooler\",\"run\":\"peninsula\",\"width\":0.6,\"kind\":\"clear-niche\",\"assignment\":\"Two-zone wine storage with front ventilation\"},{\"id\":\"peninsula-end\",\"run\":\"peninsula\",\"width\":0.05,\"kind\":\"end-panel\"},{\"id\":\"cooking-corner\",\"run\":\"cooking\",\"width\":1.2,\"kind\":\"blind-corner\",\"assignment\":\"Swing-out corner baskets through a 520 mm access front\"},{\"id\":\"hob-drawers\",\"run\":\"cooking\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Utensils and pots below the induction hob\"},{\"id\":\"preparation-drawers\",\"run\":\"cooking\",\"width\":0.9,\"kind\":\"drawers\",\"assignment\":\"Knives, boards, food containers and pans\"},{\"id\":\"spice-pullout\",\"run\":\"cooking\",\"width\":0.41,\"kind\":\"pull-out\",\"assignment\":\"Oils, spices and tall bottles\"},{\"id\":\"fridge-bay\",\"run\":\"tall\",\"width\":0.96,\"kind\":\"appliance-bay\",\"assignment\":\"Four-door fridge-freezer with side and rear allowances\"},{\"id\":\"oven-tower\",\"run\":\"tall\",\"width\":0.6,\"kind\":\"tower\",\"assignment\":\"Full combi-steam oven and separate microwave/speed oven\"},{\"id\":\"nutrition-pantry\",\"run\":\"tall\",\"width\":0.55,\"kind\":\"pantry\",\"assignment\":\"Hidden protein powders, supplements and small appliances\"},{\"id\":\"pantry-corner\",\"run\":\"tall\",\"width\":0.55,\"kind\":\"corner-pantry\",\"assignment\":\"Filled corner for bulk supplies and occasional appliances\"}],\"equipment\":{\"dishwasher\":{\"name\":\"Miele G 7985 SCVi XXL AutoDos K2O\",\"width\":0.598,\"height\":0.845,\"depth\":0.55,\"nicheWidth\":0.6,\"nicheHeight\":[0.845,0.91],\"nicheDepth\":0.55,\"openDepth\":1.205,\"url\":\"https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack\"},\"steamOven\":{\"name\":\"Miele DGC 7865 HC Pro\",\"width\":0.595,\"height\":0.596,\"depth\":0.567,\"capacityLitres\":67,\"nicheWidth\":[0.56,0.568],\"nicheHeight\":[0.59,0.595],\"nicheDepth\":0.55,\"plumbed\":true,\"url\":\"https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack\"},\"speedOven\":{\"name\":\"Miele H 7840 BM\",\"width\":0.595,\"height\":0.456,\"depth\":0.563,\"capacityLitres\":43,\"microwaveWatts\":1000,\"nicheWidth\":[0.56,0.568],\"nicheHeight\":[0.45,0.452],\"nicheDepth\":0.55,\"url\":\"https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal\"},\"fridge\":{\"name\":\"Bosch KFN96AXEA four-door fridge-freezer\",\"width\":0.905,\"height\":1.83,\"depth\":0.731,\"url\":\"https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA\"},\"sink\":{\"name\":\"Franke Box Center BWX 220-54-27\",\"width\":0.86,\"depth\":0.51,\"height\":0.2,\"minimumBase\":0.9,\"bowlWidths\":[0.54,0.27],\"url\":\"https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html\"},\"wineCooler\":{\"name\":\"Miele KWT 6322 UG-1\",\"width\":0.596,\"height\":0.816,\"depth\":0.57,\"nicheWidth\":0.6,\"nicheHeight\":[0.82,0.87],\"nicheDepth\":0.58,\"minimumVentAreaCm2\":430,\"url\":\"https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf\"}},\"clearances\":{\"wetRun\":2.25,\"dishwasherClearNiches\":[0.6,0.6],\"sinkBase\":1.01,\"wetEndPanels\":0.02,\"cabinetHeightDatum\":0.9,\"worktopHeight\":0.919,\"worktopUnderside\":0.881,\"dishwasherHeight\":0.845,\"remainingAboveDishwasher\":0.036,\"peninsulaLength\":2.2,\"entryBesideChimney\":1.18,\"counterToFridge\":2.66,\"openDishwasherAisle\":2.005,\"fridgeBay\":{\"width\":0.96,\"depth\":0.79,\"bodyWidth\":0.905,\"bodyDepth\":0.731,\"rearAllowance\":0.059,\"combinedSideAllowance\":0.055},\"wineVentFreeAreaCm2\":436.8,\"installationNote\":\"Planning envelopes; final appliance drawings govern ventilation, hinge openings, services, worktop cut-outs and mounting.\"},\"mirror\":{\"width\":2.55,\"height\":2.34,\"bottom\":0.18,\"top\":2.52,\"wall\":\"Hall face of kitchen enclosure\",\"normal\":[1,0,0]},\"storage\":[\"Waste sorting and cleaning under sink\",\"900 mm cutlery / crockery / pan drawers in peninsula\",\"900 mm utensils / pots below hob\",\"900 mm preparation drawers\",\"410 mm spice pull-out\",\"1200 mm blind corner with swing-out baskets\",\"550 mm hidden nutrition and appliance pantry\",\"550 mm full-height corner pantry\",\"Cooking-wall and refrigerator-top cupboards\"]}",
+          "performanceTiming": "{\"scope\":\"continuous-navigation\",\"windowFrames\":360,\"totalNavigationFrames\":2,\"frameTimeMs\":{\"samples\":2,\"p50\":16.70000000001164,\"p95\":16.70000000001164,\"p99\":16.70000000001164,\"mean\":1949.9500000000116,\"onePercentLowFps\":0.25751957148743226,\"stalls50ms\":1,\"stalls100ms\":1,\"stalls250ms\":1},\"cpuFrameMs\":{\"samples\":6,\"p50\":10.400000000023283,\"p95\":19.29999999998836,\"p99\":19.29999999998836,\"mean\":14.216666666684128,\"onePercentLowFps\":45.04504504490332,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"phasesMs\":{\"navigation\":{\"samples\":4,\"p50\":0.10000000009313226,\"p95\":0.20000000001164153,\"p99\":0.20000000001164153,\"mean\":0.22500000002037268,\"onePercentLowFps\":2000,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"sceneUpdates\":{\"samples\":5,\"p50\":0.09999999997671694,\"p95\":0.1000000000349246,\"p99\":0.1000000000349246,\"mean\":0.11999999999534339,\"onePercentLowFps\":4999.999999708962,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"interiorLabels\":{\"samples\":6,\"p50\":0.2999999999301508,\"p95\":0.7999999999883585,\"p99\":0.7999999999883585,\"mean\":0.5999999999767169,\"onePercentLowFps\":625.000000009095,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"reflections\":{\"samples\":2,\"p50\":0.1000000000349246,\"p95\":0.1000000000349246,\"p99\":0.1000000000349246,\"mean\":0.10000000006402843,\"onePercentLowFps\":9999.999990686774,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"instanceCulling\":{\"samples\":6,\"p50\":1.3999999999068677,\"p95\":2.200000000069849,\"p99\":2.200000000069849,\"mean\":2.3166666666705473,\"onePercentLowFps\":156.25000000085265,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"sceneRender\":{\"samples\":6,\"p50\":7.900000000023283,\"p95\":10.600000000034925,\"p99\":10.600000000034925,\"mean\":8.683333333319752,\"onePercentLowFps\":72.46376811630881,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"instanceRestore\":{\"samples\":1,\"p50\":0.30000000004656613,\"p95\":0.30000000004656613,\"p99\":0.30000000004656613,\"mean\":0.30000000004656613,\"onePercentLowFps\":3333.333332815932,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"gardenLabels\":{\"samples\":5,\"p50\":0.20000000001164153,\"p95\":5.400000000023283,\"p99\":5.400000000023283,\"mean\":2.620000000030268,\"onePercentLowFps\":138.8888888875415,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0},\"adaptiveResize\":{\"samples\":1,\"p50\":0.09999999997671694,\"p95\":0.09999999997671694,\"p99\":0.09999999997671694,\"mean\":0.09999999997671694,\"onePercentLowFps\":10000.000002328306,\"stalls50ms\":0,\"stalls100ms\":0,\"stalls250ms\":0}}}",
+          "gpuSubmission": "{\"scope\":\"main-render-submission-queue\",\"supported\":true,\"enabled\":true,\"reason\":null,\"disposed\":false,\"maxInFlight\":2,\"attempts\":1239,\"submittedFrames\":19,\"fencedFrames\":19,\"completedFrames\":17,\"deferredAttempts\":1220,\"pendingFrames\":2,\"peakPendingFrames\":2,\"abandonedFences\":0,\"untrackedFrames\":0,\"polls\":1249,\"lastObservedAtMs\":488389.60000000003,\"oldestPendingMs\":1857.5,\"completionLatencyBoundsMs\":{\"samples\":17,\"capacity\":64,\"meanLower\":4731.4588235294,\"meanUpper\":13909.652941176473,\"maxUpper\":25008.70000000001},\"recentCompletions\":[{\"frame\":10,\"queueDepthAtSubmission\":1,\"submittedAtMs\":425510.6,\"observedCompletedAtMs\":439944.6,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":14434,\"observedCompletionGapMs\":15624.700000000012},{\"frame\":11,\"queueDepthAtSubmission\":1,\"submittedAtMs\":440625.2,\"observedCompletedAtMs\":459215.2,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":18590,\"observedCompletionGapMs\":19270.600000000035},{\"frame\":12,\"queueDepthAtSubmission\":1,\"submittedAtMs\":459251.8,\"observedCompletedAtMs\":465162.8,\"completionLatencyLowerMs\":0,\"completionLatencyUpperMs\":5911,\"observedCompletionGapMs\":5947.599999999977},{\"frame\":13,\"queueDepthAtSubmission\":1,\"submittedAtMs\":465194.39999999997,\"observedCompletedAtMs\":472106.99999999994,\"completionLatencyLowerMs\":6903.300000000047,\"completionLatencyUpperMs\":6912.599999999977,\"observedCompletionGapMs\":6944.199999999953},{\"frame\":14,\"queueDepthAtSubmission\":2,\"submittedAtMs\":465456.89999999997,\"observedCompletedAtMs\":477522.2,\"completionLatencyLowerMs\":6650.099999999977,\"completionLatencyUpperMs\":12065.300000000047,\"observedCompletionGapMs\":5415.20000000007},{\"frame\":15,\"queueDepthAtSubmission\":2,\"submittedAtMs\":472128.10000000003,\"observedCompletedAtMs\":482659.60000000003,\"completionLatencyLowerMs\":10428.399999999907,\"completionLatencyUpperMs\":10531.5,\"observedCompletionGapMs\":5137.400000000023},{\"frame\":16,\"queueDepthAtSubmission\":2,\"submittedAtMs\":477533.10000000003,\"observedCompletedAtMs\":486545.8,\"completionLatencyLowerMs\":8923.29999999993,\"completionLatencyUpperMs\":9012.699999999953,\"observedCompletionGapMs\":3886.1999999999534},{\"frame\":17,\"queueDepthAtSubmission\":2,\"submittedAtMs\":482676.3,\"observedCompletedAtMs\":488389.60000000003,\"completionLatencyLowerMs\":5696.599999999977,\"completionLatencyUpperMs\":5713.300000000047,\"observedCompletionGapMs\":1843.8000000000466}],\"errors\":[],\"interpretation\":\"Bounds bracket observable fence availability, including queueing, browser status caching and polling delay; they are not isolated GPU durations or presentation times. Pending counts unretired handles, which may complete before the next observation.\"}",
+          "adaptiveQuality": "{\"mode\":\"measured-motion-buffer\",\"level\":3,\"scale\":0.54,\"changes\":3,\"lastP75Ms\":0,\"targetMs\":24,\"minimumScale\":0.54,\"cooldownMs\":900,\"pressureChanges\":3,\"lastPressureAgeMs\":5489.899999999907,\"pressureThresholdMs\":250,\"recoversAtRest\":true}",
+          "sceneOptimization": "{\"repeatedGardenDetails\":{\"parts\":172,\"savedDrawCalls\":165},\"dimensionOcclusion\":\"cached-triangle-bvh\",\"dimensionLayoutHz\":10,\"vegetation\":{\"method\":\"instance-frustum-compaction\",\"sourceBatches\":17,\"nonemptyBatches\":17,\"instances\":4828,\"visibleInstances\":4828,\"culledInstances\":0,\"compacted\":false,\"shadowUploadGuard\":null,\"orderedBatches\":0,\"orderedInstances\":0,\"passes\":19,\"opaqueOrder\":\"default\",\"drawCallsAdded\":0,\"geometryChanged\":false,\"positionsChanged\":false}}",
+          "mirrors": "{\"count\":1,\"captured\":true,\"frames\":6,\"width\":256,\"height\":154,\"updateMode\":\"settled-only\",\"updatesWhileMoving\":0}"
+        }
+      },
+      "lookBefore": {
+        "yaw": -52.4345,
+        "pitch": -9.7241
+      },
+      "lookAfter": {
+        "yaw": -42.5797,
+        "pitch": -4.7967
+      },
+      "fov": 70
+    }
+  },
+  "bathrooms": {
+    "ground": [
+      "tub",
+      "shower",
+      "basin",
+      "toilet",
+      "bidet",
+      "mirror",
+      "towelRail"
+    ],
+    "first": [
+      "tub",
+      "shower",
+      "basin",
+      "toilet",
+      "mirror",
+      "towelRail"
+    ]
+  },
+  "mobile": {
+    "screen": 390,
+    "width": 390,
+    "drawing": 459,
+    "host": 844,
+    "height": 844,
+    "padMoves": [
+      {
+        "label": "Walk forward",
+        "bounds": {
+          "x": 276,
+          "y": 755.46875,
+          "width": 42,
+          "height": 42
+        },
+        "before": [
+          4.916,
+          5.208,
+          17.412
+        ],
+        "after": [
+          5.123,
+          5.208,
+          17.25
+        ],
+        "distance": 0.2628554735971835,
+        "elapsedMs": 190
+      },
+      {
+        "label": "Step left",
+        "bounds": {
+          "x": 229,
+          "y": 802.46875,
+          "width": 42,
+          "height": 42
+        },
+        "before": [
+          5.123,
+          5.208,
+          17.25
+        ],
+        "after": [
+          5.031,
+          5.208,
+          17.132
+        ],
+        "distance": 0.1496262009141439,
+        "elapsedMs": 4869
+      },
+      {
+        "label": "Step back",
+        "bounds": {
+          "x": 276,
+          "y": 802.46875,
+          "width": 42,
+          "height": 42
+        },
+        "before": [
+          5.031,
+          5.208,
+          17.132
+        ],
+        "after": [
+          4.788,
+          5.208,
+          17.321
+        ],
+        "distance": 0.3078473647767669,
+        "elapsedMs": 206
+      },
+      {
+        "label": "Step right",
+        "bounds": {
+          "x": 323,
+          "y": 802.46875,
+          "width": 42,
+          "height": 42
+        },
+        "before": [
+          4.788,
+          5.208,
+          17.321
+        ],
+        "after": [
+          4.897,
+          5.208,
+          17.462
+        ],
+        "distance": 0.1782189664429673,
+        "elapsedMs": 4276
+      }
+    ],
+    "padDistance": 0.8985480057310615
+  },
+  "status": "passed"
+}
