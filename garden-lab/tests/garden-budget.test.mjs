@@ -5,6 +5,8 @@ import {COST_DEFAULTS, estimateCosts, estimateGardenCosts, estimateSpaCosts} fro
 import {GARDEN_PRICE_REFERENCES, GARDEN_PLANNING_RATES} from '../src/garden-budget-catalog.js';
 import {getTreeType} from '../src/tree-catalog.js';
 import {renderBudget} from '../src/budget-view.js';
+import {DEFAULTS} from '../src/state.js';
+import {gardenFurniture} from '../src/layout.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/site-data.json',import.meta.url)));
 const base={...COST_DEFAULTS,gardenProgram:'spa-compact',costUsePlanningAllowances:true,
@@ -78,6 +80,15 @@ test('finish quantities exclude jacuzzi, coping and stairs, while demolition and
   assert.ok(altered.rows.some(r=>r.key==='costGardenCanopy'));
   near(altered.quantities.canopyArea,24);
   near(altered.quantities.terraceNet-q.terraceNet,data.site.terrace.width);
+  const currentSettings={...DEFAULTS,costUsePlanningAllowances:true},current=estimateGardenCosts(currentSettings,data);
+  const prior=estimateGardenCosts({...currentSettings,privateGardenSeating:false},data);
+  assert.equal(current.quantities.diningSets,0);assert.equal(prior.quantities.diningSets,1);
+  const furnitureRow=current.rows.find(r=>r.key==='costGardenFurniture');
+  assert.doesNotMatch(furnitureRow.basis,/dining set/);
+  assert.ok(prior.rows.find(r=>r.key==='costGardenFurniture').cost.low>furnitureRow.cost.low,
+    'The deleted dining set is removed from the real allowance');
+  near(current.quantities.pavingArea,gardenFurniture(data,currentSettings).pathNetwork.surfaceArea);
+  assert.ok(current.quantities.pavingArea<prior.quantities.pavingArea,'No orphan dining pad or approach remains in paving quantities');
 });
 
 test('published references and documented planning assumptions remain separate and reproducible',()=>{

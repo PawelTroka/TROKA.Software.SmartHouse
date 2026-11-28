@@ -69,7 +69,8 @@ test('warm shaded route lamps and lower perimeter lighting preserve independent 
     const route=lighting.fixtures.filter(f=>f.id?.startsWith('garden-route-light-'));
     if(summerPoolLayout){
       const network=gardenFurniture(data,settings).pathNetwork;
-      assert.equal(route.length,7);assert.equal(new Set(route.map(f=>f.destination)).size,7);
+      assert.equal(route.length,6);assert.equal(new Set(route.map(f=>f.destination)).size,6);
+      assert.ok(route.every(f=>f.destination!=='dining'),'No route fixture remains at the removed dining area');
       assert.deepEqual(route.map(f=>f.id),network.lights.map(f=>f.id));
       assert.equal(lighting.fixtures.filter(f=>f.zone==='path').length,0,'The connected route uses shielded downlights');
       for(const f of route){

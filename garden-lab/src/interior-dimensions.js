@@ -2,7 +2,7 @@
  * Points use Three's local [x, elevation, z] order. Areas exclude slab voids;
  * irregular rooms explicitly report maximum extents, never a clear rectangle.
  */
-import {containsPoint,ringBounds,floorTriangles} from './interior-geometry.js?v=1.40.0';
+import {containsPoint,ringBounds,floorTriangles} from './interior-geometry.js?v=1.41.0';
 
 const EPS=1e-7,number=n=>Number.isFinite(n),fmt=n=>n.toFixed(2),metres=(a,b)=>`${fmt(a)} × ${fmt(b)} m`;
 const area=ring=>Math.abs(ring.reduce((sum,p,i)=>{const q=ring[(i+1)%ring.length];return sum+p[0]*q[1]-q[0]*p[1];},0))/2;

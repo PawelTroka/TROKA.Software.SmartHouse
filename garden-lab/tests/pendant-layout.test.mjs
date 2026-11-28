@@ -21,7 +21,7 @@ const distanceToLine=(p,a,b)=>{
 
 for(const {data,settings} of sites)test(`${data.site.id||'sternicza-11'}: pendants fit the real garden and active hedge sides`,()=>{
   const before=JSON.stringify({data,settings}),layout=pendantLightingLayout(settings,data);
-  assert.equal(layout.garden.filter(f=>f.zone==='garden').length,3);
+  assert.equal(layout.garden.filter(f=>f.zone==='garden').length,(data.site.id||settings.siteId)==='sternicza-11'?0:3);
   assert.ok(layout.garden.length<=12);
   assert.ok(layout.hedge.length>=5&&layout.hedge.length<=24);
   assert.equal(new Set([...layout.garden,...layout.hedge].map(f=>f.id)).size,layout.garden.length+layout.hedge.length);

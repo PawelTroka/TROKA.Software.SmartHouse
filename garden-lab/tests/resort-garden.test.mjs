@@ -19,14 +19,19 @@ const defaults=createStateModel(getSiteProfile('sternicza-11',data)).DEFAULTS;
 const proposals=DESIGN_STYLES.filter(s=>s.id!=='current');
 const terrace=(d,s)=>resortTerraceLayout(d,s,jacuzziBounds(s,d),terraceStairs({...d.site.terrace,y:d.site.rearMidpoint[1]},s.terraceDepth,terraceGroundReference(s,d).drop,s,d));
 
-test('every renovation has an intentional garden composition; Current preserves its furniture',()=>{
+test('renovations preserve the requested pool row and open right garden; archived layouts retain their distinct compositions',()=>{
   assert.deepEqual(Object.keys(RESORT_GARDEN_RECIPES).sort(),proposals.map(s=>s.id).sort());
   const {pathNetwork,...currentFurniture}=gardenFurniture(data,defaults);
   assert.deepEqual(currentFurniture,gardenProgram(defaults,data).furniture);
   assert.ok(pathNetwork.connections.every(c=>c.connected),'The shared current garden also receives the requested continuous paths');
   assert.deepEqual(terrace(data,defaults).items,[]);
-  const signatures=proposals.map(style=>JSON.stringify(gardenFurniture(data,{...defaults,designStyle:style.id})));
-  assert.equal(new Set(signatures).size,proposals.length,'The complete garden arrangements differ, not just their colours');
+  for(const style of proposals){
+    const furniture=gardenFurniture(data,{...defaults,designStyle:style.id});
+    assert.deepEqual(furniture.sunbeds,currentFurniture.sunbeds,style.id+' retains the shared side-by-side row');
+    assert.equal(furniture.dining,null,style.id+' does not restore the exposed sitting area');
+  }
+  const signatures=proposals.map(style=>JSON.stringify(gardenFurniture(data,{...defaults,designStyle:style.id,privateGardenSeating:false})));
+  assert.equal(new Set(signatures).size,proposals.length,'Historical complete garden arrangements retain their distinct compositions');
 });
 
 test('all terrace compositions fit the selected deck and keep threshold, stair route and spa access open',()=>{

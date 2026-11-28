@@ -1,5 +1,5 @@
-import {getTreeType} from './tree-catalog.js?v=1.40.0';
-import {optimizedScreeningTrees,isSummerTreePreset} from './summer-garden.js?v=1.40.0';
+import {getTreeType} from './tree-catalog.js?v=1.41.0';
+import {optimizedScreeningTrees,isSummerTreePreset} from './summer-garden.js?v=1.41.0';
 
 /** Keep individual and custom placements. An explicitly requested all-species
  * preset can adopt that species' earlier positions while the triplet is unedited.

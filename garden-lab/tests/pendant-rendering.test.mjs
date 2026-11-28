@@ -126,7 +126,7 @@ test('lighting budget counts route, gate and pendant fittings once, retains them
     const routes=gardenFurniture(data,state).pathNetwork?.lights.length??3,gates=boundaryFenceLayout(state,data).fixtures.length;
     assert.equal(cost.quantities.otherLightingAllowance,9);
     assert.equal(cost.quantities.routeFixtureCount,routes);assert.equal(cost.quantities.gateFixtureCount,gates);
-    if(data.site.id==='sternicza-11'){assert.equal(routes,7);assert.equal(gates,2);}
+    if(data.site.id==='sternicza-11'){assert.equal(routes,6);assert.equal(gates,2);}
     const count=9+routes+gates+layout.garden.length+layout.hedge.length;
     assert.equal(cost.quantities.lightingFittings,count);
     assert.deepEqual(row.cost,{low:count*700,high:count*1500});

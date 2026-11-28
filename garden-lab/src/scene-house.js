@@ -1,10 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.40.0';
-import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.40.0';
-import {photoRoofEdgeHeight} from './house-roof.js?v=1.40.0';
-import {addHouseRenovation} from './scene-house-renovation.js?v=1.40.0';
-import {getDesignStyle} from './design-styles.js?v=1.40.0';
-import {entranceAccessLayout} from './entrance-access.js?v=1.40.0';
+import {toWorld,toWorldTriangle,toWorldRoofTriangle} from './orientation.js?v=1.41.0';
+import {houseAppearanceLayout,facadePoint} from './house-appearance.js?v=1.41.0';
+import {photoRoofEdgeHeight} from './house-roof.js?v=1.41.0';
+import {addHouseRenovation} from './scene-house-renovation.js?v=1.41.0';
+import {getDesignStyle} from './design-styles.js?v=1.41.0';
+import {entranceAccessLayout} from './entrance-access.js?v=1.41.0';
+import {createReflectivePrivacyGlassMaterials} from './privacy-glazing.js?v=1.41.0';
 
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const quad=(a,b,c,d)=>[toWorldTriangle(a,b,c),toWorldTriangle(a,c,d)];
@@ -52,9 +53,12 @@ function beam(group,name,a,b,radius,mat,shadow=false){
   object.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),direction.normalize());
   object.castShadow=shadow;object.receiveShadow=true;group.add(object);return object;
 }
-function panel(group,name,edge,lo,hi,bottom,top,offset,mat,shadow=false){
-  return mesh(group,name,quad(facadePoint(edge,lo,bottom,offset),facadePoint(edge,hi,bottom,offset),
-    facadePoint(edge,hi,top,offset),facadePoint(edge,lo,top,offset)),mat,shadow);
+function panel(group,name,edge,lo,hi,bottom,top,offset,mat,shadow=false,normalSign=0){
+  let triangles=quad(facadePoint(edge,lo,bottom,offset),facadePoint(edge,hi,bottom,offset),
+    facadePoint(edge,hi,top,offset),facadePoint(edge,lo,top,offset));
+  if(normalSign*(edge.direction[1]*edge.outward[0]-edge.direction[0]*edge.outward[1])<0)
+    triangles=triangles.map(([a,b,c])=>[a,c,b]);
+  return mesh(group,name,triangles,mat,shadow);
 }
 const inside=(x,z,aperture)=>x>aperture.lo-1e-7&&x<aperture.hi+1e-7&&z>aperture.z-1e-7&&z<aperture.z+aperture.height+1e-7;
 
@@ -94,7 +98,11 @@ function facade(group,edge,layout,palette){
 function window(group,edge,w,palette){
   const frame=w.kind==='hst'?palette.hstFrame:palette.frame,thickness=w.frameWidth??(w.kind==='hst'?.045:.07);
   const offset=.034,z0=w.z,z1=w.z+w.height;
-  panel(group,`${w.id}-glass`,edge,w.lo+thickness,w.hi-thickness,z0+thickness,z1-thickness,offset,w.glazing==='privacy'?palette.privacyGlass:w.kind==='hst'?palette.hstGlass:palette.glass);
+  if(w.glazing==='reflective-privacy'){
+    if(!palette.reflectivePrivacyExterior)Object.assign(palette,createReflectivePrivacyGlassMaterials(THREE));
+    panel(group,`${w.id}-reflective-glass-exterior`,edge,w.lo+thickness,w.hi-thickness,z0+thickness,z1-thickness,offset+.005,palette.reflectivePrivacyExterior,false,1);
+    panel(group,`${w.id}-reflective-glass-interior`,edge,w.lo+thickness,w.hi-thickness,z0+thickness,z1-thickness,offset-.005,palette.reflectivePrivacyInterior,false,-1);
+  }else panel(group,`${w.id}-glass`,edge,w.lo+thickness,w.hi-thickness,z0+thickness,z1-thickness,offset,w.glazing==='privacy'?palette.privacyGlass:w.kind==='hst'?palette.hstGlass:palette.glass);
   for(const [lo,hi]of [[w.lo,w.lo+thickness],[w.hi-thickness,w.hi]])panel(group,`${w.id}-jamb`,edge,lo,hi,z0,z1,.058,frame);
   for(const [bottom,top]of [[z0,z0+thickness],[z1-thickness,z1]])panel(group,`${w.id}-head-sill`,edge,w.lo,w.hi,bottom,top,.058,frame);
   for(let i=1;i<w.panes;i++){

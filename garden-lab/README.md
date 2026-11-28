@@ -2,7 +2,17 @@
 
 An interactive, browser-only garden privacy and sunlight simulator for **Sternicza 11 and Konrada Korzeniowskiego 40 in Brzeźno, and Nadmorska 17 in Jelitkowo**. Each property uses its own mapped plot, house, neighbourhood, terrain, proposals and saved scenarios.
 
-**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.40.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.40.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.40.0)**
+**[Open Nadmorska 17](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=nadmorska-17&v=1.41.0)** · **[Open Korzeniowskiego 40](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=korzeniowskiego-40&v=1.41.0)** · **[Open Sternicza 11](https://paweltroka.github.io/TROKA.Software.SmartHouse/?site=sternicza-11&v=1.41.0)**
+
+## Garden seating and bathroom privacy · 1.41.0
+
+The right-hand garden dining area is removed, including its table, chairs, paving and dedicated path branch. The current pool arrangement places all selected sunbeds beside one another, with equal spacing and their headrests facing the same way. The default is three beds; the selector also offers two or four in the same row. The pool, pines and central fire lounge retain their positions.
+
+The proposed ground-floor bathroom now has a continuous street-facing wall. Its remaining side window uses reflective privacy glazing, with a reflective exterior and a tinted outward view from inside. The glazing is a daylight privacy concept: a lit bathroom still needs a blind for privacy when outdoors is darker. The original measured house and the upstairs bathroom remain available unchanged in their corresponding views.
+
+Schema **37** adopts these refinements once for the active saved design. Older shared designs and saved comparison A retain their earlier seating and bathroom openings.
+
+[Arrangement, glazing specification and saved-design behavior](docs/garden-bathroom-privacy-1.41.md)
 
 ## Walking performance, fitted luxury kitchen and four cinema layouts · 1.40.0
 

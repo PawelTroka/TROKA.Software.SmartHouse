@@ -1,10 +1,10 @@
 /** Shared metric layout helpers. All positions are local metres. */
-import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.40.0';
-import {resortGardenFurniture} from './resort-garden.js?v=1.40.0';
-import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.40.0';
-import {footprintFit,overlapArea} from './footprint-fit.js?v=1.40.0';
-import {summerGardenEnabled} from './summer-garden.js?v=1.40.0';
-import {gardenPathNetwork} from './garden-paths.js?v=1.40.0';
+import {gardenProgram,spaEnabled,poolBounds} from './garden-program.js?v=1.41.0';
+import {resortGardenFurniture} from './resort-garden.js?v=1.41.0';
+import {terraceGroundReference,privacyStructures} from './geometry.js?v=1.41.0';
+import {footprintFit,overlapArea} from './footprint-fit.js?v=1.41.0';
+import {summerGardenEnabled} from './summer-garden.js?v=1.41.0';
+import {gardenPathNetwork} from './garden-paths.js?v=1.41.0';
 export function boundsOf(points) {
   return {minX:Math.min(...points.map(p=>p[0])),maxX:Math.max(...points.map(p=>p[0])),
     minY:Math.min(...points.map(p=>p[1])),maxY:Math.max(...points.map(p=>p[1]))};
@@ -42,7 +42,7 @@ export function gardenFurniture(data,settings={}) {
   const path=result.path.filter(([x,y])=>fits({x,y,width:1.15,length:.9}));
   // A retained building or enlarged deck may consume a proposed furniture
   // zone. Omit that proposal consistently in both plan and rendered scene.
-  const diningVisible=(!data.site.garage||settings.removeGarage!==false)&&fits(result.dining);
+  const diningVisible=Boolean(result.dining)&&(!data.site.garage||settings.removeGarage!==false)&&fits(result.dining);
   const network=withGardenPaths({...result,diningVisible,resort:{...result.resort,items}},data,settings).pathNetwork;
   const proposal=program.renovation;
   let beds=[],pads=[];

@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {indexExactFoliageGeometry} from './foliage-vertex-index.js?v=1.40.0';
+import {indexExactFoliageGeometry} from './foliage-vertex-index.js?v=1.41.0';
 
 const TAU = Math.PI * 2;
 const atlasPixels = new Map();

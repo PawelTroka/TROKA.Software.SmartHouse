@@ -1,7 +1,7 @@
 /** Architectural garden proposals in site metres. These feed the existing pool,
  * excavation, sunlight, privacy, plan and budget models; they are not overlays. */
-import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.40.0';
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.40.0';
+import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.41.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.41.0';
 const rect=(x,y,width,length)=>Object.freeze({x,y,width,length});
 const scheme=(name,pool,firepit,dining,loungers,path,beds)=>Object.freeze({
   name,pool:rect(...pool),firepit:Object.freeze(firepit),dining:rect(...dining),
@@ -62,5 +62,8 @@ export function getRenovationGardenRecipe(settings={},data){
     !(settings.gardenProgram||'').startsWith('spa'))return null;
   const recipe=RENOVATION_GARDEN_RECIPES[settings.designStyle]||null;
   return recipe&&summerGardenEnabled(settings,data)?{...recipe,pool:summerPoolBounds(settings),firepit:SUMMER_FIREPIT,
-    ...summerGardenFurniture(settings),name:`${recipe.name} · left-edge pool`}:recipe;
+    ...summerGardenFurniture(settings),
+    ...(settings.privateGardenSeating!==false?{name:'Pool and spa garden · side-by-side loungers',
+      description:'An evenly spaced poolside row, a central sunken lounge and an open right-hand garden without a dining or sitting area.'}:
+      {name:`${recipe.name} · left-edge pool`})}:recipe;
 }

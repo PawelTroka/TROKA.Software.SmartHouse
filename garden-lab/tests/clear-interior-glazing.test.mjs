@@ -32,7 +32,25 @@ test('every renovation gives the sauna one real clear view aperture without chan
   }
 });
 
-test('actual kitchen, bathroom and sauna meshes preserve clear views through their enlarged openings',()=>{
+test('bathroom privacy closes the street aperture and keeps the side view in every renovation style',()=>{
+  for(const designStyle of styles){
+    const plan=getHouseFloorPlan({floor:'ground',settings:{designStyle}});
+    const windows=apertures(plan).filter(({opening:o})=>o.roomId==='bathroom');
+    assert.equal(windows.length,1,designStyle);
+    const {wall,opening:o}=windows[0];assert.equal(wall.id,'right-facade');
+    assert.equal(o.glazing,'reflective-privacy');assert.equal(o.privacy,true);
+    assert.equal(o.privacyCondition,'outside-brighter-than-inside');assert.equal(o.nightPrivacyGuaranteed,false);
+    assert.equal(o.outlook,'side-garden');assert.equal(o.panes,1);assert.equal(o.transoms,0);
+    assert.ok(plan.walls.find(w=>w.id==='street-facade').openings.every(o=>o.type!=='window'));
+    const archived=getHouseFloorPlan({floor:'ground',settings:{designStyle,bathroomPrivacyGlazing:false}});
+    const oldWindows=apertures(archived).filter(({opening:o})=>o.roomId==='bathroom');
+    assert.equal(oldWindows.length,2);assert.ok(oldWindows.every(({opening:o})=>o.glazing==='clear'&&!o.privacy));
+  }
+  const current=getHouseFloorPlan({floor:'ground',settings:{designStyle:'current',bathroomPrivacyGlazing:true}});
+  assert.equal(current.walls.find(w=>w.id==='street-facade').openings.filter(o=>o.type==='window').length,2);
+});
+
+test('actual kitchen, bathroom and sauna meshes preserve views out and orient privacy reflection outside',()=>{
   const previous=globalThis.document,context=new Proxy({},{get:()=>()=>{}});
   globalThis.document={createElement:()=>({width:0,height:0,getContext:()=>context})};
   try{
@@ -43,6 +61,10 @@ test('actual kitchen, bathroom and sauna meshes preserve clear views through the
         model.updateVisibility('building',{x:5,z:4});model.root.updateMatrixWorld(true);
         assert.ok(finishes.m.glass.transparent&&finishes.m.glass.opacity<=.15&&finishes.m.glass.roughness<=.08);
         assert.ok(finishes.m.privacyGlass.opacity>finishes.m.glass.opacity+.5,'Clear glass is materially different from the former opaque privacy pane');
+        const outside=finishes.m.reflectivePrivacyExterior,inside=finishes.m.reflectivePrivacyInterior;
+        assert.ok(outside.transparent&&outside.opacity<1&&outside.metalness>.8&&outside.roughness<.1);
+        assert.ok(inside.transparent&&inside.opacity<=.2&&inside.side===THREE.FrontSide);
+        assert.equal(outside.userData.nightPrivacyGuaranteed,false);
         const visible=[];model.root.traverseVisible(o=>{if(o.isMesh)visible.push(o);});
         for(const {wall,opening:o}of apertures(plan)){
           const dx=wall.b[0]-wall.a[0],dz=wall.b[1]-wall.a[1],length=Math.hypot(dx,dz),ux=dx/length,uz=dz/length;
@@ -51,10 +73,23 @@ test('actual kitchen, bathroom and sauna meshes preserve clear views through the
             const d=o.offset+o.width*along,x=wall.a[0]+ux*d,z=wall.a[1]+uz*d,y=plan.elevation+o.sill+o.height*vertical;
             const ray=new THREE.Raycaster(new THREE.Vector3(x-outward[0]*.42,y,z-outward[1]*.42),new THREE.Vector3(outward[0],0,outward[1]),0,.67);
             const hits=ray.intersectObjects(visible,false);
-            assert.ok(hits.some(hit=>hit.object.material===finishes.m.glass),`${designStyle}/${floor}/${o.roomId} lacks real glazing`);
+            const expected=o.glazing==='reflective-privacy'?inside:finishes.m.glass;
+            assert.ok(hits.some(hit=>hit.object.material===expected),`${designStyle}/${floor}/${o.roomId} lacks real glazing`);
             const opaque=hits.filter(hit=>{const m=hit.object.material;return !m.transparent||m.opacity>.2;});
             assert.equal(opaque.length,0,`${designStyle}/${floor}/${o.roomId} is blocked by opaque geometry at ${along}, ${vertical}`);
+            if(o.glazing==='reflective-privacy'){
+              const reverse=new THREE.Raycaster(new THREE.Vector3(x+outward[0]*.42,y,z+outward[1]*.42),new THREE.Vector3(-outward[0],0,-outward[1]),0,.67);
+              const exteriorHits=reverse.intersectObjects(visible,false);
+              assert.ok(exteriorHits.some(hit=>hit.object.material===outside),'The exterior must show reflective glazing');
+              assert.ok(exteriorHits.every(hit=>hit.object.material!==inside),'The tinted inner face must not draw outside');
+            }
           }
+        }
+        if(floor==='ground'){
+          const street=new THREE.Raycaster(new THREE.Vector3(8.36,plan.elevation+1.65,9.15),new THREE.Vector3(0,0,-1),0,.70);
+          const hits=street.intersectObjects(visible,false);
+          assert.ok(hits.some(hit=>!hit.object.material.transparent),'The removed street window must be a solid wall');
+          assert.ok(hits.every(hit=>hit.object.material!==finishes.m.glass),'The closed opening must have no residual clear pane');
         }
       }finally{model.dispose();tools.dispose();finishes.dispose();}
     }

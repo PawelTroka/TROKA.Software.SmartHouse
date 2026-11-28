@@ -97,7 +97,7 @@ try{
   page=await context.newPage();page.setDefaultTimeout(120000);page.on('pageerror',e=>report.errors.push(e.message));
   await page.goto(`http://127.0.0.1:${server.address().port}/?site=sternicza-11#v=36&site=sternicza-11&designStyle=scandinavian&showDimensions=false&sceneMotion=false`,{waitUntil:'domcontentloaded',timeout:remaining()});
   await q('#loading').waitFor({state:'hidden',timeout:remaining()});await sharedReady();
-  const initial=await exportDesign();assert.equal(initial.schemaVersion,36);assert.equal(initial.settings.livingCinemaLayout,'right-media');
+  const initial=await exportDesign();assert.equal(initial.schemaVersion,37);assert.equal(initial.settings.livingCinemaLayout,'right-media');
   const ground=initial.interiors.floors.ground,fixtures=ground.fixtures,find=id=>fixtures.find(f=>f.id===id);
   assert.equal(fixtures.filter(f=>f.kind==='dishwasher').length,2);for(const f of fixtures.filter(f=>f.kind==='dishwasher'))assert.equal(f.productDimensions.nicheWidth,.6);
   assert.equal(find('kitchen-steam-oven').productDimensions.capacityLitres,67);assert.equal(find('kitchen-speed-oven').productDimensions.capacityLitres,43);

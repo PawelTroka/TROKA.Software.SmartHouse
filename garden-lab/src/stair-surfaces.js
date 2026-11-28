@@ -1,4 +1,4 @@
-import {ringBounds} from './interior-geometry.js?v=1.40.0';
+import {ringBounds} from './interior-geometry.js?v=1.41.0';
 
 /** Exact horizontal tread polygons used by both drawing and walking. This is
  * a visualization of the retained/proposed stair, not a headroom certificate. */

@@ -1,6 +1,6 @@
 /** A small, connected landscape route in mapped metres. Tree positions are
  * inputs, never outputs. The same polygons drive drawing, meshes and budget. */
-import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.40.0';
+import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.41.0';
 
 const distance=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
 const rectangle=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length]];
@@ -58,18 +58,18 @@ export function gardenPathNetwork({program,stairs,terrace,dining,items=[],bounda
   const saunaEntry=firstStep?mix(firstStep[0],firstStep[1],.5):mix(sauna.door.a,sauna.door.b,.5);
   const nodes={
     terrace:stairEnd,landing:[stairEnd[0],hubY],junction:[mainX,hubY],
-    diningTurn:[dining.x+dining.width/2,hubY],dining:[dining.x+dining.width/2,dining.y],
+    ...(dining?{diningTurn:[dining.x+dining.width/2,hubY],dining:[dining.x+dining.width/2,dining.y]}:{}),
     fireTurn:[fireX,hubY],poolTurn:[fireX,poolY+.15],firepit:[fireX,firepit.y],
     pool:[pool.x-pool.coping,poolY],spaTurn:[mainX,33.4],
     saunaTurn:[saunaEntry[0]+.70,saunaEntry[1]-.70],sauna:saunaEntry,
     plungeTurn:[coldPlunge.anchor[0],33.4],plunge:[coldPlunge.anchor[0],coldPlunge.y-coldPlunge.pad],
   };
-  const links=[['terrace','landing'],['landing','junction'],['landing','diningTurn'],['diningTurn','dining'],
+  const links=[['terrace','landing'],['landing','junction'],...(dining?[['landing','diningTurn'],['diningTurn','dining']]:[]),
     ['junction','fireTurn'],['fireTurn','poolTurn'],['poolTurn','firepit'],['poolTurn','pool'],
     ['junction','spaTurn'],['spaTurn','saunaTurn'],['saunaTurn','sauna'],['spaTurn','plungeTurn'],['plungeTurn','plunge']];
   const fixed=[{id:'terrace',ring:rectangle(terrace)},{id:'pool',ring:rectangle({x:pool.x-pool.coping,y:pool.y-pool.coping,width:pool.width+2*pool.coping,length:pool.length+2*pool.coping})},
     {id:'firepit',ring:firepit.outerFootprint},{id:'sauna',ring:sauna.footprint},{id:'plunge',ring:rectangle(coldPlunge.surroundBounds)},
-    {id:'dining',ring:rectangle(dining)},...items.map(r=>({id:r.id,ring:rectangle(r)}))];
+    ...(dining?[{id:'dining',ring:rectangle(dining)}]:[]),...items.map(r=>({id:r.id,ring:rectangle(r)}))];
   const enabledTrees=trees.filter(t=>t.enabled!==false);
   const segments=[],blocked=[],seen=new Set();
   const fits=(a,b,ends)=>{
@@ -115,7 +115,7 @@ export function gardenPathNetwork({program,stairs,terrace,dining,items=[],bounda
       borders.push({id:`${s.id}-border-${side}`,footprint:pathStrip(a,b,borderWidth)});
     }
   }
-  const lightAnchors=[['terrace',nodes.landing[0]-.72,nodes.landing[1]],['dining',dining.x+dining.width+.32,dining.y+.42],
+  const lightAnchors=[['terrace',nodes.landing[0]-.72,nodes.landing[1]],...(dining?[['dining',dining.x+dining.width+.32,dining.y+.42]]:[]),
     ['firepit',fireX-.73,firepit.y-.70],['pool',pool.x-1.85,poolY+.82],
     ['spa-route',mainX-.72,30.9],['sauna',nodes.saunaTurn[0]-.50,nodes.saunaTurn[1]-.48],
     ['plunge',coldPlunge.anchor[0]+.72,coldPlunge.y-.60]];
@@ -135,5 +135,5 @@ export function gardenPathNetwork({program,stairs,terrace,dining,items=[],bounda
   const stoneArea=pathUnionArea([...pavers,...borders].map(p=>p.footprint)),borderArea=Math.max(0,stoneArea-pavedArea);
   return {id:'connected-spa-garden',width,borderWidth,segments,pavers,borders,lights,planting,pathLength,surfaceArea,pavedArea,
     borderArea,stoneArea,gravelArea:Math.max(0,surfaceArea-stoneArea),fixtureCount:lights.length,blocked,
-    connections:['terrace','pool','firepit','sauna','plunge','dining'].map(id=>({id,point:nodes[id],connected:visited.has(vertex(nodes[id]))}))};
+    connections:['terrace','pool','firepit','sauna','plunge',...(dining?['dining']:[])].map(id=>({id,point:nodes[id],connected:visited.has(vertex(nodes[id]))}))};
 }

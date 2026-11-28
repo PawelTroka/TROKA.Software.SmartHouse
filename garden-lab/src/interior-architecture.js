@@ -1,11 +1,11 @@
 import * as THREE from '../vendor/three.module.js';
-import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.40.0';
-import {furnishInterior} from './interior-furniture.js?v=1.40.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.40.0';
-import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.40.0';
-import {stairTreads} from './stair-surfaces.js?v=1.40.0';
-import {slidingPanelLayout} from './hst-system.js?v=1.40.0';
-import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.40.0';
+import {batchGroup,containsPoint,floorMesh,ringBounds,wallPanels} from './interior-geometry.js?v=1.41.0';
+import {furnishInterior} from './interior-furniture.js?v=1.41.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.41.0';
+import {getBalconyGuardRecipe} from './exterior-recipes.js?v=1.41.0';
+import {stairTreads} from './stair-surfaces.js?v=1.41.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.41.0';
+import {stairLandingGuards,landingGuardTop} from './stair-guards.js?v=1.41.0';
 
 function edges(ring,fn){for(let i=0;i<ring.length;i++)fn(ring[i],ring[(i+1)%ring.length]);}
 function rail(tools,parent,mat,a,b,bottom,height=.94,style=null,m=null) {
@@ -110,7 +110,17 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
       for(let i=0;i<panels;i++){
         if(i>0)box(g,frame,left+module*i,bottom+h/2,0,o.architectureStyle?frameWidth:.045,h,.081);
         if(!o.architectureStyle&&o.type==='hst'&&i===Math.floor(panels/2)-1)continue;
-        box(g,glass,left+(i+.5)*module,bottom+h/2,0,Math.max(.01,module-frameWidth),h-(o.architectureStyle?frameWidth:.035),.009);
+        const paneWidth=Math.max(.01,module-frameWidth),paneHeight=h-(o.architectureStyle?frameWidth:.035),paneX=left+(i+.5)*module;
+        if(o.glazing==='reflective-privacy'){
+          // Opposite front-facing planes keep the exterior reflection from
+          // blocking the view out. The reflection stays semi-transparent and
+          // follows the existing environment's day/night brightness.
+          const outward=exterior?.sign??1;
+          for(const [material,sign]of [[m.reflectivePrivacyExterior,outward],[m.reflectivePrivacyInterior,-outward]]){
+            const pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,paneHeight),material);
+            pane.position.set(paneX,bottom+h/2,sign*.005);pane.rotation.y=sign<0?Math.PI:0;g.add(pane);
+          }
+        }else box(g,glass,paneX,bottom+h/2,0,paneWidth,paneHeight,.009);
       }
       if(Number.isInteger(o.transoms)){
         for(let row=1;row<=o.transoms;row++)box(g,frame,left+w/2,bottom+h*row/(o.transoms+1),0,w,Math.max(.022,frameWidth*.72),.062);
@@ -432,7 +442,7 @@ export function buildArchitecture(plan,state,tools,finishes) {
     const dir=!w.exterior?'partition':Math.abs(dx)>Math.abs(dz)?(z<outlineBox.z?'rear':'front'):(x<outlineBox.x?'left':'right');
     const pair=wallPair(dir), full=attic?Math.min(w.height??h,roofClearance(plan,z)):w.height??h;
     const length=Math.hypot(dx,dz),nx=-dz/length,nz=dx/length,outwardSign=containsPoint(outline,x+nx*.45,z+nz*.45)?-1:1;
-    const outside=w.exterior&&finishes.exteriorWall?{material:finishes.exteriorWall,sign:outwardSign}:null;
+    const outside=w.exterior?{material:finishes.exteriorWall,sign:outwardSign}:null;
     makeWall(pair.full,w,full,state,tools,m,false,outside,renovating?design:null);makeWall(pair.cut,w,Math.min(full,w.exterior?.56:.70),state,tools,m,true,outside,renovating?design:null);
     for(const feature of features.get(w.id)||[]){finishFeatureWall(pair.full,w,feature,full,tools,m,design);finishFeatureWall(pair.cut,w,feature,Math.min(full,w.exterior?.56:.70),tools,m,design);}
     if(attic&&w.exterior&&Math.abs(dz)>.1) {

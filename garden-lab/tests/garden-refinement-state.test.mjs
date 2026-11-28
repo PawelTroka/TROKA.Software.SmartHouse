@@ -15,8 +15,8 @@ const proposal=(screeningTrees=legacyTrees(),extra={})=>model.sanitizeState({
 });
 const oldLink=(state,version=32)=>{const p=new URLSearchParams(model.encodeState(state));p.set('v',String(version));p.set('poolSunbedSides',String(state.poolSunbedSides));return p.toString();};
 
-test('schema 36 starts with the boundary screening pine and resolves current links by property',()=>{
-  assert.equal(STATE_VERSION,36);
+test('schema 37 starts with the boundary screening pine and resolves current links by property',()=>{
+  assert.equal(STATE_VERSION,37);
   assert.equal(model.DEFAULTS.poolSunbedSides,2);
   assert.equal(resolveSiteId('?site=sternicza-11','#v=34&site=nadmorska-17'),'nadmorska-17');
   assert.deepEqual(model.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[19.3,32.25],[17.6,34.9]]);

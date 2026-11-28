@@ -11,7 +11,7 @@ const oldTrees=()=>model.DEFAULTS.screeningTrees.map((tree,i)=>({...tree,id:'own
   x:LEGACY_SUMMER_TREE_POSITIONS['austrian-pine-tall'][i][0],y:LEGACY_SUMMER_TREE_POSITIONS['austrian-pine-tall'][i][1],unitPrice:41000+i,rotation:13*i}));
 
 test('fresh house starts with closed gates, open stacking doors, parked covers and a shared office',()=>{
-  assert.equal(STATE_VERSION,36);
+  assert.equal(STATE_VERSION,37);
   const s=model.sanitizeState();
   for(const key of ['pedestrianGateOpen','garageGateOpen','jacuzziCoverClosed','coldPlungeCoverClosed','officeGuestBedOpen'])assert.equal(s[key],false,key);
   for(const key of ['officeCoworking','gymBenchParked','rearCornerPool'])assert.equal(s[key],true,key);

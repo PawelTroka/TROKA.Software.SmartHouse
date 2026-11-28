@@ -15,7 +15,7 @@ for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40',
   const model=createStateModel(getSiteProfile(id,data));
   // A v19 fixture must retain its published non-lighting defaults even after
   // a later release changes the fresh terrace, cover and garage proposal.
-  const publishedDefaults=Object.freeze({...model.DEFAULTS,livingCinemaLayout:'legacy',showEquipmentLabels:false,poolSunbedSides:1,edgeAlignedSunbeds:false,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
+  const publishedDefaults=Object.freeze({...model.DEFAULTS,privateGardenSeating:false,bathroomPrivacyGlazing:false,livingCinemaLayout:'legacy',showEquipmentLabels:false,poolSunbedSides:1,edgeAlignedSunbeds:false,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
     hstOpen:0,summerPoolLayout:false,jacuzziCentered:false,sceneMotion:false,
     ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false,screeningTrees:STERNICZA_EXCELSA_TREES}:{}),
     terraceCoverType:'canopy',...previous});

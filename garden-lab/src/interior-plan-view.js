@@ -1,6 +1,6 @@
 // Plan coordinates are metres, with the garden at z = 0 and the street at z = 9.
 // The SVG uses the same polygons, openings and furniture footprints as the 3D scene.
-import {interiorRoomMetrics} from './interior-dimensions.js?v=1.40.0';
+import {interiorRoomMetrics} from './interior-dimensions.js?v=1.41.0';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n = value => Number(value.toFixed(3));
 const pts = polygon => polygon.map(([x,z]) => `${n(x)},${n(z)}`).join(' ');

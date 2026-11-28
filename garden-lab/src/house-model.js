@@ -1,10 +1,10 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.40.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.40.0';
-import {renovatePlanOpenings} from './renovation-architecture.js?v=1.40.0';
-import {applyLivingCinema} from './living-cinema.js?v=1.40.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.41.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.41.0';
+import {renovatePlanOpenings} from './renovation-architecture.js?v=1.41.0';
+import {applyLivingCinema} from './living-cinema.js?v=1.41.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -23,14 +23,14 @@ export function houseModelFrame(data,settings={}){
 export function houseModelKey(settings={}){
   return JSON.stringify(['designStyle','interiorLayout','floorHeight','firstFloorRise','atticRise','basementGarageEnabled',
     'garageClearHeight','garageExtraDepth','garageSlabThickness','garageInsideRun','garageRampWidth','garageBottomApron',
-    'terraceWidth','terraceDepth','hstOpen','balconyOpen','officeCoworking','officeGuestBedOpen','gymBenchParked','livingCinemaLayout','canopyEnabled','terraceCoverType','canopyDepth','canopyWidth'].map(k=>settings[k]));
+    'terraceWidth','terraceDepth','hstOpen','balconyOpen','officeCoworking','officeGuestBedOpen','gymBenchParked','livingCinemaLayout','bathroomPrivacyGlazing','canopyEnabled','terraceCoverType','canopyDepth','canopyWidth'].map(k=>settings[k]));
 }
 export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   const layout=settings.designStyle&&settings.designStyle!=='current'?'renovation':'existing';
   const converted=floor==='basement'&&settings.basementGarageEnabled===true;
   const garageFrame=converted&&data?garagePlanFrame(settings,data):null;
   // The garage is an independently selected engineering study, in both views.
-  let plan=getInteriorPlan({floor,layout:converted?'renovation':layout,styleId:settings.designStyle||'current',officeCoworking:settings.officeCoworking,officeGuestBedOpen:settings.officeGuestBedOpen,gymBenchParked:settings.gymBenchParked,livingCinemaLayout:settings.livingCinemaLayout,garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
+  let plan=getInteriorPlan({floor,layout:converted?'renovation':layout,styleId:settings.designStyle||'current',officeCoworking:settings.officeCoworking,officeGuestBedOpen:settings.officeGuestBedOpen,gymBenchParked:settings.gymBenchParked,livingCinemaLayout:settings.livingCinemaLayout,bathroomPrivacyGlazing:settings.bathroomPrivacyGlazing,garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
   const first=num(settings.firstFloorRise,3.05),attic=num(settings.atticRise,5.75);
   const basement=settings.basementGarageEnabled===true?-(num(settings.garageClearHeight,2.3)+num(settings.garageExtraDepth,0)+num(settings.garageSlabThickness,.25)):-2;
   const levels={ground:0,first,attic,basement:floor==='basement'?plan.elevation:basement};
@@ -105,7 +105,8 @@ export function sharedHouseFacades(data,settings={}){
         const id=o.type==='hst'?`rear-hst-${i}`:o.type==='balcony-door'?`rear-balcony-room-${i}`:`${floor}-${wall.id}-${i}`;
         const record={id,edgeIndex:index,centre,width:o.width,z,height:o.height,source:o.source||(plan.layout==='renovation'?'annotated-plan-renovation':'archived-plan'),
           panes:o.panes??(o.type==='hst'?4:2),level:floor==='ground'?'living':floor,kind:o.type,position,outward:outer.slice(),lo:o.offset,hi:o.offset+o.width,
-          ...(o.architectureStyle?{architectureStyle:o.architectureStyle,transoms:o.transoms,frameWidth:o.frameWidth,glazing:o.glazing,operation:o.operation,privacy:o.privacy,roomId:o.roomId}:{} )};
+          ...(o.architectureStyle?{architectureStyle:o.architectureStyle,transoms:o.transoms,frameWidth:o.frameWidth,glazing:o.glazing,operation:o.operation,privacy:o.privacy,roomId:o.roomId,
+            ...(o.glazing==='reflective-privacy'?{privacyCondition:o.privacyCondition,nightPrivacyGuaranteed:o.nightPrivacyGuaranteed,outlook:o.outlook}:{})}:{} )};
         if(o.type==='garage-door')portal=record;
         else if(floor==='ground'&&o.type==='door'&&wall.id==='street-facade')door=record;
         else if(['window','hst','balcony-door'].includes(o.type))windows.push(record);

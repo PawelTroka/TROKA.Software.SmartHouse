@@ -1,8 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.40.0';
-import {existingCanopyRecords, existingFoliageActive} from './existing-vegetation.js?v=1.40.0';
-import {pointInPolygon} from './geometry.js?v=1.40.0';
-import {indexExactFoliageGeometry} from './foliage-vertex-index.js?v=1.40.0';
+import {toWorld} from './orientation.js?v=1.41.0';
+import {existingCanopyRecords, existingFoliageActive} from './existing-vegetation.js?v=1.41.0';
+import {pointInPolygon} from './geometry.js?v=1.41.0';
+import {indexExactFoliageGeometry} from './foliage-vertex-index.js?v=1.41.0';
 
 const TAU = Math.PI * 2;
 function randomFor(id) {

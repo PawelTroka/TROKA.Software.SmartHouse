@@ -39,13 +39,13 @@ test('generated shrubs leave the entire plunge-cover sweep clear without changin
   }
 });
 
-test('all styles connect the six actual destinations without touching water, restored trunks or sunbeds',()=>{
+test('all styles connect the five actual destinations without touching water, restored trunks or sunbeds',()=>{
   for(const style of DESIGN_STYLES)for(const sides of [1,2,3]){
     const s={...settings,designStyle:style.id,poolSunbedSides:sides},d=applyPlanExterior(source,s),f=gardenFurniture(d,s),n=f.pathNetwork,p=gardenProgram(s,d);
     assert.deepEqual(n.blocked,[],style.id);
     assert.ok(n.connections.every(c=>c.connected),`${style.id} has one connected path network from the terrace`);
-    assert.deepEqual(n.connections.map(c=>c.id),['terrace','pool','firepit','sauna','plunge','dining']);
-    assert.equal(n.fixtureCount,7);
+    assert.deepEqual(n.connections.map(c=>c.id),['terrace','pool','firepit','sauna','plunge']);
+    assert.equal(n.fixtureCount,6);
     for(const segment of n.segments){
       assert.equal(footprintFit(segment.footprint,d.site.boundary).location,'inside');
       assert.ok(overlapArea(segment.footprint,rectCorners(p.pool))<1e-8,'The route never runs through pool water');
@@ -63,7 +63,7 @@ test('connected paths report real union area and do not count crossing segments 
   near(pathUnionArea([[[0,0],[3,0],[3,1],[0,1]],[[1,-1],[2,-1],[2,2],[1,2]]]),5);
   const n=gardenFurniture(data,settings).pathNetwork;
   assert.ok(n.surfaceArea<n.segments.reduce((sum,s)=>sum+s.length*s.outerWidth,0));
-  assert.ok(n.pathLength>28&&n.pathLength<38);
+  assert.ok(n.pathLength>25&&n.pathLength<33);
   assert.ok(n.surfaceArea>24&&n.surfaceArea<32);
   assert.equal(gardenPathPlanMarkup(data,settings,{X:x=>x,Y:y=>y,scale:1}).match(/data-garden-path-network=/g).length,1);
 });
@@ -126,7 +126,7 @@ test('the path mesh follows finished grade through every paver and stays within 
   const n=gardenFurniture(data,settings).pathNetwork,g=createGardenPathGroup(n,settings,data,materials);
   try{
     assert.equal(g.name,'landscaped-garden-paths');assert.ok(g.children.length<=5);
-    assert.equal(g.userData.routeFixtures,7);assert.equal(g.userData.connectedDestinations.length,6);
+    assert.equal(g.userData.routeFixtures,6);assert.equal(g.userData.connectedDestinations.length,5);
     for(const [name,offset]of [['garden-path-base',.018],['garden-path-stone',.037],['garden-path-border',.028]]){
       const mesh=g.getObjectByName(name);assert.ok(mesh);assert.equal(mesh.castShadow,false);
       const p=mesh.geometry.attributes.position;
@@ -159,13 +159,13 @@ test('sunken plunge shares flush rim, grade, render, excavation and water receiv
   assert.ok(receivers.length>0);for(const cell of receivers)near(cell.z,z.waterZ);
 });
 
-test('seven low-glare route lights and two gate downlights retain a bounded, unshadowed budget',()=>{
+test('six low-glare route lights and two gate downlights retain a bounded, unshadowed budget',()=>{
   const l=createGardenNightLighting(settings,data,{style:DESIGN_STYLES.find(s=>s.id===settings.designStyle)});
   try{
     const route=l.group.children.filter(o=>o.isLight&&o.userData.routeLight),gate=l.group.children.filter(o=>o.isLight&&o.name.includes('gate-entry-light-downlight'));
-    assert.equal(route.length,7);assert.equal(gate.length,2);assert.ok(l.lightCount<=30);
+    assert.equal(route.length,6);assert.equal(gate.length,2);assert.ok(l.lightCount<=30);
     for(const light of [...route,...gate]){assert.equal(light.castShadow,false);assert.equal(light.userData.nightChannel,'garden');assert.ok(light.isSpotLight);assert.ok(light.target.position.y<light.position.y);}
-    assert.equal(l.fixtures.filter(f=>f.kind==='shielded-path-light').length,7);
+    assert.equal(l.fixtures.filter(f=>f.kind==='shielded-path-light').length,6);
     assert.equal(l.fixtures.filter(f=>f.kind==='gate-pier-light').length,2);
     assert.equal(l.group.getObjectByName('path-bollard-1'),undefined,'The former three route bollards are replaced');
     l.apply({gardenStrength:.7,pendantStrength:0,hedgeStrength:0});assert.ok([...route,...gate].every(light=>light.visible&&light.intensity>0));

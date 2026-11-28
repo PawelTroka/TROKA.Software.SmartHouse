@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {interiorDimensions,interiorDimensionContext} from './interior-dimensions.js?v=1.40.0';
-import {createDimensionOcclusionIndex} from './dimension-occlusion.js?v=1.40.0';
+import {interiorDimensions,interiorDimensionContext} from './interior-dimensions.js?v=1.41.0';
+import {createDimensionOcclusionIndex} from './dimension-occlusion.js?v=1.41.0';
 
 /** Labels share one small geometry group. They only appear on the occupied
  * storey, resolve real mesh occlusion, and yield space to the nearest room.

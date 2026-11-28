@@ -1,12 +1,12 @@
 // Local architectural coordinates, metres: x increases across the drawing,
 // z runs from the garden (0) to the street (9), y=0 at ground finished floor.
-import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.40.0';
-import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.40.0';
-import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.40.0';
-import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.40.0';
-import {guestAndOfficeFixtures,compactGymFixtures,LIVING_FIT_OUT_NOTES,GYM_EQUIPMENT_REFERENCES} from './living-fitouts.js?v=1.40.0';
-import {applyLivingCinema} from './living-cinema.js?v=1.40.0';
-import {luxuryKitchenFixtures,luxuryKitchenSummary} from './luxury-kitchen.js?v=1.40.0';
+import {INTERIOR_CHANGES, INTERIOR_SOURCES} from './interior-sources.js?v=1.41.0';
+import {GARAGE_DEFAULTS, GARAGE_FIELDS, upgradeSingleCarGarage} from './garage-options.js?v=1.41.0';
+import {CYBERSTER_AWD} from './garage-vehicle.js?v=1.41.0';
+import {curateInteriorPlan,INTERIOR_COMPOSITIONS} from './interior-curation.js?v=1.41.0';
+import {guestAndOfficeFixtures,compactGymFixtures,LIVING_FIT_OUT_NOTES,GYM_EQUIPMENT_REFERENCES} from './living-fitouts.js?v=1.41.0';
+import {applyLivingCinema} from './living-cinema.js?v=1.41.0';
+import {luxuryKitchenFixtures,luxuryKitchenSummary} from './luxury-kitchen.js?v=1.41.0';
 export {INTERIOR_CHANGES, INTERIOR_SOURCES};
 
 export const INTERIOR_FLOORS = ['basement','ground','first','attic'];
@@ -74,13 +74,14 @@ const roomLights=()=>[windowAt(2.2),windowAt(5.65)];
 const rearLights=()=>[windowAt(2.96),windowAt(6.54)];
 
 function groundPlan(proposed,fitOut={}){
+  const bathroomPrivacyGlazing=proposed&&fitOut.bathroomPrivacyGlazing!==false;
   const shell=[
     ...mainSides(.35,roomLights()).map(w=>proposed&&w.id==='left-facade'?{
       ...w,openings:[w.openings[0],{...windowAt(5.79,2.30,1.04,1.46),offset:5.79-w.a[1],
         service:'kitchen-sink',roomId:'front-kitchen',outlook:'side-garden'}].map(({start,...o})=>o),
     }:w),
     h('street-facade',.175,10.595,8.825,.35,[
-      ...(!proposed?[windowAt(1.86)]:[]),passage(4.59,proposed?1.38:1.20),door(5.97,.95,'start',1),windowAt(7.62),
+      ...(!proposed?[windowAt(1.86)]:[]),passage(4.59,proposed?1.38:1.20),door(5.97,.95,'start',1),...(!bathroomPrivacyGlazing?[windowAt(7.62)]:[]),
     ],exterior),
     h('street-bay-screen',3.61,7.16,10.45,.38,[windowAt(4.335,.5,1.1,1.15),windowAt(5.935,.5,1.1,1.15)],exterior),
     v('entrance-landing-divider',5.85,8.82,10.45,.12),
@@ -122,12 +123,13 @@ function groundPlan(proposed,fitOut={}){
     fixture('ground-shower','shower','Walk-in shower with north-wall fittings','bathroom',9.71,6.02,1.30,1.36,{front:[-1,0],headWall:[0,-1],approach:[8.73,6.02]}),
     fixture('ground-basin','basin','Dual vanity on the solid stair wall','bathroom',7.42,7.00,.56,1.50,{front:[1,0],basins:2,approaches:[[8.02,6.625],[8.02,7.375]]}),
     fixture('ground-wc','toilet','WC','bathroom',9.06,8.27,.46,.68,{front:[0,-1],approach:[9.06,7.60]}),
-    fixture('ground-bidet','bidet','Bidet below the street window','bathroom',8.36,8.28,.42,.66,{front:[0,-1],height:.44,approach:[8.36,7.60]}),
+    fixture('ground-bidet','bidet',bathroomPrivacyGlazing?'Bidet beside the solid street wall':'Bidet below the street window','bathroom',8.36,8.28,.42,.66,{front:[0,-1],height:.44,approach:[8.36,7.60]}),
     fixture('ground-mirror','mirror','Dual vanity mirror','bathroom',7.125,7.00,.04,1.40,{front:[1,0],wallMounted:true,mountHeight:1.56}),
     fixture('ground-towels','towelRail','Heated towel rail','bathroom',7.36,8.62,.40,.04,{front:[0,-1],wallMounted:true,mountHeight:1.18}),
   ];
   const landing=platform('entry-landing','Twin entry landings','landing',rect(3.28,9,7.49,10.40),1.4);
   return {
+    bathroomPrivacyGlazing,
     rooms:proposed?newRooms:originalRooms,
     walls:[...shell,stairWest,stairEast,...(proposed?[modifiedRear,h('right-wet-crosswall',6.86,10.595,5.04,.38),
       v('kitchen-hall-enclosure',4.53,5.04,8.825,.12,[],added),
@@ -152,8 +154,8 @@ function groundPlan(proposed,fitOut={}){
       'One 2.30 × 1.46 m picture window is centered over the sink and looks into the side garden. Both former window-side upper cabinets are removed, leaving a clean reveal and a clear wall above. The kitchen street window stays closed for cabinetry. The kitchen does not touch the rear façade; its open connection to living/dining retains the rear-garden outlook.',
       'Fitted kitchen storage follows a 2.70 m cabinet line with a 50 mm ceiling scribe. The 2.25 m wet run includes two clear 600 mm dishwasher niches, a 1010 mm sink cabinet and two 20 mm end panels. A 600 mm stacked oven tower, 550 mm hidden nutrition pantry and filled tall corner use the opposite wall. The four-door refrigerator has a wider bay, rear allowance and 100 mm top reveal; final product drawings govern hinge, ventilation and service clearances.',
       'A continuous 2.55 × 2.34 m mirror fills the hall-facing kitchen wall beyond the concealed chimney. The workstation sink, waste pull-out, wine-cooler ventilation, drawer assignments and corner access are included in the fitted-kitchen schedule.',
-      'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; the low bidet stays below the street-window sill.',
-      'Both bathroom windows use clear picture glass with a 0.98 m sill and 1.44 m height. Their wider openings remain within the retained room boundaries and keep the vanity, mirror and towel-rail mounting bays solid.',
+      'The ground bathroom has one 1.78 × 0.88 m deep soaking tub, a 1.30 × 1.36 m shower, a 1.50 m dual vanity, WC and bidet. The vanity and mirror use the solid stair wall; '+(bathroomPrivacyGlazing?'the street-facing window is closed with a continuous finished wall beside the bidet.':'the low bidet stays below the street-window sill.'),
+      bathroomPrivacyGlazing?'The remaining side-garden bathroom window uses Venetian / reflective privacy glass with a 0.98 m sill and 1.44 m height. It has a tinted view out and a reflective exterior when outside is brighter. A lit bathroom still needs a blind for night-time privacy; the final exterior glazing assembly needs a supplier specification.':'Both bathroom windows use clear picture glass with a 0.98 m sill and 1.44 m height. Their wider openings remain within the retained room boundaries and keep the vanity, mirror and towel-rail mounting bays solid.',
       'The shower opens toward the central aisle and its fittings use the solid north wall. Wet-area glazing, ventilation, waterproofing, tub support and exact plumbing need a coordinated design.',
     ]:['The historical twin approach differs from the photo-informed present-day exterior. Door leaves, front screen details and the exact stair turn need a measured survey.'],
   };
@@ -477,12 +479,12 @@ function atticPlan(proposed=false){
       'A folding stair is drawn on the floor below. No attic room partitions or habitable area are documented. The front bay roof detail and exact truss spacing are inferred.'],
   };
 }
-export function getInteriorPlan({floor='ground',layout='renovation',styleId='current',garageVariant='cellar',garageSettings={},officeCoworking=true,officeGuestBedOpen=false,gymBenchParked=true,livingCinemaLayout='legacy',secondaryDishwasherWidth=.60}={}){
+export function getInteriorPlan({floor='ground',layout='renovation',styleId='current',garageVariant='cellar',garageSettings={},officeCoworking=true,officeGuestBedOpen=false,gymBenchParked=true,livingCinemaLayout='legacy',secondaryDishwasherWidth=.60,bathroomPrivacyGlazing=true}={}){
   if(!INTERIOR_FLOORS.includes(floor))throw new RangeError('Unknown interior floor: '+floor);
   if(!INTERIOR_LAYOUTS.includes(layout))throw new RangeError('Unknown interior layout: '+layout);
   const proposed=layout==='renovation';
   const converted=floor==='basement'&&proposed&&garageVariant==='two-car';
-  const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed,{secondaryDishwasherWidth}),
+  const builders={basement:()=>converted?garagePlan(garageSettings):cellarPlan(),ground:()=>groundPlan(proposed,{secondaryDishwasherWidth,bathroomPrivacyGlazing}),
     first:()=>firstPlan(proposed,{officeCoworking,officeGuestBedOpen}),attic:()=>atticPlan(proposed)};
   const built=builders[floor]();
   const detail=converted&&INTERIOR_COMPOSITIONS[styleId]?basementServiceFitOut(built,{gymBenchParked}):built;

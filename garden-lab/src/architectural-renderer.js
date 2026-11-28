@@ -3,7 +3,7 @@ import {EffectComposer} from '../vendor/addons/postprocessing/EffectComposer.js'
 import {RenderPass} from '../vendor/addons/postprocessing/RenderPass.js';
 import {GTAOPass} from '../vendor/addons/postprocessing/GTAOPass.js';
 import {OutputPass} from '../vendor/addons/postprocessing/OutputPass.js';
-import {createGpuPhaseProfiler} from './gpu-phase-profiler.js?v=1.40.0';
+import {createGpuPhaseProfiler} from './gpu-phase-profiler.js?v=1.41.0';
 
 /** Contact shading is a presentation effect, in metres. It never changes the
  * analytical sun/privacy geometry. Small screens and Eco retain direct idle

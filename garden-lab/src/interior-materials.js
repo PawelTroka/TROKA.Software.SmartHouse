@@ -1,9 +1,10 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.40.0';
-import {exteriorSurfacePixels} from './exterior-materials.js?v=1.40.0';
-import {getDesignStyle} from './design-styles.js?v=1.40.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.40.0';
-import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.40.0';
+import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.41.0';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.41.0';
+import {getDesignStyle} from './design-styles.js?v=1.41.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.41.0';
+import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.41.0';
+import {createReflectivePrivacyGlassMaterials} from './privacy-glazing.js?v=1.41.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {
@@ -154,6 +155,7 @@ export function interiorMaterials(styleId,{svgMode=false}={}) {
     painted:make('#f5f4eb',.58,coastal?{map:wallMap,bumpMap:wallMap,bumpScale:.002}:{}),lampShade:make('#f4eddb',.92,{map:linen,side:THREE.DoubleSide,emissive:'#e8dec7',emissiveIntensity:.08}),
     ceramic:physical('#fcf9eb',.2,{metalness:0,clearcoat:.22,clearcoatRoughness:.12}),water:make('#a8c6bf',.12,{metalness:.17}),glass:physical('#eef8f7',.06,{transparent:true,opacity:.14,depthWrite:false,metalness:0,ior:1.5,reflectivity:.5,side:THREE.DoubleSide}),
     privacyGlass:physical('#dbe7e3',.82,{transparent:true,opacity:.78,depthWrite:false,metalness:0,ior:1.5,reflectivity:.25,side:THREE.DoubleSide}),
+    ...createReflectivePrivacyGlassMaterials(THREE),
     leaf:make('#52694c',.8),leafLight:make('#829573',.76),pot:make(mix(p.accent,'#ca9378',.43),.8),paper:make('#e5dcc4'),art:make('#ffffff',.8,{map:map(artwork(p))}),
     glow:make(p.light,.5,{emissive:p.light,emissiveIntensity:.55}),addition:make('#539a80'),removed:make('#c35844'),
     concrete:make('#aca99d',.94,{map:stoneMap}),brick:make('#aa8169',.93,{map:tileMap}),plinth:make('#5b635b',.88),rubber:make('#373d39',.96,{map:stoneMap}),

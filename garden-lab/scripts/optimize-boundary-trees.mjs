@@ -18,7 +18,7 @@ const program=gardenProgram(settings,data),round=n=>Math.round(n*10000)/10000;
 const baseViews=['sofa','standing','terrace','jacuzzi','pool','firepit','sauna'].map(id=>({id,
   weight:['sofa','standing','terrace','jacuzzi'].includes(id)?2:1,...observerForPreset(id,settings,data)}));
 const sunbed=program.furniture.sunbeds[1],dining=program.furniture.dining;
-for(const [id,r,eye]of [['poolside-loungers',sunbed,1.1],['dining',dining,1.2]]){
+for(const [id,r,eye]of [['poolside-loungers',sunbed,1.1],...(dining?[['dining',dining,1.2]]:[])]){
   const x=r.x+r.width/2,y=r.y+r.length/2;
   baseViews.push({id,weight:1,x,y,z:gardenGroundAt(x,y,settings,data)+eye});
 }
@@ -28,7 +28,7 @@ const terrace={...data.site.terrace,y:data.site.rearMidpoint[1],length:settings.
 const stairs=terraceStairs(terrace,settings.terraceDepth,terraceGroundReference(settings,data).drop,settings,data);
 const obstacles=[data.site.house.footprint,rectCorners(terrace),rectCorners(stairs),
   rectCorners(program.pool,program.pool.coping),program.sauna.footprint,program.firepit.outerFootprint,
-  rectCorners(program.coldPlunge,program.coldPlunge.pad),rectCorners(dining),
+  rectCorners(program.coldPlunge,program.coldPlunge.pad),...(dining?[rectCorners(dining)]:[]),
   ...program.furniture.sunbeds.map(b=>rectCorners(b)),
   ...program.coldPlunge.steps.map(s=>rectCorners(s)),...program.sauna.entrySteps.map(s=>s.footprint)];
 const pop=v=>{v=v-((v>>>1)&0x55555555);v=(v&0x33333333)+((v>>>2)&0x33333333);return (((v+(v>>>4))&0x0f0f0f0f)*0x01010101)>>>24;};
