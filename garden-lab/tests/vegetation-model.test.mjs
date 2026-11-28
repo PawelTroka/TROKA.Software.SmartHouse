@@ -54,7 +54,7 @@ test('a full perimeter batches dense botanical sprays within the detailed geomet
   assert.ok(group.userData.plantCount > 150);
   let triangles = 0;
   for (const mesh of group.children) {
-    triangles += mesh.count * mesh.geometry.attributes.position.count / 3;
+    triangles += mesh.count * (mesh.geometry.index?.count??mesh.geometry.attributes.position.count) / 3;
     assert.ok(mesh.geometry.userData.sprayCount >= 450);
     assert.ok(mesh.geometry.userData.recessedCoreRadius < .5,'The opaque core must remain behind the visible compound branches');
     assert.ok(mesh.material.alphaTest > 0);
@@ -75,6 +75,7 @@ test('hedge specimens are deterministic across rebuilds and retain several disti
   for (let i = 0; i < a.children.length; i++) {
     assert.deepEqual(a.children[i].instanceMatrix.array,b.children[i].instanceMatrix.array);
     assert.deepEqual(a.children[i].geometry.attributes.position.array,b.children[i].geometry.attributes.position.array);
+    assert.deepEqual(a.children[i].geometry.index?.array,b.children[i].geometry.index?.array);
   }
   assert.notDeepEqual(a.children[0].geometry.attributes.position.array,a.children[1].geometry.attributes.position.array);
   assert.equal(material.color.getHexString(),'a5b68b','Vegetation must not recolour caller-owned shared materials');
@@ -110,17 +111,18 @@ test('folded hedge sprays have outward winding and matching normals after instan
   for(const mesh of group.children){
     mesh.getMatrixAt(0,matrix);normalMatrix.getNormalMatrix(matrix);centre.setFromMatrixPosition(matrix);
     const {position,normal:attribute,uv}=mesh.geometry.attributes;
-    for(let i=0;i<position.count;i+=3){
-      if(uv.getX(i)<.5)continue; // The opaque recessed core is a separate UV tile.
-      a.fromBufferAttribute(position,i).applyMatrix4(matrix);
-      b.fromBufferAttribute(position,i+1).applyMatrix4(matrix);
-      c.fromBufferAttribute(position,i+2).applyMatrix4(matrix);
+    const index=mesh.geometry.index,vertex=i=>index?index.getX(i):i;
+    for(let i=0;i<(index?.count??position.count);i+=3){
+      if(uv.getX(vertex(i))<.5)continue; // The opaque recessed core is a separate UV tile.
+      a.fromBufferAttribute(position,vertex(i)).applyMatrix4(matrix);
+      b.fromBufferAttribute(position,vertex(i+1)).applyMatrix4(matrix);
+      c.fromBufferAttribute(position,vertex(i+2)).applyMatrix4(matrix);
       face.crossVectors(b.clone().sub(a),c.clone().sub(a));
       assert.ok(face.lengthSq()>1e-14,'Clipped botanical sprays must retain a drawable face');
       face.normalize();centroid.copy(a).add(b).add(c).multiplyScalar(1/3).sub(centre);centroid.y=0;
       assert.ok(face.dot(centroid)>-1e-6,'Spray winding must face away from the plant centre');
       for(let j=0;j<3;j++){
-        normal.fromBufferAttribute(attribute,i+j).applyMatrix3(normalMatrix).normalize();
+        normal.fromBufferAttribute(attribute,vertex(i+j)).applyMatrix3(normalMatrix).normalize();
         assert.ok(face.dot(normal)>.9999,'DoubleSide must not flip an incorrectly supplied outward normal inward');
       }
       inspected++;

@@ -14,7 +14,7 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   const homeControls=async open=>{if((await el('#home-controls').getAttribute('open')!==null)!==open)await el('#home-controls > summary').click({timeout});};
   const doors=async(key,value)=>{await homeControls(true);await el(`[data-door-control="${key}"][data-door-value="${value}"]`).click({timeout});};
   const baseline=await exportDesign();assert.deepEqual(trees(baseline),expectedTrees);
-  assert.equal(baseline.schemaVersion,35);assert.equal(baseline.settings.perimeterFenceEnabled,true);
+  assert.equal(baseline.schemaVersion,36);assert.equal(baseline.settings.perimeterFenceEnabled,true);
   assert.equal(baseline.gardenLayout.pool.length,6.5);assert.equal(baseline.gardenLayout.pool.width,3.2);
   assert.equal(baseline.gardenLayout.pool.x,15.5);assert.equal(baseline.gardenLayout.pool.y,24.5);
   assert.equal(baseline.gardenLayout.sunbeds.length,3);

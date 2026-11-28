@@ -14,7 +14,7 @@ const v13Coordinates=[[13,34.1],[14.4,25.7],[17.6,34.9]];
 const groveCoordinates=[[13,34.1],[14.2,32.5],[17.6,34.9]];
 
 test('fresh street screening shares its independent height, quote and street-facing viewpoint',()=>{
-  assert.equal(STATE_VERSION,35);
+  assert.equal(STATE_VERSION,36);
   assert.equal(model.DEFAULTS.gardenProgram,getScreeningLayouts('sternicza-11').find(layout=>layout.id==='default').settings.gardenProgram);
   assert.equal(model.DEFAULTS.hedgeFront,4);
   assert.equal(model.DEFAULTS.linkedHedges,false);

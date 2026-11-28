@@ -3,6 +3,16 @@ import * as THREE from '../vendor/three.module.js';
 const MAX_VERTICES=32;
 const ACTIVE_LOCAL_LIGHTS='#if ( NUM_POINT_LIGHTS > 0 ) || ( NUM_SPOT_LIGHTS > 0 )';
 const CACHE_VERSION='garden-local-light-boundary-v1';
+const ZERO_DIRECT_CACHE_VERSION='exact-zero-local-direct-v1';
+const instanceOrderSafeHooks=new WeakMap();
+
+// This wrapper only derives light coverage from the transformed world point.
+// Permit instance reordering only for the exact pair installed over Three's
+// unmodified hooks; a later shader/cache override invalidates the allowance.
+export function isGardenLightBoundaryOrderSafe(material){
+  const hooks=instanceOrderSafeHooks.get(material);
+  return !!hooks&&material.onBeforeCompile===hooks.compile&&material.customProgramCacheKey===hooks.cacheKey;
+}
 
 function normalizedBoundary(boundary){
   if(!Array.isArray(boundary)||boundary.some(p=>!Array.isArray(p)||p.length<2||!p.slice(0,2).every(Number.isFinite)))
@@ -53,13 +63,27 @@ vec4 gardenLightWorldPosition = vec4( transformed, 1.0 );
 vGardenLightWorldXZ = ( modelMatrix * gardenLightWorldPosition ).xz;
 #endif`;
 
-function localLightChunk(){
+function localLightChunk(skipZeroDirect=false){
   let chunk=THREE.ShaderChunk.lights_fragment_begin;
   for(const kind of ['Point','Spot']){
     const source=`get${kind}LightInfo( ${kind.toLowerCase()}Light, geometryPosition, directLight );`;
     chunk=replaceRequired(chunk,source,`${source}
     directLight.color *= gardenLocalLightCoverage;
     directLight.visible = directLight.visible && ( gardenLocalLightCoverage > 0.0 );`);
+    if(skipZeroDirect){
+      const begin=chunk.indexOf(`#if ( NUM_${kind.toUpperCase()}_LIGHTS > 0 ) && defined( RE_Direct )`);
+      const end=chunk.indexOf(kind==='Point'?'#if ( NUM_SPOT_LIGHTS > 0 )':'#if ( NUM_DIR_LIGHTS > 0 )',begin);
+      if(begin<0||end<0)throw new Error(`Garden light boundary cannot locate the ${kind} direct-light block`);
+      const call='RE_Direct( directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );';
+      // Keep attenuation, spotlight textures and shadow sampling in their
+      // original flow. Moving those texture reads into a varying branch could
+      // change implicit derivatives. The pinned standard/physical BRDF is pure
+      // arithmetic and adds exactly zero when its final incident color is zero.
+      const block=replaceRequired(chunk.slice(begin,end),call,`if ( directLight.color != vec3( 0.0 ) ) {
+        ${call}
+      }`);
+      chunk=chunk.slice(0,begin)+block+chunk.slice(end);
+    }
   }
   return `${ACTIVE_LOCAL_LIGHTS}
 float gardenLocalLightCoverage = gardenPlotLightMask( vGardenLightWorldXZ );
@@ -104,15 +128,17 @@ export function createGardenLightBoundary(boundary){
         `#include <worldpos_vertex>\n${worldPosition}`);
       shader.fragmentShader=replaceRequired(shader.fragmentShader,'#include <common>',
         `#include <common>\n${fragmentBoundary(points.length)}`);
-      shader.fragmentShader=replaceRequired(shader.fragmentShader,'#include <lights_fragment_begin>',localLightChunk());
+      shader.fragmentShader=replaceRequired(shader.fragmentShader,'#include <lights_fragment_begin>',localLightChunk(isGardenLightBoundaryOrderSafe(this)));
     };
     material.customProgramCacheKey=function(){
       // Three's default cache key reads the current hook. Retain the original
       // hook identity instead; a caller's custom dynamic key still runs.
       const previousKey=previousCacheKey===THREE.Material.prototype.customProgramCacheKey
         ?previousCompile.toString():previousCacheKey.call(this);
-      return `${previousKey}|${CACHE_VERSION}:${points.length}`;
+      return `${previousKey}|${CACHE_VERSION}:${points.length}${isGardenLightBoundaryOrderSafe(this)?'|'+ZERO_DIRECT_CACHE_VERSION:''}`;
     };
+    if(previousCompile===THREE.Material.prototype.onBeforeCompile&&previousCacheKey===THREE.Material.prototype.customProgramCacheKey)
+      instanceOrderSafeHooks.set(material,{compile:material.onBeforeCompile,cacheKey:material.customProgramCacheKey});
     installed.set(material,{vertexCount:points.length});
     material.needsUpdate=true;
   }

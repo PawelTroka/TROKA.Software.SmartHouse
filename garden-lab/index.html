@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="application-version" content="1.39.0">
+  <meta name="application-version" content="1.40.0">
   <meta name="application-revision" content="20261126-continuous-walk-and-summer-garden">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#243e35">
   <meta name="description" content="Compare garden privacy, seasonal sunlight, terrace designs and costs for properties in Gdańsk Brzeźno and Jelitkowo.">
   <title>Garden Lab · Gdańsk properties</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/sun.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/night.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/privacy.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/garage.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/studio.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/interior.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/neighborhood.css?v=1.39.0">
-  <link rel="stylesheet" href="./src/sea.css?v=1.39.0">
+  <link rel="stylesheet" href="./style.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/sun.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/night.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/privacy.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/garage.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/studio.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/interior.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/neighborhood.css?v=1.40.0">
+  <link rel="stylesheet" href="./src/sea.css?v=1.40.0">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to simulator</a>
@@ -191,8 +191,10 @@
         <div class="interior-entry" id="interior-entry" hidden><div><strong>Step inside Sternicza 11</strong><span>Original drawings · your renovation · furnished rooms</span></div><button class="button primary" id="interior-enter" type="button">Explore interiors →</button></div>
         <div class="viewer-toolbar"><div class="mode-tabs" role="group" aria-label="View mode"><button data-mode="orbit" aria-pressed="true">3D model</button><button data-mode="eye" aria-pressed="false">Eye level</button><button data-mode="walk" aria-pressed="false">Walk</button><button data-mode="plan" aria-pressed="false">Plan</button><button data-mode="section" aria-pressed="false">Sightline</button><button data-mode="sun" aria-pressed="false">Sun &amp; shade</button></div><div class="viewer-toggles"><label class="ray-toggle"><input id="showDimensions" type="checkbox" checked> Dimensions</label><label class="ray-toggle"><input id="showRays" type="checkbox"> Show rays</label><button id="viewer-fullscreen" type="button" class="model-fullscreen-button" aria-label="Enter fullscreen" aria-pressed="false" title="Make this model fullscreen"><svg aria-hidden="true" focusable="false" viewBox="0 0 20 20"><path class="fullscreen-expand-icon" d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4"/><path class="fullscreen-collapse-icon" d="M3 7h4V3m6 0v4h4M7 17v-4H3m14 0h-4v4"/></svg><span data-fullscreen-label>Fullscreen</span></button></div></div>
         <details id="home-controls" class="home-controls" hidden>
-          <summary>Doors, gates &amp; covers <span>Use the house</span></summary>
+          <summary>Layouts, equipment &amp; house controls <span>Use the house</span></summary>
           <div class="home-controls-grid">
+            <div id="home-cinema" class="home-control-block"><h4>Living-room layout</h4><label for="livingCinemaLayout">Cinema &amp; dining arrangement</label><select id="livingCinemaLayout" aria-describedby="living-cinema-note"></select><p id="living-cinema-note" class="field-note"></p><p class="field-note">A, B and D include 7.2.4 Atmos: seven ear-level speakers, two subwoofers and four ceiling speakers. The screen reserves an 85″ envelope; final OLED model and Dolby Vision 2 firmware are a separate equipment choice.</p></div>
+            <div id="home-kitchen" class="home-control-block"><h4>Kitchen equipment</h4><label class="switch-row"><span>Equipment labels<small>Identify integrated appliances and concealed storage.</small></span><input id="showEquipmentLabels" type="checkbox" role="switch" checked></label><details class="kitchen-equipment-details"><summary>Appliances &amp; storage schedule</summary><div id="kitchen-equipment-schedule"></div></details></div>
             <div id="hst-controls" class="field"><div class="field-top"><label for="hstOpen">Terrace doors</label><output id="hst-opening-value" for="hstOpen">100%</output></div><input id="hstOpen" type="range" min="0" max="1" step="0.01" value="1"><div class="range-labels"><span>Closed</span><span>Two panels stacked left</span></div><div class="door-position-buttons"><button type="button" data-door-control="hstOpen" data-door-value="0">Close</button><button type="button" data-door-control="hstOpen" data-door-value="1">Open</button></div><p class="field-note">Three full-height panels, slim frames and up to two-thirds clear opening.</p></div>
             <div id="balcony-controls" class="field"><div class="field-top"><label for="balconyOpen">Upper terrace doors</label><output id="balcony-opening-value" for="balconyOpen">100%</output></div><input id="balconyOpen" type="range" min="0" max="1" step="0.01" value="1"><div class="range-labels"><span>Closed</span><span>Two panels stacked left</span></div><div class="door-position-buttons"><button type="button" data-door-control="balconyOpen" data-door-value="0">Close</button><button type="button" data-door-control="balconyOpen" data-door-value="1">Open</button></div><p class="field-note">All upper rear doors move together. Open is the default.</p></div>
             <div id="home-covers" class="home-control-block"><h4>Concealed spa covers</h4><label class="switch-row"><span>Cover the jacuzzi<small>Retracts into a hidden pocket below the terrace.</small></span><input id="jacuzziCoverClosed" type="checkbox" role="switch"></label><label id="home-plunge-control" class="switch-row"><span>Cover the cold plunge<small>Stows below its flush stone surround.</small></span><input id="coldPlungeCoverClosed" type="checkbox" role="switch"></label></div>
@@ -277,7 +279,7 @@
   <dialog id="style-dialog" class="style-dialog" aria-labelledby="style-dialog-title"><div class="style-dialog-heading"><div><span class="eyebrow">A DIFFERENT WAY TO LIVE</span><h2 id="style-dialog-title">Find your property’s character.</h2><p id="style-catalogue-description">Explore complete designs for your home and garden.</p></div><button id="style-close" class="button subtle" type="button" aria-label="Close design styles">×</button></div><div class="style-filters"><label for="style-search">Find a style<input id="style-search" type="search" placeholder="Beach House, Bali, Japandi…" autocomplete="off"></label><label for="style-family">Design family<select id="style-family"><option value="">All families</option></select></label><span id="style-result-count" role="status"></span></div><div class="style-grid" id="style-grid"></div><p id="style-empty" hidden>No matching design. Try another word or choose All families.</p><p class="style-gallery-note">These are actual photographic surface samples from the model. Select a style to change window sizes and patterns, façades, room arrangements, furniture and the garden. Use House details and Daylight to compare designs from the same view. Current house restores the original layout. The retained house, shared terrace and balcony remain consistent between both viewers; garden dimensions and planting remain editable.</p></dialog>
   <dialog id="about" aria-label="Model and sources"><div class="dialog-header"><span class="eyebrow">THE MODEL, EXPLAINED</span><button id="about-close" aria-label="Close model details">×</button></div><div id="about-content"><h2>Measured context.<br>Adjustable design.</h2><p>Loading the selected property’s data and sources…</p></div></dialog>
   <noscript><p class="noscript">This simulator needs JavaScript enabled to calculate sightlines and show the model.</p></noscript>
-  <script type="module" src="./src/app.js?v=1.39.0"></script>
+  <script type="module" src="./src/app.js?v=1.40.0"></script>
 <div id="interior-host" role="region" aria-label="Sternicza 11 interior studio" hidden></div>
 </body>
 </html>

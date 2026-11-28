@@ -2,7 +2,7 @@
  * Points use Three's local [x, elevation, z] order. Areas exclude slab voids;
  * irregular rooms explicitly report maximum extents, never a clear rectangle.
  */
-import {containsPoint,ringBounds,floorTriangles} from './interior-geometry.js?v=1.39.0';
+import {containsPoint,ringBounds,floorTriangles} from './interior-geometry.js?v=1.40.0';
 
 const EPS=1e-7,number=n=>Number.isFinite(n),fmt=n=>n.toFixed(2),metres=(a,b)=>`${fmt(a)} × ${fmt(b)} m`;
 const area=ring=>Math.abs(ring.reduce((sum,p,i)=>{const q=ring[(i+1)%ring.length];return sum+p[0]*q[1]-q[0]*p[1];},0))/2;
@@ -20,7 +20,9 @@ const fixtureNames={bed:'Bed',sofaBed:'Daybed',desk:'Desk',diningTable:'Dining t
   wardrobe:'Wardrobe',bookcase:'Bookcase',worktop:'Worktop',tub:'Bath',hotTub:'Spa bath',shower:'Shower',basin:'Vanity',
   toilet:'WC',wc:'WC',bidet:'Bidet',sauna:'Sauna heater',bench:'Bench',exerciseBike:'Training bike',
   exerciseBench:'Adjustable bench',cableTrainer:'Cable station',adjustableDumbbells:'Dumbbell stand',gymStorage:'Gym storage',
-  exerciseMat:'Activity floor',washer:'Washer',dryer:'Dryer',plantUnit:'Technical equipment',car:'Car envelope'};
+  exerciseMat:'Activity floor',washer:'Washer',dryer:'Dryer',plantUnit:'Technical equipment',car:'Car envelope',
+  dishwasher:'Dishwasher',steamOven:'Steam oven',speedOven:'Speed oven',wineCooler:'Wine cooler',mirror:'Mirror',
+  wallTv:'Television',cinemaConsole:'Media console',cinemaSpeaker:'Speaker',cinemaSub:'Subwoofer',cinemaPanel:'Media wall',hob:'Hob',sink:'Sink'};
 
 /** Numeric values are retained at full precision; only presentation is rounded. */
 export function interiorRoomMetrics(plan,room){

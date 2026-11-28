@@ -1,7 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.39.0';
-import {existingCanopyRecords, existingFoliageActive} from './existing-vegetation.js?v=1.39.0';
-import {pointInPolygon} from './geometry.js?v=1.39.0';
+import {toWorld} from './orientation.js?v=1.40.0';
+import {existingCanopyRecords, existingFoliageActive} from './existing-vegetation.js?v=1.40.0';
+import {pointInPolygon} from './geometry.js?v=1.40.0';
+import {indexExactFoliageGeometry} from './foliage-vertex-index.js?v=1.40.0';
 
 const TAU = Math.PI * 2;
 function randomFor(id) {
@@ -67,7 +68,9 @@ function crownGeometry(variant, near) {
   geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
   geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
   geometry.computeBoundingBox();geometry.computeBoundingSphere();
-  return geometry;
+  const indexed=indexExactFoliageGeometry(geometry);
+  if(indexed!==geometry)geometry.dispose();
+  return indexed;
 }
 
 /** All trees share a handful of instanced foliage and wood meshes. Positions,

@@ -1,9 +1,10 @@
 /** Shared architectural coordinates. All renderers consume these same plans.
  * The drawing is registered without scaling to the middle of the surveyed
  * street wall. The source survey remains attached for provenance/comparison. */
-import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.39.0';
-import {garagePlanFrame} from './garage-ramp.js?v=1.39.0';
-import {renovatePlanOpenings} from './renovation-architecture.js?v=1.39.0';
+import {getInteriorPlan,INTERIOR_DIMENSIONS} from './interior-plan.js?v=1.40.0';
+import {garagePlanFrame} from './garage-ramp.js?v=1.40.0';
+import {renovatePlanOpenings} from './renovation-architecture.js?v=1.40.0';
+import {applyLivingCinema} from './living-cinema.js?v=1.40.0';
 const num=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
 export function houseModelFrame(data,settings={}){
   const house=data?.site?.house,source=house?.sourceFootprint||house?.footprint;
@@ -22,25 +23,30 @@ export function houseModelFrame(data,settings={}){
 export function houseModelKey(settings={}){
   return JSON.stringify(['designStyle','interiorLayout','floorHeight','firstFloorRise','atticRise','basementGarageEnabled',
     'garageClearHeight','garageExtraDepth','garageSlabThickness','garageInsideRun','garageRampWidth','garageBottomApron',
-    'terraceWidth','terraceDepth','hstOpen','balconyOpen','officeCoworking','officeGuestBedOpen','gymBenchParked','canopyEnabled','terraceCoverType','canopyDepth','canopyWidth'].map(k=>settings[k]));
+    'terraceWidth','terraceDepth','hstOpen','balconyOpen','officeCoworking','officeGuestBedOpen','gymBenchParked','livingCinemaLayout','canopyEnabled','terraceCoverType','canopyDepth','canopyWidth'].map(k=>settings[k]));
 }
 export function getHouseFloorPlan({floor='ground',settings={},data}={}){
   const layout=settings.designStyle&&settings.designStyle!=='current'?'renovation':'existing';
   const converted=floor==='basement'&&settings.basementGarageEnabled===true;
   const garageFrame=converted&&data?garagePlanFrame(settings,data):null;
   // The garage is an independently selected engineering study, in both views.
-  const plan=getInteriorPlan({floor,layout:converted?'renovation':layout,styleId:settings.designStyle||'current',officeCoworking:settings.officeCoworking,officeGuestBedOpen:settings.officeGuestBedOpen,gymBenchParked:settings.gymBenchParked,garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
+  let plan=getInteriorPlan({floor,layout:converted?'renovation':layout,styleId:settings.designStyle||'current',officeCoworking:settings.officeCoworking,officeGuestBedOpen:settings.officeGuestBedOpen,gymBenchParked:settings.gymBenchParked,livingCinemaLayout:settings.livingCinemaLayout,garageVariant:converted?'two-car':'cellar',garageSettings:{...settings,...(garageFrame?.architecturalGarageBounds?{architecturalGarageBounds:garageFrame.architecturalGarageBounds}:{})}});
   const first=num(settings.firstFloorRise,3.05),attic=num(settings.atticRise,5.75);
   const basement=settings.basementGarageEnabled===true?-(num(settings.garageClearHeight,2.3)+num(settings.garageExtraDepth,0)+num(settings.garageSlabThickness,.25)):-2;
   const levels={ground:0,first,attic,basement:floor==='basement'?plan.elevation:basement};
   const previous=plan.clearHeight;
   if(floor==='ground')plan.clearHeight=Math.max(.05,first-.30);
   if(floor==='first')plan.clearHeight=Math.max(.05,attic-first);
+  if(floor==='ground'&&plan.livingCinema&&Math.abs(plan.clearHeight-previous)>1e-7)plan=applyLivingCinema(plan,settings.livingCinemaLayout);
   if(['ground','first'].includes(floor)&&plan.clearHeight<2.3)plan.issues.unshift('The edited floor levels leave only '+plan.clearHeight.toFixed(2)+' m of clear room height. Furniture and use need reconsideration; the model does not increase the available space.');
   // Ceiling-fitted kitchen cupboards follow edited room heights. The sink
   // window stays clear above and on both sides; the cooking and pantry runs
   // alone meet the ceiling.
   plan.fixtures=plan.fixtures.flatMap(f=>{
+    if(f.heroMirror){
+      const height=Math.min(2.34,plan.clearHeight-.23);
+      return height<.30?[]:height>=f.height?[f]:[{...f,height,mountHeight:Math.round((.18+height/2)*1e6)/1e6}];
+    }
     if(!f.ceilingFitted)return [f];
     const height=Math.round((plan.clearHeight-(f.baseHeight||0)-(f.ceilingScribe||0))*1e6)/1e6;
     return height>=.12?[{...f,height}]:[];

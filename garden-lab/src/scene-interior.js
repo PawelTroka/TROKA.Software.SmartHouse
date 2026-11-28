@@ -1,15 +1,18 @@
 import * as THREE from '../vendor/three.module.js';
-import {OrbitControls} from '../vendor/OrbitControls.js?v=1.39.0';
-import {buildArchitecture} from './interior-architecture.js?v=1.39.0';
-import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.39.0';
-import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.39.0';
-import {roomPose,walkGeometry} from './interior-navigation.js?v=1.39.0';
-import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds} from './walk-motion.js?v=1.39.0';
-import {renderBudget} from './render-quality.js?v=1.39.0';
-import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.39.0';
-import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.39.0';
-import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.39.0';
-import {createInteriorDimensionOverlay} from './scene-interior-dimensions.js?v=1.39.0';
+import {OrbitControls} from '../vendor/OrbitControls.js?v=1.40.0';
+import {buildArchitecture} from './interior-architecture.js?v=1.40.0';
+import {containsPoint,modelTools,ringBounds} from './interior-geometry.js?v=1.40.0';
+import {interiorEnvironment,interiorMaterials} from './interior-materials.js?v=1.40.0';
+import {roomPose,walkGeometry} from './interior-navigation.js?v=1.40.0';
+import {WALK_COMFORT,walkDelta,walkLook,walkFrameSeconds} from './walk-motion.js?v=1.40.0';
+import {renderBudget} from './render-quality.js?v=1.40.0';
+import {createArchitecturalRenderer} from './architectural-renderer.js?v=1.40.0';
+import {onSurfaceAssetsChanged,projectArchitecturalMaterialUVs,surfaceAssetDiagnostics} from './material-assets.js?v=1.40.0';
+import {createInteriorTaskLights,setInteriorLampMaterials} from './interior-lighting.js?v=1.40.0';
+import {createInteriorDimensionOverlay} from './scene-interior-dimensions.js?v=1.40.0';
+import {createEquipmentLabelOverlay} from './scene-equipment-labels.js?v=1.40.0';
+import {createMirrorReflections} from './scene-mirrors.js?v=1.40.0';
+import {createFramePerformance,createAdaptiveMotionQuality} from './frame-performance.js?v=1.40.0';
 
 const walkKeys=new Map([['KeyW','forward'],['ArrowUp','forward'],['KeyS','back'],['ArrowDown','back'],['KeyA','left'],['ArrowLeft','left'],['KeyD','right'],['ArrowRight','right']]);
 const DEFAULTS={view:'dollhouse',styleId:'current',roomId:null,showChanges:false,showFurniture:true,showCeiling:true,showDimensions:true};
@@ -34,9 +37,11 @@ export function createInteriorScene(container,callbacks={}) {
   const abort=new AbortController(),listen=(node,e,fn,options={})=>node.addEventListener(e,fn,{...options,signal:abort.signal});
   let plan,state={...DEFAULTS},model,finishes,taskLighting,clear,context,contextKey='',raf=0,visible=true,disposed=false,dirtyShadow=true,lastTime=0;
   const dimensions=createInteriorDimensionOverlay(container,world,()=>[model?.root,context?.root]);
+  const equipmentLabels=createEquipmentLabelOverlay(container,world,()=>[model?.root,context?.root]);
+  const mirrors=createMirrorReflections(renderer,world,camera),performanceTiming=createFramePerformance(),adaptiveQuality=createAdaptiveMotionQuality();
   let yaw=0,pitch=0,eye=1.57,down=null,drag=null,drawn=0,meshCount=0,activeStyle='',sizeW=0,sizeH=0;
   let interacting=false,interactionTimer=0,sizeRatio=0,sizeQuality='',sizeInteracting=false;
-  const unsubscribeSurfaceAssets=onSurfaceAssetsChanged(request);
+  const unsubscribeSurfaceAssets=onSurfaceAssetsChanged(()=>{mirrors.invalidate();request();});
   const keys=new Set(),ray=new THREE.Raycaster(),floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0));
   const tools=modelTools();
   const pad=document.createElement('div');pad.setAttribute('aria-label','Walk controls');pad.dataset.interiorWalkControls='';
@@ -71,15 +76,21 @@ export function createInteriorScene(container,callbacks={}) {
   }
   function frame(now){
     raf=0;if(disposed||!visible||!model)return;
+    const cpuStart=performance.now();
     const dt=walkFrameSeconds(now,lastTime);
     const walking=state.view==='room'&&keys.size>0;
     lastTime=walking?now:0;
     if(walking){navigationChanged();move(Number(keys.has('right'))-Number(keys.has('left')),Number(keys.has('forward'))-Number(keys.has('back')),dt*WALK_COMFORT.speed);}
     if(orbit.enabled)orbit.update();
-    if(model.updateVisibility(state.view,camera.position,state)){dirtyShadow=true;dimensions.invalidate();}
+    if(model.updateVisibility(state.view,camera.position,state)){dirtyShadow=true;dimensions.invalidate();equipmentLabels.invalidate();mirrors.invalidate();}
     if(dirtyShadow){renderer.shadowMap.needsUpdate=true;dirtyShadow=false;}
-    dimensions.render(camera,sizeW,sizeH,{mode:state.view,floor:plan.floor,roomId:state.roomId});
+    const navigationActive=interacting||walking,deliveredFrame=performanceTiming.begin(now,navigationActive);
+    if(adaptiveQuality.sample(now,deliveredFrame,navigationActive))resize();
+    const labelView={mode:state.view,floor:plan.floor,roomId:state.roomId,interacting:navigationActive,now};
+    dimensions.render(camera,sizeW,sizeH,labelView);equipmentLabels.render(camera,sizeW,sizeH,labelView);
+    mirrors.render({quality:state.quality||'auto',width:sizeW,height:sizeH,interacting:navigationActive,visible});
     presentation.render();drawn++;
+    performanceTiming.end(performance.now()-cpuStart,navigationActive);
     if(walking)request();
   }
   function fitDollhouse(){
@@ -113,7 +124,7 @@ export function createInteriorScene(container,callbacks={}) {
   function resize(){
     if(disposed)return;const rect=container.getBoundingClientRect(),w=Math.round(rect.width),h=Math.round(rect.height);if(!w||!h)return;
     const quality=state.quality||'auto';
-    const budget=renderBudget(quality,w,h,window.devicePixelRatio||1,{memoryGB:navigator.deviceMemory,maxTextureSize:renderer.capabilities.maxTextureSize,interacting});
+    const budget=renderBudget(quality,w,h,window.devicePixelRatio||1,{memoryGB:navigator.deviceMemory,maxTextureSize:renderer.capabilities.maxTextureSize,interacting,motionScale:adaptiveQuality.scale});
     if(w===sizeW&&h===sizeH&&sizeRatio===budget.pixelRatio&&sizeQuality===quality&&sizeInteracting===interacting)return;
     const oldAspect=camera.aspect;sizeW=w;sizeH=h;sizeRatio=budget.pixelRatio;sizeQuality=quality;sizeInteracting=interacting;
     renderer.setPixelRatio(budget.pixelRatio);renderer.setSize(w,h,false);
@@ -123,6 +134,7 @@ export function createInteriorScene(container,callbacks={}) {
   }
   function update(nextPlan,options={}){
     if(disposed)return;const old=state,changedPlan=plan!==nextPlan;plan=nextPlan;state={...DEFAULTS,...options};
+    if(old.quality!==state.quality){adaptiveQuality.reset();performanceTiming.reset();}
     const sharedRoom=!!callbacks.getExteriorContext&&state.view==='room';
     state.showStairs=!sharedRoom;
     const changedModel=changedPlan||old.styleId!==state.styleId||old.showChanges!==state.showChanges||
@@ -162,7 +174,9 @@ export function createInteriorScene(container,callbacks={}) {
     if(changedPlan||old.view!==state.view||(room&&old.roomId!==state.roomId))home();
     else if(old.showFurniture!==state.showFurniture||old.showCeiling!==state.showCeiling)dirtyShadow=true;
     updateRoomFill();
-    dimensions.update([plan],{enabled:state.showDimensions!==false,showFurniture:state.showFurniture});
+    dimensions.update([plan],{enabled:state.showDimensions!==false,showFurniture:state.showFurniture,equipmentLabels:state.showEquipmentLabels!==false});
+    equipmentLabels.update([plan],{enabled:state.showEquipmentLabels!==false,showFurniture:state.showFurniture});
+    mirrors.setSurface(model.root.getObjectByName('kitchen-hall-selfie-mirror-surface'));mirrors.invalidate();
     request();
   }
   orbit.addEventListener('change',()=>{if(orbit.enabled){navigationChanged();request();}});
@@ -179,7 +193,7 @@ export function createInteriorScene(container,callbacks={}) {
   listen(canvas,'webglcontextlost',e=>{e.preventDefault();if(!disposed)callbacks.onError?.('The 3D graphics context was interrupted.');});
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(container);listen(window,'resize',resize);
   function setVisible(value){visible=!!value;if(visible){resize();request();}else{keys.clear();drag=down=null;clearTimeout(interactionTimer);interactionTimer=0;interacting=false;cancelAnimationFrame(raf);raf=0;lastTime=0;}}
-  return {update,home,resize,setVisible,getDiagnostics(){const render=presentation.sceneInfo||renderer.info.render;return {available:!disposed,visible,interacting,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:render.calls,triangles:render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye,contextSource:context?.source||null,contextKey,renovationFeatures:finishes?.interiorRecipe?.features||[],interiorDimensions:dimensions.getDiagnostics(),...presentation.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};},
-    dispose(){if(disposed)return;disposed=true;unsubscribeSurfaceAssets();cancelAnimationFrame(raf);clearTimeout(interactionTimer);abort.abort();observer?.disconnect();orbit.dispose();dimensions.dispose();model?.dispose();taskLighting?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();presentation.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
+  return {update,home,resize,setVisible,getDiagnostics(){const render=presentation.sceneInfo||renderer.info.render;return {available:!disposed,visible,interacting,view:state.view,styleId:state.styleId,roomId:state.roomId,floor:plan?.floor,layout:plan?.layout,wallCount:plan?.walls.length||0,furnitureCount:state.showFurniture?plan?.fixtures.length||0:0,meshes:meshCount,drawCalls:render.calls,triangles:render.triangles,frames:drawn,framePending:!!raf,camera:camera.position.toArray(),eyeHeight:eye,contextSource:context?.source||null,contextKey,renovationFeatures:finishes?.interiorRecipe?.features||[],interiorDimensions:dimensions.getDiagnostics(),equipmentLabels:equipmentLabels.getDiagnostics(),mirrors:mirrors.getDiagnostics(),performanceTiming:performanceTiming.getDiagnostics(),adaptiveQuality:adaptiveQuality.getDiagnostics(),...presentation.getDiagnostics(),surfaceAssets:surfaceAssetDiagnostics()};},
+    dispose(){if(disposed)return;disposed=true;unsubscribeSurfaceAssets();cancelAnimationFrame(raf);clearTimeout(interactionTimer);abort.abort();observer?.disconnect();orbit.dispose();dimensions.dispose();equipmentLabels.dispose();mirrors.dispose();model?.dispose();taskLighting?.dispose();context?.dispose();finishes?.dispose();tools.dispose();env.dispose();shadow.geometry.dispose();shadowMat.dispose();sun.shadow.dispose();presentation.dispose();renderer.dispose();renderer.forceContextLoss();canvas.remove();pad.remove();}
   };
 }

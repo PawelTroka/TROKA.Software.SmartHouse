@@ -1,7 +1,7 @@
 /** Versioned, reproducible garden proposals. Historical layouts remain literal.
  * Coordinates are mapped local metres, with x increasing toward PCK3/east.
  */
-import {getTreeType} from './tree-catalog.js?v=1.39.0';
+import {getTreeType} from './tree-catalog.js?v=1.40.0';
 
 // The current proposal follows the owner's left-edge pool preference. The
 // earlier transverse summer-sun study remains a separate historical record;

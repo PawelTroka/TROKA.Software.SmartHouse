@@ -69,5 +69,5 @@ test('plan view shows the connected worktop, cabinet enclosure and open timber g
   drawInteriorPlan(host,plan,{roomId:'front-kitchen',showFurniture:true});
   assert.match(host.innerHTML,/Retained flue behind matching removable cabinet panels/);
   assert.match(host.innerHTML,/Open timber stair guard/);
-  assert.match(host.innerHTML,/Connected peninsula with a wider refrigerator-side entrance/);
+  assert.match(host.innerHTML,/Connected peninsula with wine cooler and assigned drawers/);
 });

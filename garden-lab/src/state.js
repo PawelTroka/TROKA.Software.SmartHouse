@@ -1,21 +1,21 @@
-import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.39.0';
-import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.39.0';
-import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.39.0';
-import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.39.0';
-import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.39.0';
-import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.39.0';
-import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.39.0';
-import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.39.0';
-import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.39.0';
-import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.39.0';
-import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.39.0';
-import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.39.0';
-import {restoreSummerTreePreset,restoreCloseGrovePreset,restoreBoundaryPinePreset,CLOSE_GROVE_TREE_POSITIONS,LEGACY_SUMMER_TREE_POSITIONS} from './summer-garden.js?v=1.39.0';
+import {COST_FIELDS,COST_DEFAULTS} from './costs.js?v=1.40.0';
+import {BUILDING_FIELDS,buildingFields} from './buildings.js?v=1.40.0';
+import {DEFAULT_SITE_ID,getSiteProfile} from './sites.js?v=1.40.0';
+import {SOLAR_DEFAULTS,sanitizeSolarDate} from './solar.js?v=1.40.0';
+import {sanitizeScreeningTrees,TREE_LEAF_MODES} from './screening-trees.js?v=1.40.0';
+import {getScreeningLayouts,STERNICZA_EXCELSA_TREES} from './screening-layouts.js?v=1.40.0';
+import {UPPER_FLOOR_PRESETS} from './viewpoints.js?v=1.40.0';
+import {NIGHT_DEFAULTS} from './night-lighting.js?v=1.40.0';
+import {PRIVACY_FIELDS,PRIVACY_DEFAULTS} from './privacy-options.js?v=1.40.0';
+import {PAVILION_FIELDS,PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.40.0';
+import {GARAGE_FIELDS,GARAGE_DEFAULTS,upgradeSingleCarGarage} from './garage-options.js?v=1.40.0';
+import {DESIGN_STYLES,DEFAULT_DESIGN_STYLE} from './design-styles.js?v=1.40.0';
+import {restoreSummerTreePreset,restoreCloseGrovePreset,restoreBoundaryPinePreset,CLOSE_GROVE_TREE_POSITIONS,LEGACY_SUMMER_TREE_POSITIONS} from './summer-garden.js?v=1.40.0';
 
-import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.39.0';
-import {changePresentationSettings} from './studio-state.js?v=1.39.0';
+import {INTERIOR_DEFAULTS,INTERIOR_STRING_KEYS,sanitizeInteriorState} from './interior-state.js?v=1.40.0';
+import {changePresentationSettings} from './studio-state.js?v=1.40.0';
 
-export const STATE_VERSION = 35;
+export const STATE_VERSION = 36;
 
 // A sparse v10 link meant the published balanced arrangement. Keep the full
 // purchased-tree snapshot independent of future presets and catalog defaults.
@@ -131,7 +131,8 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     summerPoolLayout:siteId===DEFAULT_SITE_ID,rearCornerPool:true,edgeAlignedSunbeds:true,jacuzziCentered:true,jacuzziMood:'aurora',walkNavigation:'free',
     jacuzziCoverClosed:false,coldPlungeCoverClosed:false,
     perimeterFenceEnabled:siteId===DEFAULT_SITE_ID,pedestrianGateOpen:false,garageGateOpen:false,...profile.defaults,siteId});
-  const V34_DEFAULTS=Object.freeze({...DEFAULTS,poolSunbedSides:1,edgeAlignedSunbeds:false,
+  const V35_DEFAULTS=Object.freeze({...DEFAULTS,livingCinemaLayout:'legacy',showEquipmentLabels:false});
+  const V34_DEFAULTS=Object.freeze({...V35_DEFAULTS,poolSunbedSides:1,edgeAlignedSunbeds:false,
     screeningTrees:siteId===DEFAULT_SITE_ID?V34_STERNICZA_TREES:DEFAULTS.screeningTrees});
   const V33_DEFAULTS=Object.freeze({...V34_DEFAULTS,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,
     screeningTrees:siteId===DEFAULT_SITE_ID?V33_STERNICZA_TREES:DEFAULTS.screeningTrees});
@@ -239,7 +240,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       version===14&&['spa-aligned','spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-grove'}:
       version===15&&['spa-corner','spa-pool-grove'].includes(oldInput.gardenProgram)?{...oldInput,gardenProgram:'spa-aligned'}:
       version===16&&oldInput.gardenProgram==='spa-pool-grove'?{...oldInput,gardenProgram:'spa-corner'}:oldInput;
-    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:version<=19?V19_DEFAULTS:version<=22?V22_DEFAULTS:version<=25?V25_DEFAULTS:version<=29?V29_DEFAULTS:version<=33?V33_DEFAULTS:version===34?V34_DEFAULTS:DEFAULTS);
+    const next=sanitizeWithDefaults(restoredInput,version<=3?LEGACY_DEFAULTS:version<=7?V7_DEFAULTS:version===8?V8_DEFAULTS:version===9?V9_DEFAULTS:version===10?V10_DEFAULTS:version===11?V11_DEFAULTS:version===12?V12_DEFAULTS:version===13?V13_DEFAULTS:version===14?V14_DEFAULTS:version===15?V15_DEFAULTS:version===16?V16_DEFAULTS:version===17?V17_DEFAULTS:version<=19?V19_DEFAULTS:version<=22?V22_DEFAULTS:version<=25?V25_DEFAULTS:version<=29?V29_DEFAULTS:version<=33?V33_DEFAULTS:version===34?V34_DEFAULTS:version===35?V35_DEFAULTS:DEFAULTS);
     // The requested two-car proposal is now the Sternicza starting design.
     // Garage-era sparse links adopt it; an explicit off value remains an off
     // choice. Pre-garage archives still retain their unexcavated cellar.
@@ -250,7 +251,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(version<23){next.terraceCoverType='canopy';if(['pool','balcony'].includes(next.preset))next.preset='terrace';}
     if(version<24){next.designStyle=DEFAULT_DESIGN_STYLE;next.styleHouseFinish=false;next.costStyleUpgradeQuote=0;next.renderQuality='auto';next.sceneMotion=false;next.poolFreeboard=.02;}
     if(version===24&&next.designStyle!==DEFAULT_DESIGN_STYLE){next.styleHouseFinish=true;next.costStyleUpgradeQuote=0;}
-    if(version<26)Object.assign(next,INTERIOR_DEFAULTS);
+    if(version<26)Object.assign(next,INTERIOR_DEFAULTS,{livingCinemaLayout:next.livingCinemaLayout,showEquipmentLabels:next.showEquipmentLabels});
     if(version<7){next.screeningTrees=[];next.treeLeafMode='auto';}
     if(version<5){
       [next.hedgeLeft,next.hedgeRight]=[next.hedgeRight,next.hedgeLeft];
@@ -280,6 +281,10 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     if(version===32&&siteId===DEFAULT_SITE_ID&&next.summerPoolLayout){
       const restored=restoreSummerTreePreset(next.screeningTrees);
       if(restored)next.screeningTrees=restored;
+    }
+    if(version<36){
+      if(!Object.hasOwn(input,'livingCinemaLayout'))next.livingCinemaLayout='legacy';
+      if(!Object.hasOwn(input,'showEquipmentLabels'))next.showEquipmentLabels=false;
     }
     return next;
   }
@@ -338,7 +343,7 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
     }
     return true;
   }
-  function migrateSavedState(input,version=3,{restoreCurrentGarageProposal=false,adoptResortUpdate=false,adoptGardenRefinement=false,adoptInteractiveLiving=false,adoptCleanLiving=false}={}) {
+  function migrateSavedState(input,version=3,{restoreCurrentGarageProposal=false,adoptResortUpdate=false,adoptGardenRefinement=false,adoptInteractiveLiving=false,adoptCleanLiving=false,adoptCinemaKitchen=false}={}) {
     if(!isStateRecord(input)||!SUPPORTED_VERSIONS.includes(version))return sanitizeState();
     if(version>=6&&input.siteId!==siteId)return sanitizeState();
     if(input.siteId!==undefined&&input.siteId!==siteId)return sanitizeState();
@@ -368,6 +373,12 @@ export function createStateModel(profile=getSiteProfile(DEFAULT_SITE_ID)) {
       next.edgeAlignedSunbeds=true;
       if(next.poolSunbedSides===1)next.poolSunbedSides=2;
       const trees=restoreBoundaryPinePreset(next.screeningTrees);if(trees)next.screeningTrees=trees;
+    }
+    // Only the active session adopts the new room comparison. Shared links and
+    // saved comparison A retain their previous furniture/window composition.
+    if(adoptCinemaKitchen&&version<36&&siteId===DEFAULT_SITE_ID){
+      if(!Object.hasOwn(input,'livingCinemaLayout'))next.livingCinemaLayout='right-media';
+      if(!Object.hasOwn(input,'showEquipmentLabels'))next.showEquipmentLabels=true;
     }
     if(version===1)next.linkedHedges=false;
     return next;

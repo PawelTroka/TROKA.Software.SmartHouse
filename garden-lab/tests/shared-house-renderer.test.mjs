@@ -89,7 +89,11 @@ test('the full house keeps the basement gym and technical fittings while leaving
     for(const [point,count]of expected)assert.ok((actual.get(point)||0)>=count,'Basement fitting point '+point+' is absent from the whole-house model');
     const basementLights=assembled.root.getObjectByName('basement-task-lighting');
     assert.equal(basementLights.children.length,2);assert.ok(basementLights.children.every(light=>light.intensity>0&&!light.castShadow));
-    assert.equal(assembled.root.getObjectByName('interior-task-lighting').children.length,3);
+    const ground=getHouseFloorPlan({floor:'ground',settings:options,data}),first=getHouseFloorPlan({floor:'first',settings:options,data});
+    const selectedLights=[...(ground.interiorLights||[]).filter(s=>['dining-pendant','lounge-reading-light'].includes(s.id)),
+      ...(first.interiorLights||[]).filter(s=>s.id==='master-reading-light')].slice(0,3).map(s=>'task-light-'+s.id);
+    assert.deepEqual(assembled.root.getObjectByName('interior-task-lighting').children.map(light=>light.name),selectedLights,
+      'The whole-house lights must follow the selected furnishing plan; cinema has no freestanding reading lamp');
     // Neither placeholder car is left in the full-house props. Their upper
     // cabins would otherwise add vertices well inside the two parking bays.
     const vertexInsideCar=[];

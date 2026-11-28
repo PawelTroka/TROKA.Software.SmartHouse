@@ -1,9 +1,9 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.39.0';
-import {exteriorSurfacePixels} from './exterior-materials.js?v=1.39.0';
-import {getDesignStyle} from './design-styles.js?v=1.39.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.39.0';
-import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.39.0';
+import {applyPhotographicSurface,deferPhotographicSurface} from './material-assets.js?v=1.40.0';
+import {exteriorSurfacePixels} from './exterior-materials.js?v=1.40.0';
+import {getDesignStyle} from './design-styles.js?v=1.40.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.40.0';
+import {getInteriorMaterialFinishes,getMaterialForFinish} from './material-catalogue.js?v=1.40.0';
 
 const mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
 function pattern(width,height,draw,repeatX=1,repeatY=1) {

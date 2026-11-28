@@ -14,6 +14,7 @@ import {UPPER_FLOOR_PRESETS} from '../src/viewpoints.js';
 import {STATE_VERSION,createStateModel} from '../src/state.js';
 import {getSiteProfile} from '../src/sites.js';
 import {hedgeSurfaceProbes} from './hedge-light-probes.mjs';
+import {captureSceneScreenshot} from './scene-gpu-capture.mjs';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const publicRoot = path.join(project,'public');
@@ -64,6 +65,10 @@ async function runScenario(name,verify){
 
 async function frames(){
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+}
+async function renderedScreenshot(selector,options={},label='scene',deadline=Date.now()+SCENE_CAPTURE_TIMEOUT){
+  return await captureSceneScreenshot(page,selector,options,{label,deadline,
+    captures:report.sceneCaptures??=[],onFailure:progress});
 }
 async function waitReady(){
   await page.locator('#loading').waitFor({state:'hidden',timeout:60000});
@@ -134,11 +139,9 @@ async function setNumber(id,value){
 async function screenshot(name,log=true){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
-  await page.locator('#viewport').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await frames();
-  const buffer=await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,
+  const buffer=await renderedScreenshot('#viewport',{
     path:path.join(resultsRoot,name+'.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
-  });
+  },name);
   report.screenshots.push(name+'.jpg');
   if(log)console.log('GARDEN_SCREENSHOT_B64 '+name+' image/jpeg '+buffer.toString('base64'));
   return buffer;
@@ -189,6 +192,36 @@ async function warmLightDifference(unlit,lit){
     }
     return {width:on.width,height:on.height,changedPixels,warmBrightenedPixels,brightnessGain};
   },{before:unlit.toString('base64'),after:lit.toString('base64')});
+}
+/** The fixed first-floor garden view has a measured tree silhouetted against
+ * clear sky in this region. A sky-relative threshold tolerates HDR color
+ * differences while detecting the complete missing canopy seen in run 81. */
+async function nightCanopyRetention(before,moving){
+  return await page.evaluate(async({before,moving})=>{
+    const decode=async source=>{
+      const picture=new Image();picture.src='data:image/png;base64,'+source;await picture.decode();
+      const canvas=new OffscreenCanvas(picture.width,picture.height),context=canvas.getContext('2d');
+      context.drawImage(picture,0,0);
+      return {width:picture.width,height:picture.height,pixels:context.getImageData(0,0,picture.width,picture.height).data};
+    };
+    const baseline=await decode(before),motion=await decode(moving);
+    if(baseline.width!==motion.width||baseline.height!==motion.height)throw new Error('Night canopy comparison changed screenshot dimensions');
+    const canopyBounds=[.585,.15,.735,.29],skyBounds=[.57,.035,.68,.08];
+    const measure=picture=>{
+      const bounds=region=>region.map((value,index)=>Math.floor(value*(index%2?picture.height:picture.width)));
+      const brightness=(x,y)=>{const i=(y*picture.width+x)*4;return (picture.pixels[i]+picture.pixels[i+1]+picture.pixels[i+2])/3;};
+      const [sx0,sy0,sx1,sy1]=bounds(skyBounds),sky=[];
+      for(let y=sy0;y<sy1;y++)for(let x=sx0;x<sx1;x++)sky.push(brightness(x,y));
+      sky.sort((a,b)=>a-b);const skyMedian=sky[Math.floor(sky.length/2)],darkThreshold=skyMedian*.55;
+      const [x0,y0,x1,y1]=bounds(canopyBounds);let darkPixels=0;
+      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)if(brightness(x,y)<darkThreshold)darkPixels++;
+      const pixels=(x1-x0)*(y1-y0);
+      return {skyMedian,darkThreshold,pixels,darkPixels,darkFraction:darkPixels/pixels};
+    };
+    const beforeResult=measure(baseline),motionResult=measure(motion);
+    return {width:baseline.width,height:baseline.height,canopyBounds,skyBounds,before:beforeResult,motion:motionResult,
+      retainedFraction:beforeResult.darkPixels?motionResult.darkPixels/beforeResult.darkPixels:0,minimumRetainedFraction:.8};
+  },{before:before.toString('base64'),moving:moving.toString('base64')});
 }
 /** Receiving surfaces projected from the current Nadmorska fixture layout.
  * Every near-facing fitting has a foliage and ground probe; its projected
@@ -246,20 +279,125 @@ async function hedgeSurfaceDifference(unlit,lit,probes){
   },{before:unlit.toString('base64'),after:lit.toString('base64'),probes});
 }
 async function scenePngScreenshot(name){
-  await page.locator('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await frames();
-  const buffer=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,
+  const buffer=await renderedScreenshot('#scene-host',{
     path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css',
-  });
+  },name);
   report.screenshots.push(name+'.png');
   return buffer;
+}
+async function verifyNightMotionTarget(){
+  // Reuse the already lit eye view. A stationary held pointer selects the
+  // moving pipeline without changing its camera, lights, or saved design.
+  const started=Date.now(),deadline=started+SCENE_CAPTURE_TIMEOUT;
+  const remaining=()=>{const ms=deadline-Date.now();assert.ok(ms>0,'Night motion capture exceeded its scene deadline');return ms;};
+  const canvas=page.locator('#scene-host canvas');
+  const read=()=>canvas.evaluate(element=>{
+    const d=document.querySelector('#render-diagnostics').dataset,c=element.dataset;
+    const value=key=>c[key]??d[key],number=value=>value==null||value===''||!Number.isFinite(Number(value))?null:Number(value);
+    let sceneOptimization=null;try{sceneOptimization=JSON.parse(d.sceneOptimization||'null');}catch{}
+    const viewport=document.querySelector('#viewport'),bounds=element.getBoundingClientRect();
+    return {renderer:d.renderer,interacting:d.interacting==='true',frames:number(d.frames),
+      sceneOptimization,
+      motionSupported:value('motionSupported')==='true'?true:value('motionSupported')==='false'?false:null,
+      motionUnsupportedReason:d.motionUnsupportedReason||null,
+      canvas:{width:element.width,height:element.height,cssWidth:bounds.width,cssHeight:bounds.height},
+      scene:{width:number(value('sceneBufferWidth')),height:number(value('sceneBufferHeight')),
+        pixelRatio:number(value('scenePixelRatio')),path:value('renderPath'),
+        motionSamples:number(value('motionSamples')),canvasSamples:number(value('canvasSamples'))},
+      pose:{source:'public viewpoint controls and readouts',mode:viewport.dataset.mode,
+        preset:document.querySelector('[data-preset][aria-pressed="true"]')?.dataset.preset||null,
+        observer:document.querySelector('#observer-readout')?.textContent,
+        view:document.querySelector('#view-badge-text')?.textContent,
+        lookYaw:number(document.querySelector('[data-look-yaw][aria-pressed="true"]')?.dataset.lookYaw),
+        controls:Object.fromEntries(['observerX','observerY','eyeHeight','firstFloorRise','atticRise'].map(key=>
+          [key,number(document.getElementById(key+'-value')?.value)]))},
+      lights:Object.fromEntries(['nightActivation','nightGarden','nightPendants','nightHedge','nightWindows'].map(key=>
+        [key,number(viewport.dataset[key])])),sunTime:document.querySelector('#sun-time')?.value};
+  },null,{timeout:remaining()});
+  const capture=async name=>{
+    const filename=name+'.png',buffer=await renderedScreenshot('#scene-host',{
+      path:path.join(resultsRoot,filename),type:'png',animations:'disabled',scale:'css'},name,deadline);
+    report.screenshots.push(filename);return buffer;
+  };
+  await canvas.scrollIntoViewIfNeeded({timeout:remaining()});
+  await page.waitForFunction(()=>{
+    const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+    return d?.renderer==='webgl'&&d.interacting==='false'&&d.renderPending==='false'&&Number(d.frames)>0&&
+      ['true','false'].includes(c?.motionSupported)&&Number(c.sceneBufferWidth)>0&&c.renderPath!=='motion-target';
+  },null,{timeout:remaining(),polling:100});
+  const pre=await read();assert.equal(pre.pose.mode,'eye');assert.ok(pre.lights.nightActivation>0);
+  const evidence=report.nightMotion={status:'running',deadlineMs:SCENE_CAPTURE_TIMEOUT,pre};progress();
+  let before,moving;
+  try{
+    before=await capture('sternicza-night-before-motion');
+    const bounds=await canvas.boundingBox();assert.ok(bounds&&bounds.width>0&&bounds.height>0);
+    await page.mouse.move(bounds.x+bounds.width*.5,bounds.y+bounds.height*.5);
+    try{
+      await page.mouse.down({button:'left'});
+      await page.waitForFunction(({frames,supported})=>{
+        const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+        return d?.interacting==='true'&&Number(d.frames)>frames&&
+          c?.renderPath===(supported?'motion-target':'direct')&&(!supported||Number(c.motionSamples)>=2);
+      },{frames:pre.frames,supported:pre.motionSupported},{timeout:remaining(),polling:100});
+      evidence.firstMotion=await read();
+      assert.deepEqual(evidence.firstMotion.pose,pre.pose);
+      assert.deepEqual(evidence.firstMotion.lights,pre.lights);
+      // The first moving pass may intentionally retain full instance data
+      // after a shadow upload. Request exactly one further frame at the same
+      // pointer position, so the image verifies actual compacted GPU data.
+      // Public summary diagnostics update at most once per second; leave that
+      // interval before the single request even on fast hardware.
+      await page.waitForTimeout(Math.min(1050,remaining()));
+      await page.mouse.move(bounds.x+bounds.width*.5,bounds.y+bounds.height*.5);
+      await page.waitForFunction(({frames,supported})=>{
+        const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+        let optimization=null;try{optimization=JSON.parse(d?.sceneOptimization||'null');}catch{}
+        return d?.interacting==='true'&&Number(d.frames)>frames&&optimization?.vegetation?.compacted===true&&
+          c?.renderPath===(supported?'motion-target':'direct');
+      },{frames:evidence.firstMotion.frames,supported:pre.motionSupported},{timeout:remaining(),polling:100});
+      evidence.motion=await read();
+      assert.ok(evidence.motion.frames>evidence.firstMotion.frames);
+      assert.equal(evidence.motion.sceneOptimization?.vegetation?.compacted,true,'The captured night frame must exercise the actual compacted draw');
+      assert.deepEqual(evidence.motion.pose,pre.pose,'Holding the pointer cannot change the night viewpoint');
+      assert.deepEqual(evidence.motion.lights,pre.lights);assert.equal(evidence.motion.sunTime,pre.sunTime);
+      if(pre.motionSupported){
+        assert.deepEqual(evidence.motion.canvas,pre.canvas,'Supported motion targets retain the full display canvas');
+        assert.ok(evidence.motion.scene.width>0&&evidence.motion.scene.width<=pre.canvas.width);
+        assert.ok(evidence.motion.scene.height>0&&evidence.motion.scene.height<=pre.canvas.height);
+        assert.ok(evidence.motion.scene.motionSamples>=2,'Cutout foliage retains multisample coverage');
+      }
+      moving=await capture('sternicza-night-motion-target');
+    }finally{await page.mouse.up({button:'left'});}
+    await page.waitForFunction(({frames,path})=>{
+      const c=document.querySelector('#scene-host canvas')?.dataset,d=document.querySelector('#render-diagnostics')?.dataset;
+      return d?.interacting==='false'&&d.renderPending==='false'&&Number(d.frames)>frames&&c?.renderPath===path;
+    },{frames:evidence.motion.frames,path:pre.scene.path},{timeout:remaining(),polling:100});
+    evidence.settled=await read();
+    assert.deepEqual(evidence.settled.canvas,pre.canvas,'Releasing the pointer restores the selected idle canvas');
+    assert.deepEqual(evidence.settled.scene,pre.scene,'Releasing the pointer restores the selected idle pipeline');
+    assert.equal(evidence.settled.sceneOptimization?.vegetation?.compacted,false,'The settled frame restores the complete vegetation');
+    assert.deepEqual(evidence.settled.pose,pre.pose);assert.deepEqual(evidence.settled.lights,pre.lights);
+    assert.equal(evidence.settled.sunTime,pre.sunTime);
+    const settled=await capture('sternicza-night-motion-restored');
+    evidence.motionPixels=await warmLightDifference(before,moving);
+    evidence.canopyRetention=await nightCanopyRetention(before,moving);
+    evidence.restorationPixels=await warmLightDifference(before,settled);
+    assert.ok(evidence.canopyRetention.before.skyMedian>5&&evidence.canopyRetention.motion.skyMedian>5,
+      'The fixed night canopy probe requires a visible clear-sky reference');
+    assert.ok(evidence.canopyRetention.before.darkFraction>=.25&&evidence.canopyRetention.before.darkPixels>500,
+      'The fixed night baseline must contain the measured tree silhouette: '+JSON.stringify(evidence.canopyRetention));
+    assert.ok(evidence.canopyRetention.retainedFraction>=.8,
+      'Compacted motion must retain at least 80% of the visible tree silhouette: '+JSON.stringify(evidence.canopyRetention));
+    assert.equal(evidence.restorationPixels.changedPixels,0,'The stationary night view must restore its idle appearance (3-code-value pixel tolerance)');
+    remaining();evidence.elapsedMs=Date.now()-started;evidence.status='passed';
+    check(pre.motionSupported?'Night motion retains the visible canopy through the compacted multisample HDR target on a fixed canvas and restores the same idle view':
+      'Unsupported night motion retains the visible canopy through the compacted direct renderer and restores the same idle view');
+  }catch(error){evidence.status='failed';evidence.elapsedMs=Date.now()-started;progress();throw error;}
 }
 async function pngScreenshot(name){
   await details('#sun-controls',false);
   await details('#night-adjustments',false);
-  await page.locator('#viewport').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});
-  await frames();
-  await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css'});
+  await renderedScreenshot('#viewport',{path:path.join(resultsRoot,name+'.png'),type:'png',animations:'disabled',scale:'css'},name);
   report.screenshots.push(name+'.png');
 }
 async function chooseProperty(id){
@@ -297,12 +435,12 @@ async function verifyPendantLighting(){
   await page.locator('#nightHedgeLights').uncheck();
   await waitLight('nightPendants','zero');await waitLight('nightHedge','zero');
   await frames();
-  const noPendants=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const noPendants=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'pendants-all-off');
 
   await page.locator('#nightPendantLights').check();
   await waitLight('nightPendants','positive');
   await frames();
-  const gardenOnly=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const gardenOnly=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'pendants-garden-only');
   const pendantPixels=await warmLightDifference(noPendants,gardenOnly);
   assert.ok(pendantPixels.changedPixels>30&&pendantPixels.warmBrightenedPixels>12,
     'Garden pendants must visibly brighten warm scene pixels: '+JSON.stringify(pendantPixels));
@@ -314,7 +452,7 @@ async function verifyPendantLighting(){
   await page.locator('#nightHedgeLights').check();
   await waitLight('nightHedge','positive');
   await frames();
-  const hedgeOnly=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const hedgeOnly=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'pendants-hedge-only');
   const hedgePixels=await warmLightDifference(noPendants,hedgeOnly);
   assert.ok(hedgePixels.changedPixels>30&&hedgePixels.warmBrightenedPixels>12,
     'Thuja-side lanterns must visibly brighten warm scene pixels: '+JSON.stringify(hedgePixels));
@@ -468,7 +606,7 @@ async function verifyBasementGarage(){
     assert.equal(await page.locator('#basement-garage-controls [data-garage-preset="'+id+'"]').getAttribute('aria-pressed'),'true');
     return result();
   };
-  const frame=async()=>{await page.locator('#scene-host').scrollIntoViewIfNeeded({timeout:SCENE_CAPTURE_TIMEOUT});await frames();return page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});};
+  const frame=()=>renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'garage-scene-pose');
   const slider=async(value)=>{
     const input=page.locator('#garageProgress'),reverse=value>50,steps=reverse?100-value:value;
     await input.focus();await input.press(reverse?'End':'Home');
@@ -788,18 +926,18 @@ async function verifyNadmorska(){
   const windowActivityOriginal=Number(await page.locator('#nightWindowActivity-value').inputValue());
   assert.equal(windowActivityOriginal,70);
   await setNumber('nightWindowActivity-value',0);
-  const noWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const noWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-none');
   await setNumber('nightWindowActivity-value',100);
-  const allWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const allWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-all');
   assert.ok(!noWindows.equals(allWindows),'Nadmorska across-street window activity must visibly change its WebGL scene');
 
   // Compare the previous and new evening activity in the same street view.
   // Only the occupancy control changes; the camera and every light dimmer stay fixed.
   const fixedView={observer:await page.locator('#observer-readout').innerText(),lights:await lightState()};
   await setNumber('nightWindowActivity-value',35);
-  const quieterWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const quieterWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-quieter');
   await setNumber('nightWindowActivity-value',windowActivityOriginal);
-  const busierWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const busierWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-windows-busier');
   const windowActivityPixels=await warmLightDifference(quieterWindows,busierWindows);
   assert.ok(windowActivityPixels.warmBrightenedPixels>50,
     'Increasing window activity from 35% to 70% must visibly add warm lit windows: '+JSON.stringify(windowActivityPixels));
@@ -834,11 +972,11 @@ async function verifyNadmorska(){
   await waitLight('nightGarden','zero');
   assert.ok((await lightState()).windows>0,'Garden lights must not disable neighbouring windows');
   await frames();
-  const unlitWater=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const unlitWater=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-water-unlit');
   await page.locator('#nightGardenLights').check();
   await waitLight('nightGarden','positive');
   await frames();
-  const litWater=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const litWater=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'nadmorska-water-lit');
   report.nadmorska.waterGlow=await waterGlowDifference(unlitWater,litWater);
   assert.ok(report.nadmorska.waterGlow.brighterAquaPixels>20,'The WebGL water glow must brighten visible blue-green pixels: '+JSON.stringify(report.nadmorska.waterGlow));
   assert.equal(await page.locator('#sun-time').inputValue(),'23:30');
@@ -978,11 +1116,11 @@ async function verifySterniczaViewpointsAndNight(){
   await setNumber('nightWindowActivity-value',0);
   assert.ok((await page.locator('#night-status').innerText()).includes('about 0% active'));
   await frames();
-  const noWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const noWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'sternicza-windows-none');
   await setNumber('nightWindowActivity-value',100);
   assert.ok((await page.locator('#night-status').innerText()).includes('about 100% active'));
   await frames();
-  const allWindows=await page.locator('#scene-host').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'png',animations:'disabled',scale:'css'});
+  const allWindows=await renderedScreenshot('#scene-host',{type:'png',animations:'disabled',scale:'css'},'sternicza-windows-all');
   assert.ok(!noWindows.equals(allWindows),'Changing window activity must visibly change the rendered street scene');
   await setNumber('nightWindowActivity-value',activityOriginal);
   check('All three dimmers respond, including an actual rendered change from 0% to 100% active windows');
@@ -990,13 +1128,14 @@ async function verifySterniczaViewpointsAndNight(){
   await details('#night-adjustments',false);
   await selectPreset(firstStanding);
   const nightImage=await screenshot('first-floor-garden-night');
+  await verifyNightMotionTarget();
   await page.locator('#preview-day').click();
   await waitLight('nightActivation','zero');
   await waitLight('nightGarden','zero');
   await waitLight('nightWindows','zero');
   report.daylight=await lightState();
   await frames();
-  const dayImage=await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,type:'jpeg',quality:65,animations:'disabled',scale:'css'});
+  const dayImage=await renderedScreenshot('#viewport',{type:'jpeg',quality:65,animations:'disabled',scale:'css'},'sternicza-day-comparison');
   assert.ok(!dayImage.equals(nightImage),'Daylight restoration must visibly change the rendered scene');
   check('Daylight restores the sun clock and turns simulated artificial lights off');
 
@@ -1036,9 +1175,9 @@ async function verifySterniczaViewpointsAndNight(){
   }));
   assert.ok(report.mobile.scrollWidth<=report.mobile.width+2,JSON.stringify(report.mobile));
   assert.equal(await page.locator('#upper-floor-viewpoints [data-preset]').count(),8);
-  await page.locator('#viewport').screenshot({timeout:SCENE_CAPTURE_TIMEOUT,
+  await renderedScreenshot('#viewport',{
     path:path.join(resultsRoot,'mobile-night.jpg'),type:'jpeg',quality:65,animations:'disabled',scale:'css',
-  });
+  },'mobile-night');
   check('Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow');
 
 }

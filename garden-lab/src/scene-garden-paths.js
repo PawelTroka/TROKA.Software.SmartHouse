@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
-import {gardenGroundAt} from './geometry.js?v=1.39.0';
-import {pathStrip} from './garden-paths.js?v=1.39.0';
-import {toWorldRoofTriangle} from './orientation.js?v=1.39.0';
+import {gardenGroundAt} from './geometry.js?v=1.40.0';
+import {pathStrip} from './garden-paths.js?v=1.40.0';
+import {toWorldRoofTriangle} from './orientation.js?v=1.40.0';
 
 /** Four batched, grade-following meshes, irrespective of the number of stones.
  * Small open joints expose the compact mineral base; no floating flat slabs
