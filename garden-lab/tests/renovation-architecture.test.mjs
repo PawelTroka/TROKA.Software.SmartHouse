@@ -93,6 +93,7 @@ test('all shared exterior records match actual interior holes while retaining wa
           const record=[...facades.windows,facades.door].find(w=>w&&w.edgeIndex===edge.index&&Math.abs(w.lo-o.offset)<1e-7);
           assert.ok(record,wall.id+':'+o.type);near(record.width,o.width);near(record.z,edge.baseZ+o.sill);near(record.height,o.height);
           for(const key of ['panes','transoms','frameWidth','glazing','operation','architectureStyle'])assert.equal(record[key],o[key],key);
+          if(o.glazing==='reflective-privacy')for(const key of ['privacyCondition','nightPrivacyGuaranteed','outlook'])assert.equal(record[key],o[key],key);
         }
         near(panels.reduce((sum,p)=>sum+(p.right-p.left)*(p.top-p.bottom),0),length*wall.height-apertureArea,1e-6);
       }
@@ -107,12 +108,14 @@ test('all shared exterior records match actual interior holes while retaining wa
   }
 });
 
-test('larger clear bathroom windows preserve kitchen worktops, retained partitions and solid furniture bays',()=>{
+test('bathroom glazing proposals preserve kitchen worktops, retained partitions and solid furniture bays',()=>{
   for(const designStyle of styleIds){
     const plans=['ground','first'].map(floor=>getHouseFloorPlan({floor,settings:{...settings,designStyle}}));
     for(const plan of plans){
       const bathrooms=plan.walls.flatMap(w=>w.openings).filter(o=>['bathroom','spa-bath'].includes(o.roomId));
-      assert.equal(bathrooms.length,2);assert.ok(bathrooms.every(o=>o.sill===.98&&o.glazing==='clear'&&o.height===1.44&&o.width>=1.4&&o.operation==='picture'&&!o.privacy));
+      assert.equal(bathrooms.length,plan.floor==='ground'?1:2);
+      assert.ok(bathrooms.every(o=>o.sill===.98&&o.height===1.44&&o.width>=1.4&&o.operation==='picture'));
+      assert.ok(bathrooms.every(o=>plan.floor==='ground'?o.glazing==='reflective-privacy'&&o.privacy:o.glazing==='clear'&&!o.privacy));
       assert.ok(plan.walls.flatMap(w=>w.openings).filter(o=>o.roomId==='front-kitchen').every(o=>o.sill>=1));
       for(const wall of plan.walls.filter(w=>w.exterior))for(const o of wall.openings.filter(o=>o.roomId)){
         const room=plan.rooms.find(r=>r.id===o.roomId),length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]),ux=(wall.b[0]-wall.a[0])/length,uy=(wall.b[1]-wall.a[1])/length;

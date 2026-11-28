@@ -5,11 +5,11 @@ import {getSiteProfile,resolveSiteId} from '../src/sites.js';
 import {CLOSE_GROVE_TREE_POSITIONS,BOUNDARY_PINE_TREE_POSITIONS} from '../src/summer-garden.js';
 
 const model=createStateModel(getSiteProfile('sternicza-11'));
-const previous=()=>model.sanitizeState({...model.DEFAULTS,edgeAlignedSunbeds:false,poolSunbedSides:1,
+const previous=()=>model.sanitizeState({...model.DEFAULTS,privateGardenSeating:false,bathroomPrivacyGlazing:false,edgeAlignedSunbeds:false,poolSunbedSides:1,
   screeningTrees:model.DEFAULTS.screeningTrees.map((t,i)=>({...t,x:CLOSE_GROVE_TREE_POSITIONS[i][0],y:CLOSE_GROVE_TREE_POSITIONS[i][1],rotation:i*11,unitPrice:i*1000}))});
 
-test('schema 36 starts with the requested L seating and corrected boundary pine',()=>{
-  assert.equal(STATE_VERSION,36);assert.equal(model.DEFAULTS.edgeAlignedSunbeds,true);assert.equal(model.DEFAULTS.poolSunbedSides,2);
+test('schema 37 starts with the requested pool seating count and corrected boundary pine',()=>{
+  assert.equal(STATE_VERSION,37);assert.equal(model.DEFAULTS.edgeAlignedSunbeds,true);assert.equal(model.DEFAULTS.poolSunbedSides,2);
   assert.deepEqual(model.DEFAULTS.screeningTrees.map(t=>[t.x,t.y]),BOUNDARY_PINE_TREE_POSITIONS);
   assert.equal(resolveSiteId('?site=nadmorska-17','#v=35&site=sternicza-11'),'sternicza-11');
   assert.deepEqual(model.decodeState(model.encodeState(model.DEFAULTS)),model.DEFAULTS);

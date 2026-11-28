@@ -7,7 +7,7 @@ import {equipmentLabelRecords} from '../src/scene-equipment-labels.js';
 
 const model=createStateModel(getSiteProfile('sternicza-11'));
 test('new living-room choices and independent equipment labels survive sharing',()=>{
-  assert.equal(STATE_VERSION,36);
+  assert.equal(STATE_VERSION,37);
   assert.equal(model.DEFAULTS.livingCinemaLayout,'right-media');
   assert.equal(model.DEFAULTS.showEquipmentLabels,true);
   for(const layout of ['right-media','left-media','garden-salon','crosswall-media','legacy']){

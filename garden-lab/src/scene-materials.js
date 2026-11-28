@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {createPhotographicMaps,calibratePhotographicTint} from './material-assets.js?v=1.40.0';
+import {createPhotographicMaps,calibratePhotographicTint} from './material-assets.js?v=1.41.0';
 
 // Local photographic PBR finish samples supplement the procedural botanical
 // and water textures. Files are self-hosted CC0 assets; none depict this site.

@@ -83,7 +83,7 @@ add('fire-lounge-outer-coping',program.firepit.outerFootprint||program.firepit.f
 program.firepit.steps.forEach((step,i)=>add(`fire-lounge-step-${i+1}`,rectCorners(step)));
 add('cold-plunge-pad',rectCorners(program.coldPlunge,program.coldPlunge.pad??.18));
 program.coldPlunge.steps.forEach((step,i)=>add(`cold-plunge-step-${i+1}`,rectCorners(step)));
-add('dining-platform',rectCorners(program.furniture.dining));
+if(program.furniture.dining)add('dining-platform',rectCorners(program.furniture.dining));
 program.furniture.loungers.forEach(([x,y],i)=>add(`lounger-${i+1}`,rectCorners({x,y,width:.78,length:2}),'movable-furniture'));
 program.furniture.path.forEach(([x,y],i)=>add(`stepping-stone-${i+1}`,rectCorners({x,y,width:1.15,length:.9})));
 

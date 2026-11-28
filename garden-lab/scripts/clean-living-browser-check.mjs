@@ -10,6 +10,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {houseModelFrame} from '../src/house-model.js';
+import {observerForPreset} from '../src/geometry.js';
 import {WALK_COMFORT} from '../src/walk-motion.js';
 
 assert.notEqual(process.env.SITES_MANAGED_LINUX_CONTAINER,'1','Use the approved managed preview; this real-WebGL runner belongs in GitHub Actions.');
@@ -166,23 +167,30 @@ try{
   await page.goto(base+'/?site=sternicza-11',{waitUntil:'domcontentloaded',timeout:remaining()});
   await q('#loading').waitFor({state:'hidden',timeout:remaining()});assert.equal(await q('meta[name="application-version"]').getAttribute('content'),version);
   await q('#designStyle').selectOption(STYLE,{timeout:remaining()});await sceneReady();
-  const initial=await exportDesign();assert.equal(initial.schemaVersion,36);assert.equal(initial.settings.poolSunbedSides,2);
+  const initial=await exportDesign();assert.equal(initial.schemaVersion,37);assert.equal(initial.settings.poolSunbedSides,2);
   assert.deepEqual(initial.settings.screeningTrees.map(t=>[t.x,t.y]),[[13,34.1],[19.3,32.25],[17.6,34.9]]);
   const pool=initial.gardenLayout.pool,beds=initial.gardenLayout.sunbeds;
   near(pool.x,15.5);near(pool.y,24.5);near(pool.width,3.2);near(pool.length,6.5);assert.equal(beds.length,3);
-  assert.deepEqual(beds.map(b=>b.poolEdge),['garden','garden','front']);
-  for(const b of beds.slice(0,2)){assert.ok(b.length>b.width);assert.ok(b.x+b.width<pool.x);near(b.x,14.12);}
-  const end=beds[2];assert.ok(end.width>end.length&&end.y+end.length<pool.y);assert.ok(end.x>=pool.x&&end.x+end.width<=pool.x+pool.width);
+  assert.deepEqual(beds.map(b=>b.poolEdge),['garden','garden','garden']);
+  assert.deepEqual(beds.map(b=>b.x),[11.95,13.05,14.15]);
+  for(const b of beds){assert.ok(b.length>b.width);assert.ok(b.x+b.width<pool.x);near(b.y,24);assert.equal(b.back,'north');}
+  assert.equal(initial.gardenLayout.dining,null);assert.equal(initial.gardenLayout.diningVisible,false);
+  assert.ok(initial.gardenLayout.pathNetwork.connections.every(c=>c.id!=='dining'&&c.connected));
   const ground=initial.interiors.floors.ground,first=initial.interiors.floors.first;
   for(const id of ['kitchen-sink-header','kitchen-corner-storage','kitchen-sink-side-storage'])assert.ok(!ground.fixtures.some(f=>f.id===id));
   assert.ok(ground.fixtures.some(f=>f.id==='kitchen-pantry-corner'));
   const sinkWindow=ground.walls.flatMap(w=>w.openings).find(o=>o.service==='kitchen-sink');near(sinkWindow.width,2.30);near(sinkWindow.height,1.46);
   for(const plan of [ground,first]){const windows=plan.walls.flatMap(w=>w.openings).filter(o=>['bathroom','spa-bath'].includes(o.roomId));
-    assert.equal(windows.length,2);for(const o of windows){assert.equal(o.glazing,'clear');assert.ok(o.width>=1.4);near(o.sill,.98);near(o.height,1.44);}}
+    assert.equal(windows.length,plan.floor==='ground'?1:2);
+    for(const o of windows){assert.equal(o.glazing,plan.floor==='ground'?'reflective-privacy':'clear');assert.ok(o.width>=1.4);near(o.sill,.98);near(o.height,1.44);
+      if(plan.floor==='ground'){assert.equal(o.privacyCondition,'outside-brighter-than-inside');assert.equal(o.nightPrivacyGuaranteed,false);}}
+  }
+  assert.ok(ground.walls.find(w=>w.id==='street-facade').openings.every(o=>o.type!=='window'));
   const sauna=first.walls.flatMap(w=>w.openings).find(o=>o.service==='indoor-sauna');near(sauna.width,.96);near(sauna.height,1.30);assert.equal(sauna.glazing,'clear');
-  report.exported={schema:initial.schemaVersion,trees:initial.settings.screeningTrees,pool,sunbeds:beds,kitchenWindow:sinkWindow,saunaWindow:sauna};
-  const response=await page.request.get(new URL('./data/site-data.json',page.url()).href,{timeout:remaining()});assert.ok(response.ok());frame=houseModelFrame(await response.json(),initial.settings);
-  await check('Fresh Scandinavian defaults preserve two pines, restore only the boundary pine, use three chaises along two pool edges and export the actual clear apertures');
+  report.exported={schema:initial.schemaVersion,trees:initial.settings.screeningTrees,pool,sunbeds:beds,dining:initial.gardenLayout.dining,pathNetwork:initial.gardenLayout.pathNetwork,kitchenWindow:sinkWindow,saunaWindow:sauna};
+  const response=await page.request.get(new URL('./data/site-data.json',page.url()).href,{timeout:remaining()});assert.ok(response.ok());
+  const sourceData=await response.json();frame=houseModelFrame(sourceData,initial.settings);
+  await check('Fresh Scandinavian defaults preserve two pines, restore only the boundary pine, align three chaises side by side, remove the right-hand dining zone and export the actual bathroom privacy apertures');
   if(selectedGroups.includes('garden')){
     await q('#viewer button[data-mode="plan"]').click({timeout:remaining()});await q('#plan-host svg').waitFor({state:'visible',timeout:remaining()});await shot('garden-two-edge-loungers-and-boundary-pine','#plan-host','plan');
     await q('#viewer button[data-mode="orbit"]').click({timeout:remaining()});await q('#showDimensions').uncheck({timeout:remaining()});
@@ -221,7 +229,26 @@ try{
     report.walkDimensions=await dimensionState({floor:'ground'});await shot('kitchen-walking-dimensions');
     await q('#showDimensions').uncheck({timeout:remaining()});await sceneReady();await dimensionState({enabled:false});await shot('kitchen-dimensions-off');
     await check('Interior dimensions follow real room entry and walking, stay on the occupied floor, and disappear through the public Dimensions switch');
-    await roomView({id:'ground-bathroom-clear-window',floor:'ground',room:'bathroom',position:[8.70,6.45],aim:[10.595,6.45]});
+    await roomView({id:'ground-bathroom-reflective-privacy-window',floor:'ground',room:'bathroom',position:[8.70,6.45],aim:[10.595,6.45]});
+    await roomView({id:'ground-bathroom-solid-street-wall',floor:'ground',room:'bathroom',position:[8.35,7.05],aim:[8.35,8.825]});
+    // Public custom-eye Share state provides a stable outside view, independent
+    // of the walking floor resolver. Aim upward from the side-garden ground at
+    // the actual raised ground-floor pane; no private scene/camera hooks.
+    const exteriorLocal=[12.3,6.45],exteriorPosition=frame.toSite(...exteriorLocal),exteriorTarget=frame.toSite(10.595,6.45,1.70);
+    const exteriorPatch={mode:'eye',preset:'custom',observerX:exteriorPosition[0],observerY:exteriorPosition[1],eyeHeight:2,
+      sceneMotion:false,showDimensions:false,interiorView:'plan',interiorEnabled:false,walkNavigation:'free'};
+    const exteriorObserver=observerForPreset('custom',{...initial.settings,...exteriorPatch},sourceData);
+    exteriorPatch.lookYaw=degrees(Math.atan2(-(exteriorTarget[0]-exteriorObserver.x),exteriorTarget[1]-exteriorObserver.y));
+    exteriorPatch.lookPitch=degrees(Math.atan2(exteriorTarget[2]-exteriorObserver.z,Math.hypot(exteriorTarget[0]-exteriorObserver.x,exteriorTarget[1]-exteriorObserver.y)));
+    await sharePatch(exteriorPatch);await sceneReady();
+    assert.equal(await q('#viewer button[data-mode="eye"]').getAttribute('aria-pressed'),'true');
+    const exteriorExport=await exportDesign();
+    for(const key of ['x','y','z'])near(exteriorExport.summary.observer[key],exteriorObserver[key],.005);
+    near(exteriorExport.settings.lookYaw,exteriorPatch.lookYaw,.005);near(exteriorExport.settings.lookPitch,exteriorPatch.lookPitch,.005);
+    await shot('ground-bathroom-reflective-exterior');
+    report.views.push({id:'ground-bathroom-reflective-exterior',mode:'eye',local:exteriorLocal,aim:exteriorTarget,
+      observer:exteriorExport.summary.observer,lookYaw:exteriorExport.settings.lookYaw,lookPitch:exteriorExport.settings.lookPitch});
+    await check('Rendered the bathroom reflective exterior from the public custom-eye Share view with its exported position and aim verified');
     await roomView({id:'upper-bathroom-clear-window',floor:'first',room:'spa-bath',position:[8.65,6.28],aim:[10.60,6.28]});
     await roomView({id:'indoor-sauna-picture-window',floor:'first',room:'sauna',position:[9.47,4.61],aim:[10.60,4.61]});
     await openPlan('ground','front-kitchen');await field('dimensions').check({timeout:remaining()});

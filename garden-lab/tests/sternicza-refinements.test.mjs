@@ -13,7 +13,7 @@ const model=createStateModel(getSiteProfile('sternicza-11',data)),fresh=model.DE
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
 
 test('fresh Sternicza defaults match the requested terrace, infinity spa, canopy and two-car option',()=>{
-  assert.equal(STATE_VERSION,36);
+  assert.equal(STATE_VERSION,37);
   for(const [key,value]of Object.entries({terraceDepth:4,jacuzziOverflow:true,canopyEnabled:true,
     canopyHeight:3,canopyDepth:4,terraceCoverType:'canopy',garageSpaces:2,garageRampWidth:5.8,basementGarageEnabled:true})){
     assert.equal(fresh[key],value,key);

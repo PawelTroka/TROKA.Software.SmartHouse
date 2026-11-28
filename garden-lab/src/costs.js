@@ -3,17 +3,17 @@
  * and selected perimeter hedges. Price anchors are dated supplier observations; labour,
  * logistics and uncertainty remain visible allowances, not contractor quotes.
  */
-import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.40.0';
-import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.40.0';
-import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.40.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.40.0';
-import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.40.0';
-import { gardenFurniture, terraceStairs } from './layout.js?v=1.40.0';
-import { pendantLightingLayout } from './pendant-layout.js?v=1.40.0';
-import { getDesignStyle } from './design-styles.js?v=1.40.0';
-import { upgradeSingleCarGarage } from './garage-options.js?v=1.40.0';
-import { boundaryFenceLayout } from './boundary-fence.js?v=1.40.0';
-import { pathUnionArea } from './garden-paths.js?v=1.40.0';
+import { hedgeSegments, jacuzziBounds, canopyBounds, terraceGroundReference, terraceCover, privacyStructures } from './geometry.js?v=1.41.0';
+import {PAVILION_DEFAULTS} from './corner-pavilion.js?v=1.41.0';
+import { getTreeType, screeningTreeLabel, TREE_CATALOG_REVIEWED_AT } from './tree-catalog.js?v=1.41.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.41.0';
+import { GARDEN_PLANNING_RATES as RATES, GARDEN_BUDGET_REVIEWED_AT } from './garden-budget-catalog.js?v=1.41.0';
+import { gardenFurniture, terraceStairs } from './layout.js?v=1.41.0';
+import { pendantLightingLayout } from './pendant-layout.js?v=1.41.0';
+import { getDesignStyle } from './design-styles.js?v=1.41.0';
+import { upgradeSingleCarGarage } from './garage-options.js?v=1.41.0';
+import { boundaryFenceLayout } from './boundary-fence.js?v=1.41.0';
+import { pathUnionArea } from './garden-paths.js?v=1.41.0';
 
 const field = (label, value, min, max, step, unit, help = '') => ({
   label, value, min, max, step, unit, help, group: 'cost', input: 'number',
@@ -40,8 +40,8 @@ export const COST_FIELDS = Object.freeze({
     ['costSpaFirepit','Sunken fire lounge · installed'],
   ].map(([key,label])=>[key,{...field(label,0,0,2000000,100,'PLN','Complete installed quote override. 0 uses the planning range when enabled, otherwise needs a quote. Include equipment, excavation, foundations, local drainage, connections and installation.'),group:'cost-spa'}])),
   ...Object.fromEntries([
-    ['costGardenTerrace','Raised terrace, finish and steps'],['costGardenPaving','Paths and dining paving'],
-    ['costGardenFurniture','Dining set and loungers'],['costGardenPlanting','Ornamental planting'],
+    ['costGardenTerrace','Raised terrace, finish and steps'],['costGardenPaving','Garden paths and paving'],
+    ['costGardenFurniture','Outdoor furniture'],['costGardenPlanting','Ornamental planting'],
     ['costGardenLawn','Lawn finish'],['costGardenIrrigation','Permanent garden irrigation'],
     ['costGardenLighting','Landscape lighting'],['costGardenUtilities','Shared garden utilities'],
     ['costGardenDemolition','Detached garage removal'],['costGardenDesign','Garden design and coordination'],
@@ -246,7 +246,7 @@ export function estimateStyleCosts(settings) {
   const c=costSettings(settings),style=getDesignStyle(settings.designStyle),enabled=style.id!=='current',rows=[];
   if(enabled)rows.push(installedLine(c,'costStyleUpgradeQuote',null,
     `${style.label}${settings.styleHouseFinish?' · garden and house renovation':' · garden finishes'}`,
-    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include the proposed replacement glazing, enlarged or repositioned openings and structural supports, facade build-up, interior joinery and fittings when house renovation is enabled. Include the selected planted beds, dining court and resting platforms in the garden upgrade. Reconfirm scope and applicable tax after changing the style or its garden arrangement; zero is unquoted.'));
+    'Additional installed upgrade above the base terrace, paving, furniture, lighting and cover amounts already included. Reconcile the supplier package against those lines to avoid double counting. Include the proposed replacement glazing, enlarged or repositioned openings and structural supports, facade build-up, interior joinery and fittings when house renovation is enabled. Include the selected planted beds, paved routes and resting platforms in the garden upgrade. Reconfirm scope and applicable tax after changing the style or its garden arrangement; zero is unquoted.'));
   return installationGroup(enabled,rows,c,{planningEnabled:false,quoteOnly:true,styleId:style.id,houseFinishPreview:enabled&&settings.styleHouseFinish===true,houseRenovationIncluded:enabled&&settings.styleHouseFinish===true});
 }
 
@@ -339,12 +339,13 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
   const terraceGross=positive(terrace.width)*positive(settings.terraceDepth??terrace.depth);
   const terraceNet=Math.max(0,terraceGross-tub.width*tub.length);
   const furniture=gardenFurniture(data,settings),dining=furniture.dining,path=furniture.path||[],network=furniture.pathNetwork;
+  const diningSets=dining?1:0,diningArea=dining?dining.width*dining.length:0;
   const pathLength=network?.pathLength??sum(path.slice(1).map((point,i)=>Math.hypot(point[0]-path[i][0],point[1]-path[i][1])));
   const pathSurfaceArea=network?.surfaceArea??pathLength*1.15,pathStoneArea=network?.pavedArea??pathSurfaceArea*.9;
   // The full decorated route includes inset stone, mineral joints and borders.
   // Count shared junctions and the dining entrance once, from the drawn polygons.
-  const pavingArea=network?pathUnionArea([rectangle(dining.x,dining.y,dining.width,dining.length),...network.segments.map(s=>s.footprint)])
-    :dining.width*dining.length+pathStoneArea;
+  const pavingArea=network?pathUnionArea([...(dining?[rectangle(dining.x,dining.y,dining.width,dining.length)]:[]),...network.segments.map(s=>s.footprint)])
+    :diningArea+pathStoneArea;
   const rearY=data.site.rearMidpoint[1],rear=clipHalfPlane(openRing(data.site.boundary),p=>p[1]-rearY);
   const pool=poolBounds(settings,data),extra=[],baseExclusions=[data.site.house.footprint,
     rectangle(terrace.x,rearY,terrace.width,positive(settings.terraceDepth??terrace.depth))];
@@ -382,9 +383,9 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
       `${quantityText(terraceNet,'m² net')} × 1,000–1,700 PLN/m² + 8,000–15,000 steps`,
       'Raised terrace frame, waterproofing, finish, removable spa service hatches and garden steps. Jacuzzi support is in the spa line; house facade / doors are excluded.'),
     installedLine(c,'costGardenPaving',scaledRange(RATES.pavingPerM2,pavingArea),`${quantityText(pavingArea,'m²')} × 450–800 PLN/m²`,
-      network?`Dining pad plus ${pathSurfaceArea.toFixed(1)} m² of connected route including ${pathStoneArea.toFixed(1)} m² inset stone, mineral joints and borders. Shared junctions are counted once. Finish and local sub-base; excludes pool coping, terrace, access stairs and the recessed plunge surround priced with the spa.`:'Dining pad plus a 1.15 m path with 90% stone coverage. Finish and local sub-base; excludes pool coping, terrace, access stairs and spa foundations.'),
-    installedLine(c,'costGardenFurniture',addRanges([scaledRange(RATES.diningSet),scaledRange(RATES.lounger,loungers),scaledRange(RATES.furnitureDelivery)]),
-      `1 dining set (6 seats) + ${loungers} loungers + delivery / handling allowance`,
+      network?`${dining?'Dining pad plus ':''}${pathSurfaceArea.toFixed(1)} m² of connected route including ${pathStoneArea.toFixed(1)} m² inset stone, mineral joints and borders. Shared junctions are counted once. Finish and local sub-base; excludes pool coping, terrace, access stairs and the recessed plunge surround priced with the spa.`:'Dining pad plus a 1.15 m path with 90% stone coverage. Finish and local sub-base; excludes pool coping, terrace, access stairs and spa foundations.'),
+    installedLine(c,'costGardenFurniture',addRanges([scaledRange(RATES.diningSet,diningSets),scaledRange(RATES.lounger,loungers),scaledRange(RATES.furnitureDelivery)]),
+      `${diningSets?'1 dining set (6 seats) + ':''}${loungers} loungers + delivery / handling allowance`,
       `${nadmorska?'Movable furniture only.':'Movable furniture only. Built-in lounge seats/cushions are in the fire-lounge line.'} The named Cloveris benchmarks advertise free delivery; the generic range reserves 500–1,500 PLN for alternative delivery or placement assistance. Product references are not additional costs.`,['furniture','lounger']),
     installedLine(c,'costGardenPlanting',scaledRange(RATES.plantingPerM2,ornamentalArea),`${quantityText(ornamentalArea,'m² assumed beds')} × 180–350 PLN/m²`,
       'Assume 20% of garden left after hedge beds and paving. Ornamental plants, mulch and planting labour; excludes thujas, specimen trees and added bulk topsoil.'),
@@ -403,7 +404,7 @@ export function estimateGardenCosts(settings,data,quantities=gardenQuantities(se
     'Allowance for removal of the detached garage and its waste transport/disposal. Final demolition method and quantities require a site quote. No separate duplicate general-waste charge.'));
   if(canopyArea>EPS)rows.push(installedLine(c,'costGardenCanopy',scaledRange(RATES.canopyPerM2,canopyArea),`${quantityText(canopyArea,'m² canopy')} × 1,700–3,000 PLN/m²`,
     'Selected terrace canopy, supports and installation; not charged when the cover is disabled or replaced with a balcony.'));
-  return installationGroup(true,rows,c,{quantities:{terraceGross,terraceNet,pavingArea,pathLength,pathSurfaceArea,pathStoneArea,additionalHardscape,ornamentalArea,lawnArea,irrigatedArea,frontIrrigationArea,frontSideIrrigationArea,garageArea,canopyArea,loungers,lightingFittings,otherLightingAllowance,routeFixtureCount,gateFixtureCount,gardenPendantCount,hedgePendantCount}});
+  return installationGroup(true,rows,c,{quantities:{terraceGross,terraceNet,pavingArea,pathLength,pathSurfaceArea,pathStoneArea,additionalHardscape,ornamentalArea,lawnArea,irrigatedArea,frontIrrigationArea,frontSideIrrigationArea,garageArea,canopyArea,loungers,diningSets,lightingFittings,otherLightingAllowance,routeFixtureCount,gateFixtureCount,gardenPendantCount,hedgePendantCount}});
 }
 
 export function thujaUnitPrice(height, customPrice = 0, factor = 100) {

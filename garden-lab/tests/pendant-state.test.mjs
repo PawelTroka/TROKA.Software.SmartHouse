@@ -14,7 +14,7 @@ const values={...NIGHT_DEFAULTS,sunEnabled:true,nightGardenIntensity:75,nightPen
 for(const [id,file] of [['sternicza-11','site-data.json'],['korzeniowskiego-40','korzeniowskiego-40.json'],['nadmorska-17','nadmorska-17.json']]){
   const data=JSON.parse(readFileSync(new URL('../data/'+file,import.meta.url)));
   const model=createStateModel(getSiteProfile(id,data));
-  const publishedDefaults=Object.freeze({...model.DEFAULTS,livingCinemaLayout:'legacy',showEquipmentLabels:false,poolSunbedSides:1,edgeAlignedSunbeds:false,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
+  const publishedDefaults=Object.freeze({...model.DEFAULTS,privateGardenSeating:false,bathroomPrivacyGlazing:false,livingCinemaLayout:'legacy',showEquipmentLabels:false,poolSunbedSides:1,edgeAlignedSunbeds:false,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,
     hstOpen:0,summerPoolLayout:false,jacuzziCentered:false,sceneMotion:false,
     ...(id==='sternicza-11'?{terraceDepth:4.2,canopyDepth:4.2,canopyHeight:2.7,canopyEnabled:false,jacuzziOverflow:false}:{}),
     terraceCoverType:'canopy',nightGardenIntensity:75,nightWindowActivity:35,...previousPendantDefaults});

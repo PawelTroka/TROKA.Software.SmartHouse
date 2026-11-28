@@ -53,7 +53,7 @@ test('current shares and JSON save/reload retain every privacy dimension, switch
 
 test('v20 sparse and custom designs never acquire privacy structures, even with unknown true flags',()=>{
   // The historical terrace and canopy predate the basement garage proposal.
-  const historical={...custom,livingCinemaLayout:'legacy',showEquipmentLabels:false,poolSunbedSides:1,edgeAlignedSunbeds:false,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85,sceneMotion:false,summerPoolLayout:false,jacuzziCentered:false,hstOpen:0,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,jacuzziOverflow:false,terraceCoverType:'canopy'};
+  const historical={...custom,privateGardenSeating:false,bathroomPrivacyGlazing:false,livingCinemaLayout:'legacy',showEquipmentLabels:false,poolSunbedSides:1,edgeAlignedSunbeds:false,pedestrianGateOpen:true,garageGateOpen:true,rearCornerPool:false,nightGardenIntensity:75,nightPendantIntensity:80,nightHedgeIntensity:85,sceneMotion:false,summerPoolLayout:false,jacuzziCentered:false,hstOpen:0,styleGardenLayout:false,basementGarageEnabled:false,poolFreeboard:.02,garageSlabThickness:.25,firstFloorRise:3,atticRise:6,jacuzziOverflow:false,terraceCoverType:'canopy'};
   const previous=without(historical,privacyKeys),original=clone(previous);
   const shared=new URLSearchParams(model.encodeState(historical));
   shared.set('v','20');

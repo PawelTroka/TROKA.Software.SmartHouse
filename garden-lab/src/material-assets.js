@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.40.0';
+import {MATERIAL_ASSETS} from './material-asset-data.js?v=1.41.0';
 export {MATERIAL_ASSETS};
 
 // Original 1K PBR files from Poly Haven, vendored for offline/self-hosted use.

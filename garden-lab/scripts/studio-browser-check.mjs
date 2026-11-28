@@ -196,8 +196,30 @@ function canonicalScope(exported,id){
     assert.equal(exported.settings.planExteriorApplied,active);
   }
 }
+function verifyPrivateGarden(exported,reference,id){
+  assert.equal(exported.settings.privateGardenSeating,true,id+' keeps the requested private seating layout');
+  const garden=exported.gardenLayout,beds=garden.sunbeds;
+  assert.equal(beds.length,exported.settings.poolSunbedSides+1,id+' keeps the selected sunbed count');
+  assert.ok(beds.length>=2&&beds.length<=4);
+  assert.deepEqual(beds,reference.gardenLayout.sunbeds,id+' cannot move the shared poolside row');
+  assert.ok(beds.every(b=>b.kind==='lounger'&&b.width===.78&&b.length===2&&b.back==='north'&&b.y===beds[0].y&&b.poolEdge==='garden'),
+    id+' keeps matching head/foot lines and direction');
+  for(let i=1;i<beds.length;i++)assert.ok(Math.abs(beds[i].x-beds[i-1].x-beds[i-1].width-.32)<1e-8,
+    id+' keeps equal side-by-side gaps');
+  assert.equal(garden.dining,null,id+' cannot restore the exposed dining area');
+  assert.equal(garden.diningVisible,false,id+' has no displayed garden dining area');
+  assert.deepEqual(garden.furniture,beds,id+' renders only the requested individual poolside chaises');
+  const paths=garden.pathNetwork;
+  assert.deepEqual(paths.connections.map(c=>c.id),['terrace','pool','firepit','sauna','plunge']);
+  assert.ok(paths.connections.every(c=>c.connected),id+' keeps every remaining destination connected');
+  assert.deepEqual(paths.blocked,[],id+' keeps the shared circulation clear');
+  assert.ok(paths.lights.every(light=>light.destination!=='dining'),id+' cannot retain an orphan dining light');
+  assert.deepEqual(garden.pool,reference.gardenLayout.pool,id+' preserves the pool');
+  assert.deepEqual(exported.settings.screeningTrees,reference.settings.screeningTrees,id+' preserves all pine positions and dimensions');
+  return {id,sunbeds:beds,dining:garden.dining,connections:paths.connections,routeFixtures:paths.fixtureCount};
+}
 const gardenSettings=settings=>Object.fromEntries(Object.entries(settings).filter(([key])=>
-  /^(garden|summerPoolLayout|hedge|bed|screeningTrees|treeLeafMode|pool|jacuzzi|privacyPergola|spaScreens|sauna|coldPlunge|firepit|removeGarage)/.test(key)));
+  /^(garden|privateGardenSeating|summerPoolLayout|hedge|bed|screeningTrees|treeLeafMode|pool|jacuzzi|privacyPergola|spaScreens|sauna|coldPlunge|firepit|removeGarage)/.test(key)));
 // Compare complete renovation states at one fixed camera and solar moment.
 // Turning renovation off now restores Current for the whole house and garden.
 async function compareHouse(site,id){
@@ -301,6 +323,7 @@ try{
   const comparisonView=await cameraTime();
   const original=await shot('sternicza-current','#scene-host canvas');
   const reference=await houseScope(false),selectedShots=new Map(),selectedInfo=new Map(),geometrySignatures=new Set(),windowPatterns=new Set(),gardenSchemes=new Set();
+  const sharedPrivateGarden=before.settings.privateGardenSeating===true&&before.settings.summerPoolLayout===true;
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
   const sweep=options.filter(id=>id!=='current'&&(scenarioGroup==='all'||minimalIds.has(id)===(scenarioGroup==='styles-minimal')));
   assert.equal(sweep.length,scenarioGroup==='all'?34:scenarioGroup==='styles-minimal'?12:22);
@@ -314,6 +337,7 @@ try{
     assert.ok(info.houseOpeningCount>0&&info.windowPattern.length>10,id+' has no rendered aperture records');
     assert.equal(info.gardenKitchens,0,id+' omits outdoor kitchens');
     assert.ok(info.gardenPlantingBeds>0,id+' has no fitted planting bed');
+    if(sharedPrivateGarden)(report.gardenLayouts??=[]).push(verifyPrivateGarden(await exportDesign(),before,id));
     if(minimalIds.has(id)||['hidden-bali','space-age','mediterranean-villa','coastal','baltic-dune','beach-house','japandi'].includes(id)){
       const frame=await shot('sternicza-'+id,'#scene-host canvas');
       const diff=await pixelChange(original,frame);
@@ -329,7 +353,14 @@ try{
   }
   assert.equal(geometrySignatures.size,sweep.length,'Every tested style must change physical facade geometry');
   assert.equal(windowPatterns.size,sweep.length,'Every style must have a distinct physical window proposal');
-  assert.equal(gardenSchemes.size,scenarioGroup==='styles-minimal'?new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.gardenLayout[0])).size:6,'Every required garden recipe family must render around the shared left-edge pool');
+  if(sharedPrivateGarden){
+    assert.deepEqual([...gardenSchemes],['Pool and spa garden · side-by-side loungers'],
+      'Every current style retains the shared seating proposal');
+    assert.equal(report.gardenLayouts.length,sweep.length,'Every rendered style is checked against its actual exported garden');
+  }else{
+    assert.equal(gardenSchemes.size,scenarioGroup==='styles-minimal'?new Set(MINIMAL_STYLE_DEFINITIONS.map(style=>style.gardenLayout[0])).size:6,
+      'Historical designs retain every required garden recipe family around the shared left-edge pool');
+  }
   await style('current');const reset=await houseScope(false);report.returnedResources={reference,reset};
   assert.equal(reset.garageVehicles,2,'Current preserves both garage vehicles');
   assert.equal(await el('#styleHouseFinish').isDisabled(),true);
@@ -337,7 +368,7 @@ try{
   report.currentRestoration=await pixelChange(original,restored);
   assert.ok(report.currentRestoration.fraction<.001,JSON.stringify(report.currentRestoration));
   assert.ok(reset.geometries<=reference.geometries+16&&reset.textures<=reference.textures+4,JSON.stringify(report.returnedResources));
-  check(`${sweep.length} tested styles have distinct physical window proposals, ${gardenSchemes.size} garden recipe families without outdoor kitchens around the shared left-edge pool; both cars remain and Current restores the neutral dwelling`);
+  check(`${sweep.length} tested styles have distinct physical window proposals and ${sharedPrivateGarden?'the same aligned poolside row, no right-hand dining area and connected remaining paths':`${gardenSchemes.size} historical garden recipe families`} without outdoor kitchens; both cars remain and Current restores the neutral dwelling`);
   }
 
   if(runsGroup('controls')){

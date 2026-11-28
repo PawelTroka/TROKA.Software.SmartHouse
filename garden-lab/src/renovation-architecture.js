@@ -2,7 +2,8 @@
  * These opening records cut the actual walls in both views. Measurements of the
  * original footprint, roof, floors and stairs are never edited by a style.
  */
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.40.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.41.0';
+import {REFLECTIVE_PRIVACY_GLAZING} from './privacy-glazing.js?v=1.41.0';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const finite=(x,f=0)=>Number.isFinite(Number(x))?Number(x):f;
 const EPS=1e-7;
@@ -27,7 +28,7 @@ export const RENOVATION_ARCHITECTURES=Object.freeze({
   coastal:recipe('coastal','Paired divided-light French windows and deep white projecting casings around the garden HST.',2.08,2.07,.42,-.04,2,2,.083,3,2,.44,.25,.23,'french',1.10),
   'gdansk-brick':recipe('gdansk-brick','Narrow tall steel-divided windows and deep brick reveals around the full-width garden HST.',1.48,2.29,.26,.09,2,3,.047,3,2,.64,.30,.18,'steel-grid',1.02),
   'danish-midcentury':recipe('danish-midcentury','Long three-part timber picture windows, higher sills and a wide garden slider beneath a strong horizontal head.',3.02,1.71,.68,-.15,3,0,.068,1,4,.30,.21,.33,'ribbon',1.13),
-  'finnish-sauna':recipe('finnish-sauna','Quiet square picture windows, clear bathroom glazing and deep cedar reveals around the garden HST.',1.72,1.76,.67,.03,1,0,.071,2,2,.62,.35,.28,'picture',1.04),
+  'finnish-sauna':recipe('finnish-sauna','Quiet square picture windows, clear upper-bathroom glazing and deep cedar reveals around the garden HST.',1.72,1.76,.67,.03,1,0,.071,2,2,.62,.35,.28,'picture',1.04),
   'riviera-deco':recipe('riviera-deco','Tall three-part windows, high transoms and stepped projecting heads above the garden HST.',2.28,2.22,.29,-.10,3,1,.062,3,3,.48,.31,.29,'deco-grid',1.16),
   'arts-and-crafts':recipe('arts-and-crafts','Broad paired timber casements with upper divided lights and crafted timber reveals around the garden HST.',2.18,1.98,.51,.07,2,2,.089,3,2,.60,.29,.26,'casement',1.08),
   'palm-springs':recipe('palm-springs','Very broad low-sill picture windows and one open garden frontage under long protective sun heads.',3.36,2.08,.24,.17,1,0,.045,1,4,.26,.20,.39,'picture',1.20),
@@ -192,8 +193,10 @@ export function renovatePlanOpenings(plan,{styleId='current'}={}){
       const rank=source.filter(other=>sign*(other.offset+other.width/2-centre)<-EPS).length;
       const target=centre+(entry?0:r.shift*(rank%2?-1:1)*sign);
       const offset=clamp(target-width/2,bounds.lo,bounds.hi-width);
+      const reflectiveBathroom=bathroom&&plan.floor==='ground'&&plan.bathroomPrivacyGlazing!==false;
       openings.push({...o,...styleOpeningDetails({...o,privacy:false},r.id),offset,width,sill,height,privacy:false,roomId:room?.roomId,
-        ...(bathroom?{panes:1,transoms:0,operation:'picture',source:'clear-bathroom-window-proposal'}:{})});
+        ...(bathroom?{panes:1,transoms:0,operation:'picture',source:'clear-bathroom-window-proposal'}:{}),
+        ...(reflectiveBathroom?{...REFLECTIVE_PRIVACY_GLAZING,source:'reflective-bathroom-window-proposal'}:{})});
     }
     return {...wall,openings,architectureSourceOpenings:source.map(o=>({...o}))};
   });

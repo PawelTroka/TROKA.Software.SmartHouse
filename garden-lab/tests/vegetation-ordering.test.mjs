@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
 import {createVegetationInstanceCuller} from '../src/scene-spatial-instances.js';
 import {createExistingVegetationGroup} from '../src/scene-existing-vegetation.js';
-import {createGardenLightBoundary,isGardenLightBoundaryOrderSafe} from '../src/scene-light-boundary.js?v=1.40.0';
+import {createGardenLightBoundary,isGardenLightBoundaryOrderSafe} from '../src/scene-light-boundary.js?v=1.41.0';
 
 function fixture(positions=[[0,0,-12],[0,0,-3],[0,0,-7]],material=new THREE.MeshStandardMaterial({alphaTest:.33,alphaToCoverage:true})){
   const root=new THREE.Group(),geometry=new THREE.BoxGeometry(.5,.5,.5),mesh=new THREE.InstancedMesh(geometry,material,positions.length),matrix=new THREE.Matrix4();

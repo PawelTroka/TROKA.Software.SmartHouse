@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {isGardenLightBoundaryOrderSafe} from './scene-light-boundary.js?v=1.40.0';
+import {isGardenLightBoundaryOrderSafe} from './scene-light-boundary.js?v=1.41.0';
 
 const vegetation=mesh=>mesh.isInstancedMesh&&mesh.count>1&&
   (mesh.name.startsWith('existing-canopies-')||mesh.name.startsWith('reconstructed-existing-tree-branches')||mesh.name.startsWith('hedge-sprays-'));

@@ -1,7 +1,8 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.40.0';
-import {facadeSolidPanels} from './renovation-architecture.js?v=1.40.0';
-import {slidingPanelLayout} from './hst-system.js?v=1.40.0';
+import {toWorld} from './orientation.js?v=1.41.0';
+import {facadeSolidPanels} from './renovation-architecture.js?v=1.41.0';
+import {slidingPanelLayout} from './hst-system.js?v=1.41.0';
+import {createReflectivePrivacyGlassMaterials} from './privacy-glazing.js?v=1.41.0';
 
 /** Proposed mapped-house walls and apertures. Current uses its original path.
  * Geometry is batched across the house by finish, rather than by wall cell or
@@ -11,8 +12,12 @@ export function createRenovationFacadeGroup(layout,materials,settings={}){
   if(!layout?.architectureProposal)return null;
   const group=new THREE.Group();group.name='renovated-mapped-facades';
   const batches=new Map(),apertures=[];
-  let privacyMaterial=materials.privacyGlass;
+  let privacyMaterial=materials.privacyGlass,reflectivePrivacyMaterials=null;
   const materialFor=role=>{
+    if(role.startsWith('reflective-privacy-glass-')){
+      reflectivePrivacyMaterials??=createReflectivePrivacyGlassMaterials(THREE);
+      return reflectivePrivacyMaterials[role.endsWith('exterior')?'reflectivePrivacyExterior':'reflectivePrivacyInterior'];
+    }
     if(role==='privacy-glass'&&!privacyMaterial){
       privacyMaterial=materials.glass.clone();privacyMaterial.color.set('#d4dedb');
       privacyMaterial.roughness=.78;privacyMaterial.metalness=0;privacyMaterial.opacity=.86;
@@ -23,7 +28,7 @@ export function createRenovationFacadeGroup(layout,materials,settings={}){
   const polygon=(edge,vertices,role,offset=0)=>{
     if(vertices.length<3)return;
     if(!batches.has(role))batches.set(role,{positions:[],uv:[],material:materialFor(role)});
-    const batch=batches.get(role),flip=-edge.direction[1]*edge.outward[0]+edge.direction[0]*edge.outward[1]<0;
+    const batch=batches.get(role),flip=(-edge.direction[1]*edge.outward[0]+edge.direction[0]*edge.outward[1]<0)!==(role==='reflective-privacy-glass-interior');
     const push=([x,z])=>{
       batch.positions.push(...toWorld(edge.a[0]+edge.direction[0]*x+edge.outward[0]*offset,
         edge.a[1]+edge.direction[1]*x+edge.outward[1]*offset,z));
@@ -51,6 +56,9 @@ export function createRenovationFacadeGroup(layout,materials,settings={}){
           for(const x of [panel.lo,panel.hi-f])rectangle(edge,x,x+f,w.z+frame,top-frame,'frame',track+.014);
           for(const y of [w.z+frame,top-2*frame])rectangle(edge,panel.lo,panel.hi,y,y+frame,'frame',track+.014);
         }
+      }else if(w.glazing==='reflective-privacy'){
+        rectangle(edge,w.lo+frame,w.hi-frame,w.z+frame,top-frame,'reflective-privacy-glass-exterior',.017);
+        rectangle(edge,w.lo+frame,w.hi-frame,w.z+frame,top-frame,'reflective-privacy-glass-interior',.007);
       }else rectangle(edge,w.lo+frame,w.hi-frame,w.z+frame,top-frame,glassRole,.012);
       // Outer jambs use a full frame width. They meet the glass exactly; half
       // bars clipped at the edge would leave uncovered strips around the pane.
@@ -67,7 +75,9 @@ export function createRenovationFacadeGroup(layout,materials,settings={}){
         rectangle(edge,w.lo+frame,w.hi-frame,z-frame*.36,z+frame*.36,'frame',.037);
       }
       apertures.push({id:w.id,edgeIndex:edge.index,lo:w.lo,hi:w.hi,bottom:w.z,top,panes,transoms,frameWidth:frame,
-        glazing:w.glazing||'clear',mullions:panes-1,...(slider?{openFraction:slider.open,clearWidth:slider.clear.width,stackSide:'left'}:{})});
+        glazing:w.glazing||'clear',mullions:panes-1,
+        ...(w.glazing==='reflective-privacy'?{privacyCondition:w.privacyCondition,nightPrivacyGuaranteed:w.nightPrivacyGuaranteed}:{}),
+        ...(slider?{openFraction:slider.open,clearWidth:slider.clear.width,stackSide:'left'}:{})});
     }
   }
   for(const [role,{positions,uv,material}]of batches){

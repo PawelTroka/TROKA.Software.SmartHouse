@@ -1,7 +1,7 @@
 /** Proposed garden objects, in the mapped local metre frame. No height model. */
-import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.40.0';
-import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.40.0';
-import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.40.0';
+import {getRenovationGardenRecipe} from './renovation-garden.js?v=1.41.0';
+import {pavilionAlternativeEnabled} from './corner-pavilion.js?v=1.41.0';
+import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.41.0';
 const rectRing=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length],[r.x,r.y]];
 const centre=r=>[r.x+r.width/2,r.y+r.length/2];
 export function spaEnabled(settings={},data){

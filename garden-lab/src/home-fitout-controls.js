@@ -1,5 +1,5 @@
-import {LIVING_CINEMA_LAYOUTS,getLivingCinemaLayout} from './living-cinema.js?v=1.40.0';
-import {luxuryKitchenSchedule} from './luxury-kitchen.js?v=1.40.0';
+import {LIVING_CINEMA_LAYOUTS,getLivingCinemaLayout} from './living-cinema.js?v=1.41.0';
+import {luxuryKitchenSchedule} from './luxury-kitchen.js?v=1.41.0';
 
 export function fillCinemaOptions(select){
   select.replaceChildren(...LIVING_CINEMA_LAYOUTS.map(layout=>new Option(`${layout.letter} · ${layout.label}${layout.recommended?' · Recommended':''}`,layout.id)),new Option('Earlier saved arrangement','legacy'));

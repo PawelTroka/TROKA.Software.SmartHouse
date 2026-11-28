@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {createVegetationInstanceCuller} from '../src/scene-spatial-instances.js';
 import {createFoliageMaterial} from '../src/scene-vegetation.js';
 import {createExistingVegetationGroup} from '../src/scene-existing-vegetation.js';
-import {createGardenLightBoundary} from '../src/scene-light-boundary.js?v=1.40.0';
+import {createGardenLightBoundary} from '../src/scene-light-boundary.js?v=1.41.0';
 
 const vendor=readFileSync(new URL('../vendor/three.module.js',import.meta.url),'utf8');
 function material(){

@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {interiorDimensionContext} from './interior-dimensions.js?v=1.40.0';
-import {createDimensionOcclusionIndex} from './dimension-occlusion.js?v=1.40.0';
+import {interiorDimensionContext} from './interior-dimensions.js?v=1.41.0';
+import {createDimensionOcclusionIndex} from './dimension-occlusion.js?v=1.41.0';
 
 /** Identification is independent of measurement display. Anchors sit in front
  * of the actual joinery face, so a concealed appliance can still be found. */

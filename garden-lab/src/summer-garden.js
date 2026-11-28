@@ -1,7 +1,7 @@
 /** Versioned, reproducible garden proposals. Historical layouts remain literal.
  * Coordinates are mapped local metres, with x increasing toward PCK3/east.
  */
-import {getTreeType} from './tree-catalog.js?v=1.40.0';
+import {getTreeType} from './tree-catalog.js?v=1.41.0';
 
 // The current proposal follows the owner's left-edge pool preference. The
 // earlier transverse summer-sun study remains a separate historical record;
@@ -21,10 +21,13 @@ export function summerGardenFurniture(settings={},pool=summerPoolBounds(settings
   const p=pool;
   const bed=(x,y,width=.78,length=2,back='north')=>({x,y,width,length,back});
   const aligned=settings.edgeAlignedSunbeds!==false&&settings.rearCornerPool!==false;
-  const rows=[
-    // End-to-end chaises follow the inner long edge, rather than spreading
-    // two metres into the lawn. Their gap admits the lit pool approach. The
-    // near short-edge chaise completes the owner's compact L arrangement.
+  const privateSeating=settings.privateGardenSeating!==false;
+  // Every current chaise shares one head line and one foot line. Anchor the
+  // row beside the pool and add neighbours toward the garden, leaving the lit
+  // approach behind their feet. The stored side count remains compatible with
+  // historical designs, mapping 1 / 2 / 3 to 2 / 3 / 4 individual sunbeds.
+  const rows=privateSeating?[{side:'garden',beds:Array.from({length:sides+1},(_,i)=>
+    bed(Number((p.x-1.35-(sides-i)*1.10).toFixed(2)),p.y-.5))}]:[
     {side:'garden',beds:aligned?[-.5,2.9].map(dy=>bed(p.x-1.38,p.y+dy)):
       [-2.45,-1.35].map(dx=>bed(p.x+dx,p.y+3.55))},
     {side:'front',beds:[bed(p.x+.60,p.y-1.35,2,.78,'east')]},
@@ -34,7 +37,9 @@ export function summerGardenFurniture(settings={},pool=summerPoolBounds(settings
   ].slice(0,sides);
   const sunbeds=rows.flatMap(r=>r.beds.map(b=>({...b,poolEdge:r.side}))).map((b,i)=>({...b,id:`garden-sunbed-${i+1}`,kind:'lounger'}));
   return {loungers:sunbeds.map(b=>[b.x,b.y]),sunbeds,loungerSides:rows.map(r=>r.side),
-    dining:{x:1.85,y:25.8,width:3.8,length:3.4},
+    // The right-hand garden is deliberately left without a sitting zone.
+    dining:privateSeating?null:{x:1.85,y:25.8,width:3.8,length:3.4},
+    diningVisible:!privateSeating,
     path:[],
     beds:[{x:1.35,y:29.7,width:.62,length:3.5},{x:10.4,y:34.3,width:2.8,length:.65}]};
 }

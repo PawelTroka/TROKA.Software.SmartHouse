@@ -1,8 +1,8 @@
 /** Movable furnishings and decorative light compositions. These are design
  * proposals, never replacements for surveyed geometry or screening volumes. */
-import {canopySupportBounds} from './geometry.js?v=1.40.0';
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.40.0';
-import {jacuzziCoverLayout} from './spa-covers.js?v=1.40.0';
+import {canopySupportBounds} from './geometry.js?v=1.41.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.41.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.41.0';
 const recipe=(terrace,garden,diningTurn,shift,hedgeCount,pendantCount,treeCount,light,plant)=>Object.freeze({
   terrace,garden,diningTurn,shift:Object.freeze(shift),hedgeCount,pendantCount,treeCount,
   light:Object.freeze(light),plant,
@@ -130,7 +130,7 @@ export function resortTerraceLayout(data,settings,tub,stairs){
  * deliberately modest around the shared pool, stairs and excavated fire room. */
 export function resortGardenFurniture(base,settings,data){
   const r=getResortGardenRecipe(settings);if(!r)return base;
-  const dining={...base.dining,x:base.dining.x+r.shift[0],y:base.dining.y+r.shift[1],rotation:r.diningTurn?Math.PI/2:0};
+  const dining=base.dining?{...base.dining,x:base.dining.x+r.shift[0],y:base.dining.y+r.shift[1],rotation:r.diningTurn?Math.PI/2:0}:null;
   const points=base.loungers||[],items=[];
   if(points.length){
     const minX=Math.min(...points.map(p=>p[0])),minY=Math.min(...points.map(p=>p[1]));

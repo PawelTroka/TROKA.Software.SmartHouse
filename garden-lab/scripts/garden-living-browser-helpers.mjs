@@ -14,10 +14,11 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   const homeControls=async open=>{if((await el('#home-controls').getAttribute('open')!==null)!==open)await el('#home-controls > summary').click({timeout});};
   const doors=async(key,value)=>{await homeControls(true);await el(`[data-door-control="${key}"][data-door-value="${value}"]`).click({timeout});};
   const baseline=await exportDesign();assert.deepEqual(trees(baseline),expectedTrees);
-  assert.equal(baseline.schemaVersion,36);assert.equal(baseline.settings.perimeterFenceEnabled,true);
+  assert.equal(baseline.schemaVersion,37);assert.equal(baseline.settings.perimeterFenceEnabled,true);
   assert.equal(baseline.gardenLayout.pool.length,6.5);assert.equal(baseline.gardenLayout.pool.width,3.2);
   assert.equal(baseline.gardenLayout.pool.x,15.5);assert.equal(baseline.gardenLayout.pool.y,24.5);
   assert.equal(baseline.gardenLayout.sunbeds.length,3);
+  assert.equal(baseline.gardenLayout.dining,null);assert.equal(baseline.gardenLayout.diningVisible,false);
   assert.equal(baseline.settings.pedestrianGateOpen,false);assert.equal(baseline.settings.garageGateOpen,false);
   await el('#showDimensions').uncheck();
   await details();await style('warm-minimal');
@@ -27,25 +28,28 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   assert.equal(first.boundaryFence.enabled,true);assert.equal(first.boundaryFence.height,2.2);
   assert.equal(first.boundaryFence.styleId,'warm-minimal');assert.ok(first.boundaryFence.members>100);
   assert.ok(first.boundaryFence.meshes>0&&first.boundaryFence.meshes<=6);
-  assert.equal(first.gardenPaths.fixtures,7);assert.equal(first.gardenPaths.connections.length,6);
-  assert.deepEqual(first.gardenPaths.blockedRoutes,[]);assert.ok(first.gardenPaths.segments>=12);
+  assert.equal(first.gardenPaths.fixtures,6);assert.equal(first.gardenPaths.connections.length,5);
+  assert.deepEqual(first.gardenPaths.blockedRoutes,[]);assert.ok(first.gardenPaths.segments>=10);
   assert.equal(first.coldPlunge.sunken,true);assert.equal(first.coldPlunge.padTopZ,first.coldPlunge.rimZ);
   assert.ok(Math.abs(first.coldPlunge.rimZ-first.coldPlunge.waterZ-.08)<1e-8);
-  assert.equal(first.gardenLighting.routeFixtures,7);assert.equal(first.gardenLighting.gateFixtures,2);
+  assert.equal(first.gardenLighting.routeFixtures,6);assert.equal(first.gardenLighting.gateFixtures,2);
   assert.equal(first.gardenLighting.routeShadowMaps,0);assert.ok(first.gardenLighting.lights<=30);
   await shot('garden-living-day-overview','#scene-host canvas');
-  check('The actual WebGL scene contains restored planting, the compact pool, a connected six-destination route, recessed plunge and a batched 2.2 m boundary');
+  check('The actual WebGL scene contains restored planting, the compact pool, a connected five-destination route, recessed plunge and a batched 2.2 m boundary');
 
   for(const sides of [2,3,1]){
     await el('#poolSunbedSides').selectOption(String(sides));
     const design=await exportDesign();assert.deepEqual(trees(design),expectedTrees);
     assert.equal(design.gardenLayout.sunbeds.length,sides+1);
-    for(const bed of design.gardenLayout.sunbeds.slice(0,2))assert.ok(bed.length>bed.width,'Garden-side sunbeds run along the long pool edge');
-    for(const bed of design.gardenLayout.sunbeds.slice(2))assert.ok(bed.width>bed.length,'End sunbeds run along the short pool edge');
+    assert.equal(design.gardenLayout.dining,null);assert.equal(design.gardenLayout.diningVisible,false);
+    assert.ok(design.gardenLayout.furniture.every(f=>!['table','chair','sofa'].includes(f.kind)),'No furniture reappears at the removed right-hand dining zone');
+    const beds=design.gardenLayout.sunbeds;
+    assert.ok(beds.every(b=>b.length>b.width&&b.y===beds[0].y&&b.back===beds[0].back),'Every sunbed has the same head line, foot line and direction');
+    for(let i=1;i<beds.length;i++)assert.ok(Math.abs(beds[i].x-beds[i-1].x-beds[i-1].width-.32)<1e-8,'Sunbeds have equal side-by-side spacing');
   }
   await el('#summerPoolLayout').uncheck({timeout});assert.deepEqual(trees(await exportDesign()),expectedTrees);
   await el('#summerPoolLayout').check({timeout});assert.deepEqual(trees(await exportDesign()),expectedTrees);
-  check('All three sunbed options keep their long axes parallel to the adjacent pool edge; layout switches leave the trees fixed');
+  check('All three sunbed counts form one evenly spaced row with matching head and foot positions; layout switches leave the trees fixed');
 
   assert.equal(gates(first)['front-pedestrian-opening'],false);assert.equal(gates(first)['front-vehicle-opening'],false);
   await el('#home-controls > summary').click({timeout});
@@ -101,10 +105,10 @@ export async function verifyGardenLiving({page,el,sceneVisible,style,shot,export
   await el('[data-preset="terrace"]').click({timeout});await el('[data-look-yaw="0"]').click({timeout});
   await el('[data-studio-moment="blue"]').first().click({timeout});await sceneVisible(timeout);
   await page.waitForFunction(()=>Number(document.querySelector('#viewport').dataset.nightActivation)>0,null,{timeout});
-  info=await sceneInfo();assert.equal(info.gardenLighting.activeRouteLights,7);
+  info=await sceneInfo();assert.equal(info.gardenLighting.activeRouteLights,6);
   const nightLighting=info.gardenLighting;
   await shot('garden-living-blue-hour-paths','#scene-host canvas');
-  check('Blue hour activates all seven real route downlights without adding route shadow maps');
+  check('Blue hour activates all six real route downlights without adding route shadow maps');
 
   // Walk up to the plunge using the same observer and drag controls available
   // to the owner. A shallow downward look makes the flush rim and water clear.

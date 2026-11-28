@@ -1,6 +1,6 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.40.0';
-import {batchGroup} from './interior-geometry.js?v=1.40.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.41.0';
+import {batchGroup} from './interior-geometry.js?v=1.41.0';
 
 // These repeated names describe fixed decorative members, never interactive
 // targets. Keeping each assembly/material/shadow flag separate preserves the
