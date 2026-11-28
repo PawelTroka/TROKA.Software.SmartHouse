@@ -62,7 +62,9 @@ test('actual kitchen, bathroom and sauna meshes preserve views out and orient pr
         assert.ok(finishes.m.glass.transparent&&finishes.m.glass.opacity<=.15&&finishes.m.glass.roughness<=.08);
         assert.ok(finishes.m.privacyGlass.opacity>finishes.m.glass.opacity+.5,'Clear glass is materially different from the former opaque privacy pane');
         const outside=finishes.m.reflectivePrivacyExterior,inside=finishes.m.reflectivePrivacyInterior;
-        assert.ok(outside.transparent&&outside.opacity<1&&outside.metalness>.8&&outside.roughness<.1);
+        assert.equal(outside.transparent,false,'The exterior privacy face must not blend the room through its reflection');
+        assert.equal(outside.opacity,1);assert.equal(outside.depthWrite,true);assert.equal(outside.side,THREE.FrontSide);
+        assert.ok(outside.metalness>.8&&outside.roughness<.1);
         assert.ok(inside.transparent&&inside.opacity<=.2&&inside.side===THREE.FrontSide);
         assert.equal(outside.userData.nightPrivacyGuaranteed,false);
         const visible=[];model.root.traverseVisible(o=>{if(o.isMesh)visible.push(o);});
@@ -81,6 +83,7 @@ test('actual kitchen, bathroom and sauna meshes preserve views out and orient pr
               const reverse=new THREE.Raycaster(new THREE.Vector3(x+outward[0]*.42,y,z+outward[1]*.42),new THREE.Vector3(-outward[0],0,-outward[1]),0,.67);
               const exteriorHits=reverse.intersectObjects(visible,false);
               assert.ok(exteriorHits.some(hit=>hit.object.material===outside),'The exterior must show reflective glazing');
+              assert.equal(exteriorHits[0]?.object.material,outside,'The opaque reflected face must occlude the room from outside');
               assert.ok(exteriorHits.every(hit=>hit.object.material!==inside),'The tinted inner face must not draw outside');
             }
           }

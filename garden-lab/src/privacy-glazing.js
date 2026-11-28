@@ -1,6 +1,8 @@
 /** A daylight design appearance, not a guarantee of night-time privacy.
- * Both faces remain transmissive; the existing sky environment supplies the
- * reflection and dims it at night without another scene capture or shader.
+ * The exterior face occludes the room to show the intended daytime privacy;
+ * the inward face stays tinted and transparent. The existing sky environment
+ * supplies reflection without another scene capture or shader. This visual
+ * approximation does not simulate a real glazing assembly's lighting ratio.
  */
 export const REFLECTIVE_PRIVACY_GLAZING=Object.freeze({
   glazing:'reflective-privacy',privacy:true,privacyCondition:'outside-brighter-than-inside',
@@ -11,7 +13,7 @@ export const REFLECTIVE_PRIVACY_GLAZING=Object.freeze({
 // usable by plans/exports without making them import the WebGL engine.
 export function createReflectivePrivacyGlassMaterials(THREE){
   const exterior=new THREE.MeshStandardMaterial({color:'#c9d4d5',roughness:.07,metalness:.92,
-    transparent:true,opacity:.84,depthWrite:false,side:THREE.FrontSide,envMapIntensity:1.2});
+    transparent:false,opacity:1,depthWrite:true,side:THREE.FrontSide,envMapIntensity:1.2});
   const interior=new THREE.MeshPhysicalMaterial({color:'#61787a',roughness:.06,metalness:.05,
     transparent:true,opacity:.17,depthWrite:false,side:THREE.FrontSide,ior:1.5,reflectivity:.2});
   for(const [face,material]of [['exterior',exterior],['interior',interior]]){
