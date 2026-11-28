@@ -66,12 +66,12 @@
         "total": 19,
         "visible": 3,
         "floor": "ground",
-        "layoutPasses": 6,
+        "layoutPasses": 5,
         "occlusion": {
           "meshes": 179,
-          "queries": 44,
-          "triangleTests": 2406,
-          "boxTests": 12522,
+          "queries": 36,
+          "triangleTests": 1953,
+          "boxTests": 10126,
           "method": "cached-triangle-bvh"
         }
       },
@@ -102,12 +102,12 @@
         "total": 19,
         "visible": 0,
         "floor": "ground",
-        "layoutPasses": 9,
+        "layoutPasses": 8,
         "occlusion": {
           "meshes": 179,
-          "queries": 61,
-          "triangleTests": 3254,
-          "boxTests": 14164,
+          "queries": 53,
+          "triangleTests": 2801,
+          "boxTests": 11768,
           "method": "cached-triangle-bvh"
         }
       },
@@ -607,5 +607,5 @@
     "updateMode": "settled-only",
     "updatesWhileMoving": 0
   },
-  "elapsedMs": 132774
+  "elapsedMs": 104036
 }

@@ -26,7 +26,7 @@
     {
       "file": "garden-overview-covers-concealed.png",
       "renderer": "webgl",
-      "frames": 6,
+      "frames": 7,
       "triangles": 1356360,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -81,7 +81,7 @@
     {
       "file": "jacuzzi-seated-pck3-screening.png",
       "renderer": "webgl",
-      "frames": 9,
+      "frames": 10,
       "triangles": 1042339,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -136,7 +136,7 @@
     {
       "file": "garden-both-spa-covers-closed.png",
       "renderer": "webgl",
-      "frames": 12,
+      "frames": 13,
       "triangles": 1355184,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -191,7 +191,7 @@
     {
       "file": "garden-both-spa-covers-retracted.png",
       "renderer": "webgl",
-      "frames": 14,
+      "frames": 15,
       "triangles": 1356360,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -246,7 +246,7 @@
     {
       "file": "cold-plunge-clear-flush-surround.png",
       "renderer": "webgl",
-      "frames": 16,
+      "frames": 17,
       "triangles": 863573,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -301,7 +301,7 @@
     {
       "file": "cold-plunge-flush-cover-closed.png",
       "renderer": "webgl",
-      "frames": 17,
+      "frames": 18,
       "triangles": 863813,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -518,5 +518,5 @@
       }
     }
   },
-  "elapsedMs": 82723
+  "elapsedMs": 108767
 }

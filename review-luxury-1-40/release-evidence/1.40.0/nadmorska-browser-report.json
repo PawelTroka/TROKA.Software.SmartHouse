@@ -3,14 +3,14 @@
   "scenarioGroup": "nadmorska",
   "renderQuality": "eco",
   "status": "passed",
-  "startedAt": "2026-11-27T22:57:15.087Z",
+  "startedAt": "2026-11-28T00:05:40.278Z",
   "scenarios": [
     {
       "name": "nadmorska",
       "status": "passed",
-      "startedAt": "2026-11-27T22:57:27.088Z",
+      "startedAt": "2026-11-28T00:05:55.744Z",
       "firstCheck": 2,
-      "durationMs": 231237,
+      "durationMs": 377430,
       "checks": 15
     }
   ],
@@ -1279,13 +1279,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 1,
+        "polls": 4,
         "restarts": 0,
-        "fencePolls": 91,
-        "fenceElapsedMs": 2274.399999999994,
-        "elapsedMs": 2274.5
+        "fencePolls": 148,
+        "fenceElapsedMs": 3744.5999999999767,
+        "elapsedMs": 6342.700000000012
       },
-      "elapsedMs": 4175
+      "elapsedMs": 11793
     },
     {
       "name": "nadmorska-windows-all",
@@ -1301,11 +1301,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 57,
-        "fenceElapsedMs": 1416.3000000000175,
-        "elapsedMs": 1416.3999999999942
+        "fencePolls": 93,
+        "fenceElapsedMs": 2336.899999999965,
+        "elapsedMs": 2337
       },
-      "elapsedMs": 1631
+      "elapsedMs": 2586
     },
     {
       "name": "nadmorska-windows-quieter",
@@ -1321,11 +1321,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 55,
-        "fenceElapsedMs": 1368.6999999999825,
-        "elapsedMs": 1368.7999999999884
+        "fencePolls": 97,
+        "fenceElapsedMs": 2425.0999999999767,
+        "elapsedMs": 2425.2999999999884
       },
-      "elapsedMs": 1564
+      "elapsedMs": 2697
     },
     {
       "name": "nadmorska-windows-busier",
@@ -1341,11 +1341,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 53,
-        "fenceElapsedMs": 1307.5,
-        "elapsedMs": 1307.5999999999767
+        "fencePolls": 93,
+        "fenceElapsedMs": 2315.9000000000233,
+        "elapsedMs": 2316
       },
-      "elapsedMs": 1529
+      "elapsedMs": 2559
     },
     {
       "name": "nadmorska-street-busy-evening",
@@ -1361,11 +1361,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 100,
-        "fenceElapsedMs": 2490,
-        "elapsedMs": 2490
+        "fencePolls": 181,
+        "fenceElapsedMs": 4541.199999999953,
+        "elapsedMs": 4541.400000000023
       },
-      "elapsedMs": 2717
+      "elapsedMs": 4764
     },
     {
       "name": "nadmorska-day",
@@ -1381,11 +1381,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 305,
-        "fenceElapsedMs": 7668.299999999988,
-        "elapsedMs": 7668.5
+        "fencePolls": 543,
+        "fenceElapsedMs": 13715.599999999977,
+        "elapsedMs": 13715.799999999988
       },
-      "elapsedMs": 7933
+      "elapsedMs": 14035
     },
     {
       "name": "nadmorska-water-unlit",
@@ -1401,11 +1401,11 @@
         "fence": "signaled",
         "polls": 2,
         "restarts": 0,
-        "fencePolls": 295,
-        "fenceElapsedMs": 7420.100000000006,
-        "elapsedMs": 8492.799999999988
+        "fencePolls": 480,
+        "fenceElapsedMs": 12102.799999999988,
+        "elapsedMs": 13758.100000000035
       },
-      "elapsedMs": 8745
+      "elapsedMs": 21915
     },
     {
       "name": "nadmorska-water-lit",
@@ -1421,11 +1421,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 135,
-        "fenceElapsedMs": 3373.899999999994,
-        "elapsedMs": 3373.899999999994
+        "fencePolls": 241,
+        "fenceElapsedMs": 6072.899999999965,
+        "elapsedMs": 6073.099999999977
       },
-      "elapsedMs": 3623
+      "elapsedMs": 6375
     },
     {
       "name": "nadmorska-night",
@@ -1441,11 +1441,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 364,
-        "fenceElapsedMs": 9134.299999999988,
-        "elapsedMs": 9134.299999999988
+        "fencePolls": 642,
+        "fenceElapsedMs": 16189.400000000023,
+        "elapsedMs": 16189.599999999977
       },
-      "elapsedMs": 9360
+      "elapsedMs": 16470
     },
     {
       "name": "pendants-all-off",
@@ -1459,13 +1459,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 101,
+        "polls": 6,
         "restarts": 0,
-        "fencePolls": 304,
-        "fenceElapsedMs": 7625.299999999988,
-        "elapsedMs": 10156.600000000006
+        "fencePolls": 496,
+        "fenceElapsedMs": 12521.099999999977,
+        "elapsedMs": 12661.700000000012
       },
-      "elapsedMs": 10392
+      "elapsedMs": 17130
     },
     {
       "name": "pendants-garden-only",
@@ -1481,11 +1481,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 159,
-        "fenceElapsedMs": 3973,
-        "elapsedMs": 3973.1999999999825
+        "fencePolls": 237,
+        "fenceElapsedMs": 5955,
+        "elapsedMs": 5955.099999999977
       },
-      "elapsedMs": 4221
+      "elapsedMs": 6257
     },
     {
       "name": "pendants-hedge-only",
@@ -1501,11 +1501,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 242,
-        "fenceElapsedMs": 6068,
-        "elapsedMs": 6068.1999999999825
+        "fencePolls": 423,
+        "fenceElapsedMs": 10681.100000000035,
+        "elapsedMs": 10681.299999999988
       },
-      "elapsedMs": 6325
+      "elapsedMs": 10966
     },
     {
       "name": "nadmorska-pendants-night",
@@ -1521,11 +1521,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 464,
-        "fenceElapsedMs": 11660.400000000023,
-        "elapsedMs": 11660.5
+        "fencePolls": 810,
+        "fenceElapsedMs": 20511.5,
+        "elapsedMs": 20514.199999999953
       },
-      "elapsedMs": 11935
+      "elapsedMs": 20866
     },
     {
       "name": "nadmorska-hedge-isolated-off",
@@ -1539,13 +1539,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 1,
+        "polls": 6,
         "restarts": 0,
-        "fencePolls": 310,
-        "fenceElapsedMs": 7821.700000000012,
-        "elapsedMs": 7822.599999999977
+        "fencePolls": 500,
+        "fenceElapsedMs": 12659.199999999953,
+        "elapsedMs": 14210.100000000093
       },
-      "elapsedMs": 13163
+      "elapsedMs": 21741
     },
     {
       "name": "nadmorska-hedge-isolated-low",
@@ -1561,11 +1561,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 282,
-        "fenceElapsedMs": 7068.099999999977,
-        "elapsedMs": 7068.200000000012
+        "fencePolls": 493,
+        "fenceElapsedMs": 12466.099999999977,
+        "elapsedMs": 12466.300000000047
       },
-      "elapsedMs": 7314
+      "elapsedMs": 12773
     },
     {
       "name": "nadmorska-hedge-isolated-on",
@@ -1581,11 +1581,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 142,
-        "fenceElapsedMs": 3559.7999999999884,
-        "elapsedMs": 3560.0999999999767
+        "fencePolls": 247,
+        "fenceElapsedMs": 6232.29999999993,
+        "elapsedMs": 6232.400000000023
       },
-      "elapsedMs": 3786
+      "elapsedMs": 6522
     },
     {
       "name": "nadmorska-plan",
@@ -1601,11 +1601,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 53,
-        "fenceElapsedMs": 1333.7000000000116,
-        "elapsedMs": 1333.899999999965
+        "fencePolls": 67,
+        "fenceElapsedMs": 1666,
+        "elapsedMs": 1666.1999999999534
       },
-      "elapsedMs": 1629
+      "elapsedMs": 2038
     },
     {
       "name": "nadmorska-mobile-plan",
@@ -1621,11 +1621,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 11,
-        "fenceElapsedMs": 251.40000000002328,
-        "elapsedMs": 251.59999999997672
+        "fencePolls": 17,
+        "fenceElapsedMs": 403.0999999999767,
+        "elapsedMs": 403.19999999995343
       },
-      "elapsedMs": 513
+      "elapsedMs": 670
     },
     {
       "name": "nadmorska-mobile-hedge-off",
@@ -1639,13 +1639,13 @@
         "height": 447,
         "path": "direct",
         "fence": "signaled",
-        "polls": 45,
+        "polls": 83,
         "restarts": 0,
-        "fencePolls": 135,
-        "fenceElapsedMs": 3379.3000000000466,
-        "elapsedMs": 6418.200000000012
+        "fencePolls": 219,
+        "fenceElapsedMs": 5568.20000000007,
+        "elapsedMs": 10645.5
       },
-      "elapsedMs": 6581
+      "elapsedMs": 10843
     },
     {
       "name": "nadmorska-mobile-night",
@@ -1661,11 +1661,11 @@
         "fence": "signaled",
         "polls": 3,
         "restarts": 1,
-        "fencePolls": 175,
-        "fenceElapsedMs": 4351.399999999965,
-        "elapsedMs": 4376.600000000035
+        "fencePolls": 313,
+        "fenceElapsedMs": 7894.20000000007,
+        "elapsedMs": 7929
       },
-      "elapsedMs": 4560
+      "elapsedMs": 8121
     }
   ],
   "pageErrors": [],

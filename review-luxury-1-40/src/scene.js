@@ -461,6 +461,7 @@ export function createScene(container, data, callbacks = {}) {
   const equipmentLabels=createEquipmentLabelOverlay(container,scene,()=>[houseGroup],{shared:true});
   const performanceTiming=createFramePerformance(),adaptiveQuality=createAdaptiveMotionQuality();
   const vegetationCulling=createVegetationInstanceCuller();
+  const optimizeOpaqueCoverage=new URLSearchParams(window.location.search).get('motionAlphaCoverage')!=='keep';
   const sceneOptimization={repeatedGardenDetails:null,dimensionOcclusion:'cached-triangle-bvh',dimensionLayoutHz:10};
   let disposed = false, renderPending = false, mode = 'orbit', currentSettings = {}, currentObserver = null, currentAnalysis = null;
   let designSignature = '', observerSignature = '', eyeYaw = 0, eyePitch = 0, eyeFov=65, storedYaw = null, storedPitch = null;
@@ -1612,7 +1613,7 @@ export function createScene(container, data, callbacks = {}) {
       performanceTiming.phase('instanceCulling',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
       vegetationCulling.withOpaqueDepthOrder(renderer,()=>{
         if(presentation)presentation.render();else renderer.render(scene,camera);
-      },{enabled:!!culling?.compacted});
+      },{enabled:!!culling?.compacted,optimizeOpaqueCoverage});
       performanceTiming.phase('sceneRender',performance.now()-phaseStart,navigationActive);
     }finally{
       phaseStart=performance.now();vegetationCulling.restore();performanceTiming.phase('instanceRestore',performance.now()-phaseStart,navigationActive);

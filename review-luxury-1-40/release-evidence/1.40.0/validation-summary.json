@@ -1,0 +1,400 @@
+{
+  "version": "1.40.0",
+  "sourceHead": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+  "workflowRun": 46085953841,
+  "workflowUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/46085953841",
+  "status": "release-candidate-performance-open",
+  "tests": {
+    "passed": 1038,
+    "failed": 0
+  },
+  "build": {
+    "head": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+    "sourceTree": "d6c60fd027ddbe5e9cd8ec598171ccb4772a917b",
+    "files": 565,
+    "mismatches": []
+  },
+  "ci": {
+    "passed": 22,
+    "failed": 2,
+    "jobs": [
+      {
+        "id": 140795443014,
+        "name": "GPU phase diagnostic",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443263,
+        "name": "Design studio \u00b7 styles-minimal",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443268,
+        "name": "Measured neighbourhood and sea-height browser checks",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443312,
+        "name": "Interior layouts, materials and mobile walkthrough",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443322,
+        "name": "WebGL regression \u00b7 nadmorska",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443328,
+        "name": "Walking performance \u00b7 living",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 140795443334,
+        "name": "Design studio \u00b7 styles",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443340,
+        "name": "Opaque foliage coverage fidelity",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443364,
+        "name": "Geometry, build and WebGL browser checks",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443365,
+        "name": "WebGL regression \u00b7 garage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443368,
+        "name": "Cinema and kitchen \u00b7 kitchen",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443380,
+        "name": "Design studio \u00b7 garden-living",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443383,
+        "name": "Architectural rendering comparison",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443397,
+        "name": "Cinema and kitchen \u00b7 layouts",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443403,
+        "name": "Design studio \u00b7 controls",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443420,
+        "name": "Covers and glazing \u00b7 garden",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443428,
+        "name": "Design studio \u00b7 properties",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443434,
+        "name": "Walking performance \u00b7 garden",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 140795443441,
+        "name": "Covers and glazing \u00b7 interiors",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443475,
+        "name": "WebGL regression \u00b7 sternicza",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443482,
+        "name": "Living fit-outs \u00b7 office-basement",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443486,
+        "name": "Living fit-outs \u00b7 architecture",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443496,
+        "name": "Living fit-outs \u00b7 guests",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140795443512,
+        "name": "Corner pavilion alternatives and mobile checks",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "walking": {
+    "living": {
+      "status": "failed",
+      "host": {
+        "platform": "linux",
+        "release": "7.0.0-1018-aws",
+        "arch": "x64",
+        "cpuModel": "Intel(R) Xeon(R) 6975P-C",
+        "logicalCpus": 4,
+        "totalMemoryGB": 15.333541870117188,
+        "node": "v22.23.5",
+        "chromium": "141.0.7390.37",
+        "webgl": {
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "vendor": "Google Inc. (Google)",
+          "canvasSamples": 4,
+          "sampleCountContext": "baseline-1.39-idle-default-framebuffer"
+        }
+      },
+      "capturePolicy": {
+        "minimumSamples": 32,
+        "warmupMinimumMs": 4000,
+        "warmupLimitMs": 30000,
+        "captureLimitMs": 60000,
+        "initializationLimitMs": 60000,
+        "stableBufferMinimumFrames": 12,
+        "stableBufferFrameSource": "public-rendered-frame-counter",
+        "stableBufferMinimumMs": 1500,
+        "shuttleHalfWidthM": 0.35,
+        "discardedInitialIntervals": 0,
+        "regressionEnforced": true
+      },
+      "runs": [
+        {
+          "case": "baseline-1.39",
+          "route": "living",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (4 RAF / 5 rendered)",
+          "rendererThroughput": {
+            "frames": 5,
+            "elapsedMs": 60239.69999999998,
+            "framesPerSecond": 0.0830017413765341,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true
+        },
+        {
+          "case": "candidate-legacy",
+          "route": "living",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (1129 RAF / 18 rendered)",
+          "rendererThroughput": {
+            "frames": 18,
+            "elapsedMs": 60412.100000000035,
+            "framesPerSecond": 0.29795355566186227,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true
+        },
+        {
+          "case": "candidate-current",
+          "route": "living",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (983 RAF / 17 rendered)",
+          "rendererThroughput": {
+            "frames": 17,
+            "elapsedMs": 60364.80000000005,
+            "framesPerSecond": 0.28162107718405405,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true
+        }
+      ],
+      "rawReport": "walking-living-report.json.gz"
+    },
+    "garden": {
+      "status": "failed",
+      "host": {
+        "platform": "linux",
+        "release": "7.0.0-1018-aws",
+        "arch": "x64",
+        "cpuModel": "Intel(R) Xeon(R) 6975P-C",
+        "logicalCpus": 4,
+        "totalMemoryGB": 15.333553314208984,
+        "node": "v22.23.5",
+        "chromium": "141.0.7390.37",
+        "webgl": {
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "vendor": "Google Inc. (Google)",
+          "canvasSamples": 4,
+          "sampleCountContext": "baseline-1.39-idle-default-framebuffer"
+        }
+      },
+      "capturePolicy": {
+        "minimumSamples": 32,
+        "warmupMinimumMs": 4000,
+        "warmupLimitMs": 30000,
+        "captureLimitMs": 60000,
+        "initializationLimitMs": 60000,
+        "stableBufferMinimumFrames": 12,
+        "stableBufferFrameSource": "public-rendered-frame-counter",
+        "stableBufferMinimumMs": 1500,
+        "shuttleHalfWidthM": 0.35,
+        "discardedInitialIntervals": 0,
+        "regressionEnforced": true
+      },
+      "runs": [
+        {
+          "case": "baseline-1.39",
+          "route": "garden",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (7 RAF / 8 rendered)",
+          "rendererThroughput": {
+            "frames": 8,
+            "elapsedMs": 60287.5,
+            "framesPerSecond": 0.13269749118805724,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true
+        },
+        {
+          "case": "candidate-legacy",
+          "route": "garden",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (1592 RAF / 22 rendered)",
+          "rendererThroughput": {
+            "frames": 22,
+            "elapsedMs": 60501.5,
+            "framesPerSecond": 0.363627348082279,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true
+        },
+        {
+          "case": "candidate-current",
+          "route": "garden",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (1607 RAF / 25 rendered)",
+          "rendererThroughput": {
+            "frames": 25,
+            "elapsedMs": 60622.59999999998,
+            "framesPerSecond": 0.41238745946231287,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true
+        }
+      ],
+      "rawReport": "walking-garden-report.json.gz"
+    }
+  },
+  "interpretation": "Actual renderer submissions are separate from RAF callbacks and are not presented-frame FPS. These approximately 60-second samples all fall short of the unchanged 32-draw minimum; no percentile or percentage speedup is claimed. Software-GPU results do not establish performance on the user device.",
+  "movingImageComparison": {
+    "status": "passed",
+    "testedMergeCommit": "0e6ec79bfc0d42a0319e22813b5aa495aeecf165",
+    "comparisons": {
+      "aa": {
+        "width": 1280,
+        "height": 584,
+        "pixels": 747520,
+        "threshold": 15,
+        "exactChangedPixels": 0,
+        "exactChangedFraction": 0,
+        "changedPixels": 0,
+        "fraction": 0,
+        "changedChannels": 0,
+        "maximumChannelDifference": 0,
+        "meanAbsoluteChannelDifference": 0,
+        "exactDifferenceBounds": null,
+        "exactRGBA": true
+      },
+      "ab": {
+        "width": 1280,
+        "height": 584,
+        "pixels": 747520,
+        "threshold": 15,
+        "exactChangedPixels": 0,
+        "exactChangedFraction": 0,
+        "changedPixels": 0,
+        "fraction": 0,
+        "changedChannels": 0,
+        "maximumChannelDifference": 0,
+        "meanAbsoluteChannelDifference": 0,
+        "exactDifferenceBounds": null,
+        "exactRGBA": true
+      }
+    },
+    "rawReport": "motion-coverage-report.json.gz",
+    "idleRestoration": [
+      {
+        "id": "control",
+        "status": "passed",
+        "idlePixels": {
+          "width": 1280,
+          "height": 584,
+          "pixels": 747520,
+          "threshold": 15,
+          "exactChangedPixels": 0,
+          "exactChangedFraction": 0,
+          "changedPixels": 0,
+          "fraction": 0,
+          "changedChannels": 0,
+          "maximumChannelDifference": 0,
+          "meanAbsoluteChannelDifference": 0,
+          "exactDifferenceBounds": null,
+          "exactRGBA": true
+        }
+      },
+      {
+        "id": "optimized",
+        "status": "passed",
+        "idlePixels": {
+          "width": 1280,
+          "height": 584,
+          "pixels": 747520,
+          "threshold": 15,
+          "exactChangedPixels": 0,
+          "exactChangedFraction": 0,
+          "changedPixels": 0,
+          "fraction": 0,
+          "changedChannels": 0,
+          "maximumChannelDifference": 0,
+          "meanAbsoluteChannelDifference": 0,
+          "exactDifferenceBounds": null,
+          "exactRGBA": true
+        }
+      }
+    ]
+  },
+  "gpuDiagnostic": {
+    "status": "passed",
+    "rawReport": "gpu-phase-report.json.gz",
+    "interpretation": "Independent completion fences continue to locate the dominant delay in scene work/resolve. Inconsistent raw timer attribution is retained and must not be treated as a speedup."
+  }
+}

@@ -3,14 +3,14 @@
   "scenarioGroup": "sternicza",
   "renderQuality": "eco",
   "status": "passed",
-  "startedAt": "2026-11-27T22:57:17.076Z",
+  "startedAt": "2026-11-28T00:08:55.831Z",
   "scenarios": [
     {
       "name": "sternicza",
       "status": "passed",
-      "startedAt": "2026-11-27T22:57:28.664Z",
+      "startedAt": "2026-11-28T00:09:07.234Z",
       "firstCheck": 2,
-      "durationMs": 280085,
+      "durationMs": 278205,
       "checks": 13
     }
   ],
@@ -103,13 +103,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 1,
+        "polls": 166,
         "restarts": 0,
-        "fencePolls": 609,
-        "fenceElapsedMs": 15318.699999999953,
-        "elapsedMs": 15318.900000000023
+        "fencePolls": 366,
+        "fenceElapsedMs": 9224.899999999994,
+        "elapsedMs": 17760.599999999977
       },
-      "elapsedMs": 15597
+      "elapsedMs": 18081
     },
     {
       "name": "sternicza-windows-all",
@@ -125,11 +125,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 292,
-        "fenceElapsedMs": 7319,
-        "elapsedMs": 7319.099999999977
+        "fencePolls": 288,
+        "fenceElapsedMs": 7210.600000000006,
+        "elapsedMs": 7210.799999999988
       },
-      "elapsedMs": 7575
+      "elapsedMs": 7478
     },
     {
       "name": "first-floor-garden-night",
@@ -145,16 +145,16 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 637,
-        "fenceElapsedMs": 16023.300000000047,
-        "elapsedMs": 16023.5
+        "fencePolls": 640,
+        "fenceElapsedMs": 16105.5,
+        "elapsedMs": 16105.800000000017
       },
-      "elapsedMs": 16184
+      "elapsedMs": 16293
     },
     {
       "name": "sternicza-night-before-motion",
       "status": "passed",
-      "deadlineMs": 119942,
+      "deadlineMs": 119932,
       "attempts": 1,
       "readiness": {
         "frame": 16,
@@ -165,16 +165,16 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 7,
-        "fenceElapsedMs": 150.70000000006985,
-        "elapsedMs": 150.80000000004657
+        "fencePolls": 8,
+        "fenceElapsedMs": 176,
+        "elapsedMs": 176
       },
-      "elapsedMs": 433
+      "elapsedMs": 448
     },
     {
       "name": "sternicza-night-motion-target",
       "status": "passed",
-      "deadlineMs": 112490,
+      "deadlineMs": 112154,
       "attempts": 1,
       "readiness": {
         "frame": 18,
@@ -185,16 +185,16 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 618,
-        "fenceElapsedMs": 15521.599999999977,
-        "elapsedMs": 15521.599999999977
+        "fencePolls": 661,
+        "fenceElapsedMs": 16636.400000000023,
+        "elapsedMs": 16636.5
       },
-      "elapsedMs": 15819
+      "elapsedMs": 16884
     },
     {
       "name": "sternicza-night-motion-restored",
       "status": "passed",
-      "deadlineMs": 96445,
+      "deadlineMs": 95024,
       "attempts": 1,
       "readiness": {
         "frame": 20,
@@ -205,11 +205,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 702,
-        "fenceElapsedMs": 17622.300000000047,
-        "elapsedMs": 17622.300000000047
+        "fencePolls": 705,
+        "fenceElapsedMs": 17720.5,
+        "elapsedMs": 17720.599999999977
       },
-      "elapsedMs": 17869
+      "elapsedMs": 17995
     },
     {
       "name": "sternicza-day-comparison",
@@ -225,11 +225,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 173,
-        "fenceElapsedMs": 4327.099999999977,
-        "elapsedMs": 4327.099999999977
+        "fencePolls": 178,
+        "fenceElapsedMs": 4455.100000000035,
+        "elapsedMs": 4455.200000000012
       },
-      "elapsedMs": 4480
+      "elapsedMs": 4620
     },
     {
       "name": "attic-street-night",
@@ -237,19 +237,19 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 3,
+        "frame": 2,
         "pending": false,
         "width": 982,
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 51,
+        "polls": 1,
         "restarts": 0,
-        "fencePolls": 571,
-        "fenceElapsedMs": 14349.79999999993,
-        "elapsedMs": 15726
+        "fencePolls": 418,
+        "fenceElapsedMs": 10494.900000000023,
+        "elapsedMs": 10495.199999999953
       },
-      "elapsedMs": 15879
+      "elapsedMs": 10638
     },
     {
       "name": "mobile-night",
@@ -257,7 +257,7 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 4,
+        "frame": 3,
         "pending": false,
         "width": 360,
         "height": 447,
@@ -265,11 +265,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 84,
-        "fenceElapsedMs": 2091.100000000093,
-        "elapsedMs": 2091.3000000000466
+        "fencePolls": 92,
+        "fenceElapsedMs": 2296.4000000000233,
+        "elapsedMs": 2296.5
       },
-      "elapsedMs": 2196
+      "elapsedMs": 2401
     },
     {
       "name": "sternicza-privacy-combined-orbit",
@@ -283,13 +283,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 183,
+        "polls": 189,
         "restarts": 0,
-        "fencePolls": 315,
-        "fenceElapsedMs": 7907.100000000093,
-        "elapsedMs": 14683.5
+        "fencePolls": 314,
+        "fenceElapsedMs": 7887.899999999965,
+        "elapsedMs": 14944.400000000023
       },
-      "elapsedMs": 14831
+      "elapsedMs": 15107
     }
   ],
   "nightMotion": {
@@ -319,6 +319,9 @@
           "orderedInstances": 0,
           "passes": 16,
           "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
           "drawCallsAdded": 0,
           "geometryChanged": false,
           "positionsChanged": false
@@ -388,6 +391,9 @@
           "orderedInstances": 0,
           "passes": 17,
           "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
           "drawCallsAdded": 0,
           "geometryChanged": false,
           "positionsChanged": false
@@ -457,6 +463,9 @@
           "orderedInstances": 874,
           "passes": 18,
           "opaqueOrder": "architecture-before-vegetation",
+          "opaqueCoverageMaterials": 5,
+          "opaqueCoverageMeshes": 15,
+          "opaqueCoverageRestored": true,
           "drawCallsAdded": 0,
           "geometryChanged": false,
           "positionsChanged": false
@@ -526,6 +535,9 @@
           "orderedInstances": 0,
           "passes": 20,
           "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
           "drawCallsAdded": 0,
           "geometryChanged": false,
           "positionsChanged": false
@@ -617,7 +629,7 @@
       "warmBrightenedPixels": 0,
       "brightnessGain": 0
     },
-    "elapsedMs": 41936
+    "elapsedMs": 43485
   },
   "daylight": {
     "activation": 0,

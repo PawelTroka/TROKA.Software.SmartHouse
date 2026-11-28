@@ -1,39 +1,40 @@
 {
-  "workflowRun": 46079586400,
-  "runNumber": 84,
-  "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-  "gallery": "/tmp/smarthouse-release-evidence-140",
-  "validationScope": "All seven listed functional jobs passed. Overall workflow and walking performance remain independently gated.",
+  "workflowRun": 46085953841,
+  "runNumber": 87,
+  "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+  "testedMergeCommit": "0e6ec79bfc0d42a0319e22813b5aa495aeecf165",
+  "validationScope": "All 22 functional, visual and diagnostic checks passed. Both walking benchmarks failed the unchanged actual-rendered-frame sampling requirement. This remains a release candidate.",
   "artifacts": [
     {
       "name": "cinema-kitchen-evidence-layouts",
-      "artifactId": 15237465481,
-      "archiveDigest": "sha256:a2a3c119b52116a0cba1ce5fb4104735443fc88b507c4487c6ec7039ef71dd2a",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T23:03:17Z",
-      "directory": "/tmp/cinema-kitchen-84/layouts",
+      "artifactId": 15239027995,
+      "archiveDigest": "sha256:1f346be985d20cd16b07f116700768352062588784282686071688e879c36f34",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:09:58Z",
       "galleryReport": "cinema-layouts-report.json",
-      "reportSha256": "bb847b6d6edc62ddb284e5731f96e8118ddbd01d2df8d75d7b318529d208bb41",
+      "reportSha256": "3925341caf8cbf550e8726b8df9f105931ae07e57bd81e5b1a764452f85ab427",
+      "storedSha256": "3925341caf8cbf550e8726b8df9f105931ae07e57bd81e5b1a764452f85ab427",
+      "compression": null,
       "galleryPngs": [
         {
           "file": "living-cinema-screen-view.png",
-          "sha256": "2739ec4de3019ced14c479c82b9cc3872f175801a41db697bb15478d961578dd"
+          "sha256": "ea76d75cc85f88cd9f09c0e31893a1fa1b2cedcbb3c2ea99f752828894dfbe07"
         },
         {
           "file": "living-crosswall-media.png",
-          "sha256": "3b6d76cdbb476c6bc839703f25307e72658b1e3ebb06cd1bbdcd804067ab5186"
+          "sha256": "d5c27af8de68b5b473e31fd79a34ce93c1c10e4dd772e3329cafa78ea915b3dc"
         },
         {
           "file": "living-garden-salon.png",
-          "sha256": "193011e7d4eece875843349c3ad0a50cec3a29a7e48a34ba91d0dffe412d2553"
+          "sha256": "50934f6854426d04775a7d0a3ffc34b17408ab5514319d9b06b07d74ff58f875"
         },
         {
           "file": "living-left-media.png",
-          "sha256": "02bf1f9a1a54c38d6da973bdc62ad9cae571a094a7d3dc87e03b93f928a024b4"
+          "sha256": "763f466318ff1b7bacf668207adc5251c9fd8816828510f9fa0301f4335ee468"
         },
         {
           "file": "living-right-media.png",
-          "sha256": "1a0d93d95299863936f65e44a3240bec57e05a5ce0c20c16be5134f209f15041"
+          "sha256": "e1e0db3cc648a1c3bf18d166bbcab06b1570c5c884de7c030f269745b43fe7ee"
         },
         {
           "file": "mobile-living-layout-controls.png",
@@ -53,91 +54,91 @@
         },
         {
           "file": "plan-right-media.png",
-          "sha256": "d835209d25c48b5ec24377e2d0dba7c8d58324c98d95815d2dfd910a614642f1"
+          "sha256": "cac8220102ef0c5bc629a4f014875ef10a7b452914a18561cd450527be4aa97f"
         }
       ],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": 224676
+      "errors": []
     },
     {
       "name": "cinema-kitchen-evidence-kitchen",
-      "artifactId": 15236811142,
-      "archiveDigest": "sha256:5d71f68b881bdc8a59a6b4bb172ec8ee5708156689eadee92c69f2295562a4e9",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T22:59:12Z",
-      "directory": "/tmp/cinema-kitchen-84/kitchen",
+      "artifactId": 15239072423,
+      "archiveDigest": "sha256:a47f14e7740ec07ae87fa6f2d48cc2920ecc3c6d4795be4816ac8f9a1a1907d9",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:07:26Z",
       "galleryReport": "kitchen-mirror-report.json",
-      "reportSha256": "560e7eaba93a8713624895d2eda168855ef926316aef1b7f4eeb6b8580048bf2",
+      "reportSha256": "efdfc23da006c7ba82d41e8e7c9c4e2a587bb53ee5f3e92f0b81d92ba582c6a8",
+      "storedSha256": "efdfc23da006c7ba82d41e8e7c9c4e2a587bb53ee5f3e92f0b81d92ba582c6a8",
+      "compression": null,
       "galleryPngs": [
         {
           "file": "hall-giant-mirror.png",
-          "sha256": "d4590e9e7cea5b7b1f3f961b026414273be2ba15ae9474ed9c49db1e20f22e5d"
+          "sha256": "0e4a0a03d4bbafec8f9e091baff383c951be125ff90010814708c60016e329b6"
         },
         {
           "file": "kitchen-tall-appliances-and-pantry.png",
-          "sha256": "ed8d5efe86254cf19309859fb6fba52b1fd311b598aef857b251d028d42367d5"
+          "sha256": "171624c07a15a3f76f3ae492acaa104b494ee50a5fa3127ace189dbb14fd85c5"
         },
         {
           "file": "kitchen-workstation-and-two-dishwashers.png",
-          "sha256": "d17283172c1e6e719836439321446b50b9efb650b4ea8c363d91dbe18a968a3d"
+          "sha256": "ecc4c48c24a89164c639000dfd6a6133ed30d83a6eec8008919278e96e2de652"
         }
       ],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": 132774
+      "errors": []
     },
     {
       "name": "interior-evidence",
-      "artifactId": 15237002144,
-      "archiveDigest": "sha256:f2426224adad51638ea78450433d0d468c7cf64d7c951ffa1becf3cc7c25ac4d",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T23:07:32Z",
-      "directory": "/tmp/interior-evidence-84",
+      "artifactId": 15239582001,
+      "archiveDigest": "sha256:4fc56915817a7cdc23b12fcdbccd0dd4d71c4e5918afeb492133edeb5efdfcd7",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:16:03Z",
       "galleryReport": "interiors-mobile-report.json",
-      "reportSha256": "fd3431cbd7ec24f5753ed3a45575b8f06d7e06adc70b8fb42705edf9dddd0a87",
+      "reportSha256": "346b8be52e927f06096ad3a66e6c2f8437406addacf08b75a618baee6ced7150",
+      "storedSha256": "346b8be52e927f06096ad3a66e6c2f8437406addacf08b75a618baee6ced7150",
+      "compression": null,
       "galleryPngs": [],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": null
+      "errors": []
     },
     {
       "name": "clean-living-evidence-garden",
-      "artifactId": 15237305325,
-      "archiveDigest": "sha256:8734365e9a8e1fce45287b26f5c9c79d78e995f17e2bc4aa5ccfd5612996db7d",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T22:58:20Z",
-      "directory": "/tmp/clean-living-84/garden",
+      "artifactId": 15239411310,
+      "archiveDigest": "sha256:0101e2f4821e5f72f760fc7f02dbb444d188188b70f2d8444ca2ccc30f4f2a92",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:08:13Z",
       "galleryReport": "covers-garden-report.json",
-      "reportSha256": "a5cd5d1ef290be4095d0fcb3bcd4694210e6240d5da5dc63fadc0e512bbf06f6",
+      "reportSha256": "6edec61e59be1ed298b5892faed99ce4f1f7ae8eb0cddf655244caa422ad27e2",
+      "storedSha256": "6edec61e59be1ed298b5892faed99ce4f1f7ae8eb0cddf655244caa422ad27e2",
+      "compression": null,
       "galleryPngs": [],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": 82723
+      "errors": []
     },
     {
       "name": "clean-living-evidence-interiors",
-      "artifactId": 15236436313,
-      "archiveDigest": "sha256:15ca2f240f13cb4916cdab2b17bd7916e696ad04eead081ce407db6d0bd9a71e",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T22:59:27Z",
-      "directory": "/tmp/clean-living-84/interiors",
+      "artifactId": 15238978076,
+      "archiveDigest": "sha256:36a4f03b9ac2e977614b3a1e08599bc0570653803831485a9f3e1573a0493d41",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:09:15Z",
       "galleryReport": "covers-interiors-report.json",
-      "reportSha256": "8fcb5f512dc84aa8c40f9aa3a3b7d5fc4a9901bb229be66fd70c1f282b207576",
+      "reportSha256": "7cd745d852d49b98879c98929e4760edeee460596fe04acfa422268eecef202d",
+      "storedSha256": "7cd745d852d49b98879c98929e4760edeee460596fe04acfa422268eecef202d",
+      "compression": null,
       "galleryPngs": [],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": 147052
+      "errors": []
     },
     {
       "name": "garden-lab-browser-sternicza",
-      "artifactId": 15236681479,
-      "archiveDigest": "sha256:ae0bcc33a4c7e8c9f180bf37b3e30ddabecf0d28634bfae933df639dffe1a7fa",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T23:02:09Z",
-      "directory": "/tmp/night-evidence-84/sternicza",
+      "artifactId": 15239456156,
+      "archiveDigest": "sha256:3454bc856e525ffab31172e255c8a7cc3a012e6bf27b4c77021fab53dacad446",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:13:46Z",
       "galleryReport": "sternicza-browser-report.json",
-      "reportSha256": "234dcba5318631e5746b13cd40f354307a5f904f50ebd9c761598bb6af121183",
+      "reportSha256": "ce464550b93696ceb55bc8c88b22a517561f05eba079b841dc2922d2947de43e",
+      "storedSha256": "ce464550b93696ceb55bc8c88b22a517561f05eba079b841dc2922d2947de43e",
+      "compression": null,
       "galleryPngs": [
         {
           "file": "sternicza-night-before-motion.png",
@@ -153,169 +154,606 @@
         }
       ],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": null
+      "errors": []
     },
     {
       "name": "garden-lab-browser-nadmorska",
-      "artifactId": 15237021354,
-      "archiveDigest": "sha256:16a62b92c11d34df589ac8098f308bbdee1a345f152600a1ef9eadd2b996ecb7",
-      "headSha": "2f2e0c81fe7b26e8d63701410721265cba016555",
-      "createdAt": "2026-11-27T23:01:21Z",
-      "directory": "/tmp/night-evidence-84/nadmorska",
+      "artifactId": 15239282153,
+      "archiveDigest": "sha256:cc4c5f8e5c52d1b9395d270f866e6d8b579272a18a9e4dce2320eadf3f108c82",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:12:18Z",
       "galleryReport": "nadmorska-browser-report.json",
-      "reportSha256": "1b461d17034d8c2797724e1521baaa7f89978d8ec0377f02f06cff8d1138e6d3",
+      "reportSha256": "a1a8495afbd55483148e387285a4b7b0d4792fa6cb4019a1c51cb2fd97a603f9",
+      "storedSha256": "a1a8495afbd55483148e387285a4b7b0d4792fa6cb4019a1c51cb2fd97a603f9",
+      "compression": null,
       "galleryPngs": [],
       "status": "passed",
-      "errors": [],
-      "elapsedMs": null
+      "errors": []
+    },
+    {
+      "name": "walk-performance-evidence-living",
+      "artifactId": 15239277608,
+      "archiveDigest": "sha256:b317ae6058657ef2b920aa668f81de12647d806ae5837c11a789c6ee3155f0b0",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:14:45Z",
+      "galleryReport": "walking-living-report.json.gz",
+      "reportSha256": "527ab41e77b766eb683be14dae86dbe4854eb0a3f4182cd9783551b5c5dd8b1f",
+      "storedSha256": "5ca9776bfd627158a04a059a2329641398b73ac33582d53d236a5176257d1df7",
+      "compression": "gzip",
+      "galleryPngs": [],
+      "status": "failed",
+      "errors": []
+    },
+    {
+      "name": "walk-performance-evidence-garden",
+      "artifactId": 15238749741,
+      "archiveDigest": "sha256:28d731e7551430658356454db28abeb383b9b0683308a060a23c35b5a4abc241",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:15:13Z",
+      "galleryReport": "walking-garden-report.json.gz",
+      "reportSha256": "2eac145e52aa4e345c10e00956d3b57b29727e926388230e200c5696d4103a84",
+      "storedSha256": "5bc99f39dec2d1c4dcc326d9a753ea34f19bd88b9a2cfda23d661893ffc0ae14",
+      "compression": "gzip",
+      "galleryPngs": [],
+      "status": "failed",
+      "errors": []
+    },
+    {
+      "name": "motion-alpha-coverage-evidence",
+      "artifactId": 15238744224,
+      "archiveDigest": "sha256:9b73d5744f4800b9f73b266892ae4f43585c7a24f4f8c63dfd1a1914dca5a965",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:11:03Z",
+      "galleryReport": "motion-coverage-report.json.gz",
+      "reportSha256": "55dfce1b8f70ef9b168d9663d80a8e1ecf876c694a30174e495fbdcee81915be",
+      "storedSha256": "6f4af881de3df62fb31522d0a4de00031cecc77af188b2a7637844e1f1836b32",
+      "compression": "gzip",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "name": "gpu-phase-profile-evidence",
+      "artifactId": 15239575626,
+      "archiveDigest": "sha256:30abae4b7f09e7d8b9f4c5660ce5d77c0dbdac40459889643b8995c7e963efda",
+      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
+      "createdAt": "2026-11-28T00:07:53Z",
+      "galleryReport": "gpu-phase-report.json.gz",
+      "reportSha256": "8e2437d9d7da7d187e0738932067977ecde93345cdbc1fc240fd107022b53d49",
+      "storedSha256": "d3cf8b590ec870c5691ead2d0cd2f6a95fd0ae887266266ed7e7c8b9262f719f",
+      "compression": "gzip",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": []
     }
   ],
   "nightValidation": {
-    "status": "passed-with-GPU-completion-fences",
-    "motionFrame": 18,
-    "compacted": true,
-    "visibleInstances": 875,
-    "totalInstances": 4829,
-    "orderedBatches": 12,
-    "fixedCanvas": {
-      "width": 982,
-      "height": 572,
-      "cssWidth": 982,
-      "cssHeight": 572
-    },
-    "motionScene": {
-      "width": 824,
-      "height": 480,
-      "pixelRatio": 0.84,
-      "path": "motion-target",
-      "motionSamples": 4,
-      "canvasSamples": 4
-    },
-    "canopyRetainedFraction": 1.0031179138321995,
-    "restorationChangedPixels": 0,
-    "idlePngSha256": "0fceaa7526a61f9c80895128ca1ed2db87370cd572b7c183a0a3995ab9579e75",
-    "idlePngByteIdenticalAcrossRuns": [
-      83,
-      84
-    ],
-    "elapsedMs": 41936,
-    "captures": [
-      {
-        "name": "sternicza-night-before-motion",
-        "status": "passed",
-        "deadlineMs": 119942,
-        "attempts": 1,
-        "readiness": {
-          "frame": 16,
-          "pending": false,
-          "width": 982,
-          "height": 572,
-          "path": "direct",
-          "fence": "signaled",
-          "polls": 1,
-          "restarts": 0,
-          "fencePolls": 7,
-          "fenceElapsedMs": 150.70000000006985,
-          "elapsedMs": 150.80000000004657
+    "status": "passed",
+    "deadlineMs": 120000,
+    "pre": {
+      "renderer": "webgl",
+      "interacting": false,
+      "frames": 16,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
         },
-        "elapsedMs": 433
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 4829,
+          "culledInstances": 0,
+          "compacted": false,
+          "shadowUploadGuard": "shadow-pass",
+          "orderedBatches": 0,
+          "orderedInstances": 0,
+          "passes": 16,
+          "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
       },
-      {
-        "name": "sternicza-night-motion-target",
-        "status": "passed",
-        "deadlineMs": 112490,
-        "attempts": 1,
-        "readiness": {
-          "frame": 18,
-          "pending": false,
-          "width": 982,
-          "height": 572,
-          "path": "motion-target",
-          "fence": "signaled",
-          "polls": 1,
-          "restarts": 0,
-          "fencePolls": 618,
-          "fenceElapsedMs": 15521.599999999977,
-          "elapsedMs": 15521.599999999977
-        },
-        "elapsedMs": 15819
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
       },
-      {
-        "name": "sternicza-night-motion-restored",
-        "status": "passed",
-        "deadlineMs": 96445,
-        "attempts": 1,
-        "readiness": {
-          "frame": 20,
-          "pending": false,
-          "width": 982,
-          "height": 572,
-          "path": "direct",
-          "fence": "signaled",
-          "polls": 1,
-          "restarts": 0,
-          "fencePolls": 702,
-          "fenceElapsedMs": 17622.300000000047,
-          "elapsedMs": 17622.300000000047
+      "scene": {
+        "width": 982,
+        "height": 572,
+        "pixelRatio": 1,
+        "path": "direct",
+        "motionSamples": 0,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference \u00b7 1.65 m above first-floor level",
+        "view": "First floor \u00b7 bedroom / office \u00b7 garden \u00b7 standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "firstMotion": {
+      "renderer": "webgl",
+      "interacting": true,
+      "frames": 17,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
         },
-        "elapsedMs": 17869
-      }
-    ]
-  },
-  "nadmorskaValidation": {
-    "status": "passed-with-GPU-completion-fences",
-    "waterGlow": {
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 4829,
+          "culledInstances": 0,
+          "compacted": false,
+          "shadowUploadGuard": "post-shadow-full-pass",
+          "orderedBatches": 0,
+          "orderedInstances": 0,
+          "passes": 17,
+          "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 824,
+        "height": 480,
+        "pixelRatio": 0.84,
+        "path": "motion-target",
+        "motionSamples": 4,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference \u00b7 1.65 m above first-floor level",
+        "view": "First floor \u00b7 bedroom / office \u00b7 garden \u00b7 standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "motion": {
+      "renderer": "webgl",
+      "interacting": true,
+      "frames": 18,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
+        },
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 875,
+          "culledInstances": 3954,
+          "compacted": true,
+          "shadowUploadGuard": null,
+          "orderedBatches": 12,
+          "orderedInstances": 874,
+          "passes": 18,
+          "opaqueOrder": "architecture-before-vegetation",
+          "opaqueCoverageMaterials": 5,
+          "opaqueCoverageMeshes": 15,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 824,
+        "height": 480,
+        "pixelRatio": 0.84,
+        "path": "motion-target",
+        "motionSamples": 4,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference \u00b7 1.65 m above first-floor level",
+        "view": "First floor \u00b7 bedroom / office \u00b7 garden \u00b7 standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "settled": {
+      "renderer": "webgl",
+      "interacting": false,
+      "frames": 20,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
+        },
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 4829,
+          "culledInstances": 0,
+          "compacted": false,
+          "shadowUploadGuard": null,
+          "orderedBatches": 0,
+          "orderedInstances": 0,
+          "passes": 20,
+          "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 982,
+        "height": 572,
+        "pixelRatio": 1,
+        "path": "direct",
+        "motionSamples": 0,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference \u00b7 1.65 m above first-floor level",
+        "view": "First floor \u00b7 bedroom / office \u00b7 garden \u00b7 standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "motionPixels": {
       "width": 982,
       "height": 573,
-      "aquaPixels": 321076,
-      "brighterAquaPixels": 7890,
-      "brightnessGain": 398069.5
+      "changedPixels": 56586,
+      "warmBrightenedPixels": 12154,
+      "brightnessGain": 286438.66666666634
     },
-    "waterCaptures": [
-      {
-        "name": "nadmorska-water-unlit",
-        "status": "passed",
-        "deadlineMs": 120000,
-        "attempts": 1,
-        "readiness": {
-          "frame": 17,
-          "pending": false,
-          "width": 982,
-          "height": 572,
-          "path": "direct",
-          "fence": "signaled",
-          "polls": 2,
-          "restarts": 0,
-          "fencePolls": 295,
-          "fenceElapsedMs": 7420.100000000006,
-          "elapsedMs": 8492.799999999988
-        },
-        "elapsedMs": 8745
+    "canopyRetention": {
+      "width": 982,
+      "height": 573,
+      "canopyBounds": [
+        0.585,
+        0.15,
+        0.735,
+        0.29
+      ],
+      "skyBounds": [
+        0.57,
+        0.035,
+        0.68,
+        0.08
+      ],
+      "before": {
+        "skyMedian": 21,
+        "darkThreshold": 11.55,
+        "pixels": 11907,
+        "darkPixels": 7056,
+        "darkFraction": 0.5925925925925926
       },
-      {
-        "name": "nadmorska-water-lit",
-        "status": "passed",
-        "deadlineMs": 120000,
-        "attempts": 1,
-        "readiness": {
-          "frame": 18,
-          "pending": false,
-          "width": 982,
-          "height": 572,
-          "path": "direct",
-          "fence": "signaled",
-          "polls": 1,
-          "restarts": 0,
-          "fencePolls": 135,
-          "fenceElapsedMs": 3373.899999999994,
-          "elapsedMs": 3373.899999999994
-        },
-        "elapsedMs": 3623
-      }
-    ],
-    "sceneCaptureCount": 20,
-    "allSceneFencesSignaled": true
+      "motion": {
+        "skyMedian": 21,
+        "darkThreshold": 11.55,
+        "pixels": 11907,
+        "darkPixels": 7078,
+        "darkFraction": 0.594440245233896
+      },
+      "retainedFraction": 1.0031179138321995,
+      "minimumRetainedFraction": 0.8
+    },
+    "restorationPixels": {
+      "width": 982,
+      "height": 573,
+      "changedPixels": 0,
+      "warmBrightenedPixels": 0,
+      "brightnessGain": 0
+    },
+    "elapsedMs": 43485
   },
-  "indexHtmlUnchangedSha256": "cdeb8c1c34bccde976c9a81daa342fc2a8a4327f5928d6301214eeb875e03431"
+  "styleRestoration": {
+    "firstAdoptionUndo": {
+      "pixels": 0,
+      "fraction": 0
+    },
+    "currentRestoration": {
+      "pixels": 0,
+      "fraction": 0
+    }
+  },
+  "motionCoverageComparison": {
+    "aa": {
+      "width": 1280,
+      "height": 584,
+      "pixels": 747520,
+      "threshold": 15,
+      "exactChangedPixels": 0,
+      "exactChangedFraction": 0,
+      "changedPixels": 0,
+      "fraction": 0,
+      "changedChannels": 0,
+      "maximumChannelDifference": 0,
+      "meanAbsoluteChannelDifference": 0,
+      "exactDifferenceBounds": null,
+      "exactRGBA": true
+    },
+    "ab": {
+      "width": 1280,
+      "height": 584,
+      "pixels": 747520,
+      "threshold": 15,
+      "exactChangedPixels": 0,
+      "exactChangedFraction": 0,
+      "changedPixels": 0,
+      "fraction": 0,
+      "changedChannels": 0,
+      "maximumChannelDifference": 0,
+      "meanAbsoluteChannelDifference": 0,
+      "exactDifferenceBounds": null,
+      "exactRGBA": true
+    }
+  },
+  "validationSummary": "validation-summary.json",
+  "files": [
+    {
+      "file": "cinema-layouts-report.json",
+      "sha256": "3925341caf8cbf550e8726b8df9f105931ae07e57bd81e5b1a764452f85ab427",
+      "bytes": 90866
+    },
+    {
+      "file": "covers-garden-report.json",
+      "sha256": "6edec61e59be1ed298b5892faed99ce4f1f7ae8eb0cddf655244caa422ad27e2",
+      "bytes": 13086
+    },
+    {
+      "file": "covers-interiors-report.json",
+      "sha256": "7cd745d852d49b98879c98929e4760edeee460596fe04acfa422268eecef202d",
+      "bytes": 28217
+    },
+    {
+      "file": "gpu-phase-report.json.gz",
+      "sha256": "d3cf8b590ec870c5691ead2d0cd2f6a95fd0ae887266266ed7e7c8b9262f719f",
+      "bytes": 68214
+    },
+    {
+      "file": "hall-giant-mirror.png",
+      "sha256": "0e4a0a03d4bbafec8f9e091baff383c951be125ff90010814708c60016e329b6",
+      "bytes": 274312
+    },
+    {
+      "file": "index.html",
+      "sha256": "497ca2b7cc9f36a156d7919b95e1fb281c3347f09f2a0be283a3fef5ead43097",
+      "bytes": 24654
+    },
+    {
+      "file": "interiors-mobile-report.json",
+      "sha256": "346b8be52e927f06096ad3a66e6c2f8437406addacf08b75a618baee6ced7150",
+      "bytes": 108792
+    },
+    {
+      "file": "kitchen-mirror-report.json",
+      "sha256": "efdfc23da006c7ba82d41e8e7c9c4e2a587bb53ee5f3e92f0b81d92ba582c6a8",
+      "bytes": 17845
+    },
+    {
+      "file": "kitchen-tall-appliances-and-pantry.png",
+      "sha256": "171624c07a15a3f76f3ae492acaa104b494ee50a5fa3127ace189dbb14fd85c5",
+      "bytes": 219846
+    },
+    {
+      "file": "kitchen-workstation-and-two-dishwashers.png",
+      "sha256": "ecc4c48c24a89164c639000dfd6a6133ed30d83a6eec8008919278e96e2de652",
+      "bytes": 355480
+    },
+    {
+      "file": "living-cinema-screen-view.png",
+      "sha256": "ea76d75cc85f88cd9f09c0e31893a1fa1b2cedcbb3c2ea99f752828894dfbe07",
+      "bytes": 381749
+    },
+    {
+      "file": "living-crosswall-media.png",
+      "sha256": "d5c27af8de68b5b473e31fd79a34ce93c1c10e4dd772e3329cafa78ea915b3dc",
+      "bytes": 171437
+    },
+    {
+      "file": "living-garden-salon.png",
+      "sha256": "50934f6854426d04775a7d0a3ffc34b17408ab5514319d9b06b07d74ff58f875",
+      "bytes": 177401
+    },
+    {
+      "file": "living-left-media.png",
+      "sha256": "763f466318ff1b7bacf668207adc5251c9fd8816828510f9fa0301f4335ee468",
+      "bytes": 177376
+    },
+    {
+      "file": "living-right-media.png",
+      "sha256": "e1e0db3cc648a1c3bf18d166bbcab06b1570c5c884de7c030f269745b43fe7ee",
+      "bytes": 175622
+    },
+    {
+      "file": "mobile-living-layout-controls.png",
+      "sha256": "d4d1524bf0d6f788a761ee4a2eb5a86645766f864f12518283c7f3320baa5b06",
+      "bytes": 30202
+    },
+    {
+      "file": "motion-coverage-report.json.gz",
+      "sha256": "6f4af881de3df62fb31522d0a4de00031cecc77af188b2a7637844e1f1836b32",
+      "bytes": 24739
+    },
+    {
+      "file": "nadmorska-browser-report.json",
+      "sha256": "a1a8495afbd55483148e387285a4b7b0d4792fa6cb4019a1c51cb2fd97a603f9",
+      "bytes": 45733
+    },
+    {
+      "file": "plan-crosswall-media.png",
+      "sha256": "a945d843cf307adc0129eace4a2bb368b5fc9b31fac28de44890711f81c4cb85",
+      "bytes": 30201
+    },
+    {
+      "file": "plan-garden-salon.png",
+      "sha256": "13773c8e607dab754c5dc2837dbdf5b4469c82d246078b6645a338d26d776eed",
+      "bytes": 29264
+    },
+    {
+      "file": "plan-left-media.png",
+      "sha256": "cc95a3ee9ff0222d1c30fdac47085654f3fb092f14e4e5b4e59ed82987327c8e",
+      "bytes": 30331
+    },
+    {
+      "file": "plan-right-media.png",
+      "sha256": "cac8220102ef0c5bc629a4f014875ef10a7b452914a18561cd450527be4aa97f",
+      "bytes": 30379
+    },
+    {
+      "file": "sternicza-browser-report.json",
+      "sha256": "ce464550b93696ceb55bc8c88b22a517561f05eba079b841dc2922d2947de43e",
+      "bytes": 22049
+    },
+    {
+      "file": "sternicza-night-before-motion.png",
+      "sha256": "0fceaa7526a61f9c80895128ca1ed2db87370cd572b7c183a0a3995ab9579e75",
+      "bytes": 404009
+    },
+    {
+      "file": "sternicza-night-motion-restored.png",
+      "sha256": "0fceaa7526a61f9c80895128ca1ed2db87370cd572b7c183a0a3995ab9579e75",
+      "bytes": 404009
+    },
+    {
+      "file": "sternicza-night-motion-target.png",
+      "sha256": "f27422d8e0481a8a7b43ce46954ace4c77bc9aff77835c28c3066016834285ed",
+      "bytes": 366684
+    },
+    {
+      "file": "validation-summary.json",
+      "sha256": "9b02247b55f13293fcd2c983bc56e922a2835089c8d6dd6a0f4a3630ff521784",
+      "bytes": 12509
+    },
+    {
+      "file": "walking-garden-report.json.gz",
+      "sha256": "5bc99f39dec2d1c4dcc326d9a753ea34f19bd88b9a2cfda23d661893ffc0ae14",
+      "bytes": 136734
+    },
+    {
+      "file": "walking-living-report.json.gz",
+      "sha256": "5ca9776bfd627158a04a059a2329641398b73ac33582d53d236a5176257d1df7",
+      "bytes": 119186
+    }
+  ]
 }
