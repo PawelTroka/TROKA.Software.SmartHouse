@@ -4,6 +4,7 @@ import {isGardenLightBoundaryOrderSafe} from './scene-light-boundary.js?v=1.40.0
 const vegetation=mesh=>mesh.isInstancedMesh&&mesh.count>1&&
   (mesh.name.startsWith('existing-canopies-')||mesh.name.startsWith('reconstructed-existing-tree-branches')||mesh.name.startsWith('hedge-sprays-'));
 const visible=object=>{for(let node=object;node;node=node.parent)if(!node.visible)return false;return true;};
+const botanical=material=>material?.userData.botanicalCutouts===true||material?.userData.existingCanopy===true;
 function supported(mesh){
   // These static builders use matrix/color instance data, with no wind or
   // gl_InstanceID-dependent shader. Future morph/custom instance data needs
@@ -27,6 +28,19 @@ function orderable(mesh){
       material.customProgramCacheKey===THREE.Material.prototype.customProgramCacheKey||isGardenLightBoundaryOrderSafe(material))&&
     mesh.onBeforeRender===THREE.Object3D.prototype.onBeforeRender&&mesh.onAfterRender===THREE.Object3D.prototype.onAfterRender;
 }
+function opaqueCoverageRedundant(mesh,material){
+  // Pinned r160 defines OPAQUE only for NormalBlending + !transparent. Its
+  // standard shader performs alpha-test discard first, then writes alpha=1.
+  // Alpha-to-coverage therefore cannot remove any surviving MSAA sample.
+  // Unlike ordering, this proof excludes NoBlending, Physical/transmission,
+  // custom defines and every unverified shader/material/object render hook.
+  const defines=material.defines;
+  if(!defines||typeof defines!=='object'||defines.STANDARD!==''||Reflect.ownKeys(defines).length!==1)return false;
+  for(const name in defines)if(name!=='STANDARD')return false;
+  return material.constructor===THREE.MeshStandardMaterial&&botanical(material)&&material.alphaToCoverage===true&&
+    material.blending===THREE.NormalBlending&&!(material.transmission>0)&&orderable(mesh)&&
+    material.onBeforeRender===THREE.Material.prototype.onBeforeRender;
+}
 
 /** Keep the original material batches while culling individual instances.
  * prepare() changes only the rendered matrix/color prefix; restore() returns
@@ -34,10 +48,11 @@ function orderable(mesh){
  * color pass. Shadow updates and other-camera passes see every instance.
  */
 export function createVegetationInstanceCuller(){
-  const entries=new Map(),matrix=new THREE.Matrix4(),projection=new THREE.Matrix4(),cameraProjection=new THREE.Matrix4(),view=new THREE.Matrix4(),frustum=new THREE.Frustum(),sphere=new THREE.Sphere();
+  const entries=new Map(),coverageConsumers=new Set(),matrix=new THREE.Matrix4(),projection=new THREE.Matrix4(),cameraProjection=new THREE.Matrix4(),view=new THREE.Matrix4(),frustum=new THREE.Frustum(),sphere=new THREE.Sphere();
   let postShadowFullPass=false;
   let diagnostics={method:'instance-frustum-compaction',sourceBatches:0,nonemptyBatches:0,instances:0,visibleInstances:0,culledInstances:0,
-    compacted:false,shadowUploadGuard:null,orderedBatches:0,orderedInstances:0,passes:0,opaqueOrder:'default',drawCallsAdded:0,geometryChanged:false,positionsChanged:false};
+    compacted:false,shadowUploadGuard:null,orderedBatches:0,orderedInstances:0,passes:0,opaqueOrder:'default',
+    opaqueCoverageMaterials:0,opaqueCoverageMeshes:0,opaqueCoverageRestored:true,drawCallsAdded:0,geometryChanged:false,positionsChanged:false};
   function opaqueDepthOrder(a,b){
     // Keep explicit scene priorities, then let solid architecture establish
     // depth before expensive foliage. Material batching and every remaining
@@ -53,14 +68,45 @@ export function createVegetationInstanceCuller(){
     if(a.z!==b.z)return a.z-b.z;
     return a.id-b.id;
   }
-  function withOpaqueDepthOrder(renderer,render,{enabled=false}={}){
+  function withOpaqueDepthOrder(renderer,render,{enabled=false,optimizeOpaqueCoverage=true}={}){
     diagnostics.opaqueOrder=enabled?'architecture-before-vegetation':'default';
+    diagnostics.opaqueCoverageMaterials=0;diagnostics.opaqueCoverageMeshes=0;diagnostics.opaqueCoverageRestored=true;
     if(!enabled)return render();
     // This scene owns its renderer and otherwise uses the default sorter.
     // Scope the override to one moving main pass: shadow/reflection/idle
     // renders must never inherit it, including after an exception.
-    renderer.setOpaqueSort(opaqueDepthOrder);
-    try{return render();}finally{renderer.setOpaqueSort(null);}
+    const changed=new Map();let completed=false;
+    try{
+      renderer.setOpaqueSort(opaqueDepthOrder);
+      if(optimizeOpaqueCoverage){
+        const materials=new Map();
+        for(const mesh of coverageConsumers){
+          for(const material of Array.isArray(mesh.material)?new Set(mesh.material):[mesh.material]){
+            if(!botanical(material))continue;
+            if(!materials.has(material))materials.set(material,{eligible:true,visibleMeshes:0});
+            const usage=materials.get(material);
+            // Shared state is safe only when every registered consumer is
+            // eligible, including hidden consumers and material-array users.
+            usage.eligible=usage.eligible&&opaqueCoverageRedundant(mesh,material);
+            if(visible(mesh)&&material.visible&&(!mesh.isInstancedMesh||mesh.count>0))usage.visibleMeshes++;
+          }
+        }
+        for(const [material,usage] of materials){
+          if(!usage.eligible||!usage.visibleMeshes)continue;
+          changed.set(material,material.alphaToCoverage);material.alphaToCoverage=false;
+          diagnostics.opaqueCoverageMaterials++;diagnostics.opaqueCoverageMeshes+=usage.visibleMeshes;
+        }
+        diagnostics.opaqueCoverageRestored=changed.size===0;
+      }
+      const result=render();completed=true;return result;
+    }finally{
+      for(const [material,alphaToCoverage] of changed)material.alphaToCoverage=alphaToCoverage;
+      diagnostics.opaqueCoverageRestored=true;
+      // Retain counts for the completed pass, not a failed render attempt.
+      // These are registered visible consumers, never a draw-call estimate.
+      if(!completed){diagnostics.opaqueCoverageMaterials=0;diagnostics.opaqueCoverageMeshes=0;}
+      renderer.setOpaqueSort(null);
+    }
   }
   function restoreEntry(entry){
     if(!entry.compacted)return;
@@ -73,8 +119,14 @@ export function createVegetationInstanceCuller(){
   }
   function restore(){for(const entry of entries.values())restoreEntry(entry);}
   function setRoots(roots=[]){
-    restore();const sources=new Set();
-    for(const root of roots.filter(Boolean))root.traverse(mesh=>{if(supported(mesh))sources.add(mesh);});
+    restore();const sources=new Set();coverageConsumers.clear();
+    for(const root of roots.filter(Boolean))root.traverse(mesh=>{
+      if(supported(mesh))sources.add(mesh);
+      // Include focal botanical meshes outside the instance registry. The
+      // scene supplies all existing-vegetation/design roots; evaluate hooks
+      // at render time because the verified light wrapper is installed later.
+      if(mesh.isMesh&&(Array.isArray(mesh.material)?mesh.material:[mesh.material]).some(botanical))coverageConsumers.add(mesh);
+    });
     for(const [mesh,entry] of entries)if(!sources.has(mesh)){restoreEntry(entry);entries.delete(mesh);}
     for(const mesh of sources){
       if(entries.has(mesh))continue;
@@ -148,5 +200,5 @@ export function createVegetationInstanceCuller(){
     }
     return diagnostics;
   }
-  return {setRoots,prepare,restore,withOpaqueDepthOrder,getDiagnostics:()=>({...diagnostics}),dispose(){restore();entries.clear();}};
+  return {setRoots,prepare,restore,withOpaqueDepthOrder,getDiagnostics:()=>({...diagnostics}),dispose(){restore();entries.clear();coverageConsumers.clear();}};
 }
