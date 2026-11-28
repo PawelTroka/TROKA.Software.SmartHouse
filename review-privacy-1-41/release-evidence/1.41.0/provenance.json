@@ -1,0 +1,147 @@
+{
+  "version": "1.41.0",
+  "status": "pending",
+  "sourceHead": "5d78cc4bb017960169e62173b0dace85c4ba7bf4",
+  "sourceTree": "7e0f1b4e78411aef406fbb1d8e60c4ee6ebf6d22",
+  "runId": 46106367197,
+  "runNumber": 92,
+  "pullRequest": 43,
+  "unitTests": 1061,
+  "builtFiles": 567,
+  "releaseReceipt": {
+    "filename": "smarthouse141-release.json",
+    "sha256": "7762e20025d48011f2282d0e766ab542a54dbc243c9db9ffcd94abd441048964",
+    "bytes": 575,
+    "data": {
+      "version": "1.41.0",
+      "mainBase": "5147e072625a2e305c16cfbd65c513e30e7c5ffd",
+      "source": "5d78cc4bb017960169e62173b0dace85c4ba7bf4",
+      "sourceTree": "7e0f1b4e78411aef406fbb1d8e60c4ee6ebf6d22",
+      "ciRun": 46106367197,
+      "ciNumber": 92,
+      "pr": 43,
+      "tests": 1061,
+      "builtFiles": 567,
+      "previewCommit": "e2fef8e096b922930b058c634733ea47fbeea412",
+      "previewRoot": "d86281298e0ae5857b12215cad0565be04491852",
+      "publicTree": "a53efcd16c27635dcccaad4fc679bc60007cf086",
+      "previousCandidate": "c67df55dd8adde13cc16af446e670586d5160bad",
+      "previousCiRun": 46105305561
+    }
+  },
+  "ciCompletedSuccessfully": false,
+  "ciJobCount": 0,
+  "artifacts": {
+    "garden": {
+      "id": 15247992162,
+      "name": "clean-living-evidence-garden",
+      "archiveSha256": "dee6e5320619d8131f504f5d40d82ceff2d3441dbd820696201f208e8a28c04f",
+      "createdAt": "2026-11-28T04:14:21Z",
+      "workflowRun": {
+        "id": 46106367197,
+        "repository_id": 480730657,
+        "head_repository_id": 480730657,
+        "head_branch": "codex/garden-bathroom-feedback",
+        "head_sha": "5d78cc4bb017960169e62173b0dace85c4ba7bf4"
+      },
+      "reportStatus": "passed"
+    },
+    "interiors": {
+      "id": 15247497884,
+      "name": "clean-living-evidence-interiors",
+      "archiveSha256": "4c2359ed300cf0da76ae89011dbb6e8b82a1eb8ccdc00d2bb0e5503c038db469",
+      "createdAt": "2026-11-28T04:15:22Z",
+      "workflowRun": {
+        "id": 46106367197,
+        "repository_id": 480730657,
+        "head_repository_id": 480730657,
+        "head_branch": "codex/garden-bathroom-feedback",
+        "head_sha": "5d78cc4bb017960169e62173b0dace85c4ba7bf4"
+      },
+      "reportStatus": "passed"
+    }
+  },
+  "imagesAreOriginalUneditedArtifactBytes": true,
+  "privacySource": "https://www.pilkington.com/en/gbl/architectural-and-technical-glass/product-categories/special-applications/pilkington-mirropane",
+  "files": {
+    "garden-plan.png": {
+      "bytes": 171118,
+      "sha256": "b92bbd8e9dac986a04141706a7dc90f94e56cfce236087b1faacdbe7eb9586ae",
+      "artifactId": 15247992162,
+      "originalFilename": "garden-two-edge-loungers-and-boundary-pine.png",
+      "bytePreserved": true,
+      "image": {
+        "width": 792,
+        "height": 661
+      }
+    },
+    "garden-overview.png": {
+      "bytes": 511838,
+      "sha256": "459b83a1d9583f2491ec09134e9719576bd52b3c4d40e6d7d8641cf8cf5bd609",
+      "artifactId": 15247992162,
+      "originalFilename": "garden-overview-covers-concealed.png",
+      "bytePreserved": true,
+      "image": {
+        "width": 792,
+        "height": 479
+      }
+    },
+    "bathroom-side-window.png": {
+      "bytes": 370765,
+      "sha256": "c8452a6bded84dba867a267429685afd6d3eacdcb4cdefbcf7465242c2c5d664",
+      "artifactId": 15247497884,
+      "originalFilename": "ground-bathroom-reflective-privacy-window.png",
+      "bytePreserved": true,
+      "image": {
+        "width": 792,
+        "height": 479
+      }
+    },
+    "bathroom-exterior.png": {
+      "bytes": 393576,
+      "sha256": "3dfc5bc42aecd62e34c540f9826a13114bf0d06297a42de12e482496cdac9668",
+      "artifactId": 15247497884,
+      "originalFilename": "ground-bathroom-reflective-exterior.png",
+      "bytePreserved": true,
+      "image": {
+        "width": 792,
+        "height": 479
+      }
+    },
+    "bathroom-street-wall.png": {
+      "bytes": 428605,
+      "sha256": "70077a62bd4113964c46cf7f2c0cd5f5b18bc49b62531cb6f8c014e3a053a94c",
+      "artifactId": 15247497884,
+      "originalFilename": "ground-bathroom-solid-street-wall.png",
+      "bytePreserved": true,
+      "image": {
+        "width": 792,
+        "height": 479
+      }
+    },
+    "garden-browser-report.json": {
+      "bytes": 54600,
+      "sha256": "1612c505f15dbd10911bbd2d681e02ca8e1e22354ae00b5f469897cfde80f251",
+      "artifactId": 15247992162,
+      "originalFilename": "browser-report.json",
+      "bytePreserved": true
+    },
+    "interiors-browser-report.json": {
+      "bytes": 75409,
+      "sha256": "4538a554b20c1ebce516debe1fec6ff753a998b1b5588775f8b24c1addf0ae48",
+      "artifactId": 15247497884,
+      "originalFilename": "browser-report.json",
+      "bytePreserved": true
+    },
+    "ci-status.json": {
+      "bytes": 121,
+      "sha256": "8620ba165f62a1da27d2ee489545afabad2e8804df24b2bb9d2fc9ce8f491e44",
+      "previewOnly": true
+    },
+    "index.html": {
+      "bytes": 10190,
+      "sha256": "fedb62c41341e06d19383c9ff699b93f541142bbcaa0d1ee2c0354a7f63fe8b0"
+    }
+  },
+  "hashScope": "Every gallery file except this provenance manifest itself."
+}

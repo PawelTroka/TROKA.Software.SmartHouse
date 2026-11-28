@@ -1,0 +1,2368 @@
+{
+  "version": "1.41.0",
+  "group": "garden",
+  "selectedGroups": [
+    "garden"
+  ],
+  "completedGroups": [
+    "garden"
+  ],
+  "style": "scandinavian",
+  "status": "passed",
+  "checks": [
+    "Fresh Scandinavian defaults preserve two pines, restore only the boundary pine, align three chaises side by side, remove the right-hand dining zone and export the actual bathroom privacy apertures",
+    "Both actual spa lids independently close and retract completely below their surrounds; seated jacuzzi and close plunge views are captured"
+  ],
+  "screenshots": [
+    "garden-two-edge-loungers-and-boundary-pine.png",
+    "garden-overview-covers-concealed.png",
+    "jacuzzi-seated-pck3-screening.png",
+    "garden-both-spa-covers-closed.png",
+    "garden-both-spa-covers-retracted.png",
+    "cold-plunge-clear-flush-surround.png",
+    "cold-plunge-flush-cover-closed.png"
+  ],
+  "sceneCaptures": [
+    {
+      "file": "garden-overview-covers-concealed.png",
+      "renderer": "webgl",
+      "frames": 6,
+      "triangles": 1343848,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "jacuzzi-seated-pck3-screening.png",
+      "renderer": "webgl",
+      "frames": 9,
+      "triangles": 1032667,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "garden-both-spa-covers-closed.png",
+      "renderer": "webgl",
+      "frames": 12,
+      "triangles": 1342672,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 1,
+        "coldPlunge": 1,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 1,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 2,
+            "hiddenPanels": 0,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 1,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 2,
+            "hiddenPanels": 0,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "garden-both-spa-covers-retracted.png",
+      "renderer": "webgl",
+      "frames": 14,
+      "triangles": 1343848,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "cold-plunge-clear-flush-surround.png",
+      "renderer": "webgl",
+      "frames": 15,
+      "triangles": 863433,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "cold-plunge-flush-cover-closed.png",
+      "renderer": "webgl",
+      "frames": 16,
+      "triangles": 863673,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 1,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 1,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 2,
+            "hiddenPanels": 0,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "yaw": null,
+        "pitch": null,
+        "fov": null
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    }
+  ],
+  "views": [],
+  "errors": [],
+  "sceneEvidence": "Actual WebGL frames through public garden controls, Share URLs, interior room selectors, accessible walking and drag look. No private app state or camera control hooks.",
+  "exported": {
+    "schema": 37,
+    "trees": [
+      {
+        "id": "pine-1",
+        "typeId": "austrian-pine-tall",
+        "x": 13,
+        "y": 34.1,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "pine-2",
+        "typeId": "austrian-pine-tall",
+        "x": 19.3,
+        "y": 32.25,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "pine-3",
+        "typeId": "austrian-pine-tall",
+        "x": 17.6,
+        "y": 34.9,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      }
+    ],
+    "pool": {
+      "x": 15.5,
+      "y": 24.5,
+      "width": 3.2,
+      "length": 6.5,
+      "waterDepth": 1.4,
+      "waterOffset": -0.02500000000000001,
+      "freeboard": 0.1,
+      "copingRise": 0.075,
+      "coping": 0.28
+    },
+    "sunbeds": [
+      {
+        "x": 11.95,
+        "y": 24,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-1",
+        "kind": "lounger"
+      },
+      {
+        "x": 13.05,
+        "y": 24,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-2",
+        "kind": "lounger"
+      },
+      {
+        "x": 14.15,
+        "y": 24,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-3",
+        "kind": "lounger"
+      }
+    ],
+    "dining": null,
+    "pathNetwork": {
+      "id": "connected-spa-garden",
+      "width": 0.82,
+      "borderWidth": 0.06,
+      "segments": [
+        {
+          "id": "garden-path-terrace-landing",
+          "from": "terrace",
+          "to": "landing",
+          "a": [
+            5.5036106615521465,
+            23.56747521754293
+          ],
+          "b": [
+            5.5036106615521465,
+            24.14747521754293
+          ],
+          "length": 0.5799999999999983,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              5.033610661552147,
+              23.56747521754293
+            ],
+            [
+              5.033610661552147,
+              24.14747521754293
+            ],
+            [
+              5.973610661552146,
+              24.14747521754293
+            ],
+            [
+              5.973610661552146,
+              23.56747521754293
+            ]
+          ],
+          "surface": [
+            [
+              5.093610661552146,
+              23.56747521754293
+            ],
+            [
+              5.093610661552146,
+              24.14747521754293
+            ],
+            [
+              5.913610661552147,
+              24.14747521754293
+            ],
+            [
+              5.913610661552147,
+              23.56747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-landing-junction",
+          "from": "landing",
+          "to": "junction",
+          "a": [
+            5.5036106615521465,
+            24.14747521754293
+          ],
+          "b": [
+            6.65,
+            24.14747521754293
+          ],
+          "length": 1.1463893384478538,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              5.5036106615521465,
+              24.61747521754293
+            ],
+            [
+              6.65,
+              24.61747521754293
+            ],
+            [
+              6.65,
+              23.67747521754293
+            ],
+            [
+              5.5036106615521465,
+              23.67747521754293
+            ]
+          ],
+          "surface": [
+            [
+              5.5036106615521465,
+              24.55747521754293
+            ],
+            [
+              6.65,
+              24.55747521754293
+            ],
+            [
+              6.65,
+              23.73747521754293
+            ],
+            [
+              5.5036106615521465,
+              23.73747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn",
+          "from": "junction",
+          "to": "fireTurn",
+          "a": [
+            6.65,
+            24.14747521754293
+          ],
+          "b": [
+            9.609167656420745,
+            24.14747521754293
+          ],
+          "length": 2.9591676564207443,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              6.65,
+              24.61747521754293
+            ],
+            [
+              9.609167656420745,
+              24.61747521754293
+            ],
+            [
+              9.609167656420745,
+              23.67747521754293
+            ],
+            [
+              6.65,
+              23.67747521754293
+            ]
+          ],
+          "surface": [
+            [
+              6.65,
+              24.55747521754293
+            ],
+            [
+              9.609167656420745,
+              24.55747521754293
+            ],
+            [
+              9.609167656420745,
+              23.73747521754293
+            ],
+            [
+              6.65,
+              23.73747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-fireTurn-poolTurn",
+          "from": "fireTurn",
+          "to": "poolTurn",
+          "a": [
+            9.609167656420745,
+            24.14747521754293
+          ],
+          "b": [
+            9.609167656420745,
+            26.849999999999998
+          ],
+          "length": 2.7025247824570684,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              9.139167656420744,
+              24.14747521754293
+            ],
+            [
+              9.139167656420744,
+              26.849999999999998
+            ],
+            [
+              10.079167656420745,
+              26.849999999999998
+            ],
+            [
+              10.079167656420745,
+              24.14747521754293
+            ]
+          ],
+          "surface": [
+            [
+              9.199167656420745,
+              24.14747521754293
+            ],
+            [
+              9.199167656420745,
+              26.849999999999998
+            ],
+            [
+              10.019167656420745,
+              26.849999999999998
+            ],
+            [
+              10.019167656420745,
+              24.14747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-firepit",
+          "from": "poolTurn",
+          "to": "firepit",
+          "a": [
+            9.609167656420745,
+            26.849999999999998
+          ],
+          "b": [
+            9.609167656420745,
+            27.75
+          ],
+          "length": 0.9000000000000021,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              9.139167656420744,
+              26.849999999999998
+            ],
+            [
+              9.139167656420744,
+              27.75
+            ],
+            [
+              10.079167656420745,
+              27.75
+            ],
+            [
+              10.079167656420745,
+              26.849999999999998
+            ]
+          ],
+          "surface": [
+            [
+              9.199167656420745,
+              26.849999999999998
+            ],
+            [
+              9.199167656420745,
+              27.75
+            ],
+            [
+              10.019167656420745,
+              27.75
+            ],
+            [
+              10.019167656420745,
+              26.849999999999998
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool",
+          "from": "poolTurn",
+          "to": "pool",
+          "a": [
+            9.609167656420745,
+            26.849999999999998
+          ],
+          "b": [
+            15.22,
+            26.7
+          ],
+          "length": 5.6128370355601,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              9.621728149368135,
+              27.319832133870083
+            ],
+            [
+              15.23256049294739,
+              27.169832133870084
+            ],
+            [
+              15.20743950705261,
+              26.230167866129914
+            ],
+            [
+              9.596607163473355,
+              26.380167866129913
+            ]
+          ],
+          "surface": [
+            [
+              9.620124682183361,
+              27.259853563588795
+            ],
+            [
+              15.230957025762617,
+              27.109853563588796
+            ],
+            [
+              15.209042974237384,
+              26.290146436411202
+            ],
+            [
+              9.598210630658128,
+              26.4401464364112
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn",
+          "from": "junction",
+          "to": "spaTurn",
+          "a": [
+            6.65,
+            24.14747521754293
+          ],
+          "b": [
+            6.65,
+            33.4
+          ],
+          "length": 9.252524782457069,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              6.180000000000001,
+              24.14747521754293
+            ],
+            [
+              6.180000000000001,
+              33.4
+            ],
+            [
+              7.12,
+              33.4
+            ],
+            [
+              7.12,
+              24.14747521754293
+            ]
+          ],
+          "surface": [
+            [
+              6.24,
+              24.14747521754293
+            ],
+            [
+              6.24,
+              33.4
+            ],
+            [
+              7.0600000000000005,
+              33.4
+            ],
+            [
+              7.0600000000000005,
+              24.14747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-saunaTurn",
+          "from": "spaTurn",
+          "to": "saunaTurn",
+          "a": [
+            6.65,
+            33.4
+          ],
+          "b": [
+            5.024264068711928,
+            33.975735931288064
+          ],
+          "length": 1.724670745637332,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              6.493102871437995,
+              32.95696129847495
+            ],
+            [
+              4.867366940149923,
+              33.532697229763016
+            ],
+            [
+              5.1811611972739335,
+              34.41877463281311
+            ],
+            [
+              6.806897128562006,
+              33.843038701525046
+            ]
+          ],
+          "surface": [
+            [
+              6.513132292105484,
+              33.01351943058454
+            ],
+            [
+              4.887396360817412,
+              33.5892553618726
+            ],
+            [
+              5.161131776606444,
+              34.362216500703525
+            ],
+            [
+              6.786867707894516,
+              33.78648056941546
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-saunaTurn-sauna",
+          "from": "saunaTurn",
+          "to": "sauna",
+          "a": [
+            5.024264068711928,
+            33.975735931288064
+          ],
+          "b": [
+            4.324264068711928,
+            34.67573593128807
+          ],
+          "length": 0.9899494936611688,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              4.69192388155425,
+              33.64339574413039
+            ],
+            [
+              3.99192388155425,
+              34.34339574413039
+            ],
+            [
+              4.656604255869606,
+              35.00807611844574
+            ],
+            [
+              5.356604255869606,
+              34.30807611844574
+            ]
+          ],
+          "surface": [
+            [
+              4.734350288425444,
+              33.68582215100158
+            ],
+            [
+              4.034350288425443,
+              34.385822151001584
+            ],
+            [
+              4.614177848998413,
+              34.96564971157455
+            ],
+            [
+              5.314177848998413,
+              34.26564971157455
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-plungeTurn",
+          "from": "spaTurn",
+          "to": "plungeTurn",
+          "a": [
+            6.65,
+            33.4
+          ],
+          "b": [
+            7.699999999999999,
+            33.4
+          ],
+          "length": 1.049999999999999,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              6.65,
+              33.87
+            ],
+            [
+              7.699999999999999,
+              33.87
+            ],
+            [
+              7.699999999999999,
+              32.93
+            ],
+            [
+              6.65,
+              32.93
+            ]
+          ],
+          "surface": [
+            [
+              6.65,
+              33.809999999999995
+            ],
+            [
+              7.699999999999999,
+              33.809999999999995
+            ],
+            [
+              7.699999999999999,
+              32.99
+            ],
+            [
+              6.65,
+              32.99
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-plungeTurn-plunge",
+          "from": "plungeTurn",
+          "to": "plunge",
+          "a": [
+            7.699999999999999,
+            33.4
+          ],
+          "b": [
+            7.699999999999999,
+            35.37
+          ],
+          "length": 1.9699999999999989,
+          "width": 0.82,
+          "outerWidth": 0.94,
+          "footprint": [
+            [
+              7.2299999999999995,
+              33.4
+            ],
+            [
+              7.2299999999999995,
+              35.37
+            ],
+            [
+              8.17,
+              35.37
+            ],
+            [
+              8.17,
+              33.4
+            ]
+          ],
+          "surface": [
+            [
+              7.289999999999999,
+              33.4
+            ],
+            [
+              7.289999999999999,
+              35.37
+            ],
+            [
+              8.11,
+              35.37
+            ],
+            [
+              8.11,
+              33.4
+            ]
+          ]
+        }
+      ],
+      "pavers": [
+        {
+          "id": "garden-path-terrace-landing-stone-1",
+          "footprint": [
+            [
+              5.133610661552146,
+              23.59997521754293
+            ],
+            [
+              5.133610661552146,
+              24.11497521754293
+            ],
+            [
+              5.873610661552147,
+              24.11497521754293
+            ],
+            [
+              5.873610661552147,
+              23.59997521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-landing-junction-stone-2",
+          "footprint": [
+            [
+              6.109305330776073,
+              24.51747521754293
+            ],
+            [
+              6.617500000000001,
+              24.51747521754293
+            ],
+            [
+              6.617500000000001,
+              23.77747521754293
+            ],
+            [
+              6.109305330776073,
+              23.77747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn-stone-1",
+          "footprint": [
+            [
+              6.6825,
+              24.51747521754293
+            ],
+            [
+              7.357291914105186,
+              24.51747521754293
+            ],
+            [
+              7.357291914105186,
+              23.77747521754293
+            ],
+            [
+              6.6825,
+              23.77747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn-stone-2",
+          "footprint": [
+            [
+              7.422291914105187,
+              24.51747521754293
+            ],
+            [
+              8.097083828210373,
+              24.51747521754293
+            ],
+            [
+              8.097083828210373,
+              23.77747521754293
+            ],
+            [
+              7.422291914105187,
+              23.77747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn-stone-3",
+          "footprint": [
+            [
+              8.162083828210372,
+              24.51747521754293
+            ],
+            [
+              8.83687574231556,
+              24.51747521754293
+            ],
+            [
+              8.83687574231556,
+              23.77747521754293
+            ],
+            [
+              8.162083828210372,
+              23.77747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn-stone-4",
+          "footprint": [
+            [
+              8.901875742315559,
+              24.51747521754293
+            ],
+            [
+              9.576667656420744,
+              24.51747521754293
+            ],
+            [
+              9.576667656420744,
+              23.77747521754293
+            ],
+            [
+              8.901875742315559,
+              23.77747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-fireTurn-poolTurn-stone-2",
+          "footprint": [
+            [
+              9.239167656420745,
+              24.855606413157197
+            ],
+            [
+              9.239167656420745,
+              25.466237608771465
+            ],
+            [
+              9.979167656420744,
+              25.466237608771465
+            ],
+            [
+              9.979167656420744,
+              24.855606413157197
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-fireTurn-poolTurn-stone-3",
+          "footprint": [
+            [
+              9.239167656420745,
+              25.531237608771463
+            ],
+            [
+              9.239167656420745,
+              26.14186880438573
+            ],
+            [
+              9.979167656420744,
+              26.14186880438573
+            ],
+            [
+              9.979167656420744,
+              25.531237608771463
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-fireTurn-poolTurn-stone-4",
+          "footprint": [
+            [
+              9.239167656420745,
+              26.20686880438573
+            ],
+            [
+              9.239167656420745,
+              26.8175
+            ],
+            [
+              9.979167656420744,
+              26.8175
+            ],
+            [
+              9.979167656420744,
+              26.20686880438573
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-firepit-stone-1",
+          "footprint": [
+            [
+              9.239167656420745,
+              26.882499999999997
+            ],
+            [
+              9.239167656420745,
+              27.2675
+            ],
+            [
+              9.979167656420744,
+              27.2675
+            ],
+            [
+              9.979167656420744,
+              26.882499999999997
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-firepit-stone-2",
+          "footprint": [
+            [
+              9.239167656420745,
+              27.3325
+            ],
+            [
+              9.239167656420745,
+              27.7175
+            ],
+            [
+              9.979167656420744,
+              27.7175
+            ],
+            [
+              9.979167656420744,
+              27.3325
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-stone-2",
+          "footprint": [
+            [
+              10.453091573950056,
+              27.197570733914283
+            ],
+            [
+              11.18966226713284,
+              27.17787925193588
+            ],
+            [
+              11.169886171853973,
+              26.4381435518
+            ],
+            [
+              10.433315478671188,
+              26.4578350337784
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-stone-3",
+          "footprint": [
+            [
+              11.254639051604235,
+              27.17614216248571
+            ],
+            [
+              11.99120974478702,
+              27.15645068050731
+            ],
+            [
+              11.971433649508151,
+              26.416714980371427
+            ],
+            [
+              11.234862956325367,
+              26.43640646234983
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-stone-4",
+          "footprint": [
+            [
+              12.056186529258413,
+              27.15471359105714
+            ],
+            [
+              12.792757222441198,
+              27.13502210907874
+            ],
+            [
+              12.77298112716233,
+              26.39528640894286
+            ],
+            [
+              12.036410433979546,
+              26.414977890921257
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-stone-5",
+          "footprint": [
+            [
+              12.857734006912594,
+              27.13328501962857
+            ],
+            [
+              13.594304700095377,
+              27.113593537650168
+            ],
+            [
+              13.574528604816509,
+              26.373857837514286
+            ],
+            [
+              12.837957911633726,
+              26.39354931949269
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-stone-6",
+          "footprint": [
+            [
+              13.659281484566772,
+              27.111856448199998
+            ],
+            [
+              14.395852177749559,
+              27.092164966221596
+            ],
+            [
+              14.376076082470691,
+              26.352429266085714
+            ],
+            [
+              13.639505389287905,
+              26.372120748064116
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-stone-7",
+          "footprint": [
+            [
+              14.460828962220953,
+              27.090427876771425
+            ],
+            [
+              15.197399655403737,
+              27.070736394793027
+            ],
+            [
+              15.17762356012487,
+              26.331000694657146
+            ],
+            [
+              14.441052866942085,
+              26.350692176635544
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-2",
+          "footprint": [
+            [
+              6.28,
+              25.021113834129935
+            ],
+            [
+              6.28,
+              25.797252450716943
+            ],
+            [
+              7.0200000000000005,
+              25.797252450716943
+            ],
+            [
+              7.0200000000000005,
+              25.021113834129935
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-3",
+          "footprint": [
+            [
+              6.28,
+              25.86225245071694
+            ],
+            [
+              6.28,
+              26.63839106730395
+            ],
+            [
+              7.0200000000000005,
+              26.63839106730395
+            ],
+            [
+              7.0200000000000005,
+              25.86225245071694
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-4",
+          "footprint": [
+            [
+              6.28,
+              26.703391067303947
+            ],
+            [
+              6.28,
+              27.479529683890956
+            ],
+            [
+              7.0200000000000005,
+              27.479529683890956
+            ],
+            [
+              7.0200000000000005,
+              26.703391067303947
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-5",
+          "footprint": [
+            [
+              6.28,
+              27.544529683890953
+            ],
+            [
+              6.28,
+              28.320668300477962
+            ],
+            [
+              7.0200000000000005,
+              28.320668300477962
+            ],
+            [
+              7.0200000000000005,
+              27.544529683890953
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-6",
+          "footprint": [
+            [
+              6.28,
+              28.38566830047796
+            ],
+            [
+              6.28,
+              29.16180691706497
+            ],
+            [
+              7.0200000000000005,
+              29.16180691706497
+            ],
+            [
+              7.0200000000000005,
+              28.38566830047796
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-7",
+          "footprint": [
+            [
+              6.28,
+              29.226806917064966
+            ],
+            [
+              6.28,
+              30.002945533651975
+            ],
+            [
+              7.0200000000000005,
+              30.002945533651975
+            ],
+            [
+              7.0200000000000005,
+              29.226806917064966
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-8",
+          "footprint": [
+            [
+              6.28,
+              30.067945533651972
+            ],
+            [
+              6.28,
+              30.84408415023898
+            ],
+            [
+              7.0200000000000005,
+              30.84408415023898
+            ],
+            [
+              7.0200000000000005,
+              30.067945533651972
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-9",
+          "footprint": [
+            [
+              6.28,
+              30.90908415023898
+            ],
+            [
+              6.28,
+              31.685222766825987
+            ],
+            [
+              7.0200000000000005,
+              31.685222766825987
+            ],
+            [
+              7.0200000000000005,
+              30.90908415023898
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-10",
+          "footprint": [
+            [
+              6.28,
+              31.750222766825985
+            ],
+            [
+              6.28,
+              32.52636138341299
+            ],
+            [
+              7.0200000000000005,
+              32.52636138341299
+            ],
+            [
+              7.0200000000000005,
+              31.750222766825985
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-stone-11",
+          "footprint": [
+            [
+              6.28,
+              32.591361383412995
+            ],
+            [
+              6.28,
+              33.3675
+            ],
+            [
+              7.0200000000000005,
+              33.3675
+            ],
+            [
+              7.0200000000000005,
+              32.591361383412995
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-saunaTurn-stone-2",
+          "footprint": [
+            [
+              5.68298161868042,
+              33.34994208716318
+            ],
+            [
+              4.931384962821761,
+              33.61611151375077
+            ],
+            [
+              5.178414484387472,
+              34.31366180976892
+            ],
+            [
+              5.930011140246131,
+              34.04749238318133
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-saunaTurn-sauna-stone-2",
+          "footprint": [
+            [
+              4.389653589284343,
+              34.0870873926376
+            ],
+            [
+              4.085615530061467,
+              34.391125451860475
+            ],
+            [
+              4.608874548139514,
+              34.914384469938526
+            ],
+            [
+              4.912912607362388,
+              34.61034641071565
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-plungeTurn-stone-2",
+          "footprint": [
+            [
+              7.2075,
+              33.769999999999996
+            ],
+            [
+              7.6674999999999995,
+              33.769999999999996
+            ],
+            [
+              7.6674999999999995,
+              33.03
+            ],
+            [
+              7.2075,
+              33.03
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-plungeTurn-plunge-stone-2",
+          "footprint": [
+            [
+              7.329999999999999,
+              34.089166666666664
+            ],
+            [
+              7.329999999999999,
+              34.68083333333333
+            ],
+            [
+              8.069999999999999,
+              34.68083333333333
+            ],
+            [
+              8.069999999999999,
+              34.089166666666664
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-plungeTurn-plunge-stone-3",
+          "footprint": [
+            [
+              7.329999999999999,
+              34.74583333333333
+            ],
+            [
+              7.329999999999999,
+              35.3375
+            ],
+            [
+              8.069999999999999,
+              35.3375
+            ],
+            [
+              8.069999999999999,
+              34.74583333333333
+            ]
+          ]
+        }
+      ],
+      "borders": [
+        {
+          "id": "garden-path-terrace-landing-border--1",
+          "footprint": [
+            [
+              5.913610661552146,
+              23.56747521754293
+            ],
+            [
+              5.913610661552146,
+              24.14747521754293
+            ],
+            [
+              5.973610661552146,
+              24.14747521754293
+            ],
+            [
+              5.973610661552146,
+              23.56747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-terrace-landing-border-1",
+          "footprint": [
+            [
+              5.033610661552147,
+              23.56747521754293
+            ],
+            [
+              5.033610661552147,
+              24.14747521754293
+            ],
+            [
+              5.093610661552147,
+              24.14747521754293
+            ],
+            [
+              5.093610661552147,
+              23.56747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-landing-junction-border--1",
+          "footprint": [
+            [
+              5.5036106615521465,
+              23.73747521754293
+            ],
+            [
+              6.65,
+              23.73747521754293
+            ],
+            [
+              6.65,
+              23.677475217542927
+            ],
+            [
+              5.5036106615521465,
+              23.677475217542927
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-landing-junction-border-1",
+          "footprint": [
+            [
+              5.5036106615521465,
+              24.617475217542932
+            ],
+            [
+              6.65,
+              24.617475217542932
+            ],
+            [
+              6.65,
+              24.55747521754293
+            ],
+            [
+              5.5036106615521465,
+              24.55747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn-border--1",
+          "footprint": [
+            [
+              6.65,
+              23.73747521754293
+            ],
+            [
+              9.609167656420745,
+              23.73747521754293
+            ],
+            [
+              9.609167656420745,
+              23.677475217542927
+            ],
+            [
+              6.65,
+              23.677475217542927
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-fireTurn-border-1",
+          "footprint": [
+            [
+              6.65,
+              24.617475217542932
+            ],
+            [
+              9.609167656420745,
+              24.617475217542932
+            ],
+            [
+              9.609167656420745,
+              24.55747521754293
+            ],
+            [
+              6.65,
+              24.55747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-fireTurn-poolTurn-border--1",
+          "footprint": [
+            [
+              10.019167656420745,
+              24.14747521754293
+            ],
+            [
+              10.019167656420745,
+              26.849999999999998
+            ],
+            [
+              10.079167656420744,
+              26.849999999999998
+            ],
+            [
+              10.079167656420744,
+              24.14747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-fireTurn-poolTurn-border-1",
+          "footprint": [
+            [
+              9.139167656420746,
+              24.14747521754293
+            ],
+            [
+              9.139167656420746,
+              26.849999999999998
+            ],
+            [
+              9.199167656420745,
+              26.849999999999998
+            ],
+            [
+              9.199167656420745,
+              24.14747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-firepit-border--1",
+          "footprint": [
+            [
+              10.019167656420745,
+              26.849999999999998
+            ],
+            [
+              10.019167656420745,
+              27.75
+            ],
+            [
+              10.079167656420744,
+              27.75
+            ],
+            [
+              10.079167656420744,
+              26.849999999999998
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-firepit-border-1",
+          "footprint": [
+            [
+              9.139167656420746,
+              26.849999999999998
+            ],
+            [
+              9.139167656420746,
+              27.75
+            ],
+            [
+              9.199167656420745,
+              27.75
+            ],
+            [
+              9.199167656420745,
+              26.849999999999998
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-border--1",
+          "footprint": [
+            [
+              9.598210630658128,
+              26.4401464364112
+            ],
+            [
+              15.209042974237384,
+              26.290146436411202
+            ],
+            [
+              15.207439507052612,
+              26.230167866129914
+            ],
+            [
+              9.596607163473356,
+              26.380167866129913
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-poolTurn-pool-border-1",
+          "footprint": [
+            [
+              9.621728149368133,
+              27.319832133870083
+            ],
+            [
+              15.232560492947389,
+              27.169832133870084
+            ],
+            [
+              15.230957025762617,
+              27.109853563588796
+            ],
+            [
+              9.620124682183361,
+              27.259853563588795
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-border--1",
+          "footprint": [
+            [
+              7.06,
+              24.14747521754293
+            ],
+            [
+              7.06,
+              33.4
+            ],
+            [
+              7.12,
+              33.4
+            ],
+            [
+              7.12,
+              24.14747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-junction-spaTurn-border-1",
+          "footprint": [
+            [
+              6.180000000000001,
+              24.14747521754293
+            ],
+            [
+              6.180000000000001,
+              33.4
+            ],
+            [
+              6.240000000000001,
+              33.4
+            ],
+            [
+              6.240000000000001,
+              24.14747521754293
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-saunaTurn-border--1",
+          "footprint": [
+            [
+              6.786867707894516,
+              33.78648056941546
+            ],
+            [
+              5.161131776606444,
+              34.362216500703525
+            ],
+            [
+              5.1811611972739335,
+              34.41877463281311
+            ],
+            [
+              6.806897128562006,
+              33.843038701525046
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-saunaTurn-border-1",
+          "footprint": [
+            [
+              6.493102871437995,
+              32.95696129847495
+            ],
+            [
+              4.867366940149923,
+              33.532697229763016
+            ],
+            [
+              4.887396360817412,
+              33.5892553618726
+            ],
+            [
+              6.513132292105484,
+              33.01351943058454
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-saunaTurn-sauna-border--1",
+          "footprint": [
+            [
+              5.314177848998413,
+              34.265649711574554
+            ],
+            [
+              4.614177848998413,
+              34.96564971157456
+            ],
+            [
+              4.656604255869606,
+              35.00807611844574
+            ],
+            [
+              5.356604255869606,
+              34.30807611844574
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-saunaTurn-sauna-border-1",
+          "footprint": [
+            [
+              4.69192388155425,
+              33.64339574413039
+            ],
+            [
+              3.9919238815542504,
+              34.34339574413039
+            ],
+            [
+              4.034350288425443,
+              34.38582215100158
+            ],
+            [
+              4.734350288425444,
+              33.685822151001574
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-plungeTurn-border--1",
+          "footprint": [
+            [
+              6.65,
+              32.99
+            ],
+            [
+              7.699999999999999,
+              32.99
+            ],
+            [
+              7.699999999999999,
+              32.93
+            ],
+            [
+              6.65,
+              32.93
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-spaTurn-plungeTurn-border-1",
+          "footprint": [
+            [
+              6.65,
+              33.87
+            ],
+            [
+              7.699999999999999,
+              33.87
+            ],
+            [
+              7.699999999999999,
+              33.809999999999995
+            ],
+            [
+              6.65,
+              33.809999999999995
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-plungeTurn-plunge-border--1",
+          "footprint": [
+            [
+              8.11,
+              33.4
+            ],
+            [
+              8.11,
+              35.37
+            ],
+            [
+              8.169999999999998,
+              35.37
+            ],
+            [
+              8.169999999999998,
+              33.4
+            ]
+          ]
+        },
+        {
+          "id": "garden-path-plungeTurn-plunge-border-1",
+          "footprint": [
+            [
+              7.2299999999999995,
+              33.4
+            ],
+            [
+              7.2299999999999995,
+              35.37
+            ],
+            [
+              7.29,
+              35.37
+            ],
+            [
+              7.29,
+              33.4
+            ]
+          ]
+        }
+      ],
+      "lights": [
+        {
+          "id": "garden-route-light-1",
+          "destination": "terrace",
+          "x": 4.783610661552147,
+          "y": 24.14747521754293,
+          "target": [
+            5.5036106615521465,
+            24.14747521754293
+          ]
+        },
+        {
+          "id": "garden-route-light-2",
+          "destination": "firepit",
+          "x": 8.879167656420744,
+          "y": 27.05,
+          "target": [
+            9.609167656420745,
+            27.05
+          ]
+        },
+        {
+          "id": "garden-route-light-3",
+          "destination": "pool",
+          "x": 13.65,
+          "y": 27.52,
+          "target": [
+            14.6,
+            26.7
+          ]
+        },
+        {
+          "id": "garden-route-light-4",
+          "destination": "spa-route",
+          "x": 5.930000000000001,
+          "y": 30.9,
+          "target": [
+            6.65,
+            30.9
+          ]
+        },
+        {
+          "id": "garden-route-light-5",
+          "destination": "sauna",
+          "x": 4.524264068711928,
+          "y": 33.49573593128807,
+          "target": [
+            5.024264068711928,
+            33.975735931288064
+          ]
+        },
+        {
+          "id": "garden-route-light-6",
+          "destination": "plunge",
+          "x": 8.42,
+          "y": 34.949999999999996,
+          "target": [
+            7.699999999999999,
+            34.949999999999996
+          ]
+        }
+      ],
+      "planting": [
+        {
+          "id": "path-planting-west",
+          "x": 5.55,
+          "y": 30.05,
+          "width": 0.48,
+          "length": 1.65
+        },
+        {
+          "id": "path-planting-spa",
+          "x": 8.48,
+          "y": 33.75,
+          "width": 0.52,
+          "length": 1.2
+        }
+      ],
+      "pathLength": 28.888063834641336,
+      "surfaceArea": 25.143366337557367,
+      "pavedArea": 15.81919364146141,
+      "borderArea": 3.244005336265534,
+      "stoneArea": 19.063198977726945,
+      "gravelArea": 6.080167359830423,
+      "fixtureCount": 6,
+      "blocked": [],
+      "connections": [
+        {
+          "id": "terrace",
+          "point": [
+            5.5036106615521465,
+            23.56747521754293
+          ],
+          "connected": true
+        },
+        {
+          "id": "pool",
+          "point": [
+            15.22,
+            26.7
+          ],
+          "connected": true
+        },
+        {
+          "id": "firepit",
+          "point": [
+            9.609167656420745,
+            27.75
+          ],
+          "connected": true
+        },
+        {
+          "id": "sauna",
+          "point": [
+            4.324264068711928,
+            34.67573593128807
+          ],
+          "connected": true
+        },
+        {
+          "id": "plunge",
+          "point": [
+            7.699999999999999,
+            35.37
+          ],
+          "connected": true
+        }
+      ]
+    },
+    "kitchenWindow": {
+      "width": 2.3,
+      "sill": 1.04,
+      "height": 1.46,
+      "type": "window",
+      "offset": 5.615,
+      "service": "kitchen-sink",
+      "roomId": "front-kitchen",
+      "outlook": "side-garden",
+      "panes": 1,
+      "transoms": 0,
+      "frameWidth": 0.067,
+      "operation": "picture",
+      "glazing": "clear",
+      "architectureStyle": "scandinavian",
+      "source": "side-garden-sink-window-proposal",
+      "privacy": false
+    },
+    "saunaWindow": {
+      "width": 0.96,
+      "sill": 1.05,
+      "height": 1.3,
+      "type": "window",
+      "offset": 3.96,
+      "service": "indoor-sauna",
+      "roomId": "sauna",
+      "outlook": "side-garden",
+      "panes": 1,
+      "transoms": 0,
+      "frameWidth": 0.067,
+      "operation": "picture",
+      "glazing": "clear",
+      "architectureStyle": "scandinavian",
+      "source": "indoor-sauna-window-proposal",
+      "privacy": false
+    }
+  },
+  "jacuzziView": {
+    "observer": {
+      "x": 9.608610661552147,
+      "y": 20.117475217542932,
+      "z": 4.33755850309423,
+      "preset": "jacuzzi",
+      "label": "Jacuzzi · seated",
+      "eyeHeight": 0.7,
+      "groundZ": 3.6375585030942297,
+      "surface": "floor",
+      "defaultLookYaw": 0,
+      "defaultLookPitch": 0
+    },
+    "summary": {
+      "observer": {
+        "x": 9.608610661552147,
+        "y": 20.117475217542932,
+        "z": 4.33755850309423,
+        "preset": "jacuzzi",
+        "label": "Jacuzzi · seated",
+        "eyeHeight": 0.7,
+        "groundZ": 3.6375585030942297,
+        "surface": "floor",
+        "defaultLookYaw": 0,
+        "defaultLookPitch": 0
+      },
+      "visible": 58,
+      "total": 1646,
+      "blockedPercent": 96.47630619684082,
+      "worstRequiredHedge": {
+        "rear": 11.986215146292675,
+        "left": 11.498161652763873,
+        "right": 0,
+        "front": 0,
+        "overall": 11.986215146292675
+      }
+    }
+  },
+  "elapsedMs": 99416
+}
