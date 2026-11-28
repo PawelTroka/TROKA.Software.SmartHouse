@@ -98,11 +98,12 @@ export function createStudioControls({getSettings,onChange,onMoment,onInspect,on
   function performanceInfo(value){
     stats=value;if(!value)return;
     const host=$('render-diagnostics');
-    for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','sceneBufferWidth','sceneBufferHeight','scenePixelRatio','motionSamples','canvasSamples','shadowSize','houseRenovationParts','houseRenovationProjection','houseOpeningCount','gardenKitchens','gardenPlantingBeds','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
+    for(const key of ['frames','shadowUpdates','calls','triangles','geometries','textures','pixelRatio','bufferWidth','bufferHeight','sceneBufferWidth','sceneBufferHeight','scenePixelRatio','motionSamples','motionStorageSamples','canvasSamples','shadowSize','houseRenovationParts','houseRenovationProjection','houseOpeningCount','gardenKitchens','gardenPlantingBeds','garageVehicles'])if(Number.isFinite(value[key]))host.dataset[key]=String(value[key]);
     for(const [key,fallback]of [['canvasWidth','bufferWidth'],['canvasHeight','bufferHeight']])if(Number.isFinite(value[key]??value[fallback]))host.dataset[key]=String(value[key]??value[fallback]);
     host.dataset.renderPath=value.renderPath||'direct';
     host.dataset.motionSupported=String(Boolean(value.motionSupported));
     host.dataset.motionUnsupportedReason=value.motionUnsupportedReason||'';
+    host.dataset.motionMsaaDiagnostic=value.motionMsaaDiagnostic||'';
     host.dataset.renderedStyle=value.renderedStyle||'pending';
     host.dataset.gardenScheme=value.gardenScheme||'manual';host.dataset.windowPattern=value.windowPattern||'original';
     for(const key of ['drawEnabled','canvasIntersecting','presentationVisible','renderPending'])host.dataset[key]=String(Boolean(value[key]));

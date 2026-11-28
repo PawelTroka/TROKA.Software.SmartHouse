@@ -319,6 +319,7 @@ export function createScene(container, data, callbacks = {}) {
   const camera = new THREE.PerspectiveCamera(48, 1, 0.08, sceneFar);
   const presentation=svgMode?null:createArchitecturalRenderer(renderer,scene,camera,{
     gpuPhaseDiagnostics:callbacks.gpuPhaseDiagnostics===true||new URLSearchParams(window.location.search).get('gpuPhaseProfile')==='1',
+    motionMsaaDiagnostic:new URLSearchParams(window.location.search).get('motionMsaa')==='single'?'single':null,
     onGpuPhaseUpdate:()=>queueMicrotask(()=>callbacks.onPerformanceInfo?.(getPerformanceInfo())),
   });
   const gpuPacer=svgMode?null:createGpuSubmissionPacer(renderer.getContext());
@@ -1625,9 +1626,10 @@ export function createScene(container, data, callbacks = {}) {
     // canvas. The live fields let diagnostics observe every adaptive level,
     // including levels between the slower summary updates.
     const output=presentation?.getDiagnostics()||{sceneBufferWidth:renderer.domElement.width||lastWidth,
-      sceneBufferHeight:renderer.domElement.height||lastHeight,scenePixelRatio:1,renderPath:'svg',motionSupported:false,motionSamples:0,canvasSamples:0};
-    for(const key of ['sceneBufferWidth','sceneBufferHeight','scenePixelRatio','renderPath','motionSupported','motionSamples','canvasSamples'])
+      sceneBufferHeight:renderer.domElement.height||lastHeight,scenePixelRatio:1,renderPath:'svg',motionSupported:false,motionSamples:0,motionStorageSamples:0,canvasSamples:0};
+    for(const key of ['sceneBufferWidth','sceneBufferHeight','scenePixelRatio','renderPath','motionSupported','motionSamples','motionStorageSamples','canvasSamples'])
       renderer.domElement.dataset[key]=String(output[key]);
+    renderer.domElement.dataset.motionMsaaDiagnostic=output.motionMsaaDiagnostic||'';
     phaseStart=performance.now();
     // A rebuild or visibility callback alone does not replace the visible frame.
     renderedStyle=finishSignature||null;frameCount++;

@@ -45,8 +45,12 @@ class ArchitecturalAO extends GTAOPass{
   dispose(){super.dispose();this.gtaoMaterial.dispose();this.blendMaterial.dispose();}
 }
 
-export function createArchitecturalRenderer(renderer,scene,camera,{interior=false,gpuPhaseDiagnostics=false,onGpuPhaseUpdate=null}={}){
+export function createArchitecturalRenderer(renderer,scene,camera,{interior=false,gpuPhaseDiagnostics=false,onGpuPhaseUpdate=null,motionMsaaDiagnostic=null}={}){
   const supported=renderer.capabilities.isWebGL2&&renderer.extensions.has('EXT_color_buffer_float');
+  // Explicit diagnostic only: r160 samples=0 uses single-sample color/depth
+  // storage and no MSAA resolve. Requesting 1 could round up to 4 on a device.
+  // Keep normal support eligibility, quality policy and idle rendering intact.
+  const singleSampleDiagnostic=motionMsaaDiagnostic==='single',motionRequestedSamples=singleSampleDiagnostic?0:2;
   // The main scene has an opaque canvas and a separately sized display buffer.
   // The transparent interior/dollhouse renderer keeps its existing pipeline.
   const gl=renderer.getContext?.();let motionSupported=false,motionSampleCount=0;
@@ -104,7 +108,7 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     if(motionEnabled){
       const mw=Math.max(1,Math.floor(w*pixelRatio)),mh=Math.max(1,Math.floor(h*pixelRatio));
       if(!motionTarget){
-        motionTarget=new THREE.WebGLRenderTarget(mw,mh,{type:THREE.HalfFloatType,samples:2});
+        motionTarget=new THREE.WebGLRenderTarget(mw,mh,{type:THREE.HalfFloatType,samples:motionRequestedSamples});
         motionTarget.texture.name='ArchitecturalMotion.color';
         motionColorPass=new RenderPass(scene,camera);
         motionOutput=new OutputPass();motionOutput.renderToScreen=true;
@@ -142,19 +146,23 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     // Retain that attachment for all scene depth tests, but discard it before
     // the color resolve instead of copying an unused full-size depth buffer.
     // setSize() disposes renderer properties, so reapply before every render.
-    motionDepthResolveSkipped=!!renderer.properties?.get&&motionTarget.depthBuffer===true&&!motionTarget.depthTexture&&!motionTarget.stencilBuffer&&
+    motionDepthResolveSkipped=motionTarget.samples>0&&!!renderer.properties?.get&&motionTarget.depthBuffer===true&&!motionTarget.depthTexture&&!motionTarget.stencilBuffer&&
       motionColorPass.clear===true&&renderer.autoClearDepth===true;
     if(renderer.properties?.get)renderer.properties.get(motionTarget).__ignoreDepthValues=motionDepthResolveSkipped;
     let profile=null;
     if(gpuPhases){
       const published=Number(renderer.domElement?.dataset?.renderedFrameCount);
       profile=gpuPhases.beginFrame({renderPath:'motion-target',sceneBufferWidth:motionTarget.width,sceneBufferHeight:motionTarget.height,
-        scenePixelRatio:sceneRatio,motionSamples:motionSampleCount,canvasWidth:renderer.domElement?.width,canvasHeight:renderer.domElement?.height,
+        scenePixelRatio:sceneRatio,motionSamples:singleSampleDiagnostic?0:motionSampleCount,motionRequestedSamples,
+        motionStorageSamples:singleSampleDiagnostic?1:motionSampleCount,motionMsaaDiagnostic:singleSampleDiagnostic?'single':null,
+        sceneColorType:motionTarget.texture.type,sceneColorSpace:motionTarget.texture.colorSpace,outputColorSpace:renderer.outputColorSpace,
+        toneMapping:renderer.toneMapping,toneMappingExposure:renderer.toneMappingExposure,
+        canvasWidth:renderer.domElement?.width,canvasHeight:renderer.domElement?.height,
         motionDepthResolveSkipped,
         expectedPublicFrame:Number.isFinite(published)?published+1:null,cameraPosition:camera.position?.toArray(),cameraQuaternion:camera.quaternion?.toArray()});
     }
     try{
-      // r160 resolves the target's MSAA at the end of renderer.render(). Its
+      // r160 resolves a multisampled target at the end of renderer.render(). Its
       // ordinary offscreen scene shader writes linear HDR; OutputPass applies
       // the existing AgX/exposure/sRGB transform exactly once, as at idle.
       motionColorPass.render(renderer,null,motionTarget);
@@ -190,9 +198,11 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       aoWidth:enabled?ao?.width||0:0,aoHeight:enabled?ao?.height||0:0,
       msaaSamples:enabled?lastSamples:0,toneMapping:'AgX',renderPath,sceneBufferWidth,sceneBufferHeight,scenePixelRatio,
       motionSupported,motionUnsupportedReason,
-      // GL rounds requested samples up to a supported count. Report the
-      // matching per-format result, independently of the default canvas.
-      motionSamples:motionEnabled?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,canvasSamples,
+      // GL rounds requested MSAA samples up to a supported count. Zero means
+      // no MSAA; the diagnostic still has one color/depth storage sample.
+      // Both counts are independent of the default display canvas's samples.
+      motionSamples:motionEnabled&&!singleSampleDiagnostic?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,
+      motionStorageSamples:motionEnabled?(singleSampleDiagnostic?1:motionSampleCount):0,motionMsaaDiagnostic:singleSampleDiagnostic?'single':null,canvasSamples,
       motionDepthResolveSkipped:motionEnabled&&motionDepthResolveSkipped,
       ...(gpuPhases?{gpuPhases:gpuPhases.getDiagnostics()}:{} )};
   }

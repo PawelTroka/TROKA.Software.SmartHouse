@@ -45,7 +45,7 @@ function motionRenderer(scene,{webgl2=true,float=true,maxSamples=4,colorSamples=
     setRenderTarget(target,face=0,mip=0){state.target=target;state.face=face;state.mip=mip;},
     getClearColor:target=>target.copy(state.clearColor),getClearAlpha:()=>state.clearAlpha,
     setClearColor(color,alpha=state.clearAlpha){state.clearColor.set(color);state.clearAlpha=alpha;},
-    getPixelRatio:()=>1,getDrawingBufferSize:target=>target.set(1280,584),clear(...options){state.clears.push(state.target);state.clearOptions.push(options);},
+    getPixelRatio:()=>1,getSize:target=>target.set(1280,584),getDrawingBufferSize:target=>target.set(1280,584),clear(...options){state.clears.push(state.target);state.clearOptions.push(options);},
     render(object,camera){
       const stage=object===scene?'scene':'output';state.draws.push({stage,target:state.target,object,camera,autoClear:this.autoClear});
       if(state.throwAt===stage){renderer.setClearColor('#abcdef',.9);throw new Error(stage+' draw failed');}
@@ -70,7 +70,8 @@ test('motion renders into a cached two-sample HDR target at the scene scale with
   assert.ok('AGX_TONE_MAPPING' in output.defines&&'SRGB_TRANSFER' in output.defines,'Existing OutputPass applies the idle HDR output transform');
   assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968},'The output triangle cannot replace scene statistics');
   assert.deepEqual(presentation.getDiagnostics(),{contactShading:false,contactShadingSupported:true,aoWidth:0,aoHeight:0,msaaSamples:0,toneMapping:'AgX',
-    renderPath:'motion-target',sceneBufferWidth:1075,sceneBufferHeight:490,scenePixelRatio:.84,motionSupported:true,motionUnsupportedReason:null,motionSamples:2,motionRequestedSamples:2,canvasSamples:4,motionDepthResolveSkipped:false});
+    renderPath:'motion-target',sceneBufferWidth:1075,sceneBufferHeight:490,scenePixelRatio:.84,motionSupported:true,motionUnsupportedReason:null,motionSamples:2,motionRequestedSamples:2,
+    motionStorageSamples:2,motionMsaaDiagnostic:null,canvasSamples:4,motionDepthResolveSkipped:false});
   let targetDisposals=0,outputDisposals=0;target.addEventListener('dispose',()=>targetDisposals++);output.addEventListener('dispose',()=>outputDisposals++);
   presentation.resize(1280,584,.84,'high',{interacting:true});presentation.render();
   assert.equal(state.draws[2].target,target);assert.equal(state.draws[3].object.material,output);assert.equal(targetDisposals,0);
@@ -129,28 +130,78 @@ test('the actual r160 resolver skips only unused motion depth copies and reappli
   const count=blits.length;presentation.resize(1280,584,1,'eco',{interacting:false});presentation.render();
   assert.equal(blits.length,count);assert.equal(presentation.getDiagnostics().motionDepthResolveSkipped,false);
   presentation.dispose();ordinary.dispose();
+
+  const single=createArchitecturalRenderer(renderer,scene,new THREE.PerspectiveCamera(),{motionMsaaDiagnostic:'single'});
+  for(const scale of [.84,.54]){
+    const invalidationCount=invalidations.length;
+    single.resize(1280,584,scale,'auto',{interacting:true});single.render();
+    const target=state.draws.at(-2).target;
+    assert.equal(target.samples,0);assert.equal(target.depthBuffer,true);assert.equal(target.texture.type,THREE.HalfFloatType);
+    assert.equal(properties.get(target).__ignoreDepthValues,false,'A single-sample target cannot advertise a discarded MSAA depth resolve');
+    assert.equal(blits.length,count,'The actual pinned resolver submits no blit for samples=0');
+    assert.equal(invalidations.length,invalidationCount,'No single-sample scene depth is discarded before its use');
+    assert.equal(single.getDiagnostics().motionDepthResolveSkipped,false);
+  }
+  single.dispose();
 });
 
 test('motion output restores target, cube face, mip, clearing and colors after either draw fails',()=>{
-  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),{renderer,state}=motionRenderer(scene);
-  const presentation=createArchitecturalRenderer(renderer,scene,camera),previousTarget=new THREE.WebGLRenderTarget(16,16);
-  presentation.resize(1280,584,.84,'auto',{interacting:true});
-  for(const throwAt of [null,'scene','output']){
-    renderer.setRenderTarget(previousTarget,3,2);renderer.autoClear=false;renderer.setClearColor('#123456',.35);state.throwAt=throwAt;
-    if(throwAt)assert.throws(()=>presentation.render(),new RegExp(throwAt+' draw failed'));else presentation.render();
-    assert.equal(state.target,previousTarget);assert.equal(state.face,3);assert.equal(state.mip,2);assert.equal(renderer.autoClear,false);
-    assert.equal(state.clearColor.getHexString(),'123456');assert.equal(state.clearAlpha,.35);
+  for(const motionMsaaDiagnostic of [null,'single']){
+    const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),{renderer,state}=motionRenderer(scene);
+    const presentation=createArchitecturalRenderer(renderer,scene,camera,{motionMsaaDiagnostic}),previousTarget=new THREE.WebGLRenderTarget(16,16);
+    presentation.resize(1280,584,.84,'auto',{interacting:true});
+    for(const throwAt of [null,'scene','output']){
+      renderer.setRenderTarget(previousTarget,3,2);renderer.autoClear=false;renderer.setClearColor('#123456',.35);state.throwAt=throwAt;
+      if(throwAt)assert.throws(()=>presentation.render(),new RegExp(throwAt+' draw failed'));else presentation.render();
+      assert.equal(state.target,previousTarget);assert.equal(state.face,3);assert.equal(state.mip,2);assert.equal(renderer.autoClear,false);
+      assert.equal(state.clearColor.getHexString(),'123456');assert.equal(state.clearAlpha,.35);
+    }
+    presentation.dispose();previousTarget.dispose();
   }
-  presentation.dispose();previousTarget.dispose();
+});
+
+test('single-sample motion is an explicit diagnostic with unchanged HDR output, caching, canvas and idle path',()=>{
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),results=[];
+  for(const motionMsaaDiagnostic of [undefined,'invalid','single']){
+    const {renderer,state}=motionRenderer(scene,{colorSamples:[4],depthSamples:[4]}),presentation=createArchitecturalRenderer(renderer,scene,camera,{motionMsaaDiagnostic});
+    assert.equal(presentation.motionSupported,true);
+    presentation.resize(1280,584,.54,'auto',{interacting:true});presentation.render();
+    const target=state.draws[0].target,output=state.draws[1].object.material,diagnostics=presentation.getDiagnostics(),single=motionMsaaDiagnostic==='single';
+    assert.equal(target.samples,single?0:2);assert.equal(diagnostics.motionSamples,single?0:4);assert.equal(diagnostics.motionRequestedSamples,single?0:2);
+    assert.equal(diagnostics.motionStorageSamples,single?1:4);assert.equal(diagnostics.motionMsaaDiagnostic,single?'single':null);
+    assert.equal(target.depthBuffer,true);assert.equal(target.stencilBuffer,false);assert.equal(target.depthTexture,null);
+    assert.equal(target.texture.type,THREE.HalfFloatType);assert.equal(target.width,691);assert.equal(target.height,315);
+    assert.equal(output.uniforms.tDiffuse.value,target.texture);assert.equal(output.uniforms.toneMappingExposure.value,1.05);
+    results.push({defines:{...output.defines},outputColorSpace:renderer.outputColorSpace,toneMapping:renderer.toneMapping,
+      sceneInfo:{...presentation.sceneInfo},depthTest:output.depthTest,depthWrite:output.depthWrite,clearOptions:state.clearOptions[0]});
+    let targetDisposals=0,outputDisposals=0;target.addEventListener('dispose',()=>targetDisposals++);output.addEventListener('dispose',()=>outputDisposals++);
+    presentation.resize(1280,584,.54,'auto',{interacting:true});presentation.render();
+    assert.equal(state.draws.at(-2).target,target);assert.equal(state.draws.at(-1).object.material,output);assert.equal(targetDisposals,0);
+    presentation.resize(1280,584,.68,'auto',{interacting:true});presentation.render();
+    assert.equal(state.draws.at(-2).target,target);assert.equal(target.samples,single?0:2);assert.equal(targetDisposals,1);
+    presentation.resize(1280,584,1,'eco',{interacting:false});presentation.render();
+    assert.equal(state.draws.at(-1).object,scene);assert.equal(state.draws.at(-1).target,null);assert.equal(presentation.getDiagnostics().renderPath,'direct');
+    assert.equal(presentation.getDiagnostics().motionStorageSamples,0);assert.equal(presentation.getDiagnostics().motionSamples,0);
+    assert.deepEqual(renderer.domElement,{width:1280,height:584});assert.equal(state.queries,1);
+    presentation.resize(1280,584,1,'auto',{interacting:false});
+    assert.equal(presentation.getDiagnostics().renderPath,'ao-composer');assert.equal(presentation.getDiagnostics().contactShading,true);
+    assert.equal(presentation.getDiagnostics().msaaSamples,2,'The original idle AO/composer sample configuration is unchanged');
+    assert.equal(presentation.getDiagnostics().motionStorageSamples,0);assert.equal(presentation.getDiagnostics().motionSamples,0);
+    presentation.dispose();presentation.dispose();assert.equal(targetDisposals,2);assert.equal(outputDisposals,1);
+  }
+  assert.deepEqual(results[1],results[0],'An unknown diagnostic value does not opt in');
+  assert.deepEqual(results[2],results[0],'Sampling storage is the only diagnostic rendering difference');
 });
 
 test('motion target capability rejects unavailable or mismatched float multisampling and leaves dollhouse unchanged',()=>{
   for(const options of [{webgl2:false},{float:false},{maxSamples:1},{colorSamples:[]},{colorSamples:[4],depthSamples:[4,2]},{interior:true}]){
-    const scene=new THREE.Scene(),{renderer,state}=motionRenderer(scene,options),presentation=createArchitecturalRenderer(renderer,scene,new THREE.PerspectiveCamera(),options);
+    for(const motionMsaaDiagnostic of [null,'single']){
+    const scene=new THREE.Scene(),{renderer,state}=motionRenderer(scene,options),presentation=createArchitecturalRenderer(renderer,scene,new THREE.PerspectiveCamera(),{...options,motionMsaaDiagnostic});
     assert.equal(presentation.motionSupported,false,JSON.stringify(options));
     assert.equal(typeof presentation.getDiagnostics().motionUnsupportedReason,'string');
     presentation.resize(390,700,.8,'auto',{interacting:true});presentation.render();
     assert.equal(presentation.getDiagnostics().renderPath,'direct');assert.equal(state.draws.length,1);assert.equal(state.draws[0].target,null);presentation.dispose();
+    }
   }
   const scene=new THREE.Scene(),{renderer}=motionRenderer(scene,{colorSamples:[4],depthSamples:[4]});
   const rounded=createArchitecturalRenderer(renderer,scene,new THREE.PerspectiveCamera());
@@ -160,6 +211,7 @@ test('motion target capability rejects unavailable or mismatched float multisamp
 });
 
 test('optional phase marks surround the scene/resolve and output with the exact next public frame metadata',()=>{
+  for(const motionMsaaDiagnostic of [null,'single']){
   const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),{renderer}=motionRenderer(scene);
   const events=[],fences=[],deleted=[],gl=renderer.getContext(),draw=renderer.render.bind(renderer);
   Object.assign(gl,{SYNC_GPU_COMMANDS_COMPLETE:10,TIMEOUT_EXPIRED:11,
@@ -168,15 +220,19 @@ test('optional phase marks surround the scene/resolve and output with the exact 
   renderer.domElement.dataset={renderedFrameCount:'17'};
   renderer.render=(object,...args)=>{events.push(object===scene?'scene-and-resolve':'output');draw(object,...args);
     if(object===scene)Object.assign(renderer.info.render,{points:0,lines:317,frame:35});};
-  const presentation=createArchitecturalRenderer(renderer,scene,camera,{gpuPhaseDiagnostics:true});
+  const presentation=createArchitecturalRenderer(renderer,scene,camera,{gpuPhaseDiagnostics:true,motionMsaaDiagnostic});
   presentation.resize(1280,584,.54,'auto',{interacting:true});presentation.render();
   assert.deepEqual(events,['fence-1','scene-and-resolve','fence-2','output','fence-3','flush']);
   const sample=presentation.getDiagnostics().gpuPhases.pending[0];
   assert.deepEqual(sample.metadata,{renderPath:'motion-target',sceneBufferWidth:691,sceneBufferHeight:315,scenePixelRatio:.54,
-    motionSamples:2,canvasWidth:1280,canvasHeight:584,motionDepthResolveSkipped:false,expectedPublicFrame:18,cameraPosition:[0,0,0],cameraQuaternion:[0,0,0,1],
+    motionSamples:motionMsaaDiagnostic==='single'?0:2,motionRequestedSamples:motionMsaaDiagnostic==='single'?0:2,
+    motionStorageSamples:motionMsaaDiagnostic==='single'?1:2,motionMsaaDiagnostic,
+    sceneColorType:THREE.HalfFloatType,sceneColorSpace:THREE.NoColorSpace,outputColorSpace:THREE.SRGBColorSpace,toneMapping:THREE.AgXToneMapping,toneMappingExposure:1.05,
+    canvasWidth:1280,canvasHeight:584,motionDepthResolveSkipped:false,expectedPublicFrame:18,cameraPosition:[0,0,0],cameraQuaternion:[0,0,0,1],
     sceneInfo:{calls:501,triangles:825968,points:0,lines:317,rendererFrame:35}});
   assert.deepEqual(presentation.sceneInfo,{calls:501,triangles:825968,points:0,lines:317,frame:35});
   presentation.dispose();assert.equal(deleted.length,3);assert.equal(new Set(deleted).size,3);
+  }
 });
 
 test('a scene or output error aborts optional phase evidence and still restores the renderer',()=>{

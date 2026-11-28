@@ -130,6 +130,46 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  motion-msaa-diagnostic:
+    name: Motion MSAA diagnostic
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: garden-lab
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Read the unchanged walking fixture
+        uses: actions/checkout@v6
+        with:
+          ref: 66c096a94b6ada93e015a98bce07b4b3a643f933
+          path: .walk-baseline
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm run build
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: python3 scripts/install-ci-browser.py
+      - name: Measure the opt-in motion sampling tradeoff on one host
+        # Up to four cases, each with four bounded 120 s stages. This separate
+        # diagnostic does not change default quality or walking acceptance.
+        timeout-minutes: 36
+        env:
+          BASELINE_DIR: ../.walk-baseline/garden-lab
+        run: node scripts/motion-msaa-diagnostic.mjs
+      - name: Upload paired completion bounds and actual images
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: motion-msaa-diagnostic-evidence
+          path: garden-lab/test-results/motion-msaa-diagnostic/
+          if-no-files-found: ignore
+          retention-days: 7
+
   browser-regression:
     name: WebGL regression · ${{ matrix.scenario }}
     runs-on: ubuntu-24.04
