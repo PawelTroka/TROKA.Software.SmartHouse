@@ -113,8 +113,8 @@ function makeWall(parent,wall,height,state,tools,m,cut,exterior=null,design=null
         const paneWidth=Math.max(.01,module-frameWidth),paneHeight=h-(o.architectureStyle?frameWidth:.035),paneX=left+(i+.5)*module;
         if(o.glazing==='reflective-privacy'){
           // Opposite front-facing planes keep the exterior reflection from
-          // blocking the view out. The reflection stays semi-transparent and
-          // follows the existing environment's day/night brightness.
+          // blocking the view out. Its opaque exterior writes depth to hide
+          // room contents, while the inner face alone remains transparent.
           const outward=exterior?.sign??1;
           for(const [material,sign]of [[m.reflectivePrivacyExterior,outward],[m.reflectivePrivacyInterior,-outward]]){
             const pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,paneHeight),material);
