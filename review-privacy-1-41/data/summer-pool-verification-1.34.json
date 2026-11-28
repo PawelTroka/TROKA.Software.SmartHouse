@@ -1,0 +1,1452 @@
+{
+  "method": {
+    "sourceData": {
+      "site-data.json": {
+        "sha256": "7a2019323e1bab439ccac4fe0b87b5a525ed90b53db180c6010f9e6a1bd50fee"
+      },
+      "sternicza-surrounding-nature.json": {
+        "sha256": "b3b220eba664314db2e0c9945ac7af27c4367438350eac5551032965016b7a39"
+      },
+      "sternicza-neighbor-roofs.json": {
+        "sha256": "9e1c325008e2a520671080cbd4611ca0aa135c87827d7731af3fa11ceadfbdd9"
+      }
+    },
+    "state": "v=30&site=sternicza-11&basementGarageEnabled=true&hedgeFullPerimeter=true&screeningTrees=%5B%7B%22id%22%3A%22pine-1%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18%2C%22y%22%3A35%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-2%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A14%2C%22y%22%3A36%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%2C%7B%22id%22%3A%22pine-3%22%2C%22typeId%22%3A%22austrian-pine-tall%22%2C%22x%22%3A18%2C%22y%22%3A28%2C%22height%22%3A9.5%2C%22crownBase%22%3A2.5%2C%22crownWidth%22%3A5%2C%22crownDepth%22%3A5%2C%22rotation%22%3A0%2C%22enabled%22%3Atrue%2C%22unitPrice%22%3A0%7D%5D&treeLeafMode=leaf-on&existingLeafMode=summer&gardenProgram=spa-pool-grove",
+    "registration": "applyBuildingOverrides followed by applyPlanExterior, matching the public app",
+    "terrace": {
+      "x": 5.358610661552147,
+      "y": 18.117475217542932,
+      "width": 8.5,
+      "depth": 4
+    },
+    "rearMidpoint": [
+      9.608610661552147,
+      18.117475217542932
+    ],
+    "dateRange": [
+      "2026-06-01",
+      "2026-08-31"
+    ],
+    "days": 92,
+    "timeZone": "Europe/Warsaw",
+    "timeStepMinutes": 30,
+    "timeSampling": "Half-hour midpoints over all 24 local hours; only sun above geometric horizon enters daylight fraction.",
+    "receivers": "32 equal-area cell centres per pool, on the exact horizontal rendered water plane; shared spaLevels and poolEdgeBoxes supply elevations and basin geometry.",
+    "searchCandidateCount": 83,
+    "shortlist": [
+      {
+        "x": 3.25,
+        "y": 25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5156,
+        "samples": 105,
+        "waterZ": 3.0653084486562427,
+        "sunlitRays": 3979,
+        "sunlitFraction": 0.4895,
+        "sunlitHoursPerDay": 6.908,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5165
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5116
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4371
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 3.25,
+        "y": 25.25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5132,
+        "samples": 90,
+        "waterZ": 3.065299194480041,
+        "sunlitRays": 3953,
+        "sunlitFraction": 0.4863,
+        "sunlitHoursPerDay": 6.8628,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5133
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5134
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4286
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 3.5,
+        "y": 25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5121,
+        "samples": 112,
+        "waterZ": 3.0498104202418332,
+        "sunlitRays": 3948,
+        "sunlitFraction": 0.4857,
+        "sunlitHoursPerDay": 6.8542,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5144
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5091
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4302
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 3.5,
+        "y": 25.25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5091,
+        "samples": 96,
+        "waterZ": 3.0497993048793828,
+        "sunlitRays": 3928,
+        "sunlitFraction": 0.4833,
+        "sunlitHoursPerDay": 6.8194,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5144
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5113
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4201
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 3.75,
+        "y": 25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5126,
+        "samples": 105,
+        "waterZ": 3.038594180277989,
+        "sunlitRays": 3916,
+        "sunlitFraction": 0.4818,
+        "sunlitHoursPerDay": 6.7986,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5122
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5062
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4232
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 3.75,
+        "y": 25.25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5092,
+        "samples": 90,
+        "waterZ": 3.0385812037292887,
+        "sunlitRays": 3889,
+        "sunlitFraction": 0.4785,
+        "sunlitHoursPerDay": 6.7517,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5119
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5062
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4132
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 4,
+        "y": 25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5078,
+        "samples": 112,
+        "waterZ": 3.0272365785242363,
+        "sunlitRays": 3886,
+        "sunlitFraction": 0.4781,
+        "sunlitHoursPerDay": 6.7465,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5093
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5044
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4167
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      },
+      {
+        "x": 4.25,
+        "y": 25,
+        "width": 8,
+        "length": 3.5,
+        "score": 0.5084,
+        "samples": 105,
+        "waterZ": 3.0207505214623995,
+        "sunlitRays": 3877,
+        "sunlitFraction": 0.477,
+        "sunlitHoursPerDay": 6.7309,
+        "months": {
+          "2026-06": {
+            "sunlitFraction": 0.5104
+          },
+          "2026-07": {
+            "sunlitFraction": 0.5015
+          },
+          "2026-08": {
+            "sunlitFraction": 0.4151
+          }
+        },
+        "receivers": 32,
+        "totalRays": 8128
+      }
+    ],
+    "objective": "Mean geometric direct-sun area-hours across the full summer.",
+    "included": "Resolved measured neighbour roofs, house envelope, enabled measured summer foliage, 4 m hedges, shared garden structures, pool coping, local terrain and proposed specimen trees.",
+    "limits": "Finite candidate grid and simplified dense foliage. Not a continuous global optimum, weather forecast, energy yield or surveyed shade guarantee. Existing tree canopy scan is from October 2024; leaf-on assumes dense summer crowns. Floating-point/grid precision does not imply survey accuracy."
+  },
+  "results": [
+    {
+      "name": "Proposed summer pool and boundary pines",
+      "x": 3.25,
+      "y": 25,
+      "width": 8,
+      "length": 3.5,
+      "waterZ": 3.0653084486562427,
+      "sunlitRays": 40873,
+      "sunlitFraction": 0.4373,
+      "sunlitHoursPerDay": 6.9417,
+      "months": {
+        "2026-06": {
+          "sunlitFraction": 0.4503
+        },
+        "2026-07": {
+          "sunlitFraction": 0.4452
+        },
+        "2026-08": {
+          "sunlitFraction": 0.414
+        }
+      },
+      "days": {
+        "2026-06-01": {
+          "sunlitHours": 7.4375
+        },
+        "2026-06-02": {
+          "sunlitHours": 7.4531
+        },
+        "2026-06-03": {
+          "sunlitHours": 7.4844
+        },
+        "2026-06-04": {
+          "sunlitHours": 7.4688
+        },
+        "2026-06-05": {
+          "sunlitHours": 7.4844
+        },
+        "2026-06-06": {
+          "sunlitHours": 7.5
+        },
+        "2026-06-07": {
+          "sunlitHours": 7.5
+        },
+        "2026-06-08": {
+          "sunlitHours": 7.5156
+        },
+        "2026-06-09": {
+          "sunlitHours": 7.5156
+        },
+        "2026-06-10": {
+          "sunlitHours": 7.5313
+        },
+        "2026-06-11": {
+          "sunlitHours": 7.5313
+        },
+        "2026-06-12": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-13": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-14": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-15": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-16": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-17": {
+          "sunlitHours": 7.5625
+        },
+        "2026-06-18": {
+          "sunlitHours": 7.5781
+        },
+        "2026-06-19": {
+          "sunlitHours": 7.6094
+        },
+        "2026-06-20": {
+          "sunlitHours": 7.625
+        },
+        "2026-06-21": {
+          "sunlitHours": 7.625
+        },
+        "2026-06-22": {
+          "sunlitHours": 7.6094
+        },
+        "2026-06-23": {
+          "sunlitHours": 7.5781
+        },
+        "2026-06-24": {
+          "sunlitHours": 7.5625
+        },
+        "2026-06-25": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-26": {
+          "sunlitHours": 7.5469
+        },
+        "2026-06-27": {
+          "sunlitHours": 7.5313
+        },
+        "2026-06-28": {
+          "sunlitHours": 7.5
+        },
+        "2026-06-29": {
+          "sunlitHours": 7.4844
+        },
+        "2026-06-30": {
+          "sunlitHours": 7.5156
+        },
+        "2026-07-01": {
+          "sunlitHours": 7.5
+        },
+        "2026-07-02": {
+          "sunlitHours": 7.4844
+        },
+        "2026-07-03": {
+          "sunlitHours": 7.4844
+        },
+        "2026-07-04": {
+          "sunlitHours": 7.4531
+        },
+        "2026-07-05": {
+          "sunlitHours": 7.3594
+        },
+        "2026-07-06": {
+          "sunlitHours": 7.3594
+        },
+        "2026-07-07": {
+          "sunlitHours": 7.3594
+        },
+        "2026-07-08": {
+          "sunlitHours": 7.3594
+        },
+        "2026-07-09": {
+          "sunlitHours": 7.3438
+        },
+        "2026-07-10": {
+          "sunlitHours": 7.3438
+        },
+        "2026-07-11": {
+          "sunlitHours": 7.3281
+        },
+        "2026-07-12": {
+          "sunlitHours": 7.3125
+        },
+        "2026-07-13": {
+          "sunlitHours": 7.3281
+        },
+        "2026-07-14": {
+          "sunlitHours": 7.2969
+        },
+        "2026-07-15": {
+          "sunlitHours": 7.2813
+        },
+        "2026-07-16": {
+          "sunlitHours": 7.25
+        },
+        "2026-07-17": {
+          "sunlitHours": 7.2656
+        },
+        "2026-07-18": {
+          "sunlitHours": 7.25
+        },
+        "2026-07-19": {
+          "sunlitHours": 7.2344
+        },
+        "2026-07-20": {
+          "sunlitHours": 7.2031
+        },
+        "2026-07-21": {
+          "sunlitHours": 7.1719
+        },
+        "2026-07-22": {
+          "sunlitHours": 7.1719
+        },
+        "2026-07-23": {
+          "sunlitHours": 7.1875
+        },
+        "2026-07-24": {
+          "sunlitHours": 7.2031
+        },
+        "2026-07-25": {
+          "sunlitHours": 7.1719
+        },
+        "2026-07-26": {
+          "sunlitHours": 7.125
+        },
+        "2026-07-27": {
+          "sunlitHours": 7.0938
+        },
+        "2026-07-28": {
+          "sunlitHours": 7.0625
+        },
+        "2026-07-29": {
+          "sunlitHours": 7.0625
+        },
+        "2026-07-30": {
+          "sunlitHours": 7.0156
+        },
+        "2026-07-31": {
+          "sunlitHours": 6.9844
+        },
+        "2026-08-01": {
+          "sunlitHours": 6.9688
+        },
+        "2026-08-02": {
+          "sunlitHours": 6.9063
+        },
+        "2026-08-03": {
+          "sunlitHours": 6.8594
+        },
+        "2026-08-04": {
+          "sunlitHours": 6.8125
+        },
+        "2026-08-05": {
+          "sunlitHours": 6.8125
+        },
+        "2026-08-06": {
+          "sunlitHours": 6.8125
+        },
+        "2026-08-07": {
+          "sunlitHours": 6.7813
+        },
+        "2026-08-08": {
+          "sunlitHours": 6.7969
+        },
+        "2026-08-09": {
+          "sunlitHours": 6.7031
+        },
+        "2026-08-10": {
+          "sunlitHours": 6.6563
+        },
+        "2026-08-11": {
+          "sunlitHours": 6.5469
+        },
+        "2026-08-12": {
+          "sunlitHours": 6.5469
+        },
+        "2026-08-13": {
+          "sunlitHours": 6.5
+        },
+        "2026-08-14": {
+          "sunlitHours": 6.4688
+        },
+        "2026-08-15": {
+          "sunlitHours": 6.4375
+        },
+        "2026-08-16": {
+          "sunlitHours": 6.3438
+        },
+        "2026-08-17": {
+          "sunlitHours": 6.2031
+        },
+        "2026-08-18": {
+          "sunlitHours": 6.0938
+        },
+        "2026-08-19": {
+          "sunlitHours": 6.0156
+        },
+        "2026-08-20": {
+          "sunlitHours": 5.8906
+        },
+        "2026-08-21": {
+          "sunlitHours": 5.7813
+        },
+        "2026-08-22": {
+          "sunlitHours": 5.6719
+        },
+        "2026-08-23": {
+          "sunlitHours": 5.5313
+        },
+        "2026-08-24": {
+          "sunlitHours": 5.4063
+        },
+        "2026-08-25": {
+          "sunlitHours": 5.2969
+        },
+        "2026-08-26": {
+          "sunlitHours": 5.1094
+        },
+        "2026-08-27": {
+          "sunlitHours": 5.0156
+        },
+        "2026-08-28": {
+          "sunlitHours": 4.875
+        },
+        "2026-08-29": {
+          "sunlitHours": 4.7656
+        },
+        "2026-08-30": {
+          "sunlitHours": 4.6094
+        },
+        "2026-08-31": {
+          "sunlitHours": 4.3438
+        }
+      },
+      "receivers": 32,
+      "totalRays": 93472
+    },
+    {
+      "name": "Previous pool and Excelsa reference",
+      "x": 14.52,
+      "y": 26.3,
+      "width": 3.5,
+      "length": 8,
+      "waterZ": 3.43936117275872,
+      "sunlitRays": 29049,
+      "sunlitFraction": 0.3108,
+      "sunlitHoursPerDay": 4.9336,
+      "months": {
+        "2026-06": {
+          "sunlitFraction": 0.3576
+        },
+        "2026-07": {
+          "sunlitFraction": 0.3399
+        },
+        "2026-08": {
+          "sunlitFraction": 0.2263
+        }
+      },
+      "days": {
+        "2026-06-01": {
+          "sunlitHours": 5.7969
+        },
+        "2026-06-02": {
+          "sunlitHours": 5.8438
+        },
+        "2026-06-03": {
+          "sunlitHours": 5.8594
+        },
+        "2026-06-04": {
+          "sunlitHours": 5.8906
+        },
+        "2026-06-05": {
+          "sunlitHours": 5.9063
+        },
+        "2026-06-06": {
+          "sunlitHours": 5.9375
+        },
+        "2026-06-07": {
+          "sunlitHours": 5.9688
+        },
+        "2026-06-08": {
+          "sunlitHours": 5.9844
+        },
+        "2026-06-09": {
+          "sunlitHours": 6.0313
+        },
+        "2026-06-10": {
+          "sunlitHours": 6.0313
+        },
+        "2026-06-11": {
+          "sunlitHours": 6.0313
+        },
+        "2026-06-12": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-13": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-14": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-15": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-16": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-17": {
+          "sunlitHours": 6.0938
+        },
+        "2026-06-18": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-19": {
+          "sunlitHours": 6.0469
+        },
+        "2026-06-20": {
+          "sunlitHours": 6.0469
+        },
+        "2026-06-21": {
+          "sunlitHours": 6.0625
+        },
+        "2026-06-22": {
+          "sunlitHours": 6.0469
+        },
+        "2026-06-23": {
+          "sunlitHours": 6.0313
+        },
+        "2026-06-24": {
+          "sunlitHours": 6
+        },
+        "2026-06-25": {
+          "sunlitHours": 5.9531
+        },
+        "2026-06-26": {
+          "sunlitHours": 5.9375
+        },
+        "2026-06-27": {
+          "sunlitHours": 5.9219
+        },
+        "2026-06-28": {
+          "sunlitHours": 5.9063
+        },
+        "2026-06-29": {
+          "sunlitHours": 5.9063
+        },
+        "2026-06-30": {
+          "sunlitHours": 5.9063
+        },
+        "2026-07-01": {
+          "sunlitHours": 5.875
+        },
+        "2026-07-02": {
+          "sunlitHours": 5.875
+        },
+        "2026-07-03": {
+          "sunlitHours": 5.8281
+        },
+        "2026-07-04": {
+          "sunlitHours": 5.8438
+        },
+        "2026-07-05": {
+          "sunlitHours": 5.8125
+        },
+        "2026-07-06": {
+          "sunlitHours": 5.7813
+        },
+        "2026-07-07": {
+          "sunlitHours": 5.7656
+        },
+        "2026-07-08": {
+          "sunlitHours": 5.7656
+        },
+        "2026-07-09": {
+          "sunlitHours": 5.7344
+        },
+        "2026-07-10": {
+          "sunlitHours": 5.7344
+        },
+        "2026-07-11": {
+          "sunlitHours": 5.7188
+        },
+        "2026-07-12": {
+          "sunlitHours": 5.7031
+        },
+        "2026-07-13": {
+          "sunlitHours": 5.6875
+        },
+        "2026-07-14": {
+          "sunlitHours": 5.625
+        },
+        "2026-07-15": {
+          "sunlitHours": 5.5938
+        },
+        "2026-07-16": {
+          "sunlitHours": 5.5938
+        },
+        "2026-07-17": {
+          "sunlitHours": 5.5938
+        },
+        "2026-07-18": {
+          "sunlitHours": 5.5781
+        },
+        "2026-07-19": {
+          "sunlitHours": 5.5469
+        },
+        "2026-07-20": {
+          "sunlitHours": 5.5156
+        },
+        "2026-07-21": {
+          "sunlitHours": 5.4844
+        },
+        "2026-07-22": {
+          "sunlitHours": 5.4688
+        },
+        "2026-07-23": {
+          "sunlitHours": 5.4688
+        },
+        "2026-07-24": {
+          "sunlitHours": 5.4531
+        },
+        "2026-07-25": {
+          "sunlitHours": 5.3438
+        },
+        "2026-07-26": {
+          "sunlitHours": 5.2813
+        },
+        "2026-07-27": {
+          "sunlitHours": 5.1875
+        },
+        "2026-07-28": {
+          "sunlitHours": 5.1094
+        },
+        "2026-07-29": {
+          "sunlitHours": 5.0469
+        },
+        "2026-07-30": {
+          "sunlitHours": 4.9063
+        },
+        "2026-07-31": {
+          "sunlitHours": 4.9219
+        },
+        "2026-08-01": {
+          "sunlitHours": 4.8594
+        },
+        "2026-08-02": {
+          "sunlitHours": 4.7656
+        },
+        "2026-08-03": {
+          "sunlitHours": 4.6719
+        },
+        "2026-08-04": {
+          "sunlitHours": 4.5469
+        },
+        "2026-08-05": {
+          "sunlitHours": 4.4375
+        },
+        "2026-08-06": {
+          "sunlitHours": 4.3594
+        },
+        "2026-08-07": {
+          "sunlitHours": 4.2813
+        },
+        "2026-08-08": {
+          "sunlitHours": 4.2031
+        },
+        "2026-08-09": {
+          "sunlitHours": 4.1719
+        },
+        "2026-08-10": {
+          "sunlitHours": 4.0781
+        },
+        "2026-08-11": {
+          "sunlitHours": 3.9688
+        },
+        "2026-08-12": {
+          "sunlitHours": 3.8281
+        },
+        "2026-08-13": {
+          "sunlitHours": 3.75
+        },
+        "2026-08-14": {
+          "sunlitHours": 3.5781
+        },
+        "2026-08-15": {
+          "sunlitHours": 3.4219
+        },
+        "2026-08-16": {
+          "sunlitHours": 3.3125
+        },
+        "2026-08-17": {
+          "sunlitHours": 3.1563
+        },
+        "2026-08-18": {
+          "sunlitHours": 3.0469
+        },
+        "2026-08-19": {
+          "sunlitHours": 2.9688
+        },
+        "2026-08-20": {
+          "sunlitHours": 2.8438
+        },
+        "2026-08-21": {
+          "sunlitHours": 2.7031
+        },
+        "2026-08-22": {
+          "sunlitHours": 2.6719
+        },
+        "2026-08-23": {
+          "sunlitHours": 2.5625
+        },
+        "2026-08-24": {
+          "sunlitHours": 2.4375
+        },
+        "2026-08-25": {
+          "sunlitHours": 2.2969
+        },
+        "2026-08-26": {
+          "sunlitHours": 2.1875
+        },
+        "2026-08-27": {
+          "sunlitHours": 2.0938
+        },
+        "2026-08-28": {
+          "sunlitHours": 1.9531
+        },
+        "2026-08-29": {
+          "sunlitHours": 1.8438
+        },
+        "2026-08-30": {
+          "sunlitHours": 1.7813
+        },
+        "2026-08-31": {
+          "sunlitHours": 1.75
+        }
+      },
+      "receivers": 32,
+      "totalRays": 93472
+    },
+    {
+      "name": "Previous pool with original broad pines",
+      "x": 14.52,
+      "y": 26.3,
+      "width": 3.5,
+      "length": 8,
+      "waterZ": 3.43936117275872,
+      "sunlitRays": 6212,
+      "sunlitFraction": 0.0665,
+      "sunlitHoursPerDay": 1.055,
+      "months": {
+        "2026-06": {
+          "sunlitFraction": 0.0958
+        },
+        "2026-07": {
+          "sunlitFraction": 0.0752
+        },
+        "2026-08": {
+          "sunlitFraction": 0.0242
+        }
+      },
+      "days": {
+        "2026-06-01": {
+          "sunlitHours": 1.4063
+        },
+        "2026-06-02": {
+          "sunlitHours": 1.4375
+        },
+        "2026-06-03": {
+          "sunlitHours": 1.4531
+        },
+        "2026-06-04": {
+          "sunlitHours": 1.4844
+        },
+        "2026-06-05": {
+          "sunlitHours": 1.4844
+        },
+        "2026-06-06": {
+          "sunlitHours": 1.5156
+        },
+        "2026-06-07": {
+          "sunlitHours": 1.5625
+        },
+        "2026-06-08": {
+          "sunlitHours": 1.6094
+        },
+        "2026-06-09": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-10": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-11": {
+          "sunlitHours": 1.6563
+        },
+        "2026-06-12": {
+          "sunlitHours": 1.6875
+        },
+        "2026-06-13": {
+          "sunlitHours": 1.7031
+        },
+        "2026-06-14": {
+          "sunlitHours": 1.6875
+        },
+        "2026-06-15": {
+          "sunlitHours": 1.6875
+        },
+        "2026-06-16": {
+          "sunlitHours": 1.6719
+        },
+        "2026-06-17": {
+          "sunlitHours": 1.6719
+        },
+        "2026-06-18": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-19": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-20": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-21": {
+          "sunlitHours": 1.6563
+        },
+        "2026-06-22": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-23": {
+          "sunlitHours": 1.6406
+        },
+        "2026-06-24": {
+          "sunlitHours": 1.625
+        },
+        "2026-06-25": {
+          "sunlitHours": 1.6094
+        },
+        "2026-06-26": {
+          "sunlitHours": 1.6094
+        },
+        "2026-06-27": {
+          "sunlitHours": 1.6094
+        },
+        "2026-06-28": {
+          "sunlitHours": 1.6094
+        },
+        "2026-06-29": {
+          "sunlitHours": 1.5938
+        },
+        "2026-06-30": {
+          "sunlitHours": 1.5781
+        },
+        "2026-07-01": {
+          "sunlitHours": 1.5625
+        },
+        "2026-07-02": {
+          "sunlitHours": 1.5938
+        },
+        "2026-07-03": {
+          "sunlitHours": 1.5469
+        },
+        "2026-07-04": {
+          "sunlitHours": 1.5625
+        },
+        "2026-07-05": {
+          "sunlitHours": 1.5156
+        },
+        "2026-07-06": {
+          "sunlitHours": 1.4844
+        },
+        "2026-07-07": {
+          "sunlitHours": 1.4531
+        },
+        "2026-07-08": {
+          "sunlitHours": 1.4375
+        },
+        "2026-07-09": {
+          "sunlitHours": 1.3906
+        },
+        "2026-07-10": {
+          "sunlitHours": 1.3594
+        },
+        "2026-07-11": {
+          "sunlitHours": 1.3594
+        },
+        "2026-07-12": {
+          "sunlitHours": 1.3281
+        },
+        "2026-07-13": {
+          "sunlitHours": 1.3281
+        },
+        "2026-07-14": {
+          "sunlitHours": 1.25
+        },
+        "2026-07-15": {
+          "sunlitHours": 1.2188
+        },
+        "2026-07-16": {
+          "sunlitHours": 1.2188
+        },
+        "2026-07-17": {
+          "sunlitHours": 1.2188
+        },
+        "2026-07-18": {
+          "sunlitHours": 1.2188
+        },
+        "2026-07-19": {
+          "sunlitHours": 1.2188
+        },
+        "2026-07-20": {
+          "sunlitHours": 1.1719
+        },
+        "2026-07-21": {
+          "sunlitHours": 1.1563
+        },
+        "2026-07-22": {
+          "sunlitHours": 1.0938
+        },
+        "2026-07-23": {
+          "sunlitHours": 1.0938
+        },
+        "2026-07-24": {
+          "sunlitHours": 1.0781
+        },
+        "2026-07-25": {
+          "sunlitHours": 1
+        },
+        "2026-07-26": {
+          "sunlitHours": 0.9531
+        },
+        "2026-07-27": {
+          "sunlitHours": 0.9219
+        },
+        "2026-07-28": {
+          "sunlitHours": 0.8906
+        },
+        "2026-07-29": {
+          "sunlitHours": 0.8438
+        },
+        "2026-07-30": {
+          "sunlitHours": 0.7813
+        },
+        "2026-07-31": {
+          "sunlitHours": 0.7656
+        },
+        "2026-08-01": {
+          "sunlitHours": 0.75
+        },
+        "2026-08-02": {
+          "sunlitHours": 0.75
+        },
+        "2026-08-03": {
+          "sunlitHours": 0.7188
+        },
+        "2026-08-04": {
+          "sunlitHours": 0.6719
+        },
+        "2026-08-05": {
+          "sunlitHours": 0.6563
+        },
+        "2026-08-06": {
+          "sunlitHours": 0.6875
+        },
+        "2026-08-07": {
+          "sunlitHours": 0.6719
+        },
+        "2026-08-08": {
+          "sunlitHours": 0.6563
+        },
+        "2026-08-09": {
+          "sunlitHours": 0.6563
+        },
+        "2026-08-10": {
+          "sunlitHours": 0.6094
+        },
+        "2026-08-11": {
+          "sunlitHours": 0.5625
+        },
+        "2026-08-12": {
+          "sunlitHours": 0.4531
+        },
+        "2026-08-13": {
+          "sunlitHours": 0.4531
+        },
+        "2026-08-14": {
+          "sunlitHours": 0.3438
+        },
+        "2026-08-15": {
+          "sunlitHours": 0.3125
+        },
+        "2026-08-16": {
+          "sunlitHours": 0.3125
+        },
+        "2026-08-17": {
+          "sunlitHours": 0.2969
+        },
+        "2026-08-18": {
+          "sunlitHours": 0.25
+        },
+        "2026-08-19": {
+          "sunlitHours": 0.2344
+        },
+        "2026-08-20": {
+          "sunlitHours": 0.2031
+        },
+        "2026-08-21": {
+          "sunlitHours": 0.1406
+        },
+        "2026-08-22": {
+          "sunlitHours": 0.1094
+        },
+        "2026-08-23": {
+          "sunlitHours": 0.0938
+        },
+        "2026-08-24": {
+          "sunlitHours": 0.0781
+        },
+        "2026-08-25": {
+          "sunlitHours": 0.0625
+        },
+        "2026-08-26": {
+          "sunlitHours": 0.0469
+        },
+        "2026-08-27": {
+          "sunlitHours": 0.0469
+        },
+        "2026-08-28": {
+          "sunlitHours": 0.0469
+        },
+        "2026-08-29": {
+          "sunlitHours": 0.0313
+        },
+        "2026-08-30": {
+          "sunlitHours": 0.0313
+        },
+        "2026-08-31": {
+          "sunlitHours": 0.0156
+        }
+      },
+      "receivers": 32,
+      "totalRays": 93472
+    },
+    {
+      "name": "Previous pool with new boundary pines",
+      "x": 14.52,
+      "y": 26.3,
+      "width": 3.5,
+      "length": 8,
+      "waterZ": 3.43936117275872,
+      "sunlitRays": 14822,
+      "sunlitFraction": 0.1586,
+      "sunlitHoursPerDay": 2.5173,
+      "months": {
+        "2026-06": {
+          "sunlitFraction": 0.2043
+        },
+        "2026-07": {
+          "sunlitFraction": 0.1813
+        },
+        "2026-08": {
+          "sunlitFraction": 0.0825
+        }
+      },
+      "days": {
+        "2026-06-01": {
+          "sunlitHours": 3.1875
+        },
+        "2026-06-02": {
+          "sunlitHours": 3.2188
+        },
+        "2026-06-03": {
+          "sunlitHours": 3.25
+        },
+        "2026-06-04": {
+          "sunlitHours": 3.2656
+        },
+        "2026-06-05": {
+          "sunlitHours": 3.3125
+        },
+        "2026-06-06": {
+          "sunlitHours": 3.3594
+        },
+        "2026-06-07": {
+          "sunlitHours": 3.3906
+        },
+        "2026-06-08": {
+          "sunlitHours": 3.4063
+        },
+        "2026-06-09": {
+          "sunlitHours": 3.4531
+        },
+        "2026-06-10": {
+          "sunlitHours": 3.4531
+        },
+        "2026-06-11": {
+          "sunlitHours": 3.4531
+        },
+        "2026-06-12": {
+          "sunlitHours": 3.4531
+        },
+        "2026-06-13": {
+          "sunlitHours": 3.4688
+        },
+        "2026-06-14": {
+          "sunlitHours": 3.4844
+        },
+        "2026-06-15": {
+          "sunlitHours": 3.4844
+        },
+        "2026-06-16": {
+          "sunlitHours": 3.5
+        },
+        "2026-06-17": {
+          "sunlitHours": 3.5
+        },
+        "2026-06-18": {
+          "sunlitHours": 3.4844
+        },
+        "2026-06-19": {
+          "sunlitHours": 3.5
+        },
+        "2026-06-20": {
+          "sunlitHours": 3.5156
+        },
+        "2026-06-21": {
+          "sunlitHours": 3.5313
+        },
+        "2026-06-22": {
+          "sunlitHours": 3.5
+        },
+        "2026-06-23": {
+          "sunlitHours": 3.4844
+        },
+        "2026-06-24": {
+          "sunlitHours": 3.4688
+        },
+        "2026-06-25": {
+          "sunlitHours": 3.4531
+        },
+        "2026-06-26": {
+          "sunlitHours": 3.4219
+        },
+        "2026-06-27": {
+          "sunlitHours": 3.4063
+        },
+        "2026-06-28": {
+          "sunlitHours": 3.4063
+        },
+        "2026-06-29": {
+          "sunlitHours": 3.3906
+        },
+        "2026-06-30": {
+          "sunlitHours": 3.375
+        },
+        "2026-07-01": {
+          "sunlitHours": 3.3438
+        },
+        "2026-07-02": {
+          "sunlitHours": 3.3438
+        },
+        "2026-07-03": {
+          "sunlitHours": 3.3125
+        },
+        "2026-07-04": {
+          "sunlitHours": 3.2969
+        },
+        "2026-07-05": {
+          "sunlitHours": 3.2656
+        },
+        "2026-07-06": {
+          "sunlitHours": 3.25
+        },
+        "2026-07-07": {
+          "sunlitHours": 3.2344
+        },
+        "2026-07-08": {
+          "sunlitHours": 3.25
+        },
+        "2026-07-09": {
+          "sunlitHours": 3.2031
+        },
+        "2026-07-10": {
+          "sunlitHours": 3.1875
+        },
+        "2026-07-11": {
+          "sunlitHours": 3.1719
+        },
+        "2026-07-12": {
+          "sunlitHours": 3.1563
+        },
+        "2026-07-13": {
+          "sunlitHours": 3.1094
+        },
+        "2026-07-14": {
+          "sunlitHours": 3.0781
+        },
+        "2026-07-15": {
+          "sunlitHours": 3.0625
+        },
+        "2026-07-16": {
+          "sunlitHours": 3.0469
+        },
+        "2026-07-17": {
+          "sunlitHours": 3.0313
+        },
+        "2026-07-18": {
+          "sunlitHours": 3.0313
+        },
+        "2026-07-19": {
+          "sunlitHours": 2.9688
+        },
+        "2026-07-20": {
+          "sunlitHours": 2.9375
+        },
+        "2026-07-21": {
+          "sunlitHours": 2.9063
+        },
+        "2026-07-22": {
+          "sunlitHours": 2.8594
+        },
+        "2026-07-23": {
+          "sunlitHours": 2.7969
+        },
+        "2026-07-24": {
+          "sunlitHours": 2.7969
+        },
+        "2026-07-25": {
+          "sunlitHours": 2.6875
+        },
+        "2026-07-26": {
+          "sunlitHours": 2.5938
+        },
+        "2026-07-27": {
+          "sunlitHours": 2.4375
+        },
+        "2026-07-28": {
+          "sunlitHours": 2.4063
+        },
+        "2026-07-29": {
+          "sunlitHours": 2.3906
+        },
+        "2026-07-30": {
+          "sunlitHours": 2.2344
+        },
+        "2026-07-31": {
+          "sunlitHours": 2.2344
+        },
+        "2026-08-01": {
+          "sunlitHours": 2.1406
+        },
+        "2026-08-02": {
+          "sunlitHours": 2.0625
+        },
+        "2026-08-03": {
+          "sunlitHours": 2.0156
+        },
+        "2026-08-04": {
+          "sunlitHours": 1.9219
+        },
+        "2026-08-05": {
+          "sunlitHours": 1.8906
+        },
+        "2026-08-06": {
+          "sunlitHours": 1.8438
+        },
+        "2026-08-07": {
+          "sunlitHours": 1.7344
+        },
+        "2026-08-08": {
+          "sunlitHours": 1.7188
+        },
+        "2026-08-09": {
+          "sunlitHours": 1.7031
+        },
+        "2026-08-10": {
+          "sunlitHours": 1.5938
+        },
+        "2026-08-11": {
+          "sunlitHours": 1.5313
+        },
+        "2026-08-12": {
+          "sunlitHours": 1.375
+        },
+        "2026-08-13": {
+          "sunlitHours": 1.3438
+        },
+        "2026-08-14": {
+          "sunlitHours": 1.2813
+        },
+        "2026-08-15": {
+          "sunlitHours": 1.1563
+        },
+        "2026-08-16": {
+          "sunlitHours": 1.1094
+        },
+        "2026-08-17": {
+          "sunlitHours": 1.0469
+        },
+        "2026-08-18": {
+          "sunlitHours": 0.9844
+        },
+        "2026-08-19": {
+          "sunlitHours": 0.9219
+        },
+        "2026-08-20": {
+          "sunlitHours": 0.8906
+        },
+        "2026-08-21": {
+          "sunlitHours": 0.8125
+        },
+        "2026-08-22": {
+          "sunlitHours": 0.7813
+        },
+        "2026-08-23": {
+          "sunlitHours": 0.7344
+        },
+        "2026-08-24": {
+          "sunlitHours": 0.6875
+        },
+        "2026-08-25": {
+          "sunlitHours": 0.6563
+        },
+        "2026-08-26": {
+          "sunlitHours": 0.6094
+        },
+        "2026-08-27": {
+          "sunlitHours": 0.6094
+        },
+        "2026-08-28": {
+          "sunlitHours": 0.5938
+        },
+        "2026-08-29": {
+          "sunlitHours": 0.5781
+        },
+        "2026-08-30": {
+          "sunlitHours": 0.5469
+        },
+        "2026-08-31": {
+          "sunlitHours": 0.5156
+        }
+      },
+      "receivers": 32,
+      "totalRays": 93472
+    }
+  ]
+}
