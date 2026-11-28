@@ -1,0 +1,734 @@
+{
+  "version": "1.40.0",
+  "scenarioGroup": "sternicza",
+  "renderQuality": "eco",
+  "status": "passed",
+  "startedAt": "2026-11-28T00:51:42.362Z",
+  "scenarios": [
+    {
+      "name": "sternicza",
+      "status": "passed",
+      "startedAt": "2026-11-28T00:51:53.812Z",
+      "firstCheck": 2,
+      "durationMs": 284416,
+      "checks": 13
+    }
+  ],
+  "checks": [
+    "Built application loads with a real WebGL canvas",
+    "Functional browser regressions use explicit Eco WebGL; High rendering is verified separately",
+    "All eight upper-floor presets enter eye mode with correct direction, posture and readout",
+    "Editable first and attic floor heights update the actual observer readout",
+    "Night preview and both independent lighting switches work",
+    "All three dimmers respond, including an actual rendered change from 0% to 100% active windows",
+    "Night motion retains the visible canopy through the compacted multisample HDR target on a fixed canvas and restores the same idle view",
+    "Daylight restores the sun clock and turns simulated artificial lights off",
+    "Upper-floor preset, eye mode and night time survive a normal page reload",
+    "The visible Share view action creates a reloadable upper-floor night view",
+    "Mobile layout at 390px retains all eight upper viewpoints without horizontal page overflow",
+    "Spa screening improves the visible PCK3 result and a reduced service gap shows a layout warning",
+    "Switching established pergola foliage off reduces the actual terrace screening result",
+    "Combined Plan displays the finite pergola, two planted sides and both spa screen panels",
+    "Combined screening survives Share and reload in the actual WebGL orbit scene",
+    "No unhandled JavaScript or browser console errors"
+  ],
+  "presets": [
+    {
+      "id": "first-garden-seated",
+      "eye": "Eye 5.45 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the garden façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "first-garden-standing",
+      "eye": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the garden façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "first-street-seated",
+      "eye": "Eye 5.45 m above original garden reference · 1.20 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the street façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "first-street-standing",
+      "eye": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+      "note": "Drawing-based, editable first floor: +3.05 m above the living floor. This is a view just outside the street façade at the rendered window position, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-garden-seated",
+      "eye": "Eye 8.15 m above original garden reference · 1.20 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-garden-standing",
+      "eye": "Eye 8.60 m above original garden reference · 1.65 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the garden façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-street-seated",
+      "eye": "Eye 8.15 m above original garden reference · 1.20 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    },
+    {
+      "id": "attic-street-standing",
+      "eye": "Eye 8.60 m above original garden reference · 1.65 m above strych floor",
+      "note": "Drawing-based, editable strych floor: +5.75 m above the living floor. This is a view just outside the street façade, before any window-frame or roof-opening restrictions. The archived section records first floor +3.05 m and attic +5.75 m; compare with the present house."
+    }
+  ],
+  "screenshots": [
+    "first-floor-garden-night.jpg",
+    "sternicza-night-before-motion.png",
+    "sternicza-night-motion-target.png",
+    "sternicza-night-motion-restored.png",
+    "attic-street-night.jpg",
+    "sternicza-privacy-combined-orbit.jpg"
+  ],
+  "night": {
+    "activation": 1,
+    "garden": 0.45,
+    "pendants": 0.65,
+    "hedge": 0.3,
+    "windows": 0.6,
+    "mode": "eye"
+  },
+  "sceneCaptures": [
+    {
+      "name": "sternicza-windows-none",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 12,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 528,
+        "fenceElapsedMs": 13387.600000000006,
+        "elapsedMs": 13387.699999999983
+      },
+      "elapsedMs": 13695
+    },
+    {
+      "name": "sternicza-windows-all",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 13,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 293,
+        "fenceElapsedMs": 7357.400000000023,
+        "elapsedMs": 7357.5
+      },
+      "elapsedMs": 7612
+    },
+    {
+      "name": "first-floor-garden-night",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 15,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 626,
+        "fenceElapsedMs": 15829.5,
+        "elapsedMs": 15829.699999999983
+      },
+      "elapsedMs": 15994
+    },
+    {
+      "name": "sternicza-night-before-motion",
+      "status": "passed",
+      "deadlineMs": 119954,
+      "attempts": 1,
+      "readiness": {
+        "frame": 15,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 10,
+        "fenceElapsedMs": 226.80000000004657,
+        "elapsedMs": 226.90000000002328
+      },
+      "elapsedMs": 502
+    },
+    {
+      "name": "sternicza-night-motion-target",
+      "status": "passed",
+      "deadlineMs": 111717,
+      "attempts": 1,
+      "readiness": {
+        "frame": 17,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "motion-target",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 656,
+        "fenceElapsedMs": 16513.100000000035,
+        "elapsedMs": 16513.100000000035
+      },
+      "elapsedMs": 16788
+    },
+    {
+      "name": "sternicza-night-motion-restored",
+      "status": "passed",
+      "deadlineMs": 94688,
+      "attempts": 1,
+      "readiness": {
+        "frame": 19,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 699,
+        "fenceElapsedMs": 17600.100000000035,
+        "elapsedMs": 17600.29999999999
+      },
+      "elapsedMs": 17889
+    },
+    {
+      "name": "sternicza-day-comparison",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 20,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 180,
+        "fenceElapsedMs": 4511.200000000012,
+        "elapsedMs": 4511.399999999965
+      },
+      "elapsedMs": 4718
+    },
+    {
+      "name": "attic-street-night",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 3,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 221,
+        "restarts": 0,
+        "fencePolls": 418,
+        "fenceElapsedMs": 10567.799999999988,
+        "elapsedMs": 22098.899999999965
+      },
+      "elapsedMs": 22276
+    },
+    {
+      "name": "mobile-night",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 4,
+        "pending": false,
+        "width": 360,
+        "height": 447,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 95,
+        "fenceElapsedMs": 2375.8000000000466,
+        "elapsedMs": 2376
+      },
+      "elapsedMs": 2497
+    },
+    {
+      "name": "sternicza-privacy-combined-orbit",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 3,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 193,
+        "restarts": 0,
+        "fencePolls": 317,
+        "fenceElapsedMs": 8024,
+        "elapsedMs": 15437.700000000012
+      },
+      "elapsedMs": 15609
+    }
+  ],
+  "nightMotion": {
+    "status": "passed",
+    "deadlineMs": 120000,
+    "pre": {
+      "renderer": "webgl",
+      "interacting": false,
+      "frames": 15,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
+        },
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 4829,
+          "culledInstances": 0,
+          "compacted": false,
+          "shadowUploadGuard": "shadow-pass",
+          "orderedBatches": 0,
+          "orderedInstances": 0,
+          "passes": 15,
+          "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 982,
+        "height": 572,
+        "pixelRatio": 1,
+        "path": "direct",
+        "motionSamples": 0,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+        "view": "First floor · bedroom / office · garden · standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "firstMotion": {
+      "renderer": "webgl",
+      "interacting": true,
+      "frames": 16,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
+        },
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 4829,
+          "culledInstances": 0,
+          "compacted": false,
+          "shadowUploadGuard": "post-shadow-full-pass",
+          "orderedBatches": 0,
+          "orderedInstances": 0,
+          "passes": 16,
+          "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 824,
+        "height": 480,
+        "pixelRatio": 0.84,
+        "path": "motion-target",
+        "motionSamples": 4,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+        "view": "First floor · bedroom / office · garden · standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "motion": {
+      "renderer": "webgl",
+      "interacting": true,
+      "frames": 17,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
+        },
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 875,
+          "culledInstances": 3954,
+          "compacted": true,
+          "shadowUploadGuard": null,
+          "orderedBatches": 12,
+          "orderedInstances": 874,
+          "passes": 17,
+          "opaqueOrder": "architecture-before-vegetation",
+          "opaqueCoverageMaterials": 5,
+          "opaqueCoverageMeshes": 15,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 824,
+        "height": 480,
+        "pixelRatio": 0.84,
+        "path": "motion-target",
+        "motionSamples": 4,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+        "view": "First floor · bedroom / office · garden · standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "settled": {
+      "renderer": "webgl",
+      "interacting": false,
+      "frames": 19,
+      "sceneOptimization": {
+        "repeatedGardenDetails": {
+          "parts": 172,
+          "savedDrawCalls": 165
+        },
+        "dimensionOcclusion": "cached-triangle-bvh",
+        "dimensionLayoutHz": 10,
+        "vegetation": {
+          "method": "instance-frustum-compaction",
+          "sourceBatches": 13,
+          "nonemptyBatches": 13,
+          "instances": 4829,
+          "visibleInstances": 4829,
+          "culledInstances": 0,
+          "compacted": false,
+          "shadowUploadGuard": null,
+          "orderedBatches": 0,
+          "orderedInstances": 0,
+          "passes": 19,
+          "opaqueOrder": "default",
+          "opaqueCoverageMaterials": 0,
+          "opaqueCoverageMeshes": 0,
+          "opaqueCoverageRestored": true,
+          "drawCallsAdded": 0,
+          "geometryChanged": false,
+          "positionsChanged": false
+        }
+      },
+      "motionSupported": true,
+      "motionUnsupportedReason": null,
+      "canvas": {
+        "width": 982,
+        "height": 572,
+        "cssWidth": 982,
+        "cssHeight": 572
+      },
+      "scene": {
+        "width": 982,
+        "height": 572,
+        "pixelRatio": 1,
+        "path": "direct",
+        "motionSamples": 0,
+        "canvasSamples": 4
+      },
+      "pose": {
+        "source": "public viewpoint controls and readouts",
+        "mode": "eye",
+        "preset": "first-garden-standing",
+        "observer": "Eye 5.90 m above original garden reference · 1.65 m above first-floor level",
+        "view": "First floor · bedroom / office · garden · standing",
+        "lookYaw": 0,
+        "controls": {
+          "observerX": 9.6,
+          "observerY": 30,
+          "eyeHeight": 1.65,
+          "firstFloorRise": 3.05,
+          "atticRise": 5.75
+        }
+      },
+      "lights": {
+        "nightActivation": 1,
+        "nightGarden": 0.45,
+        "nightPendants": 0.65,
+        "nightHedge": 0.3,
+        "nightWindows": 0.6
+      },
+      "sunTime": "23:30"
+    },
+    "motionPixels": {
+      "width": 982,
+      "height": 573,
+      "changedPixels": 56586,
+      "warmBrightenedPixels": 12154,
+      "brightnessGain": 286438.66666666634
+    },
+    "canopyRetention": {
+      "width": 982,
+      "height": 573,
+      "canopyBounds": [
+        0.585,
+        0.15,
+        0.735,
+        0.29
+      ],
+      "skyBounds": [
+        0.57,
+        0.035,
+        0.68,
+        0.08
+      ],
+      "before": {
+        "skyMedian": 21,
+        "darkThreshold": 11.55,
+        "pixels": 11907,
+        "darkPixels": 7056,
+        "darkFraction": 0.5925925925925926
+      },
+      "motion": {
+        "skyMedian": 21,
+        "darkThreshold": 11.55,
+        "pixels": 11907,
+        "darkPixels": 7078,
+        "darkFraction": 0.594440245233896
+      },
+      "retainedFraction": 1.0031179138321995,
+      "minimumRetainedFraction": 0.8
+    },
+    "restorationPixels": {
+      "width": 982,
+      "height": 573,
+      "changedPixels": 0,
+      "warmBrightenedPixels": 0,
+      "brightnessGain": 0
+    },
+    "elapsedMs": 43740
+  },
+  "daylight": {
+    "activation": 0,
+    "garden": 0,
+    "pendants": 0,
+    "hedge": 0,
+    "windows": 0,
+    "mode": "eye"
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390,
+    "overflowing": [
+      {
+        "tag": "g",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      },
+      {
+        "tag": "polygon",
+        "id": "",
+        "className": "[object SVGAnimatedString]"
+      }
+    ]
+  },
+  "privacy": {
+    "baseline": {
+      "before": 86.9,
+      "after": 86.9
+    },
+    "spa": {
+      "before": 86.9,
+      "after": 100
+    },
+    "pergola": {
+      "before": 86.9,
+      "after": 95.7
+    },
+    "bare": {
+      "before": 86.9,
+      "after": 93.3
+    },
+    "combined": {
+      "before": 86.9,
+      "after": 100
+    },
+    "sharedReloadPassed": true,
+    "renderer": "WebGL"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}

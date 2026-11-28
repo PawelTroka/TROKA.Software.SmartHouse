@@ -3,14 +3,14 @@
   "scenarioGroup": "nadmorska",
   "renderQuality": "eco",
   "status": "passed",
-  "startedAt": "2026-11-28T00:05:40.278Z",
+  "startedAt": "2026-11-28T00:51:37.760Z",
   "scenarios": [
     {
       "name": "nadmorska",
       "status": "passed",
-      "startedAt": "2026-11-28T00:05:55.744Z",
+      "startedAt": "2026-11-28T00:51:50.098Z",
       "firstCheck": 2,
-      "durationMs": 377430,
+      "durationMs": 223708,
       "checks": 15
     }
   ],
@@ -1281,11 +1281,11 @@
         "fence": "signaled",
         "polls": 4,
         "restarts": 0,
-        "fencePolls": 148,
-        "fenceElapsedMs": 3744.5999999999767,
-        "elapsedMs": 6342.700000000012
+        "fencePolls": 90,
+        "fenceElapsedMs": 2242.9000000000233,
+        "elapsedMs": 3866.600000000035
       },
-      "elapsedMs": 11793
+      "elapsedMs": 7004
     },
     {
       "name": "nadmorska-windows-all",
@@ -1301,11 +1301,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 93,
-        "fenceElapsedMs": 2336.899999999965,
-        "elapsedMs": 2337
+        "fencePolls": 54,
+        "fenceElapsedMs": 1343.100000000035,
+        "elapsedMs": 1343.100000000035
       },
-      "elapsedMs": 2586
+      "elapsedMs": 1521
     },
     {
       "name": "nadmorska-windows-quieter",
@@ -1321,11 +1321,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 97,
-        "fenceElapsedMs": 2425.0999999999767,
-        "elapsedMs": 2425.2999999999884
+        "fencePolls": 53,
+        "fenceElapsedMs": 1309.100000000035,
+        "elapsedMs": 1309.2000000000116
       },
-      "elapsedMs": 2697
+      "elapsedMs": 1501
     },
     {
       "name": "nadmorska-windows-busier",
@@ -1341,11 +1341,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 93,
-        "fenceElapsedMs": 2315.9000000000233,
-        "elapsedMs": 2316
+        "fencePolls": 52,
+        "fenceElapsedMs": 1281.399999999965,
+        "elapsedMs": 1281.399999999965
       },
-      "elapsedMs": 2559
+      "elapsedMs": 1470
     },
     {
       "name": "nadmorska-street-busy-evening",
@@ -1361,11 +1361,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 181,
-        "fenceElapsedMs": 4541.199999999953,
-        "elapsedMs": 4541.400000000023
+        "fencePolls": 99,
+        "fenceElapsedMs": 2465.9000000000233,
+        "elapsedMs": 2466
       },
-      "elapsedMs": 4764
+      "elapsedMs": 2660
     },
     {
       "name": "nadmorska-day",
@@ -1381,14 +1381,34 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 543,
-        "fenceElapsedMs": 13715.599999999977,
-        "elapsedMs": 13715.799999999988
+        "fencePolls": 308,
+        "fenceElapsedMs": 7714,
+        "elapsedMs": 7714.100000000035
       },
-      "elapsedMs": 14035
+      "elapsedMs": 7988
     },
     {
       "name": "nadmorska-water-unlit",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 16,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 146,
+        "fenceElapsedMs": 3657.5999999999767,
+        "elapsedMs": 3657.7999999999884
+      },
+      "elapsedMs": 8702
+    },
+    {
+      "name": "nadmorska-water-lit",
       "status": "passed",
       "deadlineMs": 120000,
       "attempts": 1,
@@ -1399,33 +1419,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 2,
-        "restarts": 0,
-        "fencePolls": 480,
-        "fenceElapsedMs": 12102.799999999988,
-        "elapsedMs": 13758.100000000035
-      },
-      "elapsedMs": 21915
-    },
-    {
-      "name": "nadmorska-water-lit",
-      "status": "passed",
-      "deadlineMs": 120000,
-      "attempts": 1,
-      "readiness": {
-        "frame": 18,
-        "pending": false,
-        "width": 982,
-        "height": 572,
-        "path": "direct",
-        "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 241,
-        "fenceElapsedMs": 6072.899999999965,
-        "elapsedMs": 6073.099999999977
+        "fencePolls": 163,
+        "fenceElapsedMs": 4078.3000000000466,
+        "elapsedMs": 4078.4000000000233
       },
-      "elapsedMs": 6375
+      "elapsedMs": 4293
     },
     {
       "name": "nadmorska-night",
@@ -1433,7 +1433,7 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 20,
+        "frame": 19,
         "pending": false,
         "width": 982,
         "height": 572,
@@ -1441,14 +1441,34 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 642,
-        "fenceElapsedMs": 16189.400000000023,
-        "elapsedMs": 16189.599999999977
+        "fencePolls": 355,
+        "fenceElapsedMs": 8902.5,
+        "elapsedMs": 8902.700000000012
       },
-      "elapsedMs": 16470
+      "elapsedMs": 9146
     },
     {
       "name": "pendants-all-off",
+      "status": "passed",
+      "deadlineMs": 120000,
+      "attempts": 1,
+      "readiness": {
+        "frame": 22,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 117,
+        "restarts": 0,
+        "fencePolls": 302,
+        "fenceElapsedMs": 7577.399999999965,
+        "elapsedMs": 10499.700000000012
+      },
+      "elapsedMs": 10725
+    },
+    {
+      "name": "pendants-garden-only",
       "status": "passed",
       "deadlineMs": 120000,
       "attempts": 1,
@@ -1459,33 +1479,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 6,
-        "restarts": 0,
-        "fencePolls": 496,
-        "fenceElapsedMs": 12521.099999999977,
-        "elapsedMs": 12661.700000000012
-      },
-      "elapsedMs": 17130
-    },
-    {
-      "name": "pendants-garden-only",
-      "status": "passed",
-      "deadlineMs": 120000,
-      "attempts": 1,
-      "readiness": {
-        "frame": 24,
-        "pending": false,
-        "width": 982,
-        "height": 572,
-        "path": "direct",
-        "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 237,
-        "fenceElapsedMs": 5955,
-        "elapsedMs": 5955.099999999977
+        "fencePolls": 155,
+        "fenceElapsedMs": 3882.0999999999767,
+        "elapsedMs": 3882.3000000000466
       },
-      "elapsedMs": 6257
+      "elapsedMs": 4097
     },
     {
       "name": "pendants-hedge-only",
@@ -1493,7 +1493,7 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 26,
+        "frame": 25,
         "pending": false,
         "width": 982,
         "height": 572,
@@ -1501,11 +1501,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 423,
-        "fenceElapsedMs": 10681.100000000035,
-        "elapsedMs": 10681.299999999988
+        "fencePolls": 246,
+        "fenceElapsedMs": 6160.100000000035,
+        "elapsedMs": 6160.200000000012
       },
-      "elapsedMs": 10966
+      "elapsedMs": 6397
     },
     {
       "name": "nadmorska-pendants-night",
@@ -1521,11 +1521,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 810,
-        "fenceElapsedMs": 20511.5,
-        "elapsedMs": 20514.199999999953
+        "fencePolls": 462,
+        "fenceElapsedMs": 11604.200000000012,
+        "elapsedMs": 11604.5
       },
-      "elapsedMs": 20866
+      "elapsedMs": 11850
     },
     {
       "name": "nadmorska-hedge-isolated-off",
@@ -1539,13 +1539,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 6,
+        "polls": 13,
         "restarts": 0,
-        "fencePolls": 500,
-        "fenceElapsedMs": 12659.199999999953,
-        "elapsedMs": 14210.100000000093
+        "fencePolls": 304,
+        "fenceElapsedMs": 7629,
+        "elapsedMs": 8811.199999999953
       },
-      "elapsedMs": 21741
+      "elapsedMs": 12824
     },
     {
       "name": "nadmorska-hedge-isolated-low",
@@ -1561,11 +1561,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 493,
-        "fenceElapsedMs": 12466.099999999977,
-        "elapsedMs": 12466.300000000047
+        "fencePolls": 276,
+        "fenceElapsedMs": 6910.599999999977,
+        "elapsedMs": 6910.70000000007
       },
-      "elapsedMs": 12773
+      "elapsedMs": 7149
     },
     {
       "name": "nadmorska-hedge-isolated-on",
@@ -1581,11 +1581,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 247,
-        "fenceElapsedMs": 6232.29999999993,
-        "elapsedMs": 6232.400000000023
+        "fencePolls": 139,
+        "fenceElapsedMs": 3468.5,
+        "elapsedMs": 3468.5
       },
-      "elapsedMs": 6522
+      "elapsedMs": 3687
     },
     {
       "name": "nadmorska-plan",
@@ -1601,11 +1601,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 67,
-        "fenceElapsedMs": 1666,
-        "elapsedMs": 1666.1999999999534
+        "fencePolls": 43,
+        "fenceElapsedMs": 1071,
+        "elapsedMs": 1071.1999999999534
       },
-      "elapsedMs": 2038
+      "elapsedMs": 4978
     },
     {
       "name": "nadmorska-mobile-plan",
@@ -1621,11 +1621,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 17,
-        "fenceElapsedMs": 403.0999999999767,
-        "elapsedMs": 403.19999999995343
+        "fencePolls": 12,
+        "fenceElapsedMs": 276.20000000006985,
+        "elapsedMs": 276.30000000004657
       },
-      "elapsedMs": 670
+      "elapsedMs": 526
     },
     {
       "name": "nadmorska-mobile-hedge-off",
@@ -1639,13 +1639,13 @@
         "height": 447,
         "path": "direct",
         "fence": "signaled",
-        "polls": 83,
+        "polls": 43,
         "restarts": 0,
-        "fencePolls": 219,
-        "fenceElapsedMs": 5568.20000000007,
-        "elapsedMs": 10645.5
+        "fencePolls": 130,
+        "fenceElapsedMs": 3253.1999999999534,
+        "elapsedMs": 6184.79999999993
       },
-      "elapsedMs": 10843
+      "elapsedMs": 6352
     },
     {
       "name": "nadmorska-mobile-night",
@@ -1661,11 +1661,11 @@
         "fence": "signaled",
         "polls": 3,
         "restarts": 1,
-        "fencePolls": 313,
-        "fenceElapsedMs": 7894.20000000007,
-        "elapsedMs": 7929
+        "fencePolls": 171,
+        "fenceElapsedMs": 4268.600000000093,
+        "elapsedMs": 4293.70000000007
       },
-      "elapsedMs": 8121
+      "elapsedMs": 4465
     }
   ],
   "pageErrors": [],

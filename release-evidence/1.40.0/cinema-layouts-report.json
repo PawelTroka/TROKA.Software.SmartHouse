@@ -1,0 +1,3180 @@
+{
+  "version": "1.40.0",
+  "group": "layouts",
+  "status": "passed",
+  "checks": [
+    "Two real 600 mm dishwasher niches, 67 L steam oven, separate microwave, four-door fridge, wine cooler, concealed pantry, workstation sink and giant mirror are exported from the drawn plan",
+    "A/B swap furniture and solid/window sides, C removes all thirteen audio devices and screen, and D keeps both windows; every choice renders in WebGL and plan",
+    "Layout selection and independent equipment-label setting survive Share and reload without moving any trees"
+  ],
+  "layouts": [
+    {
+      "id": "right-media",
+      "cinema": {
+        "id": "right-media",
+        "letter": "A",
+        "label": "Cinema right · dining left",
+        "summary": "Side-wall OLED and 7.2.4 cinema on the right; a large picture window lights dining on the left.",
+        "recommended": false,
+        "hasCinema": true,
+        "fixtures": [
+          {
+            "id": "table",
+            "kind": "diningTable",
+            "label": "Eight-seat dining table",
+            "roomId": "dining",
+            "x": 2.98,
+            "z": 2.65,
+            "width": 2.7,
+            "depth": 1.04,
+            "rotation": 0,
+            "fixedLayout": true,
+            "seats": 8
+          },
+          {
+            "id": "sofa",
+            "kind": "sofa",
+            "label": "Cinema sofa facing the OLED",
+            "roomId": "lounge",
+            "x": 7.48,
+            "z": 2.75,
+            "width": 0.96,
+            "depth": 2.2,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              1,
+              0
+            ],
+            "approach": [
+              8.48,
+              2.75
+            ]
+          },
+          {
+            "id": "lounge-table",
+            "kind": "coffeeTable",
+            "label": "Low cinema table",
+            "roomId": "lounge",
+            "x": 8.88,
+            "z": 2.75,
+            "width": 0.7,
+            "depth": 1.05,
+            "rotation": 0,
+            "fixedLayout": true
+          },
+          {
+            "id": "lounge-rug",
+            "kind": "rug",
+            "label": "Quiet woven cinema rug",
+            "roomId": "lounge",
+            "x": 8.23,
+            "z": 2.75,
+            "width": 2.65,
+            "depth": 3.15,
+            "rotation": 0,
+            "fixedLayout": true,
+            "nonBlocking": true
+          },
+          {
+            "id": "cinema-acoustic-panel",
+            "kind": "cinemaPanel",
+            "label": "Integrated fabric and timber media wall",
+            "roomId": "lounge",
+            "x": 10.395,
+            "z": 2.75,
+            "width": 0.04,
+            "depth": 3.02,
+            "rotation": 0,
+            "fixedLayout": true,
+            "wallMounted": true,
+            "mountHeight": 1.4,
+            "height": 2.5,
+            "front": [
+              -1,
+              0
+            ]
+          },
+          {
+            "id": "cinema-console",
+            "kind": "cinemaConsole",
+            "label": "Ventilated AV cabinet · open receiver bay",
+            "roomId": "lounge",
+            "x": 10.11,
+            "z": 2.75,
+            "width": 0.6,
+            "depth": 2.34,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              -1,
+              0
+            ],
+            "height": 0.54,
+            "receiver": {
+              "width": 0.434,
+              "depth": 0.482,
+              "height": 0.195,
+              "requiredAmplifiedChannels": 11,
+              "referenceAmplifiedChannels": 13,
+              "ventilated": true,
+              "reference": "Denon AVC-A10H envelope",
+              "referenceUrl": "https://www.denon.com/en/product/av-receivers/avc-a10h/AVCA10HBKE2.html"
+            },
+            "equipmentLabel": {
+              "title": "7.2.4 Atmos · ventilated AV bay",
+              "detail": "7 ear-level + 4 overhead speakers · 2 independent subs",
+              "anchorHeight": 0.6
+            }
+          },
+          {
+            "id": "tv",
+            "kind": "wallTv",
+            "label": "85-inch OLED design envelope · Dolby Vision 2 target",
+            "roomId": "lounge",
+            "x": 10.34,
+            "z": 2.75,
+            "width": 0.1,
+            "depth": 1.881732,
+            "rotation": 0,
+            "fixedLayout": true,
+            "wallMounted": true,
+            "screenFront": [
+              -1,
+              0
+            ],
+            "wallAnchor": [
+              10.395,
+              2.75
+            ],
+            "screenWidth": 1.881732,
+            "screenHeight": 1.058474,
+            "mountHeight": 1.28,
+            "height": 1.058474,
+            "screenDiagonalInches": 85,
+            "planningEnvelope": true,
+            "cinema": true,
+            "pictureTarget": "Dolby Vision 2 Max",
+            "equipmentLabel": {
+              "title": "85″ OLED design envelope",
+              "detail": "Dolby Vision 2 Max target · final 83″ model to verify",
+              "anchorHeight": 1.92,
+              "anchor": [
+                10.25,
+                1.92,
+                2.75
+              ]
+            }
+          },
+          {
+            "id": "cinema-fl",
+            "kind": "cinemaSpeaker",
+            "label": "FL · Front left",
+            "roomId": "lounge",
+            "x": 10.34,
+            "z": 1.462991,
+            "width": 0.075,
+            "depth": 0.2,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "FL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -1,
+              0
+            ],
+            "aimDirection": [
+              -0.9063077870366499,
+              0.42261826174069944
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -25,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 0,
+            "distance": 3.045323
+          },
+          {
+            "id": "cinema-fr",
+            "kind": "cinemaSpeaker",
+            "label": "FR · Front right",
+            "roomId": "lounge",
+            "x": 10.34,
+            "z": 4.037009,
+            "width": 0.075,
+            "depth": 0.2,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "FR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -1,
+              0
+            ],
+            "aimDirection": [
+              -0.9063077870366499,
+              -0.4226182617406996
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 25,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 0,
+            "distance": 3.045323
+          },
+          {
+            "id": "cinema-c",
+            "kind": "cinemaSpeaker",
+            "label": "C · Center",
+            "roomId": "lounge",
+            "x": 10.34,
+            "z": 2.75,
+            "width": 0.075,
+            "depth": 0.64,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "C",
+            "layer": "ear-level",
+            "mountHeight": 0.64,
+            "height": 0.16,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -1,
+              0
+            ],
+            "aimDirection": [
+              -1,
+              0
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 0,
+            "elevationDegrees": -8.449538,
+            "sagittalDegrees": -8.449538,
+            "distance": 2.790287
+          },
+          {
+            "id": "cinema-sl",
+            "kind": "cinemaSpeaker",
+            "label": "SL · Side surround left",
+            "roomId": "lounge",
+            "x": 7.352538,
+            "z": 1.46,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0.17364817766693008,
+              0.9848077530122081
+            ],
+            "aimDirection": [
+              0.17364817766693008,
+              0.9848077530122081
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -100,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.3099
+          },
+          {
+            "id": "cinema-sr",
+            "kind": "cinemaSpeaker",
+            "label": "SR · Side surround right",
+            "roomId": "lounge",
+            "x": 7.262611,
+            "z": 4.55,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0.1736481776669302,
+              -0.9848077530122081
+            ],
+            "aimDirection": [
+              0.1736481776669302,
+              -0.9848077530122081
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 100,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.827768
+          },
+          {
+            "id": "cinema-sbl",
+            "kind": "cinemaSpeaker",
+            "label": "SBL · Rear surround left",
+            "roomId": "lounge",
+            "x": 6.26,
+            "z": 1.642388,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SBL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0.766044443118978,
+              0.6427876096865393
+            ],
+            "aimDirection": [
+              0.766044443118978,
+              0.6427876096865393
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -140,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.723138
+          },
+          {
+            "id": "cinema-sbr",
+            "kind": "cinemaSpeaker",
+            "label": "SBR · Rear surround right",
+            "roomId": "lounge",
+            "x": 6.26,
+            "z": 3.857612,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SBR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0.7660444431189781,
+              -0.6427876096865391
+            ],
+            "aimDirection": [
+              0.7660444431189781,
+              -0.6427876096865391
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 140,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.723138
+          },
+          {
+            "id": "cinema-tfl",
+            "kind": "cinemaSpeaker",
+            "label": "TFL · Top front left",
+            "roomId": "lounge",
+            "x": 9.08,
+            "z": 1.87,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TFL",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              -0.8625249057662362,
+              0.5060146113828585
+            ],
+            "aimDirection": [
+              -0.8625249057662362,
+              0.5060146113828585
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -30.398728,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 48.205791,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-tfr",
+            "kind": "cinemaSpeaker",
+            "label": "TFR · Top front right",
+            "roomId": "lounge",
+            "x": 9.08,
+            "z": 3.63,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TFR",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              -0.8625249057662362,
+              -0.5060146113828585
+            ],
+            "aimDirection": [
+              -0.8625249057662362,
+              -0.5060146113828585
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 30.398728,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 48.205791,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-trl",
+            "kind": "cinemaSpeaker",
+            "label": "TRL · Top rear left",
+            "roomId": "lounge",
+            "x": 6.08,
+            "z": 1.87,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TRL",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              0.8625249057662362,
+              0.5060146113828585
+            ],
+            "aimDirection": [
+              0.8625249057662362,
+              0.5060146113828585
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -149.601272,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 131.794209,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-trr",
+            "kind": "cinemaSpeaker",
+            "label": "TRR · Top rear right",
+            "roomId": "lounge",
+            "x": 6.08,
+            "z": 3.63,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TRR",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              0.8625249057662362,
+              -0.5060146113828585
+            ],
+            "aimDirection": [
+              0.8625249057662362,
+              -0.5060146113828585
+            ],
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 149.601272,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 131.794209,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-sw1",
+            "kind": "cinemaSub",
+            "label": "SW1 · independent subwoofer",
+            "roomId": "lounge",
+            "x": 9.5,
+            "z": 1.58,
+            "width": 0.44,
+            "depth": 0.44,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SW1",
+            "layer": "subwoofer",
+            "height": 0.46,
+            "mountHeight": 0.23,
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "calibrationRequired": true
+          },
+          {
+            "id": "cinema-sw2",
+            "kind": "cinemaSub",
+            "label": "SW2 · independent subwoofer",
+            "roomId": "lounge",
+            "x": 6.26,
+            "z": 4.55,
+            "width": 0.44,
+            "depth": 0.44,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SW2",
+            "layer": "subwoofer",
+            "height": 0.46,
+            "mountHeight": 0.23,
+            "aimAt": [
+              7.58,
+              1.05,
+              2.75
+            ],
+            "calibrationRequired": true
+          }
+        ],
+        "sideWindows": {
+          "left": true,
+          "right": false
+        },
+        "listener": {
+          "x": 7.58,
+          "z": 2.75,
+          "earHeight": 1.05,
+          "forward": [
+            1,
+            0
+          ]
+        },
+        "clearHeight": 2.75,
+        "screen": {
+          "diagonalInches": 85,
+          "width": 1.881732,
+          "height": 1.058474,
+          "planningEnvelope": true,
+          "technology": "OLED design envelope",
+          "pictureTarget": "Dolby Vision 2 Max",
+          "productNote": "85-inch space reservation. Philips 83OLED811 is an 83-inch OLED / Dolby Vision 2 Max candidate; confirm the final release and installation sheet.",
+          "x": 10.34,
+          "z": 2.75,
+          "mountHeight": 1.28,
+          "viewingDistance": 2.76,
+          "horizontalViewAngle": 37.647817
+        },
+        "audio": {
+          "bedChannels": 7,
+          "subwoofers": 2,
+          "overheadChannels": 4,
+          "amplifiedChannels": 11,
+          "channelLayout": "7.2.4",
+          "reference": "https://www.dolby.com/about/support/guide/speaker-setup-guides/7.1.4-overhead-speaker-setup-guide",
+          "note": "Seat-based placement with independent subwoofers. Final aiming, bass positions and delays are calibrated in the completed room."
+        },
+        "clearances": {
+          "rearGlazingStrip": 1,
+          "centralPassage": 0.9
+        }
+      },
+      "renderer": {
+        "available": true,
+        "visible": true,
+        "interacting": false,
+        "view": "dollhouse",
+        "styleId": "scandinavian",
+        "roomId": "lounge",
+        "floor": "ground",
+        "layout": "renovation",
+        "wallCount": 11,
+        "furnitureCount": 51,
+        "meshes": 114,
+        "drawCalls": 125,
+        "triangles": 96241,
+        "frames": 3,
+        "framePending": false,
+        "camera": [
+          13.168423394377708,
+          16.381286107944,
+          20.605716261523657
+        ],
+        "eyeHeight": 1.57,
+        "contextSource": "shared-site-model",
+        "contextKey": "3:true,true,57.79393370160966,2026-06-21,false,0.36875081583889435,0.38480572952407543,0.8461367421070863,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|dollhouse",
+        "renovationFeatures": [
+          "Open timber seating and spindle chairs",
+          "Slatted oak headboards and framed cabinetry",
+          "Painted wall boarding and broad ceiling rafters"
+        ],
+        "interiorDimensions": {
+          "enabled": false,
+          "total": 0,
+          "visible": 0,
+          "floor": null,
+          "roomId": null,
+          "layouts": 0,
+          "projectionFrames": 0,
+          "refreshIntervalMs": 100,
+          "occlusion": null
+        },
+        "equipmentLabels": {
+          "enabled": true,
+          "total": 19,
+          "visible": 0,
+          "floor": "ground",
+          "layoutPasses": 2,
+          "occlusion": {
+            "meshes": 141,
+            "queries": 0,
+            "triangleTests": 0,
+            "boxTests": 0,
+            "method": "cached-triangle-bvh"
+          }
+        },
+        "mirrors": {
+          "count": 1,
+          "captured": false,
+          "frames": 0,
+          "width": 0,
+          "height": 0,
+          "updateMode": "settled-only",
+          "updatesWhileMoving": 0
+        },
+        "performanceTiming": {
+          "scope": "continuous-navigation",
+          "windowFrames": 360,
+          "totalNavigationFrames": 0,
+          "frameTimeMs": {
+            "samples": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "mean": 0,
+            "onePercentLowFps": 0,
+            "stalls50ms": 0,
+            "stalls100ms": 0,
+            "stalls250ms": 0
+          },
+          "cpuFrameMs": {
+            "samples": 1,
+            "p50": 4903.599999999977,
+            "p95": 4903.599999999977,
+            "p99": 4903.599999999977,
+            "mean": 4903.599999999977,
+            "onePercentLowFps": 0.20393180520434065,
+            "stalls50ms": 1,
+            "stalls100ms": 1,
+            "stalls250ms": 1
+          },
+          "phasesMs": {}
+        },
+        "adaptiveQuality": {
+          "mode": "measured-motion-buffer",
+          "level": 0,
+          "scale": 1,
+          "changes": 0,
+          "lastP75Ms": 0,
+          "targetMs": 24,
+          "minimumScale": 0.54,
+          "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
+        },
+        "contactShading": true,
+        "contactShadingSupported": true,
+        "aoWidth": 501,
+        "aoHeight": 233,
+        "msaaSamples": 2,
+        "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
+        "canvasSamples": 4,
+        "motionDepthResolveSkipped": false,
+        "surfaceAssets": {
+          "requested": 45,
+          "loaded": 45,
+          "failed": [],
+          "liveTextures": 156,
+          "decodedBytes": 207753024,
+          "idleBytes": 0,
+          "totalRequests": 45
+        }
+      }
+    },
+    {
+      "id": "left-media",
+      "cinema": {
+        "id": "left-media",
+        "letter": "B",
+        "label": "Cinema left · dining right",
+        "summary": "The cinema and dining genuinely swap sides. The left media bay is solid; the right dining window opens up.",
+        "recommended": false,
+        "hasCinema": true,
+        "fixtures": [
+          {
+            "id": "table",
+            "kind": "diningTable",
+            "label": "Eight-seat dining table",
+            "roomId": "dining",
+            "x": 8.15,
+            "z": 2.65,
+            "width": 2.7,
+            "depth": 1.04,
+            "rotation": 0,
+            "fixedLayout": true,
+            "seats": 8
+          },
+          {
+            "id": "sofa",
+            "kind": "sofa",
+            "label": "Cinema sofa facing the OLED",
+            "roomId": "lounge",
+            "x": 3.32,
+            "z": 2.75,
+            "width": 0.96,
+            "depth": 2.2,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              -1,
+              0
+            ],
+            "approach": [
+              2.3200000000000003,
+              2.75
+            ]
+          },
+          {
+            "id": "lounge-table",
+            "kind": "coffeeTable",
+            "label": "Low cinema table",
+            "roomId": "lounge",
+            "x": 1.92,
+            "z": 2.75,
+            "width": 0.7,
+            "depth": 1.05,
+            "rotation": 0,
+            "fixedLayout": true
+          },
+          {
+            "id": "lounge-rug",
+            "kind": "rug",
+            "label": "Quiet woven cinema rug",
+            "roomId": "lounge",
+            "x": 2.57,
+            "z": 2.75,
+            "width": 2.65,
+            "depth": 3.15,
+            "rotation": 0,
+            "fixedLayout": true,
+            "nonBlocking": true
+          },
+          {
+            "id": "cinema-acoustic-panel",
+            "kind": "cinemaPanel",
+            "label": "Integrated fabric and timber media wall",
+            "roomId": "lounge",
+            "x": 0.375,
+            "z": 2.75,
+            "width": 0.04,
+            "depth": 3.02,
+            "rotation": 0,
+            "fixedLayout": true,
+            "wallMounted": true,
+            "mountHeight": 1.4,
+            "height": 2.5,
+            "front": [
+              1,
+              0
+            ]
+          },
+          {
+            "id": "cinema-console",
+            "kind": "cinemaConsole",
+            "label": "Ventilated AV cabinet · open receiver bay",
+            "roomId": "lounge",
+            "x": 0.66,
+            "z": 2.75,
+            "width": 0.6,
+            "depth": 2.34,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              1,
+              0
+            ],
+            "height": 0.54,
+            "receiver": {
+              "width": 0.434,
+              "depth": 0.482,
+              "height": 0.195,
+              "requiredAmplifiedChannels": 11,
+              "referenceAmplifiedChannels": 13,
+              "ventilated": true,
+              "reference": "Denon AVC-A10H envelope",
+              "referenceUrl": "https://www.denon.com/en/product/av-receivers/avc-a10h/AVCA10HBKE2.html"
+            },
+            "equipmentLabel": {
+              "title": "7.2.4 Atmos · ventilated AV bay",
+              "detail": "7 ear-level + 4 overhead speakers · 2 independent subs",
+              "anchorHeight": 0.6
+            }
+          },
+          {
+            "id": "tv",
+            "kind": "wallTv",
+            "label": "85-inch OLED design envelope · Dolby Vision 2 target",
+            "roomId": "lounge",
+            "x": 0.43,
+            "z": 2.75,
+            "width": 0.1,
+            "depth": 1.881732,
+            "rotation": 0,
+            "fixedLayout": true,
+            "wallMounted": true,
+            "screenFront": [
+              1,
+              0
+            ],
+            "wallAnchor": [
+              0.375,
+              2.75
+            ],
+            "screenWidth": 1.881732,
+            "screenHeight": 1.058474,
+            "mountHeight": 1.28,
+            "height": 1.058474,
+            "screenDiagonalInches": 85,
+            "planningEnvelope": true,
+            "cinema": true,
+            "pictureTarget": "Dolby Vision 2 Max",
+            "equipmentLabel": {
+              "title": "85″ OLED design envelope",
+              "detail": "Dolby Vision 2 Max target · final 83″ model to verify",
+              "anchorHeight": 1.92,
+              "anchor": [
+                0.52,
+                1.92,
+                2.75
+              ]
+            }
+          },
+          {
+            "id": "cinema-fl",
+            "kind": "cinemaSpeaker",
+            "label": "FL · Front left",
+            "roomId": "lounge",
+            "x": 0.43,
+            "z": 4.050998,
+            "width": 0.075,
+            "depth": 0.2,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "FL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              1,
+              0
+            ],
+            "aimDirection": [
+              0.90630778703665,
+              -0.42261826174069944
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -25,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 0,
+            "distance": 3.078424
+          },
+          {
+            "id": "cinema-fr",
+            "kind": "cinemaSpeaker",
+            "label": "FR · Front right",
+            "roomId": "lounge",
+            "x": 0.43,
+            "z": 1.449002,
+            "width": 0.075,
+            "depth": 0.2,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "FR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              1,
+              0
+            ],
+            "aimDirection": [
+              0.90630778703665,
+              0.42261826174069944
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 25,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 0,
+            "distance": 3.078424
+          },
+          {
+            "id": "cinema-c",
+            "kind": "cinemaSpeaker",
+            "label": "C · Center",
+            "roomId": "lounge",
+            "x": 0.43,
+            "z": 2.75,
+            "width": 0.075,
+            "depth": 0.64,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "C",
+            "layer": "ear-level",
+            "mountHeight": 0.64,
+            "height": 0.16,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              1,
+              0
+            ],
+            "aimDirection": [
+              1,
+              0
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 0,
+            "elevationDegrees": -8.359974,
+            "sagittalDegrees": -8.359974,
+            "distance": 2.819965
+          },
+          {
+            "id": "cinema-sl",
+            "kind": "cinemaSpeaker",
+            "label": "SL · Side surround left",
+            "roomId": "lounge",
+            "x": 3.537389,
+            "z": 4.55,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -0.17364817766693044,
+              -0.9848077530122081
+            ],
+            "aimDirection": [
+              -0.17364817766693044,
+              -0.9848077530122081
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -100,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.827768
+          },
+          {
+            "id": "cinema-sr",
+            "kind": "cinemaSpeaker",
+            "label": "SR · Side surround right",
+            "roomId": "lounge",
+            "x": 3.447462,
+            "z": 1.46,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -0.17364817766693041,
+              0.9848077530122081
+            ],
+            "aimDirection": [
+              -0.17364817766693041,
+              0.9848077530122081
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 100,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.3099
+          },
+          {
+            "id": "cinema-sbl",
+            "kind": "cinemaSpeaker",
+            "label": "SBL · Rear surround left",
+            "roomId": "lounge",
+            "x": 4.57,
+            "z": 3.882785,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SBL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -0.7660444431189781,
+              -0.6427876096865393
+            ],
+            "aimDirection": [
+              -0.7660444431189781,
+              -0.6427876096865393
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -140,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.7623
+          },
+          {
+            "id": "cinema-sbr",
+            "kind": "cinemaSpeaker",
+            "label": "SBR · Rear surround right",
+            "roomId": "lounge",
+            "x": 4.57,
+            "z": 1.617215,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SBR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -0.7660444431189781,
+              0.6427876096865393
+            ],
+            "aimDirection": [
+              -0.7660444431189781,
+              0.6427876096865393
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 140,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.7623
+          },
+          {
+            "id": "cinema-tfl",
+            "kind": "cinemaSpeaker",
+            "label": "TFL · Top front left",
+            "roomId": "lounge",
+            "x": 1.72,
+            "z": 3.63,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TFL",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              0.8625249057662362,
+              -0.5060146113828585
+            ],
+            "aimDirection": [
+              0.8625249057662362,
+              -0.5060146113828585
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -30.398728,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 48.205791,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-tfr",
+            "kind": "cinemaSpeaker",
+            "label": "TFR · Top front right",
+            "roomId": "lounge",
+            "x": 1.72,
+            "z": 1.87,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TFR",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              0.8625249057662362,
+              0.5060146113828585
+            ],
+            "aimDirection": [
+              0.8625249057662362,
+              0.5060146113828585
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 30.398728,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 48.205791,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-trl",
+            "kind": "cinemaSpeaker",
+            "label": "TRL · Top rear left",
+            "roomId": "lounge",
+            "x": 4.72,
+            "z": 3.63,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TRL",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              -0.8625249057662363,
+              -0.5060146113828584
+            ],
+            "aimDirection": [
+              -0.8625249057662363,
+              -0.5060146113828584
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": -149.601272,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 131.794209,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-trr",
+            "kind": "cinemaSpeaker",
+            "label": "TRR · Top rear right",
+            "roomId": "lounge",
+            "x": 4.72,
+            "z": 1.87,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TRR",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              -0.8625249057662363,
+              0.5060146113828584
+            ],
+            "aimDirection": [
+              -0.8625249057662363,
+              0.5060146113828584
+            ],
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "azimuthDegrees": 149.601272,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 131.794209,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-sw1",
+            "kind": "cinemaSub",
+            "label": "SW1 · independent subwoofer",
+            "roomId": "lounge",
+            "x": 1.25,
+            "z": 1.58,
+            "width": 0.44,
+            "depth": 0.44,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SW1",
+            "layer": "subwoofer",
+            "height": 0.46,
+            "mountHeight": 0.23,
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "calibrationRequired": true
+          },
+          {
+            "id": "cinema-sw2",
+            "kind": "cinemaSub",
+            "label": "SW2 · independent subwoofer",
+            "roomId": "lounge",
+            "x": 4.7,
+            "z": 4.55,
+            "width": 0.44,
+            "depth": 0.44,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SW2",
+            "layer": "subwoofer",
+            "height": 0.46,
+            "mountHeight": 0.23,
+            "aimAt": [
+              3.22,
+              1.05,
+              2.75
+            ],
+            "calibrationRequired": true
+          }
+        ],
+        "sideWindows": {
+          "left": false,
+          "right": true
+        },
+        "listener": {
+          "x": 3.22,
+          "z": 2.75,
+          "earHeight": 1.05,
+          "forward": [
+            -1,
+            0
+          ]
+        },
+        "clearHeight": 2.75,
+        "screen": {
+          "diagonalInches": 85,
+          "width": 1.881732,
+          "height": 1.058474,
+          "planningEnvelope": true,
+          "technology": "OLED design envelope",
+          "pictureTarget": "Dolby Vision 2 Max",
+          "productNote": "85-inch space reservation. Philips 83OLED811 is an 83-inch OLED / Dolby Vision 2 Max candidate; confirm the final release and installation sheet.",
+          "x": 0.43,
+          "z": 2.75,
+          "mountHeight": 1.28,
+          "viewingDistance": 2.79,
+          "horizontalViewAngle": 37.271089
+        },
+        "audio": {
+          "bedChannels": 7,
+          "subwoofers": 2,
+          "overheadChannels": 4,
+          "amplifiedChannels": 11,
+          "channelLayout": "7.2.4",
+          "reference": "https://www.dolby.com/about/support/guide/speaker-setup-guides/7.1.4-overhead-speaker-setup-guide",
+          "note": "Seat-based placement with independent subwoofers. Final aiming, bass positions and delays are calibrated in the completed room."
+        },
+        "clearances": {
+          "rearGlazingStrip": 1,
+          "centralPassage": 0.9
+        }
+      },
+      "renderer": {
+        "available": true,
+        "visible": true,
+        "interacting": false,
+        "view": "dollhouse",
+        "styleId": "scandinavian",
+        "roomId": "lounge",
+        "floor": "ground",
+        "layout": "renovation",
+        "wallCount": 11,
+        "furnitureCount": 51,
+        "meshes": 114,
+        "drawCalls": 129,
+        "triangles": 96589,
+        "frames": 2,
+        "framePending": false,
+        "camera": [
+          13.168423394377708,
+          16.381286107944,
+          20.605716261523657
+        ],
+        "eyeHeight": 1.57,
+        "contextSource": "shared-site-model",
+        "contextKey": "5:true,true,57.79393370160966,2026-06-21,false,0.36875081583889435,0.38480572952407543,0.8461367421070863,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|dollhouse",
+        "renovationFeatures": [
+          "Open timber seating and spindle chairs",
+          "Slatted oak headboards and framed cabinetry",
+          "Painted wall boarding and broad ceiling rafters"
+        ],
+        "interiorDimensions": {
+          "enabled": false,
+          "total": 0,
+          "visible": 0,
+          "floor": null,
+          "roomId": null,
+          "layouts": 0,
+          "projectionFrames": 0,
+          "refreshIntervalMs": 100,
+          "occlusion": null
+        },
+        "equipmentLabels": {
+          "enabled": true,
+          "total": 19,
+          "visible": 0,
+          "floor": "ground",
+          "layoutPasses": 1,
+          "occlusion": {
+            "meshes": 141,
+            "queries": 0,
+            "triangleTests": 0,
+            "boxTests": 0,
+            "method": "cached-triangle-bvh"
+          }
+        },
+        "mirrors": {
+          "count": 1,
+          "captured": false,
+          "frames": 0,
+          "width": 0,
+          "height": 0,
+          "updateMode": "settled-only",
+          "updatesWhileMoving": 0
+        },
+        "performanceTiming": {
+          "scope": "continuous-navigation",
+          "windowFrames": 360,
+          "totalNavigationFrames": 0,
+          "frameTimeMs": {
+            "samples": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "mean": 0,
+            "onePercentLowFps": 0,
+            "stalls50ms": 0,
+            "stalls100ms": 0,
+            "stalls250ms": 0
+          },
+          "cpuFrameMs": {
+            "samples": 1,
+            "p50": 1352.600000000035,
+            "p95": 1352.600000000035,
+            "p99": 1352.600000000035,
+            "mean": 1352.600000000035,
+            "onePercentLowFps": 0.739316871210982,
+            "stalls50ms": 1,
+            "stalls100ms": 1,
+            "stalls250ms": 1
+          },
+          "phasesMs": {}
+        },
+        "adaptiveQuality": {
+          "mode": "measured-motion-buffer",
+          "level": 0,
+          "scale": 1,
+          "changes": 0,
+          "lastP75Ms": 0,
+          "targetMs": 24,
+          "minimumScale": 0.54,
+          "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
+        },
+        "contactShading": true,
+        "contactShadingSupported": true,
+        "aoWidth": 501,
+        "aoHeight": 233,
+        "msaaSamples": 2,
+        "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
+        "canvasSamples": 4,
+        "motionDepthResolveSkipped": false,
+        "surfaceAssets": {
+          "requested": 45,
+          "loaded": 45,
+          "failed": [],
+          "liveTextures": 156,
+          "decodedBytes": 207753024,
+          "idleBytes": 0,
+          "totalRequests": 60
+        }
+      }
+    },
+    {
+      "id": "garden-salon",
+      "cinema": {
+        "id": "garden-salon",
+        "letter": "C",
+        "label": "Garden salon · no screens",
+        "summary": "Conversation seating, no television or audio equipment, and large clear windows on both sides.",
+        "recommended": false,
+        "hasCinema": false,
+        "fixtures": [
+          {
+            "id": "table",
+            "kind": "diningTable",
+            "label": "Eight-seat dining table",
+            "roomId": "dining",
+            "x": 2.98,
+            "z": 2.65,
+            "width": 2.7,
+            "depth": 1.04,
+            "rotation": 0,
+            "fixedLayout": true,
+            "seats": 8
+          },
+          {
+            "id": "sofa",
+            "kind": "sofa",
+            "label": "Garden-facing conversation sofa",
+            "roomId": "lounge",
+            "x": 8.12,
+            "z": 4.02,
+            "width": 2.5,
+            "depth": 0.96,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              0,
+              -1
+            ]
+          },
+          {
+            "id": "lounge-chair-west",
+            "kind": "armchair",
+            "label": "Conversation chair",
+            "roomId": "lounge",
+            "x": 6.65,
+            "z": 2.17,
+            "width": 0.84,
+            "depth": 0.88,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              1,
+              0
+            ]
+          },
+          {
+            "id": "lounge-chair-east",
+            "kind": "armchair",
+            "label": "Window-side reading chair",
+            "roomId": "lounge",
+            "x": 9.48,
+            "z": 2.12,
+            "width": 0.84,
+            "depth": 0.88,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              -1,
+              0
+            ]
+          },
+          {
+            "id": "lounge-table",
+            "kind": "coffeeTable",
+            "label": "Low conversation table",
+            "roomId": "lounge",
+            "x": 8.14,
+            "z": 2.92,
+            "width": 1.12,
+            "depth": 0.6,
+            "rotation": 0,
+            "fixedLayout": true
+          },
+          {
+            "id": "lounge-rug",
+            "kind": "rug",
+            "label": "Woven conversation rug",
+            "roomId": "lounge",
+            "x": 8.13,
+            "z": 3.12,
+            "width": 3.9,
+            "depth": 2.94,
+            "rotation": 0,
+            "fixedLayout": true,
+            "nonBlocking": true
+          },
+          {
+            "id": "lounge-reading-light",
+            "kind": "floorLamp",
+            "label": "Soft reading light",
+            "roomId": "lounge",
+            "x": 9.92,
+            "z": 4.62,
+            "width": 0.36,
+            "depth": 0.36,
+            "rotation": 0,
+            "fixedLayout": true,
+            "height": 1.38,
+            "lamp": "linen"
+          }
+        ],
+        "sideWindows": {
+          "left": true,
+          "right": true
+        },
+        "listener": null,
+        "screen": null,
+        "audio": null,
+        "clearHeight": 2.75,
+        "clearances": {
+          "rearGlazingStrip": 1,
+          "centralPassage": 0.9
+        }
+      },
+      "renderer": {
+        "available": true,
+        "visible": true,
+        "interacting": false,
+        "view": "dollhouse",
+        "styleId": "scandinavian",
+        "roomId": "lounge",
+        "floor": "ground",
+        "layout": "renovation",
+        "wallCount": 11,
+        "furnitureCount": 38,
+        "meshes": 116,
+        "drawCalls": 130,
+        "triangles": 105157,
+        "frames": 2,
+        "framePending": false,
+        "camera": [
+          13.168423394377708,
+          16.381286107944,
+          20.605716261523657
+        ],
+        "eyeHeight": 1.57,
+        "contextSource": "shared-site-model",
+        "contextKey": "7:true,true,57.79393370160966,2026-06-21,false,0.36875081583889435,0.38480572952407543,0.8461367421070863,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|dollhouse",
+        "renovationFeatures": [
+          "Open timber seating and spindle chairs",
+          "Slatted oak headboards and framed cabinetry",
+          "Painted wall boarding and broad ceiling rafters"
+        ],
+        "interiorDimensions": {
+          "enabled": false,
+          "total": 0,
+          "visible": 0,
+          "floor": null,
+          "roomId": null,
+          "layouts": 0,
+          "projectionFrames": 0,
+          "refreshIntervalMs": 100,
+          "occlusion": null
+        },
+        "equipmentLabels": {
+          "enabled": true,
+          "total": 17,
+          "visible": 0,
+          "floor": "ground",
+          "layoutPasses": 1,
+          "occlusion": {
+            "meshes": 142,
+            "queries": 0,
+            "triangleTests": 0,
+            "boxTests": 0,
+            "method": "cached-triangle-bvh"
+          }
+        },
+        "mirrors": {
+          "count": 1,
+          "captured": false,
+          "frames": 0,
+          "width": 0,
+          "height": 0,
+          "updateMode": "settled-only",
+          "updatesWhileMoving": 0
+        },
+        "performanceTiming": {
+          "scope": "continuous-navigation",
+          "windowFrames": 360,
+          "totalNavigationFrames": 0,
+          "frameTimeMs": {
+            "samples": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "mean": 0,
+            "onePercentLowFps": 0,
+            "stalls50ms": 0,
+            "stalls100ms": 0,
+            "stalls250ms": 0
+          },
+          "cpuFrameMs": {
+            "samples": 1,
+            "p50": 1277.399999999965,
+            "p95": 1277.399999999965,
+            "p99": 1277.399999999965,
+            "mean": 1277.399999999965,
+            "onePercentLowFps": 0.7828401440426079,
+            "stalls50ms": 1,
+            "stalls100ms": 1,
+            "stalls250ms": 1
+          },
+          "phasesMs": {}
+        },
+        "adaptiveQuality": {
+          "mode": "measured-motion-buffer",
+          "level": 0,
+          "scale": 1,
+          "changes": 0,
+          "lastP75Ms": 0,
+          "targetMs": 24,
+          "minimumScale": 0.54,
+          "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
+        },
+        "contactShading": true,
+        "contactShadingSupported": true,
+        "aoWidth": 501,
+        "aoHeight": 233,
+        "msaaSamples": 2,
+        "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
+        "canvasSamples": 4,
+        "motionDepthResolveSkipped": false,
+        "surfaceAssets": {
+          "requested": 45,
+          "loaded": 45,
+          "failed": [],
+          "liveTextures": 159,
+          "decodedBytes": 207753024,
+          "idleBytes": 0,
+          "totalRequests": 75
+        }
+      }
+    },
+    {
+      "id": "crosswall-media",
+      "cinema": {
+        "id": "crosswall-media",
+        "letter": "D",
+        "label": "Crosswall cinema · both windows",
+        "summary": "OLED on the existing inner crosswall, a sofa facing it, and large windows on both sides. The terrace and central passage stay open.",
+        "recommended": true,
+        "hasCinema": true,
+        "fixtures": [
+          {
+            "id": "table",
+            "kind": "diningTable",
+            "label": "Eight-seat dining table",
+            "roomId": "dining",
+            "x": 2.98,
+            "z": 2.65,
+            "width": 2.7,
+            "depth": 1.04,
+            "rotation": 0,
+            "fixedLayout": true,
+            "seats": 8
+          },
+          {
+            "id": "sofa",
+            "kind": "sofa",
+            "label": "Cinema sofa facing the OLED",
+            "roomId": "lounge",
+            "x": 8.62,
+            "z": 2.4,
+            "width": 2.2,
+            "depth": 0.94,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              0,
+              1
+            ],
+            "approach": [
+              7.05,
+              2.45
+            ]
+          },
+          {
+            "id": "lounge-table",
+            "kind": "coffeeTable",
+            "label": "Low cinema table",
+            "roomId": "lounge",
+            "x": 8.62,
+            "z": 3.55,
+            "width": 1.18,
+            "depth": 0.58,
+            "rotation": 0,
+            "fixedLayout": true
+          },
+          {
+            "id": "lounge-rug",
+            "kind": "rug",
+            "label": "Quiet woven cinema rug",
+            "roomId": "lounge",
+            "x": 8.6,
+            "z": 3.15,
+            "width": 3.1,
+            "depth": 2.55,
+            "rotation": 0,
+            "fixedLayout": true,
+            "nonBlocking": true
+          },
+          {
+            "id": "cinema-acoustic-panel",
+            "kind": "cinemaPanel",
+            "label": "Integrated fabric and timber media wall",
+            "roomId": "lounge",
+            "x": 8.62,
+            "z": 4.823,
+            "width": 3.02,
+            "depth": 0.04,
+            "rotation": 0,
+            "fixedLayout": true,
+            "wallMounted": true,
+            "mountHeight": 1.4,
+            "height": 2.5,
+            "front": [
+              0,
+              -1
+            ]
+          },
+          {
+            "id": "cinema-console",
+            "kind": "cinemaConsole",
+            "label": "Ventilated AV cabinet · open receiver bay",
+            "roomId": "lounge",
+            "x": 8.62,
+            "z": 4.53,
+            "width": 2.34,
+            "depth": 0.6,
+            "rotation": 0,
+            "fixedLayout": true,
+            "front": [
+              0,
+              -1
+            ],
+            "height": 0.54,
+            "receiver": {
+              "width": 0.434,
+              "depth": 0.482,
+              "height": 0.195,
+              "requiredAmplifiedChannels": 11,
+              "referenceAmplifiedChannels": 13,
+              "ventilated": true,
+              "reference": "Denon AVC-A10H envelope",
+              "referenceUrl": "https://www.denon.com/en/product/av-receivers/avc-a10h/AVCA10HBKE2.html"
+            },
+            "equipmentLabel": {
+              "title": "7.2.4 Atmos · ventilated AV bay",
+              "detail": "7 ear-level + 4 overhead speakers · 2 independent subs",
+              "anchorHeight": 0.6
+            }
+          },
+          {
+            "id": "tv",
+            "kind": "wallTv",
+            "label": "85-inch OLED design envelope · Dolby Vision 2 target",
+            "roomId": "lounge",
+            "x": 8.62,
+            "z": 4.79,
+            "width": 1.881732,
+            "depth": 0.1,
+            "rotation": 0,
+            "fixedLayout": true,
+            "wallMounted": true,
+            "screenFront": [
+              0,
+              -1
+            ],
+            "wallAnchor": [
+              8.62,
+              4.823
+            ],
+            "screenWidth": 1.881732,
+            "screenHeight": 1.058474,
+            "mountHeight": 1.28,
+            "height": 1.058474,
+            "screenDiagonalInches": 85,
+            "planningEnvelope": true,
+            "cinema": true,
+            "pictureTarget": "Dolby Vision 2 Max",
+            "equipmentLabel": {
+              "title": "85″ OLED design envelope",
+              "detail": "Dolby Vision 2 Max target · final 83″ model to verify",
+              "anchorHeight": 1.92,
+              "anchor": [
+                8.62,
+                1.92,
+                4.7
+              ]
+            }
+          },
+          {
+            "id": "cinema-fl",
+            "kind": "cinemaSpeaker",
+            "label": "FL · Front left",
+            "roomId": "lounge",
+            "x": 9.664529,
+            "z": 4.79,
+            "width": 0.2,
+            "depth": 0.075,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "FL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0,
+              -1
+            ],
+            "aimDirection": [
+              -0.4226182617406995,
+              -0.9063077870366499
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": -25,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 0,
+            "distance": 2.471567
+          },
+          {
+            "id": "cinema-fr",
+            "kind": "cinemaSpeaker",
+            "label": "FR · Front right",
+            "roomId": "lounge",
+            "x": 7.575471,
+            "z": 4.79,
+            "width": 0.2,
+            "depth": 0.075,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "FR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0,
+              -1
+            ],
+            "aimDirection": [
+              0.4226182617406995,
+              -0.9063077870366499
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": 25,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 0,
+            "distance": 2.471567
+          },
+          {
+            "id": "cinema-c",
+            "kind": "cinemaSpeaker",
+            "label": "C · Center",
+            "roomId": "lounge",
+            "x": 8.62,
+            "z": 4.79,
+            "width": 0.64,
+            "depth": 0.075,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "C",
+            "layer": "ear-level",
+            "mountHeight": 0.64,
+            "height": 0.16,
+            "mounting": "wall",
+            "wallMounted": true,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0,
+              -1
+            ],
+            "aimDirection": [
+              0,
+              -1
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": 0,
+            "elevationDegrees": -10.372359,
+            "sagittalDegrees": -10.372359,
+            "distance": 2.277213
+          },
+          {
+            "id": "cinema-sl",
+            "kind": "cinemaSpeaker",
+            "label": "SL · Side surround left",
+            "roomId": "lounge",
+            "x": 10.19,
+            "z": 2.273167,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -0.9848077530122081,
+              0.17364817766693036
+            ],
+            "aimDirection": [
+              -0.9848077530122081,
+              0.17364817766693036
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": -100,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.59422
+          },
+          {
+            "id": "cinema-sr",
+            "kind": "cinemaSpeaker",
+            "label": "SR · Side surround right",
+            "roomId": "lounge",
+            "x": 6.54,
+            "z": 2.18324,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0.9848077530122081,
+              0.17364817766693041
+            ],
+            "aimDirection": [
+              0.9848077530122081,
+              0.17364817766693041
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": 100,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 2.112087
+          },
+          {
+            "id": "cinema-sbl",
+            "kind": "cinemaSpeaker",
+            "label": "SBL · Rear surround left",
+            "roomId": "lounge",
+            "x": 9.526228,
+            "z": 1.47,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SBL",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              -0.6427876096865393,
+              0.766044443118978
+            ],
+            "aimDirection": [
+              -0.6427876096865393,
+              0.766044443118978
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": -140,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.40984
+          },
+          {
+            "id": "cinema-sbr",
+            "kind": "cinemaSpeaker",
+            "label": "SBR · Rear surround right",
+            "roomId": "lounge",
+            "x": 7.713772,
+            "z": 1.47,
+            "width": 0.22,
+            "depth": 0.22,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SBR",
+            "layer": "ear-level",
+            "mountHeight": 1.05,
+            "height": 0.34,
+            "mounting": "slim-stand",
+            "wallMounted": false,
+            "ceilingMounted": false,
+            "mountNormal": [
+              0.6427876096865393,
+              0.766044443118978
+            ],
+            "aimDirection": [
+              0.6427876096865393,
+              0.766044443118978
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": 140,
+            "elevationDegrees": 0,
+            "sagittalDegrees": 180,
+            "distance": 1.40984
+          },
+          {
+            "id": "cinema-tfl",
+            "kind": "cinemaSpeaker",
+            "label": "TFL · Top front left",
+            "roomId": "lounge",
+            "x": 9.5,
+            "z": 4.05,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TFL",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              -0.5060146113828589,
+              -0.862524905766236
+            ],
+            "aimDirection": [
+              -0.5060146113828589,
+              -0.862524905766236
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": -30.398728,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 48.205791,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-tfr",
+            "kind": "cinemaSpeaker",
+            "label": "TFR · Top front right",
+            "roomId": "lounge",
+            "x": 7.74,
+            "z": 4.05,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TFR",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              0.5060146113828585,
+              -0.8625249057662362
+            ],
+            "aimDirection": [
+              0.5060146113828585,
+              -0.8625249057662362
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": 30.398728,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 48.205791,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-trl",
+            "kind": "cinemaSpeaker",
+            "label": "TRL · Top rear left",
+            "roomId": "lounge",
+            "x": 9.5,
+            "z": 1.05,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TRL",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              -0.5060146113828589,
+              0.862524905766236
+            ],
+            "aimDirection": [
+              -0.5060146113828589,
+              0.862524905766236
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": -149.601272,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 131.794209,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-trr",
+            "kind": "cinemaSpeaker",
+            "label": "TRR · Top rear right",
+            "roomId": "lounge",
+            "x": 7.74,
+            "z": 1.05,
+            "width": 0.24,
+            "depth": 0.24,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "TRR",
+            "layer": "overhead",
+            "mountHeight": 2.728,
+            "height": 0.035,
+            "mounting": "flush-ceiling",
+            "wallMounted": true,
+            "ceilingMounted": true,
+            "mountNormal": [
+              0.5060146113828585,
+              0.8625249057662362
+            ],
+            "aimDirection": [
+              0.5060146113828585,
+              0.8625249057662362
+            ],
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "azimuthDegrees": 149.601272,
+            "elevationDegrees": 43.975949,
+            "sagittalDegrees": 131.794209,
+            "distance": 2.416627
+          },
+          {
+            "id": "cinema-sw1",
+            "kind": "cinemaSub",
+            "label": "SW1 · independent subwoofer",
+            "roomId": "lounge",
+            "x": 10.15,
+            "z": 4.55,
+            "width": 0.44,
+            "depth": 0.44,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SW1",
+            "layer": "subwoofer",
+            "height": 0.46,
+            "mountHeight": 0.23,
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "calibrationRequired": true
+          },
+          {
+            "id": "cinema-sw2",
+            "kind": "cinemaSub",
+            "label": "SW2 · independent subwoofer",
+            "roomId": "lounge",
+            "x": 6.26,
+            "z": 1.58,
+            "width": 0.44,
+            "depth": 0.44,
+            "rotation": 0,
+            "fixedLayout": true,
+            "channel": "SW2",
+            "layer": "subwoofer",
+            "height": 0.46,
+            "mountHeight": 0.23,
+            "aimAt": [
+              8.62,
+              1.05,
+              2.55
+            ],
+            "calibrationRequired": true
+          }
+        ],
+        "sideWindows": {
+          "left": true,
+          "right": true
+        },
+        "listener": {
+          "x": 8.62,
+          "z": 2.55,
+          "earHeight": 1.05,
+          "forward": [
+            0,
+            1
+          ]
+        },
+        "clearHeight": 2.75,
+        "screen": {
+          "diagonalInches": 85,
+          "width": 1.881732,
+          "height": 1.058474,
+          "planningEnvelope": true,
+          "technology": "OLED design envelope",
+          "pictureTarget": "Dolby Vision 2 Max",
+          "productNote": "85-inch space reservation. Philips 83OLED811 is an 83-inch OLED / Dolby Vision 2 Max candidate; confirm the final release and installation sheet.",
+          "x": 8.62,
+          "z": 4.79,
+          "mountHeight": 1.28,
+          "viewingDistance": 2.24,
+          "horizontalViewAngle": 45.567682
+        },
+        "audio": {
+          "bedChannels": 7,
+          "subwoofers": 2,
+          "overheadChannels": 4,
+          "amplifiedChannels": 11,
+          "channelLayout": "7.2.4",
+          "reference": "https://www.dolby.com/about/support/guide/speaker-setup-guides/7.1.4-overhead-speaker-setup-guide",
+          "note": "Seat-based placement with independent subwoofers. Final aiming, bass positions and delays are calibrated in the completed room."
+        },
+        "clearances": {
+          "rearGlazingStrip": 1,
+          "centralPassage": 0.9
+        }
+      },
+      "renderer": {
+        "available": true,
+        "visible": true,
+        "interacting": false,
+        "view": "dollhouse",
+        "styleId": "scandinavian",
+        "roomId": "lounge",
+        "floor": "ground",
+        "layout": "renovation",
+        "wallCount": 11,
+        "furnitureCount": 51,
+        "meshes": 117,
+        "drawCalls": 129,
+        "triangles": 96373,
+        "frames": 2,
+        "framePending": false,
+        "camera": [
+          13.168423394377708,
+          16.381286107944,
+          20.605716261523657
+        ],
+        "eyeHeight": 1.57,
+        "contextSource": "shared-site-model",
+        "contextKey": "9:true,true,57.79393370160966,2026-06-21,false,0.36875081583889435,0.38480572952407543,0.8461367421070863,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|dollhouse",
+        "renovationFeatures": [
+          "Open timber seating and spindle chairs",
+          "Slatted oak headboards and framed cabinetry",
+          "Painted wall boarding and broad ceiling rafters"
+        ],
+        "interiorDimensions": {
+          "enabled": false,
+          "total": 0,
+          "visible": 0,
+          "floor": null,
+          "roomId": null,
+          "layouts": 0,
+          "projectionFrames": 0,
+          "refreshIntervalMs": 100,
+          "occlusion": null
+        },
+        "equipmentLabels": {
+          "enabled": true,
+          "total": 19,
+          "visible": 0,
+          "floor": "ground",
+          "layoutPasses": 1,
+          "occlusion": {
+            "meshes": 143,
+            "queries": 0,
+            "triangleTests": 0,
+            "boxTests": 0,
+            "method": "cached-triangle-bvh"
+          }
+        },
+        "mirrors": {
+          "count": 1,
+          "captured": false,
+          "frames": 0,
+          "width": 0,
+          "height": 0,
+          "updateMode": "settled-only",
+          "updatesWhileMoving": 0
+        },
+        "performanceTiming": {
+          "scope": "continuous-navigation",
+          "windowFrames": 360,
+          "totalNavigationFrames": 0,
+          "frameTimeMs": {
+            "samples": 0,
+            "p50": 0,
+            "p95": 0,
+            "p99": 0,
+            "mean": 0,
+            "onePercentLowFps": 0,
+            "stalls50ms": 0,
+            "stalls100ms": 0,
+            "stalls250ms": 0
+          },
+          "cpuFrameMs": {
+            "samples": 1,
+            "p50": 1285.600000000035,
+            "p95": 1285.600000000035,
+            "p99": 1285.600000000035,
+            "mean": 1285.600000000035,
+            "onePercentLowFps": 0.7778469197261767,
+            "stalls50ms": 1,
+            "stalls100ms": 1,
+            "stalls250ms": 1
+          },
+          "phasesMs": {}
+        },
+        "adaptiveQuality": {
+          "mode": "measured-motion-buffer",
+          "level": 0,
+          "scale": 1,
+          "changes": 0,
+          "lastP75Ms": 0,
+          "targetMs": 24,
+          "minimumScale": 0.54,
+          "cooldownMs": 900,
+          "pressureChanges": 0,
+          "lastPressureAgeMs": 0,
+          "pressureThresholdMs": 250,
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
+        },
+        "contactShading": true,
+        "contactShadingSupported": true,
+        "aoWidth": 501,
+        "aoHeight": 233,
+        "msaaSamples": 2,
+        "toneMapping": "AgX",
+        "renderPath": "ao-composer",
+        "sceneBufferWidth": 1002,
+        "sceneBufferHeight": 465,
+        "scenePixelRatio": 1,
+        "motionSupported": false,
+        "motionUnsupportedReason": "interior-renderer",
+        "motionSamples": 0,
+        "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
+        "canvasSamples": 4,
+        "motionDepthResolveSkipped": false,
+        "surfaceAssets": {
+          "requested": 45,
+          "loaded": 45,
+          "failed": [],
+          "liveTextures": 156,
+          "decodedBytes": 207753024,
+          "idleBytes": 0,
+          "totalRequests": 90
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "living-right-media.png",
+    "plan-right-media.png",
+    "living-left-media.png",
+    "plan-left-media.png",
+    "living-garden-salon.png",
+    "plan-garden-salon.png",
+    "living-crosswall-media.png",
+    "plan-crosswall-media.png",
+    "living-cinema-screen-view.png",
+    "mobile-living-layout-controls.png"
+  ],
+  "views": [
+    {
+      "name": "living-cinema-screen-view",
+      "pose": {
+        "floor": "ground",
+        "position": [
+          7.441,
+          5.208,
+          15.372
+        ],
+        "yaw": 90.495,
+        "pitch": 1
+      },
+      "equipmentLabels": {
+        "enabled": true,
+        "total": 19,
+        "visible": 2,
+        "floor": "ground",
+        "layoutPasses": 5,
+        "occlusion": {
+          "meshes": 179,
+          "queries": 4,
+          "triangleTests": 628,
+          "boxTests": 1426,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "mirrors": {
+        "count": 1,
+        "captured": true,
+        "frames": 1,
+        "width": 256,
+        "height": 152,
+        "updateMode": "settled-only",
+        "updatesWhileMoving": 0
+      }
+    }
+  ],
+  "errors": [],
+  "kitchen": {
+    "kind": "fitted-luxury-kitchen",
+    "schedule": [
+      {
+        "id": "kitchen-dishwasher-1",
+        "label": "Dishwasher 1 · 60 cm",
+        "width": 0.6,
+        "depth": 0.65,
+        "height": 0.845,
+        "detail": "Fully integrated XXL AutoDos; 600 mm clear niche beside the sink.",
+        "reference": "Miele G 7985 SCVi XXL AutoDos K2O",
+        "url": "https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack",
+        "hidden": true,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-dishwasher-2",
+        "label": "Dishwasher 2 · 60 cm",
+        "width": 0.6,
+        "depth": 0.65,
+        "height": 0.845,
+        "detail": "Second full-size XXL dishwasher; the pair fits the measured wet run.",
+        "reference": "Miele G 7985 SCVi XXL AutoDos K2O",
+        "url": "https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack",
+        "hidden": true,
+        "category": "appliance"
+      },
+      {
+        "id": "sink-base",
+        "label": "Workstation sink and waste · 101 cm",
+        "width": 1.01,
+        "depth": 0.65,
+        "height": 0.9,
+        "detail": "860 × 510 mm two-bowl workstation sink; waste-sorting pull-out and cleaning storage below.",
+        "reference": "Franke Box Center BWX 220-54-27",
+        "url": "https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html",
+        "hidden": true,
+        "category": "worktop"
+      },
+      {
+        "id": "kitchen-steam-oven",
+        "label": "Combi-steam oven · 67 L",
+        "width": 0.6,
+        "depth": 0.63,
+        "height": 0.596,
+        "detail": "Plumbed Miele Diamond oven with HydroClean, installed in a 600 mm tower.",
+        "reference": "Miele DGC 7865 HC Pro",
+        "url": "https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-speed-oven",
+        "label": "Microwave / speed oven · 43 L",
+        "width": 0.6,
+        "depth": 0.63,
+        "height": 0.456,
+        "detail": "Separate compact oven with 1000 W microwave above the combi-steam oven.",
+        "reference": "Miele H 7840 BM",
+        "url": "https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-fridge",
+        "label": "Four-door fridge-freezer · 96 cm bay",
+        "width": 0.96,
+        "depth": 0.79,
+        "height": 1.83,
+        "detail": "905 mm product in a wider ventilated bay; 731 mm body depth plus rear allowance. Final hinge clearances follow its installation drawing.",
+        "reference": "Bosch KFN96AXEA four-door fridge-freezer",
+        "url": "https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-wine-cooler",
+        "label": "Wine cooler · 60 cm",
+        "width": 0.6,
+        "depth": 0.85,
+        "height": 0.816,
+        "detail": "Undercounter two-zone cooler in the peninsula; modeled grille gives at least 430 cm² free ventilation.",
+        "reference": "Miele KWT 6322 UG-1",
+        "url": "https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf",
+        "hidden": false,
+        "category": "appliance"
+      },
+      {
+        "id": "kitchen-nutrition-pantry",
+        "label": "Hidden nutrition pantry · 55 cm",
+        "width": 0.55,
+        "depth": 0.63,
+        "height": 2.7,
+        "detail": "Closed, labelled storage for powder tubs, supplements, a blender and compact appliances; deep pull-outs keep the contents reachable.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "kitchen-pantry-corner",
+        "label": "Full-height corner pantry · 55 cm",
+        "width": 0.55,
+        "depth": 0.63,
+        "height": 2.7,
+        "detail": "Fills the retained corner with bulk-food and occasional-appliance storage.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "peninsula-drawers",
+        "label": "Peninsula drawers · 90 cm",
+        "width": 0.9,
+        "depth": 0.85,
+        "height": 0.9,
+        "detail": "Cutlery above, crockery in the middle and deep pan drawers below.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "cooking-corner",
+        "label": "Corner pull-out · 120 cm",
+        "width": 1.2,
+        "depth": 0.62,
+        "height": 0.9,
+        "detail": "A 520 mm access front serves swing-out baskets in the blind corner.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "cooking-drawers",
+        "label": "Cooking and preparation drawers · 180 cm",
+        "width": 1.8,
+        "depth": 0.62,
+        "height": 0.9,
+        "detail": "Two 900 mm drawer stacks divide utensils, boards, pots and food containers; 410 mm spice pull-out alongside.",
+        "reference": null,
+        "url": null,
+        "hidden": true,
+        "category": "storage"
+      },
+      {
+        "id": "hob",
+        "label": "Induction cooking · 80 cm",
+        "width": 0.8,
+        "depth": 0.52,
+        "height": 0.03,
+        "detail": "80 cm induction allowance with flush glass and concealed extraction; final appliance and duct route remain selectable.",
+        "reference": null,
+        "url": null,
+        "hidden": false,
+        "category": "worktop"
+      },
+      {
+        "id": "kitchen-hall-selfie-mirror",
+        "label": "Hall-facing mirror · 255 × 234 cm",
+        "width": 2.55,
+        "depth": 0.026,
+        "height": 2.34,
+        "detail": "Continuous full-height mirror on the stair-facing kitchen wall, clear of the chimney enclosure and entry.",
+        "reference": null,
+        "url": null,
+        "hidden": false,
+        "category": "mirror"
+      }
+    ],
+    "modules": [
+      {
+        "id": "wet-end-front",
+        "run": "sink",
+        "width": 0.02,
+        "kind": "end-panel"
+      },
+      {
+        "id": "dishwasher-1",
+        "run": "sink",
+        "width": 0.6,
+        "kind": "clear-niche",
+        "assignment": "Main dishwasher"
+      },
+      {
+        "id": "sink-base",
+        "run": "sink",
+        "width": 1.01,
+        "kind": "cabinet",
+        "sideThickness": 0.018,
+        "assignment": "Workstation sink, waste sorting and cleaning pull-outs"
+      },
+      {
+        "id": "dishwasher-2",
+        "run": "sink",
+        "width": 0.6,
+        "kind": "clear-niche",
+        "assignment": "Second dishwasher"
+      },
+      {
+        "id": "wet-end-rear",
+        "run": "sink",
+        "width": 0.02,
+        "kind": "end-panel"
+      },
+      {
+        "id": "peninsula-corner",
+        "run": "peninsula",
+        "width": 0.65,
+        "kind": "blind-corner",
+        "assignment": "Access from dining side for serving dishes"
+      },
+      {
+        "id": "peninsula-drawers",
+        "run": "peninsula",
+        "width": 0.9,
+        "kind": "drawers",
+        "assignment": "Cutlery top, daily crockery middle, deep pans below"
+      },
+      {
+        "id": "wine-cooler",
+        "run": "peninsula",
+        "width": 0.6,
+        "kind": "clear-niche",
+        "assignment": "Two-zone wine storage with front ventilation"
+      },
+      {
+        "id": "peninsula-end",
+        "run": "peninsula",
+        "width": 0.05,
+        "kind": "end-panel"
+      },
+      {
+        "id": "cooking-corner",
+        "run": "cooking",
+        "width": 1.2,
+        "kind": "blind-corner",
+        "assignment": "Swing-out corner baskets through a 520 mm access front"
+      },
+      {
+        "id": "hob-drawers",
+        "run": "cooking",
+        "width": 0.9,
+        "kind": "drawers",
+        "assignment": "Utensils and pots below the induction hob"
+      },
+      {
+        "id": "preparation-drawers",
+        "run": "cooking",
+        "width": 0.9,
+        "kind": "drawers",
+        "assignment": "Knives, boards, food containers and pans"
+      },
+      {
+        "id": "spice-pullout",
+        "run": "cooking",
+        "width": 0.41,
+        "kind": "pull-out",
+        "assignment": "Oils, spices and tall bottles"
+      },
+      {
+        "id": "fridge-bay",
+        "run": "tall",
+        "width": 0.96,
+        "kind": "appliance-bay",
+        "assignment": "Four-door fridge-freezer with side and rear allowances"
+      },
+      {
+        "id": "oven-tower",
+        "run": "tall",
+        "width": 0.6,
+        "kind": "tower",
+        "assignment": "Full combi-steam oven and separate microwave/speed oven"
+      },
+      {
+        "id": "nutrition-pantry",
+        "run": "tall",
+        "width": 0.55,
+        "kind": "pantry",
+        "assignment": "Hidden protein powders, supplements and small appliances"
+      },
+      {
+        "id": "pantry-corner",
+        "run": "tall",
+        "width": 0.55,
+        "kind": "corner-pantry",
+        "assignment": "Filled corner for bulk supplies and occasional appliances"
+      }
+    ],
+    "equipment": {
+      "dishwasher": {
+        "name": "Miele G 7985 SCVi XXL AutoDos K2O",
+        "width": 0.598,
+        "height": 0.845,
+        "depth": 0.55,
+        "nicheWidth": 0.6,
+        "nicheHeight": [
+          0.845,
+          0.91
+        ],
+        "nicheDepth": 0.55,
+        "openDepth": 1.205,
+        "url": "https://www.miele.pl/product/12440470/zmywarka-w-pelni-zintegrowana-xxl-g-7985-scvi-xxl-autodos-k2o-cleansteel-obsidianblack"
+      },
+      "steamOven": {
+        "name": "Miele DGC 7865 HC Pro",
+        "width": 0.595,
+        "height": 0.596,
+        "depth": 0.567,
+        "capacityLitres": 67,
+        "nicheWidth": [
+          0.56,
+          0.568
+        ],
+        "nicheHeight": [
+          0.59,
+          0.595
+        ],
+        "nicheDepth": 0.55,
+        "plumbed": true,
+        "url": "https://www.miele.pl/product/12100920/piekarnik-parowy-z-przylaczem-do-wody-i-odplywu-dgc-7865-hc-pro-obsidianblack"
+      },
+      "speedOven": {
+        "name": "Miele H 7840 BM",
+        "width": 0.595,
+        "height": 0.456,
+        "depth": 0.563,
+        "capacityLitres": 43,
+        "microwaveWatts": 1000,
+        "nicheWidth": [
+          0.56,
+          0.568
+        ],
+        "nicheHeight": [
+          0.45,
+          0.452
+        ],
+        "nicheDepth": 0.55,
+        "url": "https://www.miele.pl/product/11105960/kompaktowy-piekarnik-z-kuchnia-mikrofalowa-h-7840-bm-stal-nierdzewna-czysta-stal"
+      },
+      "fridge": {
+        "name": "Bosch KFN96AXEA four-door fridge-freezer",
+        "width": 0.905,
+        "height": 1.83,
+        "depth": 0.731,
+        "url": "https://www.bosch-home.pl/pl/mkt-product/chlodzenie-i-zamrazanie/chlodziarko-zamrazarki/chlodziarko-zamrazarki/KFN96AXEA"
+      },
+      "sink": {
+        "name": "Franke Box Center BWX 220-54-27",
+        "width": 0.86,
+        "depth": 0.51,
+        "height": 0.2,
+        "minimumBase": 0.9,
+        "bowlWidths": [
+          0.54,
+          0.27
+        ],
+        "url": "https://www.franke.com/pl/pl/home-solutions/produkty/mythos/product-detail-page.html/127.0557.961.html"
+      },
+      "wineCooler": {
+        "name": "Miele KWT 6322 UG-1",
+        "width": 0.596,
+        "height": 0.816,
+        "depth": 0.57,
+        "nicheWidth": 0.6,
+        "nicheHeight": [
+          0.82,
+          0.87
+        ],
+        "nicheDepth": 0.58,
+        "minimumVentAreaCm2": 430,
+        "url": "https://media.miele.com/downloads/l-/pl/FS_12497000_PLP_PL-pl.pdf"
+      }
+    },
+    "clearances": {
+      "wetRun": 2.25,
+      "dishwasherClearNiches": [
+        0.6,
+        0.6
+      ],
+      "sinkBase": 1.01,
+      "wetEndPanels": 0.02,
+      "cabinetHeightDatum": 0.9,
+      "worktopHeight": 0.919,
+      "worktopUnderside": 0.881,
+      "dishwasherHeight": 0.845,
+      "remainingAboveDishwasher": 0.036,
+      "peninsulaLength": 2.2,
+      "entryBesideChimney": 1.18,
+      "counterToFridge": 2.66,
+      "openDishwasherAisle": 2.005,
+      "fridgeBay": {
+        "width": 0.96,
+        "depth": 0.79,
+        "bodyWidth": 0.905,
+        "bodyDepth": 0.731,
+        "rearAllowance": 0.059,
+        "combinedSideAllowance": 0.055
+      },
+      "wineVentFreeAreaCm2": 436.8,
+      "installationNote": "Planning envelopes; final appliance drawings govern ventilation, hinge openings, services, worktop cut-outs and mounting."
+    },
+    "mirror": {
+      "width": 2.55,
+      "height": 2.34,
+      "bottom": 0.18,
+      "top": 2.52,
+      "wall": "Hall face of kitchen enclosure",
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    "storage": [
+      "Waste sorting and cleaning under sink",
+      "900 mm cutlery / crockery / pan drawers in peninsula",
+      "900 mm utensils / pots below hob",
+      "900 mm preparation drawers",
+      "410 mm spice pull-out",
+      "1200 mm blind corner with swing-out baskets",
+      "550 mm hidden nutrition and appliance pantry",
+      "550 mm full-height corner pantry",
+      "Cooking-wall and refrigerator-top cupboards"
+    ]
+  },
+  "planting": [
+    {
+      "id": "pine-1",
+      "typeId": "austrian-pine-tall",
+      "x": 13,
+      "y": 34.1,
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0
+    },
+    {
+      "id": "pine-2",
+      "typeId": "austrian-pine-tall",
+      "x": 19.3,
+      "y": 32.25,
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0
+    },
+    {
+      "id": "pine-3",
+      "typeId": "austrian-pine-tall",
+      "x": 17.6,
+      "y": 34.9,
+      "height": 9.5,
+      "crownBase": 2.5,
+      "crownWidth": 5,
+      "crownDepth": 5,
+      "rotation": 0,
+      "enabled": true,
+      "unitPrice": 0
+    }
+  ],
+  "elapsedMs": 232155
+}

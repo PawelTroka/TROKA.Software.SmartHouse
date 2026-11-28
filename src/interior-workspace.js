@@ -1,8 +1,9 @@
-import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.39.0';
-import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.39.0';
-import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.39.0';
-import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.39.0';
-import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.39.0';
+import { DESIGN_STYLES, getDesignStyle } from './design-styles.js?v=1.40.0';
+import { getInteriorPlan, INTERIOR_CHANGES } from './interior-plan.js?v=1.40.0';
+import { drawInteriorPlan, correspondingRoom } from './interior-plan-view.js?v=1.40.0';
+import {getHouseFloorPlan,houseModelKey} from './house-model.js?v=1.40.0';
+import {getInteriorStyleRecipe} from './interior-style-recipes.js?v=1.40.0';
+import {fillCinemaOptions,syncCinemaControls,renderKitchenSchedule} from './home-fitout-controls.js?v=1.40.0';
 
 const FLOORS = {ground:'Ground floor', first:'First floor', basement:'Basement', attic:'Attic'};
 const VIEWS = {dollhouse:'Dollhouse', plan:'Floor plan', room:'Eye level'};
@@ -54,13 +55,16 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
           <select id="iw-style" data-iw="style"></select><p class="iw-field-help" data-iw="finish-note"></p>
           <div class="iw-switches"><label class="iw-switch"><span>Furniture &amp; fittings</span><input type="checkbox" role="switch" data-iw="furniture"></label>
           <label class="iw-switch"><span>Dimensions · rooms &amp; fittings</span><input type="checkbox" role="switch" data-iw="dimensions"></label>
+          <label class="iw-switch"><span>Equipment &amp; storage labels</span><input type="checkbox" role="switch" data-iw="equipment"></label>
           <label class="iw-switch" data-iw="changes-wrap"><span>Highlight wall changes</span><input type="checkbox" role="switch" data-iw="changes"></label></div>
         </section>
         <section class="iw-inspector-block" data-iw="room-options"><h3>Room arrangements</h3>
+          <div data-iw="cinema-options"><label for="iw-cinema">Living-room layout</label><select id="iw-cinema" data-iw="cinema" aria-describedby="iw-cinema-note"></select><p id="iw-cinema-note" class="iw-field-help" data-iw="cinema-note"></p><p class="iw-field-help">85″ screen envelope · 7.2.4 Atmos in A, B &amp; D. C is a bright living room with no cinema equipment.</p></div>
           <div data-iw="office-options"><label class="iw-switch"><span>Office · two workstations</span><input type="checkbox" role="switch" data-iw="officeCoworking"></label><label class="iw-switch"><span>Office · unfold guest bed</span><input type="checkbox" role="switch" data-iw="officeGuestBedOpen"></label><p class="iw-field-help">Two computers on a 2.60 m desk. The daybed opens into a 0.90 × 2.00 m single bed.</p></div>
           <div data-iw="gym-options"><label class="iw-switch"><span>Gym · park the bench</span><input type="checkbox" role="switch" data-iw="gymBenchParked"></label><p class="iw-field-help">Park the wheeled bench for cable, cycling and floor work. Switch off to use it at the strength station.</p></div>
           <label class="iw-switch" data-iw="door-option"><span data-iw="door-label">Terrace doors open</span><input type="checkbox" role="switch" data-iw="doors-open"></label>
         </section>
+        <section class="iw-inspector-block" data-iw="kitchen-options"><details class="kitchen-equipment-details"><summary>Kitchen appliances &amp; storage</summary><div data-iw="kitchen-schedule"></div></details></section>
         <section class="iw-inspector-block"><div class="iw-section-heading"><h3>Room schedule</h3><span data-iw="count"></span></div>
           <table class="iw-schedule"><thead><tr><th scope="col">Room</th><th scope="col"><abbr title="Area printed on the original drawing">Drawing</abbr></th><th scope="col"><abbr title="Approximate area of the reconstructed room polygon">Model</abbr></th></tr></thead><tbody data-iw="schedule"></tbody></table>
           <p class="iw-field-help">Model areas are approximate. Drawing areas in m² appear where an original room matches.</p>
@@ -94,6 +98,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   const q = key => container.querySelector(`[data-iw="${key}"]`);
   const styleOptions = DESIGN_STYLES.map(s => [s.id,s.id === 'current' ? 'Current house · no renovation' : s.label]);
   setOptions(q('style'),styleOptions);
+  fillCinemaOptions(q('cinema'));renderKitchenSchedule(q('kitchen-schedule'));
   const abort = new AbortController(), events = {signal:abort.signal};
   let state = initial, visible = false, disposed = false, inspectorOpen = false;
   let plan, planKey = '', schedulePlan, drawnPlan = '', lastSceneKey = '', renderedView = 'plan';
@@ -148,7 +153,7 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
   function loadScene() {
     if (scene || sceneLoad || sceneError) return;
     const token = generation;
-    sceneLoad = import('./scene-interior.js?v=1.39.0').then(({createInteriorScene}) => {
+    sceneLoad = import('./scene-interior.js?v=1.40.0').then(({createInteriorScene}) => {
       if (token !== generation || !visible || state.interiorView === 'plan') return;
       const viewer = createInteriorScene(q('canvas'),{
         getExteriorContext,
@@ -197,11 +202,11 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     if (sceneError) {setStatus('3D is unavailable on this device. Showing the floor plan.',true); return;}
     if (!scene) {setStatus('Opening the 3D view…'); loadScene(); return;}
     const contextKey=getContextKey?.()||'';
-    const key = [planKey,style.id,view,room?.id,state.interiorFurniture !== false,!!state.interiorChanges,state.showDimensions!==false,contextKey,state.renderQuality].join('|');
+    const key = [planKey,style.id,view,room?.id,state.interiorFurniture !== false,!!state.interiorChanges,state.showDimensions!==false,state.showEquipmentLabels!==false,contextKey,state.renderQuality].join('|');
     try {
       if (lastSceneKey !== key) {
         scene.setVisible(true);
-        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showDimensions:state.showDimensions!==false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey,quality:state.renderQuality,hstOpen:state.hstOpen,balconyOpen:state.balconyOpen});
+        scene.update(plan,{styleId:style.id,view,roomId:room?.id,showFurniture:state.interiorFurniture !== false,showDimensions:state.showDimensions!==false,showEquipmentLabels:state.showEquipmentLabels!==false,showChanges:!!state.interiorChanges && plan.layout === 'renovation',showCeiling:view === 'room',contextKey,quality:state.renderQuality,hstOpen:state.hstOpen,balconyOpen:state.balconyOpen});
         scene.resize(); lastSceneKey = key;
       }
       setStatus('');
@@ -266,6 +271,10 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     q('style').value = state.designStyle || 'current';
     q('furniture').checked = state.interiorFurniture !== false;
     q('dimensions').checked = state.showDimensions !== false;
+    q('equipment').checked = state.showEquipmentLabels !== false;
+    q('cinema-options').hidden=!isRenovation||plan.floor!=='ground';
+    q('kitchen-options').hidden=!isRenovation||plan.floor!=='ground';
+    syncCinemaControls(q('cinema'),q('cinema-note'),state);
     q('changes').checked = !!state.interiorChanges;
     q('changes-wrap').hidden = !isRenovation;
     q('room-options').hidden=!isRenovation||!['ground','first','basement'].includes(plan.floor);
@@ -356,6 +365,8 @@ export function createInteriorWorkspace(container, {settings:initial = {}, onCha
     if (iw === 'room') patch({interiorRoomId:value});
     if (iw === 'furniture') patch({interiorFurniture:checked});
     if (iw === 'dimensions') patch({showDimensions:checked});
+    if (iw === 'equipment') patch({showEquipmentLabels:checked});
+    if (iw === 'cinema') patch({livingCinemaLayout:value});
     if (iw === 'changes') patch({interiorChanges:checked});
     if (iw === 'officeCoworking' || iw === 'officeGuestBedOpen' || iw === 'gymBenchParked') patch({[iw]:checked});
     if (iw === 'doors-open') patch({[plan.floor==='first'?'balconyOpen':'hstOpen']:checked?1:0});

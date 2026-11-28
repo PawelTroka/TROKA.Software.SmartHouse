@@ -1,0 +1,1086 @@
+{
+  "version": "1.40.0",
+  "group": "interiors",
+  "selectedGroups": [
+    "interiors"
+  ],
+  "completedGroups": [
+    "interiors"
+  ],
+  "style": "scandinavian",
+  "status": "passed",
+  "checks": [
+    "Fresh Scandinavian defaults preserve two pines, restore only the boundary pine, use three chaises along two pool edges and export the actual clear apertures",
+    "Rendered kitchen-wide-clear-window from its public room entry and verified walking position",
+    "Interior dimensions follow real room entry and walking, stay on the occupied floor, and disappear through the public Dimensions switch",
+    "Rendered ground-bathroom-clear-window from its public room entry and verified walking position",
+    "Rendered upper-bathroom-clear-window from its public room entry and verified walking position",
+    "Rendered indoor-sauna-picture-window from its public room entry and verified walking position",
+    "Cutaway room areas, dimensions and detail labels use the same master switch as walking and remain optional"
+  ],
+  "screenshots": [
+    "kitchen-wide-clear-window.png",
+    "kitchen-room-dimensions.png",
+    "kitchen-walking-dimensions.png",
+    "kitchen-dimensions-off.png",
+    "ground-bathroom-clear-window.png",
+    "upper-bathroom-clear-window.png",
+    "indoor-sauna-picture-window.png",
+    "ground-cutaway-room-and-furniture-dimensions.png",
+    "ground-cutaway-dimensions-off.png"
+  ],
+  "sceneCaptures": [
+    {
+      "file": "kitchen-wide-clear-window.png",
+      "renderer": "webgl",
+      "frames": 8,
+      "triangles": 1075350,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 0,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.224,
+          5.208,
+          11.18
+        ],
+        "yaw": -89.6063,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "kitchen-room-dimensions.png",
+      "renderer": "webgl",
+      "frames": 9,
+      "triangles": 1075350,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": true,
+        "total": 135,
+        "visible": 2,
+        "floor": "ground",
+        "roomId": "front-kitchen",
+        "layouts": 1,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": {
+          "meshes": 179,
+          "queries": 2,
+          "triangleTests": 116,
+          "boxTests": 662,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.224,
+          5.208,
+          11.18
+        ],
+        "yaw": -89.6063,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "kitchen-walking-dimensions.png",
+      "renderer": "webgl",
+      "frames": 11,
+      "triangles": 1074864,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": true,
+        "total": 135,
+        "visible": 2,
+        "floor": "ground",
+        "roomId": "front-kitchen",
+        "layouts": 3,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": {
+          "meshes": 179,
+          "queries": 6,
+          "triangleTests": 328,
+          "boxTests": 1942,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.504,
+          5.208,
+          11.182
+        ],
+        "yaw": -89.6063,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "kitchen-dimensions-off.png",
+      "renderer": "webgl",
+      "frames": 12,
+      "triangles": 1074864,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 3,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.504,
+          5.208,
+          11.182
+        ],
+        "yaw": -89.6063,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "ground-bathroom-clear-window.png",
+      "renderer": "webgl",
+      "frames": 15,
+      "triangles": 1099315,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 3,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "floor": "ground",
+        "position": [
+          6.393,
+          5.208,
+          11.548
+        ],
+        "yaw": 87.1205,
+        "pitch": -1.7188,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "upper-bathroom-clear-window.png",
+      "renderer": "webgl",
+      "frames": 19,
+      "triangles": 1068209,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 3,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "floor": "first",
+        "position": [
+          6.356,
+          8.258,
+          11.951
+        ],
+        "yaw": 93.9555,
+        "pitch": -1.7188,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "indoor-sauna-picture-window.png",
+      "renderer": "webgl",
+      "frames": 23,
+      "triangles": 1059261,
+      "style": "scandinavian",
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": 0
+      },
+      "spaCovers": {
+        "jacuzzi": 0,
+        "coldPlunge": 0,
+        "moving": 0,
+        "covers": [
+          {
+            "id": "jacuzzi-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.2599999999999998,
+            "parkingVisible": false
+          },
+          {
+            "id": "cold-plunge-cover",
+            "progress": 0,
+            "storage": "concealed-side-cassette",
+            "exposedPanels": 0,
+            "hiddenPanels": 2,
+            "cassetteDepth": 0.26000000000000023,
+            "parkingVisible": false
+          }
+        ]
+      },
+      "dimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 3,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "pose": {
+        "floor": "first",
+        "position": [
+          5.505,
+          8.258,
+          13.544
+        ],
+        "yaw": -267.0154,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      },
+      "pngWidth": 792,
+      "pngHeight": 479
+    },
+    {
+      "file": "ground-cutaway-room-and-furniture-dimensions.png",
+      "renderer": "webgl",
+      "available": true,
+      "visible": true,
+      "interacting": false,
+      "view": "dollhouse",
+      "styleId": "scandinavian",
+      "roomId": "front-kitchen",
+      "floor": "ground",
+      "layout": "renovation",
+      "wallCount": 11,
+      "furnitureCount": 51,
+      "meshes": 114,
+      "drawCalls": 129,
+      "triangles": 96241,
+      "frames": 2,
+      "framePending": false,
+      "camera": [
+        13.168423394377708,
+        16.381286107944,
+        20.605716261523657
+      ],
+      "eyeHeight": 1.57,
+      "contextSource": "shared-site-model",
+      "contextKey": "5:true,true,59.03259701608701,2026-06-21,false,0.2031943100795036,0.47273048541127266,0.8574601801332451,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|dollhouse",
+      "renovationFeatures": [
+        "Open timber seating and spindle chairs",
+        "Slatted oak headboards and framed cabinetry",
+        "Painted wall boarding and broad ceiling rafters"
+      ],
+      "interiorDimensions": {
+        "enabled": true,
+        "total": 47,
+        "visible": 4,
+        "floor": "ground",
+        "roomId": "front-kitchen",
+        "layouts": 2,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": {
+          "meshes": 141,
+          "queries": 8,
+          "triangleTests": 0,
+          "boxTests": 1032,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "equipmentLabels": {
+        "enabled": true,
+        "total": 19,
+        "visible": 0,
+        "floor": "ground",
+        "layoutPasses": 1,
+        "occlusion": {
+          "meshes": 141,
+          "queries": 0,
+          "triangleTests": 0,
+          "boxTests": 0,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "mirrors": {
+        "count": 1,
+        "captured": false,
+        "frames": 0,
+        "width": 0,
+        "height": 0,
+        "updateMode": "settled-only",
+        "updatesWhileMoving": 0
+      },
+      "performanceTiming": {
+        "scope": "continuous-navigation",
+        "windowFrames": 360,
+        "totalNavigationFrames": 0,
+        "frameTimeMs": {
+          "samples": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "mean": 0,
+          "onePercentLowFps": 0,
+          "stalls50ms": 0,
+          "stalls100ms": 0,
+          "stalls250ms": 0
+        },
+        "cpuFrameMs": {
+          "samples": 1,
+          "p50": 1916,
+          "p95": 1916,
+          "p99": 1916,
+          "mean": 1916,
+          "onePercentLowFps": 0.5219206680584552,
+          "stalls50ms": 1,
+          "stalls100ms": 1,
+          "stalls250ms": 1
+        },
+        "phasesMs": {}
+      },
+      "adaptiveQuality": {
+        "mode": "measured-motion-buffer",
+        "level": 0,
+        "scale": 1,
+        "changes": 0,
+        "lastP75Ms": 0,
+        "targetMs": 24,
+        "minimumScale": 0.54,
+        "cooldownMs": 900,
+        "pressureChanges": 0,
+        "lastPressureAgeMs": 0,
+        "pressureThresholdMs": 250,
+        "recoversAtRest": true,
+        "sampling": {
+          "control": null,
+          "latched": false,
+          "mode": "multisample",
+          "qualifyingSubmissions": 0,
+          "requiredSubmissions": 2,
+          "pressureMs": 0,
+          "requiredPressureMs": 900,
+          "pressureThresholdMs": 250,
+          "changes": 0,
+          "surface": null,
+          "lastTrigger": null
+        }
+      },
+      "contactShading": true,
+      "contactShadingSupported": true,
+      "aoWidth": 486,
+      "aoHeight": 233,
+      "msaaSamples": 2,
+      "toneMapping": "AgX",
+      "renderPath": "ao-composer",
+      "sceneBufferWidth": 971,
+      "sceneBufferHeight": 466,
+      "scenePixelRatio": 1,
+      "motionSupported": false,
+      "motionUnsupportedReason": "interior-renderer",
+      "motionSamples": 0,
+      "motionRequestedSamples": 0,
+      "motionStorageSamples": 0,
+      "motionMsaaDiagnostic": null,
+      "motionQualityScale": 1,
+      "motionSamplingMode": "idle",
+      "motionSamplingReason": null,
+      "canvasSamples": 4,
+      "motionDepthResolveSkipped": false,
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": [],
+        "liveTextures": 156,
+        "decodedBytes": 220335936,
+        "idleBytes": 12582912,
+        "totalRequests": 48
+      },
+      "pngWidth": 971,
+      "pngHeight": 467
+    },
+    {
+      "file": "ground-cutaway-dimensions-off.png",
+      "renderer": "webgl",
+      "available": true,
+      "visible": true,
+      "interacting": false,
+      "view": "dollhouse",
+      "styleId": "scandinavian",
+      "roomId": "front-kitchen",
+      "floor": "ground",
+      "layout": "renovation",
+      "wallCount": 11,
+      "furnitureCount": 51,
+      "meshes": 114,
+      "drawCalls": 125,
+      "triangles": 96241,
+      "frames": 3,
+      "framePending": false,
+      "camera": [
+        13.168423394377708,
+        16.381286107944,
+        20.605716261523657
+      ],
+      "eyeHeight": 1.57,
+      "contextSource": "shared-site-model",
+      "contextKey": "5:true,true,59.03259701608701,2026-06-21,false,0.2031943100795036,0.47273048541127266,0.8574601801332451,8.80748335718152,22.788454258433386,2.9645041689871197,0,0,0,0,0,0.7|ground|dollhouse",
+      "renovationFeatures": [
+        "Open timber seating and spindle chairs",
+        "Slatted oak headboards and framed cabinetry",
+        "Painted wall boarding and broad ceiling rafters"
+      ],
+      "interiorDimensions": {
+        "enabled": false,
+        "total": 0,
+        "visible": 0,
+        "floor": null,
+        "roomId": null,
+        "layouts": 2,
+        "projectionFrames": 0,
+        "refreshIntervalMs": 100,
+        "occlusion": null
+      },
+      "equipmentLabels": {
+        "enabled": true,
+        "total": 19,
+        "visible": 0,
+        "floor": "ground",
+        "layoutPasses": 2,
+        "occlusion": {
+          "meshes": 141,
+          "queries": 0,
+          "triangleTests": 0,
+          "boxTests": 0,
+          "method": "cached-triangle-bvh"
+        }
+      },
+      "mirrors": {
+        "count": 1,
+        "captured": false,
+        "frames": 0,
+        "width": 0,
+        "height": 0,
+        "updateMode": "settled-only",
+        "updatesWhileMoving": 0
+      },
+      "performanceTiming": {
+        "scope": "continuous-navigation",
+        "windowFrames": 360,
+        "totalNavigationFrames": 0,
+        "frameTimeMs": {
+          "samples": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "mean": 0,
+          "onePercentLowFps": 0,
+          "stalls50ms": 0,
+          "stalls100ms": 0,
+          "stalls250ms": 0
+        },
+        "cpuFrameMs": {
+          "samples": 1,
+          "p50": 1916,
+          "p95": 1916,
+          "p99": 1916,
+          "mean": 1916,
+          "onePercentLowFps": 0.5219206680584552,
+          "stalls50ms": 1,
+          "stalls100ms": 1,
+          "stalls250ms": 1
+        },
+        "phasesMs": {}
+      },
+      "adaptiveQuality": {
+        "mode": "measured-motion-buffer",
+        "level": 0,
+        "scale": 1,
+        "changes": 0,
+        "lastP75Ms": 0,
+        "targetMs": 24,
+        "minimumScale": 0.54,
+        "cooldownMs": 900,
+        "pressureChanges": 0,
+        "lastPressureAgeMs": 0,
+        "pressureThresholdMs": 250,
+        "recoversAtRest": true,
+        "sampling": {
+          "control": null,
+          "latched": false,
+          "mode": "multisample",
+          "qualifyingSubmissions": 0,
+          "requiredSubmissions": 2,
+          "pressureMs": 0,
+          "requiredPressureMs": 900,
+          "pressureThresholdMs": 250,
+          "changes": 0,
+          "surface": null,
+          "lastTrigger": null
+        }
+      },
+      "contactShading": true,
+      "contactShadingSupported": true,
+      "aoWidth": 486,
+      "aoHeight": 233,
+      "msaaSamples": 2,
+      "toneMapping": "AgX",
+      "renderPath": "ao-composer",
+      "sceneBufferWidth": 971,
+      "sceneBufferHeight": 466,
+      "scenePixelRatio": 1,
+      "motionSupported": false,
+      "motionUnsupportedReason": "interior-renderer",
+      "motionSamples": 0,
+      "motionRequestedSamples": 0,
+      "motionStorageSamples": 0,
+      "motionMsaaDiagnostic": null,
+      "motionQualityScale": 1,
+      "motionSamplingMode": "idle",
+      "motionSamplingReason": null,
+      "canvasSamples": 4,
+      "motionDepthResolveSkipped": false,
+      "surfaceAssets": {
+        "requested": 48,
+        "loaded": 48,
+        "failed": [],
+        "liveTextures": 156,
+        "decodedBytes": 220335936,
+        "idleBytes": 12582912,
+        "totalRequests": 48
+      },
+      "pngWidth": 971,
+      "pngHeight": 467
+    }
+  ],
+  "views": [
+    {
+      "id": "kitchen-wide-clear-window",
+      "floor": "ground",
+      "room": "front-kitchen",
+      "local": [
+        2.7969128365914266,
+        6.947706716628793,
+        1.5704414969057705
+      ],
+      "aim": [
+        0.175,
+        6.94
+      ],
+      "pose": {
+        "floor": "ground",
+        "position": [
+          12.224,
+          5.208,
+          11.18
+        ],
+        "yaw": -89.6063,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      }
+    },
+    {
+      "id": "ground-bathroom-clear-window",
+      "floor": "ground",
+      "room": "bathroom",
+      "local": [
+        8.626420570892988,
+        6.556778877100433,
+        1.5704414969057705
+      ],
+      "aim": [
+        10.595,
+        6.45
+      ],
+      "pose": {
+        "floor": "ground",
+        "position": [
+          6.393,
+          5.208,
+          11.548
+        ],
+        "yaw": 87.1205,
+        "pitch": -1.7188,
+        "fov": 70,
+        "navigation": "free"
+      }
+    },
+    {
+      "id": "upper-bathroom-clear-window",
+      "floor": "first",
+      "room": "spa-bath",
+      "local": [
+        8.66183546810572,
+        6.153636489034613,
+        4.620441496905769
+      ],
+      "aim": [
+        10.6,
+        6.28
+      ],
+      "pose": {
+        "floor": "first",
+        "position": [
+          6.356,
+          8.258,
+          11.951
+        ],
+        "yaw": 93.9555,
+        "pitch": -1.7188,
+        "fov": 70,
+        "navigation": "free"
+      }
+    },
+    {
+      "id": "indoor-sauna-picture-window",
+      "floor": "first",
+      "room": "sauna",
+      "local": [
+        9.506564339417007,
+        4.557302208887389,
+        4.620441496905769
+      ],
+      "aim": [
+        10.6,
+        4.61
+      ],
+      "pose": {
+        "floor": "first",
+        "position": [
+          5.505,
+          8.258,
+          13.544
+        ],
+        "yaw": -267.0154,
+        "pitch": -1.7189,
+        "fov": 70,
+        "navigation": "free"
+      }
+    }
+  ],
+  "errors": [],
+  "sceneEvidence": "Actual WebGL frames through public garden controls, Share URLs, interior room selectors, accessible walking and drag look. No private app state or camera control hooks.",
+  "exported": {
+    "schema": 36,
+    "trees": [
+      {
+        "id": "pine-1",
+        "typeId": "austrian-pine-tall",
+        "x": 13,
+        "y": 34.1,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "pine-2",
+        "typeId": "austrian-pine-tall",
+        "x": 19.3,
+        "y": 32.25,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      },
+      {
+        "id": "pine-3",
+        "typeId": "austrian-pine-tall",
+        "x": 17.6,
+        "y": 34.9,
+        "height": 9.5,
+        "crownBase": 2.5,
+        "crownWidth": 5,
+        "crownDepth": 5,
+        "rotation": 0,
+        "enabled": true,
+        "unitPrice": 0
+      }
+    ],
+    "pool": {
+      "x": 15.5,
+      "y": 24.5,
+      "width": 3.2,
+      "length": 6.5,
+      "waterDepth": 1.4,
+      "waterOffset": -0.02500000000000001,
+      "freeboard": 0.1,
+      "copingRise": 0.075,
+      "coping": 0.28
+    },
+    "sunbeds": [
+      {
+        "x": 14.120000000000001,
+        "y": 24,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-1",
+        "kind": "lounger"
+      },
+      {
+        "x": 14.120000000000001,
+        "y": 27.4,
+        "width": 0.78,
+        "length": 2,
+        "back": "north",
+        "poolEdge": "garden",
+        "id": "garden-sunbed-2",
+        "kind": "lounger"
+      },
+      {
+        "x": 16.1,
+        "y": 23.15,
+        "width": 2,
+        "length": 0.78,
+        "back": "east",
+        "poolEdge": "front",
+        "id": "garden-sunbed-3",
+        "kind": "lounger"
+      }
+    ],
+    "kitchenWindow": {
+      "width": 2.3,
+      "sill": 1.04,
+      "height": 1.46,
+      "type": "window",
+      "offset": 5.615,
+      "service": "kitchen-sink",
+      "roomId": "front-kitchen",
+      "outlook": "side-garden",
+      "panes": 1,
+      "transoms": 0,
+      "frameWidth": 0.067,
+      "operation": "picture",
+      "glazing": "clear",
+      "architectureStyle": "scandinavian",
+      "source": "side-garden-sink-window-proposal",
+      "privacy": false
+    },
+    "saunaWindow": {
+      "width": 0.96,
+      "sill": 1.05,
+      "height": 1.3,
+      "type": "window",
+      "offset": 3.96,
+      "service": "indoor-sauna",
+      "roomId": "sauna",
+      "outlook": "side-garden",
+      "panes": 1,
+      "transoms": 0,
+      "frameWidth": 0.067,
+      "operation": "picture",
+      "glazing": "clear",
+      "architectureStyle": "scandinavian",
+      "source": "indoor-sauna-window-proposal",
+      "privacy": false
+    }
+  },
+  "roomDimensions": [
+    {
+      "id": "interior-ground-fixture-west-counter",
+      "kind": "fixture",
+      "floor": "ground",
+      "text": "Counter0.65 × 2.25 m",
+      "title": "225 cm wet run: two dishwashers and workstation sink: modeled footprint 0.65 × 2.25 m. Furniture footprint; explicit heights follow the model. Mattress sizes are separate from the frame."
+    },
+    {
+      "id": "interior-ground-opening-left-facade-1",
+      "kind": "opening",
+      "floor": "ground",
+      "text": "Window2.30 × 1.46 m",
+      "title": "Window: modeled wall opening 2.30 × 1.46 m; sill 1.04 m above this floor. Wall aperture width × height; frame and open-leaf clearances are smaller."
+    }
+  ],
+  "walkDimensions": [
+    {
+      "id": "interior-ground-fixture-west-counter",
+      "kind": "fixture",
+      "floor": "ground",
+      "text": "Counter0.65 × 2.25 m",
+      "title": "225 cm wet run: two dishwashers and workstation sink: modeled footprint 0.65 × 2.25 m. Furniture footprint; explicit heights follow the model. Mattress sizes are separate from the frame."
+    },
+    {
+      "id": "interior-ground-opening-left-facade-1",
+      "kind": "opening",
+      "floor": "ground",
+      "text": "Window2.30 × 1.46 m",
+      "title": "Window: modeled wall opening 2.30 × 1.46 m; sill 1.04 m above this floor. Wall aperture width × height; frame and open-leaf clearances are smaller."
+    }
+  ],
+  "cutawayDimensions": [
+    {
+      "id": "interior-ground-room-dining",
+      "kind": "room",
+      "floor": "ground",
+      "text": "Dining · 24.93 m²5.54 × 4.50 m · h 2.75 m",
+      "title": "Dining: modeled floor area 24.93 square metres; floor-plan dimensions 5.54 × 4.50 m · h 2.75 m. Concept model; floor area excludes slab openings. Open-plan room boundaries are functional zones."
+    },
+    {
+      "id": "interior-ground-room-lounge",
+      "kind": "room",
+      "floor": "ground",
+      "text": "Living room · 20.39 m²4.53 × 4.50 m · h 2.75 m",
+      "title": "Living room: modeled floor area 20.39 square metres; floor-plan dimensions 4.53 × 4.50 m · h 2.75 m. Concept model; floor area excludes slab openings. Open-plan room boundaries are functional zones."
+    },
+    {
+      "id": "interior-ground-room-front-kitchen",
+      "kind": "room",
+      "floor": "ground",
+      "text": "Kitchen · 15.66 m²4.12 × 3.80 m · h 2.75 m",
+      "title": "Open kitchen · connected peninsula and side-garden sink: modeled floor area 15.66 square metres; floor-plan dimensions 4.12 × 3.80 m · h 2.75 m. Concept model; floor area excludes slab openings. Open-plan room boundaries are functional zones."
+    },
+    {
+      "id": "interior-ground-room-bathroom",
+      "kind": "room",
+      "floor": "ground",
+      "text": "Combined bathroom · 11.22 m²3.32 × 3.38 m · h 2.75 m",
+      "title": "Combined bathroom: modeled floor area 11.22 square metres; floor-plan dimensions 3.32 × 3.38 m · h 2.75 m. Concept model; floor area excludes slab openings. Open-plan room boundaries are functional zones."
+    }
+  ],
+  "elapsedMs": 204668
+}

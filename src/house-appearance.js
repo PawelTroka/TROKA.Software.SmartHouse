@@ -7,10 +7,10 @@
  * are explicitly proposed alterations. Keep this file free of Three / DOM so
  * window viewpoints can use the same aperture coordinates as the renderer.
  */
-import {getInteriorPlan} from './interior-plan.js?v=1.39.0';
-import {sharedHouseFacades} from './house-model.js?v=1.39.0';
-import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.39.0';
-import {renovateFacadeOpenings} from './renovation-architecture.js?v=1.39.0';
+import {getInteriorPlan} from './interior-plan.js?v=1.40.0';
+import {sharedHouseFacades} from './house-model.js?v=1.40.0';
+import {sterniczaRoofEnvelope,photoRoofEdgeHeight} from './house-roof.js?v=1.40.0';
+import {renovateFacadeOpenings} from './renovation-architecture.js?v=1.40.0';
 const num=(value,fallback)=>Number.isFinite(Number(value))?Number(value):fallback;
 const xyz=p=>Array.isArray(p)?p:[p.x,p.y,p.z];
 const openRing=ring=>ring?.length>1&&Math.hypot(ring[0][0]-ring.at(-1)[0],ring[0][1]-ring.at(-1)[1])<1e-8?ring.slice(0,-1):ring||[];

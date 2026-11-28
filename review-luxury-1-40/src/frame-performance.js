@@ -33,11 +33,16 @@ export function createFramePerformance(capacity=360){
  * level between gestures prevents alternating full/low buffers every second;
  * idle rendering always restores the selected still-image quality separately.
  */
-export function createAdaptiveMotionQuality(){
+export function createAdaptiveMotionQuality({motionMsaaDiagnostic=null}={}){
   const scales=[1,.84,.68,.54],samples=[];let level=0,lastChange=-Infinity,lastEvaluation=0,changes=0,p75=0,pressureChanges=0,lastPressureAgeMs=0;
+  const samplingControl=['keep','single'].includes(motionMsaaDiagnostic)?motionMsaaDiagnostic:null,qualifying=[];
+  let singleSample=false,samplingPressureSince=null,samplingPressureMs=0,samplingChanges=0,samplingTrigger=null,lastSubmissionFrame=0,samplingSurface=null;
+  function clearSamplingPressure(){samplingPressureSince=null;samplingPressureMs=0;}
+  function rest(){singleSample=false;qualifying.length=0;clearSamplingPressure();}
   return {
     sample(now,delta,active){
-      if(!active||!(delta>0)){samples.length=0;return false;}
+      if(!active){samples.length=0;rest();return false;}
+      if(!(delta>0)){samples.length=0;return false;}
       samples.push(delta);if(samples.length>32)samples.shift();
       if(samples.length<8||now-lastEvaluation<450||now-lastChange<900)return false;
       lastEvaluation=now;const sorted=samples.slice().sort((a,b)=>a-b);p75=percentile(sorted,.75);
@@ -54,9 +59,59 @@ export function createAdaptiveMotionQuality(){
       level++;changes++;pressureChanges++;lastPressureAgeMs=oldestPendingMs;
       lastChange=now;lastEvaluation=now;samples.length=0;return true;
     },
-    reset(){level=0;changes=0;lastChange=-Infinity;lastEvaluation=0;samples.length=0;p75=0;pressureChanges=0;lastPressureAgeMs=0;},
+    // Record only a real completed CPU submission after the frame bundle has
+    // acquired its fence. The applied target factor is independent of device
+    // pixel ratio; desired scale changes while blocked are not evidence.
+    submitted({frame,tracked=false,active=false,quality,renderPath,motionQualityScale,motionSamples,
+      sceneBufferWidth,sceneBufferHeight,compacted=false,shadowUploadGuard=null}={}){
+      clearSamplingPressure();
+      const consecutive=Number.isInteger(frame)&&frame>0&&frame===lastSubmissionFrame+1;
+      if(!consecutive)qualifying.length=0;
+      lastSubmissionFrame=Number.isInteger(frame)&&frame>0?frame:0;
+      const eligible=!samplingControl&&active&&quality==='auto'&&tracked&&renderPath==='motion-target'&&
+        motionQualityScale===scales.at(-1)&&motionSamples>=2&&compacted&&shadowUploadGuard===null&&
+        sceneBufferWidth>0&&sceneBufferHeight>0;
+      if(!eligible){qualifying.length=0;return;}
+      const previous=qualifying.at(-1);
+      if(previous&&(previous.sceneBufferWidth!==sceneBufferWidth||previous.sceneBufferHeight!==sceneBufferHeight||previous.motionSamples!==motionSamples))qualifying.length=0;
+      qualifying.push({frame,motionQualityScale,motionSamples,sceneBufferWidth,sceneBufferHeight});
+      if(qualifying.length>2)qualifying.shift();
+    },
+    // Call on every admission decision. A free slot breaks the pressure
+    // interval. Two consecutive qualifying submissions plus a full two-slot
+    // queue prove that older idle/high-resolution/shadow work cannot trigger
+    // this last Auto-only tradeoff. No target allocation occurs here.
+    samplingPressure(now,{blocked=false,active=false,quality,pendingFrames=0,maxInFlight=0,enabled=false,oldestPendingMs=0}={}){
+      if(!active||quality!=='auto'){rest();return false;}
+      if(singleSample)return false;
+      if(samplingControl||!enabled||!blocked||pendingFrames!==2||maxInFlight!==2||
+        qualifying.length!==2||!Number.isFinite(now)||!Number.isFinite(oldestPendingMs)||oldestPendingMs<=250){clearSamplingPressure();return false;}
+      if(samplingPressureSince===null)samplingPressureSince=now;
+      samplingPressureMs=Math.max(0,now-samplingPressureSince);
+      if(samplingPressureMs<900||now-lastChange<900)return false;
+      singleSample=true;samplingChanges++;
+      samplingTrigger={atMs:now,reason:'minimum-scale-gpu-pressure',pressureMs:samplingPressureMs,oldestPendingMs,
+        pendingFrames,qualifyingSubmissions:qualifying.map(frame=>({...frame}))};
+      return true;
+    },
+    // ResizeObserver/device changes may precede the next admitted render.
+    // Invalidate old allocation evidence immediately, not after one more draw.
+    surface({width,height,scenePixelRatio,devicePixelRatio}={}){
+      const next={width,height,scenePixelRatio,devicePixelRatio};
+      if(Object.values(next).some(value=>!Number.isFinite(value)||value<=0)){samplingSurface=null;rest();return;}
+      if(samplingSurface&&Object.keys(next).some(key=>next[key]!==samplingSurface[key]))rest();
+      samplingSurface=next;
+    },
+    rest,
+    reset(){level=0;changes=0;lastChange=-Infinity;lastEvaluation=0;samples.length=0;p75=0;pressureChanges=0;lastPressureAgeMs=0;
+      rest();samplingChanges=0;samplingTrigger=null;lastSubmissionFrame=0;samplingSurface=null;},
     get scale(){return scales[level];},
+    get singleSample(){return singleSample;},
     getDiagnostics(){return {mode:'measured-motion-buffer',level,scale:scales[level],changes,lastP75Ms:p75,targetMs:24,minimumScale:scales.at(-1),cooldownMs:900,
-      pressureChanges,lastPressureAgeMs,pressureThresholdMs:250,recoversAtRest:true};},
+      pressureChanges,lastPressureAgeMs,pressureThresholdMs:250,recoversAtRest:true,
+      sampling:{control:samplingControl,latched:singleSample,mode:singleSample?'adaptive-single':'multisample',
+        qualifyingSubmissions:qualifying.length,requiredSubmissions:2,pressureMs:samplingPressureMs,requiredPressureMs:900,
+        pressureThresholdMs:250,changes:samplingChanges,surface:samplingSurface?{...samplingSurface}:null,lastTrigger:samplingTrigger?{...samplingTrigger,
+          qualifyingSubmissions:samplingTrigger.qualifyingSubmissions.map(frame=>({...frame}))}:null}};},
   };
 }

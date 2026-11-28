@@ -1,6 +1,6 @@
 /** A small, connected landscape route in mapped metres. Tree positions are
  * inputs, never outputs. The same polygons drive drawing, meshes and budget. */
-import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.39.0';
+import {footprintFit,overlapArea,footprintArea} from './footprint-fit.js?v=1.40.0';
 
 const distance=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
 const rectangle=r=>[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.length],[r.x,r.y+r.length]];

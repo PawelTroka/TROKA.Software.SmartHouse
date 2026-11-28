@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.js';
-import {toWorld} from './orientation.js?v=1.39.0';
+import {toWorld} from './orientation.js?v=1.40.0';
 
 export const JACUZZI_MOODS=Object.freeze({lagoon:'#53c9bd',amber:'#f0bb76',aurora:'#7fb9dd'});
 

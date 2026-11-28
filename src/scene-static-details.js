@@ -1,5 +1,28 @@
 import * as THREE from '../vendor/three.module.js';
-import {applyExteriorSurface} from './exterior-materials.js?v=1.39.0';
+import {applyExteriorSurface} from './exterior-materials.js?v=1.40.0';
+import {batchGroup} from './interior-geometry.js?v=1.40.0';
+
+// These repeated names describe fixed decorative members, never interactive
+// targets. Keeping each assembly/material/shadow flag separate preserves the
+// sauna's apertures and the precise wooden surfaces with far fewer draw calls.
+const repeatedDetails=new Set(['sauna-timber-fin','sauna-bench-slat','sauna-bench-base','sauna-glazing-mullion','sauna-glazing-head','sauna-glazing-sill','sauna-heater-stone']);
+export function batchRepeatedGardenDetails(root){
+  const parents=[];root.traverse(group=>{if(group.isGroup)parents.push(group);});let saved=0,parts=0;
+  for(const parent of parents){
+    const groups=new Map();
+    for(const mesh of parent.children){
+      if(!mesh.isMesh||mesh.isInstancedMesh||!repeatedDetails.has(mesh.name)||Array.isArray(mesh.material)||mesh.material.transparent||mesh.userData.staticDetailBatch)continue;
+      const key=[mesh.name,mesh.material.id,mesh.castShadow,mesh.receiveShadow,mesh.renderOrder].join('|');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(mesh);
+    }
+    for(const meshes of groups.values()){
+      if(meshes.length<3)continue;const first=meshes[0],bucket=new THREE.Group();parent.add(bucket);for(const mesh of meshes)bucket.add(mesh);
+      batchGroup(bucket);
+      for(const batch of [...bucket.children]){batch.name=first.name;batch.castShadow=first.castShadow;batch.receiveShadow=first.receiveShadow;batch.renderOrder=first.renderOrder;batch.userData.staticDetailBatch=true;batch.userData.componentCount=meshes.length;parent.add(batch);}
+      parent.remove(bucket);saved+=meshes.length-1;parts+=meshes.length;
+    }
+  }
+  return {parts,savedDrawCalls:saved};
+}
 
 // Only the garden builder's unnamed, fixed, single-material boxes participate.
 // Named targets, glass sorting, vehicles, selectable terrain and fixture groups

@@ -1,164 +1,170 @@
 {
   "version": "1.40.0",
-  "sourceHead": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-  "workflowRun": 46085953841,
-  "workflowUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/46085953841",
-  "status": "release-candidate-performance-open",
+  "sourceHead": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+  "workflowRun": 46090035697,
+  "workflowUrl": "https://github.com/PawelTroka/TROKA.Software.SmartHouse/actions/runs/46090035697",
+  "status": "release-validation-passed",
   "tests": {
-    "passed": 1038,
+    "passed": 1056,
     "failed": 0
   },
   "build": {
-    "head": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-    "sourceTree": "d6c60fd027ddbe5e9cd8ec598171ccb4772a917b",
+    "head": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+    "sourceTree": "ee798ec2bf2f1f138284fdb5caf671cf0d2c00b6",
     "files": 565,
     "mismatches": []
   },
   "ci": {
-    "passed": 22,
-    "failed": 2,
+    "passed": 25,
+    "failed": 0,
     "jobs": [
       {
-        "id": 140795443014,
-        "name": "GPU phase diagnostic",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443263,
-        "name": "Design studio \u00b7 styles-minimal",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443268,
-        "name": "Measured neighbourhood and sea-height browser checks",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443312,
-        "name": "Interior layouts, materials and mobile walkthrough",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443322,
+        "id": 140808567431,
         "name": "WebGL regression \u00b7 nadmorska",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443328,
-        "name": "Walking performance \u00b7 living",
-        "status": "completed",
-        "conclusion": "failure"
-      },
-      {
-        "id": 140795443334,
-        "name": "Design studio \u00b7 styles",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443340,
-        "name": "Opaque foliage coverage fidelity",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443364,
-        "name": "Geometry, build and WebGL browser checks",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443365,
-        "name": "WebGL regression \u00b7 garage",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443368,
+        "id": 140808567604,
         "name": "Cinema and kitchen \u00b7 kitchen",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443380,
-        "name": "Design studio \u00b7 garden-living",
+        "id": 140808567636,
+        "name": "Motion MSAA diagnostic",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443383,
-        "name": "Architectural rendering comparison",
+        "id": 140808567645,
+        "name": "WebGL regression \u00b7 garage",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443397,
-        "name": "Cinema and kitchen \u00b7 layouts",
+        "id": 140808567648,
+        "name": "Design studio \u00b7 styles-minimal",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443403,
-        "name": "Design studio \u00b7 controls",
+        "id": 140808567659,
+        "name": "Corner pavilion alternatives and mobile checks",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443420,
+        "id": 140808567672,
+        "name": "Opaque foliage coverage fidelity",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567691,
         "name": "Covers and glazing \u00b7 garden",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443428,
-        "name": "Design studio \u00b7 properties",
+        "id": 140808567705,
+        "name": "GPU phase diagnostic",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443434,
-        "name": "Walking performance \u00b7 garden",
-        "status": "completed",
-        "conclusion": "failure"
-      },
-      {
-        "id": 140795443441,
-        "name": "Covers and glazing \u00b7 interiors",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "id": 140795443475,
+        "id": 140808567711,
         "name": "WebGL regression \u00b7 sternicza",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443482,
-        "name": "Living fit-outs \u00b7 office-basement",
+        "id": 140808567727,
+        "name": "Cinema and kitchen \u00b7 layouts",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443486,
-        "name": "Living fit-outs \u00b7 architecture",
+        "id": 140808567740,
+        "name": "Design studio \u00b7 controls",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443496,
+        "id": 140808567770,
         "name": "Living fit-outs \u00b7 guests",
         "status": "completed",
         "conclusion": "success"
       },
       {
-        "id": 140795443512,
-        "name": "Corner pavilion alternatives and mobile checks",
+        "id": 140808567771,
+        "name": "Living fit-outs \u00b7 architecture",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567774,
+        "name": "Design studio \u00b7 properties",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567781,
+        "name": "Architectural rendering comparison",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567785,
+        "name": "Design studio \u00b7 styles",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567787,
+        "name": "Living fit-outs \u00b7 office-basement",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567791,
+        "name": "Geometry, build and WebGL browser checks",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567814,
+        "name": "Design studio \u00b7 garden-living",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567816,
+        "name": "Covers and glazing \u00b7 interiors",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567823,
+        "name": "Interior layouts, materials and mobile walkthrough",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567827,
+        "name": "Walking performance \u00b7 garden",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567835,
+        "name": "Measured neighbourhood and sea-height browser checks",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 140808567850,
+        "name": "Walking performance \u00b7 living",
         "status": "completed",
         "conclusion": "success"
       }
@@ -166,81 +172,7 @@
   },
   "walking": {
     "living": {
-      "status": "failed",
-      "host": {
-        "platform": "linux",
-        "release": "7.0.0-1018-aws",
-        "arch": "x64",
-        "cpuModel": "Intel(R) Xeon(R) 6975P-C",
-        "logicalCpus": 4,
-        "totalMemoryGB": 15.333541870117188,
-        "node": "v22.23.5",
-        "chromium": "141.0.7390.37",
-        "webgl": {
-          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
-          "vendor": "Google Inc. (Google)",
-          "canvasSamples": 4,
-          "sampleCountContext": "baseline-1.39-idle-default-framebuffer"
-        }
-      },
-      "capturePolicy": {
-        "minimumSamples": 32,
-        "warmupMinimumMs": 4000,
-        "warmupLimitMs": 30000,
-        "captureLimitMs": 60000,
-        "initializationLimitMs": 60000,
-        "stableBufferMinimumFrames": 12,
-        "stableBufferFrameSource": "public-rendered-frame-counter",
-        "stableBufferMinimumMs": 1500,
-        "shuttleHalfWidthM": 0.35,
-        "discardedInitialIntervals": 0,
-        "regressionEnforced": true
-      },
-      "runs": [
-        {
-          "case": "baseline-1.39",
-          "route": "living",
-          "sampleAdequate": false,
-          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (4 RAF / 5 rendered)",
-          "rendererThroughput": {
-            "frames": 5,
-            "elapsedMs": 60239.69999999998,
-            "framesPerSecond": 0.0830017413765341,
-            "source": "public-rendered-frame-counter"
-          },
-          "navigationVerified": true
-        },
-        {
-          "case": "candidate-legacy",
-          "route": "living",
-          "sampleAdequate": false,
-          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (1129 RAF / 18 rendered)",
-          "rendererThroughput": {
-            "frames": 18,
-            "elapsedMs": 60412.100000000035,
-            "framesPerSecond": 0.29795355566186227,
-            "source": "public-rendered-frame-counter"
-          },
-          "navigationVerified": true
-        },
-        {
-          "case": "candidate-current",
-          "route": "living",
-          "sampleAdequate": false,
-          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (983 RAF / 17 rendered)",
-          "rendererThroughput": {
-            "frames": 17,
-            "elapsedMs": 60364.80000000005,
-            "framesPerSecond": 0.28162107718405405,
-            "source": "public-rendered-frame-counter"
-          },
-          "navigationVerified": true
-        }
-      ],
-      "rawReport": "walking-living-report.json.gz"
-    },
-    "garden": {
-      "status": "failed",
+      "status": "passed",
       "host": {
         "platform": "linux",
         "release": "7.0.0-1018-aws",
@@ -273,51 +205,591 @@
       "runs": [
         {
           "case": "baseline-1.39",
+          "route": "living",
+          "status": "sample-limited-control",
+          "sampleAdequate": false,
+          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (4 RAF / 6 rendered)",
+          "rendererThroughput": {
+            "frames": 6,
+            "elapsedMs": 60241.5,
+            "framesPerSecond": 0.09959911356788925,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true,
+          "motionTargetChecks": null,
+          "duringSampling": null,
+          "duringMode": null,
+          "duringSamples": null,
+          "idleSampling": null,
+          "idleMode": null
+        },
+        {
+          "case": "candidate-legacy",
+          "route": "living",
+          "status": "passed",
+          "sampleAdequate": true,
+          "sampleLimitation": null,
+          "rendererThroughput": {
+            "frames": 32,
+            "elapsedMs": 51667,
+            "framesPerSecond": 0.6193508428977877,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true,
+          "motionTargetChecks": {
+            "status": "passed",
+            "supported": true,
+            "movingPath": "motion-target",
+            "restingPath": "ao-composer",
+            "unsupportedReason": null,
+            "sceneBuffers": [
+              {
+                "width": 691,
+                "height": 315,
+                "pixels": 217665,
+                "renderPath": "motion-target",
+                "scenePixelRatio": 0.54,
+                "motionSamples": 0,
+                "canvasSamples": 4,
+                "motionSupported": true,
+                "motionUnsupportedReason": null,
+                "frames": 2212
+              }
+            ],
+            "canvasBuffers": [
+              {
+                "width": 1280,
+                "height": 584,
+                "pixels": 747520,
+                "frames": 2212
+              }
+            ]
+          },
+          "duringSampling": {
+            "control": null,
+            "latched": true,
+            "mode": "adaptive-single",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 0.54,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 67133.6,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 3149.9000000000087,
+              "oldestPendingMs": 7348.099999999977,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 9,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "duringMode": "adaptive-single",
+          "duringSamples": 0,
+          "idleSampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 1,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 67133.6,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 3149.9000000000087,
+              "oldestPendingMs": 7348.099999999977,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 9,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "idleMode": "idle"
+        },
+        {
+          "case": "candidate-current",
+          "route": "living",
+          "status": "passed",
+          "sampleAdequate": true,
+          "sampleLimitation": null,
+          "rendererThroughput": {
+            "frames": 32,
+            "elapsedMs": 54880.09999999998,
+            "framesPerSecond": 0.5830893165282136,
+            "source": "public-rendered-frame-counter"
+          },
+          "navigationVerified": true,
+          "motionTargetChecks": {
+            "status": "passed",
+            "supported": true,
+            "movingPath": "motion-target",
+            "restingPath": "ao-composer",
+            "unsupportedReason": null,
+            "sceneBuffers": [
+              {
+                "width": 691,
+                "height": 315,
+                "pixels": 217665,
+                "renderPath": "motion-target",
+                "scenePixelRatio": 0.54,
+                "motionSamples": 0,
+                "canvasSamples": 4,
+                "motionSupported": true,
+                "motionUnsupportedReason": null,
+                "frames": 1734
+              }
+            ],
+            "canvasBuffers": [
+              {
+                "width": 1280,
+                "height": 584,
+                "pixels": 747520,
+                "frames": 1734
+              }
+            ]
+          },
+          "duringSampling": {
+            "control": null,
+            "latched": true,
+            "mode": "adaptive-single",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 0.54,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 70809.7,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 916.5999999999913,
+              "oldestPendingMs": 4368,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 11,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "duringMode": "adaptive-single",
+          "duringSamples": 0,
+          "idleSampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 1,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 70809.7,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 916.5999999999913,
+              "oldestPendingMs": 4368,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 11,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "idleMode": "idle"
+        }
+      ],
+      "rawReport": "walking-living-report.json.gz"
+    },
+    "garden": {
+      "status": "passed",
+      "host": {
+        "platform": "linux",
+        "release": "7.0.0-1018-aws",
+        "arch": "x64",
+        "cpuModel": "Intel(R) Xeon(R) 6975P-C",
+        "logicalCpus": 4,
+        "totalMemoryGB": 15.333549499511719,
+        "node": "v22.23.5",
+        "chromium": "141.0.7390.37",
+        "webgl": {
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "vendor": "Google Inc. (Google)",
+          "canvasSamples": 4,
+          "sampleCountContext": "baseline-1.39-idle-default-framebuffer"
+        }
+      },
+      "capturePolicy": {
+        "minimumSamples": 32,
+        "warmupMinimumMs": 4000,
+        "warmupLimitMs": 30000,
+        "captureLimitMs": 60000,
+        "initializationLimitMs": 60000,
+        "stableBufferMinimumFrames": 12,
+        "stableBufferFrameSource": "public-rendered-frame-counter",
+        "stableBufferMinimumMs": 1500,
+        "shuttleHalfWidthM": 0.35,
+        "discardedInitialIntervals": 0,
+        "regressionEnforced": true
+      },
+      "runs": [
+        {
+          "case": "baseline-1.39",
           "route": "garden",
+          "status": "sample-limited-control",
           "sampleAdequate": false,
           "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (7 RAF / 8 rendered)",
           "rendererThroughput": {
             "frames": 8,
-            "elapsedMs": 60287.5,
-            "framesPerSecond": 0.13269749118805724,
+            "elapsedMs": 60160.20000000001,
+            "framesPerSecond": 0.13297828132220302,
             "source": "public-rendered-frame-counter"
           },
-          "navigationVerified": true
+          "navigationVerified": true,
+          "motionTargetChecks": null,
+          "duringSampling": null,
+          "duringMode": null,
+          "duringSamples": null,
+          "idleSampling": null,
+          "idleMode": null
         },
         {
           "case": "candidate-legacy",
           "route": "garden",
-          "sampleAdequate": false,
-          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (1592 RAF / 22 rendered)",
+          "status": "passed",
+          "sampleAdequate": true,
+          "sampleLimitation": null,
           "rendererThroughput": {
-            "frames": 22,
-            "elapsedMs": 60501.5,
-            "framesPerSecond": 0.363627348082279,
+            "frames": 32,
+            "elapsedMs": 49610,
+            "framesPerSecond": 0.6450312437008667,
             "source": "public-rendered-frame-counter"
           },
-          "navigationVerified": true
+          "navigationVerified": true,
+          "motionTargetChecks": {
+            "status": "passed",
+            "supported": true,
+            "movingPath": "motion-target",
+            "restingPath": "ao-composer",
+            "unsupportedReason": null,
+            "sceneBuffers": [
+              {
+                "width": 691,
+                "height": 315,
+                "pixels": 217665,
+                "renderPath": "motion-target",
+                "scenePixelRatio": 0.54,
+                "motionSamples": 0,
+                "canvasSamples": 4,
+                "motionSupported": true,
+                "motionUnsupportedReason": null,
+                "frames": 2222
+              }
+            ],
+            "canvasBuffers": [
+              {
+                "width": 1280,
+                "height": 584,
+                "pixels": 747520,
+                "frames": 2222
+              }
+            ]
+          },
+          "duringSampling": {
+            "control": null,
+            "latched": true,
+            "mode": "adaptive-single",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 0.54,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 63894.7,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 900,
+              "oldestPendingMs": 7113.899999999965,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 9,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "duringMode": "adaptive-single",
+          "duringSamples": 0,
+          "idleSampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 1,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 63894.7,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 900,
+              "oldestPendingMs": 7113.899999999965,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 9,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "idleMode": "idle"
         },
         {
           "case": "candidate-current",
           "route": "garden",
-          "sampleAdequate": false,
-          "sampleLimitation": "60000 ms cap reached before 32 RAF and rendered frames (1607 RAF / 25 rendered)",
+          "status": "passed",
+          "sampleAdequate": true,
+          "sampleLimitation": null,
           "rendererThroughput": {
-            "frames": 25,
-            "elapsedMs": 60622.59999999998,
-            "framesPerSecond": 0.41238745946231287,
+            "frames": 32,
+            "elapsedMs": 43980.5,
+            "framesPerSecond": 0.7275951842293744,
             "source": "public-rendered-frame-counter"
           },
-          "navigationVerified": true
+          "navigationVerified": true,
+          "motionTargetChecks": {
+            "status": "passed",
+            "supported": true,
+            "movingPath": "motion-target",
+            "restingPath": "ao-composer",
+            "unsupportedReason": null,
+            "sceneBuffers": [
+              {
+                "width": 691,
+                "height": 315,
+                "pixels": 217665,
+                "renderPath": "motion-target",
+                "scenePixelRatio": 0.54,
+                "motionSamples": 0,
+                "canvasSamples": 4,
+                "motionSupported": true,
+                "motionUnsupportedReason": null,
+                "frames": 2123
+              }
+            ],
+            "canvasBuffers": [
+              {
+                "width": 1280,
+                "height": 584,
+                "pixels": 747520,
+                "frames": 2123
+              }
+            ]
+          },
+          "duringSampling": {
+            "control": null,
+            "latched": true,
+            "mode": "adaptive-single",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 0.54,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 58066.7,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 900,
+              "oldestPendingMs": 5007.799999999988,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 9,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "duringMode": "adaptive-single",
+          "duringSamples": 0,
+          "idleSampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 1,
+            "surface": {
+              "width": 1280,
+              "height": 584,
+              "scenePixelRatio": 1,
+              "devicePixelRatio": 1
+            },
+            "lastTrigger": {
+              "atMs": 58066.7,
+              "reason": "minimum-scale-gpu-pressure",
+              "pressureMs": 900,
+              "oldestPendingMs": 5007.799999999988,
+              "pendingFrames": 2,
+              "qualifyingSubmissions": [
+                {
+                  "frame": 9,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                },
+                {
+                  "frame": 10,
+                  "motionQualityScale": 0.54,
+                  "motionSamples": 4,
+                  "sceneBufferWidth": 691,
+                  "sceneBufferHeight": 315
+                }
+              ]
+            }
+          },
+          "idleMode": "idle"
         }
       ],
       "rawReport": "walking-garden-report.json.gz"
     }
   },
-  "interpretation": "Actual renderer submissions are separate from RAF callbacks and are not presented-frame FPS. These approximately 60-second samples all fall short of the unchanged 32-draw minimum; no percentile or percentage speedup is claimed. Software-GPU results do not establish performance on the user device.",
+  "interpretation": "Actual renderer submissions are separate from RAF callbacks and are not presented-frame FPS. Each route compares the unchanged 1.39 control and both candidate arrangements on the same software-GPU host. A sample-limited control cannot support percentile or percentage-speedup claims. Results from different route hosts are not a hardware-normalized comparison. Native performance on the user device remains unverified.",
   "movingImageComparison": {
     "status": "passed",
-    "testedMergeCommit": "0e6ec79bfc0d42a0319e22813b5aa495aeecf165",
+    "testedMergeCommit": "e4366ee92a0fab2ceaa6ac7f75dd3f1b8a0765aa",
     "comparisons": {
       "aa": {
         "width": 1280,
@@ -351,50 +823,147 @@
       }
     },
     "rawReport": "motion-coverage-report.json.gz",
-    "idleRestoration": [
+    "samplingControl": "explicit motionMsaa=keep in both contexts"
+  },
+  "samplingStudy": {
+    "status": "passed",
+    "pairs": [
       {
-        "id": "control",
-        "status": "passed",
-        "idlePixels": {
+        "index": 1,
+        "caseOrder": [
+          "pair1-control",
+          "pair1-single"
+        ],
+        "decision": {
+          "control": {
+            "samples": 4,
+            "medianLowerMs": 3372.6999999999825,
+            "medianUpperMs": 3423.0499999999884,
+            "medianMidpointMs": 3397.8749999999854,
+            "observedRangeMs": {
+              "lower": 3365.3000000000466,
+              "upper": 3436.600000000035
+            },
+            "relativeRange": 0.020983703049696843
+          },
+          "single": {
+            "samples": 4,
+            "medianLowerMs": 1665.250000000029,
+            "medianUpperMs": 1715.5,
+            "medianMidpointMs": 1690.3750000000146,
+            "observedRangeMs": {
+              "lower": 1624.5,
+              "upper": 1744.0999999999767
+            },
+            "relativeRange": 0.07075353102120872
+          },
+          "apparentReductionFraction": 0.5025199573262638,
+          "apparentReductionBounds": {
+            "lower": 0.4913570729682424,
+            "upper": 0.513518645652259
+          },
+          "overlappingMedianBounds": false,
+          "variableWithinCase": false,
+          "repeat": true,
+          "reason": "material-apparent-improvement",
+          "interpretation": "Diagnostic comparison of isolated frame availability only; not a GPU-duration, equivalence, or walking-FPS claim."
+        },
+        "motionPixels": {
+          "status": "measured",
           "width": 1280,
           "height": 584,
           "pixels": 747520,
           "threshold": 15,
-          "exactChangedPixels": 0,
-          "exactChangedFraction": 0,
-          "changedPixels": 0,
-          "fraction": 0,
-          "changedChannels": 0,
-          "maximumChannelDifference": 0,
-          "meanAbsoluteChannelDifference": 0,
-          "exactDifferenceBounds": null,
-          "exactRGBA": true
-        }
+          "exactChangedPixels": 194619,
+          "exactChangedFraction": 0.2603529002568493,
+          "changedPixels": 10241,
+          "fraction": 0.013699967893835617,
+          "changedChannels": 474224,
+          "maximumChannelDifference": 134,
+          "meanAbsoluteChannelDifference": 0.6900905661386987,
+          "exactDifferenceBounds": [
+            0,
+            0,
+            1279,
+            583
+          ],
+          "exactRGBA": false
+        },
+        "interpretation": "Pixel differences are the measured cost in motion image quality. They do not pass or fail visual equivalence.",
+        "elapsedMs": 177
       },
       {
-        "id": "optimized",
-        "status": "passed",
-        "idlePixels": {
+        "index": 2,
+        "caseOrder": [
+          "pair2-single",
+          "pair2-control"
+        ],
+        "decision": {
+          "control": {
+            "samples": 4,
+            "medianLowerMs": 3407.2000000000116,
+            "medianUpperMs": 3457.4000000000233,
+            "medianMidpointMs": 3432.3000000000175,
+            "observedRangeMs": {
+              "lower": 3382.4000000000233,
+              "upper": 3482.70000000007
+            },
+            "relativeRange": 0.02922238732046909
+          },
+          "single": {
+            "samples": 4,
+            "medianLowerMs": 1670.2000000000116,
+            "medianUpperMs": 1720.3500000000058,
+            "medianMidpointMs": 1695.2750000000087,
+            "observedRangeMs": {
+              "lower": 1669.4000000000233,
+              "upper": 1721.5
+            },
+            "relativeRange": 0.03073247703173612
+          },
+          "apparentReductionFraction": 0.5060819275704338,
+          "apparentReductionBounds": {
+            "lower": 0.4950839398919934,
+            "upper": 0.5169202290738704
+          },
+          "overlappingMedianBounds": false,
+          "variableWithinCase": false,
+          "repeat": true,
+          "reason": "material-apparent-improvement",
+          "interpretation": "Diagnostic comparison of isolated frame availability only; not a GPU-duration, equivalence, or walking-FPS claim.",
+          "furtherRepeatAllowed": false
+        },
+        "motionPixels": {
+          "status": "measured",
           "width": 1280,
           "height": 584,
           "pixels": 747520,
           "threshold": 15,
-          "exactChangedPixels": 0,
-          "exactChangedFraction": 0,
-          "changedPixels": 0,
-          "fraction": 0,
-          "changedChannels": 0,
-          "maximumChannelDifference": 0,
-          "meanAbsoluteChannelDifference": 0,
-          "exactDifferenceBounds": null,
-          "exactRGBA": true
-        }
+          "exactChangedPixels": 194619,
+          "exactChangedFraction": 0.2603529002568493,
+          "changedPixels": 10241,
+          "fraction": 0.013699967893835617,
+          "changedChannels": 474224,
+          "maximumChannelDifference": 134,
+          "meanAbsoluteChannelDifference": 0.6900905661386987,
+          "exactDifferenceBounds": [
+            0,
+            0,
+            1279,
+            583
+          ],
+          "exactRGBA": false
+        },
+        "interpretation": "Pixel differences are the measured cost in motion image quality. They do not pass or fail visual equivalence.",
+        "elapsedMs": 174
       }
-    ]
+    ],
+    "rawReport": "motion-sampling-report.json.gz",
+    "interpretation": "Explicit keep/single controls measure isolated frame completion availability and moving-image quality. This study is separate from default Automatic walking acceptance."
   },
   "gpuDiagnostic": {
     "status": "passed",
     "rawReport": "gpu-phase-report.json.gz",
-    "interpretation": "Independent completion fences continue to locate the dominant delay in scene work/resolve. Inconsistent raw timer attribution is retained and must not be treated as a speedup."
+    "interpretation": "Raw timer attribution and independent completion bounds are retained separately; successful acquisition is not performance acceptance."
   }
 }

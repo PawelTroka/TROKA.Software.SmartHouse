@@ -1,7 +1,7 @@
 // Garden concepts use stable IDs in saved settings and share links. Finishes and
 // ornamental modules have no authority over site measurements, planting or prices.
-import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.39.0';
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.39.0';
+import {getExteriorSurfaceSpec} from './exterior-recipes.js?v=1.40.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.40.0';
 export const DEFAULT_DESIGN_STYLE = 'current';
 
 // House finishes are applied to the owner's facade only.

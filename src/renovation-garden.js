@@ -1,7 +1,7 @@
 /** Architectural garden proposals in site metres. These feed the existing pool,
  * excavation, sunlight, privacy, plan and budget models; they are not overlays. */
-import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.39.0';
-import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.39.0';
+import {summerGardenEnabled,summerPoolBounds,SUMMER_FIREPIT,summerGardenFurniture} from './summer-garden.js?v=1.40.0';
+import {MINIMAL_STYLE_DEFINITIONS} from './minimal-style-definitions.js?v=1.40.0';
 const rect=(x,y,width,length)=>Object.freeze({x,y,width,length});
 const scheme=(name,pool,firepit,dining,loungers,path,beds)=>Object.freeze({
   name,pool:rect(...pool),firepit:Object.freeze(firepit),dining:rect(...dining),

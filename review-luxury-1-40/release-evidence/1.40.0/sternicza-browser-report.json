@@ -3,14 +3,14 @@
   "scenarioGroup": "sternicza",
   "renderQuality": "eco",
   "status": "passed",
-  "startedAt": "2026-11-28T00:08:55.831Z",
+  "startedAt": "2026-11-28T00:51:42.362Z",
   "scenarios": [
     {
       "name": "sternicza",
       "status": "passed",
-      "startedAt": "2026-11-28T00:09:07.234Z",
+      "startedAt": "2026-11-28T00:51:53.812Z",
       "firstCheck": 2,
-      "durationMs": 278205,
+      "durationMs": 284416,
       "checks": 13
     }
   ],
@@ -97,19 +97,19 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 13,
+        "frame": 12,
         "pending": false,
         "width": 982,
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 166,
+        "polls": 1,
         "restarts": 0,
-        "fencePolls": 366,
-        "fenceElapsedMs": 9224.899999999994,
-        "elapsedMs": 17760.599999999977
+        "fencePolls": 528,
+        "fenceElapsedMs": 13387.600000000006,
+        "elapsedMs": 13387.699999999983
       },
-      "elapsedMs": 18081
+      "elapsedMs": 13695
     },
     {
       "name": "sternicza-windows-all",
@@ -117,7 +117,7 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 14,
+        "frame": 13,
         "pending": false,
         "width": 982,
         "height": 572,
@@ -125,11 +125,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 288,
-        "fenceElapsedMs": 7210.600000000006,
-        "elapsedMs": 7210.799999999988
+        "fencePolls": 293,
+        "fenceElapsedMs": 7357.400000000023,
+        "elapsedMs": 7357.5
       },
-      "elapsedMs": 7478
+      "elapsedMs": 7612
     },
     {
       "name": "first-floor-garden-night",
@@ -137,7 +137,7 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 16,
+        "frame": 15,
         "pending": false,
         "width": 982,
         "height": 572,
@@ -145,19 +145,19 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 640,
-        "fenceElapsedMs": 16105.5,
-        "elapsedMs": 16105.800000000017
+        "fencePolls": 626,
+        "fenceElapsedMs": 15829.5,
+        "elapsedMs": 15829.699999999983
       },
-      "elapsedMs": 16293
+      "elapsedMs": 15994
     },
     {
       "name": "sternicza-night-before-motion",
       "status": "passed",
-      "deadlineMs": 119932,
+      "deadlineMs": 119954,
       "attempts": 1,
       "readiness": {
-        "frame": 16,
+        "frame": 15,
         "pending": false,
         "width": 982,
         "height": 572,
@@ -165,19 +165,19 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 8,
-        "fenceElapsedMs": 176,
-        "elapsedMs": 176
+        "fencePolls": 10,
+        "fenceElapsedMs": 226.80000000004657,
+        "elapsedMs": 226.90000000002328
       },
-      "elapsedMs": 448
+      "elapsedMs": 502
     },
     {
       "name": "sternicza-night-motion-target",
       "status": "passed",
-      "deadlineMs": 112154,
+      "deadlineMs": 111717,
       "attempts": 1,
       "readiness": {
-        "frame": 18,
+        "frame": 17,
         "pending": false,
         "width": 982,
         "height": 572,
@@ -185,16 +185,36 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 661,
-        "fenceElapsedMs": 16636.400000000023,
-        "elapsedMs": 16636.5
+        "fencePolls": 656,
+        "fenceElapsedMs": 16513.100000000035,
+        "elapsedMs": 16513.100000000035
       },
-      "elapsedMs": 16884
+      "elapsedMs": 16788
     },
     {
       "name": "sternicza-night-motion-restored",
       "status": "passed",
-      "deadlineMs": 95024,
+      "deadlineMs": 94688,
+      "attempts": 1,
+      "readiness": {
+        "frame": 19,
+        "pending": false,
+        "width": 982,
+        "height": 572,
+        "path": "direct",
+        "fence": "signaled",
+        "polls": 1,
+        "restarts": 0,
+        "fencePolls": 699,
+        "fenceElapsedMs": 17600.100000000035,
+        "elapsedMs": 17600.29999999999
+      },
+      "elapsedMs": 17889
+    },
+    {
+      "name": "sternicza-day-comparison",
+      "status": "passed",
+      "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
         "frame": 20,
@@ -205,31 +225,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 705,
-        "fenceElapsedMs": 17720.5,
-        "elapsedMs": 17720.599999999977
+        "fencePolls": 180,
+        "fenceElapsedMs": 4511.200000000012,
+        "elapsedMs": 4511.399999999965
       },
-      "elapsedMs": 17995
-    },
-    {
-      "name": "sternicza-day-comparison",
-      "status": "passed",
-      "deadlineMs": 120000,
-      "attempts": 1,
-      "readiness": {
-        "frame": 21,
-        "pending": false,
-        "width": 982,
-        "height": 572,
-        "path": "direct",
-        "fence": "signaled",
-        "polls": 1,
-        "restarts": 0,
-        "fencePolls": 178,
-        "fenceElapsedMs": 4455.100000000035,
-        "elapsedMs": 4455.200000000012
-      },
-      "elapsedMs": 4620
+      "elapsedMs": 4718
     },
     {
       "name": "attic-street-night",
@@ -237,19 +237,19 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 2,
+        "frame": 3,
         "pending": false,
         "width": 982,
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 1,
+        "polls": 221,
         "restarts": 0,
         "fencePolls": 418,
-        "fenceElapsedMs": 10494.900000000023,
-        "elapsedMs": 10495.199999999953
+        "fenceElapsedMs": 10567.799999999988,
+        "elapsedMs": 22098.899999999965
       },
-      "elapsedMs": 10638
+      "elapsedMs": 22276
     },
     {
       "name": "mobile-night",
@@ -257,7 +257,7 @@
       "deadlineMs": 120000,
       "attempts": 1,
       "readiness": {
-        "frame": 3,
+        "frame": 4,
         "pending": false,
         "width": 360,
         "height": 447,
@@ -265,11 +265,11 @@
         "fence": "signaled",
         "polls": 1,
         "restarts": 0,
-        "fencePolls": 92,
-        "fenceElapsedMs": 2296.4000000000233,
-        "elapsedMs": 2296.5
+        "fencePolls": 95,
+        "fenceElapsedMs": 2375.8000000000466,
+        "elapsedMs": 2376
       },
-      "elapsedMs": 2401
+      "elapsedMs": 2497
     },
     {
       "name": "sternicza-privacy-combined-orbit",
@@ -283,13 +283,13 @@
         "height": 572,
         "path": "direct",
         "fence": "signaled",
-        "polls": 189,
+        "polls": 193,
         "restarts": 0,
-        "fencePolls": 314,
-        "fenceElapsedMs": 7887.899999999965,
-        "elapsedMs": 14944.400000000023
+        "fencePolls": 317,
+        "fenceElapsedMs": 8024,
+        "elapsedMs": 15437.700000000012
       },
-      "elapsedMs": 15107
+      "elapsedMs": 15609
     }
   ],
   "nightMotion": {
@@ -298,7 +298,7 @@
     "pre": {
       "renderer": "webgl",
       "interacting": false,
-      "frames": 16,
+      "frames": 15,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -317,7 +317,7 @@
           "shadowUploadGuard": "shadow-pass",
           "orderedBatches": 0,
           "orderedInstances": 0,
-          "passes": 16,
+          "passes": 15,
           "opaqueOrder": "default",
           "opaqueCoverageMaterials": 0,
           "opaqueCoverageMeshes": 0,
@@ -370,7 +370,7 @@
     "firstMotion": {
       "renderer": "webgl",
       "interacting": true,
-      "frames": 17,
+      "frames": 16,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -389,7 +389,7 @@
           "shadowUploadGuard": "post-shadow-full-pass",
           "orderedBatches": 0,
           "orderedInstances": 0,
-          "passes": 17,
+          "passes": 16,
           "opaqueOrder": "default",
           "opaqueCoverageMaterials": 0,
           "opaqueCoverageMeshes": 0,
@@ -442,7 +442,7 @@
     "motion": {
       "renderer": "webgl",
       "interacting": true,
-      "frames": 18,
+      "frames": 17,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -461,7 +461,7 @@
           "shadowUploadGuard": null,
           "orderedBatches": 12,
           "orderedInstances": 874,
-          "passes": 18,
+          "passes": 17,
           "opaqueOrder": "architecture-before-vegetation",
           "opaqueCoverageMaterials": 5,
           "opaqueCoverageMeshes": 15,
@@ -514,7 +514,7 @@
     "settled": {
       "renderer": "webgl",
       "interacting": false,
-      "frames": 20,
+      "frames": 19,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -533,7 +533,7 @@
           "shadowUploadGuard": null,
           "orderedBatches": 0,
           "orderedInstances": 0,
-          "passes": 20,
+          "passes": 19,
           "opaqueOrder": "default",
           "opaqueCoverageMaterials": 0,
           "opaqueCoverageMeshes": 0,
@@ -629,7 +629,7 @@
       "warmBrightenedPixels": 0,
       "brightnessGain": 0
     },
-    "elapsedMs": 43485
+    "elapsedMs": 43740
   },
   "daylight": {
     "activation": 0,

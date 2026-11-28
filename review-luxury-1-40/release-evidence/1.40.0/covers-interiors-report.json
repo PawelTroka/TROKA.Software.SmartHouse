@@ -33,7 +33,7 @@
     {
       "file": "kitchen-wide-clear-window.png",
       "renderer": "webgl",
-      "frames": 11,
+      "frames": 8,
       "triangles": 1075350,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -95,7 +95,7 @@
     {
       "file": "kitchen-room-dimensions.png",
       "renderer": "webgl",
-      "frames": 12,
+      "frames": 9,
       "triangles": 1075350,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -163,7 +163,7 @@
     {
       "file": "kitchen-walking-dimensions.png",
       "renderer": "webgl",
-      "frames": 14,
+      "frames": 11,
       "triangles": 1074864,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -231,7 +231,7 @@
     {
       "file": "kitchen-dimensions-off.png",
       "renderer": "webgl",
-      "frames": 15,
+      "frames": 12,
       "triangles": 1074864,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -293,7 +293,7 @@
     {
       "file": "ground-bathroom-clear-window.png",
       "renderer": "webgl",
-      "frames": 18,
+      "frames": 15,
       "triangles": 1099315,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -355,7 +355,7 @@
     {
       "file": "upper-bathroom-clear-window.png",
       "renderer": "webgl",
-      "frames": 21,
+      "frames": 19,
       "triangles": 1068209,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -417,7 +417,7 @@
     {
       "file": "indoor-sauna-picture-window.png",
       "renderer": "webgl",
-      "frames": 26,
+      "frames": 23,
       "triangles": 1059261,
       "style": "scandinavian",
       "surfaceAssets": {
@@ -564,11 +564,11 @@
         },
         "cpuFrameMs": {
           "samples": 1,
-          "p50": 1824.0999999999767,
-          "p95": 1824.0999999999767,
-          "p99": 1824.0999999999767,
-          "mean": 1824.0999999999767,
-          "onePercentLowFps": 0.5482155583575532,
+          "p50": 1916,
+          "p95": 1916,
+          "p99": 1916,
+          "mean": 1916,
+          "onePercentLowFps": 0.5219206680584552,
           "stalls50ms": 1,
           "stalls100ms": 1,
           "stalls250ms": 1
@@ -587,7 +587,20 @@
         "pressureChanges": 0,
         "lastPressureAgeMs": 0,
         "pressureThresholdMs": 250,
-        "recoversAtRest": true
+        "recoversAtRest": true,
+        "sampling": {
+          "control": null,
+          "latched": false,
+          "mode": "multisample",
+          "qualifyingSubmissions": 0,
+          "requiredSubmissions": 2,
+          "pressureMs": 0,
+          "requiredPressureMs": 900,
+          "pressureThresholdMs": 250,
+          "changes": 0,
+          "surface": null,
+          "lastTrigger": null
+        }
       },
       "contactShading": true,
       "contactShadingSupported": true,
@@ -603,6 +616,11 @@
       "motionUnsupportedReason": "interior-renderer",
       "motionSamples": 0,
       "motionRequestedSamples": 0,
+      "motionStorageSamples": 0,
+      "motionMsaaDiagnostic": null,
+      "motionQualityScale": 1,
+      "motionSamplingMode": "idle",
+      "motionSamplingReason": null,
       "canvasSamples": 4,
       "motionDepthResolveSkipped": false,
       "surfaceAssets": {
@@ -699,11 +717,11 @@
         },
         "cpuFrameMs": {
           "samples": 1,
-          "p50": 1824.0999999999767,
-          "p95": 1824.0999999999767,
-          "p99": 1824.0999999999767,
-          "mean": 1824.0999999999767,
-          "onePercentLowFps": 0.5482155583575532,
+          "p50": 1916,
+          "p95": 1916,
+          "p99": 1916,
+          "mean": 1916,
+          "onePercentLowFps": 0.5219206680584552,
           "stalls50ms": 1,
           "stalls100ms": 1,
           "stalls250ms": 1
@@ -722,7 +740,20 @@
         "pressureChanges": 0,
         "lastPressureAgeMs": 0,
         "pressureThresholdMs": 250,
-        "recoversAtRest": true
+        "recoversAtRest": true,
+        "sampling": {
+          "control": null,
+          "latched": false,
+          "mode": "multisample",
+          "qualifyingSubmissions": 0,
+          "requiredSubmissions": 2,
+          "pressureMs": 0,
+          "requiredPressureMs": 900,
+          "pressureThresholdMs": 250,
+          "changes": 0,
+          "surface": null,
+          "lastTrigger": null
+        }
       },
       "contactShading": true,
       "contactShadingSupported": true,
@@ -738,6 +769,11 @@
       "motionUnsupportedReason": "interior-renderer",
       "motionSamples": 0,
       "motionRequestedSamples": 0,
+      "motionStorageSamples": 0,
+      "motionMsaaDiagnostic": null,
+      "motionQualityScale": 1,
+      "motionSamplingMode": "idle",
+      "motionSamplingReason": null,
       "canvasSamples": 4,
       "motionDepthResolveSkipped": false,
       "surfaceAssets": {
@@ -1046,5 +1082,5 @@
       "title": "Combined bathroom: modeled floor area 11.22 square metres; floor-plan dimensions 3.32 × 3.38 m · h 2.75 m. Concept model; floor area excludes slab openings. Open-plan room boundaries are functional zones."
     }
   ],
-  "elapsedMs": 213573
+  "elapsedMs": 204668
 }

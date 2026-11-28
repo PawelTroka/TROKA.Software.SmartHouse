@@ -1,6 +1,6 @@
 // Plan coordinates are metres, with the garden at z = 0 and the street at z = 9.
 // The SVG uses the same polygons, openings and furniture footprints as the 3D scene.
-import {interiorRoomMetrics} from './interior-dimensions.js?v=1.39.0';
+import {interiorRoomMetrics} from './interior-dimensions.js?v=1.40.0';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n = value => Number(value.toFixed(3));
 const pts = polygon => polygon.map(([x,z]) => `${n(x)},${n(z)}`).join(' ');
@@ -116,6 +116,14 @@ function fixtureDrawing(f) {
     const front=f.screenFront||[0,1],length=Math.hypot(...front),tx=front[1]/length,tz=-front[0]/length,span=f.screenWidth||.84,
       anchor=f.wallAnchor||[f.x,f.z-.06];
     shape=line(anchor[0]-f.x,anchor[1]-f.z,0,0,'','stroke-width=".025"')+line(-tx*span/2,-tz*span/2,tx*span/2,tz*span/2,'','stroke-width=".045"');
+  }else if(kind==='cinemaspeaker'){
+    const radius=f.ceilingMounted?.11:.095;
+    shape=`<circle cx="0" cy="0" r="${n(radius)}" ${f.ceilingMounted?'stroke-dasharray=".025 .015"':''}/><text x="0" y=".026" text-anchor="middle" font-size=".070" stroke="none">${esc(f.channel)}</text>`;
+    if(!f.ceilingMounted&&f.aimDirection)shape+=line(f.aimDirection[0]*.12,f.aimDirection[1]*.12,f.aimDirection[0]*.21,f.aimDirection[1]*.21,'','stroke-width=".012"');
+  }else if(kind==='cinemasub'){
+    shape+=`<text x="0" y=".030" text-anchor="middle" font-size=".090" stroke="none">${esc(f.channel)}</text>`;
+  }else if(kind==='cinemaconsole'){
+    shape+=rect(-.33,y,.66,d,0);
   }else if(kind==='cabletrainer'){
     shape=rect(x,y,w,.08)+rect(x+.045,y,.24,d)+rect(-x-.285,y,.24,d)+line(x+.12,d*.36,-x-.12,d*.36,'');
     for(const side of [-1,1])shape+=rect(side*w*.39-.12,-d*.30,.24,.25,.02);

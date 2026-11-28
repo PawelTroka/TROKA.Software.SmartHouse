@@ -1,40 +1,40 @@
 {
-  "workflowRun": 46085953841,
-  "runNumber": 87,
-  "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-  "testedMergeCommit": "0e6ec79bfc0d42a0319e22813b5aa495aeecf165",
-  "validationScope": "All 22 functional, visual and diagnostic checks passed. Both walking benchmarks failed the unchanged actual-rendered-frame sampling requirement. This remains a release candidate.",
+  "workflowRun": 46090035697,
+  "runNumber": 89,
+  "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+  "testedMergeCommit": "e4366ee92a0fab2ceaa6ac7f75dd3f1b8a0765aa",
+  "validationScope": "All 25 browser, geometry and diagnostic checks passed. Both candidate arrangements on both walking routes satisfy the unchanged actual-rendered-frame and throughput requirements.",
   "artifacts": [
     {
       "name": "cinema-kitchen-evidence-layouts",
-      "artifactId": 15239027995,
-      "archiveDigest": "sha256:1f346be985d20cd16b07f116700768352062588784282686071688e879c36f34",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:09:58Z",
+      "artifactId": 15240608778,
+      "archiveDigest": "sha256:2ccaf3f8e70e6d0d8587068911bc076244480582f2640b4739d9b030afa3f269",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:55:36Z",
       "galleryReport": "cinema-layouts-report.json",
-      "reportSha256": "3925341caf8cbf550e8726b8df9f105931ae07e57bd81e5b1a764452f85ab427",
-      "storedSha256": "3925341caf8cbf550e8726b8df9f105931ae07e57bd81e5b1a764452f85ab427",
+      "reportSha256": "7f3e2b32cdcd88dd6cc9c3406b0a0c314da99616fa77d8bd3c160d5d71a58a89",
+      "storedSha256": "7f3e2b32cdcd88dd6cc9c3406b0a0c314da99616fa77d8bd3c160d5d71a58a89",
       "compression": null,
       "galleryPngs": [
         {
           "file": "living-cinema-screen-view.png",
-          "sha256": "ea76d75cc85f88cd9f09c0e31893a1fa1b2cedcbb3c2ea99f752828894dfbe07"
+          "sha256": "9e43f127b34e6362cf4b24020ef6d7a88b5c3128b3315acc24d7a3765db727b3"
         },
         {
           "file": "living-crosswall-media.png",
-          "sha256": "d5c27af8de68b5b473e31fd79a34ce93c1c10e4dd772e3329cafa78ea915b3dc"
+          "sha256": "3fa3c8fc0fa063587e4df97b666c1dd2cf56c4709ae21668e0bbfd0757fbbec2"
         },
         {
           "file": "living-garden-salon.png",
-          "sha256": "50934f6854426d04775a7d0a3ffc34b17408ab5514319d9b06b07d74ff58f875"
+          "sha256": "4fd187e4575fe89a3f4064458f9684ce01250cf4ad91d3f20ba341515eb888da"
         },
         {
           "file": "living-left-media.png",
-          "sha256": "763f466318ff1b7bacf668207adc5251c9fd8816828510f9fa0301f4335ee468"
+          "sha256": "0044223928097f4c81577c56cdb338cb9877501d288e45f02149f7afc7ef500e"
         },
         {
           "file": "living-right-media.png",
-          "sha256": "e1e0db3cc648a1c3bf18d166bbcab06b1570c5c884de7c030f269745b43fe7ee"
+          "sha256": "c0f7cc3314ea4daed5617eddca4c8abc6190bbd29eee95dc10ebbd024431f612"
         },
         {
           "file": "mobile-living-layout-controls.png",
@@ -62,26 +62,26 @@
     },
     {
       "name": "cinema-kitchen-evidence-kitchen",
-      "artifactId": 15239072423,
-      "archiveDigest": "sha256:a47f14e7740ec07ae87fa6f2d48cc2920ecc3c6d4795be4816ac8f9a1a1907d9",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:07:26Z",
+      "artifactId": 15240927546,
+      "archiveDigest": "sha256:47c0ad09a72ce578c87bf7678c87b3f59b613a96f8795dcde562e9282e6ef5b4",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:52:58Z",
       "galleryReport": "kitchen-mirror-report.json",
-      "reportSha256": "efdfc23da006c7ba82d41e8e7c9c4e2a587bb53ee5f3e92f0b81d92ba582c6a8",
-      "storedSha256": "efdfc23da006c7ba82d41e8e7c9c4e2a587bb53ee5f3e92f0b81d92ba582c6a8",
+      "reportSha256": "e06d37270f5335f0f643461fb5148e3063ea8c7ab99f142efb9bd6b075177542",
+      "storedSha256": "e06d37270f5335f0f643461fb5148e3063ea8c7ab99f142efb9bd6b075177542",
       "compression": null,
       "galleryPngs": [
         {
           "file": "hall-giant-mirror.png",
-          "sha256": "0e4a0a03d4bbafec8f9e091baff383c951be125ff90010814708c60016e329b6"
+          "sha256": "3f1c2e7db3cffb2ab60542917c0b0ad3d7117fb18cca32e459406222857ab191"
         },
         {
           "file": "kitchen-tall-appliances-and-pantry.png",
-          "sha256": "171624c07a15a3f76f3ae492acaa104b494ee50a5fa3127ace189dbb14fd85c5"
+          "sha256": "48759006c4db5805d01a8801bb0a659aadcfe4ca898aaa4adac685e0682185df"
         },
         {
           "file": "kitchen-workstation-and-two-dishwashers.png",
-          "sha256": "ecc4c48c24a89164c639000dfd6a6133ed30d83a6eec8008919278e96e2de652"
+          "sha256": "3865d600b6c940d08f06f9f8283bbabc5b6db1cc4f4d9e124a62e3e513ae7efd"
         }
       ],
       "status": "passed",
@@ -89,13 +89,13 @@
     },
     {
       "name": "interior-evidence",
-      "artifactId": 15239582001,
-      "archiveDigest": "sha256:4fc56915817a7cdc23b12fcdbccd0dd4d71c4e5918afeb492133edeb5efdfcd7",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:16:03Z",
+      "artifactId": 15241925215,
+      "archiveDigest": "sha256:7c2faf316a1d15ecb2eaf31f9cf634bc97e4e18eab687e35e59e244b4fb04df1",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T01:05:21Z",
       "galleryReport": "interiors-mobile-report.json",
-      "reportSha256": "346b8be52e927f06096ad3a66e6c2f8437406addacf08b75a618baee6ced7150",
-      "storedSha256": "346b8be52e927f06096ad3a66e6c2f8437406addacf08b75a618baee6ced7150",
+      "reportSha256": "d58122b2086d766e67b89f713f5d4099aa11da84b9bd2d0775a18714348f313d",
+      "storedSha256": "d58122b2086d766e67b89f713f5d4099aa11da84b9bd2d0775a18714348f313d",
       "compression": null,
       "galleryPngs": [],
       "status": "passed",
@@ -103,13 +103,13 @@
     },
     {
       "name": "clean-living-evidence-garden",
-      "artifactId": 15239411310,
-      "archiveDigest": "sha256:0101e2f4821e5f72f760fc7f02dbb444d188188b70f2d8444ca2ccc30f4f2a92",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:08:13Z",
+      "artifactId": 15239949849,
+      "archiveDigest": "sha256:fb5c3c82174aafc6d853ee0164c14d038a9fd55a8d3a353a4616720b5ef62971",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:54:05Z",
       "galleryReport": "covers-garden-report.json",
-      "reportSha256": "6edec61e59be1ed298b5892faed99ce4f1f7ae8eb0cddf655244caa422ad27e2",
-      "storedSha256": "6edec61e59be1ed298b5892faed99ce4f1f7ae8eb0cddf655244caa422ad27e2",
+      "reportSha256": "3554b54b12910a7d76a401ee9bbb6f10ff785fe11ff66b02b201df9f53c7560d",
+      "storedSha256": "3554b54b12910a7d76a401ee9bbb6f10ff785fe11ff66b02b201df9f53c7560d",
       "compression": null,
       "galleryPngs": [],
       "status": "passed",
@@ -117,13 +117,13 @@
     },
     {
       "name": "clean-living-evidence-interiors",
-      "artifactId": 15238978076,
-      "archiveDigest": "sha256:36a4f03b9ac2e977614b3a1e08599bc0570653803831485a9f3e1573a0493d41",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:09:15Z",
+      "artifactId": 15240019803,
+      "archiveDigest": "sha256:52f0163523d87b670376852d7342e1cd665690e780887027e3e89299c6b95a07",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:54:56Z",
       "galleryReport": "covers-interiors-report.json",
-      "reportSha256": "7cd745d852d49b98879c98929e4760edeee460596fe04acfa422268eecef202d",
-      "storedSha256": "7cd745d852d49b98879c98929e4760edeee460596fe04acfa422268eecef202d",
+      "reportSha256": "02f7a2c2d6d24cba1072d61bbd05f3286f61d8ba28386f976e3efbe84f54aea9",
+      "storedSha256": "02f7a2c2d6d24cba1072d61bbd05f3286f61d8ba28386f976e3efbe84f54aea9",
       "compression": null,
       "galleryPngs": [],
       "status": "passed",
@@ -131,13 +131,13 @@
     },
     {
       "name": "garden-lab-browser-sternicza",
-      "artifactId": 15239456156,
-      "archiveDigest": "sha256:3454bc856e525ffab31172e255c8a7cc3a012e6bf27b4c77021fab53dacad446",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:13:46Z",
+      "artifactId": 15241445030,
+      "archiveDigest": "sha256:dd26e81a64f3cb0737a9a68f155e72a79c5f40a383b7721564f92c64fcad92ca",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:56:40Z",
       "galleryReport": "sternicza-browser-report.json",
-      "reportSha256": "ce464550b93696ceb55bc8c88b22a517561f05eba079b841dc2922d2947de43e",
-      "storedSha256": "ce464550b93696ceb55bc8c88b22a517561f05eba079b841dc2922d2947de43e",
+      "reportSha256": "bf0338795c8e0c1dc60e7de9ac3dee7ca5fd6455b4a77c475c3c2ff9fa5989aa",
+      "storedSha256": "bf0338795c8e0c1dc60e7de9ac3dee7ca5fd6455b4a77c475c3c2ff9fa5989aa",
       "compression": null,
       "galleryPngs": [
         {
@@ -158,13 +158,13 @@
     },
     {
       "name": "garden-lab-browser-nadmorska",
-      "artifactId": 15239282153,
-      "archiveDigest": "sha256:cc4c5f8e5c52d1b9395d270f866e6d8b579272a18a9e4dce2320eadf3f108c82",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:12:18Z",
+      "artifactId": 15240708671,
+      "archiveDigest": "sha256:0cda26d19ccec1537bf97ba927ce07cbbcc29bf87dac751c75b6ad0e2697f66b",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:55:37Z",
       "galleryReport": "nadmorska-browser-report.json",
-      "reportSha256": "a1a8495afbd55483148e387285a4b7b0d4792fa6cb4019a1c51cb2fd97a603f9",
-      "storedSha256": "a1a8495afbd55483148e387285a4b7b0d4792fa6cb4019a1c51cb2fd97a603f9",
+      "reportSha256": "0fbf2b616bcdeeb60162eec3012d896d085612ca972aa2e34f67cbdc001e71e4",
+      "storedSha256": "0fbf2b616bcdeeb60162eec3012d896d085612ca972aa2e34f67cbdc001e71e4",
       "compression": null,
       "galleryPngs": [],
       "status": "passed",
@@ -172,41 +172,41 @@
     },
     {
       "name": "walk-performance-evidence-living",
-      "artifactId": 15239277608,
-      "archiveDigest": "sha256:b317ae6058657ef2b920aa668f81de12647d806ae5837c11a789c6ee3155f0b0",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:14:45Z",
+      "artifactId": 15240774512,
+      "archiveDigest": "sha256:90740b9a7ec43e2e151fe1d68919805fd55c597b0e9a3efb794cb7e48ebade63",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T01:02:32Z",
       "galleryReport": "walking-living-report.json.gz",
-      "reportSha256": "527ab41e77b766eb683be14dae86dbe4854eb0a3f4182cd9783551b5c5dd8b1f",
-      "storedSha256": "5ca9776bfd627158a04a059a2329641398b73ac33582d53d236a5176257d1df7",
+      "reportSha256": "479c26bfdfde9818275b84cef16a07cd1129c85ca89880f22668e28ce85e538e",
+      "storedSha256": "eae5392dd84216c5e57555ad23725f6fc44cc85c093d80afc2d671ca32e29e69",
       "compression": "gzip",
       "galleryPngs": [],
-      "status": "failed",
+      "status": "passed",
       "errors": []
     },
     {
       "name": "walk-performance-evidence-garden",
-      "artifactId": 15238749741,
-      "archiveDigest": "sha256:28d731e7551430658356454db28abeb383b9b0683308a060a23c35b5a4abc241",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:15:13Z",
+      "artifactId": 15241735415,
+      "archiveDigest": "sha256:820065cd4149e5af3a843b2f177a286a1c0829f8ed2255ec10ca2d4236a7aa6b",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T01:03:31Z",
       "galleryReport": "walking-garden-report.json.gz",
-      "reportSha256": "2eac145e52aa4e345c10e00956d3b57b29727e926388230e200c5696d4103a84",
-      "storedSha256": "5bc99f39dec2d1c4dcc326d9a753ea34f19bd88b9a2cfda23d661893ffc0ae14",
+      "reportSha256": "88caecae3febb7e69c8b2ba76fee93667d8e96572da829b8f2a4e852d7a6b3f7",
+      "storedSha256": "10f96bff619bd5166a181ecd58900868cfffdba5059886ad416bf8bf44ebd15a",
       "compression": "gzip",
       "galleryPngs": [],
-      "status": "failed",
+      "status": "passed",
       "errors": []
     },
     {
       "name": "motion-alpha-coverage-evidence",
-      "artifactId": 15238744224,
-      "archiveDigest": "sha256:9b73d5744f4800b9f73b266892ae4f43585c7a24f4f8c63dfd1a1914dca5a965",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:11:03Z",
+      "artifactId": 15241270169,
+      "archiveDigest": "sha256:334064cbc862d67368469d474620a9d4100db6522e55056264480c9ec0469d6f",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:55:15Z",
       "galleryReport": "motion-coverage-report.json.gz",
-      "reportSha256": "55dfce1b8f70ef9b168d9663d80a8e1ecf876c694a30174e495fbdcee81915be",
-      "storedSha256": "6f4af881de3df62fb31522d0a4de00031cecc77af188b2a7637844e1f1836b32",
+      "reportSha256": "521334e8aca1cabdbd7e90742c8a989d8dbd26c980d80a267ee2ca429bb65504",
+      "storedSha256": "eff7925835ea5f8f0bbdbb058f88f5abd9dc1417fb1286c674f073283b9e3754",
       "compression": "gzip",
       "galleryPngs": [],
       "status": "passed",
@@ -214,13 +214,50 @@
     },
     {
       "name": "gpu-phase-profile-evidence",
-      "artifactId": 15239575626,
-      "archiveDigest": "sha256:30abae4b7f09e7d8b9f4c5660ce5d77c0dbdac40459889643b8995c7e963efda",
-      "headSha": "9d3eae5bff7b9adc894aeb7bc4a3abe0491b929e",
-      "createdAt": "2026-11-28T00:07:53Z",
+      "artifactId": 15240483927,
+      "archiveDigest": "sha256:d343cf7a0c3378446d1ebf4542dfb43a1b3642d1db644bbaa38dcbedc40e0f3f",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:54:00Z",
       "galleryReport": "gpu-phase-report.json.gz",
-      "reportSha256": "8e2437d9d7da7d187e0738932067977ecde93345cdbc1fc240fd107022b53d49",
-      "storedSha256": "d3cf8b590ec870c5691ead2d0cd2f6a95fd0ae887266266ed7e7c8b9262f719f",
+      "reportSha256": "3a938284ed9cf1d5a4a92930fea65932f5c47ebd732c8812ee053a9d8ca5ff37",
+      "storedSha256": "b26e15579eeda028f099298fc62cb7d986203ed5435200ea420c5e9ffb72be59",
+      "compression": "gzip",
+      "galleryPngs": [],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "name": "motion-msaa-diagnostic-evidence",
+      "artifactId": 15240489652,
+      "archiveDigest": "sha256:db55ca941b7a1b45c34466d591c847b6762de75111d14006900dd1198c99e519",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:57:59Z",
+      "galleryReport": "motion-sampling-report.json.gz",
+      "reportSha256": "97daf958ed94936fec23b037d4e48de729b80aa5526dbae61ab8b5c0c76be113",
+      "storedSha256": "df740087660f409d5c476423c1329fd82f24d6b1d0702633db2b1918223d2d48",
+      "compression": "gzip",
+      "galleryPngs": [
+        {
+          "file": "pair1-control-motion.png",
+          "sha256": "65dd339be86e9ced410bba9e4d2e5500ddae7a8d6fc7f7506d3d6680df2bc412"
+        },
+        {
+          "file": "pair1-single-motion.png",
+          "sha256": "0612a60019633737745ce03d29bb30aac341ecc3a41c2fd45cf348f6214daa5d"
+        }
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "name": "studio-evidence-styles-minimal",
+      "artifactId": 15241105806,
+      "archiveDigest": "sha256:e08e7859a9a174310682d5a0d39306eb475211f877b23dee486017c76a0a3120",
+      "headSha": "df7f1b08af732657326810ff2d35bcf072db0d1d",
+      "createdAt": "2026-11-28T00:58:17Z",
+      "galleryReport": "minimal-style-report.json.gz",
+      "reportSha256": "da94386360d3750d6d3cdf49719526cdfc121b881d56908fb85576ecb0c3865f",
+      "storedSha256": "ae799f0b8ae3ff0578a46e04043680318d7063ae39e67f9d22e073d6c51f8ca3",
       "compression": "gzip",
       "galleryPngs": [],
       "status": "passed",
@@ -233,7 +270,7 @@
     "pre": {
       "renderer": "webgl",
       "interacting": false,
-      "frames": 16,
+      "frames": 15,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -252,7 +289,7 @@
           "shadowUploadGuard": "shadow-pass",
           "orderedBatches": 0,
           "orderedInstances": 0,
-          "passes": 16,
+          "passes": 15,
           "opaqueOrder": "default",
           "opaqueCoverageMaterials": 0,
           "opaqueCoverageMeshes": 0,
@@ -305,7 +342,7 @@
     "firstMotion": {
       "renderer": "webgl",
       "interacting": true,
-      "frames": 17,
+      "frames": 16,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -324,7 +361,7 @@
           "shadowUploadGuard": "post-shadow-full-pass",
           "orderedBatches": 0,
           "orderedInstances": 0,
-          "passes": 17,
+          "passes": 16,
           "opaqueOrder": "default",
           "opaqueCoverageMaterials": 0,
           "opaqueCoverageMeshes": 0,
@@ -377,7 +414,7 @@
     "motion": {
       "renderer": "webgl",
       "interacting": true,
-      "frames": 18,
+      "frames": 17,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -396,7 +433,7 @@
           "shadowUploadGuard": null,
           "orderedBatches": 12,
           "orderedInstances": 874,
-          "passes": 18,
+          "passes": 17,
           "opaqueOrder": "architecture-before-vegetation",
           "opaqueCoverageMaterials": 5,
           "opaqueCoverageMeshes": 15,
@@ -449,7 +486,7 @@
     "settled": {
       "renderer": "webgl",
       "interacting": false,
-      "frames": 20,
+      "frames": 19,
       "sceneOptimization": {
         "repeatedGardenDetails": {
           "parts": 172,
@@ -468,7 +505,7 @@
           "shadowUploadGuard": null,
           "orderedBatches": 0,
           "orderedInstances": 0,
-          "passes": 20,
+          "passes": 19,
           "opaqueOrder": "default",
           "opaqueCoverageMaterials": 0,
           "opaqueCoverageMeshes": 0,
@@ -564,7 +601,7 @@
       "warmBrightenedPixels": 0,
       "brightnessGain": 0
     },
-    "elapsedMs": 43485
+    "elapsedMs": 43740
   },
   "styleRestoration": {
     "firstAdoptionUndo": {
@@ -612,78 +649,83 @@
   "files": [
     {
       "file": "cinema-layouts-report.json",
-      "sha256": "3925341caf8cbf550e8726b8df9f105931ae07e57bd81e5b1a764452f85ab427",
-      "bytes": 90866
+      "sha256": "7f3e2b32cdcd88dd6cc9c3406b0a0c314da99616fa77d8bd3c160d5d71a58a89",
+      "bytes": 93199
     },
     {
       "file": "covers-garden-report.json",
-      "sha256": "6edec61e59be1ed298b5892faed99ce4f1f7ae8eb0cddf655244caa422ad27e2",
+      "sha256": "3554b54b12910a7d76a401ee9bbb6f10ff785fe11ff66b02b201df9f53c7560d",
       "bytes": 13086
     },
     {
       "file": "covers-interiors-report.json",
-      "sha256": "7cd745d852d49b98879c98929e4760edeee460596fe04acfa422268eecef202d",
-      "bytes": 28217
+      "sha256": "02f7a2c2d6d24cba1072d61bbd05f3286f61d8ba28386f976e3efbe84f54aea9",
+      "bytes": 29203
     },
     {
       "file": "gpu-phase-report.json.gz",
-      "sha256": "d3cf8b590ec870c5691ead2d0cd2f6a95fd0ae887266266ed7e7c8b9262f719f",
-      "bytes": 68214
+      "sha256": "b26e15579eeda028f099298fc62cb7d986203ed5435200ea420c5e9ffb72be59",
+      "bytes": 76819
     },
     {
       "file": "hall-giant-mirror.png",
-      "sha256": "0e4a0a03d4bbafec8f9e091baff383c951be125ff90010814708c60016e329b6",
-      "bytes": 274312
+      "sha256": "3f1c2e7db3cffb2ab60542917c0b0ad3d7117fb18cca32e459406222857ab191",
+      "bytes": 274367
     },
     {
       "file": "index.html",
-      "sha256": "497ca2b7cc9f36a156d7919b95e1fb281c3347f09f2a0be283a3fef5ead43097",
-      "bytes": 24654
+      "sha256": "fb414ea16e7e432bdea4c34c8f331e459c6158c7a5ce2c5a034f459c1b215446",
+      "bytes": 27204
     },
     {
       "file": "interiors-mobile-report.json",
-      "sha256": "346b8be52e927f06096ad3a66e6c2f8437406addacf08b75a618baee6ced7150",
-      "bytes": 108792
+      "sha256": "d58122b2086d766e67b89f713f5d4099aa11da84b9bd2d0775a18714348f313d",
+      "bytes": 111061
     },
     {
       "file": "kitchen-mirror-report.json",
-      "sha256": "efdfc23da006c7ba82d41e8e7c9c4e2a587bb53ee5f3e92f0b81d92ba582c6a8",
-      "bytes": 17845
+      "sha256": "e06d37270f5335f0f643461fb5148e3063ea8c7ab99f142efb9bd6b075177542",
+      "bytes": 17844
     },
     {
       "file": "kitchen-tall-appliances-and-pantry.png",
-      "sha256": "171624c07a15a3f76f3ae492acaa104b494ee50a5fa3127ace189dbb14fd85c5",
-      "bytes": 219846
+      "sha256": "48759006c4db5805d01a8801bb0a659aadcfe4ca898aaa4adac685e0682185df",
+      "bytes": 219612
     },
     {
       "file": "kitchen-workstation-and-two-dishwashers.png",
-      "sha256": "ecc4c48c24a89164c639000dfd6a6133ed30d83a6eec8008919278e96e2de652",
-      "bytes": 355480
+      "sha256": "3865d600b6c940d08f06f9f8283bbabc5b6db1cc4f4d9e124a62e3e513ae7efd",
+      "bytes": 355101
     },
     {
       "file": "living-cinema-screen-view.png",
-      "sha256": "ea76d75cc85f88cd9f09c0e31893a1fa1b2cedcbb3c2ea99f752828894dfbe07",
-      "bytes": 381749
+      "sha256": "9e43f127b34e6362cf4b24020ef6d7a88b5c3128b3315acc24d7a3765db727b3",
+      "bytes": 381630
     },
     {
       "file": "living-crosswall-media.png",
-      "sha256": "d5c27af8de68b5b473e31fd79a34ce93c1c10e4dd772e3329cafa78ea915b3dc",
-      "bytes": 171437
+      "sha256": "3fa3c8fc0fa063587e4df97b666c1dd2cf56c4709ae21668e0bbfd0757fbbec2",
+      "bytes": 171499
     },
     {
       "file": "living-garden-salon.png",
-      "sha256": "50934f6854426d04775a7d0a3ffc34b17408ab5514319d9b06b07d74ff58f875",
-      "bytes": 177401
+      "sha256": "4fd187e4575fe89a3f4064458f9684ce01250cf4ad91d3f20ba341515eb888da",
+      "bytes": 177304
     },
     {
       "file": "living-left-media.png",
-      "sha256": "763f466318ff1b7bacf668207adc5251c9fd8816828510f9fa0301f4335ee468",
-      "bytes": 177376
+      "sha256": "0044223928097f4c81577c56cdb338cb9877501d288e45f02149f7afc7ef500e",
+      "bytes": 177267
     },
     {
       "file": "living-right-media.png",
-      "sha256": "e1e0db3cc648a1c3bf18d166bbcab06b1570c5c884de7c030f269745b43fe7ee",
-      "bytes": 175622
+      "sha256": "c0f7cc3314ea4daed5617eddca4c8abc6190bbd29eee95dc10ebbd024431f612",
+      "bytes": 175608
+    },
+    {
+      "file": "minimal-style-report.json.gz",
+      "sha256": "ae799f0b8ae3ff0578a46e04043680318d7063ae39e67f9d22e073d6c51f8ca3",
+      "bytes": 21820
     },
     {
       "file": "mobile-living-layout-controls.png",
@@ -692,13 +734,28 @@
     },
     {
       "file": "motion-coverage-report.json.gz",
-      "sha256": "6f4af881de3df62fb31522d0a4de00031cecc77af188b2a7637844e1f1836b32",
-      "bytes": 24739
+      "sha256": "eff7925835ea5f8f0bbdbb058f88f5abd9dc1417fb1286c674f073283b9e3754",
+      "bytes": 24446
+    },
+    {
+      "file": "motion-sampling-report.json.gz",
+      "sha256": "df740087660f409d5c476423c1329fd82f24d6b1d0702633db2b1918223d2d48",
+      "bytes": 234357
     },
     {
       "file": "nadmorska-browser-report.json",
-      "sha256": "a1a8495afbd55483148e387285a4b7b0d4792fa6cb4019a1c51cb2fd97a603f9",
-      "bytes": 45733
+      "sha256": "0fbf2b616bcdeeb60162eec3012d896d085612ca972aa2e34f67cbdc001e71e4",
+      "bytes": 45711
+    },
+    {
+      "file": "pair1-control-motion.png",
+      "sha256": "65dd339be86e9ced410bba9e4d2e5500ddae7a8d6fc7f7506d3d6680df2bc412",
+      "bytes": 697405
+    },
+    {
+      "file": "pair1-single-motion.png",
+      "sha256": "0612a60019633737745ce03d29bb30aac341ecc3a41c2fd45cf348f6214daa5d",
+      "bytes": 685480
     },
     {
       "file": "plan-crosswall-media.png",
@@ -722,8 +779,8 @@
     },
     {
       "file": "sternicza-browser-report.json",
-      "sha256": "ce464550b93696ceb55bc8c88b22a517561f05eba079b841dc2922d2947de43e",
-      "bytes": 22049
+      "sha256": "bf0338795c8e0c1dc60e7de9ac3dee7ca5fd6455b4a77c475c3c2ff9fa5989aa",
+      "bytes": 22076
     },
     {
       "file": "sternicza-night-before-motion.png",
@@ -742,18 +799,18 @@
     },
     {
       "file": "validation-summary.json",
-      "sha256": "9b02247b55f13293fcd2c983bc56e922a2835089c8d6dd6a0f4a3630ff521784",
-      "bytes": 12509
+      "sha256": "f210181487abe37d36d888b311dd4eba418952f6e1d89d144df73391e8324ecb",
+      "bytes": 31174
     },
     {
       "file": "walking-garden-report.json.gz",
-      "sha256": "5bc99f39dec2d1c4dcc326d9a753ea34f19bd88b9a2cfda23d661893ffc0ae14",
-      "bytes": 136734
+      "sha256": "10f96bff619bd5166a181ecd58900868cfffdba5059886ad416bf8bf44ebd15a",
+      "bytes": 152394
     },
     {
       "file": "walking-living-report.json.gz",
-      "sha256": "5ca9776bfd627158a04a059a2329641398b73ac33582d53d236a5176257d1df7",
-      "bytes": 119186
+      "sha256": "eae5392dd84216c5e57555ad23725f6fc44cc85c093d80afc2d671ca32e29e69",
+      "bytes": 137309
     }
   ]
 }

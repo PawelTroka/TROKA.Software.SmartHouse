@@ -729,11 +729,11 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 4933.699999999953,
-            "p95": 4933.699999999953,
-            "p99": 4933.699999999953,
-            "mean": 4933.699999999953,
-            "onePercentLowFps": 0.20268763808095536,
+            "p50": 4903.599999999977,
+            "p95": 4903.599999999977,
+            "p99": 4903.599999999977,
+            "mean": 4903.599999999977,
+            "onePercentLowFps": 0.20393180520434065,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
@@ -752,7 +752,20 @@
           "pressureChanges": 0,
           "lastPressureAgeMs": 0,
           "pressureThresholdMs": 250,
-          "recoversAtRest": true
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
         },
         "contactShading": true,
         "contactShadingSupported": true,
@@ -768,6 +781,11 @@
         "motionUnsupportedReason": "interior-renderer",
         "motionSamples": 0,
         "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
         "canvasSamples": 4,
         "motionDepthResolveSkipped": false,
         "surfaceAssets": {
@@ -1502,11 +1520,11 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 1352.7999999999884,
-            "p95": 1352.7999999999884,
-            "p99": 1352.7999999999884,
-            "mean": 1352.7999999999884,
-            "onePercentLowFps": 0.7392075694855179,
+            "p50": 1352.600000000035,
+            "p95": 1352.600000000035,
+            "p99": 1352.600000000035,
+            "mean": 1352.600000000035,
+            "onePercentLowFps": 0.739316871210982,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
@@ -1525,7 +1543,20 @@
           "pressureChanges": 0,
           "lastPressureAgeMs": 0,
           "pressureThresholdMs": 250,
-          "recoversAtRest": true
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
         },
         "contactShading": true,
         "contactShadingSupported": true,
@@ -1541,6 +1572,11 @@
         "motionUnsupportedReason": "interior-renderer",
         "motionSamples": 0,
         "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
         "canvasSamples": 4,
         "motionDepthResolveSkipped": false,
         "surfaceAssets": {
@@ -1758,11 +1794,11 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 1317.7000000000116,
-            "p95": 1317.7000000000116,
-            "p99": 1317.7000000000116,
-            "mean": 1317.7000000000116,
-            "onePercentLowFps": 0.758898079987851,
+            "p50": 1277.399999999965,
+            "p95": 1277.399999999965,
+            "p99": 1277.399999999965,
+            "mean": 1277.399999999965,
+            "onePercentLowFps": 0.7828401440426079,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
@@ -1781,7 +1817,20 @@
           "pressureChanges": 0,
           "lastPressureAgeMs": 0,
           "pressureThresholdMs": 250,
-          "recoversAtRest": true
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
         },
         "contactShading": true,
         "contactShadingSupported": true,
@@ -1797,6 +1846,11 @@
         "motionUnsupportedReason": "interior-renderer",
         "motionSamples": 0,
         "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
         "canvasSamples": 4,
         "motionDepthResolveSkipped": false,
         "surfaceAssets": {
@@ -2531,11 +2585,11 @@
           },
           "cpuFrameMs": {
             "samples": 1,
-            "p50": 1369.7000000000698,
-            "p95": 1369.7000000000698,
-            "p99": 1369.7000000000698,
-            "mean": 1369.7000000000698,
-            "onePercentLowFps": 0.730086880338723,
+            "p50": 1285.600000000035,
+            "p95": 1285.600000000035,
+            "p99": 1285.600000000035,
+            "mean": 1285.600000000035,
+            "onePercentLowFps": 0.7778469197261767,
             "stalls50ms": 1,
             "stalls100ms": 1,
             "stalls250ms": 1
@@ -2554,7 +2608,20 @@
           "pressureChanges": 0,
           "lastPressureAgeMs": 0,
           "pressureThresholdMs": 250,
-          "recoversAtRest": true
+          "recoversAtRest": true,
+          "sampling": {
+            "control": null,
+            "latched": false,
+            "mode": "multisample",
+            "qualifyingSubmissions": 0,
+            "requiredSubmissions": 2,
+            "pressureMs": 0,
+            "requiredPressureMs": 900,
+            "pressureThresholdMs": 250,
+            "changes": 0,
+            "surface": null,
+            "lastTrigger": null
+          }
         },
         "contactShading": true,
         "contactShadingSupported": true,
@@ -2570,6 +2637,11 @@
         "motionUnsupportedReason": "interior-renderer",
         "motionSamples": 0,
         "motionRequestedSamples": 0,
+        "motionStorageSamples": 0,
+        "motionMsaaDiagnostic": null,
+        "motionQualityScale": 1,
+        "motionSamplingMode": "idle",
+        "motionSamplingReason": null,
         "canvasSamples": 4,
         "motionDepthResolveSkipped": false,
         "surfaceAssets": {
@@ -3104,5 +3176,5 @@
       "unitPrice": 0
     }
   ],
-  "elapsedMs": 230702
+  "elapsedMs": 232155
 }

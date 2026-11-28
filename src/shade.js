@@ -3,18 +3,18 @@
  * Local axes and elevations match geometry.js (metres, absolute vertical datum).
  * One-metre sample fractions are a planning approximation, not solar irradiance.
  */
-import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.39.0';
-import { sterniczaRoofEnvelope } from './house-roof.js?v=1.39.0';
-import { localRoofEnvelope } from './roof-envelope.js?v=1.39.0';
-import {sampledRoofFaces} from './roof-mesh.js?v=1.39.0';
-import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.39.0';
-import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.39.0';
-import {existingCanopyVolumes} from './existing-vegetation.js?v=1.39.0';
-import { gardenProgram, poolBounds } from './garden-program.js?v=1.39.0';
-import {jacuzziCoverLayout} from './spa-covers.js?v=1.39.0';
-import { terraceStairs } from './layout.js?v=1.39.0';
-import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.39.0';
-import { boundaryFenceLayout,boundaryMemberFaces,BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.39.0';
+import { terrainAt, gardenGroundAt, floorElevation, terraceGroundReference, hedgeSegments, hedgeGroundAt, hedgeTopAt, jacuzziBounds, pointInPolygon, poolEdgeBoxes, spaLevels, saunaOpaqueFaces, privacyStructures, terraceCover } from './geometry.js?v=1.40.0';
+import { sterniczaRoofEnvelope } from './house-roof.js?v=1.40.0';
+import { localRoofEnvelope } from './roof-envelope.js?v=1.40.0';
+import {sampledRoofFaces} from './roof-mesh.js?v=1.40.0';
+import {contextBuildingEnvelope} from './context-building-envelope.js?v=1.40.0';
+import { screeningTreeVolumes, treeSunIntersection } from './screening-trees.js?v=1.40.0';
+import {existingCanopyVolumes} from './existing-vegetation.js?v=1.40.0';
+import { gardenProgram, poolBounds } from './garden-program.js?v=1.40.0';
+import {jacuzziCoverLayout} from './spa-covers.js?v=1.40.0';
+import { terraceStairs } from './layout.js?v=1.40.0';
+import { PRIVACY_GEOMETRY_KEYS } from './privacy-structures.js?v=1.40.0';
+import { boundaryFenceLayout,boundaryMemberFaces,BOUNDARY_GEOMETRY_KEYS } from './boundary-fence.js?v=1.40.0';
 
 const EPS = 1e-8;
 const RAY_OFFSET = .005;
@@ -124,7 +124,7 @@ function gableFaces(ring,eaves,ridge,axis='x') {
   return [[a,d,f],[a,f,e],[e,f,c],[e,c,b],[a,e,b],[d,c,f]];
 }
 
-export {sampledRoofFaces} from './roof-mesh.js?v=1.39.0';
+export {sampledRoofFaces} from './roof-mesh.js?v=1.40.0';
 
 const contextOccluderCache=new WeakMap();
 
