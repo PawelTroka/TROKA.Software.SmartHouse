@@ -47,10 +47,10 @@ class ArchitecturalAO extends GTAOPass{
 
 export function createArchitecturalRenderer(renderer,scene,camera,{interior=false,gpuPhaseDiagnostics=false,onGpuPhaseUpdate=null,motionMsaaDiagnostic=null}={}){
   const supported=renderer.capabilities.isWebGL2&&renderer.extensions.has('EXT_color_buffer_float');
-  // Explicit diagnostic only: r160 samples=0 uses single-sample color/depth
-  // storage and no MSAA resolve. Requesting 1 could round up to 4 on a device.
-  // Keep normal support eligibility, quality policy and idle rendering intact.
-  const singleSampleDiagnostic=motionMsaaDiagnostic==='single',motionRequestedSamples=singleSampleDiagnostic?0:2;
+  // r160 samples=0 uses one color/depth storage sample and no MSAA resolve.
+  // Requesting 1 could round up to 4. Explicit diagnostics take precedence;
+  // the caller may otherwise request Auto's measured minimum-scale fallback.
+  const samplingControl=['keep','single'].includes(motionMsaaDiagnostic)?motionMsaaDiagnostic:null,motionTargets=new Map();
   // The main scene has an opaque canvas and a separately sized display buffer.
   // The transparent interior/dollhouse renderer keeps its existing pipeline.
   const gl=renderer.getContext?.();let motionSupported=false,motionSampleCount=0;
@@ -80,7 +80,8 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
   }
   let composer=null,ao=null,colorPass=null,output=null,enabled=false,width=0,height=0,ratio=0,
     lastSamples=0,lastAOSamples=0,sceneInfo=null,disposed=false,
-    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,motionDepthResolveSkipped=false,sceneWidth=0,sceneHeight=0,sceneRatio=1;
+    motionTarget=null,motionColorPass=null,motionOutput=null,motionEnabled=false,motionDepthResolveSkipped=false,sceneWidth=0,sceneHeight=0,sceneRatio=1,
+    motionQualityScale=1,motionSamplingMode='idle',motionSamplingReason=null;
   function initialise(){
     if(composer||!supported)return;
     const target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
@@ -105,17 +106,27 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     const budget=architecturalRenderBudget(quality,w,h,options);
     enabled=Boolean(supported&&budget.enabled);
     motionEnabled=Boolean(motionSupported&&options.interacting);
+    motionQualityScale=motionEnabled&&Number.isFinite(options.motionScale)?options.motionScale:1;
+    motionSamplingMode='idle';motionSamplingReason=null;
     if(motionEnabled){
       const mw=Math.max(1,Math.floor(w*pixelRatio)),mh=Math.max(1,Math.floor(h*pixelRatio));
+      const adaptiveSingle=!samplingControl&&quality==='auto'&&options.motionSingleSample===true&&motionQualityScale===.54;
+      const single=samplingControl==='single'||adaptiveSingle,requestedSamples=single?0:2;
+      motionSamplingMode=single?(adaptiveSingle?'adaptive-single':'forced-single'):'multisample';
+      motionSamplingReason=adaptiveSingle?'minimum-scale-gpu-pressure':samplingControl?'diagnostic-'+samplingControl:null;
+      motionTarget=motionTargets.get(requestedSamples);
       if(!motionTarget){
-        motionTarget=new THREE.WebGLRenderTarget(mw,mh,{type:THREE.HalfFloatType,samples:motionRequestedSamples});
-        motionTarget.texture.name='ArchitecturalMotion.color';
+        motionTarget=new THREE.WebGLRenderTarget(mw,mh,{type:THREE.HalfFloatType,samples:requestedSamples});
+        motionTarget.texture.name=single?'ArchitecturalMotion.single-color':'ArchitecturalMotion.color';
+        motionTargets.set(requestedSamples,motionTarget);
+      }else if(motionTarget.width!==mw||motionTarget.height!==mh)motionTarget.setSize(mw,mh);
+      if(!motionColorPass){
         motionColorPass=new RenderPass(scene,camera);
         motionOutput=new OutputPass();motionOutput.renderToScreen=true;
         // The final triangle replaces the whole opaque display image. Nothing
         // consumes its depth, and an old display depth value must not reject it.
         motionOutput.material.depthTest=false;motionOutput.material.depthWrite=false;
-      }else if(motionTarget.width!==mw||motionTarget.height!==mh)motionTarget.setSize(mw,mh);
+      }
       return;
     }
     if(!enabled)return;
@@ -153,8 +164,8 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     if(gpuPhases){
       const published=Number(renderer.domElement?.dataset?.renderedFrameCount);
       profile=gpuPhases.beginFrame({renderPath:'motion-target',sceneBufferWidth:motionTarget.width,sceneBufferHeight:motionTarget.height,
-        scenePixelRatio:sceneRatio,motionSamples:singleSampleDiagnostic?0:motionSampleCount,motionRequestedSamples,
-        motionStorageSamples:singleSampleDiagnostic?1:motionSampleCount,motionMsaaDiagnostic:singleSampleDiagnostic?'single':null,
+        scenePixelRatio:sceneRatio,motionQualityScale,motionSamples:motionTarget.samples===0?0:motionSampleCount,motionRequestedSamples:motionTarget.samples,
+        motionStorageSamples:motionTarget.samples===0?1:motionSampleCount,motionMsaaDiagnostic:samplingControl,motionSamplingMode,motionSamplingReason,
         sceneColorType:motionTarget.texture.type,sceneColorSpace:motionTarget.texture.colorSpace,outputColorSpace:renderer.outputColorSpace,
         toneMapping:renderer.toneMapping,toneMappingExposure:renderer.toneMappingExposure,
         canvasWidth:renderer.domElement?.width,canvasHeight:renderer.domElement?.height,
@@ -199,11 +210,12 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
       msaaSamples:enabled?lastSamples:0,toneMapping:'AgX',renderPath,sceneBufferWidth,sceneBufferHeight,scenePixelRatio,
       motionSupported,motionUnsupportedReason,
       // GL rounds requested MSAA samples up to a supported count. Zero means
-      // no MSAA; the diagnostic still has one color/depth storage sample.
+      // no MSAA; that target still has one color/depth storage sample.
       // Both counts are independent of the default display canvas's samples.
-      motionSamples:motionEnabled&&!singleSampleDiagnostic?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,
-      motionStorageSamples:motionEnabled?(singleSampleDiagnostic?1:motionSampleCount):0,motionMsaaDiagnostic:singleSampleDiagnostic?'single':null,canvasSamples,
-      motionDepthResolveSkipped:motionEnabled&&motionDepthResolveSkipped,
+      motionSamples:motionEnabled&&motionTarget?.samples>0?motionSampleCount:0,motionRequestedSamples:motionEnabled?motionTarget?.samples||0:0,
+      motionStorageSamples:motionEnabled?(motionTarget?.samples===0?1:motionSampleCount):0,motionMsaaDiagnostic:samplingControl,
+      motionQualityScale,motionSamplingMode,motionSamplingReason,canvasSamples,
+      motionDepthResolveSkipped:motionEnabled&&motionTarget?.samples>0&&motionDepthResolveSkipped,
       ...(gpuPhases?{gpuPhases:gpuPhases.getDiagnostics()}:{} )};
   }
   return {
@@ -217,6 +229,7 @@ export function createArchitecturalRenderer(renderer,scene,camera,{interior=fals
     get motionSupported(){return motionSupported;},
     get sceneInfo(){return sceneInfo;},
     getDiagnostics,
-    dispose(){if(disposed)return;disposed=true;gpuPhases?.dispose();ao?.dispose();output?.dispose();composer?.dispose();motionTarget?.dispose();motionColorPass?.dispose();motionOutput?.dispose();}
+    dispose(){if(disposed)return;disposed=true;gpuPhases?.dispose();ao?.dispose();output?.dispose();composer?.dispose();
+      for(const target of motionTargets.values())target.dispose();motionTargets.clear();motionColorPass?.dispose();motionOutput?.dispose();}
   };
 }

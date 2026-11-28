@@ -9,6 +9,7 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 import {captureSceneScreenshot,waitSceneCaptureReady} from './scene-gpu-capture.mjs';
+import {motionDiagnosticUrl,expectedDiagnosticSampling,diagnosticSamplingMatches} from './motion-diagnostic-controls.mjs';
 
 assert.notEqual(process.env.SITES_MANAGED_LINUX_CONTAINER,'1','Run real WebGL diagnostics in GitHub Actions, not the managed workspace.');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -16,8 +17,8 @@ const output=path.join(root,'test-results','motion-msaa-diagnostic');await mkdir
 const setupLimitMs=120000,motionLimitMs=120000,measurementLimitMs=120000,idleLimitMs=120000,pairAnalysisLimitMs=30000;
 const pollIntervalMs=150,minimumScale=.54,minimumCompletedSamples=4,pixelThreshold=15,materialImprovementFraction=.20,variableRangeFraction=.20;
 const report={status:'running',testedMergeCommit:process.env.GITHUB_SHA||null,route:'living',
-  method:'Fresh same-host contexts compare the unchanged four-sample motion target with the explicit motionMsaa=single diagnostic. Both use gpuPhaseProfile=1, the same public current living Share fixture, zero-displacement held-pointer input, minimum .54 scale, fixed canvas and identical camera/geometry/color/light state.',
-  acceptance:'Diagnostic acquisition and restoration only. Motion pixel differences are a reported quality tradeoff, never an equivalence or FPS acceptance gate. Existing walking and visual acceptance scripts are unchanged.',
+  method:'Fresh same-host contexts compare the explicitly pinned motionMsaa=keep four-sample target with motionMsaa=single. Both use gpuPhaseProfile=1, the same public current living Share fixture, zero-displacement held-pointer input, minimum .54 scale, fixed canvas and identical camera/geometry/color/light state.',
+  acceptance:'Diagnostic acquisition and restoration only. Motion pixel differences are a reported quality tradeoff, never an equivalence or FPS acceptance gate. Existing walking and visual acceptance criteria are unchanged.',
   limitations:['WebGL target samples=0 means no MSAA and one storage sample, not zero color/depth samples.',
     'Raw timer-query values are retained separately because previous device-reported intervals have disagreed with independent completion evidence.',
     'The repeat decision uses observable completion availability for isolated actual frames after a signaled preceding-work fence. It includes CPU submission, browser status caching and polling; it is not isolated GPU time or a walking frame rate.',
@@ -141,14 +142,16 @@ async function imageCapture(page,record,name,deadline){
   captures.set(name,buffer);await save();return {buffer,snapshot:after};
 }
 
-function expectedMode(mode){return mode==='single'?{samples:0,storage:1,label:'single'}:{samples:4,storage:4,label:null};}
+function expectedMode(mode){
+  assert.ok(mode==='control'||mode==='single','Unknown MSAA diagnostic case');
+  return expectedDiagnosticSampling(mode==='control'?'keep':'single');
+}
 function isMinimumTarget(snapshot,mode){
   const expected=expectedMode(mode),v=snapshot.sceneOptimization?.vegetation;
   return Number.isInteger(snapshot.frames)&&snapshot.frames>0&&snapshot.summaryFrames===snapshot.frames&&
     snapshot.motionSupported&&snapshot.interacting&&snapshot.scene.path==='motion-target'&&
     snapshot.scene.pixelRatio===minimumScale&&snapshot.scene.width===691&&snapshot.scene.height===315&&
-    snapshot.scene.motionSamples===expected.samples&&snapshot.scene.motionStorageSamples===expected.storage&&
-    snapshot.scene.motionMsaaDiagnostic===expected.label&&v?.compacted===true&&v.shadowUploadGuard===null;
+    diagnosticSamplingMatches(snapshot.scene,expected.label)&&v?.compacted===true&&v.shadowUploadGuard===null;
 }
 function assertMotion(snapshot,before,mode){
   assertSceneUnchanged(snapshot,before);assert.ok(isMinimumTarget(snapshot,mode),'A completed compacted minimum-scale frame with the requested MSAA/storage count is required');
@@ -173,8 +176,7 @@ function eligibleSample(sample,frame,before,mode){
   const m=sample?.metadata||{},expected=expectedMode(mode);
   return sample?.status==='completed'&&sample.phases?.scene&&sample.phases?.output&&
     Number.isInteger(frame)&&m.expectedPublicFrame===frame&&m.renderPath==='motion-target'&&m.scenePixelRatio===minimumScale&&
-    m.sceneBufferWidth===691&&m.sceneBufferHeight===315&&m.motionSamples===expected.samples&&
-    m.motionStorageSamples===expected.storage&&m.motionMsaaDiagnostic===expected.label&&
+    m.sceneBufferWidth===691&&m.sceneBufferHeight===315&&diagnosticSamplingMatches(m,expected.label)&&
     m.motionRequestedSamples===(mode==='single'?0:2)&&m.motionDepthResolveSkipped===(mode!=='single')&&
     m.canvasWidth===before.canvas.width&&m.canvasHeight===before.canvas.height&&
     sample.marks?.length===3&&['start','scene','output'].every(label=>sample.marks.some(mark=>mark.label===label&&mark.status==='signaled'));
@@ -273,7 +275,7 @@ async function runCase(base,id,mode){
     context=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:1,reducedMotion:'reduce'});
     page=await context.newPage();page.setDefaultTimeout(setupLimitMs);
     page.on('pageerror',error=>record.pageErrors.push(error.message));page.on('console',message=>{if(message.type()==='error')record.consoleErrors.push(message.text());});
-    record.url=base+'/?site=sternicza-11&gpuPhaseProfile=1'+(mode==='single'?'&motionMsaa=single':'')+'#'+fixtureHash;
+    record.url=motionDiagnosticUrl(base,fixtureHash,{sampling:expectedMode(mode).label,profile:true});
     await page.goto(record.url,{waitUntil:'domcontentloaded',timeout:remaining(deadline)});
     await page.locator('#loading').waitFor({state:'hidden',timeout:remaining(deadline)});await settled(page,deadline);
     await page.locator('#interior-open').click({timeout:remaining(deadline)});const host=page.locator('#interior-host');
@@ -289,8 +291,8 @@ async function runCase(base,id,mode){
     assert.equal(before.motionSupported,true);assert.equal(before.gpuPhases?.requested,true);assert.equal(before.gpuPhases?.enabled,true);
     assert.equal(before.pose.mode,'walk');assert.equal(before.pose.floor,'ground');assert.equal(before.pose.fov,70);
     assert.equal(before.canvas.width,1280);assert.equal(before.canvas.height,584);assert.equal(before.scene.path,'ao-composer');
-    assert.equal(before.scene.motionSamples,0);assert.equal(before.scene.motionStorageSamples,0);
-    assert.equal(before.scene.motionMsaaDiagnostic,expectedMode(mode).label);assert.equal(before.motionActive,false);
+    assert.ok(diagnosticSamplingMatches(before.scene,expectedMode(mode).label,{idle:true}),'The requested diagnostic sampling mode must be explicit before motion');
+    assert.equal(before.motionActive,false);
     assert.equal(await page.locator('#showDimensions').isChecked(),true);assert.equal(await page.locator('#viewer-fullscreen').getAttribute('aria-pressed'),'true');
     if(report.cases[0].before){assertSceneUnchanged(before,report.cases[0].before);assert.deepEqual(before.livingCinema,report.cases[0].before.livingCinema);}
     record.webgl=await page.locator('#scene-host canvas').evaluate(canvas=>{

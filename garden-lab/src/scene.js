@@ -317,9 +317,11 @@ export function createScene(container, data, callbacks = {}) {
   scene.background = new THREE.Color('#dfe8e8');
   scene.fog = new THREE.Fog('#dfe8e8', 145, Math.max(330,contextSpan*1.55));
   const camera = new THREE.PerspectiveCamera(48, 1, 0.08, sceneFar);
+  const requestedMotionMsaa=new URLSearchParams(window.location.search).get('motionMsaa');
+  const motionMsaaDiagnostic=['keep','single'].includes(requestedMotionMsaa)?requestedMotionMsaa:null;
   const presentation=svgMode?null:createArchitecturalRenderer(renderer,scene,camera,{
     gpuPhaseDiagnostics:callbacks.gpuPhaseDiagnostics===true||new URLSearchParams(window.location.search).get('gpuPhaseProfile')==='1',
-    motionMsaaDiagnostic:new URLSearchParams(window.location.search).get('motionMsaa')==='single'?'single':null,
+    motionMsaaDiagnostic,
     onGpuPhaseUpdate:()=>queueMicrotask(()=>callbacks.onPerformanceInfo?.(getPerformanceInfo())),
   });
   const gpuPacer=svgMode?null:createGpuSubmissionPacer(renderer.getContext());
@@ -460,7 +462,7 @@ export function createScene(container, data, callbacks = {}) {
   const dimensionOverlay=createDimensionOverlay(container,scene,()=>[staticGroup,buildingGroup,designGroup]);
   const interiorDimensionOverlay=createInteriorDimensionOverlay(container,scene,()=>[houseGroup],{shared:true});
   const equipmentLabels=createEquipmentLabelOverlay(container,scene,()=>[houseGroup],{shared:true});
-  const performanceTiming=createFramePerformance(),adaptiveQuality=createAdaptiveMotionQuality();
+  const performanceTiming=createFramePerformance(),adaptiveQuality=createAdaptiveMotionQuality({motionMsaaDiagnostic});
   const vegetationCulling=createVegetationInstanceCuller();
   const optimizeOpaqueCoverage=new URLSearchParams(window.location.search).get('motionAlphaCoverage')!=='keep';
   const sceneOptimization={repeatedGardenDetails:null,dimensionOcclusion:'cached-triangle-bvh',dimensionLayoutHz:10};
@@ -1555,7 +1557,11 @@ export function createScene(container, data, callbacks = {}) {
     // or output work and never counts as a rendered frame.
     if(gpuPacer&&!gpuPacer.canSubmit()){
       gpuFrameDeferred=true;
-      if(navigationActive&&adaptiveQuality.pressure(now,gpuPacer.getDiagnostics().oldestPendingMs)){
+      const pressure=gpuPacer.getDiagnostics();
+      const scaleChanged=navigationActive&&adaptiveQuality.pressure(now,pressure.oldestPendingMs);
+      const samplingChanged=adaptiveQuality.samplingPressure(now,{blocked:true,active:navigationActive,quality,
+        pendingFrames:pressure.pendingFrames,maxInFlight:pressure.maxInFlight,enabled:pressure.enabled,oldestPendingMs:pressure.oldestPendingMs});
+      if(scaleChanged||samplingChanged){
         motionResizePending=true;statusChanged=true;
       }
       requestRender();
@@ -1564,6 +1570,9 @@ export function createScene(container, data, callbacks = {}) {
       }
       return;
     }
+    // A newly available slot breaks the continuous-pressure interval. The
+    // latch, once justified, remains until the actual gesture ends.
+    adaptiveQuality.samplingPressure(now,{active:navigationActive,quality});
     // A deferred callback may have just published renderPending=true. The
     // final admitted idle frame must publish its completed state even inside
     // the ordinary one-second summary interval, before RAF scheduling rests.
@@ -1603,6 +1612,7 @@ export function createScene(container, data, callbacks = {}) {
     // Alternate-camera captures above and every shadow-update frame retain
     // complete vegetation. Only this moving color pass compacts visible
     // instances; finally restores the full model before any other consumer.
+    let mainCulling=null;
     try{
       // r160 leaves needsUpdate set when no shadow lights are active. Keep
       // that pending work for the next lit view without disabling culling in
@@ -1611,6 +1621,7 @@ export function createScene(container, data, callbacks = {}) {
         (sun.visible&&sun.castShadow||gardenNight?.group.visible&&gardenNight.group.children.some(light=>light.isLight&&light.visible&&light.castShadow));
       const optimizeVegetation=!svgMode&&navigationActive&&!shadowPassPending;
       const culling=svgMode?null:vegetationCulling.prepare(camera,{enabled:optimizeVegetation,shadowPassPending});
+      mainCulling=culling;
       performanceTiming.phase('instanceCulling',performance.now()-phaseStart,navigationActive);phaseStart=performance.now();
       vegetationCulling.withOpaqueDepthOrder(renderer,()=>{
         if(presentation)presentation.render();else renderer.render(scene,camera);
@@ -1621,15 +1632,21 @@ export function createScene(container, data, callbacks = {}) {
     }
     // One fence covers the complete main-frame bundle, including any earlier
     // reflections and post-processing. Settled frames obey the same bound.
-    gpuPacer?.submitted();
+    const trackedSubmission=gpuPacer?.submitted()===true;
     // Publish the completed scene target independently of the fixed display
     // canvas. The live fields let diagnostics observe every adaptive level,
     // including levels between the slower summary updates.
     const output=presentation?.getDiagnostics()||{sceneBufferWidth:renderer.domElement.width||lastWidth,
-      sceneBufferHeight:renderer.domElement.height||lastHeight,scenePixelRatio:1,renderPath:'svg',motionSupported:false,motionSamples:0,motionStorageSamples:0,canvasSamples:0};
-    for(const key of ['sceneBufferWidth','sceneBufferHeight','scenePixelRatio','renderPath','motionSupported','motionSamples','motionStorageSamples','canvasSamples'])
+      sceneBufferHeight:renderer.domElement.height||lastHeight,scenePixelRatio:1,renderPath:'svg',motionSupported:false,motionSamples:0,motionStorageSamples:0,
+      motionQualityScale:1,motionSamplingMode:'idle',motionSamplingReason:null,canvasSamples:0};
+    adaptiveQuality.submitted({frame:frameCount+1,tracked:trackedSubmission,active:navigationActive,quality,
+      renderPath:output.renderPath,motionQualityScale:output.motionQualityScale,motionSamples:output.motionSamples,
+      sceneBufferWidth:output.sceneBufferWidth,sceneBufferHeight:output.sceneBufferHeight,
+      compacted:mainCulling?.compacted===true,shadowUploadGuard:mainCulling?.shadowUploadGuard??null});
+    for(const key of ['sceneBufferWidth','sceneBufferHeight','scenePixelRatio','renderPath','motionSupported','motionSamples','motionStorageSamples','motionQualityScale','motionSamplingMode','canvasSamples'])
       renderer.domElement.dataset[key]=String(output[key]);
     renderer.domElement.dataset.motionMsaaDiagnostic=output.motionMsaaDiagnostic||'';
+    renderer.domElement.dataset.motionSamplingReason=output.motionSamplingReason||'';
     phaseStart=performance.now();
     // A rebuild or visibility callback alone does not replace the visible frame.
     renderedStyle=finishSignature||null;frameCount++;
@@ -1655,6 +1672,9 @@ export function createScene(container, data, callbacks = {}) {
     clearTimeout(motionTimer);motionTimer=0;lastMotionTime=0;statusChanged=true;
     if(canDraw())requestRender();
     else {
+      // Hiding the view ends sampling eligibility immediately, even when a
+      // pending idle draw cannot run until visibility returns.
+      adaptiveQuality.rest();motionResizePending=true;
       stopWalking();
       cancelAnimationFrame(frameHandle);frameHandle=0;renderPending=false;renderer.domElement.dataset.renderPending='false';
       callbacks.onPerformanceInfo?.(getPerformanceInfo());
@@ -1682,7 +1702,7 @@ export function createScene(container, data, callbacks = {}) {
     if(canDraw()&&(walkKeys.size||walkSettling||pointerStart||eyePointers.size)){
       interactionTimer=setTimeout(finishCameraInteraction,180);return;
     }
-    interacting=false;statusChanged=true;resize();requestRender();
+    interacting=false;adaptiveQuality.rest();motionResizePending=false;statusChanged=true;resize();requestRender();
   }
   function cameraInteraction(){
     if(!svgMode&&canDraw()){
@@ -1922,6 +1942,7 @@ export function createScene(container, data, callbacks = {}) {
       memoryGB:globalThis.navigator?.deviceMemory,maxTextureSize:renderer.capabilities?.maxTextureSize,
       interacting,motionScale:adaptiveQuality.scale,separateMotionTarget:!!presentation?.motionSupported
     });
+    adaptiveQuality.surface({width,height,scenePixelRatio:budget.pixelRatio,devicePixelRatio:window.devicePixelRatio});
     motionFps=budget.motionFps;
     if(!svgMode&&sun.shadow.mapSize.x!==budget.shadowSize){
       // r160 only allocates a new shadow target when the old one is null.
@@ -1929,7 +1950,8 @@ export function createScene(container, data, callbacks = {}) {
       sun.shadow.mapSize.set(budget.shadowSize,budget.shadowSize);shadowCameraDirty=true;
     }
     const ratio=svgMode?1:canvasBudget.pixelRatio;
-    presentation?.resize(width,height,budget.pixelRatio,quality,{memoryGB:globalThis.navigator?.deviceMemory,interacting});
+    presentation?.resize(width,height,budget.pixelRatio,quality,{memoryGB:globalThis.navigator?.deviceMemory,interacting,
+      motionScale:adaptiveQuality.scale,motionSingleSample:adaptiveQuality.singleSample});
     if(width===lastWidth&&height===lastHeight&&ratio===lastPixelRatio)return;
     lastWidth=width;lastHeight=height;lastPixelRatio=ratio;statusChanged=true;
     if(svgMode)renderer.setSize(width,height);

@@ -9,6 +9,7 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 import {captureSceneScreenshot,waitSceneCaptureReady} from './scene-gpu-capture.mjs';
+import {motionDiagnosticUrl,diagnosticSamplingMatches} from './motion-diagnostic-controls.mjs';
 
 assert.notEqual(process.env.SITES_MANAGED_LINUX_CONTAINER,'1','Run real WebGL pixel checks in GitHub Actions, not the managed workspace.');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -16,14 +17,14 @@ const output=path.join(root,'test-results','motion-alpha-coverage');await mkdir(
 const setupLimitMs=120000,motionLimitMs=120000,captureLimitMs=120000,idleLimitMs=120000;
 const pollIntervalMs=150,minimumScale=.54,minimumStableDraws=4,pixelThreshold=15,maximumChangedFraction=.001;
 const report={status:'running',head:process.env.GITHUB_SHA||null,route:'living',
-  method:'Two fresh contexts of the same build and Share fixture. A keeps motion alpha coverage; B uses the default optimization. Real zero-displacement held-pointer events request moving frames without changing the public camera. Each case requires four actual compacted minimum-scale submissions before fenced captures.',
+  method:'Two fresh contexts of the same build and Share fixture explicitly pin motionMsaa=keep. A keeps motion alpha coverage; B uses the default optimization. Real zero-displacement held-pointer events request moving frames without changing the public camera. Each case requires four actual compacted minimum-scale submissions before fenced captures.',
   acceptance:'A/A must be identical decoded RGBA on distinct actual submissions. A/B uses the existing strict changed-pixel fraction < .001 with a 15-code-value per-channel tolerance; exact RGBA differences are also reported. Both cases must restore the original idle pipeline and material state.',
   limitations:['This is a fixed-camera visual regression, not a walking performance result or speedup claim.',
     'The public camera position is reported to millimetres and yaw/pitch to four decimal places; unchanged zero-displacement input and decoded pixels provide additional evidence.',
     'GPU capture fences establish completion of preceding context work; they are not isolated GPU-duration measurements.'],
   viewport:{width:1280,height:800,deviceScaleFactor:1},
   policy:{setupLimitMs,motionLimitMs,captureLimitMs,idleLimitMs,pollIntervalMs,minimumScale,minimumStableDraws,
-    expectedMotionTarget:{width:691,height:315,samples:4},pixelThreshold,maximumChangedFraction,
+    expectedMotionTarget:{width:691,height:315,samples:4,storageSamples:4,diagnostic:'keep'},pixelThreshold,maximumChangedFraction,
     maximumCaseStagesMs:setupLimitMs+motionLimitMs+captureLimitMs+idleLimitMs},
   host:{platform:os.platform(),release:os.release(),arch:os.arch(),cpuModel:os.cpus()[0]?.model,
     logicalCpus:os.cpus().length,totalMemoryGB:os.totalmem()/1024**3,node:process.version},
@@ -70,7 +71,8 @@ async function info(page,deadline){
       motionActive:d.motionActive==='true',motionSupported:(c.motionSupported??d.motionSupported)==='true',
       canvas:{width:canvas.width,height:canvas.height,cssWidth:bounds.width,cssHeight:bounds.height},
       scene:{width:number(c.sceneBufferWidth),height:number(c.sceneBufferHeight),pixelRatio:number(c.scenePixelRatio),
-        path:c.renderPath,motionSamples:number(c.motionSamples),canvasSamples:number(c.canvasSamples)},
+        path:c.renderPath,motionSamples:number(c.motionSamples),motionStorageSamples:number(c.motionStorageSamples),
+        motionMsaaDiagnostic:c.motionMsaaDiagnostic||null,canvasSamples:number(c.canvasSamples)},
       pose:{mode:viewport.dataset.mode,floor:c.walkFloor,position:position(c.walkPosition),renderedPosition:position(c.renderedWalkPosition),
         yaw:number(c.walkYaw),pitch:number(c.walkPitch),fov:number(c.walkFov),altitude:number(c.walkAltitude),
         navigation:c.walkNavigation,floating:c.walkFloating,swimming:c.walkSwimming},
@@ -92,7 +94,7 @@ function assertSceneUnchanged(snapshot,before){
 function isMinimumTarget(snapshot){
   return snapshot.motionSupported&&snapshot.interacting&&snapshot.scene.path==='motion-target'&&
     snapshot.scene.pixelRatio===minimumScale&&snapshot.scene.width===691&&snapshot.scene.height===315&&
-    snapshot.scene.motionSamples===4;
+    diagnosticSamplingMatches(snapshot.scene,'keep');
 }
 function isStableMinimumFrame(snapshot){
   const v=snapshot.sceneOptimization?.vegetation;
@@ -175,7 +177,7 @@ async function runCase(base,id,optimized){
     context=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:1,reducedMotion:'reduce'});
     page=await context.newPage();page.setDefaultTimeout(setupLimitMs);
     page.on('pageerror',error=>record.pageErrors.push(error.message));page.on('console',message=>{if(message.type()==='error')record.consoleErrors.push(message.text());});
-    record.url=base+'/?site=sternicza-11'+(optimized?'':'&motionAlphaCoverage=keep')+'#'+fixtureHash;
+    record.url=motionDiagnosticUrl(base,fixtureHash,{sampling:'keep',keepCoverage:!optimized});
     await page.goto(record.url,{waitUntil:'domcontentloaded',timeout:remaining(deadline)});
     await page.locator('#loading').waitFor({state:'hidden',timeout:remaining(deadline)});await settled(page,deadline);
     await page.locator('#interior-open').click({timeout:remaining(deadline)});const host=page.locator('#interior-host');
@@ -190,6 +192,7 @@ async function runCase(base,id,optimized){
     before=record.before=await info(page,deadline);assert.equal(before.motionSupported,true);
     assert.equal(before.pose.mode,'walk');assert.equal(before.pose.floor,'ground');assert.equal(before.pose.fov,70);
     assert.equal(before.canvas.width,1280);assert.equal(before.canvas.height,584);assert.equal(before.scene.path,'ao-composer');
+    assert.ok(diagnosticSamplingMatches(before.scene,'keep',{idle:true}),'The alpha comparison must explicitly pin multisampling even before its gesture');
     assert.equal(before.motionActive,false);assertCoverage(before,false);
     assert.equal(await page.locator('#showDimensions').isChecked(),true);
     assert.equal(await page.locator('#viewer-fullscreen').getAttribute('aria-pressed'),'true');
